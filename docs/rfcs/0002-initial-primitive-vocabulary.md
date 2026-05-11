@@ -502,6 +502,130 @@ The expected sequence:
 
 The PX4 runtime's subset implementation tracks the drone profile RFC (a separate RFC, planned as RFC-0005 or thereabouts), not this one.
 
+## Appendix A: Prior-art mapping
+
+This appendix grounds the substrate-neutrality claim in evidence. For each of the twelve core primitives, the table below names the closest existing equivalent in six widely-used robot programming systems. A cell of `—` means the substrate has no direct equivalent at the same level of abstraction — either the concept is irrelevant on that substrate (drones don't grasp) or it is delegated to a vendor-specific extension URML's spec doesn't try to absorb.
+
+The substrates surveyed:
+
+- **ROS 2** — via [Nav2](https://navigation.ros.org/) (mobility) and [MoveIt 2](https://moveit.picknik.ai/) (manipulation). The largest open-source robotics community; default for research, home robots, and many industrial AMRs.
+- **PX4 / MAVLink** — the dominant open-source autopilot for small UAS. [`MAV_CMD_*`](https://mavlink.io/en/messages/common.html) names below refer to MAVLink common-message enumerations.
+- **OPC UA Robotics** — the [OPC UA Companion Specification 40010](https://reference.opcfoundation.org/Robotics/) for industrial robot integration. Vendor-neutral, increasingly adopted by industrial cells.
+- **KUKA KRL** — KUKA Robot Language; runs on KRC controllers. Verbs below are standard KRL 8.x; `$IN[]`/`$OUT[]` refer to digital I/O addressing.
+- **ABB RAPID** — ABB's robot programming language; runs on IRC5 / OmniCore controllers. Verbs below are standard RAPID.
+- **IEC 61131-3 (PLC)** — the international standard for industrial automation programming, with motion via [PLCopen Motion Control](https://plcopen.org/technical-activities/motion-control) function blocks (`MC_*`). The "no robot, just automation" baseline.
+
+### Summary table
+
+| URML primitive | ROS 2 (Nav2 + MoveIt 2) | PX4 / MAVLink | OPC UA Robotics | KUKA KRL | ABB RAPID | IEC 61131-3 (PLC) |
+|---|---|---|---|---|---|---|
+| `move_to` | `NavigateToPose`; `MoveGroup.plan`+`execute` | `MAV_CMD_NAV_WAYPOINT`; offboard setpoint | `MotionDevice.MoveTo()` | `PTP`, `LIN`, `CIRC` | `MoveJ`, `MoveL`, `MoveC` | `MC_MoveAbsolute`, `MC_MoveLinearAbsolute` |
+| `dock` | Nav2 `DockRobot` (Iron+) | `MAV_CMD_NAV_LAND` + service | `MotionDevice.Dock()` (vendor) | vendor routine + `WAIT FOR` | vendor routine + `WaitDI` | vendor sequence |
+| `hover` | position-hold behavior | `MAV_CMD_NAV_LOITER_TIME`, `_LOITER_UNLIM` | position-hold mode | `WAIT SEC` w/ servo-on | implicit between moves | `MC_Halt` + position-hold |
+| `wait` | simple sleep / no-op behavior | — (not used in flight) | idle state | `WAIT SEC <n>` | `WaitTime <n>` | `TON` timer |
+| `wait_for` | subscription w/ predicate | param-monitor; telemetry event | node subscription w/ filter | `WAIT FOR <signal>` | `WaitDI`, `WaitUntil` | input watch + `TON` |
+| `grasp` | MoveIt 2 + gripper action | — (rare on drones) | `Gripper.Grasp(force)` | `$OUT[]` pneumatic, `OPENC`/`CLOSEC` servo | `SetDO`, `GripperCommand` (servo) | `Q_Gripper` boolean, custom FB |
+| `release` | MoveIt 2 release / gripper open | `MAV_CMD_DO_SET_SERVO`, `_PARACHUTE` (payload) | `Gripper.Release(mode)` | opposite of grasp | opposite of grasp | opposite of grasp |
+| `detect` | perception pipeline + custom action | onboard companion + MAVLink relay | `Perception.FindObject()` (vendor) | `KUKA.VisionTech`, external I/O | `Integrated Vision`, external I/O | external vision via fieldbus |
+| `scan` | path follower + per-waypoint perception | mission upload + `MAV_CMD_DO_DIGICAM_CONTROL` | `Perception.RunScan()` (vendor) | path + vision triggers | path + vision triggers | sequence + vision triggers |
+| `measure` | one-shot subscription | telemetry read | `Sensor.Read()` | read `$IN[]` / Profinet | read `<signal>` | read `AI_*` / fieldbus |
+| `capture` | `image_transport` (photo); `rosbag2` (video) | `MAV_CMD_DO_DIGICAM_CONTROL`; `_VIDEO_START_CAPTURE` | `Camera.TakeImage()`, `StartRecording()` | — (external vision system) | — (external vision system) | — (external vision system) |
+| `report` | publish on configured topic | `STATUSTEXT`; MAVLink FTP for attachments | write configured node; file-transfer service | `WRITE` to FTP; OPC UA bridge | `TPWrite`, `WriteVar`, file I/O | HMI write; OPC UA Server FB |
+
+### Per-substrate interpretation notes
+
+#### ROS 2 (Nav2 + MoveIt 2)
+
+The cleanest mapping. Every primitive has at least one direct ROS 2 counterpart. URML's reference runtime is named first because the impedance mismatch is smallest. Two specifics:
+
+- **`detect` is the loosest mapping.** ROS 2 has no canonical perception interface — every project rolls its own. The URML reference runtime will ship a default perception adapter (likely backed by `vision_msgs`/`detectnet_ros`) and a documented contract so deployers can swap in their own.
+- **`scan` is not a single ROS 2 action.** Nav2 doesn't ship a "scan a polygon with overlap and trigger the camera at each waypoint" primitive; the reference runtime composes it.
+
+#### PX4 / MAVLink
+
+Covers the **drone subset** of URML well. Three primitives are out of scope on this substrate:
+
+- **`grasp` / `release`** — gripper-equipped drones exist but are rare; the drone profile does not require them. The reference runtime declares partial conformance.
+- **`wait`** — not used in flight (a drone never *passively* waits in air); `hover` is the airborne analogue.
+
+`scan` maps especially cleanly: MAVLink missions are sequences of waypoints with per-waypoint commands, exactly the structure `scan` describes.
+
+#### OPC UA Robotics
+
+The most architecturally sympathetic substrate. OPC UA Robotics organizes a robot as a tree of typed services (`MotionDevice`, `Gripper`, `Perception`, `Camera`, `Sensor`), each with methods — close to URML's primitive-per-capability model. Many cells in the table are method names rather than command codes.
+
+Vendor extensions in OPC UA Robotics are first-class (the spec is explicit about extensibility), so profile-specific URML primitives map naturally to vendor-extended OPC UA methods.
+
+#### KUKA KRL
+
+Industrial-arm-shaped. The mobility table cells are about manipulator motion, not mobile-base motion (KUKA KMR — the KRC4-controlled mobile manipulator — uses additional KRL extensions). `WAIT SEC` and `WAIT FOR <signal>` provide `wait`/`wait_for` cleanly; `$IN[]` / `$OUT[]` digital I/O addressing covers the gripper and signal paths.
+
+Native perception is essentially absent: KRL programs delegate vision to `KUKA.VisionTech` or external systems via Profinet/Ethernet. URML's `detect`/`scan`/`capture` map to *external* systems on this substrate.
+
+#### ABB RAPID
+
+Industrial-arm-shaped, very similar in shape to KRL. RAPID's `MoveJ`/`MoveL`/`MoveC` triplet mirrors KRL's `PTP`/`LIN`/`CIRC`. `WaitTime` and `WaitDI`/`WaitUntil` map directly. Gripper I/O via `SetDO`/`GripperCommand` (the latter for servo-controlled grippers).
+
+Like KRL, native perception is external — `Integrated Vision` or third-party systems via fieldbus.
+
+#### IEC 61131-3 (PLC)
+
+The "no robot, just automation" baseline. Most cells here are PLCopen Motion Control function blocks (`MC_*`) for axis-level motion. Strikingly little perception or media capture happens at this layer; in industrial cells where the PLC is the top-level controller, URML's perception primitives live in adjacent systems and PLCs consume their results via fieldbus.
+
+The presence of cleanly-mappable cells here (motion, wait, simple I/O) and the *absence* of perception/capture is itself useful evidence: URML's perception primitives are correctly *above* the substrate level, exactly where the intent layer should sit.
+
+### What the table reveals
+
+Three observations:
+
+1. **All twelve primitives map cleanly onto at least four of the six substrates.** No primitive is "ROS-only." This is concrete evidence — not just assertion — that the substrate-neutrality acid test is satisfied.
+
+2. **`capture` is missing from three substrates** (KRL, RAPID, IEC 61131-3). On those, media capture is delegated to external systems. The drone profile and the home-with-cameras case work; the pure-PLC industrial case treats `capture` as an external-service primitive. This is acceptable: the URML manifest declares the camera regardless of which controller it is wired to; the validator's job is to check the declaration, not the wiring.
+
+3. **No primitive forces a re-design.** Every gap is either an out-of-scope case (drones don't grasp) or a substrate-extension question (OPC UA companion extensions, KRL/RAPID external vision). Nothing in the table is "URML primitive X cannot be implemented at all on substrate Y."
+
+If a future substrate produces a row where five of twelve are `—`, that substrate is genuinely *out of URML's reach* and we should be honest about it rather than warp the spec. Today, no surveyed substrate is in that category.
+
+## Appendix B: Simulator and emulator availability
+
+URML's substrate-neutrality claim is hollow unless we can *demonstrate* programs running across substrates. This appendix names the simulators each substrate offers, the licensing posture, and a one-line judgement on demo readiness.
+
+| Substrate | Simulator | License | Demo readiness |
+|---|---|---|---|
+| **ROS 2** | [Gazebo (Ignition/modern)](https://gazebosim.org/) | Apache 2.0 | **High.** Mature, integrates natively with ROS 2; canonical for TurtleBot 4 home demos. |
+| ROS 2 | [NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim) | Free for non-commercial; commercial licensing required | **High** if you have an NVIDIA GPU; photorealistic, great for video. |
+| ROS 2 | [Webots](https://cyberbotics.com/) | Apache 2.0 | **High.** Cross-platform, lighter than Gazebo, good for education. |
+| **PX4 / MAVLink** | [PX4 SITL + Gazebo](https://docs.px4.io/main/en/simulation/) | BSD-3-Clause + Apache 2.0 | **High.** Official PX4 toolchain; the industry-standard drone-sim path. |
+| PX4 / MAVLink | [jMAVSim](https://github.com/PX4/jMAVSim) | BSD-3-Clause | **Medium.** Lightweight, deprecated upstream in favour of Gazebo; still useful for quick smoke tests. |
+| **OPC UA Robotics** | [open62541](https://www.open62541.org/) + simulated devices | MPL 2.0 | **Medium.** Open-source OPC UA stack; no turnkey "robotics" simulator — you wire a device sim against an OPC UA endpoint. |
+| OPC UA Robotics | Vendor sims (B&R Automation Studio, etc.) | Per-vendor; mostly commercial | **Low.** Vendor-locked, not portable across deployments. |
+| **KUKA KRL** | [RoboDK](https://robodk.com/) | Free version (limited); commercial paid | **Medium.** Third-party, simulates KUKA + many vendors; free tier sufficient for short demos. |
+| KUKA KRL | KUKA.OfficeLite | Commercial | **Low (for us).** Most accurate KRL emulation but costs and requires KUKA licensing. |
+| KUKA KRL | KUKA Sim Pro | Commercial | **Low (for us).** Official sim; expensive. |
+| **ABB RAPID** | [ABB RobotStudio](https://new.abb.com/products/robotics/robotstudio) | Free for non-commercial (post-2021) | **High.** Vendor-official, polished, free for the use case URML cares about. |
+| ABB RAPID | RoboDK | Free version (limited); commercial paid | **Medium.** Same as KUKA — third-party, multi-vendor. |
+| **IEC 61131-3 (PLC)** | [CODESYS](https://www.codesys.com/) | Free Development System + simulator | **Medium-High.** Free, runs the simulated PLC against a virtual machine; integrates with Gazebo via OPC UA bridge. |
+| IEC 61131-3 (PLC) | [Beremiz](https://beremiz.org/) | LGPL | **Medium.** Fully open-source IDE + sim; smaller community than CODESYS. |
+
+### Demo-readiness summary
+
+Three substrates are **demo-ready today** with free, mature, polished simulators:
+
+- **ROS 2** via Gazebo. The Phase-1 home demo target.
+- **PX4** via PX4 SITL + Gazebo. The Phase-2 drone demo target — and the source of the *flagship* public-launch video.
+- **ABB RAPID** via RobotStudio. The cleanest industrial demo target for Phase 3.
+
+Two substrates are **demo-feasible with caveats**:
+
+- **KUKA KRL** via RoboDK (free tier sufficient for short demos; full features require a paid tier).
+- **IEC 61131-3** via CODESYS (free Development System + simulator; pair with Gazebo through an OPC UA bridge for a more compelling visual).
+
+One substrate is **demo-blocked without a vendor partnership**:
+
+- **OPC UA Robotics** lacks a turnkey simulator. Demoing across an OPC UA endpoint requires wiring a device sim against an OPC UA stack — feasible (open62541 + a Gazebo-driven device facade) but more engineering than a Phase-1/2 demo can absorb. Defer to Phase 3+ or a vendor partnership.
+
+The detailed mapping from these simulators to specific Manifesto-roadmap demos lives in [`docs/demo-roadmap.md`](../demo-roadmap.md).
+
 ## Self-review (Phase 0)
 
 The author has reviewed against the checklist in [`0001-rfc-process.md`](0001-rfc-process.md) §Self-review:
