@@ -1,0 +1,46 @@
+# Treat all text files as LF-normalized in the repository.
+# This keeps line endings stable across Windows, macOS, and Linux contributors.
+# The .editorconfig file declares the same intent at the editor level;
+# this file enforces it at the Git level.
+
+* text=auto eol=lf
+
+# Explicitly mark known text formats so Git never guesses wrong.
+*.md       text eol=lf
+*.yaml     text eol=lf
+*.yml      text eol=lf
+*.txt      text eol=lf
+*.py       text eol=lf
+*.pyi      text eol=lf
+*.c        text eol=lf
+*.cc       text eol=lf
+*.cpp      text eol=lf
+*.h        text eol=lf
+*.hpp      text eol=lf
+*.rs       text eol=lf
+*.toml     text eol=lf
+*.json     text eol=lf
+*.jsonc    text eol=lf
+*.sh       text eol=lf
+Makefile   text eol=lf
+LICENSE    text eol=lf
+DCO        text eol=lf
+
+# Windows shell scripts keep CRLF.
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+*.ps1      text eol=crlf
+
+# Known binary formats — never normalize.
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.gif      binary
+*.webp     binary
+*.svg      text eol=lf
+*.pdf      binary
+*.zip      binary
+*.gz       binary
+*.tar      binary
+*.tgz      binary
+*.ico      binary

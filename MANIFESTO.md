@@ -3,8 +3,8 @@
 **A Manifesto**
 
 *Version 0.1 — Draft*  
-*Date: [Fill in]*  
-*Author: [Your Name]*  
+*Date: 2026-05-11*  
+*Author: Ido Jacob*  
 *Status: Pre-public draft — written to be critiqued, not endorsed*
 
 ---

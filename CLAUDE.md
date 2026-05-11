@@ -2,7 +2,7 @@
 
 > Project context for AI-assisted development sessions (Claude Code, Claude chat, IDE integrations).  
 > Loaded automatically by Claude Code at the start of every session in this repository.  
-> Last updated: [fill in]
+> Last updated: 2026-05-11
 
 ---
 
