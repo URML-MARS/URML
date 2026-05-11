@@ -1,0 +1,14 @@
+# Fixture: the default safety envelope a home-profile deployment applies on
+# top of the capability manifest. Numbers here are conservative.
+
+envelope_version: "0.1"
+deployment_id: home_demo
+description: Default home-profile envelope for the red-mug demo.
+
+max_velocity: 0.4          # 0.4 m/s; below manifest's 0.46 max.
+max_grip_force_n: 3.0      # Below the gripper's declared 5.0 N max.
+
+people_occupancy_zones: []
+geofences: []
+
+link_loss_policy: halt_and_report

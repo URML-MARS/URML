@@ -1,6 +1,6 @@
 # Validator
 
-**Status:** Pre-implementation. Phase 1 target.
+**Status:** Phase 1 in flight. **Package skeleton + schemas landed** at `0.1.0a0` (pre-alpha). The four-pass validator itself lands in a follow-up.
 
 ## What this is
 
@@ -82,6 +82,28 @@ else:
 ## Core Commitment
 
 The validator is part of the [Core Commitment](../../CORE_COMMITMENT.md). It will always be Apache 2.0. The safety guarantees of URML flow through this component; gating it behind a license would forfeit them.
+
+## Quickstart (current pre-alpha)
+
+```bash
+cd reference/validator
+python -m venv .venv && . .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+pytest
+```
+
+The 22 tests confirm: the `red-mug` example parses against the schemas; every primitive accepts its minimal valid form; cross-field rules (e.g. `move_to` requires exactly one of `location`/`pose`, `capture(media: video)` requires `duration`, `release(mode: place)` requires `at`) fire correctly.
+
+What works **now** at this pre-alpha milestone:
+
+- Pydantic v2 schemas for Layer-1 (capability manifest), Layer-2 (all 12 RFC-0002 primitives), Layer-3 (composition), the safety envelope, and the top-level `URMLProgram`.
+- The Step / BehaviorOrStep tagged union accepts the YAML surface (`{move_to: {...}}`) and the recursive composition forms.
+
+What's **not** in this milestone (lands next):
+
+- The four-pass validator (`urml_validator.validator.validate`) — argument-type pass exists implicitly via pydantic; capability/envelope/binding passes are the next PR.
+- The structured error format the LLM bridge will consume.
+- The `urml` CLI.
 
 ## Related documents
 

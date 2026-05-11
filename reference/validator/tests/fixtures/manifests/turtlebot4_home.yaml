@@ -1,0 +1,69 @@
+# Fixture: a capability manifest for a TurtleBot 4 configured for the home profile.
+# Used by the validator test suite. Hand-authored to be the minimum manifest
+# the red-mug example needs to schema-parse end-to-end.
+
+manifest_version: "0.1"
+robot_id: turtlebot4_demo
+description: TurtleBot 4 with depth camera and a small claw mount for the red-mug demo.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+    description: Kitchen entry pose.
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+    description: User pickup location.
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - mug
+    - cup
+    - person
+
+docking_stations:
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+    services: [park, charge]
+
+outputs:
+  named_endpoints: []

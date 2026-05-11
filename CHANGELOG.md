@@ -11,6 +11,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - Phase 0 repository scaffold: governance and policy files, RFC process, layer/profile stubs, reference-implementation stubs, the first runnable example (`examples/home/red-mug.*`), and the conformance test suite placeholder.
 - [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) — the list of components that will always remain Apache 2.0.
 - [`docs/rfcs/0001-rfc-process.md`](docs/rfcs/0001-rfc-process.md) — the meta-RFC documenting how RFCs work.
+- `urml-validator` Python package skeleton at [`reference/validator/`](reference/validator/) (pre-alpha v0.1.0a0). Includes pydantic v2 schemas for Layer-1 (capability manifest), Layer-2 (all 12 RFC-0002 primitives), Layer-3 (Sequence, Branch, Parallel, Retry, on-error), the safety envelope, and the top-level `URMLProgram`. Tested with 22 schema-parse cases including the `red-mug` example.
 
 ### Changed
 
