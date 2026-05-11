@@ -4,7 +4,7 @@
 
 *Version 0.1 — Draft*  
 *Date: 2026-05-11*  
-*Author: Ido Jacob*  
+*Author: Ido Yahalomi*  
 *Status: Pre-public draft — written to be critiqued, not endorsed*
 
 ---
