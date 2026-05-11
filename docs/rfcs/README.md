@@ -1,0 +1,35 @@
+# URML RFCs
+
+This directory is URML's decision history. Every change to the **specification** — adding or modifying a primitive, changing a schema, modifying behavior semantics, changing a profile, modifying the Core Commitment — happens here, not in a pull request.
+
+The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.md). This file is just the index.
+
+## Index
+
+| # | Title | State | Last updated |
+|---|---|---|---|
+| [0000](0000-template.md) | RFC template | Template (not an RFC) | — |
+| [0001](0001-rfc-process.md) | RFC process | Accepted | Phase 0 |
+
+## Lifecycle states
+
+Per RFC-0001:
+
+- **Draft** — Author working on it. Not yet open for review.
+- **Open** — Open for review; the comment window is active.
+- **Accepted** — Approved by the governance body (Phase 0: sole maintainer; Phase 1+: steering committee). Authoritative; implementation may begin.
+- **Implemented** — The RFC's normative changes have landed in the spec and at least the reference implementations required for conformance.
+- **Rejected** — Considered and not adopted. Stays in the directory as historical record; the RFC body documents the reasoning.
+- **Superseded** — Replaced by a later RFC. Header links to the successor.
+- **Withdrawn** — Author withdrew before the decision. Stays as historical record.
+
+State changes are recorded in the RFC's own header, not here; this table reflects the current state at index update.
+
+## How to file an RFC
+
+1. Copy [`0000-template.md`](0000-template.md) to `NNNN-short-kebab-name.md`, where `NNNN` is the next unused number (zero-padded to four digits).
+2. Fill in the template. The required sections are non-negotiable; saying "N/A" in one is fine if it's truly N/A and you explain why.
+3. Open a PR titled `RFC-NNNN: <short title>`. The PR is the comment window.
+4. The maintainer (Phase 0) or a steering-committee reviewer (Phase 1+) advances the state header.
+
+A Phase 0 RFC may be authored, reviewed, and merged by the same person. The author reviews their own work against the self-review checklist in RFC-0001 §Self-review. The discipline matters: future contributors inherit a real decision trail rather than a folkloric one.

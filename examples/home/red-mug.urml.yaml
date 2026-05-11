@@ -1,0 +1,33 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: home/red-mug
+# Source NL: "Bring me the red mug from the kitchen." (see red-mug.en.txt)
+#
+# This is the canonical home-profile example, reproduced from
+# MANIFESTO.md §A Concrete Example. It is illustrative: the Layer-2
+# primitives `move_to`, `detect`, `grasp`, and `release` are not yet
+# normatively specified, so this program is not yet validatable
+# against a real Layer-1 capability manifest. It will become
+# normatively validatable when the home-profile Layer-2 vocabulary
+# is drafted (RFC-0002 and the home-profile spec).
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: kitchen
+    - detect:
+        object: mug
+        attributes:
+          color: red
+        store_as: target_mug
+    - grasp:
+        target: $target_mug
+        force: gentle
+    - move_to:
+        location: user
+        carrying: $target_mug
+    - release:
+        mode: hand_to_user

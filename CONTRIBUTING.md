@@ -1,0 +1,92 @@
+# Contributing to URML
+
+Thank you for your interest in URML. This document describes how to engage during Phase 0 and how to contribute from Phase 1 on.
+
+> **Phase 0 status (current).** URML is a solo project working in public. The artifact under review is the manifesto itself. The author welcomes critique, prior-art pointers, and use-case descriptions; **direct code contributions open in Phase 1.** This document is in force now so the contribution process is understood before contributions arrive.
+
+---
+
+## Ways to Engage Today (Phase 0)
+
+The author welcomes:
+
+- **Critique of [`MANIFESTO.md`](MANIFESTO.md)** — especially of the layer boundaries, the substrate-neutrality acid test, and the (not-yet-drafted) primitive vocabulary.
+- **Pointers to prior art** that should be acknowledged or built upon — behavior trees, PDDL, AUTOSAR Adaptive, Skiros, BehaviorTree.CPP, OpenRAVE intent layers, and others.
+- **Use cases that strain the current architecture** — scenarios the manifesto's three motivating examples (home, drone, industrial) do not cover.
+- **Naming suggestions** if "URML" proves unsuitable. See `MANIFESTO.md` Appendix B, Question 1.
+
+For now, reach the author via the channels in `README.md`. A `discussions` board and a contributor mailing list will be set up when the project moves under its permanent GitHub organization.
+
+## What Changes Today
+
+When Phase 1 opens, this section is updated. Three things happen at that boundary:
+
+1. The repository moves under a permanent GitHub organization.
+2. CI is wired up: DCO enforcement, linting, conformance test execution.
+3. This document is updated to describe pull-request mechanics, review SLAs, and merge authority.
+
+## Developer Certificate of Origin (DCO)
+
+URML uses **DCO sign-off**, not a Contributor License Agreement. The strategic reasoning is in [`CLAUDE.md`](CLAUDE.md) §What Claude Should Never Do (final bullet). The short version: a CLA concentrates copyright in one party and reads as a signal that re-licensing may be coming. DCO does neither.
+
+The full DCO text is in [`DCO`](DCO).
+
+**To sign off a commit, add `-s` to `git commit`:**
+
+```bash
+git commit -s -m "Subject line under 72 chars"
+```
+
+This appends a `Signed-off-by: Your Name <your@email>` line to the commit message. By doing so, you assert that you have the right to submit the work under the project's license, per the DCO.
+
+DCO enforcement is wired into CI from Phase 1. Commits without sign-off are rejected; squashing or amending to add `-s` is the normal fix.
+
+## Specification Changes Are RFCs
+
+The single most important rule:
+
+> Any change to the **specification** — adding a primitive, changing a schema, modifying behavior semantics, changing a profile, modifying the Core Commitment — is an **RFC**, not a pull request.
+
+RFCs live in [`docs/rfcs/`](docs/rfcs/). The process is documented in [`docs/rfcs/0001-rfc-process.md`](docs/rfcs/0001-rfc-process.md). The template is [`docs/rfcs/0000-template.md`](docs/rfcs/0000-template.md). The index of all RFCs is in [`docs/rfcs/README.md`](docs/rfcs/README.md).
+
+Pull requests handle *implementation* of accepted RFCs and routine maintenance — tests, documentation fixes, dependency bumps, refactoring without behavior change. If you cannot tell whether your change needs an RFC, file an issue and ask.
+
+## Proposing a Layer 2 Primitive
+
+A new primitive is a one-way door — once shipped, removing it breaks every downstream user. URML's bar is correspondingly high:
+
+A new primitive enters Layer 2 only with **all** of the following:
+
+1. A specification document section in the relevant [`spec/layer-2-primitives/`](spec/layer-2-primitives/) document.
+2. A JSON Schema in the spec source.
+3. A reference implementation in **at least one** runtime.
+4. Conformance tests.
+5. A runnable example.
+
+Before doing that work, file the [primitive proposal issue](.github/ISSUE_TEMPLATE/primitive_proposal.md) so it can be evaluated against the existing vocabulary and the substrate-neutrality acid test (per [`CLAUDE.md`](CLAUDE.md): can it be cleanly implemented on a runtime with zero ROS dependencies?). If a behavior can be composed from existing primitives, it should be.
+
+## Code Conventions
+
+From [`CLAUDE.md`](CLAUDE.md) §Working Conventions:
+
+- **Languages, in order of preference:** Python (specifications, validators, tooling, LLM bridge), C++17 (ROS 2 nodes that need to be performant), Rust (long-running infrastructure: validator service, conformance harness). TypeScript/JavaScript is avoided in the core repo; web tooling lives in a separate repository.
+- **Public APIs are fully type-annotated.** Python: full PEP 484, `mypy --strict`. C++: concepts where reasonable.
+- **Tests are not optional.** New code lands with tests. Bug fixes land with a regression test that fails before the fix and passes after.
+
+## Documentation Conventions
+
+- Markdown is canonical for everything human-readable. No reStructuredText, no AsciiDoc.
+- All examples in spec documents must be runnable against the current reference runtime. A broken example is fixed or removed in the same commit — never left dangling.
+- One thought per paragraph. Bullets only when the items are genuinely parallel and discrete.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). All contributors and engagement participants — including during Phase 0 — are expected to follow it.
+
+## Security
+
+If you find a safety issue in the specification (a primitive that admits unsafe interpretations), file an RFC. If you find an implementation vulnerability in a reference runtime, follow the disclosure process in [`SECURITY.md`](SECURITY.md).
+
+## Questions
+
+If anything in this document is unclear, ambiguous, or contradicts other documents, that is a bug. Open an issue. Documentation bugs are real bugs.

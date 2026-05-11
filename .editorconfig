@@ -1,0 +1,37 @@
+# EditorConfig — https://editorconfig.org
+# Repo-wide defaults so the scaffold survives mixed editors on Windows, macOS, and Linux.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Markdown trailing spaces can be meaningful (hard line breaks); leave them alone.
+trim_trailing_whitespace = false
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.{json,jsonc}]
+indent_size = 2
+
+[*.py]
+indent_size = 4
+
+[*.{c,cc,cpp,h,hpp}]
+indent_size = 2
+
+[*.rs]
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
