@@ -13,7 +13,9 @@ Stability: 0.1.0a0 — pre-alpha. The schemas track the RFC-0002 vocabulary;
 the four-pass validator lands in a follow-up release.
 """
 
+from urml_validator._version import __version__
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
+from urml_validator.schema_export import export_all_schemas, export_schema, write_schemas
 from urml_validator.schemas.program import URMLProgram
 from urml_validator.validator import validate
 
@@ -22,7 +24,9 @@ __all__ = [
     "URMLProgram",
     "ValidationError",
     "ValidationResult",
+    "__version__",
+    "export_all_schemas",
+    "export_schema",
     "validate",
+    "write_schemas",
 ]
-
-__version__ = "0.1.0a1"
