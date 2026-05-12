@@ -16,9 +16,11 @@ implement the same surface without first translating to ROS-isms.
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
+    ManipulationResult,
     MeasurementResult,
     NavigationResult,
     ROSAdapter,
+    ScanResult,
     SubstrateResult,
     WaitResult,
 )
@@ -27,10 +29,12 @@ from urml_ros2_runtime.substrate.mock import MockROSAdapter
 __all__ = [
     "CaptureResult",
     "DetectionResult",
+    "ManipulationResult",
     "MeasurementResult",
     "MockROSAdapter",
     "NavigationResult",
     "ROSAdapter",
+    "ScanResult",
     "SubstrateResult",
     "WaitResult",
 ]

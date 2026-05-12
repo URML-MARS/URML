@@ -1,6 +1,6 @@
 # URML Conformance Suite
 
-**Status:** Pre-implementation. Phase 3 target per [`MANIFESTO.md`](../MANIFESTO.md) §Roadmap Snapshot.
+**Status:** v0.1 shipped. **Declarative fixture model + ConformanceRunner + 7 fixture cases + parametrized pytest harness** at pre-alpha `0.1.0a0`. Pulls earlier from the [MANIFESTO Roadmap](../MANIFESTO.md) (which named Phase 3 for the suite v1) so that every URML-compatible runtime has a target to build toward from day one.
 
 ## What this is
 
@@ -67,6 +67,74 @@ A spec change (RFC) that affects observable behavior must land with the correspo
 ## Status as of Phase 0
 
 This directory contains only this README. Drafting the suite begins in Phase 3, after the first reference runtimes have stabilized. Before then, runtimes self-test against the spec documents directly; the formal harness lands once there is enough surface to test.
+
+## Quickstart (v0.1 — hermetic, no ROS 2 needed)
+
+```bash
+cd conformance
+python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ../reference/validator
+pip install -e ../reference/ros2-runtime
+pip install -e ".[dev]"
+pytest
+```
+
+Use the runner programmatically:
+
+```python
+from urml_conformance import ConformanceRunner
+
+runner = ConformanceRunner()
+report = runner.run()
+assert report.all_passed, report.render()
+```
+
+## Authoring a new fixture
+
+Drop a YAML file under `conformance/fixtures/<profile>/`:
+
+```yaml
+name: profile/my_case
+description: One-line summary.
+manifest: turtlebot4_home      # name from MANIFEST_REGISTRY
+envelope: home_default         # optional; name from ENVELOPE_REGISTRY
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps: [ ... ]
+
+adapter_overrides:             # optional: pre-configure MockROSAdapter
+  navigation: { success: false, reason: path_blocked }
+
+expected_validation:
+  accepted: true               # or false + error_codes for rejection tests
+
+expected_execution:            # omit for validator-only cases
+  success: true
+  steps_executed: 5
+  audit_methods: [send_navigation_goal, ...]
+  bindings_contains:
+    target_mug: { class: mug }
+```
+
+The fixture is picked up automatically by `discover_fixtures()` and exercised by the next `pytest` run.
+
+## What's in the v0.1 fixture set
+
+7 cases shipping today:
+
+| Fixture | Exercises |
+|---|---|
+| `home/red_mug_positive` | Canonical red-mug fetch end to end. |
+| `home/red_mug_nav_failure` | Adapter failure → `abort_and_report` halts the sequence. |
+| `home/missing_location_rejected` | Validator-only: undeclared location → `capability.missing_location`. |
+| `home/branch_on_color` | Branch composition + `$ref.field.subfield` condition evaluation. |
+| `home/retry_until_confidence` | Retry composition with `until` short-circuit. |
+| `home/parallel_first_to_succeed` | Parallel composition with `first_to_succeed` mode. |
+| `industrial/pick_red_positive` | Industrial-profile pick-and-place; structured report to line controller. |
 
 ## Related documents
 

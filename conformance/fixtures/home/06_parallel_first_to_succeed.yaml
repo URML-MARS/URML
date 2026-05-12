@@ -1,0 +1,25 @@
+name: home/parallel_first_to_succeed
+description: >
+  A parallel block in `first_to_succeed` mode. The first branch (a 1-second
+  wait) succeeds; the runtime short-circuits and never executes the second.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: parallel
+    complete_when: first_to_succeed
+    branches:
+      - wait: { duration: "1s" }
+      - wait: { duration: "5s" }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - wait_passively

@@ -1,0 +1,21 @@
+name: home/missing_location_rejected
+description: >
+  A program references an undeclared location. The validator rejects it
+  statically; the runtime is never invoked.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps:
+      - move_to: { location: the_moon }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_location
+
+# expected_execution intentionally omitted: this is a validator-only case.
