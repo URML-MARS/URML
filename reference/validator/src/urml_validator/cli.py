@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -130,6 +131,89 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output directory for --all. Required when --all is used.",
     )
     p_schema.set_defaults(func=cmd_schema)
+
+    # ---- urml translate ----
+    p_translate = subparsers.add_parser(
+        "translate",
+        help="Translate a natural-language request into a validated URML program.",
+        description=(
+            "Send a natural-language request to an LLM via the URML bridge, "
+            "validate the emission against a capability manifest, and print "
+            "the accepted URML program. Requires the urml-llm-bridge package "
+            "(install with: pip install urml-llm-bridge[anthropic] OR [openai])."
+        ),
+    )
+    p_translate.add_argument(
+        "request",
+        metavar="REQUEST",
+        help="The user's natural-language request, in quotes.",
+    )
+    p_translate.add_argument(
+        "--manifest",
+        "-m",
+        type=Path,
+        required=True,
+        metavar="PATH",
+        help="Path to the target robot's capability manifest (YAML).",
+    )
+    p_translate.add_argument(
+        "--envelope",
+        "-e",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Optional path to a deployment safety envelope (YAML).",
+    )
+    p_translate.add_argument(
+        "--profile",
+        "-p",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="Profile(s) the request targets (repeatable).",
+    )
+    p_translate.add_argument(
+        "--provider",
+        choices=("anthropic", "openai", "echo"),
+        default="anthropic",
+        metavar="NAME",
+        help="LLM provider to use. Default: anthropic. `echo` is a hermetic "
+        "test provider requiring --echo-response-file.",
+    )
+    p_translate.add_argument(
+        "--model",
+        default=None,
+        metavar="MODEL",
+        help="Override the provider's default model.",
+    )
+    p_translate.add_argument(
+        "--max-revisions",
+        type=int,
+        default=3,
+        metavar="N",
+        help="Maximum number of validator-feedback revision attempts. Default: 3.",
+    )
+    p_translate.add_argument(
+        "--echo-response-file",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
+    )
+    p_translate.add_argument(
+        "--json",
+        dest="as_json",
+        action="store_true",
+        help="Emit the accepted program as JSON on stdout (default: YAML).",
+    )
+    p_translate.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Write the accepted program to PATH instead of stdout.",
+    )
+    p_translate.set_defaults(func=cmd_translate)
 
     return parser
 
@@ -260,6 +344,186 @@ def cmd_schema(args: argparse.Namespace) -> int:
     json.dump(schema, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
     return 0
+
+
+# ---------------------------------------------------------------------------
+# `urml translate`
+# ---------------------------------------------------------------------------
+
+
+def cmd_translate(args: argparse.Namespace) -> int:
+    """Implement the `urml translate` subcommand.
+
+    This subcommand requires the `urml-llm-bridge` package, which is not a
+    hard dependency of `urml-validator`. The import is lazy so `urml validate`
+    and `urml schema` work even when the bridge isn't installed.
+    """
+    try:
+        from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
+            Bridge,
+            BridgeRevisionExhausted,
+            ProviderError,
+        )
+    except ImportError:
+        print(
+            "urml: error: `translate` requires urml-llm-bridge.\n"
+            "  Install with: pip install urml-llm-bridge[anthropic]\n"
+            "  Or:           pip install urml-llm-bridge[openai]",
+            file=sys.stderr,
+        )
+        return 2
+
+    # ----- Load fixtures -----
+    try:
+        manifest = _load_yaml(args.manifest, kind="manifest")
+        envelope: dict[str, Any] | None = (
+            _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
+        )
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    # ----- Construct provider -----
+    try:
+        provider = _build_provider(args)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    bridge = Bridge(
+        provider=provider,
+        manifest=manifest,
+        envelope=envelope,
+        profiles=tuple(args.profile),
+        max_revisions=args.max_revisions,
+    )
+
+    # ----- Translate -----
+    try:
+        result = bridge.translate(args.request)
+    except ProviderError as exc:
+        print(f"urml: provider error: {exc}", file=sys.stderr)
+        return 1
+    except BridgeRevisionExhausted as exc:
+        print(
+            f"urml: translation failed: validator rejected the LLM's emission in all {exc.attempts} attempt(s).",
+            file=sys.stderr,
+        )
+        last = exc.last_result
+        for issue in getattr(last, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        return 1
+
+    # ----- Emit accepted program -----
+    if result.program is None:
+        print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
+        return 64
+
+    text = _render_program(result.program, as_json=args.as_json)
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(text + ("" if text.endswith("\n") else "\n"), encoding="utf-8")
+        print(f"wrote {args.out}", file=sys.stderr)
+    else:
+        sys.stdout.write(text)
+        if not text.endswith("\n"):
+            sys.stdout.write("\n")
+
+    print(
+        f"Translation accepted after {result.revision_count} revision(s); "
+        f"profile(s)={','.join(args.profile) or '(none)'}",
+        file=sys.stderr,
+    )
+    return 0
+
+
+def _build_provider(args: argparse.Namespace) -> Any:
+    """Construct the right provider based on the CLI args.
+
+    Return type is intentionally `Any` (rather than the bridge's `LLMProvider`)
+    because `urml-llm-bridge` is an optional dependency of `urml-validator` —
+    importing it at the module top level would break installs that don't
+    include the bridge.
+
+    Raises `_CLILoadError` for usage problems (missing API key, missing echo
+    response file, etc.) so the caller can map them to exit code 2.
+    """
+    if args.provider == "echo":
+        return _build_echo_provider(args)
+    if args.provider == "anthropic":
+        return _build_anthropic_provider(args)
+    if args.provider == "openai":
+        return _build_openai_provider(args)
+    raise _CLILoadError(f"unknown provider: {args.provider!r}")
+
+
+def _build_echo_provider(args: argparse.Namespace) -> Any:
+    from urml_llm_bridge import EchoProvider
+
+    if args.echo_response_file is None:
+        raise _CLILoadError("--provider echo requires --echo-response-file PATH.")
+    if not args.echo_response_file.is_file():
+        raise _CLILoadError(f"echo-response file not found: {args.echo_response_file}")
+    raw = args.echo_response_file.read_text(encoding="utf-8")
+    # Accept either a JSON object (passed through verbatim) or a YAML mapping
+    # (re-serialized as JSON for the EchoProvider, which expects the raw
+    # response string a real LLM would emit).
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        try:
+            parsed = yaml.safe_load(raw)
+        except yaml.YAMLError as exc:
+            raise _CLILoadError(f"echo-response file is neither valid JSON nor YAML: {exc}") from exc
+    if not isinstance(parsed, dict):
+        raise _CLILoadError(
+            f"echo-response file did not contain a top-level mapping: {args.echo_response_file}"
+        )
+    return EchoProvider(scripted=[json.dumps(parsed)])
+
+
+def _build_anthropic_provider(args: argparse.Namespace) -> Any:
+    try:
+        # type: ignore[import-not-found,unused-ignore]
+        from urml_llm_bridge.providers.anthropic import (  # type: ignore[import-not-found,unused-ignore]
+            AnthropicProvider,
+        )
+    except ImportError as exc:
+        raise _CLILoadError(
+            "anthropic SDK not installed. Install with: pip install urml-llm-bridge[anthropic]"
+        ) from exc
+    if "ANTHROPIC_API_KEY" not in os.environ:
+        raise _CLILoadError(
+            "ANTHROPIC_API_KEY environment variable is not set. Set it or pick a different --provider."
+        )
+    kwargs: dict[str, Any] = {}
+    if args.model is not None:
+        kwargs["model"] = args.model
+    return AnthropicProvider(**kwargs)
+
+
+def _build_openai_provider(args: argparse.Namespace) -> Any:
+    try:
+        from urml_llm_bridge.providers.openai import OpenAIProvider  # type: ignore[import-not-found,unused-ignore]
+    except ImportError as exc:
+        raise _CLILoadError(
+            "openai SDK not installed. Install with: pip install urml-llm-bridge[openai]"
+        ) from exc
+    if "OPENAI_API_KEY" not in os.environ:
+        raise _CLILoadError(
+            "OPENAI_API_KEY environment variable is not set. Set it or pick a different --provider."
+        )
+    kwargs: dict[str, Any] = {}
+    if args.model is not None:
+        kwargs["model"] = args.model
+    return OpenAIProvider(**kwargs)
+
+
+def _render_program(program: dict[str, Any], *, as_json: bool) -> str:
+    """Render an accepted URML program in the chosen surface format."""
+    if as_json:
+        return json.dumps(program, indent=2, sort_keys=True)
+    return yaml.safe_dump(program, sort_keys=False, default_flow_style=False)
 
 
 # ---------------------------------------------------------------------------
