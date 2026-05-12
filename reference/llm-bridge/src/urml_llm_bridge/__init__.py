@@ -19,7 +19,13 @@ from __future__ import annotations
 from urml_llm_bridge._version import __version__
 from urml_llm_bridge.bridge import Bridge, TranslateResult
 from urml_llm_bridge.errors import BridgeError, BridgeRevisionExhausted, ProviderError
-from urml_llm_bridge.few_shot import FewShot, default_few_shots
+from urml_llm_bridge.few_shot import (
+    FewShot,
+    default_few_shots,
+    few_shots_for,
+    home_few_shots,
+    industrial_few_shots,
+)
 from urml_llm_bridge.prompt import build_system_prompt
 from urml_llm_bridge.providers.base import LLMProvider
 from urml_llm_bridge.providers.echo import EchoProvider
@@ -36,4 +42,7 @@ __all__ = [
     "__version__",
     "build_system_prompt",
     "default_few_shots",
+    "few_shots_for",
+    "home_few_shots",
+    "industrial_few_shots",
 ]

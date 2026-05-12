@@ -46,7 +46,7 @@ from urml_validator import (
 )
 
 from urml_llm_bridge.errors import BridgeRevisionExhausted, ProviderError
-from urml_llm_bridge.few_shot import FewShot, default_few_shots
+from urml_llm_bridge.few_shot import FewShot, few_shots_for
 from urml_llm_bridge.prompt import build_system_prompt, render_revision_context
 from urml_llm_bridge.providers.base import LLMProvider
 
@@ -91,8 +91,9 @@ class Bridge:
             manifest:      Active robot's capability manifest (raw dict from YAML).
             envelope:      Optional active safety envelope.
             profiles:      Profile name(s) this Bridge handles.
-            few_shots:     Examples to inline into the prompt. Defaults to
-                           `default_few_shots()` (the red-mug example).
+            few_shots:     Examples to inline into the prompt. If omitted, the
+                           bridge auto-selects examples that match the active
+                           `profiles` via `few_shots_for(profiles)`.
             max_revisions: How many revision attempts to allow after the first
                            emission. `max_revisions=0` means one attempt and out.
         """
@@ -100,7 +101,7 @@ class Bridge:
         self._manifest = manifest
         self._envelope = envelope
         self._profiles = tuple(profiles)
-        self._few_shots = few_shots if few_shots is not None else default_few_shots()
+        self._few_shots = few_shots if few_shots is not None else few_shots_for(self._profiles)
         self._max_revisions = max_revisions
         self._schema = export_schema("program")
 
