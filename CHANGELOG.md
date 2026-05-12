@@ -13,6 +13,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - [`docs/rfcs/0001-rfc-process.md`](docs/rfcs/0001-rfc-process.md) — the meta-RFC documenting how RFCs work.
 - `urml-validator` Python package skeleton at [`reference/validator/`](reference/validator/) (pre-alpha v0.1.0a0). Includes pydantic v2 schemas for Layer-1 (capability manifest), Layer-2 (all 12 RFC-0002 primitives), Layer-3 (Sequence, Branch, Parallel, Retry, on-error), the safety envelope, and the top-level `URMLProgram`. Tested with 22 schema-parse cases including the `red-mug` example.
 - Four-pass validator at `urml_validator.validate(program, manifest, envelope, profiles)` (pre-alpha v0.1.0a1). Argument, capability, safety-envelope, and binding-name passes; structured `ValidationError` with stable namespaced error codes (`argument.*`, `capability.*`, `envelope.*`, `binding.*`) consumable by the future LLM bridge. The `red-mug` example now validates end-to-end against the TurtleBot fixture; 22 additional behavior tests cover every error code.
+- `urml` command-line interface, installed as a console script via the package's `[project.scripts]` entry point. Subcommand `urml validate <program> --manifest <path> [--envelope <path>] [--profile <name>] [--json]`. Pretty human-readable output by default; structured JSON output behind `--json` for tooling. Exit codes: 0 accepted, 1 validation failed, 2 usage error, 64 internal error. 13 CLI tests covering happy path, file-not-found, bad YAML, validation failure, JSON output, and argparse behaviours.
 
 ### Changed
 

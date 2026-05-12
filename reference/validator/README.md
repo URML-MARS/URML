@@ -1,6 +1,6 @@
 # Validator
 
-**Status:** Phase 1 in flight. **Schemas + four-pass validator landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and the `urml` CLI land in follow-ups.
+**Status:** Phase 1 in flight. **Schemas + four-pass validator + `urml` CLI landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and JSON Schema export are the next milestones.
 
 ## What this is
 
@@ -112,11 +112,25 @@ What works **now** at this pre-alpha milestone:
           print(err.render())
   ```
 
+### `urml` CLI
+
+After `pip install -e .` the `urml` console script is on PATH:
+
+```bash
+urml validate examples/home/red-mug.urml.yaml \
+  --manifest reference/validator/tests/fixtures/manifests/turtlebot4_home.yaml \
+  --envelope reference/validator/tests/fixtures/envelopes/home_default.yaml \
+  --profile home
+```
+
+Exit codes: **0** accepted, **1** validation failed, **2** usage error (missing file, bad YAML), **64** internal error.
+
+Add `--json` to emit the raw `ValidationResult` for machine consumers (LLM bridge revision flow, CI checks).
+
 What's **not** in this milestone (lands next):
 
 - Variable-binding **type** checking across primitives (e.g., that `grasp(target: $foo)` requires `$foo` to be an Object-typed binding, not a Measurement).
 - Geometric geofence containment (polygon-vertex math).
-- The `urml` CLI front-end.
 - JSON Schema export for non-Python consumers.
 
 ## Related documents
