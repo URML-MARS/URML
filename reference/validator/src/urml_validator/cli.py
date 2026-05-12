@@ -27,8 +27,12 @@ from typing import Any
 
 import yaml
 
-from urml_validator import __version__, validate
+from urml_validator import validate
+from urml_validator._version import __version__
 from urml_validator.errors import ValidationError, ValidationResult
+from urml_validator.schema_export import SCHEMA_REGISTRY, export_schema, write_schemas
+
+_SCHEMA_NAMES = frozenset(SCHEMA_REGISTRY.keys())
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -94,6 +98,38 @@ def build_parser() -> argparse.ArgumentParser:
         help="Emit the ValidationResult as JSON on stdout instead of pretty text.",
     )
     p_validate.set_defaults(func=cmd_validate)
+
+    # ---- urml schema ----
+    p_schema = subparsers.add_parser(
+        "schema",
+        help="Export URML JSON Schemas (program, manifest, envelope).",
+        description=(
+            "Print or write the JSON Schema definitions for URML artifacts. "
+            "Used by the LLM bridge as the structured-output contract; also "
+            "useful for robot makers writing manifests by hand."
+        ),
+    )
+    schema_excl = p_schema.add_mutually_exclusive_group(required=True)
+    schema_excl.add_argument(
+        "--name",
+        choices=sorted(_SCHEMA_NAMES),
+        metavar="NAME",
+        help="Print the named schema to stdout. One of: program, manifest, envelope.",
+    )
+    schema_excl.add_argument(
+        "--all",
+        dest="all_schemas",
+        action="store_true",
+        help="Write every schema to --out-dir.",
+    )
+    p_schema.add_argument(
+        "--out-dir",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help="Output directory for --all. Required when --all is used.",
+    )
+    p_schema.set_defaults(func=cmd_schema)
 
     return parser
 
@@ -201,6 +237,29 @@ def _emit_json(result: ValidationResult) -> None:
     payload = result.model_dump(mode="json")
     json.dump(payload, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
+
+
+# ---------------------------------------------------------------------------
+# `urml schema`
+# ---------------------------------------------------------------------------
+
+
+def cmd_schema(args: argparse.Namespace) -> int:
+    """Implement the `urml schema` subcommand."""
+    if args.all_schemas:
+        if args.out_dir is None:
+            print("urml: error: --all requires --out-dir DIR.", file=sys.stderr)
+            return 2
+        written = write_schemas(args.out_dir)
+        for path in written:
+            print(f"wrote {path}", file=sys.stderr)
+        return 0
+
+    # Single-schema mode: print to stdout.
+    schema = export_schema(args.name)
+    json.dump(schema, sys.stdout, indent=2, sort_keys=True)
+    sys.stdout.write("\n")
+    return 0
 
 
 # ---------------------------------------------------------------------------

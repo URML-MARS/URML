@@ -1,6 +1,6 @@
 # Validator
 
-**Status:** Phase 1 in flight. **Schemas + four-pass validator + `urml` CLI landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and JSON Schema export are the next milestones.
+**Status:** Phase 1 in flight. **Schemas + four-pass validator + `urml` CLI + JSON Schema export landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and the LLM bridge are the next milestones.
 
 ## What this is
 
@@ -127,11 +127,32 @@ Exit codes: **0** accepted, **1** validation failed, **2** usage error (missing 
 
 Add `--json` to emit the raw `ValidationResult` for machine consumers (LLM bridge revision flow, CI checks).
 
+### JSON Schema export
+
+```bash
+# Print one schema to stdout (suitable for piping into an LLM prompt fixture).
+urml schema --name program
+
+# Write all three schemas to a directory.
+urml schema --all --out-dir build/schemas/
+```
+
+Produces Draft 2020-12 schemas for `URMLProgram`, `CapabilityManifest`, and `SafetyEnvelope`. The LLM bridge consumes the program schema as the structured-output contract; robot makers consume the manifest schema when writing manifests by hand.
+
+The Python API mirrors the CLI:
+
+```python
+from urml_validator import export_schema, write_schemas
+
+schema = export_schema("program")  # dict
+write_schemas(Path("build/schemas/"))  # writes urml-{program,manifest,envelope}.schema.json
+```
+
 What's **not** in this milestone (lands next):
 
 - Variable-binding **type** checking across primitives (e.g., that `grasp(target: $foo)` requires `$foo` to be an Object-typed binding, not a Measurement).
 - Geometric geofence containment (polygon-vertex math).
-- JSON Schema export for non-Python consumers.
+- The LLM bridge (`reference/llm-bridge/`).
 
 ## Related documents
 
