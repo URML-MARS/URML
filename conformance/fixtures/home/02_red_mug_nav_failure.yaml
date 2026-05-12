@@ -1,0 +1,34 @@
+name: home/red_mug_nav_failure
+description: >
+  The first navigation step fails (e.g., path blocked). The sequence's
+  default on_error policy aborts; the runtime reports failure with the
+  substrate's reason surfaced verbatim, and downstream steps are not
+  attempted.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+      - detect: { object: mug, store_as: target_mug }
+      - grasp: { target: $target_mug }
+
+adapter_overrides:
+  navigation:
+    success: false
+    reason: path_blocked
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: false
+  steps_executed: 1
+  audit_methods:
+    - send_navigation_goal
+  last_reason: path_blocked

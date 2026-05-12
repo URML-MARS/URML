@@ -1,0 +1,40 @@
+name: home/branch_on_color
+description: >
+  Detect a mug; branch based on its color. The mock adapter's detection
+  override fixes the color to red, so the if_true leg runs. Exercises
+  Branch composition + $ref.field.subfield condition evaluation.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps:
+      - detect: { object: mug, store_as: target_mug }
+      - type: branch
+        condition: '$target_mug.attributes.color == "red"'
+        if_true: { wait: { duration: "1s" } }
+        if_false: { move_to: { location: kitchen } }
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: mug
+      pose: { x: 1.0, y: 0.5 }
+      frame: map
+      attributes:
+        color: red
+      confidence: 0.95
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - query_detection
+    - wait_passively

@@ -1,0 +1,29 @@
+name: home/retry_until_confidence
+description: >
+  Retry a detection until confidence > 0.9. The mock adapter's default
+  detection has confidence 0.95, so the `until` clause matches on the
+  first attempt — Retry short-circuits with one execution.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: retry
+    max_attempts: 5
+    until: '$detected.confidence > 0.9'
+    behavior:
+      detect: { object: mug, store_as: detected }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - query_detection
+  bindings_contains:
+    detected:
+      class: mug
