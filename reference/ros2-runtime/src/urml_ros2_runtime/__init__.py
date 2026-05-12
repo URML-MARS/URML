@@ -18,7 +18,9 @@ mock so the runtime can be exercised on any host, with no ROS 2 install.
 from __future__ import annotations
 
 from urml_ros2_runtime._version import __version__
+from urml_ros2_runtime.conditions import evaluate as evaluate_condition
 from urml_ros2_runtime.errors import (
+    ConditionEvalError,
     PrimitiveExecutionError,
     RuntimeError,
     UnsupportedCompositionError,
@@ -39,6 +41,7 @@ from urml_ros2_runtime.substrate import (
 
 __all__ = [
     "CaptureResult",
+    "ConditionEvalError",
     "DetectionResult",
     "MeasurementResult",
     "MockROSAdapter",
@@ -54,4 +57,5 @@ __all__ = [
     "ValidationRejectedError",
     "WaitResult",
     "__version__",
+    "evaluate_condition",
 ]

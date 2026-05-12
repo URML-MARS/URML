@@ -40,9 +40,10 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 from urml_validator import ValidationResult, validate
-from urml_validator.schemas.composition import Sequence, Step
+from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
 from urml_validator.schemas.program import URMLProgram
 
+from urml_ros2_runtime.conditions import evaluate as _eval_condition
 from urml_ros2_runtime.errors import (
     PrimitiveExecutionError,
     UnsupportedCompositionError,
@@ -143,8 +144,13 @@ class URMLRuntime:
                 last_outcome=halt.last_outcome,
             )
 
+        # The composition executors (Branch / Parallel / Retry) may return a
+        # failing outcome without raising — the runtime treats a non-success
+        # outcome at the root as overall failure. Sequence still raises
+        # `_ExecutionHalt` (handled above) when its `on_error` policy aborts.
+        overall_success = last_outcome is None or last_outcome.success
         return RuntimeResult(
-            success=True,
+            success=overall_success,
             steps_executed=steps_executed,
             bindings=bindings,
             audit_log=self._audit_snapshot(),
@@ -165,12 +171,16 @@ class URMLRuntime:
             return self._exec_step(node, path=path, bindings=bindings, steps_executed=steps_executed)
         if isinstance(node, Sequence):
             return self._exec_sequence(node, path=path, bindings=bindings, steps_executed=steps_executed)
-        # Branch / Parallel / Retry land in a follow-up PR. Until then we
-        # surface an unambiguous error so programs can adjust.
+        if isinstance(node, Branch):
+            return self._exec_branch(node, path=path, bindings=bindings, steps_executed=steps_executed)
+        if isinstance(node, Parallel):
+            return self._exec_parallel(node, path=path, bindings=bindings, steps_executed=steps_executed)
+        if isinstance(node, Retry):
+            return self._exec_retry(node, path=path, bindings=bindings, steps_executed=steps_executed)
         cls_name = type(node).__name__
         raise UnsupportedCompositionError(
-            f"runtime skeleton does not yet implement composition node {cls_name!r}. "
-            "Sequence is supported; Branch / Parallel / Retry land in a follow-up release."
+            f"runtime does not implement composition node {cls_name!r}. "
+            "Supported: Sequence, Branch, Parallel, Retry, Step."
         )
 
     def _exec_sequence(
@@ -216,6 +226,146 @@ class URMLRuntime:
         # Merge any new bindings the step produced into the runtime scope.
         bindings.update(outcome.bindings)
         return steps_executed, outcome
+
+    def _exec_branch(
+        self,
+        node: Branch,
+        *,
+        path: list[str],
+        bindings: dict[str, Any],
+        steps_executed: int,
+    ) -> tuple[int, PrimitiveOutcome | None]:
+        condition_true = _eval_condition(node.condition, bindings)
+        chosen = node.if_true if condition_true else node.if_false
+        if chosen is None:
+            # Branch with condition=False and no `if_false`: treat as a no-op that
+            # succeeds. Synthesize a success outcome so the caller's
+            # success-tracking stays consistent.
+            return steps_executed, PrimitiveOutcome(success=True, reason="branch_skipped")
+        sub_path = [*path, "if_true" if condition_true else "if_false"]
+        return self._exec_behavior(
+            chosen, path=sub_path, bindings=bindings, steps_executed=steps_executed
+        )
+
+    def _exec_parallel(
+        self,
+        node: Parallel,
+        *,
+        path: list[str],
+        bindings: dict[str, Any],
+        steps_executed: int,
+    ) -> tuple[int, PrimitiveOutcome | None]:
+        """Execute branches and aggregate per `complete_when`.
+
+        This skeleton executes branches **sequentially**. Real concurrent
+        execution is a substrate-level concern (the adapter decides whether
+        to coordinate via threads, asyncio, or substrate-native parallelism).
+        Aggregation semantics are honored either way:
+
+          - ``all``               -> every branch must succeed; first failure halts.
+          - ``any``               -> at least one branch must succeed; failures
+                                     don't halt the loop, but a final all-fail
+                                     overall outcome is failure.
+          - ``first_to_succeed``  -> short-circuit on the first success.
+        """
+        branch_bindings = dict(bindings)
+        succeeded = 0
+        last_outcome: PrimitiveOutcome | None = None
+
+        for idx, sub in enumerate(node.branches):
+            sub_path = [*path, "branches", str(idx)]
+            steps_executed, last_outcome = self._exec_behavior(
+                sub,
+                path=sub_path,
+                bindings=branch_bindings,
+                steps_executed=steps_executed,
+            )
+            sub_success = last_outcome is None or last_outcome.success
+            if sub_success:
+                succeeded += 1
+                if node.complete_when == "first_to_succeed":
+                    break
+            elif node.complete_when == "all":
+                # Halt the parallel block; surface the failing outcome.
+                bindings.update(branch_bindings)
+                return steps_executed, last_outcome
+
+        # Merge the branches' bindings back into the parent scope.
+        bindings.update(branch_bindings)
+
+        if node.complete_when == "all":
+            return steps_executed, last_outcome  # all succeeded (we'd have returned above otherwise)
+        if node.complete_when == "any":
+            if succeeded >= 1:
+                # Synthesize a success outcome since multiple branches contributed.
+                return steps_executed, PrimitiveOutcome(success=True, reason=f"parallel.any:{succeeded}")
+            return steps_executed, PrimitiveOutcome(
+                success=False, reason="parallel.any: every branch failed"
+            )
+        if node.complete_when == "first_to_succeed":
+            if succeeded >= 1:
+                return steps_executed, last_outcome  # the one that succeeded
+            return steps_executed, PrimitiveOutcome(
+                success=False, reason="parallel.first_to_succeed: no branch succeeded"
+            )
+        # Unreachable per the pydantic Literal type, but kept for safety.
+        raise UnsupportedCompositionError(
+            f"unknown parallel.complete_when: {node.complete_when!r}"
+        )
+
+    def _exec_retry(
+        self,
+        node: Retry,
+        *,
+        path: list[str],
+        bindings: dict[str, Any],
+        steps_executed: int,
+    ) -> tuple[int, PrimitiveOutcome | None]:
+        """Retry the inner behavior up to ``max_attempts`` times.
+
+        Semantics:
+
+          - No ``until``: retry until the inner behavior succeeds, or
+            ``max_attempts`` is exhausted.
+          - With ``until``: retry until the ``until`` expression evaluates
+            to true *or* ``max_attempts`` is exhausted. Inner-behavior
+            failures do NOT short-circuit when ``until`` is set — the
+            condition is the source of truth.
+
+        Bindings produced by failed attempts are kept (they describe the
+        state of the world when the attempt ran; the next attempt sees
+        them). Authors who want fresh state per attempt should structure
+        their program so each attempt rebinds.
+        """
+        last_outcome: PrimitiveOutcome | None = None
+        for attempt_idx in range(node.max_attempts):
+            sub_path = [*path, "attempt", str(attempt_idx)]
+            steps_executed, last_outcome = self._exec_behavior(
+                node.behavior,
+                path=sub_path,
+                bindings=bindings,
+                steps_executed=steps_executed,
+            )
+            if node.until is not None:
+                if _eval_condition(node.until, bindings):
+                    return steps_executed, last_outcome
+            else:
+                # No `until`: success-on-attempt halts the retry.
+                if last_outcome is None or last_outcome.success:
+                    return steps_executed, last_outcome
+        # Exhausted attempts.
+        if last_outcome is None:
+            last_outcome = PrimitiveOutcome(success=False, reason="retry.max_attempts_exhausted")
+        elif last_outcome.success and node.until is not None:
+            # Inner kept succeeding but `until` never matched -> overall failure.
+            last_outcome = PrimitiveOutcome(
+                success=False,
+                reason="retry.until_unsatisfied_after_max_attempts",
+            )
+        elif not last_outcome.success:
+            # Last attempt failed; surface that outcome as-is.
+            pass
+        return steps_executed, last_outcome
 
     def _audit_snapshot(self) -> list[dict[str, Any]]:
         """Snapshot of the adapter's call log, if it exposes one."""
