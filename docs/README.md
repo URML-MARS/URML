@@ -6,6 +6,7 @@ This directory holds documentation that supports — but is not part of — the 
 
 | Document | Purpose |
 |---|---|
+| [`tutorials/`](tutorials/) | **Start here if you're new.** A four-step hands-on path from install to writing your own manifest. About an hour end-to-end. |
 | [`architecture.md`](architecture.md) | The layered stack, expanded from the Manifesto. One section per layer: *what goes here*, *what does NOT go here*, *open questions*. Read this before proposing changes that cross layer boundaries. |
 | [`glossary.md`](glossary.md) | Terms used across the spec, with one-line definitions. Extends `MANIFESTO.md` Appendix A. |
 | [`open-questions.md`](open-questions.md) | Working list of decisions that are still open. Extends `MANIFESTO.md` Appendix B. Items move out of this file when an RFC resolves them. |
