@@ -44,7 +44,7 @@ Issues = "https://github.com/URML-MARS/URML/issues"
 packages = ["src/urml_validator"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
 src = ["src", "tests"]
 

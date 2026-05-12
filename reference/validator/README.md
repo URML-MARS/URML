@@ -1,6 +1,6 @@
 # Validator
 
-**Status:** Phase 1 in flight. **Package skeleton + schemas landed** at `0.1.0a0` (pre-alpha). The four-pass validator itself lands in a follow-up.
+**Status:** Phase 1 in flight. **Schemas + four-pass validator landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and the `urml` CLI land in follow-ups.
 
 ## What this is
 
@@ -98,12 +98,26 @@ What works **now** at this pre-alpha milestone:
 
 - Pydantic v2 schemas for Layer-1 (capability manifest), Layer-2 (all 12 RFC-0002 primitives), Layer-3 (composition), the safety envelope, and the top-level `URMLProgram`.
 - The Step / BehaviorOrStep tagged union accepts the YAML surface (`{move_to: {...}}`) and the recursive composition forms.
+- **The four-pass validator** — `urml_validator.validate(program, manifest, envelope, profiles)` runs argument, capability, envelope, and binding checks and returns a `ValidationResult` with structured `ValidationError`s. Error codes are stable and namespaced (`argument.*`, `capability.*`, `envelope.*`, `binding.*`); the LLM bridge will consume this format.
+- Example:
+
+  ```python
+  from urml_validator import validate
+
+  result = validate(program, manifest, envelope, profiles=("home",))
+  if result.accepted:
+      runtime.execute(program)
+  else:
+      for err in result.errors:
+          print(err.render())
+  ```
 
 What's **not** in this milestone (lands next):
 
-- The four-pass validator (`urml_validator.validator.validate`) — argument-type pass exists implicitly via pydantic; capability/envelope/binding passes are the next PR.
-- The structured error format the LLM bridge will consume.
-- The `urml` CLI.
+- Variable-binding **type** checking across primitives (e.g., that `grasp(target: $foo)` requires `$foo` to be an Object-typed binding, not a Measurement).
+- Geometric geofence containment (polygon-vertex math).
+- The `urml` CLI front-end.
+- JSON Schema export for non-Python consumers.
 
 ## Related documents
 
