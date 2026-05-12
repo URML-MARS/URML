@@ -3,14 +3,14 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "urml-validator"
-version = "0.1.0a1"
-description = "Static verification engine for URML — Universal Robot Language"
+name = "urml-llm-bridge"
+version = "0.1.0a0"
+description = "Provider-agnostic glue between natural language and validated URML programs."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "specification", "validator", "urml"]
+keywords = ["robotics", "urml", "llm", "specification"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -19,14 +19,18 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
+  "urml-validator>=0.1.0a1",
 ]
 
 [project.optional-dependencies]
+# Provider adapters are opt-in. Install the ones you need.
+anthropic = ["anthropic>=0.34"]
+openai = ["openai>=1.40"]
 dev = [
   "pytest>=8",
   "pytest-cov>=5",
@@ -35,16 +39,13 @@ dev = [
   "types-PyYAML>=6.0",
 ]
 
-[project.scripts]
-urml = "urml_validator.cli:main"
-
 [project.urls]
 Homepage = "https://github.com/URML-MARS/URML"
 Repository = "https://github.com/URML-MARS/URML"
 Issues = "https://github.com/URML-MARS/URML/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/urml_validator"]
+packages = ["src/urml_llm_bridge"]
 
 [tool.ruff]
 line-length = 120
@@ -52,28 +53,18 @@ target-version = "py311"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = [
-  "E", "F", "W",      # pycodestyle + pyflakes
-  "I",                # isort
-  "B",                # flake8-bugbear
-  "UP",               # pyupgrade
-  "N",                # pep8-naming
-  "ANN",              # type annotations on public APIs
-  "RUF",
-]
-ignore = [
-  "ANN401",  # disallow Any — pydantic uses it legitimately
-]
+select = ["E", "F", "W", "I", "B", "UP", "N", "ANN", "RUF"]
+ignore = ["ANN401"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN"]   # tests don't need full type annotations
+"tests/*" = ["ANN"]
 
 [tool.mypy]
 strict = true
 python_version = "3.11"
 plugins = ["pydantic.mypy"]
 mypy_path = "src"
-packages = ["urml_validator"]
+packages = ["urml_llm_bridge"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

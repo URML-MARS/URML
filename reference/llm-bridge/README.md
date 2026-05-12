@@ -1,6 +1,6 @@
 # LLM Bridge
 
-**Status:** Pre-implementation. Phase 1 target.
+**Status:** Phase 1 in flight. **Skeleton + provider-agnostic Bridge + revision loop landed** at `0.1.0a0` (pre-alpha). Real Anthropic and OpenAI adapters are the next milestone.
 
 ## What this is
 
@@ -90,6 +90,45 @@ The bridge has its own conformance bar: for the published few-shot example libra
 ## Core Commitment
 
 The LLM bridge — the *bridge logic and the prompt contract*, not any specific provider's API — is part of the [Core Commitment](../../CORE_COMMITMENT.md). It will always be Apache 2.0 and provider-agnostic.
+
+## Quickstart (current pre-alpha — hermetic, no provider needed)
+
+```bash
+cd reference/llm-bridge
+python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ../validator           # bridge depends on validator
+pip install -e ".[dev]"
+pytest
+```
+
+Use it in code with the bundled `EchoProvider` (for tests / hermetic CI):
+
+```python
+import json
+from urml_llm_bridge import Bridge, EchoProvider
+
+red_mug_program = {  # the URML the LLM is expected to emit
+    "profile": "home",
+    "behavior": {"type": "sequence", "steps": [...]},
+}
+
+provider = EchoProvider(scripted=[json.dumps(red_mug_program)])
+bridge = Bridge(provider=provider, manifest=manifest, envelope=envelope, profiles=("home",))
+result = bridge.translate("Bring me the red mug from the kitchen.")
+
+if result.accepted:
+    runtime.execute(result.program)
+```
+
+The revision loop runs automatically when the validator rejects the LLM's emission: the bridge feeds the structured errors back to the LLM and asks for a corrected version, up to `max_revisions` times (default 3).
+
+## What's not in this pre-alpha (lands next)
+
+- **Real provider adapters** for Anthropic (`pip install urml-llm-bridge[anthropic]`) and OpenAI (`[openai]`). The protocol is settled; the adapters are short wrapper modules.
+- **CLI integration** — `urml translate` subcommand on top of `urml-validator`'s CLI.
+- **Profile-specific few-shot libraries** (drone scenarios, industrial scenarios).
+- **Multilingual few-shot variants** (Hebrew, Spanish, Japanese, Mandarin).
+- **Conversation memory** for follow-up requests within a session.
 
 ## Related documents
 
