@@ -35,6 +35,9 @@ dev = [
   "types-PyYAML>=6.0",
 ]
 
+[project.scripts]
+urml = "urml_validator.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/URML-MARS/URML"
 Repository = "https://github.com/URML-MARS/URML"
