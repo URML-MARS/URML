@@ -1,6 +1,6 @@
 # LLM Bridge
 
-**Status:** Phase 1 in flight. **Skeleton + provider-agnostic Bridge + revision loop landed** at `0.1.0a0` (pre-alpha). Real Anthropic and OpenAI adapters are the next milestone.
+**Status:** Phase 1 in flight. **Skeleton + provider-agnostic Bridge + revision loop + real Anthropic / OpenAI adapters landed** at `0.1.0a0` (pre-alpha). CLI integration and profile-specific few-shot libraries are the next milestone.
 
 ## What this is
 
@@ -122,13 +122,43 @@ if result.accepted:
 
 The revision loop runs automatically when the validator rejects the LLM's emission: the bridge feeds the structured errors back to the LLM and asks for a corrected version, up to `max_revisions` times (default 3).
 
+### Using a real provider
+
+Install the extra for the provider you want — the bridge package itself has no SDK dependencies:
+
+```bash
+pip install urml-llm-bridge[anthropic]    # adds the `anthropic` SDK
+pip install urml-llm-bridge[openai]       # adds the `openai` SDK
+```
+
+Then:
+
+```python
+from urml_llm_bridge import Bridge
+from urml_llm_bridge.providers.anthropic import AnthropicProvider
+
+provider = AnthropicProvider(model="claude-sonnet-4-6")  # reads ANTHROPIC_API_KEY env var
+bridge = Bridge(provider=provider, manifest=manifest, envelope=envelope, profiles=("home",))
+result = bridge.translate("Bring me the red mug from the kitchen.")
+```
+
+Or OpenAI:
+
+```python
+from urml_llm_bridge.providers.openai import OpenAIProvider
+
+provider = OpenAIProvider(model="gpt-4o")  # reads OPENAI_API_KEY env var
+```
+
+Both adapters surface their native structured-output mechanism — Anthropic via tool use (with the URML schema as the `emit_urml` tool's `input_schema`), OpenAI via `response_format={"type": "json_object"}` with the schema conveyed in the system prompt. Either way, conformance to the schema is validated downstream by `urml_validator.validate()` as part of the bridge's revision loop.
+
 ## What's not in this pre-alpha (lands next)
 
-- **Real provider adapters** for Anthropic (`pip install urml-llm-bridge[anthropic]`) and OpenAI (`[openai]`). The protocol is settled; the adapters are short wrapper modules.
 - **CLI integration** — `urml translate` subcommand on top of `urml-validator`'s CLI.
 - **Profile-specific few-shot libraries** (drone scenarios, industrial scenarios).
 - **Multilingual few-shot variants** (Hebrew, Spanish, Japanese, Mandarin).
 - **Conversation memory** for follow-up requests within a session.
+- **OpenAI strict JSON-schema mode** — needs schema preprocessing to satisfy the strict-mode constraints (every property required, no `oneOf`, etc.). The current adapter uses `json_object` mode plus the schema in the system prompt for portability.
 
 ## Related documents
 
