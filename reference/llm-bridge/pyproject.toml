@@ -37,6 +37,11 @@ dev = [
   "ruff>=0.5",
   "mypy>=1.10",
   "types-PyYAML>=6.0",
+  # Provider SDKs included in dev so mypy can type-check the adapters
+  # and the test suite can exercise them with mocked clients. End users
+  # install just the extras they need (e.g., pip install urml-llm-bridge[anthropic]).
+  "anthropic>=0.34",
+  "openai>=1.40",
 ]
 
 [project.urls]
