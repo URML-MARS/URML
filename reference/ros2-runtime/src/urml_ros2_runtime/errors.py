@@ -44,6 +44,14 @@ class UnsupportedCompositionError(RuntimeError):
     """
 
 
+class ConditionEvalError(RuntimeError):
+    """The runtime could not evaluate a Branch.condition or Retry.until expression.
+
+    Surfaces from `urml_ros2_runtime.conditions.evaluate` when the expression
+    is syntactically invalid or uses an unsupported construct.
+    """
+
+
 class ValidationRejectedError(RuntimeError):
     """The runtime's defense-in-depth re-validation rejected the program.
 
