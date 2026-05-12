@@ -91,9 +91,21 @@ def test_red_mug_executes_end_to_end(
     assert result.bindings["target_mug"]["class"] == "mug"
     assert result.bindings["target_mug"]["attributes"] == {"color": "red"}
 
-    # The grasp call referenced the stored binding by name.
+    # The grasp call received the *resolved* target payload from the prior
+    # detect step. The runtime resolves $target_mug into actual data before
+    # the adapter sees it -- no URML syntax leaks across the substrate
+    # boundary.
     grasp_call = next(e for e in result.audit_log if e.get("action") == "grasp")
-    assert grasp_call["target_ref"] == "$target_mug"
+    assert isinstance(grasp_call["target"], dict)
+    assert grasp_call["target"]["class"] == "mug"
+    assert grasp_call["target"]["attributes"] == {"color": "red"}
+
+    # The second move_to step's `carrying` was also resolved.
+    move_with_carry = next(
+        e for e in result.audit_log if e["method"] == "send_navigation_goal" and e.get("carrying")
+    )
+    assert isinstance(move_with_carry["carrying"], dict)
+    assert move_with_carry["carrying"]["class"] == "mug"
 
 
 # ---------------------------------------------------------------------------

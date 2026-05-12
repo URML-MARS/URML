@@ -93,7 +93,7 @@ class MockROSAdapter:
         location: str | None = None,
         pose: dict[str, float] | None = None,
         frame: str | None = None,
-        carrying: str | None = None,
+        carrying: dict[str, Any] | None = None,
         speed: float | None = None,
     ) -> NavigationResult:
         self.call_log.append(
@@ -138,17 +138,17 @@ class MockROSAdapter:
         self,
         *,
         action: Literal["grasp", "release"],
-        target_ref: str | None = None,
+        target: dict[str, Any] | None = None,
         force_n: float | None = None,
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
-        release_at: str | None = None,
+        release_at: dict[str, Any] | str | None = None,
     ) -> ManipulationResult:
         self.call_log.append(
             {
                 "method": "send_manipulation_goal",
                 "action": action,
-                "target_ref": target_ref,
+                "target": target,
                 "force_n": force_n,
                 "approach": approach,
                 "release_mode": release_mode,

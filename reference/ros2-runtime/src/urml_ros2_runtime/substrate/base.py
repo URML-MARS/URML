@@ -133,10 +133,15 @@ class ROSAdapter(Protocol):
         location: str | None = None,
         pose: dict[str, float] | None = None,
         frame: str | None = None,
-        carrying: str | None = None,
+        carrying: dict[str, Any] | None = None,
         speed: float | None = None,
     ) -> NavigationResult:
-        """Move the robot to a named location or pose. Used by `move_to`, `hover`."""
+        """Move the robot to a named location or pose. Used by `move_to`, `hover`.
+
+        `carrying`, when set, is the **resolved object payload** from a prior
+        `detect` (or other binding-producing primitive) — not the URML
+        reference string. The runtime handles the resolution.
+        """
         ...
 
     def send_docking_goal(
@@ -153,13 +158,19 @@ class ROSAdapter(Protocol):
         self,
         *,
         action: Literal["grasp", "release"],
-        target_ref: str | None = None,
+        target: dict[str, Any] | None = None,
         force_n: float | None = None,
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
-        release_at: str | None = None,
+        release_at: dict[str, Any] | str | None = None,
     ) -> ManipulationResult:
-        """Grasp or release. Used by `grasp`, `release`."""
+        """Grasp or release. Used by `grasp`, `release`.
+
+        `target` is the **resolved object payload** (dict with class, pose,
+        attributes, etc.) the runtime got from a prior `detect`. `release_at`
+        may be either a resolved object dict or a literal named-location
+        string, depending on whether the URML used `$ref` or a name.
+        """
         ...
 
     def query_detection(

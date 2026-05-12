@@ -18,11 +18,14 @@ mock so the runtime can be exercised on any host, with no ROS 2 install.
 from __future__ import annotations
 
 from urml_ros2_runtime._version import __version__
+from urml_ros2_runtime.bindings import resolve as resolve_reference
+from urml_ros2_runtime.bindings import resolve_all as resolve_references
 from urml_ros2_runtime.conditions import evaluate as evaluate_condition
 from urml_ros2_runtime.errors import (
     ConditionEvalError,
     PrimitiveExecutionError,
     RuntimeError,
+    UnresolvedReferenceError,
     UnsupportedCompositionError,
     ValidationRejectedError,
 )
@@ -53,9 +56,12 @@ __all__ = [
     "RuntimeResult",
     "SubstrateResult",
     "URMLRuntime",
+    "UnresolvedReferenceError",
     "UnsupportedCompositionError",
     "ValidationRejectedError",
     "WaitResult",
     "__version__",
     "evaluate_condition",
+    "resolve_reference",
+    "resolve_references",
 ]
