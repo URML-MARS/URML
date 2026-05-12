@@ -215,6 +215,56 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_translate.set_defaults(func=cmd_translate)
 
+    # ---- urml emit-prompt ----
+    p_emit = subparsers.add_parser(
+        "emit-prompt",
+        help="Print the system prompt the LLM bridge would build for a given manifest/envelope.",
+        description=(
+            "Assemble and emit the system prompt the URML bridge would send to "
+            "an LLM for the given manifest + envelope + profile set. Useful for "
+            "debugging, transparency, and offline review without needing an API key."
+        ),
+    )
+    p_emit.add_argument(
+        "--manifest",
+        "-m",
+        type=Path,
+        required=True,
+        metavar="PATH",
+        help="Path to the target robot's capability manifest (YAML).",
+    )
+    p_emit.add_argument(
+        "--envelope",
+        "-e",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Optional path to a deployment safety envelope (YAML).",
+    )
+    p_emit.add_argument(
+        "--profile",
+        "-p",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="Profile(s) the prompt should target (repeatable).",
+    )
+    p_emit.add_argument(
+        "--no-few-shots",
+        dest="include_few_shots",
+        action="store_false",
+        default=True,
+        help="Omit the few-shot examples block from the prompt.",
+    )
+    p_emit.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Write the prompt to PATH instead of stdout.",
+    )
+    p_emit.set_defaults(func=cmd_emit_prompt)
+
     return parser
 
 
@@ -524,6 +574,63 @@ def _render_program(program: dict[str, Any], *, as_json: bool) -> str:
     if as_json:
         return json.dumps(program, indent=2, sort_keys=True)
     return yaml.safe_dump(program, sort_keys=False, default_flow_style=False)
+
+
+# ---------------------------------------------------------------------------
+# `urml emit-prompt`
+# ---------------------------------------------------------------------------
+
+
+def cmd_emit_prompt(args: argparse.Namespace) -> int:
+    """Implement the `urml emit-prompt` subcommand.
+
+    Prints the system prompt the LLM bridge would assemble for the given
+    manifest / envelope / profile set. Useful for debugging the prompt,
+    reviewing what gets sent to the LLM, and inspecting few-shot examples
+    without requiring an API key.
+
+    Requires the `urml-llm-bridge` package; the import is lazy.
+    """
+    try:
+        from urml_llm_bridge import build_system_prompt, few_shots_for  # type: ignore[import-not-found,unused-ignore]
+    except ImportError:
+        print(
+            "urml: error: `emit-prompt` requires urml-llm-bridge.\n"
+            "  Install with: pip install urml-llm-bridge",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        manifest = _load_yaml(args.manifest, kind="manifest")
+        envelope: dict[str, Any] | None = (
+            _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
+        )
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    profiles = tuple(args.profile)
+    few_shots = list(few_shots_for(profiles)) if args.include_few_shots else []
+    schema = export_schema("program")
+    prompt = build_system_prompt(
+        schema=schema,
+        manifest=manifest,
+        envelope=envelope,
+        profiles=profiles,
+        few_shots=few_shots,
+    )
+
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(prompt + ("" if prompt.endswith("\n") else "\n"), encoding="utf-8")
+        print(f"wrote {args.out}", file=sys.stderr)
+    else:
+        sys.stdout.write(prompt)
+        if not prompt.endswith("\n"):
+            sys.stdout.write("\n")
+
+    return 0
 
 
 # ---------------------------------------------------------------------------
