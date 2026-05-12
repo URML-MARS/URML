@@ -31,6 +31,7 @@ import yaml
 from urml_validator import validate
 from urml_validator._version import __version__
 from urml_validator.errors import ValidationError, ValidationResult
+from urml_validator.init_templates import PROJECT_TEMPLATES
 from urml_validator.schema_export import SCHEMA_REGISTRY, export_schema, write_schemas
 
 _SCHEMA_NAMES = frozenset(SCHEMA_REGISTRY.keys())
@@ -264,6 +265,38 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the prompt to PATH instead of stdout.",
     )
     p_emit.set_defaults(func=cmd_emit_prompt)
+
+    # ---- urml init ----
+    p_init = subparsers.add_parser(
+        "init",
+        help="Scaffold a starter URML project (manifest, envelope, sample program, Makefile).",
+        description=(
+            "Create a new directory with a minimal but runnable URML project: "
+            "a capability manifest, an optional envelope, a sample program "
+            "with its natural-language prompt, a README, and a Makefile. "
+            "Pick `--profile home` or `--profile industrial`; defaults to home."
+        ),
+    )
+    p_init.add_argument(
+        "directory",
+        type=Path,
+        metavar="DIRECTORY",
+        help="Where to write the project. Must be empty (or use --force).",
+    )
+    p_init.add_argument(
+        "--profile",
+        "-p",
+        choices=sorted(PROJECT_TEMPLATES.keys()),
+        default="home",
+        metavar="NAME",
+        help="Profile to scaffold. Default: home.",
+    )
+    p_init.add_argument(
+        "--force",
+        action="store_true",
+        help="Allow writing into a non-empty directory; existing files are overwritten.",
+    )
+    p_init.set_defaults(func=cmd_init)
 
     return parser
 
@@ -574,6 +607,59 @@ def _render_program(program: dict[str, Any], *, as_json: bool) -> str:
     if as_json:
         return json.dumps(program, indent=2, sort_keys=True)
     return yaml.safe_dump(program, sort_keys=False, default_flow_style=False)
+
+
+# ---------------------------------------------------------------------------
+# `urml init`
+# ---------------------------------------------------------------------------
+
+
+def cmd_init(args: argparse.Namespace) -> int:
+    """Implement the `urml init` subcommand.
+
+    Writes a starter project into ``args.directory``. Refuses to write into
+    a non-empty directory unless ``--force`` is passed. The set of files
+    landed depends on ``--profile``; see ``init_templates.PROJECT_TEMPLATES``.
+    """
+    target: Path = args.directory
+    factory = PROJECT_TEMPLATES[args.profile]
+    files = factory(target.name or args.profile)
+
+    # Pre-flight: refuse to clobber a non-empty directory without --force.
+    if target.exists():
+        if not target.is_dir():
+            print(f"urml: error: {target} exists and is not a directory.", file=sys.stderr)
+            return 2
+        contents = list(target.iterdir())
+        if contents and not args.force:
+            print(
+                f"urml: error: {target} is not empty (use --force to overwrite).",
+                file=sys.stderr,
+            )
+            return 2
+    else:
+        target.mkdir(parents=True, exist_ok=True)
+
+    # Write every file.
+    written: list[Path] = []
+    for relative_path, content in files.items():
+        path = target / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        written.append(path)
+
+    print(f"Initialized {args.profile} project at {target}", file=sys.stderr)
+    for path in sorted(written):
+        print(f"  wrote {path.relative_to(target)}", file=sys.stderr)
+    print(
+        "\nNext steps:\n"
+        f"  cd {target}\n"
+        "  urml validate program.urml.yaml --manifest manifest.yaml"
+        + (" --envelope envelope.yaml" if "envelope.yaml" in files else "")
+        + f" --profile {args.profile}",
+        file=sys.stderr,
+    )
+    return 0
 
 
 # ---------------------------------------------------------------------------
