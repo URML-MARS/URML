@@ -33,6 +33,7 @@ from urml_validator.schemas.primitives import (
     WaitForArgs,
 )
 
+from urml_ros2_runtime.bindings import resolve, resolve_all
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
@@ -87,7 +88,12 @@ class PrimitiveOutcome(BaseModel):
 class PrimitiveExecutor(Protocol):
     """The shape every per-primitive function satisfies."""
 
-    def __call__(self, args: BaseModel, adapter: ROSAdapter) -> PrimitiveOutcome: ...
+    def __call__(
+        self,
+        args: BaseModel,
+        adapter: ROSAdapter,
+        bindings: dict[str, Any],
+    ) -> PrimitiveOutcome: ...
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +139,30 @@ def _force_newtons(force: Any) -> float | None:
 # ---------------------------------------------------------------------------
 
 
-def exec_move_to(args: MoveToArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def _resolve_target_field(value: Any, bindings: dict[str, Any]) -> dict[str, Any] | str | None:
+    """For fields like `release.at` that can be a $ref OR a literal name.
+
+    Returns:
+        - dict resolved from a $ref
+        - str literal (the original)
+        - None
+    """
+    if value is None:
+        return None
+    if isinstance(value, str) and value.startswith("$"):
+        resolved = resolve(value, bindings)
+        if isinstance(resolved, dict):
+            return resolved
+        # Refs that resolve to non-dicts (rare) are passed through as-is.
+        return resolved  # type: ignore[no-any-return]
+    if isinstance(value, str):
+        return value
+    return value  # type: ignore[no-any-return]
+
+
+def exec_move_to(
+    args: MoveToArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     pose = None
     if args.pose is not None:
         pose = {"x": args.pose.x, "y": args.pose.y}
@@ -146,17 +175,25 @@ def exec_move_to(args: MoveToArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
         speed_value = float(args.speed)
     elif args.speed is not None:
         speed_value = float(getattr(args.speed, "value", 0.0)) or None
+    # `carrying` is always a $ref per the schema (VarRef). Resolve it.
+    carrying_resolved: dict[str, Any] | None = None
+    if args.carrying is not None:
+        resolved = resolve(args.carrying, bindings)
+        if isinstance(resolved, dict):
+            carrying_resolved = resolved
     result = adapter.send_navigation_goal(
         location=args.location,
         pose=pose,
         frame=args.frame,
-        carrying=args.carrying,
+        carrying=carrying_resolved,
         speed=speed_value,
     )
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_dock(args: DockArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_dock(
+    args: DockArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     until_str: str | None = None
     if args.until is not None:
         until_str = str(args.until)
@@ -168,12 +205,23 @@ def exec_dock(args: DockArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_hover(args: HoverArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
-    # Hover is implemented as a stationary navigation goal at current pose.
-    # The adapter is responsible for interpreting "hold position for duration".
+def exec_hover(
+    args: HoverArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    # `over` may be a $ref or a literal name. Literal names go through as `location`;
+    # $refs become navigation goals at the bound pose (when resolvable).
+    location: str | None = None
+    pose: dict[str, float] | None = None
+    if isinstance(args.over, str):
+        if args.over.startswith("$"):
+            resolved = resolve(args.over, bindings)
+            if isinstance(resolved, dict) and "pose" in resolved:
+                pose = resolved["pose"]
+        else:
+            location = args.over
     result = adapter.send_navigation_goal(
-        location=args.over if isinstance(args.over, str) and not args.over.startswith("$") else None,
-        pose=None,
+        location=location,
+        pose=pose,
         frame=None,
         carrying=None,
         speed=0.0,
@@ -181,13 +229,17 @@ def exec_hover(args: HoverArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_wait(args: WaitArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_wait(
+    args: WaitArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     seconds = _duration_seconds(args.duration) or 0.0
     result = adapter.wait_passively(duration_seconds=seconds)
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_wait_for(args: WaitForArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_wait_for(
+    args: WaitForArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     cond = args.condition
     kind: Literal["event", "signal", "input", "sensor_threshold"]
     name: str | None = None
@@ -213,18 +265,23 @@ def exec_wait_for(args: WaitForArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
         threshold=threshold,
         timeout_seconds=timeout,
     )
-    bindings: dict[str, Any] = {}
+    new_bindings: dict[str, Any] = {}
     if args.store_as is not None and result.payload is not None:
-        bindings[args.store_as] = result.payload
+        new_bindings[args.store_as] = result.payload
     return PrimitiveOutcome(
-        success=result.success, reason=result.reason, raw=result, bindings=bindings
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
     )
 
 
-def exec_grasp(args: GraspArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_grasp(
+    args: GraspArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    # `target` is always a $ref per the schema (VarRef).
+    resolved = resolve(args.target, bindings)
+    target_dict: dict[str, Any] | None = resolved if isinstance(resolved, dict) else None
     result = adapter.send_manipulation_goal(
         action="grasp",
-        target_ref=args.target,
+        target=target_dict,
         force_n=_force_newtons(args.force),
         approach=args.approach,
         release_mode=None,
@@ -233,13 +290,13 @@ def exec_grasp(args: GraspArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_release(args: ReleaseArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
-    release_at: str | None = None
-    if isinstance(args.at, str):
-        release_at = args.at
+def exec_release(
+    args: ReleaseArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    release_at = _resolve_target_field(args.at, bindings)
     result = adapter.send_manipulation_goal(
         action="release",
-        target_ref=None,
+        target=None,
         force_n=None,
         approach="auto",
         release_mode=args.mode,
@@ -248,12 +305,25 @@ def exec_release(args: ReleaseArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
-def exec_detect(args: DetectArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_detect(
+    args: DetectArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     where_near: str | None = None
     where_within: float | None = None
     if args.where is not None:
         if isinstance(args.where.near, str):
-            where_near = args.where.near
+            # `near` may be a $ref or a literal location name. For now we
+            # extract a string locator (the literal name, or a resolved
+            # location identifier from the bound object). The adapter
+            # receives a string to keep its surface compact.
+            if args.where.near.startswith("$"):
+                resolved = resolve(args.where.near, bindings)
+                if isinstance(resolved, dict) and "name" in resolved:
+                    where_near = resolved["name"]
+                elif isinstance(resolved, str):
+                    where_near = resolved
+            else:
+                where_near = args.where.near
         where_within = args.where.within
     attributes = args.attributes.model_dump(exclude_none=True) if args.attributes else None
     result = adapter.query_detection(
@@ -262,15 +332,17 @@ def exec_detect(args: DetectArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
         where_near=where_near,
         where_within=where_within,
     )
-    bindings: dict[str, Any] = {}
+    new_bindings: dict[str, Any] = {}
     if args.store_as is not None and result.payload is not None:
-        bindings[args.store_as] = result.payload
+        new_bindings[args.store_as] = result.payload
     return PrimitiveOutcome(
-        success=result.success, reason=result.reason, raw=result, bindings=bindings
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
     )
 
 
-def exec_scan(args: ScanArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_scan(
+    args: ScanArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
     result = adapter.run_scan(
         area=args.area.model_dump(exclude_none=True),
         pattern=args.pattern,
@@ -279,35 +351,55 @@ def exec_scan(args: ScanArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
         media=args.media,
         sensor=args.sensor,
     )
-    bindings: dict[str, Any] = {}
+    new_bindings: dict[str, Any] = {}
     if result.payload is not None:
-        bindings[args.store_as] = result.payload
+        new_bindings[args.store_as] = result.payload
     return PrimitiveOutcome(
-        success=result.success, reason=result.reason, raw=result, bindings=bindings
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
     )
 
 
-def exec_measure(args: MeasureArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_measure(
+    args: MeasureArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    # `target` may be a $ref, a literal name, or omitted.
     target_str: str | None = None
     if isinstance(args.target, str):
-        target_str = args.target
+        if args.target.startswith("$"):
+            resolved = resolve(args.target, bindings)
+            if isinstance(resolved, dict) and "name" in resolved:
+                target_str = resolved["name"]
+            elif isinstance(resolved, str):
+                target_str = resolved
+        else:
+            target_str = args.target
     result = adapter.take_measurement(
         what=str(args.what),
         target=target_str,
         sensor=args.sensor,
     )
-    bindings: dict[str, Any] = {}
+    new_bindings: dict[str, Any] = {}
     if result.payload is not None:
-        bindings[args.store_as] = result.payload
+        new_bindings[args.store_as] = result.payload
     return PrimitiveOutcome(
-        success=result.success, reason=result.reason, raw=result, bindings=bindings
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
     )
 
 
-def exec_capture(args: CaptureArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_capture(
+    args: CaptureArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    # `target` may be a $ref or a literal name.
     target_str: str | None = None
     if isinstance(args.target, str):
-        target_str = args.target
+        if args.target.startswith("$"):
+            resolved = resolve(args.target, bindings)
+            if isinstance(resolved, dict) and "name" in resolved:
+                target_str = resolved["name"]
+            elif isinstance(resolved, str):
+                target_str = resolved
+        else:
+            target_str = args.target
     duration_s = _duration_seconds(args.duration)
     attributes = args.attributes.model_dump(exclude_none=True) if args.attributes else None
     result = adapter.capture_media(
@@ -316,19 +408,26 @@ def exec_capture(args: CaptureArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
         duration_seconds=duration_s,
         attributes=attributes,
     )
-    bindings: dict[str, Any] = {}
+    new_bindings: dict[str, Any] = {}
     if result.payload is not None:
-        bindings[args.store_as] = result.payload
+        new_bindings[args.store_as] = result.payload
     return PrimitiveOutcome(
-        success=result.success, reason=result.reason, raw=result, bindings=bindings
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
     )
 
 
-def exec_report(args: ReportArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
+def exec_report(
+    args: ReportArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    # `facts` may contain $ref values; `attachments` is a list of $refs.
+    resolved_facts = resolve_all(args.facts, bindings)
+    resolved_attachments: list[Any] | None = None
+    if args.attachments is not None:
+        resolved_attachments = [resolve(ref, bindings) for ref in args.attachments]
     result = adapter.emit_report(
         to=args.to,
-        facts=args.facts,
-        attachments=args.attachments,
+        facts=resolved_facts,
+        attachments=resolved_attachments,
         status=args.status,
         severity=args.severity,
     )
@@ -340,7 +439,9 @@ def exec_report(args: ReportArgs, adapter: ROSAdapter) -> PrimitiveOutcome:
 # ---------------------------------------------------------------------------
 
 
-PRIMITIVE_EXECUTORS: dict[str, Callable[[Any, ROSAdapter], PrimitiveOutcome]] = {
+PRIMITIVE_EXECUTORS: dict[
+    str, Callable[[Any, ROSAdapter, dict[str, Any]], PrimitiveOutcome]
+] = {
     "move_to": exec_move_to,
     "dock": exec_dock,
     "hover": exec_hover,
@@ -356,9 +457,14 @@ PRIMITIVE_EXECUTORS: dict[str, Callable[[Any, ROSAdapter], PrimitiveOutcome]] = 
 }
 
 
-def execute_step(step: Step, adapter: ROSAdapter) -> PrimitiveOutcome:
-    """Dispatch one Step through the right executor."""
+def execute_step(step: Step, adapter: ROSAdapter, bindings: dict[str, Any]) -> PrimitiveOutcome:
+    """Dispatch one Step through the right executor.
+
+    `bindings` is the runtime's current variable scope. Executors resolve
+    `$ref` arguments against it before calling the adapter so the adapter
+    only sees concrete data.
+    """
     name = step.primitive_name
     executor = PRIMITIVE_EXECUTORS[name]  # KeyError here = unknown primitive => bug
     args = getattr(step, name)
-    return executor(args, adapter)
+    return executor(args, adapter, bindings)

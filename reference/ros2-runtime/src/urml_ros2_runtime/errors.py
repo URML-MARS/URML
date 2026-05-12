@@ -44,6 +44,28 @@ class UnsupportedCompositionError(RuntimeError):
     """
 
 
+class UnresolvedReferenceError(RuntimeError):
+    """A ``$ref`` in a primitive argument couldn't be resolved at execution time.
+
+    The validator's binding pass catches most of these statically, but the
+    runtime re-checks defensively when resolving primitive arguments. This
+    error surfaces when the validator was bypassed (``revalidate=False``)
+    or when a chain like ``$mug.attributes.size`` references a missing
+    intermediate field.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        reference: str,
+        bound_names: list[str] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.reference = reference
+        self.bound_names = bound_names or []
+
+
 class ConditionEvalError(RuntimeError):
     """The runtime could not evaluate a Branch.condition or Retry.until expression.
 

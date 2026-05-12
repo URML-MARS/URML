@@ -221,7 +221,7 @@ class URMLRuntime:
         bindings: dict[str, Any],
         steps_executed: int,
     ) -> tuple[int, PrimitiveOutcome]:
-        outcome = execute_step(step, self._adapter)
+        outcome = execute_step(step, self._adapter, bindings)
         steps_executed += 1
         # Merge any new bindings the step produced into the runtime scope.
         bindings.update(outcome.bindings)
