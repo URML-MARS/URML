@@ -1,6 +1,6 @@
 # ROS 2 Reference Runtime
 
-**Status:** Pre-implementation. Phase 1 target.
+**Status:** Phase 1 in flight. **Skeleton + substrate Protocol + hermetic MockROSAdapter + end-to-end red-mug execution landed** at `0.1.0a0` (pre-alpha). The real `rclpy`-backed adapter is the next milestone.
 
 ## What this is
 
