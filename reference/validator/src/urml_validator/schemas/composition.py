@@ -23,11 +23,13 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
     ScanArgs,
+    SpeakArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -50,6 +52,8 @@ _PRIMITIVE_FIELDS = (
     "measure",
     "capture",
     "report",
+    "speak",
+    "listen",
 )
 
 
@@ -78,6 +82,8 @@ class Step(BaseModel):
     measure: MeasureArgs | None = None
     capture: CaptureArgs | None = None
     report: ReportArgs | None = None
+    speak: SpeakArgs | None = None
+    listen: ListenArgs | None = None
 
     @model_validator(mode="after")
     def _exactly_one_primitive(self) -> Step:

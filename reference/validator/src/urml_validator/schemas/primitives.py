@@ -346,6 +346,43 @@ class ReportArgs(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Home-profile primitives (RFC-0002 §Profile-extensibility authorizes these).
+# ---------------------------------------------------------------------------
+
+
+class SpeakArgs(BaseModel):
+    """Emit a spoken utterance to the user (home profile)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    utterance: str = Field(..., min_length=1)
+    locale: str | None = None  # BCP-47; default = manifest's primary_locale
+    style: Literal["notice", "warning", "conversational"] = "conversational"
+    interrupt: bool = False
+
+
+class ListenArgs(BaseModel):
+    """Block until the user provides spoken input (home profile)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    prompt: str | None = None
+    locale: str | None = None
+    timeout: Duration | None = None
+    expected: Literal["free_form", "confirmation", "choice"] = "free_form"
+    choices: list[str] | None = None
+    store_as: Identifier | None = None
+
+    @model_validator(mode="after")
+    def _choices_iff_choice(self) -> ListenArgs:
+        if self.expected == "choice" and not self.choices:
+            raise ValueError("listen(expected: choice) requires non-empty `choices`")
+        if self.expected != "choice" and self.choices is not None:
+            raise ValueError("listen.choices is only allowed when expected == 'choice'")
+        return self
+
+
+# ---------------------------------------------------------------------------
 # Registry of primitive names -> arg-model classes.
 # ---------------------------------------------------------------------------
 
@@ -362,6 +399,8 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "measure",
     "capture",
     "report",
+    "speak",
+    "listen",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -377,4 +416,6 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "measure": MeasureArgs,
     "capture": CaptureArgs,
     "report": ReportArgs,
+    "speak": SpeakArgs,
+    "listen": ListenArgs,
 }

@@ -57,11 +57,13 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
     ScanArgs,
+    SpeakArgs,
     WaitForArgs,
 )
 from urml_validator.schemas.program import URMLProgram
@@ -312,6 +314,8 @@ _PRIMITIVE_NAMES_FROZEN = (
     "measure",
     "capture",
     "report",
+    "speak",
+    "listen",
 )
 
 
@@ -359,6 +363,10 @@ def _check_capabilities(
         return _check_capture_caps(args, manifest, path)
     if name == "report":
         return _check_report_caps(args, manifest, path)
+    if name == "speak":
+        return _check_speak_caps(args, manifest, path)
+    if name == "listen":
+        return _check_listen_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -792,6 +800,50 @@ def _check_report_caps(
                 field="to",
                 suggestion=f"Add {args.to!r} to manifest.outputs.named_endpoints, "
                 "or use one of: user, log, caller.",
+            )
+        )
+    return out
+
+
+def _check_speak_caps(
+    _args: SpeakArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Home profile: `speak` requires a declared `speech` output endpoint."""
+    out: list[ValidationError] = []
+    if "speech" not in manifest.outputs.named_endpoints:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_SPEECH_OUTPUT,
+                "speak",
+                path,
+                "speak requires the manifest to declare `speech` in outputs.named_endpoints.",
+                suggestion="Add `speech` to manifest.outputs.named_endpoints, "
+                "or omit `speak` from this program.",
+            )
+        )
+    return out
+
+
+def _check_listen_caps(
+    _args: ListenArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Home profile: `listen` requires a sensor with measurement_type 'speech'."""
+    out: list[ValidationError] = []
+    perception = manifest.perception
+    has_speech_sensor = (
+        perception is not None
+        and any(s.measurement_type == "speech" for s in perception.sensors)
+    )
+    if not has_speech_sensor:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_SPEECH_INPUT,
+                "listen",
+                path,
+                "listen requires the manifest to declare a sensor with "
+                "measurement_type: speech in perception.sensors.",
+                suggestion="Declare a speech-input sensor in manifest.perception.sensors, "
+                "or omit `listen` from this program.",
             )
         )
     return out
