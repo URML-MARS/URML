@@ -3,13 +3,16 @@
 # Scenario: home/red-mug
 # Source NL: "Bring me the red mug from the kitchen." (see red-mug.en.txt)
 #
-# This is the canonical home-profile example, reproduced from
-# MANIFESTO.md §A Concrete Example. It is illustrative: the Layer-2
-# primitives `move_to`, `detect`, `grasp`, and `release` are not yet
-# normatively specified, so this program is not yet validatable
-# against a real Layer-1 capability manifest. It will become
-# normatively validatable when the home-profile Layer-2 vocabulary
-# is drafted (RFC-0002 and the home-profile spec).
+# The canonical home-profile example, reproduced from MANIFESTO.md
+# §A Concrete Example. Validatable end-to-end via the companion
+# manifest `red-mug.manifest.yaml`:
+#
+#   urml validate red-mug.urml.yaml -m red-mug.manifest.yaml --profile home
+#
+# The companion manifest declares fully US-compliant hardware
+# provenance, so the bundled default policy (RFC-0004) accepts it.
+# Pass `--no-policy` to skip Pass 5 if you're exercising the program
+# against a manifest without a provenance block.
 
 profile: home
 behavior:
