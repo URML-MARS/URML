@@ -93,6 +93,25 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="NAME",
         help="Profile(s) the program targets (repeatable). Currently informational.",
     )
+    p_validate_policy = p_validate.add_mutually_exclusive_group()
+    p_validate_policy.add_argument(
+        "--policy",
+        "-P",
+        dest="policy_path",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Path to a compliance policy file (YAML). If omitted, the bundled "
+            "default US-federal policy is loaded automatically. See RFC-0004."
+        ),
+    )
+    p_validate_policy.add_argument(
+        "--no-policy",
+        dest="no_policy",
+        action="store_true",
+        help="Skip Pass 5 (compliance policy) entirely.",
+    )
     p_validate.add_argument(
         "--json",
         dest="as_json",
@@ -172,6 +191,25 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         metavar="NAME",
         help="Profile(s) the request targets (repeatable).",
+    )
+    p_translate_policy = p_translate.add_mutually_exclusive_group()
+    p_translate_policy.add_argument(
+        "--policy",
+        "-P",
+        dest="policy_path",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Path to a compliance policy file (YAML). If omitted, the bundled "
+            "default US-federal policy is loaded automatically."
+        ),
+    )
+    p_translate_policy.add_argument(
+        "--no-policy",
+        dest="no_policy",
+        action="store_true",
+        help="Skip Pass 5 (compliance policy) when validating LLM emissions.",
     )
     p_translate.add_argument(
         "--provider",
@@ -340,11 +378,18 @@ def cmd_validate(args: argparse.Namespace) -> int:
         envelope: dict[str, Any] | None = (
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
+        policy_arg = _resolve_policy_arg(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
 
-    result = validate(program, manifest, envelope, profiles=tuple(args.profile))
+    result = validate(
+        program,
+        manifest,
+        envelope,
+        profiles=tuple(args.profile),
+        policy=policy_arg,
+    )
 
     if args.as_json:
         _emit_json(result)
@@ -352,6 +397,22 @@ def cmd_validate(args: argparse.Namespace) -> int:
         _emit_pretty(result, program_path=args.program)
 
     return 0 if result.accepted else 1
+
+
+def _resolve_policy_arg(args: argparse.Namespace) -> Any:
+    """Map the CLI policy flags to the `policy` parameter of validate().
+
+    Returns:
+      - None if --no-policy was passed.
+      - The parsed policy dict if --policy PATH was passed.
+      - The "DEFAULT" sentinel string otherwise.
+    """
+    if getattr(args, "no_policy", False):
+        return None
+    policy_path: Path | None = getattr(args, "policy_path", None)
+    if policy_path is None:
+        return "DEFAULT"
+    return _load_yaml(policy_path, kind="policy")
 
 
 # ---------------------------------------------------------------------------
@@ -391,12 +452,16 @@ def _render_issue(
     """Render one ValidationError as 3-4 lines on the given stream."""
     location = "/".join(issue.path) if issue.path else "<program>"
     print(file=stream)
-    print(f"  {severity_label} [{issue.code.value}] {location}", file=stream)
+    print(f"  {severity_label} [{issue.code_str}] {location}", file=stream)
     if issue.field:
         print(f"    field: {issue.field}", file=stream)
     print(f"    {issue.message}", file=stream)
     if issue.suggestion:
         print(f"    suggestion: {issue.suggestion}", file=stream)
+    if issue.detail:
+        # Render policy-error detail in a stable, scannable shape.
+        for key, value in issue.detail.items():
+            print(f"    {key}: {value}", file=stream)
 
 
 def _emit_json(result: ValidationResult) -> None:
@@ -444,6 +509,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
     try:
         from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
             Bridge,
+            BridgePolicyViolation,
             BridgeRevisionExhausted,
             ProviderError,
         )
@@ -462,6 +528,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         envelope: dict[str, Any] | None = (
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
+        policy_arg = _resolve_policy_arg(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
@@ -479,6 +546,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         envelope=envelope,
         profiles=tuple(args.profile),
         max_revisions=args.max_revisions,
+        policy=policy_arg,
     )
 
     # ----- Translate -----
@@ -486,6 +554,17 @@ def cmd_translate(args: argparse.Namespace) -> int:
         result = bridge.translate(args.request)
     except ProviderError as exc:
         print(f"urml: provider error: {exc}", file=sys.stderr)
+        return 1
+    except BridgePolicyViolation as exc:
+        print(
+            f"urml: translation aborted: compliance policy rejected the target "
+            f"robot after {exc.attempts} attempt(s). Policy errors cannot be "
+            f"fixed by editing the URML program.",
+            file=sys.stderr,
+        )
+        last = exc.last_result
+        for issue in getattr(last, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
         return 1
     except BridgeRevisionExhausted as exc:
         print(

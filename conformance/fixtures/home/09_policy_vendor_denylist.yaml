@@ -1,0 +1,21 @@
+name: home/policy_vendor_denylist
+description: >
+  A manifest with a critical component whose declared vendor is on the
+  bundled US-federal default policy's denylist (FCC Covered List entries).
+  The validator's Pass 5 rejects with policy.vendor_denied. RFC-0004.
+
+manifest: turtlebot4_home_dji_vendor
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: false
+  error_codes: [policy.vendor_denied]

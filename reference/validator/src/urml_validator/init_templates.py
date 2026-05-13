@@ -81,6 +81,37 @@ docking_stations:
 
 outputs:
   named_endpoints: []
+
+# Hardware provenance (RFC-0004). Optional: when present, the validator's
+# Pass 5 checks the bundled US-federal compliance policy against this block.
+# Pass `urml validate --no-policy` to skip the check, or `--policy <file>`
+# to override with a deployment-specific rule set.
+#
+# TODO: fill in real provenance for your robot before any deployment that
+# claims compliance. The placeholder values below illustrate the shape and
+# are deliberately fictional ("example_*" vendor IDs); they are not a
+# certification of any real product.
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_drive_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: depth_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/depth_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 """
 
 
@@ -289,6 +320,45 @@ docking_stations: []
 outputs:
   named_endpoints:
     - line_controller
+
+# Hardware provenance (RFC-0004). Optional: when present, the validator's
+# Pass 5 checks the bundled US-federal compliance policy against this block.
+# Industrial cells commonly contract for NDAA-compliant procurement; the
+# provenance block lets URML enforce that statically before any program runs.
+#
+# TODO: fill in real provenance before any deployment that claims compliance.
+# The placeholder values below are illustrative; they are not a certification
+# of any real product.
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: example_arm_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: gripper_pneumatic
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/gripper.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: wrist_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/wrist_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
 """
 
 

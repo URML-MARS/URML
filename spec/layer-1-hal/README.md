@@ -25,8 +25,60 @@ Layer 1 must also **not** absorb concerns from adjacent layers:
 
 - The capability manifest schema (YAML canonical; JSON-LD for tooling). Sections: mobility, manipulation, perception, frames, limits, safety envelope.
 - The safety-envelope schema: declared maximums (velocity, payload, force), declared forbidden zones, declared required preconditions.
+- **Hardware provenance** (see *Provenance and Compliance* below).
 - The relationship to URDF/SDF: how a Layer-1 manifest references the URDF that describes the robot's structure.
 - A worked example: the capability manifest for the v0.1 demo robot (likely a TurtleBot 4; see `docs/open-questions.md` Question 5).
+
+## Provenance and Compliance
+
+Added by [RFC-0004](../../docs/rfcs/0004-compliance-policy.md). The capability manifest carries an optional `provenance:` block declaring per-component hardware origin facts. The validator's Pass 5 evaluates a pluggable compliance policy against this block before any program is accepted for execution. The policy file format is specified in [`policy.md`](policy.md).
+
+### When provenance is required
+
+Provenance is *optional* on the manifest. A manifest without a `provenance:` block triggers no Pass 5 errors — policy enforcement is opt-in. URML's posture per [RFC-0003](../../docs/rfcs/0003-us-alignment.md): the default validator ships with US federal procurement rules active, but a manifest that does not opt into provenance is silently exempt. Deployments that need to *prove* compliance must declare provenance; deployments that don't have a regulatory frame may omit it.
+
+### The `provenance:` block
+
+```yaml
+provenance:
+  manifest_attestation: self_declared    # self_declared | third_party_audited | cryptographically_signed
+  attestation_uri: null                  # optional URI to a signed attestation document
+  components:
+    - id: drive_controller               # ISO-style snake_case identifier
+      role: critical                     # critical | non_critical | informational
+      vendor: example_drive_vendor       # free-form machine-readable identifier
+      country_of_origin: US              # ISO 3166-1 alpha-2; "unknown" allowed and meaningful
+      country_of_final_assembly: US      # often differs from manufacture
+      hbom_ref:                          # optional
+        format: cyclonedx-1.7            # recommended; free string
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "<64-hex-char-integrity-hash>"
+```
+
+Field-by-field:
+
+| Field | Type | Notes |
+|---|---|---|
+| `manifest_attestation` | enum | Who asserts the provenance is true. Policies may require a minimum level; the default US-federal policy warns on `self_declared` in v0.1 and is scheduled to error in v0.2. |
+| `attestation_uri` | string \| null | Optional pointer to a signed attestation document. URML does not fetch this; it records the URI. |
+| `components` | list | One entry per declared component. Empty list is allowed and means "nothing critical to attest." |
+| `components[].id` | identifier | Snake_case identifier scoped to this manifest. |
+| `components[].role` | enum | `critical` / `non_critical` / `informational`. The load-bearing selector for policies. |
+| `components[].vendor` | string | Free string in v0.1. Future RFCs may add a registered-identifier dimension (DUNS, ROR). |
+| `components[].country_of_origin` | string | ISO 3166-1 alpha-2 country code. The literal `unknown` is accepted and policies may treat it as failing or warn. |
+| `components[].country_of_final_assembly` | string | Same shape; often differs from `country_of_origin`. NDAA-style rules check both. |
+| `components[].hbom_ref` | object \| null | Reference to a Hardware Bill of Materials document. Opaque in v0.1 — URML records the URI and a SHA-256 integrity hash but does not parse SBOM content. |
+
+### What URML does NOT do
+
+- URML does **not** fetch the HBOM document. The validator records what the manifest declares.
+- URML does **not** verify the integrity hash. A future RFC may add this; v0.1 treats the hash as a deployer-controlled commitment, not a check.
+- URML does **not** certify the provenance. The `manifest_attestation` field surfaces the strength of the claim; the *correctness* of the claim is the declarer's responsibility, not URML's.
+- The default policy file shipped with the validator is **not legal advice**. See [`policy.md`](policy.md) and [`CORE_COMMITMENT.md`](../../CORE_COMMITMENT.md) for the certified-policy commercial surface.
+
+### Status
+
+The `provenance:` block is part of the v0.1 schema (`manifest_version: "0.1"`) and is fully implemented in the reference validator. The accompanying policy enforcement specification is in [`policy.md`](policy.md); the strategic and technical decision history is in [RFC-0003](../../docs/rfcs/0003-us-alignment.md) and [RFC-0004](../../docs/rfcs/0004-compliance-policy.md).
 
 ## Conformance points
 

@@ -23,6 +23,7 @@ from urml_conformance.fixtures import (
     discover_fixtures,
     resolve_envelope,
     resolve_manifest,
+    resolve_policy,
 )
 from urml_conformance.report import CaseResult, ConformanceReport
 
@@ -148,6 +149,7 @@ class ConformanceRunner:
         try:
             manifest = resolve_manifest(case.manifest)
             envelope = resolve_envelope(case.envelope) if case.envelope else None
+            policy = resolve_policy(case.policy)
         except (KeyError, ValueError) as exc:
             return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -159,6 +161,7 @@ class ConformanceRunner:
             manifest,
             envelope,
             profiles=tuple(case.profiles),
+            policy=policy,
         )
         diagnostics.extend(_diag_validation(case, validation))
 

@@ -29,6 +29,7 @@ from pydantic import BaseModel
 from urml_validator._version import __version__
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import CapabilityManifest
+from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.program import URMLProgram
 
 #: The named schemas this module knows how to export.
@@ -36,6 +37,7 @@ SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
     "program": URMLProgram,
     "manifest": CapabilityManifest,
     "envelope": SafetyEnvelope,
+    "policy": Policy,
 }
 
 

@@ -1,7 +1,7 @@
-"""The four-pass URML validator.
+"""The five-pass URML validator.
 
-`validate(program, manifest, envelope, profiles)` returns a `ValidationResult`
-that the LLM bridge consumes. The four passes, in order:
+`validate(program, manifest, envelope, profiles, policy)` returns a
+`ValidationResult` that the LLM bridge consumes. The five passes, in order:
 
   1. **Argument typing.** Delegated to pydantic via `URMLProgram.model_validate`.
      Surfaced here as namespaced `argument.*` errors.
@@ -13,11 +13,14 @@ that the LLM bridge consumes. The four passes, in order:
   4. **Variable bindings.** `store_as` names must be unique within their
      scope; `$var` references must resolve to a prior binding. This pass
      produces `binding.*` errors.
+  5. **Compliance policy (RFC-0004).** Evaluates a pluggable policy file
+     against the manifest's `provenance` block. Produces `policy.*` errors
+     and warnings. Default policy is the bundled US-federal rule set.
 
 The passes are best-effort sequential: argument failure short-circuits the
 later passes (because the program tree is invalid); capability/envelope/
-binding errors all collect into the same result so authors get full feedback
-in one round trip.
+binding/policy errors all collect into the same result so authors get full
+feedback in one round trip.
 
 Scope of this milestone:
 
@@ -28,19 +31,26 @@ Scope of this milestone:
 - Variable bindings: name uniqueness + reference resolution. Type checking
   across primitives (`grasp` requires an object-typed reference, etc.) is
   deferred to the next milestone.
+- Policy enforcement: evaluates only when the manifest declares a
+  `provenance:` block. Manifests without provenance trigger no Pass 5
+  errors (policy enforcement is opt-in at the manifest level).
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Any
+from importlib import resources
+from typing import Any, Literal
 
+import yaml
 from pydantic import ValidationError as PydanticValidationError
 
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
+from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
+from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.primitives import (
     CaptureArgs,
     DetectArgs,
@@ -57,6 +67,37 @@ from urml_validator.schemas.primitives import (
 from urml_validator.schemas.program import URMLProgram
 
 # =============================================================================
+# Default-policy sentinel
+# =============================================================================
+
+#: Sentinel passed as the default value of the `policy` parameter.
+#: Indicates "load the bundled default policy"; distinct from None which
+#: indicates "skip Pass 5 entirely".
+DEFAULT_POLICY: Literal["DEFAULT"] = "DEFAULT"
+
+#: Name of the default policy YAML file shipped under urml_validator/policies/.
+_DEFAULT_POLICY_RESOURCE = "us_federal_default.yaml"
+
+#: Cache for the bundled default policy. Loaded once per process.
+_DEFAULT_POLICY_CACHE: Policy | None = None
+
+
+def _load_default_policy() -> Policy:
+    """Load and cache the bundled US-federal default policy."""
+    global _DEFAULT_POLICY_CACHE
+    if _DEFAULT_POLICY_CACHE is None:
+        text = resources.files("urml_validator.policies").joinpath(
+            _DEFAULT_POLICY_RESOURCE
+        ).read_text(encoding="utf-8")
+        data = yaml.safe_load(text)
+        if not isinstance(data, dict):
+            raise RuntimeError(
+                f"bundled default policy {_DEFAULT_POLICY_RESOURCE} did not parse as a mapping"
+            )
+        _DEFAULT_POLICY_CACHE = Policy.model_validate(data)
+    return _DEFAULT_POLICY_CACHE
+
+# =============================================================================
 # Public entry point
 # =============================================================================
 
@@ -66,6 +107,7 @@ def validate(
     manifest: dict[str, Any] | CapabilityManifest,
     envelope: dict[str, Any] | SafetyEnvelope | None = None,
     profiles: tuple[str, ...] = (),
+    policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
 ) -> ValidationResult:
     """Validate a URML program against a manifest and (optionally) an envelope.
 
@@ -79,6 +121,9 @@ def validate(
         envelope:   Optional deployment safety envelope. Raw dict, `SafetyEnvelope`, or None.
         profiles:   Profile names the validator should consider active. Currently
                     informational; profile-specific constraints land in per-profile RFCs.
+        policy:     Compliance policy for Pass 5. Pass ``"DEFAULT"`` (the default)
+                    to load the bundled US-federal policy; ``None`` to skip Pass 5
+                    entirely; or a raw dict / ``Policy`` model to use a specific policy.
 
     Returns:
         A `ValidationResult` with `accepted=True` iff no error-severity errors fired.
@@ -133,10 +178,52 @@ def validate(
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
 
+    # ----- Pass 5: compliance policy (RFC-0004) -----
+    policy_model = _resolve_policy(policy, errors)
+    if policy_model is not None:
+        for issue in evaluate_policy(manifest_model, policy_model):
+            if issue.severity == "warning":
+                warnings.append(issue)
+            else:
+                errors.append(issue)
+
     return ValidationResult(
         accepted=not errors,
         errors=errors,
         warnings=warnings,
+    )
+
+
+def _resolve_policy(
+    policy: dict[str, Any] | Policy | None | Literal["DEFAULT"],
+    errors: list[ValidationError],
+) -> Policy | None:
+    """Resolve the `policy` argument into a Policy model (or None to skip Pass 5).
+
+    A malformed dict policy is converted into a `policy.rule_invalid` error
+    appended to `errors` and Pass 5 is skipped.
+    """
+    if policy is None:
+        return None
+    if policy == "DEFAULT":
+        return _load_default_policy()
+    if isinstance(policy, Policy):
+        return policy
+    if isinstance(policy, dict):
+        try:
+            return Policy.model_validate(policy)
+        except PydanticValidationError as exc:
+            errors.append(
+                ValidationError(
+                    code=ErrorCode.POLICY_RULE_INVALID,
+                    message=f"policy file failed schema validation: {exc.error_count()} error(s)",
+                    path=["<policy>"],
+                    detail={"pydantic_errors": exc.errors()},
+                )
+            )
+            return None
+    raise TypeError(
+        f"policy must be Policy, dict, None, or 'DEFAULT' sentinel; got {type(policy).__name__}"
     )
 
 

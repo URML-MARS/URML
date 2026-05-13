@@ -233,3 +233,201 @@ def test_unknown_subcommand_is_usage_error() -> None:
     with pytest.raises(SystemExit) as excinfo:
         main(["nonsense"])
     assert excinfo.value.code == 2
+
+
+# ---------------------------------------------------------------------------
+# Policy flag tests (RFC-0004)
+# ---------------------------------------------------------------------------
+
+
+def _write_manifest_with_provenance(
+    tmp_path: Path,
+    *,
+    country: str = "US",
+    vendor: str = "example_vendor",
+) -> Path:
+    """Write a minimal manifest with a single critical-provenance component."""
+    manifest = tmp_path / "manifest.yaml"
+    manifest.write_text(
+        f"""manifest_version: "0.1"
+robot_id: test_bot
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: {vendor}
+      country_of_origin: {country}
+      country_of_final_assembly: {country}
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/x.json
+        sha256: abc
+""",
+        encoding="utf-8",
+    )
+    return manifest
+
+
+def _write_trivial_program(tmp_path: Path) -> Path:
+    """Write a program that exercises Pass 5 without Pass 1-4 issues."""
+    program = tmp_path / "program.yaml"
+    program.write_text(
+        """profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait: { duration: 1s }
+""",
+        encoding="utf-8",
+    )
+    return program
+
+
+def test_default_policy_rejects_cn_critical_component(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Without --policy, the bundled US-federal default loads and fires on CN provenance."""
+    manifest = _write_manifest_with_provenance(tmp_path, country="CN")
+    program = _write_trivial_program(tmp_path)
+    rc = main(["validate", str(program), "--manifest", str(manifest)])
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert "policy.country_denied" in captured.err
+
+
+def test_no_policy_flag_skips_pass_5(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`--no-policy` bypasses Pass 5 entirely; a CN component validates."""
+    manifest = _write_manifest_with_provenance(tmp_path, country="CN")
+    program = _write_trivial_program(tmp_path)
+    rc = main(["validate", str(program), "--manifest", str(manifest), "--no-policy"])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "Validation passed" in captured.out
+
+
+def test_explicit_policy_path_loads_and_evaluates(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`--policy PATH` overrides the default with a custom rule set."""
+    manifest = _write_manifest_with_provenance(tmp_path, country="US")
+    program = _write_trivial_program(tmp_path)
+    # Permissive policy: empty rules list, accepts everything.
+    policy = tmp_path / "permissive.yaml"
+    policy.write_text(
+        """policy_version: "0.1"
+policy_id: permissive
+rules: []
+""",
+        encoding="utf-8",
+    )
+    rc = main([
+        "validate",
+        str(program),
+        "--manifest",
+        str(manifest),
+        "--policy",
+        str(policy),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "Validation passed" in captured.out
+
+
+def test_policy_and_no_policy_are_mutually_exclusive(
+    tmp_path: Path,
+) -> None:
+    """argparse rejects --policy together with --no-policy."""
+    manifest = _write_manifest_with_provenance(tmp_path)
+    program = _write_trivial_program(tmp_path)
+    policy = tmp_path / "p.yaml"
+    policy.write_text("policy_version: \"0.1\"\npolicy_id: x\nrules: []\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as excinfo:
+        main([
+            "validate",
+            str(program),
+            "--manifest",
+            str(manifest),
+            "--policy",
+            str(policy),
+            "--no-policy",
+        ])
+    assert excinfo.value.code == 2
+
+
+def test_missing_policy_file_exits_2(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    manifest = _write_manifest_with_provenance(tmp_path)
+    program = _write_trivial_program(tmp_path)
+    rc = main([
+        "validate",
+        str(program),
+        "--manifest",
+        str(manifest),
+        "--policy",
+        str(tmp_path / "nope.yaml"),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "policy file not found" in captured.err.lower()
+
+
+def test_policy_error_detail_appears_in_pretty_output(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The `detail` dict on policy errors is rendered in the pretty output."""
+    manifest = _write_manifest_with_provenance(tmp_path, country="CN")
+    program = _write_trivial_program(tmp_path)
+    rc = main(["validate", str(program), "--manifest", str(manifest)])
+    captured = capsys.readouterr()
+    assert rc == 1
+    # detail fields rendered as `key: value` lines under the error.
+    assert "rule_id:" in captured.err
+    assert "component_id:" in captured.err
+    assert "offending_value:" in captured.err
+
+
+def test_policy_error_appears_in_json_output(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """JSON output carries the structured detail dict on policy errors."""
+    manifest = _write_manifest_with_provenance(tmp_path, country="CN")
+    program = _write_trivial_program(tmp_path)
+    rc = main([
+        "validate",
+        str(program),
+        "--manifest",
+        str(manifest),
+        "--json",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 1
+    payload = json.loads(captured.out)
+    codes = [e["code"] for e in payload["errors"]]
+    assert "policy.country_denied" in codes
+    policy_err = next(e for e in payload["errors"] if e["code"] == "policy.country_denied")
+    assert policy_err["detail"] is not None
+    assert policy_err["detail"]["component_id"] == "drive_controller"
+
+
+def test_urml_schema_policy_emits_policy_schema(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`urml schema --name policy` returns the Policy JSON Schema."""
+    rc = main(["schema", "--name", "policy"])
+    captured = capsys.readouterr()
+    assert rc == 0
+    payload = json.loads(captured.out)
+    # The Policy model declares these top-level fields.
+    assert "policy_id" in payload["properties"]
+    assert "rules" in payload["properties"]

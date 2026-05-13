@@ -18,7 +18,12 @@ from __future__ import annotations
 
 from urml_llm_bridge._version import __version__
 from urml_llm_bridge.bridge import Bridge, TranslateResult
-from urml_llm_bridge.errors import BridgeError, BridgeRevisionExhausted, ProviderError
+from urml_llm_bridge.errors import (
+    BridgeError,
+    BridgePolicyViolation,
+    BridgeRevisionExhausted,
+    ProviderError,
+)
 from urml_llm_bridge.few_shot import (
     FewShot,
     default_few_shots,
@@ -33,6 +38,7 @@ from urml_llm_bridge.providers.echo import EchoProvider
 __all__ = [
     "Bridge",
     "BridgeError",
+    "BridgePolicyViolation",
     "BridgeRevisionExhausted",
     "EchoProvider",
     "FewShot",
