@@ -136,6 +136,7 @@ class Sensor(BaseModel):
         "wind_speed",
         "current",
         "voltage",
+        "speech",
         "custom",
     ]
     range_min: float | None = None

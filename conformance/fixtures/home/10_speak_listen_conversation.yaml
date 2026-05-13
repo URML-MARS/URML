@@ -1,0 +1,46 @@
+name: home/speak_listen_conversation
+description: >
+  Multi-step conversational program using the home-profile additions
+  `speak` and `listen` (RFC-0002 §Profile-extensibility; specified in
+  spec/profiles/home/README.md). The validator accepts the program;
+  execution is not exercised in v0.1 because the MockROSAdapter does
+  not yet have speech bindings (runtime support is a follow-up).
+
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - speak:
+          utterance: "Which mug should I bring you?"
+          style: conversational
+      - listen:
+          expected: choice
+          choices: [red, blue, any]
+          store_as: choice
+      - detect:
+          object: mug
+          where:
+            near: kitchen
+          store_as: target_mug
+      - grasp:
+          target: $target_mug
+          force: gentle
+      - move_to:
+          location: user
+          carrying: $target_mug
+      - release:
+          mode: hand_to_user
+      - speak:
+          utterance: "Here you go."
+
+expected_validation:
+  accepted: true
+
+# No expected_execution: validator-only in v0.1; runtime adapter for
+# speak/listen is a follow-up (RFC pending).

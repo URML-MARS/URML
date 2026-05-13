@@ -47,6 +47,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_OUTPUT = "capability.missing_output"
     CAPABILITY_FIXED_CAMERA_TARGET = "capability.fixed_camera_target"
     CAPABILITY_VIDEO_UNSUPPORTED = "capability.video_unsupported"
+    CAPABILITY_MISSING_SPEECH_OUTPUT = "capability.missing_speech_output"
+    CAPABILITY_MISSING_SPEECH_INPUT = "capability.missing_speech_input"
 
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"

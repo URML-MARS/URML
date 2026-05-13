@@ -81,8 +81,11 @@ def test_home_envelope_parses() -> None:
 
 
 def test_primitive_registry_covers_rfc_0002_set() -> None:
-    """RFC-0002 names exactly twelve primitives; the registry must match."""
-    expected = {
+    """RFC-0002 names exactly twelve core primitives; the registry must include
+    those plus any profile-extension primitives authorized by RFC-0002
+    §Profile-extensibility (currently: home-profile `speak` and `listen`).
+    """
+    core = {
         "move_to",
         "dock",
         "hover",
@@ -96,8 +99,14 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         "capture",
         "report",
     }
+    # Profile-extension primitives. New entries here track profile RFCs.
+    home_extensions = {"speak", "listen"}
+    expected = core | home_extensions
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected
+    # The RFC-0002 core set must remain a subset of the registry — the
+    # twelve are non-negotiable.
+    assert core.issubset(set(PRIMITIVE_NAMES))
 
 
 @pytest.mark.parametrize(

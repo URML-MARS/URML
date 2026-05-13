@@ -1,0 +1,27 @@
+name: home/force_ceiling_envelope
+description: >
+  A program that declares `grasp(force: 25)` against the home envelope
+  (max_grip_force_n: 3.0) fails Pass 3 with envelope.force_exceeded.
+  Specified by spec/profiles/home/README.md §grasp constraints.
+
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect:
+          object: mug
+          store_as: target
+      - grasp:
+          target: $target
+          force: 25.0
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.force_exceeded
