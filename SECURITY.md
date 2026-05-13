@@ -12,7 +12,7 @@ If you are uncertain whether a problem is spec-level or implementation-level, op
 
 ## 2. Implementation vulnerabilities
 
-An *implementation* vulnerability is a flaw in a reference runtime (`reference/ros2-runtime/`, `reference/px4-runtime/`, `reference/validator/`, `reference/llm-bridge/`) or in tools (`tools/`) where the bug is in URML's own code, not in the specification. Examples: a validator that fails to reject an out-of-envelope program, an LLM-bridge prompt that allows injection, a runtime that doesn't honor a primitive's declared limits.
+An *implementation* vulnerability is a flaw in a reference runtime (`reference/ros2-runtime/`, `reference/px4-runtime/`, `reference/validator/`, `reference/llm-bridge/`) or in tools (`tools/`) where the bug is in URML's own code, not in the specification. Examples: a validator that fails to reject an out-of-envelope program, an LLM-bridge prompt that allows injection, a runtime that doesn't honor a primitive's declared limits, the compliance-policy engine (RFC-0004) failing to apply a denylist rule, or the bundled default policy file having syntactically valid but semantically broken rules that accept manifests the rules should reject.
 
 **Report path:** email `security@urml.example` <!-- TODO: fill in real address after GitHub org setup -->. Please include:
 
@@ -33,10 +33,17 @@ Please do **not** open a public issue for an implementation vulnerability until 
 
 For reports related to the [Code of Conduct](CODE_OF_CONDUCT.md), email `conduct@urml.example` <!-- TODO: fill in real address after GitHub org setup -->. Reports are handled confidentially by the maintainer (Phase 0) or the enforcement committee (Phase 1+).
 
+## Compliance-data updates
+
+URML's bundled default compliance policy (`reference/validator/src/urml_validator/policies/us_federal_default.yaml`, per [RFC-0004](docs/rfcs/0004-compliance-policy.md)) tracks enacted US federal regulation. When statute or final agency lists change (a new entry on the FCC Covered List; an updated DoD Chinese Military Companies designation; an NDAA amendment), the report path is **a normal pull request**, not a security disclosure. See [`GOVERNANCE.md`](GOVERNANCE.md) §Default Compliance Policy Maintenance for the cadence and the sources the bundled policy tracks.
+
+If the bundled policy is *missing* a covered entity such that a real federal-procurement deployment would incorrectly pass URML validation — that *is* a security-relevant issue, and the implementation-vulnerability path above applies.
+
 ## Out of scope
 
 - **Substrate vulnerabilities** (ROS 2, PX4, AUTOSAR, OPC UA, vendor SDKs). Please report those to the substrate's own security process. URML cannot fix bugs in code it does not maintain.
 - **Vulnerabilities in third-party runtimes, profiles, or tools** that are not part of this repository. Contact the maintainer of that project directly.
+- **Third-party compliance policy files.** URML supplies the mechanism and a bundled US-federal default. Other policy files (community-maintained or commercial; see [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) §What This Commitment Does Not Cover for the audited/certified commercial surface) are the responsibility of their authors. URML vulnerabilities in the *engine* that evaluates policies are in scope; flaws in *third-party rules* are not.
 
 ## Public security log
 

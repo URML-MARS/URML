@@ -65,6 +65,24 @@ A new primitive enters Layer 2 only with **all** of the following:
 
 Before doing that work, file the [primitive proposal issue](.github/ISSUE_TEMPLATE/primitive_proposal.md) so it can be evaluated against the existing vocabulary and the substrate-neutrality acid test (per [`CLAUDE.md`](CLAUDE.md): can it be cleanly implemented on a runtime with zero ROS dependencies?). If a behavior can be composed from existing primitives, it should be.
 
+### Core vs. profile-specific primitives
+
+The bar above is for the **core twelve** ([RFC-0002](docs/rfcs/0002-initial-primitive-vocabulary.md)) — primitives meaningful across multiple profiles. **Profile-specific primitives** (`speak`/`listen` in the home profile; `take_off`/`land`/`return_to_home` in the drone profile) follow the same five-point bar with one substitution: the specification document lives in the **profile's** spec directory ([`spec/profiles/<name>/`](spec/profiles/)), not in the core primitive doc.
+
+Authorizing a profile-specific primitive does not require a dedicated RFC if the profile spec is already in **Draft** state and the primitive is named in that spec; the spec itself is the authorization. Primitives outside that scope (e.g., a new home-profile primitive a future contributor wants to add) require an RFC that amends the relevant profile spec first.
+
+## Proposing a Profile
+
+A new profile is a smaller commitment than a core primitive but still a commitment. The current profile set (home / drone / industrial) plus the stretch list (agricultural, AV, healthcare, SAR, education, underwater) in [`MANIFESTO.md`](MANIFESTO.md) §Scope is the canonical maintenance scope. The Apache 2.0 license permits external parties to build any profile on top of URML; the canonical URML organization maintains only the scoped set.
+
+To propose a new canonical profile:
+
+1. File a [feature request](.github/ISSUE_TEMPLATE/feature_request.md) describing the domain, the v1.0 use cases, and the safety-envelope class. The maintainer routes it.
+2. If routed forward, file an RFC under [`docs/rfcs/`](docs/rfcs/) that defines the profile's added primitives, constrained core primitives, manifest fields, default safety envelope, and compliance-policy alignment.
+3. On Accepted, draft the profile spec document under `spec/profiles/<name>/`, write reference examples under `examples/<name>/`, and write conformance fixtures under `conformance/fixtures/<name>/`. The profile reaches **Implemented** only when all four exist and the reference runtime supports the profile's added primitives.
+
+See [`spec/profiles/home/`](spec/profiles/home/) and [`spec/profiles/drone/`](spec/profiles/drone/) for v0.1 Draft profiles as templates.
+
 ## Code Conventions
 
 From [`CLAUDE.md`](CLAUDE.md) §Working Conventions:
