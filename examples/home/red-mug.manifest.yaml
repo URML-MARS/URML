@@ -1,0 +1,108 @@
+# Companion manifest for examples/home/red-mug.urml.yaml — demonstrates a
+# fully US-federal-compliant provenance declaration alongside the canonical
+# home-profile program.
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are fictional;
+# country codes are real ISO 3166-1 alpha-2 values. The integrity hashes are
+# zeroed placeholders. Do not deploy from this file; use it to see what a
+# manifest that passes both the validator's capability checks AND the bundled
+# US-federal compliance policy (RFC-0004) looks like end-to-end.
+#
+# Validate with the bundled default policy active:
+#   urml validate red-mug.urml.yaml -m red-mug.manifest.yaml --profile home
+#
+# Demonstrate the override path (skip Pass 5):
+#   urml validate red-mug.urml.yaml -m red-mug.manifest.yaml --profile home --no-policy
+
+manifest_version: "0.1"
+robot_id: turtlebot4_red_mug
+description: TurtleBot 4 home-service robot, US-compliant illustrative manifest.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+    description: Kitchen entry pose.
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+    description: User pickup location.
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - mug
+    - cup
+    - person
+
+outputs:
+  named_endpoints: []
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-origin manufacture and assembly, references an HBOM document, and
+# carries the third-party-audited attestation level required by the
+# bundled default policy.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/turtlebot4_red_mug.signed
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_drive_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: depth_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/depth_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: claw_servo
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/claw_servo.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

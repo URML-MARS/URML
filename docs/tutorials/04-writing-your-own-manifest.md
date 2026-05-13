@@ -189,6 +189,35 @@ Then `dock: { at: charging_dock, service: swap_consumable }` passes validation. 
 
 Core URML reserves `park` and `charge`. Other services (`swap_battery`, `swap_tool`, `refuel`, `transfer_payload`, `download_data`, `swap_consumable`) are profile-extensible — you declare them per station.
 
+## Exercise 6: Declare hardware provenance for compliance checks
+
+URML's v0.1 validator runs a fifth pass that checks a manifest's **hardware provenance** against a pluggable compliance policy (see [RFC-0004](../rfcs/0004-compliance-policy.md)). The default policy mirrors US federal procurement rules (NDAA Section 889 / FY26, the FCC Covered List, etc.); deployers outside the US override with `urml validate --policy <file.yaml>`, and `--no-policy` skips Pass 5 entirely.
+
+Manifests **without** a `provenance:` block trigger no Pass 5 errors — policy enforcement is opt-in at the manifest level. Add a `provenance:` block when your deployment needs to *prove* compliance:
+
+```yaml
+provenance:
+  manifest_attestation: third_party_audited    # self_declared | third_party_audited | cryptographically_signed
+  components:
+    - id: drive_controller
+      role: critical                            # critical | non_critical | informational
+      vendor: example_drive_vendor
+      country_of_origin: US                     # ISO 3166-1 alpha-2
+      country_of_final_assembly: US             # often differs from origin
+      hbom_ref:                                 # optional; opaque-by-hash in v0.1
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "<64-hex-char-integrity-hash>"
+```
+
+The selector that policies usually filter on is `role: critical` — most regulatory rules turn on which components are "critical." If you declare provenance on every component as `informational`, the default policy will pass; that's a feature, not a bug — it lets manifests *opt in* to the structure without committing to every component being regulated.
+
+If you write `country_of_origin: CN` on a critical component and run the default policy, the validator emits `policy.country_denied` with structured `detail` (rule ID, component ID, the denied country list, and a `remediation_hint`). The LLM bridge consumes that detail and exits its revision loop rather than asking the model to rewrite the program — programs cannot fix hardware.
+
+See [`spec/layer-1-hal/policy.md`](../../spec/layer-1-hal/policy.md) for the normative policy file format, and [`examples/home/red-mug.manifest.yaml`](../../examples/home/red-mug.manifest.yaml) for a fully US-compliant illustrative manifest matching the canonical red-mug example.
+
+A note worth repeating from the spec: a policy file passing the validator is **not a legal compliance determination**. The bundled default ships under Apache 2.0 forever per [`CORE_COMMITMENT.md`](../../CORE_COMMITMENT.md) item 7; audited and certified policy files carrying third-party legal attestation are a separate, legitimate commercial surface.
+
 ## What the validator does NOT check (yet)
 
 In v0.1, the validator is strict about *declaration* — it rejects programs that reference undeclared anything. It is more permissive about:
