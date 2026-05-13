@@ -44,10 +44,20 @@ _VALIDATOR_FIXTURES = _REPO_ROOT / "reference" / "validator" / "tests" / "fixtur
 MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home.yaml",
     "industrial_cell": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml",
+    "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
+    "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_default": _VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml",
+}
+
+#: Compliance policies (RFC-0004). Names map to YAML files under
+#: reference/validator/tests/fixtures/policies/. Two sentinel values are
+#: reserved: a fixture may set ``policy: default`` to explicitly load the
+#: bundled US-federal default, or ``policy: none`` to skip Pass 5 entirely.
+POLICY_REGISTRY: dict[str, Path] = {
+    "permissive": _VALIDATOR_FIXTURES / "policies" / "permissive.yaml",
 }
 
 
@@ -112,6 +122,15 @@ class FixtureCase(BaseModel):
     manifest: str = Field(..., description="Name of a registered manifest.")
     envelope: str | None = Field(
         None, description="Name of a registered envelope (optional)."
+    )
+    policy: str | None = Field(
+        None,
+        description=(
+            "Compliance policy for Pass 5 (RFC-0004). Names map to "
+            "POLICY_REGISTRY; the literal 'none' skips Pass 5; the literal "
+            "'default' (or omitting the field) loads the bundled US-federal "
+            "default policy."
+        ),
     )
     profiles: list[str] = Field(default_factory=list)
 
@@ -222,4 +241,30 @@ def resolve_envelope(name: str) -> dict[str, Any]:
         result = yaml.safe_load(fh)
     if not isinstance(result, dict):
         raise ValueError(f"envelope {name!r} did not parse as a mapping")
+    return result
+
+
+def resolve_policy(name: str | None) -> dict[str, Any] | None | str:
+    """Resolve a fixture's `policy:` field to the argument the validator expects.
+
+    Returns one of:
+      - ``None`` if the fixture passes ``policy: none`` (Pass 5 should be skipped).
+      - ``"DEFAULT"`` (sentinel string) if the fixture omits ``policy:`` or
+        passes ``policy: default``. The validator interprets this as
+        "load the bundled US-federal default policy".
+      - A parsed dict if ``policy`` names a key in ``POLICY_REGISTRY``.
+    """
+    if name is None or name == "default":
+        return "DEFAULT"
+    if name == "none":
+        return None
+    if name not in POLICY_REGISTRY:
+        raise KeyError(
+            f"unknown policy {name!r}; registered: "
+            f"{sorted(POLICY_REGISTRY.keys())!r} (also 'default' and 'none')"
+        )
+    with POLICY_REGISTRY[name].open(encoding="utf-8") as fh:
+        result = yaml.safe_load(fh)
+    if not isinstance(result, dict):
+        raise ValueError(f"policy {name!r} did not parse as a mapping")
     return result

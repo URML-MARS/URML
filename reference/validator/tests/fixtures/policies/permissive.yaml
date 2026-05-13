@@ -1,0 +1,16 @@
+# Permissive baseline policy — accepts every manifest unconditionally.
+#
+# Useful as a deliberate override of the bundled US-federal default in
+# conformance fixtures and tests that want to exercise non-policy validator
+# behavior with a manifest that happens to declare provenance.
+
+policy_version: "0.1"
+policy_id: permissive_test
+description: |
+  Accepts every manifest. Ships only as a test fixture; never load this in
+  a production deployment that expects compliance enforcement.
+
+issued_by: urml_test_fixtures
+issued_at: "2026-05-13"
+
+rules: []

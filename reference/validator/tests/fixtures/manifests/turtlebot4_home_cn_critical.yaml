@@ -1,0 +1,71 @@
+# Fixture: TurtleBot 4 manifest with a critical component whose declared
+# country of origin trips the bundled US-federal default policy.
+#
+# This is a test-only fixture. The vendor / country values are illustrative;
+# no claim about any real organization is made.
+
+manifest_version: "0.1"
+robot_id: turtlebot4_demo_cn_critical
+description: TurtleBot 4 variant with a critical component declared as CN-origin (for compliance-policy tests).
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+
+declared_events:
+  - user_present
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - mug
+    - cup
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_drive_vendor
+      country_of_origin: CN
+      country_of_final_assembly: CN
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

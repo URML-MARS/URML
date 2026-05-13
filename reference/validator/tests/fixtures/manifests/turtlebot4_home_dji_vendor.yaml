@@ -1,0 +1,72 @@
+# Fixture: TurtleBot 4 manifest with a component vendor that's on the
+# bundled US-federal default policy's denylist (FCC Covered List entries).
+#
+# This is a test-only fixture. The vendor string `dji` is used here as a
+# regulatory marker (it appears in the actual FCC Covered List), not as
+# any claim about specific hardware shipping inside any real TurtleBot.
+
+manifest_version: "0.1"
+robot_id: turtlebot4_demo_covered_vendor
+description: TurtleBot 4 variant with a component from a covered vendor (for compliance-policy tests).
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+
+declared_events:
+  - user_present
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - mug
+    - cup
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: camera_module
+      role: critical
+      vendor: dji
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/camera.cdx.json
+        sha256: "1111111111111111111111111111111111111111111111111111111111111111"
