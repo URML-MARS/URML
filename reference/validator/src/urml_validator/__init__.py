@@ -15,16 +15,22 @@ the four-pass validator lands in a follow-up release.
 
 from urml_validator._version import __version__
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
+from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schema_export import export_all_schemas, export_schema, write_schemas
+from urml_validator.schemas.policy import Policy, PolicyRule
 from urml_validator.schemas.program import URMLProgram
-from urml_validator.validator import validate
+from urml_validator.validator import DEFAULT_POLICY, validate
 
 __all__ = [
+    "DEFAULT_POLICY",
     "ErrorCode",
+    "Policy",
+    "PolicyRule",
     "URMLProgram",
     "ValidationError",
     "ValidationResult",
     "__version__",
+    "evaluate_policy",
     "export_all_schemas",
     "export_schema",
     "validate",

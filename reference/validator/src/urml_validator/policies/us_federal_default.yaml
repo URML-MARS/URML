@@ -1,0 +1,94 @@
+# URML default compliance policy — US federal robotics regulation.
+#
+# Ratified by RFC-0003 (URML aligns with US federal regulation) and
+# RFC-0004 (Compliance Policy Enforcement). Loaded automatically by
+# urml_validator.validate() when the caller does not pass `--policy` /
+# `policy=...` explicitly.
+#
+# Sources, by rule:
+#
+# - critical_country_denylist:    NDAA Section 889 (FAR 4.21); FY26 NDAA
+#                                 expansions extending to all federal
+#                                 agencies, contractors, and grant recipients;
+#                                 DoD Chinese Military Companies list.
+# - covered_vendor_denylist:      FCC Covered List entries effective
+#                                 2025-12-23 (DJI, Autel); Hesai per the
+#                                 FY26 NDAA §164 LiDAR restriction; Unitree
+#                                 per the American Security Robotics Act
+#                                 (Cotton/Schumer, March 2026).
+# - hbom_required_for_critical:   NIST SP 800-218 / IR 8425 alignment for
+#                                 federal procurement.
+# - attestation_floor:            Warning in v0.1; promotion to error scheduled
+#                                 for v0.2 once third-party-attestation tooling
+#                                 has been audited for at least one deployment.
+#
+# THIS FILE IS NOT LEGAL ADVICE. Deployers must consult counsel for any
+# binding compliance determination. Audited and certified policy files
+# carrying third-party legal attestation are a separate commercial surface
+# (see CORE_COMMITMENT.md, "What This Commitment Does Not Cover").
+
+policy_version: "0.1"
+policy_id: urml_us_federal_default
+description: |
+  Default policy bundled with URML v0.1, encoding US federal procurement
+  rules for robotic and uncrewed systems. Mirrors NDAA Section 889 / FY26,
+  the FCC Covered List, EO 14307, and the American Security Robotics Act.
+  Not legal advice; see CORE_COMMITMENT.md for the certified-policy
+  commercial surface.
+
+issued_by: urml_core
+issued_at: "2026-05-13"
+
+rules:
+  - id: critical_country_denylist
+    applies_to: { component_role: critical }
+    deny:
+      country_of_origin_in: [CN, RU, IR, KP]
+    on_violation:
+      code: policy.country_denied
+      message: >-
+        Critical component from covered foreign country (NDAA Section 889 /
+        FY26 NDAA). Federal procurement of this robot is prohibited under
+        US federal law.
+
+  - id: critical_final_assembly_denylist
+    applies_to: { component_role: critical }
+    deny:
+      country_of_final_assembly_in: [CN, RU, IR, KP]
+    on_violation:
+      code: policy.country_denied
+      message: >-
+        Critical component with final assembly in a covered foreign country
+        (NDAA Section 889 / FY26 NDAA).
+
+  - id: covered_vendor_denylist
+    applies_to: { component_role: any }
+    deny:
+      vendor_in: [dji, autel, hesai, unitree]
+    on_violation:
+      code: policy.vendor_denied
+      message: >-
+        Vendor named in the FCC Covered List, the DoD Chinese Military
+        Companies list, or the American Security Robotics Act.
+
+  - id: hbom_required_for_critical
+    applies_to: { component_role: critical }
+    require:
+      hbom_ref_present: true
+    on_violation:
+      code: policy.hbom_missing
+      message: >-
+        Critical components must declare a hardware bill-of-materials
+        reference (`hbom_ref`) for federal procurement.
+
+  - id: attestation_floor
+    applies_to: { scope: manifest }
+    require:
+      manifest_attestation_in: [third_party_audited, cryptographically_signed]
+    on_violation:
+      code: policy.attestation_insufficient
+      severity: warning
+      message: >-
+        Self-declared provenance accepted in v0.1 but flagged. v0.2 will
+        promote this to an error; deployments should arrange third-party
+        attestation now.

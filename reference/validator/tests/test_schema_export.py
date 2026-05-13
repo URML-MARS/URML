@@ -33,8 +33,8 @@ EXAMPLES_ROOT = REPO_ROOT / "examples"
 
 
 def test_registry_lists_all_expected_artifacts() -> None:
-    """The exporter knows about program, manifest, and envelope — no more, no less."""
-    assert set(SCHEMA_REGISTRY.keys()) == {"program", "manifest", "envelope"}
+    """The exporter knows about program, manifest, envelope, and policy."""
+    assert set(SCHEMA_REGISTRY.keys()) == {"program", "manifest", "envelope", "policy"}
 
 
 @pytest.mark.parametrize("name", sorted(SCHEMA_REGISTRY.keys()))
@@ -76,14 +76,10 @@ def test_comment_block_is_machine_readable_json() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_write_schemas_creates_three_files(tmp_path: Path) -> None:
+def test_write_schemas_creates_all_files(tmp_path: Path) -> None:
     written = write_schemas(tmp_path)
-    assert len(written) == 3
-    expected = {
-        tmp_path / "urml-program.schema.json",
-        tmp_path / "urml-manifest.schema.json",
-        tmp_path / "urml-envelope.schema.json",
-    }
+    assert len(written) == len(SCHEMA_REGISTRY)
+    expected = {tmp_path / f"urml-{name}.schema.json" for name in SCHEMA_REGISTRY}
     assert set(written) == expected
     for path in written:
         assert path.is_file()

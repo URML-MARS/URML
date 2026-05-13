@@ -188,6 +188,76 @@ class Outputs(BaseModel):
     named_endpoints: list[Identifier] = Field(default_factory=list)
 
 
+class HBOMRef(BaseModel):
+    """Reference to a Hardware Bill of Materials document.
+
+    URML records the reference and an integrity hash; URML v0.1 does not parse
+    SBOM/HBOM content. `format` is a free string; the recommended value is
+    `cyclonedx-1.7` but any format identifier is accepted.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    format: str = Field(..., description="HBOM format identifier (e.g., 'cyclonedx-1.7', 'spdx-3.0').")
+    uri: str = Field(..., description="URI to the HBOM document. May be local (./hbom/x.json) or remote.")
+    sha256: str | None = Field(
+        None,
+        description="Hex-encoded SHA-256 integrity hash. Required when uri is local; recommended otherwise.",
+    )
+
+
+class ProvenanceComponent(BaseModel):
+    """A single declared hardware component and its origin facts.
+
+    `role` is the load-bearing selector. Policies typically gate on critical
+    components only. `country_of_origin` and `country_of_final_assembly` are
+    distinct because NDAA-style rules often care about both.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: Identifier
+    role: Literal["critical", "non_critical", "informational"]
+    vendor: str = Field(..., description="Machine-readable vendor identifier. Free string in v0.1.")
+    country_of_origin: str = Field(
+        ...,
+        description="ISO 3166-1 alpha-2 country code, or 'unknown'.",
+    )
+    country_of_final_assembly: str = Field(
+        ...,
+        description="ISO 3166-1 alpha-2 country code, or 'unknown'. Often differs from country_of_origin.",
+    )
+    hbom_ref: HBOMRef | None = None
+
+
+class Provenance(BaseModel):
+    """Hardware-provenance declaration for the robot.
+
+    Added by RFC-0003 / RFC-0004. Optional sibling of mobility/manipulation/
+    perception. When present, the validator's Pass 5 evaluates a compliance
+    policy against this block. When absent, Pass 5 is a no-op for the manifest.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    manifest_attestation: Literal[
+        "self_declared",
+        "third_party_audited",
+        "cryptographically_signed",
+    ] = Field(
+        "self_declared",
+        description="Who asserts the provenance is true. Policies may require a minimum level.",
+    )
+    attestation_uri: str | None = Field(
+        None,
+        description="Optional URI to a signed attestation document.",
+    )
+    components: list[ProvenanceComponent] = Field(
+        default_factory=list,
+        description="Declared components and their per-component provenance facts.",
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -211,3 +281,6 @@ class CapabilityManifest(BaseModel):
 
     docking_stations: list[DockingStation] = Field(default_factory=list)
     outputs: Outputs = Field(default_factory=Outputs)
+
+    # RFC-0004: optional hardware provenance for compliance enforcement.
+    provenance: Provenance | None = None

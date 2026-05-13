@@ -5,14 +5,14 @@ revise emissions. Stability here matters: any code surfaced by a returned
 ``ValidationError`` is a part of the public API.
 
 Error codes are namespaced: ``argument.*``, ``capability.*``, ``envelope.*``,
-``binding.*``. New codes may be added between minor versions; existing codes
-do not change meaning.
+``binding.*``, ``policy.*``. New codes may be added between minor versions;
+existing codes do not change meaning.
 """
 
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -58,6 +58,15 @@ class ErrorCode(StrEnum):
     BINDING_DUPLICATE_STORE_AS = "binding.duplicate_store_as"
     BINDING_UNRESOLVED_REFERENCE = "binding.unresolved_reference"
 
+    # Pass 5 — compliance policy (RFC-0004).
+    # The policy namespace is reserved; policy authors may emit any
+    # `policy.*` string via PolicyRule.on_violation.code, not just these.
+    POLICY_COUNTRY_DENIED = "policy.country_denied"
+    POLICY_VENDOR_DENIED = "policy.vendor_denied"
+    POLICY_HBOM_MISSING = "policy.hbom_missing"
+    POLICY_ATTESTATION_INSUFFICIENT = "policy.attestation_insufficient"
+    POLICY_RULE_INVALID = "policy.rule_invalid"
+
     # Internal / programmer-error categories.
     INTERNAL = "internal.error"
 
@@ -70,11 +79,23 @@ class ValidationError(BaseModel):
 
     All fields are JSON-serializable so the LLM bridge can pass the structured
     error verbatim back to the language model for revision.
+
+    The ``code`` field accepts either an ``ErrorCode`` enum value (preferred
+    for built-in codes) or a plain string in the ``policy.*`` namespace
+    (used for author-defined codes emitted by ``PolicyRule.on_violation``).
+    The validator coerces a string to ``ErrorCode`` when the string matches
+    a defined enum value; otherwise the string is preserved verbatim.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    code: ErrorCode = Field(..., description="Stable, namespaced error code.")
+    code: ErrorCode | str = Field(
+        ...,
+        description=(
+            "Namespaced error code. ErrorCode enum values for built-in codes; "
+            "any 'policy.*' string for author-defined policy codes."
+        ),
+    )
     severity: Severity = Field("error", description="`error` rejects the program; `warning` does not.")
     primitive: str | None = Field(
         None,
@@ -94,11 +115,24 @@ class ValidationError(BaseModel):
         None,
         description="Suggested correction. Consumed by the LLM bridge revision flow.",
     )
+    detail: dict[str, Any] | None = Field(
+        None,
+        description=(
+            "Optional structured detail for the error. Populated by Pass 5 (policy) "
+            "with rule_id, policy_id, offending_value, allowed/denied lists, and a "
+            "remediation_hint. Existing Pass 1-4 errors do not populate this field."
+        ),
+    )
 
     def render(self) -> str:
         """Compact one-line rendering used for log lines and pytest assertions."""
         prefix = "/".join(self.path) if self.path else "<program>"
-        return f"[{self.code.value}] {prefix}: {self.message}"
+        return f"[{self.code_str}] {prefix}: {self.message}"
+
+    @property
+    def code_str(self) -> str:
+        """The error code as a plain string, regardless of whether it's enum or raw."""
+        return str(self.code)
 
 
 class ValidationResult(BaseModel):
@@ -115,10 +149,11 @@ class ValidationResult(BaseModel):
         """Errors first, then warnings, in the order they were emitted."""
         return list(self.errors) + list(self.warnings)
 
-    def codes(self) -> list[ErrorCode]:
-        """Just the error codes, in order. Convenient for assertions in tests."""
-        return [e.code for e in self.all_issues]
+    def codes(self) -> list[str]:
+        """Just the error codes (as strings), in order. Convenient for assertions in tests."""
+        return [str(e.code) for e in self.all_issues]
 
-    def has(self, code: ErrorCode) -> bool:
+    def has(self, code: ErrorCode | str) -> bool:
         """True iff at least one error or warning with the given code is present."""
-        return any(e.code == code for e in self.all_issues)
+        target = str(code)
+        return any(str(e.code) == target for e in self.all_issues)

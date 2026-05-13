@@ -391,12 +391,16 @@ def _render_issue(
     """Render one ValidationError as 3-4 lines on the given stream."""
     location = "/".join(issue.path) if issue.path else "<program>"
     print(file=stream)
-    print(f"  {severity_label} [{issue.code.value}] {location}", file=stream)
+    print(f"  {severity_label} [{issue.code_str}] {location}", file=stream)
     if issue.field:
         print(f"    field: {issue.field}", file=stream)
     print(f"    {issue.message}", file=stream)
     if issue.suggestion:
         print(f"    suggestion: {issue.suggestion}", file=stream)
+    if issue.detail:
+        # Render policy-error detail in a stable, scannable shape.
+        for key, value in issue.detail.items():
+            print(f"    {key}: {value}", file=stream)
 
 
 def _emit_json(result: ValidationResult) -> None:
