@@ -1,0 +1,105 @@
+# Demo manifest: red-mug with a camera module from an FCC-Covered-List vendor.
+#
+# Same robot as red-mug.manifest.yaml in every respect EXCEPT the
+# depth_camera component's `vendor` is `dji` — a string used here as a
+# regulatory marker (DJI appears on the actual FCC Covered List effective
+# 2025-12-23). The bundled US-federal default policy (RFC-0004) rejects this
+# with policy.vendor_denied. Used by docs/demos/compliance-walkthrough.md
+# to illustrate the vendor-denylist rejection path.
+#
+# The string `dji` here is a regulatory-list lookup token, not a claim about
+# specific hardware shipping inside any real TurtleBot. All other vendor
+# identifiers are fictional (example_*).
+
+manifest_version: "0.1"
+robot_id: turtlebot4_red_mug_demo_dji
+description: Demo variant of red-mug with a FCC-Covered-List vendor on the camera module.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+    description: Kitchen entry pose.
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+    description: User pickup location.
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - mug
+    - cup
+    - person
+
+outputs:
+  named_endpoints: []
+
+# Hardware provenance — same as red-mug.manifest.yaml EXCEPT depth_camera
+# is declared with vendor `dji` (the regulatory marker on the FCC Covered List).
+# The bundled US-federal default policy trips on this with rule
+# `covered_vendor_denylist`.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/turtlebot4_red_mug_demo_dji.signed
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_drive_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: depth_camera
+      role: critical
+      vendor: dji                                # <-- the regulatory tripwire
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/depth_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: claw_servo
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/claw_servo.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
