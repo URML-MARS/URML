@@ -33,7 +33,7 @@ specific LLM SDK. Use `EchoProvider` for tests; install
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from urml_validator import (
@@ -45,7 +45,11 @@ from urml_validator import (
     validate,
 )
 
-from urml_llm_bridge.errors import BridgeRevisionExhausted, ProviderError
+from urml_llm_bridge.errors import (
+    BridgePolicyViolation,
+    BridgeRevisionExhausted,
+    ProviderError,
+)
 from urml_llm_bridge.few_shot import FewShot, few_shots_for
 from urml_llm_bridge.prompt import build_system_prompt, render_revision_context
 from urml_llm_bridge.providers.base import LLMProvider
@@ -82,6 +86,7 @@ class Bridge:
         profiles: tuple[str, ...] = (),
         few_shots: list[FewShot] | None = None,
         max_revisions: int = 3,
+        policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
     ) -> None:
         """Configure a Bridge instance.
 
@@ -96,6 +101,11 @@ class Bridge:
                            `profiles` via `few_shots_for(profiles)`.
             max_revisions: How many revision attempts to allow after the first
                            emission. `max_revisions=0` means one attempt and out.
+            policy:        Compliance policy (RFC-0004) passed to the validator
+                           on every revision attempt. ``"DEFAULT"`` (the default)
+                           uses the bundled US-federal policy; ``None`` skips
+                           Pass 5; a dict supplies a specific policy file's
+                           parsed content.
         """
         self._provider = provider
         self._manifest = manifest
@@ -103,6 +113,7 @@ class Bridge:
         self._profiles = tuple(profiles)
         self._few_shots = few_shots if few_shots is not None else few_shots_for(self._profiles)
         self._max_revisions = max_revisions
+        self._policy = policy
         self._schema = export_schema("program")
 
     def translate(self, user_request: str) -> TranslateResult:
@@ -146,6 +157,7 @@ class Bridge:
                 self._manifest,
                 self._envelope,
                 profiles=self._profiles,
+                policy=self._policy,
             )
             last_result = result
 
@@ -158,12 +170,25 @@ class Bridge:
                     raw_completions=raw_completions,
                 )
 
+            # RFC-0004: short-circuit revision when ONLY policy.* errors remain.
+            # Programs cannot fix hardware; another revision will not help.
+            non_policy_errors = [e for e in result.errors if not _is_policy_error(e)]
+            if not non_policy_errors:
+                raise BridgePolicyViolation(
+                    "validation rejected for compliance-policy reasons only; "
+                    "revision cannot fix hardware provenance",
+                    last_result=result,
+                    attempts=attempt_idx + 1,
+                )
+
             # Not accepted: prepare for next attempt if any budget remains.
             if attempt_idx + 1 >= attempts_total:
                 break
             revision_context = render_revision_context(
                 prior_emission=raw,
-                error_payload=[_error_to_dict(e) for e in result.errors],
+                # Only feed the LLM the errors it can act on. Policy errors are
+                # surfaced terminally below if revision exhausts.
+                error_payload=[_error_to_dict(e) for e in non_policy_errors],
             )
 
         assert last_result is not None  # the loop runs at least once
@@ -203,10 +228,15 @@ def _parse_emission(raw: str) -> dict[str, Any]:
 def _error_to_dict(err: URMLValidationError) -> dict[str, Any]:
     """Compact, JSON-safe rendering of a ValidationError for the revision prompt."""
     return {
-        "code": err.code.value,
+        "code": str(err.code),
         "primitive": err.primitive,
         "path": err.path,
         "field": err.field,
         "message": err.message,
         "suggestion": err.suggestion,
     }
+
+
+def _is_policy_error(err: URMLValidationError) -> bool:
+    """Return True iff the error is in the `policy.*` namespace."""
+    return str(err.code).startswith("policy.")

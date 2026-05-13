@@ -11,6 +11,7 @@ from urml_validator import ErrorCode, export_schema
 
 from urml_llm_bridge import (
     Bridge,
+    BridgePolicyViolation,
     BridgeRevisionExhausted,
     EchoProvider,
     ProviderError,
@@ -264,3 +265,88 @@ def test_echo_provider_rejects_both_modes() -> None:
 def test_echo_provider_requires_at_least_one_mode() -> None:
     with pytest.raises(ValueError, match="either"):
         EchoProvider()
+
+
+# ---------------------------------------------------------------------------
+# Policy short-circuit (RFC-0004)
+# ---------------------------------------------------------------------------
+
+
+def _manifest_with_provenance(country: str = "US", attestation: str = "third_party_audited") -> dict:
+    """Minimal manifest that triggers Pass 5."""
+    return {
+        "manifest_version": "0.1",
+        "robot_id": "test_bot",
+        "provenance": {
+            "manifest_attestation": attestation,
+            "components": [
+                {
+                    "id": "drive_controller",
+                    "role": "critical",
+                    "vendor": "example_vendor",
+                    "country_of_origin": country,
+                    "country_of_final_assembly": country,
+                    "hbom_ref": {
+                        "format": "cyclonedx-1.7",
+                        "uri": "./hbom/x.json",
+                        "sha256": "abc",
+                    },
+                }
+            ],
+        },
+    }
+
+
+# A trivial program that doesn't depend on the manifest's mobility/etc.
+_WAIT_PROGRAM = {
+    "profile": "home",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [{"wait": {"duration": "1s"}}],
+    },
+}
+
+
+def test_policy_only_errors_raise_violation_without_revision() -> None:
+    """When only policy.* errors fire, the bridge does NOT retry — it raises."""
+    provider = EchoProvider(scripted=[json.dumps(_WAIT_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=_manifest_with_provenance(country="CN"),  # tripwires default policy
+        profiles=("home",),
+        max_revisions=3,
+    )
+    with pytest.raises(BridgePolicyViolation) as excinfo:
+        bridge.translate("ignored request")
+    # The bridge gave up after one attempt — provider only had one scripted
+    # response, but the assertion that matters is that we did NOT exhaust
+    # the scripted list (no revision was attempted).
+    assert excinfo.value.attempts == 1
+
+
+def test_policy_none_disables_pass_5() -> None:
+    """Passing policy=None to the Bridge constructor skips Pass 5 entirely."""
+    provider = EchoProvider(scripted=[json.dumps(_WAIT_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=_manifest_with_provenance(country="CN"),
+        profiles=("home",),
+        max_revisions=1,
+        policy=None,
+    )
+    result = bridge.translate("ignored request")
+    assert result.accepted
+
+
+def test_us_compliant_manifest_translates_under_default_policy() -> None:
+    """A US-compliant provenance manifest passes the bundled default policy."""
+    provider = EchoProvider(scripted=[json.dumps(_WAIT_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=_manifest_with_provenance(country="US"),
+        profiles=("home",),
+        max_revisions=1,
+    )
+    result = bridge.translate("ignored request")
+    assert result.accepted

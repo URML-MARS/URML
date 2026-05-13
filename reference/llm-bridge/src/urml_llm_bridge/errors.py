@@ -30,3 +30,19 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         super().__init__(message)
         self.last_result = last_result
         self.attempts = attempts
+
+
+class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads better than "ViolationError".
+    """The validator rejected the program for compliance-policy reasons.
+
+    Raised by ``Bridge.translate()`` when *every* error in a validation result
+    is in the ``policy.*`` namespace. Policy errors describe hardware
+    provenance — they cannot be fixed by editing the URML program, so further
+    revisions are pointless. The caller should surface the violation to the
+    user (or pick a different robot, or update the policy).
+    """
+
+    def __init__(self, message: str, *, last_result: object, attempts: int) -> None:
+        super().__init__(message)
+        self.last_result = last_result
+        self.attempts = attempts
