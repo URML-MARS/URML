@@ -40,6 +40,14 @@ URML is **not** a hidden-state black box. Every URML program is human-readable t
 
 URML does **not** narrow what the Apache 2.0 license permits — any third party may build any extension on top of URML. The canonical URML organization, separately, scopes its own development to civilian, consumer, educational, industrial, and research domains. Profiles outside that scope are not maintained here.
 
+## Jurisdictional Alignment
+
+URML aligns with United States federal robotics and uncrewed-systems regulation as its primary regulatory frame of reference, including (non-exhaustively) NDAA Section 889 and FY26 procurement restrictions, the FCC Covered List, Executive Order 14307, and the American Security Robotics Act once enacted. URML-compatible runtimes validate, by default, that a target robot's declared hardware provenance is consistent with these regulations. Deployers outside the United States may override the default policy with their own jurisdiction-appropriate rule set; URML supplies the mechanism, but the default ships pre-loaded with US federal procurement rules.
+
+The natural-language layer remains multilingual. End users in any country, speaking any language, interact with URML through their own words. The *regulatory frame* is US-federal; the *user interface* is not.
+
+This is a v0.x positioning decision. Major-version increments may revisit it; see [RFC-0003](docs/rfcs/0003-us-alignment.md) for the reasoning and the trade-offs accepted.
+
 ## Why Now
 
 Three things changed in the last few years that make URML possible, and the last few months that make it urgent.
@@ -51,6 +59,8 @@ Three things changed in the last few years that make URML possible, and the last
 **The substrate has stabilized.** ROS 2 LTS releases through Jazzy and beyond have made it realistic to build durable abstractions on top. PX4 and ArduPilot have done the same for drones. The lower layers are ready to be targeted.
 
 **The window is now.** If the standard form for natural-language robot control is left to individual vendors, every robot will speak a slightly different dialect of English-to-action, locked to its manufacturer's cloud. URML proposes the alternative: a shared, open, free vocabulary before the dialects calcify.
+
+**The regulatory window is now too.** The US federal regulatory cascade between Dec 2025 and June 2026 — FCC Covered List enforcement, FY26 NDAA expansion to all federal agencies and contractors, DoD LiDAR restrictions effective June 30 2026, and the American Security Robotics Act — defines a default rule set URML can encode and ship. A standard that materializes alongside the regulation it serves accelerates both.
 
 ## Who URML Is For
 
@@ -68,7 +78,7 @@ The following principles take precedence over feature requests, including our ow
 
 **Intent over instruction.** URML describes what should happen, not how. A `move_to` does not specify a trajectory; that is the runtime's job. This is the line between URML and ROS.
 
-**Substrate-agnostic.** No primitive may assume a specific underlying robot OS. If it cannot be implemented cleanly on both ROS 2 and PX4, it does not belong in the core specification.
+**Substrate-agnostic.** No primitive may assume a specific underlying robot OS. If it cannot be implemented cleanly on both ROS 2 and PX4, it does not belong in the core specification. Substrate-agnosticism is preserved as an architectural principle; jurisdictional-agnosticism is not — URML's default regulatory frame is US-federal (see *Jurisdictional Alignment*), with overrides available for non-US deployments.
 
 **Small vocabulary, deep profiles.** The core primitive set will stay under thirty. Domain richness lives in profiles, not in the core.
 
@@ -248,7 +258,7 @@ The robots that exist today already work. Most people cannot use them. URML is a
 3. **Versioning.** Semver applied to the spec, or a date-based scheme (URML 2026-Q3)?
 4. **LLM prompt contract location.** In the main spec or in a separate companion document?
 5. **First demo robot.** TurtleBot 4 (cheapest, widest community), a simulated platform only, or both?
-6. **Hebrew localization in v0.1.** The author works in Hebrew; the spec itself is English-first, but the natural-language layer should be tested in at least two languages from the start.
+6. **Hebrew localization in v0.1.** *Resolved.* The natural-language testing matrix in v0.1 includes English and Hebrew, with Spanish, Japanese, and Mandarin in v1.x per the existing roadmap. The regulatory-frame question (distinct from user-language localization) is resolved by [RFC-0003](docs/rfcs/0003-us-alignment.md) in favor of US-federal alignment.
 
 ---
 

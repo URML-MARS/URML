@@ -6,6 +6,8 @@ URML sits above existing robot operating systems (ROS 2, PX4, OPC UA Robotics, v
 
 URML is a **specification** and a set of **reference implementations**, not a robot operating system. The specification is Apache 2.0. The Core Commitment ([`CORE_COMMITMENT.md`](CORE_COMMITMENT.md)) names what will always remain so.
 
+**Regulatory alignment.** URML's default validator policy aligns with United States federal robotics and uncrewed-systems regulation — NDAA Section 889 / FY26, the FCC Covered List, Executive Order 14307, and the American Security Robotics Act once enacted. Deployments outside the US may override the default via `urml validate --policy <file.yaml>`. See [RFC-0003](docs/rfcs/0003-us-alignment.md) for the rationale and RFC-0004 (forthcoming) for the mechanism.
+
 ## Status
 
 **Phase 0 — pre-public draft.** Solo author working in public. The repository is being scaffolded; substantive specification work begins in Phase 1.
