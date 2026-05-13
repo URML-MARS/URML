@@ -30,12 +30,15 @@ The following components of URML will always be Apache 2.0:
 
 6. **The LLM prompt contract.** The published schema, examples, and validators that allow language models to reliably emit valid URML. This is the surface by which natural-language interfaces meet URML; making it provider-neutral and free is what prevents the standard from being captured by any single LLM vendor. See [`reference/llm-bridge/`](reference/llm-bridge/).
 
+7. **The default compliance policy file.** Per RFC-0003, URML the standard aligns with US federal robotics regulation. The default policy file the validator loads when no `--policy` is specified — currently `us_federal_default.yaml`, and any successor — remains Apache 2.0 and freely usable. URML's regulatory teeth are a public good. See [`reference/validator/src/urml_validator/policies/`](reference/validator/src/urml_validator/policies/).
+
 ## What This Commitment Does Not Cover
 
 The boundary is deliberately explicit, so there is no ambiguity about where commercial work *can* legitimately happen:
 
 - **Commercial products built on top of URML** by the URML organization or any other party — managed services, premium tooling, fleet management platforms, hosted simulation, observability dashboards, training, certification of individuals. These are out of scope of this repository and not subject to this commitment.
 - **The URML trademark** and the **URML-Certified conformance mark**, governed by a separate, public trademark policy. Using the marks requires conformance; the conformance tests themselves remain free.
+- **Certified or audited policy files.** The default policy in (6) above is free forever. *Audited* policy files — those carrying a third-party legal-audit certification (e.g., "Audited against NDAA §889 and FY26 by an accredited firm as of YYYY-MM-DD") — are a legitimate commercial surface for the URML organization or any other party. The uncertified default is free; certifications, attestations, and the legal opinions that back them are not.
 - **Third-party extensions, profiles, and runtimes** that are not maintained by the URML organization. They may choose any license they wish.
 
 ## Modifying This Document

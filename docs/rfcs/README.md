@@ -11,6 +11,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0000](0000-template.md) | RFC template | Template (not an RFC) | — |
 | [0001](0001-rfc-process.md) | RFC process | Accepted | Phase 0 |
 | [0002](0002-initial-primitive-vocabulary.md) | Initial Layer-2 primitive vocabulary | Draft | 2026-05-11 |
+| [0003](0003-us-alignment.md) | Strategic realignment — URML aligns with US federal robotics regulation | Open | 2026-05-13 |
 
 ## Lifecycle states
 

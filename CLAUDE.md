@@ -27,15 +27,15 @@ The long-term goal is a **venture-scale company**. This is not incidental — it
 
 **Commercial value lives in the surround, not in this repository.** Eventual revenue comes from: a paid certification/conformance program (the trademark *URML-Certified*), premium tooling on top of the open core (fleet management, hosted simulation, observability), managed cloud services (URML-as-a-service, hosted LLM bridges), training, and certification for individuals. These commercial surfaces are not part of this repository. Keep them mentally separate, but design so they remain *possible* later: clean APIs, well-defined extension points, no architectural choices that would make a hosted product harder to build.
 
-**The Core Commitment, in writing.** What will always be Apache 2.0 and never move behind a paywall: the specification documents, the conformance test suite, the ROS 2 and PX4 reference runtimes, the validator, and the prompt contract for LLM integration. This commitment lives in `CORE_COMMITMENT.md` (to be created before any commercial entity is incorporated). It is non-negotiable. The open-core re-licensing controversies of the last decade (Elastic, MongoDB, HashiCorp, Redis) show what happens when the line is drawn after adoption rather than before.
+**The Core Commitment, in writing.** What will always be Apache 2.0 and never move behind a paywall: the specification documents, the conformance test suite, the ROS 2 and PX4 reference runtimes, the validator, the prompt contract for LLM integration, and (per RFC-0003) the default US-federal compliance policy file. This commitment lives in [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md). It is non-negotiable. The open-core re-licensing controversies of the last decade (Elastic, MongoDB, HashiCorp, Redis) show what happens when the line is drawn after adoption rather than before.
 
 **Optimize for inevitability, not features.** A venture-scale outcome requires URML to become *the obvious choice* for natural-language robot control, not one of several. That means ruthless simplicity in the core vocabulary, exceptional documentation, demos that travel virally, and a deliberate community strategy. Every architectural decision should ask: does this make URML easier or harder to adopt at scale?
 
 **Don't lock to one substrate.** ROS 2 is the first reference runtime because its community is largest. But a venture-scale outcome means URML works *everywhere* — PX4, AUTOSAR Adaptive, Autoware, OPC UA Robotics, vendor SDKs, future runtimes that don't exist yet. Architectural decisions that implicitly assume ROS 2 are bugs. The acid test for any primitive: can it be cleanly implemented on a runtime with zero ROS dependencies?
 
-**Geographic neutrality matters.** The author is in Israel; the target market is global. Avoid choices that would make the project read as a national project. Documentation is English-first; examples deliberately include diverse languages (Hebrew, Spanish, Japanese, Mandarin) from v0.1; license and governance follow international open-source conventions; the eventual foundation is intended to be jurisdictionally neutral.
+**Regulatory alignment is US-federal.** Default provenance and procurement rules embedded in the standard reflect United States statutory and executive frameworks — NDAA Section 889 / FY26, the FCC Covered List, Executive Order 14307, and the American Security Robotics Act once enacted. Documentation remains English-first, and the natural-language layer remains multilingual (examples in Hebrew, Spanish, Japanese, Mandarin from v0.1), because end users speak many languages even when the regulatory frame is one country's. Avoid choices that would *additionally* couple URML to a single US vendor, a single US agency, or a single US administration's policy interpretation; the alignment is to enacted law, not to politics. The strategic rationale and trade-offs are in [RFC-0003](docs/rfcs/0003-us-alignment.md).
 
-**Structural separation is coming.** A venture-scale outcome typically ends with two entities: a non-profit foundation owning the standard (the moat) and a for-profit company selling adjacent products (the revenue). This separation does not need to exist on day one but should not be made structurally harder by today's decisions. Specifically: trademarks are filed in the founder's name initially and assignable; code is contributed under DCO sign-off (not CLA) so future re-organization is clean; no commercial features are merged into this repository.
+**Structural separation is coming.** A venture-scale outcome typically ends with two entities: a non-profit foundation owning the standard (the moat) and a for-profit company selling adjacent products (the revenue). The realistic foundation target is US-domiciled and aligned with US federal law — a 501(c)(6) industry association, an SDO with strong US ties (IEEE-SA, INCITS), or a sponsored project under an existing US-domiciled foundation (Open Source Security Foundation, Cloud Native Computing Foundation). This separation does not need to exist on day one but should not be made structurally harder by today's decisions. Specifically: trademarks are filed in the founder's name initially and assignable; code is contributed under DCO sign-off (not CLA) so future re-organization is clean; no commercial features are merged into this repository.
 
 ## Architecture: Quick Reference
 
@@ -79,7 +79,7 @@ README.md
 LICENSE             Apache 2.0
 CONTRIBUTING.md
 GOVERNANCE.md
-CORE_COMMITMENT.md  (to be created before commercial work begins)
+CORE_COMMITMENT.md
 ```
 
 Not all directories exist yet. Create them as needed; do not create empty directories speculatively.
@@ -133,6 +133,7 @@ Not all directories exist yet. Create them as needed; do not create empty direct
 - Couple a primitive to a specific substrate. If a primitive's specification is unimplementable on a substrate that doesn't use ROS, it is a leaky primitive and needs rework.
 - Accept or write code that gathers user data, telemetry, or identifiers without an explicit, opt-in, documented purpose. Trust is the most valuable asset this project has and the easiest to lose.
 - Suggest a CLA (Contributor License Agreement) over a DCO. CLAs concentrate copyright in one party and are read by the open-source community as a signal of intent to re-license later. DCO is the venture-scale-friendly choice precisely because it preserves trust.
+- Embed a specific US administration's executive-order interpretation in default rules. Track enacted statutes, final FCC Covered List entries, and final DoD rules — not draft guidance, not pending bills, not interpretive memos that can be withdrawn by a successor. The default policy file's stability depends on this discipline.
 
 ## Communication Style
 
@@ -149,7 +150,7 @@ The founder prefers direct, opinionated engagement. Specifically:
 - `MANIFESTO.md` — Project vision, scope, principles, roadmap. The constitution.
 - `GOVERNANCE.md` — How decisions are made (to be created).
 - `CONTRIBUTING.md` — How to contribute (to be created when external contributions open in Phase 1).
-- `CORE_COMMITMENT.md` — What will always be Apache 2.0 and never move (to be created before any commercial work begins).
+- `CORE_COMMITMENT.md` — What will always be Apache 2.0 and never move.
 - `/docs/rfcs/` — Numbered RFC documents; the decision history.
 - `LICENSE` — Apache License 2.0.
 
