@@ -2,7 +2,7 @@
 rfc: 0003
 title: Strategic Realignment — URML Aligns with US Federal Robotics Regulation
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Open
+state: Accepted
 created: 2026-05-13
 updated: 2026-05-13
 supersedes: —
