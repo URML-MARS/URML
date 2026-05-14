@@ -2,7 +2,7 @@
 rfc: 0002
 title: Initial Layer-2 Primitive Vocabulary
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Accepted
 created: 2026-05-11
 updated: 2026-05-11
 supersedes: —

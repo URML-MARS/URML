@@ -2,7 +2,7 @@
 rfc: 0004
 title: Compliance Policy Enforcement
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Open
+state: Accepted
 created: 2026-05-13
 updated: 2026-05-13
 supersedes: —
