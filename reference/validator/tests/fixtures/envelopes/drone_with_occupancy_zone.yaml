@@ -1,0 +1,22 @@
+# Fixture: drone envelope with a declared people-occupancy zone.
+# Small denylist polygon centered at origin in the `agl` frame.
+# Used by the occupancy-zone intrusion conformance fixture; the drone
+# manifest's declared `home` (0, 0) is intentionally inside so a take_off
+# at home + immediate move_to a perimeter point exposes the check.
+
+envelope_version: "0.1"
+deployment_id: drone_occupied_site
+description: Drone envelope with a declared people-occupancy zone.
+
+max_velocity: 10.0
+max_altitude: 120.0
+
+people_occupancy_zones:
+  - name: spectator_area
+    frame: agl
+    vertices:
+      - [-3.0, -3.0]
+      - [3.0, -3.0]
+      - [3.0, 3.0]
+      - [-3.0, 3.0]
+    allow_override: false

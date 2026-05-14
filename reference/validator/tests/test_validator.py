@@ -583,6 +583,186 @@ def test_geofence_check_is_noop_when_envelope_declares_none(
     assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
 
 
+def test_move_to_pose_inside_footprint_but_above_altitude_band_rejected() -> None:
+    """A pose inside the polygon footprint but above max_altitude is rejected
+    with an altitude-band failure (distinct from a footprint failure)."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                # Inside the [-5,-5]..[15,15] footprint, but above the band.
+                {"move_to": {"pose": {"x": 5.0, "y": 5.0, "z": 150.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    envelope = _drone_geofence_envelope()
+    # Attach an altitude band to the existing geofence so this test is
+    # self-contained — the on-disk fixture only declares the footprint.
+    envelope["geofences"][0]["max_altitude"] = 100.0
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        envelope,
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.accepted
+    assert result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+    # The geofence error's message should mention "altitude band" so a
+    # human (or LLM) revising the program knows it's the altitude that's
+    # wrong, not the footprint.
+    geofence_errs = [
+        e for e in result.errors if e.code == ErrorCode.ENVELOPE_GEOFENCE_VIOLATION
+    ]
+    assert any("altitude band" in e.message for e in geofence_errs)
+
+
+def test_move_to_pose_inside_footprint_with_z_in_band_accepted() -> None:
+    """When both footprint and altitude band are satisfied, no violation fires."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {"move_to": {"pose": {"x": 5.0, "y": 5.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    envelope = _drone_geofence_envelope()
+    envelope["geofences"][0]["min_altitude"] = 0.0
+    envelope["geofences"][0]["max_altitude"] = 100.0
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        envelope,
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+# ---------------------------------------------------------------------------
+# Pass 3: people-occupancy zones (denylist)
+# ---------------------------------------------------------------------------
+
+
+def _drone_envelope_with_occupancy_zone(allow_override: bool = False) -> dict:
+    """Drone envelope with a single people-occupancy zone near origin."""
+    return {
+        "envelope_version": "0.1",
+        "deployment_id": "drone_occupied_site",
+        "description": "Drone envelope with a declared people-occupancy zone.",
+        "max_velocity": 10.0,
+        "max_altitude": 120.0,
+        "people_occupancy_zones": [
+            {
+                "name": "spectator_area",
+                "frame": "agl",
+                "vertices": [
+                    [-3.0, -3.0],
+                    [3.0, -3.0],
+                    [3.0, 3.0],
+                    [-3.0, 3.0],
+                ],
+                "allow_override": allow_override,
+            }
+        ],
+    }
+
+
+def test_move_to_pose_inside_occupancy_zone_rejected() -> None:
+    """A pose inside a declared people-occupancy zone is rejected."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {"move_to": {"pose": {"x": 0.0, "y": 0.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_envelope_with_occupancy_zone(),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.accepted
+    assert result.has(ErrorCode.ENVELOPE_OCCUPANCY_ZONE_INTRUSION)
+
+
+def test_occupancy_zone_with_allow_override_accepts_intrusion() -> None:
+    """A zone marked allow_override:true is a deployer-acknowledged risk; abstain."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {"move_to": {"pose": {"x": 0.0, "y": 0.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_envelope_with_occupancy_zone(allow_override=True),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.has(ErrorCode.ENVELOPE_OCCUPANCY_ZONE_INTRUSION)
+
+
+def test_occupancy_zone_no_intrusion_when_target_outside() -> None:
+    """A target outside every declared occupancy zone does not trigger the check."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                # Far outside the (-3,-3)..(3,3) occupancy zone.
+                {"move_to": {"pose": {"x": 10.0, "y": 5.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_envelope_with_occupancy_zone(),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.has(ErrorCode.ENVELOPE_OCCUPANCY_ZONE_INTRUSION)
+
+
+def test_occupancy_zone_check_is_noop_when_envelope_declares_none(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """No occupancy zones declared → check abstains entirely."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"move_to": {"pose": {"x": 0.0, "y": 0.0}, "frame": "map"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    assert not result.has(ErrorCode.ENVELOPE_OCCUPANCY_ZONE_INTRUSION)
+
+
 def test_scan_bounding_box_partially_outside_geofence_rejected() -> None:
     """A scan whose bounding-box corners straddle the geofence is rejected."""
     program: dict[str, Any] = {

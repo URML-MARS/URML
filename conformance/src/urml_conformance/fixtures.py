@@ -54,6 +54,8 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_default": _VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml",
     "drone_default": _VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml",
     "drone_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_geofence.yaml",
+    "drone_with_altitude_band": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_altitude_band.yaml",
+    "drone_with_occupancy_zone": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_occupancy_zone.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under
