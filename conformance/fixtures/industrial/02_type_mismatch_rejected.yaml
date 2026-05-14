@@ -1,0 +1,29 @@
+name: industrial/type_mismatch_rejected
+description: >
+  Industrial program that binds a `measure` result (type `measurement`)
+  then tries to `grasp` it. Pass 4 (variable bindings) must emit
+  `binding.type_mismatch` and reject the program — `grasp.target` requires
+  a binding of type `object`, and a measurement is not graspable.
+
+manifest: industrial_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: pick_bin }
+      - measure:
+          what: pressure
+          sensor: tcp_force
+          store_as: force_reading
+      - grasp:
+          target: $force_reading
+          force: firm
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - binding.type_mismatch
