@@ -56,6 +56,10 @@ def _apply_overrides(adapter: MockROSAdapter, overrides: AdapterOverrides | None
         adapter.set_wait_passive_result(overrides.wait_passive)
     if overrides.report is not None:
         adapter.set_report_result(overrides.report)
+    if overrides.speech is not None:
+        adapter.set_speech_result(overrides.speech)
+    if overrides.listen is not None:
+        adapter.set_listen_result(overrides.listen)
 
 
 # ---------------------------------------------------------------------------

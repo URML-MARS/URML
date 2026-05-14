@@ -2,9 +2,8 @@ name: home/speak_listen_conversation
 description: >
   Multi-step conversational program using the home-profile additions
   `speak` and `listen` (RFC-0002 §Profile-extensibility; specified in
-  spec/profiles/home/README.md). The validator accepts the program;
-  execution is not exercised in v0.1 because the MockROSAdapter does
-  not yet have speech bindings (runtime support is a follow-up).
+  spec/profiles/home/README.md). Validator accepts AND MockROSAdapter
+  executes all seven steps via its speech bindings.
 
 manifest: turtlebot4_home
 envelope: home_default
@@ -42,5 +41,14 @@ program:
 expected_validation:
   accepted: true
 
-# No expected_execution: validator-only in v0.1; runtime adapter for
-# speak/listen is a follow-up (RFC pending).
+expected_execution:
+  success: true
+  steps_executed: 7
+  audit_methods:
+    - emit_speech
+    - acquire_speech
+    - query_detection
+    - send_manipulation_goal
+    - send_navigation_goal
+    - send_manipulation_goal
+    - emit_speech

@@ -20,6 +20,7 @@ from typing import Any, Literal
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
+    ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
@@ -51,6 +52,8 @@ class MockROSAdapter:
         self._wait_for_override: WaitResult | None = None
         self._wait_passive_override: SubstrateResult | None = None
         self._report_override: SubstrateResult | None = None
+        self._speech_override: SubstrateResult | None = None
+        self._listen_override: ListenResult | None = None
 
     # ----- Overrides -----
 
@@ -84,6 +87,14 @@ class MockROSAdapter:
 
     def set_report_result(self, result: SubstrateResult) -> None:
         self._report_override = result
+
+    def set_speech_result(self, result: SubstrateResult) -> None:
+        """Make the next `emit_speech` return this result."""
+        self._speech_override = result
+
+    def set_listen_result(self, result: ListenResult) -> None:
+        """Make the next `acquire_speech` return this result."""
+        self._listen_override = result
 
     # ----- Substrate methods -----
 
@@ -323,3 +334,66 @@ class MockROSAdapter:
         if self._report_override is not None:
             return self._report_override
         return SubstrateResult(success=True)
+
+    def emit_speech(
+        self,
+        *,
+        utterance: str,
+        locale: str | None,
+        style: Literal["notice", "warning", "conversational"],
+        interrupt: bool,
+    ) -> SubstrateResult:
+        self.call_log.append(
+            {
+                "method": "emit_speech",
+                "utterance": utterance,
+                "locale": locale,
+                "style": style,
+                "interrupt": interrupt,
+            }
+        )
+        if self._speech_override is not None:
+            return self._speech_override
+        return SubstrateResult(success=True)
+
+    def acquire_speech(
+        self,
+        *,
+        prompt: str | None,
+        locale: str | None,
+        timeout_seconds: float | None,
+        expected: Literal["free_form", "confirmation", "choice"],
+        choices: list[str] | None,
+    ) -> ListenResult:
+        self.call_log.append(
+            {
+                "method": "acquire_speech",
+                "prompt": prompt,
+                "locale": locale,
+                "timeout_seconds": timeout_seconds,
+                "expected": expected,
+                "choices": choices,
+            }
+        )
+        if self._listen_override is not None:
+            return self._listen_override
+        # Default: a deterministic mock transcription.
+        # `expected: choice` picks the first declared choice (index 0).
+        # `expected: confirmation` returns "yes".
+        # `expected: free_form` returns a generic transcription.
+        if expected == "choice":
+            assert choices is not None  # validated by ListenArgs at parse time
+            payload = {
+                "transcription": choices[0],
+                "confidence": 0.95,
+                "choice_index": 0,
+            }
+        elif expected == "confirmation":
+            payload = {"transcription": "yes", "confidence": 0.95, "choice_index": None}
+        else:
+            payload = {
+                "transcription": "(mock spoken input)",
+                "confidence": 0.95,
+                "choice_index": None,
+            }
+        return ListenResult(success=True, timed_out=False, payload=payload)

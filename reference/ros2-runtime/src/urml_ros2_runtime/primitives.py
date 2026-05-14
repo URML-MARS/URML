@@ -24,11 +24,13 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
     ScanArgs,
+    SpeakArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -37,6 +39,7 @@ from urml_ros2_runtime.bindings import resolve, resolve_all
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
+    ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
@@ -61,6 +64,7 @@ RawSubstrateResult = (
     | MeasurementResult
     | CaptureResult
     | WaitResult
+    | ListenResult
 )
 
 
@@ -434,6 +438,42 @@ def exec_report(
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
+def exec_speak(
+    args: SpeakArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Home profile: emit a spoken utterance."""
+    result = adapter.emit_speech(
+        utterance=args.utterance,
+        locale=args.locale,
+        style=args.style,
+        interrupt=args.interrupt,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_listen(
+    args: ListenArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Home profile: block until the user provides spoken input."""
+    timeout = _duration_seconds(args.timeout)
+    result = adapter.acquire_speech(
+        prompt=args.prompt,
+        locale=args.locale,
+        timeout_seconds=timeout,
+        expected=args.expected,
+        choices=args.choices,
+    )
+    new_bindings: dict[str, Any] = {}
+    if args.store_as is not None and result.payload is not None:
+        new_bindings[args.store_as] = result.payload
+    return PrimitiveOutcome(
+        success=result.success,
+        reason=result.reason,
+        raw=result,
+        bindings=new_bindings,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -454,6 +494,8 @@ PRIMITIVE_EXECUTORS: dict[
     "measure": exec_measure,
     "capture": exec_capture,
     "report": exec_report,
+    "speak": exec_speak,
+    "listen": exec_listen,
 }
 
 
