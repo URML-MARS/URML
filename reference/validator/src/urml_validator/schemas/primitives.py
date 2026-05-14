@@ -383,6 +383,40 @@ class ListenArgs(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Drone-profile primitives (RFC-0002 §Profile-extensibility authorizes these).
+# ---------------------------------------------------------------------------
+
+
+class TakeOffArgs(BaseModel):
+    """Begin flight: ascend from ground position to declared altitude (drone profile)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    altitude: float = Field(..., gt=0, description="Target altitude in meters.")
+    climb_rate: float | None = Field(
+        None, gt=0, description="Optional climb rate in m/s. Substrate default if omitted."
+    )
+
+
+class LandArgs(BaseModel):
+    """End flight: descend to a declared landing location (drone profile)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    at: Identifier | None = None
+    precision: Literal["standard", "precise"] = "standard"
+
+
+class ReturnToHomeArgs(BaseModel):
+    """Abort current flight intent and return to declared home location (drone profile)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    speed: float | None = Field(None, gt=0)
+    altitude: float | None = Field(None, gt=0)
+
+
+# ---------------------------------------------------------------------------
 # Registry of primitive names -> arg-model classes.
 # ---------------------------------------------------------------------------
 
@@ -401,6 +435,9 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "report",
     "speak",
     "listen",
+    "take_off",
+    "land",
+    "return_to_home",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -418,4 +455,7 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "report": ReportArgs,
     "speak": SpeakArgs,
     "listen": ListenArgs,
+    "take_off": TakeOffArgs,
+    "land": LandArgs,
+    "return_to_home": ReturnToHomeArgs,
 }

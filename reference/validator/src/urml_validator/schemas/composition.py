@@ -23,13 +23,16 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    LandArgs,
     ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
+    ReturnToHomeArgs,
     ScanArgs,
     SpeakArgs,
+    TakeOffArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -54,6 +57,9 @@ _PRIMITIVE_FIELDS = (
     "report",
     "speak",
     "listen",
+    "take_off",
+    "land",
+    "return_to_home",
 )
 
 
@@ -84,6 +90,9 @@ class Step(BaseModel):
     report: ReportArgs | None = None
     speak: SpeakArgs | None = None
     listen: ListenArgs | None = None
+    take_off: TakeOffArgs | None = None
+    land: LandArgs | None = None
+    return_to_home: ReturnToHomeArgs | None = None
 
     @model_validator(mode="after")
     def _exactly_one_primitive(self) -> Step:

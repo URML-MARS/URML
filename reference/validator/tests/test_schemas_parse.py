@@ -99,9 +99,10 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         "capture",
         "report",
     }
-    # Profile-extension primitives. New entries here track profile RFCs.
+    # Profile-extension primitives. New entries here track profile specs.
     home_extensions = {"speak", "listen"}
-    expected = core | home_extensions
+    drone_extensions = {"take_off", "land", "return_to_home"}
+    expected = core | home_extensions | drone_extensions
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected
     # The RFC-0002 core set must remain a subset of the registry — the

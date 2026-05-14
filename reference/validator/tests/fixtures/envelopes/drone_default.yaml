@@ -1,0 +1,14 @@
+# Fixture: default drone-profile safety envelope.
+# Mirrors the schema in spec/profiles/drone/README.md §Default safety envelope.
+
+envelope_version: "0.1"
+deployment_id: drone_demo
+description: Default civilian drone envelope. FAA Part 107-aligned defaults.
+
+# Numeric caps (strictest-wins against manifest).
+max_velocity: 10.0      # m/s; below the manifest's max_velocity of 15 m/s
+max_altitude: 120.0     # m AGL; FAA Part 107 default for uncertified small drones
+
+# Spatial / behavioral defaults documented in the profile spec are not yet
+# enforced statically in v0.1 (geofence polygons, weather thresholds,
+# people-occupancy zones); they live in the substrate runtime contract.

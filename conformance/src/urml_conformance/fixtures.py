@@ -46,10 +46,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "industrial_cell": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml",
     "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
     "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
+    "drone_civilian": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_default": _VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml",
+    "drone_default": _VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

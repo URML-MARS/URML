@@ -1,0 +1,31 @@
+name: drone/inspect_roof_positive
+description: >
+  Canonical drone-profile happy path: take_off, move to a declared roof
+  inspection pose, capture a photo, return to home, land. Per the
+  citizen-inspector scenario in MANIFESTO.md §Motivating Scenarios.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off:
+          altitude: 30.0
+      - move_to:
+          location: roof_north
+      - capture:
+          media: photo
+          store_as: photo
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: true
+
+# No expected_execution: runtime executors for take_off / land /
+# return_to_home are a follow-up PR (parallel to PR #29 for speak/listen).

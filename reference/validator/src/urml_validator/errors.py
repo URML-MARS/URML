@@ -49,6 +49,9 @@ class ErrorCode(StrEnum):
     CAPABILITY_VIDEO_UNSUPPORTED = "capability.video_unsupported"
     CAPABILITY_MISSING_SPEECH_OUTPUT = "capability.missing_speech_output"
     CAPABILITY_MISSING_SPEECH_INPUT = "capability.missing_speech_input"
+    CAPABILITY_DRIVE_TYPE_NOT_AERIAL = "capability.drive_type_not_aerial"
+    CAPABILITY_MISSING_SERVICE_CEILING = "capability.missing_service_ceiling"
+    CAPABILITY_MISSING_HOME_LOCATION = "capability.missing_home_location"
 
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"
