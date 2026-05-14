@@ -6,11 +6,13 @@ Runnable demonstrations of URML, organized per profile. Examples are how new rea
 
 ```
 examples/
-├── home/                  v1.0 profile — only profile with content in v0.1.
-│   ├── red-mug.urml.yaml      # The structured program.
-│   └── red-mug.en.txt         # The English natural-language prompt.
-├── drone/                 Reserved — populated when drone L2 vocab is drafted.
-└── industrial/            Reserved — populated when industrial L2 vocab is drafted.
+├── home/                       v1.0 profile.
+│   ├── red-mug.urml.yaml           # The structured program.
+│   └── red-mug.en.txt              # The English natural-language prompt.
+├── drone/                      drone-profile programs (v0.1).
+│   └── roof-inspection.*           # Citizen-inspector roof scan.
+└── industrial/                 industrial-profile programs (v0.1).
+    └── simple-pick-and-place.*     # MVP pick-place cycle.
 ```
 
 ## Pairing convention
@@ -38,11 +40,11 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 
 ## Status of each profile
 
-| Profile | v0.1 content | Trigger to fill in |
+| Profile | v0.1 content | How it grows |
 |---|---|---|
-| [`home/`](home/) | `red-mug` (the manifesto example). | Already populated. Additional home scenarios land alongside the home-profile spec. |
-| [`drone/`](drone/) | None yet. | Populated when the drone-profile Layer-2 vocabulary is drafted (Phase 2). |
-| [`industrial/`](industrial/) | None yet. | Populated when the industrial-profile Layer-2 vocabulary is drafted (Phase 3). |
+| [`home/`](home/) | `red-mug` (the manifesto example). | Additional home scenarios land alongside the home-profile spec. |
+| [`drone/`](drone/) | `roof-inspection` (citizen-inspector). | Additional drone scenarios land alongside the drone-profile spec. |
+| [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
 
 ## Adding a new example
 

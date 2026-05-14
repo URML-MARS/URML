@@ -10,17 +10,14 @@ one.
 - `FewShot` — the per-example pydantic model.
 - `home_few_shots()` — examples for the home profile.
 - `industrial_few_shots()` — examples for the industrial profile.
+- `drone_few_shots()` — examples for the drone profile.
 - `few_shots_for(profiles)` — pick the right examples for an active
   profile set. Falls back to the home set if no profiles are declared.
 - `default_few_shots()` — backwards-compatible alias for the home set,
   used by `Bridge` when no `few_shots=` is supplied.
 
 Every example below validates against the matching manifest fixture in
-`reference/validator/tests/fixtures/manifests/`, using only the v0.1
-core primitive vocabulary from RFC-0002. Profile-specific primitives
-(`take_off`/`land` for drone, `pick_from`/`place_at` for industrial)
-land alongside the corresponding profile RFCs and become additional
-few-shot examples then.
+`reference/validator/tests/fixtures/manifests/`.
 """
 
 from __future__ import annotations
@@ -250,16 +247,126 @@ def industrial_few_shots() -> list[FewShot]:
 
 
 # ===========================================================================
+# Drone profile examples
+# ===========================================================================
+
+
+_DRONE_ROOF_INSPECTION: dict[str, Any] = {
+    "profile": "drone",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"take_off": {"altitude": 30.0}},
+            {"move_to": {"location": "roof_north"}},
+            {"capture": {"media": "photo", "store_as": "north_photo"}},
+            {"return_to_home": {}},
+            {"land": {}},
+        ],
+    },
+}
+
+
+_DRONE_AREA_SCAN: dict[str, Any] = {
+    "profile": "drone",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"take_off": {"altitude": 30.0}},
+            {
+                "scan": {
+                    "area": {
+                        "bounding_box": {
+                            "min_x": 0.0,
+                            "max_x": 20.0,
+                            "min_y": 0.0,
+                            "max_y": 10.0,
+                        }
+                    },
+                    "pattern": "serpentine",
+                    "overlap": 0.3,
+                    "altitude": 30.0,
+                    "media": "photo",
+                    "sensor": "downward",
+                    "store_as": "survey",
+                }
+            },
+            {"return_to_home": {}},
+            {"land": {}},
+        ],
+    },
+}
+
+
+_DRONE_HOVER_AND_MEASURE: dict[str, Any] = {
+    "profile": "drone",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"take_off": {"altitude": 30.0}},
+            {"hover": {"over": "roof_north", "duration": "5s", "tolerance": 0.5}},
+            {
+                "measure": {
+                    "what": "distance",
+                    "sensor": "rangefinder",
+                    "store_as": "roof_distance",
+                }
+            },
+            {
+                "report": {
+                    "to": "user",
+                    "facts": {
+                        "location": "roof_north",
+                        "reading": "$roof_distance",
+                    },
+                    "status": "success",
+                }
+            },
+            {"return_to_home": {}},
+            {"land": {}},
+        ],
+    },
+}
+
+
+def drone_few_shots() -> list[FewShot]:
+    """Return the drone-profile few-shot example set."""
+    return [
+        FewShot(
+            user="Inspect the north roof for damage and bring me photos.",
+            program=_DRONE_ROOF_INSPECTION,
+            note="Canonical citizen-inspector flight: take_off, fly to an "
+            "inspection station, capture, return, land.",
+        ),
+        FewShot(
+            user="Scan the field in a serpentine pattern and photograph it.",
+            program=_DRONE_AREA_SCAN,
+            note="Bounded-area survey with a declared overlap; the scan "
+            "primitive stores its result for downstream consumers.",
+        ),
+        FewShot(
+            user="Hover over the north roof, measure the distance to it, and tell me.",
+            program=_DRONE_HOVER_AND_MEASURE,
+            note="Station-keeping + sensor measurement + structured report. "
+            "Exercises hover, measure, and a $ref into report.facts.",
+        ),
+    ]
+
+
+# ===========================================================================
 # Profile selector
 # ===========================================================================
 
 
-# Drone / healthcare / agricultural / etc. land here as their profile RFCs accept.
+# Healthcare / agricultural / etc. land here as their profile RFCs accept.
 # Until then, requesting an unknown profile falls through to the home set,
 # which exercises the core vocabulary regardless of domain.
 _PROFILE_FACTORIES: dict[str, object] = {
     "home": home_few_shots,
     "industrial": industrial_few_shots,
+    "drone": drone_few_shots,
 }
 
 

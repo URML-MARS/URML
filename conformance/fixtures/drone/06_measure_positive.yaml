@@ -1,0 +1,33 @@
+name: drone/measure_positive
+description: >
+  Drone takes a single distance reading from its declared rangefinder.
+  Exercises the measure primitive's positive path on the civilian drone
+  manifest, which declares a rangefinder with measurement_type=distance.
+  The default MockROSAdapter.take_measurement returns
+  {value: 0.0, unit: unspecified, timestamp: 0.0} into store_as.
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - measure:
+          what: distance
+          sensor: rangefinder
+          store_as: reading
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - take_measurement
+  bindings_contains:
+    reading:
+      unit: unspecified

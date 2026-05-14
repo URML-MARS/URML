@@ -1,0 +1,48 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: industrial/simple-pick-and-place
+# Source NL: "Pick the red widget from the bin and place it on the red tray."
+#            (see simple-pick-and-place.en.txt)
+#
+# Minimum-viable industrial-profile example for first-time integrators.
+# Modeled on the line-reconfiguration scenario in MANIFESTO.md §Motivating
+# Scenarios, simplified to one pick-place cycle without re-parameterization.
+# Validatable end-to-end via the companion manifest:
+#
+#   urml validate simple-pick-and-place.urml.yaml \
+#     -m simple-pick-and-place.manifest.yaml --profile industrial
+#
+# The companion manifest declares US-compliant hardware provenance, so the
+# bundled default policy (RFC-0004) accepts it. Pass `--no-policy` to skip
+# Pass 5 if you're exercising the program against a manifest without a
+# provenance block.
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: pick_bin
+    - detect:
+        object: widget_red
+        where:
+          near: pick_bin
+        store_as: red_widget
+    - grasp:
+        target: $red_widget
+        force: firm
+    - move_to:
+        location: kitting_tray_red
+        carrying: $red_widget
+    - release:
+        mode: place
+        at: kitting_tray_red
+    - move_to:
+        location: home_pose
+    - report:
+        to: line_controller
+        facts:
+          cycle: pick_red_to_tray
+          result: ok
+        status: success

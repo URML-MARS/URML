@@ -478,6 +478,229 @@ def industrial_project(project_name: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# Drone profile
+# ---------------------------------------------------------------------------
+
+
+_DRONE_MANIFEST = """\
+# Capability manifest for a civilian multirotor configured for the drone profile.
+# Edit to match your aircraft. See spec/layer-1-hal/ for the field reference.
+
+manifest_version: "0.1"
+robot_id: civilian_inspector
+description: Civilian multirotor for roof / tower inspection.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: roof_north
+    pose: { x: 10.0, y: 5.0, z: 30.0 }
+    frame: agl
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  sensors:
+    - name: rangefinder
+      measurement_type: distance
+      range_min: 0.5
+      range_max: 50.0
+      units: m
+  object_vocabulary:
+    - person
+    - vehicle
+
+outputs:
+  named_endpoints: []
+
+# Hardware provenance (RFC-0004). Optional: when present, the validator's
+# Pass 5 checks the bundled US-federal compliance policy against this block.
+# Civilian drones are explicitly covered by FCC entity-list rules and NDAA
+# §889 procurement restrictions; the provenance block lets URML enforce
+# that statically before any flight.
+#
+# TODO: fill in real provenance before any deployment that claims compliance.
+# The placeholder values below are illustrative; they are not a certification
+# of any real product.
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: example_fc_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/flight_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: imaging_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/imaging_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: rangefinder_module
+      role: critical
+      vendor: example_sensor_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/rangefinder.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+"""
+
+
+_DRONE_ENVELOPE = """\
+# Default drone-profile safety envelope. FAA Part 107-aligned defaults.
+
+envelope_version: "0.1"
+deployment_id: drone_demo
+description: Default civilian drone envelope.
+
+max_velocity: 10.0      # m/s
+max_altitude: 120.0     # m AGL; FAA Part 107 default for uncertified small drones
+
+# Spatial / behavioral defaults (geofence polygons, weather thresholds,
+# people-occupancy zones) are not statically enforced in v0.1; they live
+# in the substrate runtime contract.
+"""
+
+
+_DRONE_PROGRAM = """\
+# URML program -- generated from the natural-language prompt below.
+# Citizen-inspector flight: take off, fly to the north roof, capture a photo,
+# return home, land.
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 30.0
+    - move_to:
+        location: roof_north
+    - capture:
+        media: photo
+        store_as: north_photo
+    - return_to_home: {}
+    - land: {}
+"""
+
+
+_DRONE_PROMPT = "Inspect the north roof for damage and bring me photos.\n"
+
+
+_DRONE_README = """\
+# {project_name}
+
+A starter URML project for the **drone** profile.
+
+## Files
+
+- `manifest.yaml` -- the aircraft's capability declaration (edit to match your platform).
+- `envelope.yaml` -- the deployment safety envelope (altitude cap, velocity cap, etc.).
+- `program.urml.yaml` -- a sample URML program; the roof-inspection flight.
+- `prompt.en.txt` -- the natural-language request that would produce that program.
+- `Makefile` -- common URML commands.
+
+## What you can run today
+
+```bash
+# Validate the sample program against the manifest + envelope:
+urml validate program.urml.yaml --manifest manifest.yaml --envelope envelope.yaml --profile drone
+
+# See the system prompt the LLM bridge would send for this aircraft
+# (no API key required):
+urml emit-prompt --manifest manifest.yaml --envelope envelope.yaml --profile drone
+
+# Translate a natural-language request through an LLM (requires urml-llm-bridge
+# and an API key):
+urml translate "Inspect the north roof for damage and bring me photos." \\
+    --manifest manifest.yaml --envelope envelope.yaml --profile drone \\
+    --provider anthropic
+```
+
+## What to edit first
+
+1. **`manifest.yaml`** -- replace `civilian_inspector` with your aircraft's identifier;
+   add the real declared locations and sensor list.
+2. **`envelope.yaml`** -- tighten the altitude or velocity caps for your deployment.
+3. **`prompt.en.txt`** -- the natural-language request you want translated.
+
+See the spec for field references:
+
+- Layer 1 (manifest): https://github.com/URML-MARS/URML/tree/main/spec/layer-1-hal
+- Layer 2 (primitives): https://github.com/URML-MARS/URML/tree/main/spec/layer-2-primitives
+- Layer 3 (composition): https://github.com/URML-MARS/URML/tree/main/spec/layer-3-behavior
+- Drone profile: https://github.com/URML-MARS/URML/tree/main/spec/profiles/drone
+"""
+
+
+_DRONE_MAKEFILE = """\
+# Convenience targets. Run `make help` for the list.
+
+.PHONY: help validate emit-prompt translate clean
+
+help:
+\t@echo "validate        Validate program.urml.yaml against manifest + envelope."
+\t@echo "emit-prompt     Print the system prompt the bridge would send to an LLM."
+\t@echo "translate       Translate prompt.en.txt via Anthropic (requires ANTHROPIC_API_KEY)."
+
+validate:
+\turml validate program.urml.yaml --manifest manifest.yaml --envelope envelope.yaml --profile drone
+
+emit-prompt:
+\turml emit-prompt --manifest manifest.yaml --envelope envelope.yaml --profile drone
+
+translate:
+\turml translate "$$(cat prompt.en.txt)" \\
+\t    --manifest manifest.yaml --envelope envelope.yaml --profile drone \\
+\t    --provider anthropic
+"""
+
+
+def drone_project(project_name: str) -> dict[str, str]:
+    """Return the starter file set for a drone-profile project."""
+    return {
+        "manifest.yaml": _DRONE_MANIFEST,
+        "envelope.yaml": _DRONE_ENVELOPE,
+        "program.urml.yaml": _DRONE_PROGRAM,
+        "prompt.en.txt": _DRONE_PROMPT,
+        "README.md": _DRONE_README.format(project_name=project_name),
+        "Makefile": _DRONE_MAKEFILE,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Profile registry
 # ---------------------------------------------------------------------------
 
@@ -485,4 +708,5 @@ def industrial_project(project_name: str) -> dict[str, str]:
 PROJECT_TEMPLATES = {
     "home": home_project,
     "industrial": industrial_project,
+    "drone": drone_project,
 }

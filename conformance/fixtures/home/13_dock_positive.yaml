@@ -1,0 +1,31 @@
+name: home/dock_positive
+description: >
+  Canonical dock-to-charge: the robot returns to its declared charging
+  dock and runs the `park` service until the battery is full. Exercises
+  the dock primitive end-to-end against the home-profile turtlebot
+  manifest, which declares `charging_dock` with services `[park, charge]`.
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: charging_dock }
+      - dock:
+          at: charging_dock
+          service: park
+          until: full
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - send_navigation_goal
+    - send_docking_goal

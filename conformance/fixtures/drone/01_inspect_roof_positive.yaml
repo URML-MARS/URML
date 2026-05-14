@@ -27,5 +27,12 @@ program:
 expected_validation:
   accepted: true
 
-# No expected_execution: runtime executors for take_off / land /
-# return_to_home are a follow-up PR (parallel to PR #29 for speak/listen).
+expected_execution:
+  success: true
+  steps_executed: 5
+  audit_methods:
+    - send_takeoff_goal
+    - send_navigation_goal
+    - capture_media
+    - send_return_to_home_goal
+    - send_land_goal

@@ -1,20 +1,24 @@
 """ConformanceRunner — exercise URMLRuntime against a set of fixtures.
 
-For v0.1, the runner targets ``URMLRuntime`` + ``MockROSAdapter`` as the
-reference combination. The fixtures themselves are the durable artifact:
-they declare expected outcomes that any future runtime/adapter pair must
-reproduce.
+The fixtures themselves are the durable artifact: they declare expected
+outcomes that any URML-compatible runtime/adapter pair must reproduce.
 
-A v1.0 runner will likely accept a ``adapter_factory`` callable so real
-adapters (rclpy, PX4, vendor SDKs) can be exercised through the same
-suite without modification.
+By default, the runner uses ``MockROSAdapter`` — fully hermetic, no ROS 2
+install required. A real adapter (``RclpyAdapter``, a PX4 adapter, a
+vendor SDK adapter) can be plugged in via the ``adapter_factory`` hook
+without changing the fixture set or the runner internals. Fixture-side
+``adapter_overrides`` are only applied when the factory yields a
+``MockROSAdapter``; real adapters get their behavior from the live
+substrate.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from urml_ros2_runtime import MockROSAdapter, URMLRuntime
+from urml_ros2_runtime.substrate.base import ROSAdapter
 from urml_validator import validate
 
 from urml_conformance.fixtures import (
@@ -26,6 +30,14 @@ from urml_conformance.fixtures import (
     resolve_policy,
 )
 from urml_conformance.report import CaseResult, ConformanceReport
+
+AdapterFactory = Callable[[], ROSAdapter]
+"""Construct a fresh ROSAdapter per fixture case.
+
+Use a factory rather than a single adapter instance so each case starts
+with a clean call_log / clean topic subscriptions / clean action-client
+state. The default factory returns ``MockROSAdapter()``.
+"""
 
 # ---------------------------------------------------------------------------
 # Apply adapter overrides — small helper so the runner stays compact
@@ -135,10 +147,24 @@ def _diag_execution(case: FixtureCase, result: Any, audit_log: list[dict[str, An
 
 
 class ConformanceRunner:
-    """Run a set of fixture cases against URMLRuntime + MockROSAdapter."""
+    """Run a set of fixture cases against URMLRuntime + a configurable adapter.
 
-    def __init__(self, cases: list[FixtureCase] | None = None) -> None:
+    By default uses ``MockROSAdapter`` for fully hermetic, OS-independent
+    execution. Pass ``adapter_factory=`` to plug in a real adapter (e.g.,
+    ``RclpyAdapter``) for integration testing against a live substrate.
+    """
+
+    def __init__(
+        self,
+        cases: list[FixtureCase] | None = None,
+        *,
+        adapter_factory: AdapterFactory | None = None,
+    ) -> None:
         self._cases: list[FixtureCase] = cases if cases is not None else discover_fixtures()
+        # Default factory: hermetic mock. The factory pattern (callable, not
+        # instance) gives each case a fresh adapter — important for real
+        # adapters that accumulate state across calls.
+        self._adapter_factory: AdapterFactory = adapter_factory or (lambda: MockROSAdapter())
 
     @property
     def cases(self) -> list[FixtureCase]:
@@ -176,8 +202,11 @@ class ConformanceRunner:
             return CaseResult(name=case.name, passed=passed, diagnostics=diagnostics)
 
         # ----- Execution pass -----
-        adapter = MockROSAdapter()
-        _apply_overrides(adapter, case.adapter_overrides)
+        adapter = self._adapter_factory()
+        # Fixture-declared overrides only make sense against the mock; real
+        # adapters get their behavior from the live substrate.
+        if isinstance(adapter, MockROSAdapter):
+            _apply_overrides(adapter, case.adapter_overrides)
         runtime = URMLRuntime(adapter)
         try:
             runtime_result = runtime.execute(
@@ -190,7 +219,10 @@ class ConformanceRunner:
             diagnostics.append(f"runtime raised: {type(exc).__name__}: {exc}")
             return CaseResult(name=case.name, passed=False, diagnostics=diagnostics)
 
-        diagnostics.extend(_diag_execution(case, runtime_result, adapter.call_log))
+        # Audit-log assertions only run against the mock (real adapters
+        # don't expose a call_log surface).
+        call_log = getattr(adapter, "call_log", [])
+        diagnostics.extend(_diag_execution(case, runtime_result, call_log))
 
         return CaseResult(
             name=case.name,

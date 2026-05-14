@@ -312,7 +312,8 @@ def build_parser() -> argparse.ArgumentParser:
             "Create a new directory with a minimal but runnable URML project: "
             "a capability manifest, an optional envelope, a sample program "
             "with its natural-language prompt, a README, and a Makefile. "
-            "Pick `--profile home` or `--profile industrial`; defaults to home."
+            "Pick `--profile home`, `--profile industrial`, or `--profile drone`; "
+            "defaults to home."
         ),
     )
     p_init.add_argument(

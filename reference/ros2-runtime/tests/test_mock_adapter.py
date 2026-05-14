@@ -70,3 +70,49 @@ def test_wait_passively_records_duration() -> None:
     assert isinstance(out, SubstrateResult)
     assert out.success is True
     assert adapter.call_log[-1]["duration_seconds"] == 2.5
+
+
+# ---------------------------------------------------------------------------
+# Drone-profile methods
+# ---------------------------------------------------------------------------
+
+
+def test_takeoff_records_call_and_returns_altitude() -> None:
+    adapter = MockROSAdapter()
+    result = adapter.send_takeoff_goal(altitude=30.0)
+    assert result.success is True
+    assert result.final_pose == {"x": 0.0, "y": 0.0, "z": 30.0}
+    assert result.frame == "agl"
+    assert adapter.call_log[-1] == {
+        "method": "send_takeoff_goal",
+        "altitude": 30.0,
+        "climb_rate": None,
+    }
+
+
+def test_land_records_call() -> None:
+    adapter = MockROSAdapter()
+    result = adapter.send_land_goal(at="home", precision="precise")
+    assert result.success is True
+    entry = adapter.call_log[-1]
+    assert entry["method"] == "send_land_goal"
+    assert entry["at"] == "home"
+    assert entry["precision"] == "precise"
+
+
+def test_return_to_home_records_call() -> None:
+    adapter = MockROSAdapter()
+    result = adapter.send_return_to_home_goal(speed=5.0, altitude=40.0)
+    assert result.success is True
+    entry = adapter.call_log[-1]
+    assert entry["method"] == "send_return_to_home_goal"
+    assert entry["speed"] == 5.0
+    assert entry["altitude"] == 40.0
+
+
+def test_takeoff_override_takes_precedence() -> None:
+    adapter = MockROSAdapter()
+    adapter.set_takeoff_result(NavigationResult(success=False, reason="weather_violation"))
+    result = adapter.send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == "weather_violation"

@@ -293,3 +293,40 @@ class ROSAdapter(Protocol):
         `transcription` (the substrate decides).
         """
         ...
+
+    # ------------------------------------------------------------------
+    # Drone-profile dispatch (RFC-0002 §Profile-extensibility)
+    #
+    # These three methods back the drone-profile primitives (`take_off`,
+    # `land`, `return_to_home`). Non-drone adapters (e.g., a ground-only
+    # ROS 2 setup) may stub these out with `NavigationResult(success=False)`
+    # — the validator's manifest checks ensure the runtime never calls them
+    # against a substrate that hasn't declared drone capability.
+    # ------------------------------------------------------------------
+
+    def send_takeoff_goal(
+        self,
+        *,
+        altitude: float,
+        climb_rate: float | None = None,
+    ) -> NavigationResult:
+        """Begin flight: ascend to ``altitude`` (meters AGL). Used by `take_off`."""
+        ...
+
+    def send_land_goal(
+        self,
+        *,
+        at: str | None = None,
+        precision: Literal["standard", "precise"] = "standard",
+    ) -> NavigationResult:
+        """End flight: descend to ``at`` (a declared location) or current position. Used by `land`."""
+        ...
+
+    def send_return_to_home_goal(
+        self,
+        *,
+        speed: float | None = None,
+        altitude: float | None = None,
+    ) -> NavigationResult:
+        """Abort current intent and fly to declared home. Used by `return_to_home`."""
+        ...

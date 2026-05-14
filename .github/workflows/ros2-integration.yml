@@ -1,0 +1,66 @@
+# Gated Linux + ROS 2 integration workflow.
+#
+# What this verifies: RclpyAdapter loads and operates against a real
+# ROS 2 install (Jazzy LTS), not just the mocked rclpy used by the
+# default unit tests. Full Gazebo + Nav2 + MoveIt 2 conformance-fixture
+# runs land in a follow-up — the adapter_factory hook is already wired
+# (see reference/ros2-runtime/tests/integration/test_rclpy_adapter_live.py).
+#
+# When this runs:
+#   - Manual dispatch from the Actions tab (workflow_dispatch).
+#   - Once a week on Mondays (scheduled cron) to catch upstream ROS 2 drift.
+#
+# This workflow does NOT run on every push because (a) the container
+# pull + apt install is slow and (b) the live tests don't yet add
+# enough coverage to justify the per-PR cost. Re-evaluate when the
+# Gazebo integration tests land.
+
+name: ros2-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 06:00 UTC.
+    - cron: '0 6 * * 1'
+
+jobs:
+  rclpy-smoke:
+    runs-on: ubuntu-24.04
+    container:
+      image: ros:jazzy-ros-base
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          apt-get update
+          apt-get install -y python3-pip python3-venv python3-yaml
+
+      - name: Install URML packages
+        # rclpy comes from the container's apt-installed ROS 2 Jazzy. We
+        # install the URML Python packages in editable mode against the
+        # container's Python 3 (which is the same Python that ROS 2 uses).
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          python3 -m pip install --break-system-packages \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e conformance \
+            pytest
+
+      - name: Run live integration tests
+        env:
+          URML_ROS2_INTEGRATION: "1"
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          cd reference/ros2-runtime
+          python3 -m pytest tests/integration/ -v
+
+      - name: Re-run hermetic unit tests under real rclpy
+        # The mocked-rclpy tests must also pass when a real rclpy is
+        # available — the lazy-import contract should be invariant.
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          cd reference/ros2-runtime
+          python3 -m pytest tests/test_rclpy_adapter.py -v

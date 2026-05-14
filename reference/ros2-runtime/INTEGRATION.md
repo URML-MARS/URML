@@ -1,22 +1,24 @@
-# ROS 2 Integration — design notes for the real `RclpyAdapter`
+# ROS 2 Integration — `RclpyAdapter`
 
-**Status:** Design only. v0.1 ships `MockROSAdapter` (in `substrate/mock.py`). A real `rclpy`-backed adapter is Phase 1+ work.
+**Status (v0.1):** Reference `RclpyAdapter` ships in `substrate/rclpy_adapter.py`. Unit tests with mocked rclpy run on every host (including Windows) as part of the default suite. Integration tests against a live ROS 2 + Gazebo stack are gated to a separate Linux-only CI workflow — see `.github/workflows/ros2-integration.yml`.
 
-This document is what someone with a working ROS 2 environment needs in order to implement the real adapter. It records the surface area, the per-method ROS 2 mapping, the testing strategy, and the open design questions that did not need to be answered to ship the mock.
-
-The implementation itself lives in a future PR. This doc is the blueprint.
+This document is the blueprint for the adapter. It records the surface area, the per-method ROS 2 mapping, the testing strategy, the configuration surface, and the open design questions.
 
 ---
 
-## Why this isn't done yet
+## Development environment
 
-Three reasons, ordered:
+The reference adapter is developed and integration-tested on **WSL2 + ROS 2 Jazzy** (current LTS as of 2026). Specifically:
 
-1. **The author's primary development environment is Windows.** ROS 2 has nominal Windows support but the integration-test loop is much smoother on Linux + simulator (Gazebo). Doing the real adapter half-blind would produce code that compiles but is hard to verify end-to-end.
-2. **The conformance suite already exercises the Protocol.** `ROSAdapter` is implemented by `MockROSAdapter` and tested by 21 declarative fixtures. The shape is locked in. The real adapter has a target.
-3. **The validator + bridge + conformance + LLM-bridge surface ships independent of the real adapter.** Most adopters in Phase 0 / early Phase 1 will write their own substrate-specific adapter (PX4, OPC UA, vendor SDK) anyway. The MockROSAdapter covers the development case until a real ROS 2 deployment forces the integration.
+- Windows 10/11 host with WSL2 enabled.
+- Ubuntu 24.04 LTS image.
+- ROS 2 Jazzy desktop install (`ros-jazzy-desktop`).
+- Nav2 (`ros-jazzy-nav2-bringup`), MoveIt 2 (`ros-jazzy-moveit`), and Gazebo Harmonic for integration tests.
+- Python `>=3.11` from the system Python (matches the URML packages' minimum).
 
-These are honest reasons, not excuses. When someone with ROS 2 experience picks this up, this doc is their starting point.
+This is the recommended path because (a) it works on the author's primary development host without a dual-boot or a separate machine, (b) ROS 2 Linux support is first-class and Windows support is not, (c) WSL2's networking is fast enough for the action client patterns the adapter uses.
+
+Alternatives that also work: a Linux-native dev box, a devcontainer pinned to `osrf/ros:jazzy-desktop`, or a cloud Linux VM with X forwarding for the Gazebo GUI. The adapter code itself is OS-agnostic — only the ROS 2 install isn't.
 
 ---
 
@@ -57,71 +59,14 @@ The PX4-side belongs in `reference/px4-runtime/` (which doesn't exist yet; Phase
 
 ---
 
-## Implementation skeleton
+## Where the code lives
 
-```python
-# reference/ros2-runtime/src/urml_ros2_runtime/substrate/rclpy_adapter.py
-# THIS FILE DOES NOT EXIST YET. This is the recommended starting structure.
+- **Adapter:** [`src/urml_ros2_runtime/substrate/rclpy_adapter.py`](src/urml_ros2_runtime/substrate/rclpy_adapter.py) — `RclpyAdapter` class, all 12 ROSAdapter Protocol methods.
+- **Config:** [`src/urml_ros2_runtime/substrate/adapter_config.py`](src/urml_ros2_runtime/substrate/adapter_config.py) — `AdapterConfig` pydantic model + `load_adapter_config` YAML loader.
+- **Unit tests (hermetic, mocked rclpy):** [`tests/test_rclpy_adapter.py`](tests/test_rclpy_adapter.py) — runs on every host without ROS 2 installed.
+- **Integration tests (gated, real ROS 2):** [`tests/integration/test_rclpy_adapter_live.py`](tests/integration/test_rclpy_adapter_live.py) — runs only under `ROS2_INTEGRATION=1` in CI on the Linux ROS 2 runner.
 
-from typing import Any, Literal
-
-# rclpy is an optional dependency:
-#   pip install urml-ros2-runtime[real]
-try:
-    import rclpy
-    from rclpy.action import ActionClient
-    from rclpy.node import Node
-    HAS_RCLPY = True
-except ImportError:
-    HAS_RCLPY = False
-
-
-class RclpyAdapter:
-    """Real ROS 2 adapter — implements the ROSAdapter Protocol via rclpy.
-
-    Construction requires a running ROS 2 environment. Each adapter instance
-    owns one rclpy Node; multiple adapters in the same process share an
-    rclpy.init() call (the adapter does not re-init).
-
-    Action clients (Nav2, MoveIt 2, etc.) are created lazily on first use,
-    so an instance that never calls navigation doesn't pay the action-client
-    cost.
-    """
-
-    def __init__(self, node_name: str = "urml_runtime_adapter") -> None:
-        if not HAS_RCLPY:
-            raise RuntimeError(
-                "rclpy is not installed. Install with: pip install urml-ros2-runtime[real]"
-            )
-        # rclpy.init() is the caller's responsibility — adapters in production
-        # often share a single init across multiple subsystems.
-        self._node = rclpy.create_node(node_name)
-        # Lazy action-client slots; created on first use.
-        self._nav_client: ActionClient | None = None
-        self._dock_client: ActionClient | None = None
-        # ... per-method slots ...
-
-    def send_navigation_goal(
-        self,
-        *,
-        location: str | None = None,
-        pose: dict[str, float] | None = None,
-        frame: str | None = None,
-        carrying: dict[str, Any] | None = None,
-        speed: float | None = None,
-    ) -> NavigationResult:
-        # 1. Resolve `location` against a deployment-configured location-to-pose map
-        #    (NOT part of URML; the deployer provides this, typically via a ROS 2
-        #    parameter file or a topic). For pose-mode, use `pose` directly.
-        # 2. Build a Nav2 NavigateToPose goal.
-        # 3. Submit via self._nav_client and wait for the result.
-        # 4. Map Nav2 status to NavigationResult{success, reason, final_pose, frame}.
-        raise NotImplementedError("see INTEGRATION.md")
-
-    # ... one method per ROSAdapter Protocol entry ...
-```
-
-The full implementation is ~600-800 lines for the home profile; the drone-profile additions add ~200-300 more.
+rclpy itself is *not* in `dependencies`; it's an optional extra (`pip install urml-ros2-runtime[ros2]`) because the rclpy wheel is unusual (ships with the ROS 2 distribution rather than PyPI in practice). The adapter imports rclpy lazily at construction time and raises a clear error if it's missing.
 
 ---
 

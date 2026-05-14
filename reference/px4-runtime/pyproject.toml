@@ -3,14 +3,14 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "urml-ros2-runtime"
+name = "urml-px4-runtime"
 version = "0.1.0a0"
-description = "ROS 2 reference runtime for URML — Universal Robot Language."
+description = "PX4 / MAVLink reference runtime for URML — Universal Robot Language."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "ros2", "urml", "runtime"]
+keywords = ["robotics", "drone", "px4", "mavlink", "urml", "runtime"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -25,23 +25,21 @@ dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
   "urml-validator>=0.1.0a1",
+  "urml-ros2-runtime>=0.1.0a0",
 ]
 
 [project.optional-dependencies]
-# Real ROS 2 backing for `RclpyAdapter`. `rclpy` itself is NOT listed here
-# because the rclpy wheel ships with a ROS 2 distribution (via apt/colcon),
-# not from PyPI. Installing `urml-ros2-runtime[ros2]` on a Linux host with
-# ROS 2 sourced (`source /opt/ros/<distro>/setup.bash`) gives you a working
-# adapter. This extra is reserved for *additional* ROS-2-ecosystem packages
-# that are pip-installable (vision_msgs Python bindings, geometry helpers,
-# etc.) plus dependency pins as they're needed.
-ros2 = []
+# pymavlink is a normal PyPI package (unlike rclpy, which ships with a ROS 2
+# distribution). Installing `urml-px4-runtime[px4]` gives you everything needed
+# to construct PX4Adapter against a real PX4 autopilot or PX4 SITL simulator.
+px4 = [
+  "pymavlink>=2.4,<3",
+]
 dev = [
   "pytest>=8",
   "pytest-cov>=5",
   "ruff>=0.5",
   "mypy>=1.10",
-  "types-PyYAML>=6.0",
 ]
 
 [project.urls]
@@ -50,7 +48,7 @@ Repository = "https://github.com/URML-MARS/URML"
 Issues = "https://github.com/URML-MARS/URML/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/urml_ros2_runtime"]
+packages = ["src/urml_px4_runtime"]
 
 [tool.ruff]
 line-length = 120
@@ -69,7 +67,7 @@ strict = true
 python_version = "3.11"
 plugins = ["pydantic.mypy"]
 mypy_path = "src"
-packages = ["urml_ros2_runtime"]
+packages = ["urml_px4_runtime"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

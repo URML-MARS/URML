@@ -126,6 +126,62 @@ def test_init_industrial_program_validates(
 
 
 # ---------------------------------------------------------------------------
+# Happy paths: drone profile
+# ---------------------------------------------------------------------------
+
+
+def test_init_drone_writes_full_starter(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    project = tmp_path / "demo-drone"
+    rc = main(["init", str(project), "--profile", "drone"])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+
+    # Drone set: ships with an envelope (altitude cap matters).
+    for name in (
+        "manifest.yaml",
+        "envelope.yaml",
+        "program.urml.yaml",
+        "prompt.en.txt",
+        "README.md",
+        "Makefile",
+    ):
+        assert (project / name).is_file(), f"missing: {name}"
+
+    # Manifest identifies as a civilian inspector multirotor.
+    manifest = yaml.safe_load((project / "manifest.yaml").read_text(encoding="utf-8"))
+    assert manifest["robot_id"] == "civilian_inspector"
+    assert manifest["mobility"]["drive_type"] == "multirotor"
+    assert "roof_north" in [loc["name"] for loc in manifest["declared_locations"]]
+
+    # The status banner went to stderr.
+    assert "Initialized drone project" in captured.err
+
+
+def test_init_drone_program_validates(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The scaffolded drone program must validate against its sibling manifest+envelope."""
+    project = tmp_path / "demo-drone"
+    main(["init", str(project), "--profile", "drone"])
+    capsys.readouterr()
+
+    rc = main([
+        "validate",
+        str(project / "program.urml.yaml"),
+        "--manifest", str(project / "manifest.yaml"),
+        "--envelope", str(project / "envelope.yaml"),
+        "--profile", "drone",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "Validation passed" in captured.out
+
+
+# ---------------------------------------------------------------------------
 # Defaults + edge cases
 # ---------------------------------------------------------------------------
 
