@@ -20,6 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from urml_ros2_runtime.substrate import (
     CaptureResult,
     DetectionResult,
+    ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
@@ -175,6 +176,8 @@ class AdapterOverrides(BaseModel):
     wait_for: WaitResult | None = None
     wait_passive: SubstrateResult | None = None
     report: SubstrateResult | None = None
+    speech: SubstrateResult | None = None
+    listen: ListenResult | None = None
 
 
 # Resolve the forward reference after AdapterOverrides is defined.

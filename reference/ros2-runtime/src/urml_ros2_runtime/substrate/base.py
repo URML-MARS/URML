@@ -111,6 +111,24 @@ class WaitResult(SubstrateResult):
     payload: dict[str, Any] | None = None
 
 
+class ListenResult(SubstrateResult):
+    """Result of an `acquire_speech` call (home profile `listen` primitive).
+
+    The payload mirrors the home-profile spec's listen-result shape:
+    `{transcription, confidence, choice_index}`. `choice_index` is set only
+    when `expected: choice` was used and the runtime maps the transcription
+    to one of the declared choices.
+    """
+
+    timed_out: bool = False
+    payload: dict[str, Any] | None = Field(
+        None,
+        description="Listen result dict with at least `transcription` (str), "
+        "`confidence` (float 0..1), and optionally `choice_index` (int) when "
+        "expected=choice.",
+    )
+
+
 # ---------------------------------------------------------------------------
 # The Protocol itself
 # ---------------------------------------------------------------------------
@@ -244,4 +262,34 @@ class ROSAdapter(Protocol):
         severity: Literal["info", "notice", "warning", "error"],
     ) -> SubstrateResult:
         """Send structured information upstream. Used by `report`."""
+        ...
+
+    def emit_speech(
+        self,
+        *,
+        utterance: str,
+        locale: str | None,
+        style: Literal["notice", "warning", "conversational"],
+        interrupt: bool,
+    ) -> SubstrateResult:
+        """Speak an utterance to the user. Used by `speak` (home profile)."""
+        ...
+
+    def acquire_speech(
+        self,
+        *,
+        prompt: str | None,
+        locale: str | None,
+        timeout_seconds: float | None,
+        expected: Literal["free_form", "confirmation", "choice"],
+        choices: list[str] | None,
+    ) -> ListenResult:
+        """Listen for spoken input and return a transcription. Used by `listen` (home profile).
+
+        For `expected: choice`, the adapter is responsible for mapping the
+        transcription to one of `choices` and populating `payload.choice_index`.
+        For `expected: confirmation`, the adapter maps to a yes/no judgement;
+        URML does not standardize how that decision is represented in
+        `transcription` (the substrate decides).
+        """
         ...
