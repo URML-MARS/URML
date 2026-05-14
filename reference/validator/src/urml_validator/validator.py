@@ -57,13 +57,16 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    LandArgs,
     ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
+    ReturnToHomeArgs,
     ScanArgs,
     SpeakArgs,
+    TakeOffArgs,
     WaitForArgs,
 )
 from urml_validator.schemas.program import URMLProgram
@@ -316,6 +319,9 @@ _PRIMITIVE_NAMES_FROZEN = (
     "report",
     "speak",
     "listen",
+    "take_off",
+    "land",
+    "return_to_home",
 )
 
 
@@ -367,6 +373,12 @@ def _check_capabilities(
         return _check_speak_caps(args, manifest, path)
     if name == "listen":
         return _check_listen_caps(args, manifest, path)
+    if name == "take_off":
+        return _check_take_off_caps(args, manifest, path)
+    if name == "land":
+        return _check_land_caps(args, manifest, path)
+    if name == "return_to_home":
+        return _check_return_to_home_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -849,6 +861,112 @@ def _check_listen_caps(
     return out
 
 
+_AERIAL_DRIVE_TYPES = {"multirotor", "fixed_wing", "vtol"}
+
+
+def _check_aerial_caps(
+    primitive: str, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Shared drone-profile capability check: drive_type must be aerial."""
+    out: list[ValidationError] = []
+    if manifest.mobility is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MOBILITY,
+                primitive,
+                path,
+                f"{primitive} requires the manifest to declare `mobility`.",
+            )
+        )
+        return out
+    if manifest.mobility.drive_type not in _AERIAL_DRIVE_TYPES:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_DRIVE_TYPE_NOT_AERIAL,
+                primitive,
+                path,
+                f"{primitive} requires an aerial drive_type "
+                f"(multirotor / fixed_wing / vtol); manifest declares "
+                f"{manifest.mobility.drive_type!r}.",
+                suggestion=f"Use {primitive} only on a drone manifest; this manifest "
+                "appears to declare a ground or manipulator platform.",
+            )
+        )
+    return out
+
+
+def _check_take_off_caps(
+    args: TakeOffArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Drone profile: take_off requires aerial drive_type AND declared service_ceiling."""
+    out: list[ValidationError] = _check_aerial_caps("take_off", manifest, path)
+    if manifest.mobility is None:
+        return out
+    if manifest.mobility.service_ceiling is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_SERVICE_CEILING,
+                "take_off",
+                path,
+                "take_off requires manifest.mobility.service_ceiling to be declared.",
+                suggestion="Add `service_ceiling: <max altitude in m>` to manifest.mobility.",
+            )
+        )
+        return out
+    if args.altitude > manifest.mobility.service_ceiling:
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_ALTITUDE_EXCEEDED,
+                "take_off",
+                path,
+                f"take_off.altitude ({args.altitude} m) exceeds "
+                f"manifest.mobility.service_ceiling ({manifest.mobility.service_ceiling} m).",
+                field="altitude",
+            )
+        )
+    return out
+
+
+def _check_land_caps(
+    _args: LandArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Drone profile: land requires aerial drive_type."""
+    return _check_aerial_caps("land", manifest, path)
+
+
+def _check_return_to_home_caps(
+    args: ReturnToHomeArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """Drone profile: return_to_home requires aerial drive_type AND a declared 'home' location."""
+    out: list[ValidationError] = _check_aerial_caps("return_to_home", manifest, path)
+    has_home = any(loc.name == "home" for loc in manifest.declared_locations)
+    if not has_home:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_HOME_LOCATION,
+                "return_to_home",
+                path,
+                "return_to_home requires a declared location named 'home' in "
+                "manifest.declared_locations.",
+                suggestion="Add a declared_locations entry named 'home' with the "
+                "intended takeoff/landing pose.",
+            )
+        )
+    if manifest.mobility is not None and manifest.mobility.service_ceiling is not None:
+        if args.altitude is not None and args.altitude > manifest.mobility.service_ceiling:
+            out.append(
+                _err(
+                    ErrorCode.ENVELOPE_ALTITUDE_EXCEEDED,
+                    "return_to_home",
+                    path,
+                    f"return_to_home.altitude ({args.altitude} m) exceeds "
+                    f"manifest.mobility.service_ceiling ({manifest.mobility.service_ceiling} m).",
+                    field="altitude",
+                )
+            )
+    return out
+
+
 # =============================================================================
 # Pass 3: safety envelope
 # =============================================================================
@@ -872,8 +990,10 @@ def _check_envelope(
         out.extend(_check_envelope_grasp(args, manifest, envelope, path))
     elif name == "hover":
         out.extend(_check_envelope_hover(args, envelope, path))
-    elif name in ("move_to", "dock", "wait", "wait_for", "release", "detect", "measure", "capture", "report"):
-        pass  # no numeric-envelope obligation for these in this milestone
+    elif name == "take_off":
+        out.extend(_check_envelope_take_off(args, manifest, envelope, path))
+    elif name == "return_to_home":
+        out.extend(_check_envelope_return_to_home(args, manifest, envelope, path))
 
     return out
 
@@ -967,6 +1087,60 @@ def _check_envelope_hover(
     # the move_to that *got* the robot to hover position. This pass intentionally
     # returns no envelope errors for hover in this milestone.
     return []
+
+
+def _check_envelope_take_off(
+    args: TakeOffArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """Drone profile: take_off altitude must be at or below the strictest envelope cap."""
+    out: list[ValidationError] = []
+    manifest_ceiling = manifest.mobility.service_ceiling if manifest.mobility else None
+    envelope_max = envelope.max_altitude if envelope else None
+    cap = _strictest(manifest_ceiling, envelope_max)
+    if cap is not None and args.altitude > cap:
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_ALTITUDE_EXCEEDED,
+                "take_off",
+                path,
+                f"take_off.altitude ({args.altitude} m) exceeds the strictest "
+                f"declared altitude cap ({cap} m).",
+                field="altitude",
+                suggestion=f"Reduce altitude to at most {cap} m, or relax the cap "
+                "if the deployment allows.",
+            )
+        )
+    return out
+
+
+def _check_envelope_return_to_home(
+    args: ReturnToHomeArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """Drone profile: declared RTH altitude (if set) must be at or below the cap."""
+    out: list[ValidationError] = []
+    if args.altitude is None:
+        return out  # substrate default; nothing to check statically
+    manifest_ceiling = manifest.mobility.service_ceiling if manifest.mobility else None
+    envelope_max = envelope.max_altitude if envelope else None
+    cap = _strictest(manifest_ceiling, envelope_max)
+    if cap is not None and args.altitude > cap:
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_ALTITUDE_EXCEEDED,
+                "return_to_home",
+                path,
+                f"return_to_home.altitude ({args.altitude} m) exceeds the strictest "
+                f"declared altitude cap ({cap} m).",
+                field="altitude",
+            )
+        )
+    return out
 
 
 def _check_envelope_grasp(

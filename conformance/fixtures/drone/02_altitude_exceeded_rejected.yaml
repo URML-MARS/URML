@@ -1,0 +1,24 @@
+name: drone/altitude_exceeded_rejected
+description: >
+  A take_off above the strictest declared altitude cap is rejected at
+  validation time. Service ceiling is 120m on the manifest; envelope
+  caps to 120m; program asks for 200m.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off:
+          altitude: 200.0
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.altitude_exceeded
