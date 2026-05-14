@@ -50,7 +50,8 @@ If you find a step that doesn't work, that's a bug — please open an issue.
 - [`MANIFESTO.md`](../../MANIFESTO.md) — why URML, what it is and isn't, who it's for.
 - [`docs/architecture.md`](../architecture.md) — the five-layer stack expanded.
 - [`docs/glossary.md`](../glossary.md) — every URML term defined.
-- [`docs/rfcs/0002-initial-primitive-vocabulary.md`](../rfcs/0002-initial-primitive-vocabulary.md) — the twelve core primitives, with substrate-neutrality sketches.
+- [`docs/rfcs/`](../rfcs/) — the design history. Five RFCs are filed: the process (0001), the initial primitive vocabulary (0002), the strategic US-alignment decision (0003), the compliance-policy mechanism (0004), and a forward-looking HBOM-parsing design (0005).
+- [`docs/demos/compliance-walkthrough.md`](../demos/compliance-walkthrough.md) — see the compliance pass reject a covered-foreign-country manifest, then watch the `--no-policy` override accept it. Five minutes, three commands.
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — how to engage during Phase 0.
 
 Ready? Start with [Tutorial 1: Getting started](01-getting-started.md).
