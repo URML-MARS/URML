@@ -1,0 +1,42 @@
+name: home/nav_patrol_positive
+description: >
+  Navigation-only patrol: drive to the kitchen, drive to the user
+  pickup point, then drive back to the charging-dock location. This is
+  the one home-profile fixture that exercises ONLY navigation — no
+  perception, manipulation, speech, or docking-action. That makes it
+  the fixture the Gazebo end-to-end test runs against a stock
+  TurtleBot 4 + Nav2 simulation: a stock TB4 sim exposes Nav2's
+  `/navigate_to_pose` but its dock is iRobot Create 3's `/dock`
+  action (not Nav2 `DockRobot`), and it has no gripper or camera — so
+  red-mug and the dock fixtures cannot run there, but three plain
+  `move_to` goals can. Against MockROSAdapter it behaves identically,
+  so it also runs in the default hermetic suite.
+
+  `charging_dock` is referenced here as a declared *location* (it has a
+  pose in turtlebot4_home.declared_locations), not as a docking action —
+  `move_to` drives to the dock's pose without invoking a dock server.
+
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+      - move_to: { location: user }
+      - move_to: { location: charging_dock }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

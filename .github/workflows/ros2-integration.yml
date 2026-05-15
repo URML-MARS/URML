@@ -1,19 +1,25 @@
 # Gated Linux + ROS 2 integration workflow.
 #
-# What this verifies: RclpyAdapter loads and operates against a real
-# ROS 2 install (Jazzy LTS), not just the mocked rclpy used by the
-# default unit tests. Full Gazebo + Nav2 + MoveIt 2 conformance-fixture
-# runs land in a follow-up — the adapter_factory hook is already wired
-# (see reference/ros2-runtime/tests/integration/test_rclpy_adapter_live.py).
+# Two jobs, both gated to manual dispatch + weekly cron (never per-push:
+# the container pulls + apt installs + sim bringup are slow and the
+# coverage doesn't justify the per-PR cost):
 #
-# When this runs:
-#   - Manual dispatch from the Actions tab (workflow_dispatch).
-#   - Once a week on Mondays (scheduled cron) to catch upstream ROS 2 drift.
+#   1. rclpy-smoke  — RclpyAdapter loads + operates against a real
+#      rclpy (no simulator). Fast, reliable.
+#   2. gazebo-e2e   — the real end-to-end: the home/nav_patrol_positive
+#      conformance fixture run through ConformanceRunner with a live
+#      RclpyAdapter driving a TurtleBot 4 Ignition sim via Nav2. Heavy,
+#      best-effort.
 #
-# This workflow does NOT run on every push because (a) the container
-# pull + apt install is slow and (b) the live tests don't yet add
-# enough coverage to justify the per-PR cost. Re-evaluate when the
-# Gazebo integration tests land.
+# HONESTY NOTE ON gazebo-e2e: the sim/Nav2 launch invocations below were
+# authored on a Windows box with no ability to run Gazebo. The package
+# and launch-file names match TurtleBot 4 / Jazzy documentation but the
+# FIRST real run may need a launch-name or arg tweak. That is expected
+# and designed for: every diagnostic (ROS logs, gz logs, the pytest
+# output) is uploaded as an artifact on `always()`, so a red first run
+# tells you exactly what to pin rather than failing opaquely. Do not
+# treat the first gazebo-e2e run as a regression signal — treat it as
+# the calibration run.
 
 name: ros2-integration
 
@@ -38,9 +44,6 @@ jobs:
           apt-get install -y python3-pip python3-venv python3-yaml
 
       - name: Install URML packages
-        # rclpy comes from the container's apt-installed ROS 2 Jazzy. We
-        # install the URML Python packages in editable mode against the
-        # container's Python 3 (which is the same Python that ROS 2 uses).
         run: |
           . /opt/ros/jazzy/setup.sh
           python3 -m pip install --break-system-packages \
@@ -49,18 +52,99 @@ jobs:
             -e conformance \
             pytest
 
-      - name: Run live integration tests
+      - name: Run live integration tests (rclpy smoke only)
         env:
           URML_ROS2_INTEGRATION: "1"
         run: |
           . /opt/ros/jazzy/setup.sh
           cd reference/ros2-runtime
-          python3 -m pytest tests/integration/ -v
+          python3 -m pytest tests/integration/test_rclpy_adapter_live.py -v
 
       - name: Re-run hermetic unit tests under real rclpy
-        # The mocked-rclpy tests must also pass when a real rclpy is
-        # available — the lazy-import contract should be invariant.
         run: |
           . /opt/ros/jazzy/setup.sh
           cd reference/ros2-runtime
           python3 -m pytest tests/test_rclpy_adapter.py -v
+
+  gazebo-e2e:
+    runs-on: ubuntu-24.04
+    # No container: the TurtleBot 4 sim + Gazebo Harmonic stack is
+    # easier to apt-install on the bare runner than to find a single
+    # prebuilt image that has all of ROS 2 Jazzy + Nav2 + TB4 sim + Gz.
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ROS 2 Jazzy + TurtleBot 4 sim + Nav2
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common curl gnupg lsb-release
+          sudo add-apt-repository universe -y
+          curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+            | sudo gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+          sudo apt-get update
+          # ros-base + the TB4 sim + nav stack. turtlebot4-simulator pulls
+          # Gazebo Harmonic (gz-sim8) and the TB4 description/bringup.
+          sudo apt-get install -y \
+            ros-jazzy-ros-base \
+            ros-jazzy-turtlebot4-simulator \
+            ros-jazzy-turtlebot4-navigation \
+            ros-jazzy-nav2-bringup \
+            ros-jazzy-irobot-create-nodes \
+            python3-pip xvfb
+
+      - name: Install URML packages
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          python3 -m pip install --break-system-packages \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e conformance \
+            pytest
+
+      - name: Launch TurtleBot 4 Ignition sim + Nav2 (headless)
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          mkdir -p "$HOME/e2e-logs"
+          # Headless: software GL under Xvfb so Gazebo's rendering plugin
+          # doesn't abort on a GPU-less runner.
+          export LIBGL_ALWAYS_SOFTWARE=1
+          # Best-effort launch. `nav2:=true slam:=true` brings up Nav2 with
+          # online SLAM so no prebuilt map is needed for the flat default
+          # world. If the launch/arg names differ on the installed TB4
+          # version, the artifact upload below captures the error.
+          nohup xvfb-run -a ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py \
+            nav2:=true slam:=true rviz:=false headless:=true \
+            > "$HOME/e2e-logs/sim.log" 2>&1 &
+          echo $! > "$HOME/e2e-logs/sim.pid"
+          # Give the sim + Nav2 lifecycle a head start; the test itself
+          # also waits on the /navigate_to_pose server (60s bound).
+          sleep 90
+
+      - name: Run the Gazebo end-to-end conformance test
+        env:
+          URML_GAZEBO_E2E: "1"
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          cd reference/ros2-runtime
+          python3 -m pytest tests/integration/test_nav_patrol_gazebo_e2e.py -v \
+            | tee "$HOME/e2e-logs/pytest.log"
+
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          set +e
+          cp -r "$HOME/.ros/log" "$HOME/e2e-logs/ros-log" 2>/dev/null || true
+          ros2 node list > "$HOME/e2e-logs/node-list.txt" 2>&1 || true
+          ros2 action list > "$HOME/e2e-logs/action-list.txt" 2>&1 || true
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gazebo-e2e-diagnostics
+          path: ~/e2e-logs
+          retention-days: 14

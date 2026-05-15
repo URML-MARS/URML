@@ -1,0 +1,36 @@
+# Deployment-side adapter config for the Gazebo nav-patrol end-to-end test.
+#
+# The validator resolves location *names* against the manifest; the
+# adapter resolves those names to actual poses in the running sim's
+# `map` frame via this file. The coordinates below mirror the
+# turtlebot4_home manifest's declared_locations, which suit a flat,
+# open sim world (the default TurtleBot 4 Ignition "depot"/empty world).
+#
+# IMPORTANT: these poses are sim-world-specific. If you run against a
+# different world (or a real robot), edit location_to_pose to match.
+# This is by design — the URML program and manifest are substrate-
+# neutral; the pose binding lives here, at the deployment boundary.
+#
+# A stock TurtleBot 4 Ignition bringup publishes Nav2's
+# /navigate_to_pose with no namespace, so the action-server defaults
+# are left unchanged. No gripper / perception / speech is configured —
+# the nav-patrol scenario uses none of them.
+
+ros2_namespace: ""
+
+action_servers:
+  navigate_to_pose: /navigate_to_pose
+
+location_to_pose:
+  kitchen:
+    x: 3.2
+    y: 1.0
+    frame: map
+  user:
+    x: 0.5
+    y: 0.5
+    frame: map
+  charging_dock:
+    x: 0.0
+    y: 0.0
+    frame: map
