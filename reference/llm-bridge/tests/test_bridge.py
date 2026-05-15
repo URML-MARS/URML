@@ -36,6 +36,24 @@ def home_envelope() -> dict:
         return yaml.safe_load(fh)
 
 
+@pytest.fixture
+def drone_manifest() -> dict:
+    with (VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml").open(encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
+@pytest.fixture
+def drone_envelope() -> dict:
+    with (VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml").open(encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
+@pytest.fixture
+def industrial_manifest() -> dict:
+    with (VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml").open(encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
 # A correct URML program the EchoProvider can return.
 RED_MUG_PROGRAM = {
     "profile": "home",
@@ -83,6 +101,147 @@ def test_translate_happy_path(
     assert result.revision_count == 0
     assert result.program == RED_MUG_PROGRAM
     assert len(result.raw_completions) == 1
+
+
+# A correct drone-profile URML program the EchoProvider can return.
+ROOF_INSPECTION_PROGRAM = {
+    "profile": "drone",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"take_off": {"altitude": 30.0}},
+            {"move_to": {"location": "roof_north"}},
+            {"capture": {"media": "photo", "store_as": "north_photo"}},
+            {"return_to_home": {}},
+            {"land": {}},
+        ],
+    },
+}
+
+
+def test_translate_happy_path_drone(
+    drone_manifest: dict,
+    drone_envelope: dict,
+) -> None:
+    """End-to-end drone translate: provider returns a valid program, bridge accepts."""
+    provider = EchoProvider(scripted=[json.dumps(ROOF_INSPECTION_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=drone_manifest,
+        envelope=drone_envelope,
+        profiles=("drone",),
+        max_revisions=2,
+    )
+    result = bridge.translate("Inspect the north roof for damage and bring me photos.")
+    assert result.accepted is True
+    assert result.revision_count == 0
+    assert result.program == ROOF_INSPECTION_PROGRAM
+
+
+# A correct industrial-profile URML program the EchoProvider can return.
+PICK_RED_PROGRAM = {
+    "profile": "industrial",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"move_to": {"location": "pick_bin"}},
+            {
+                "detect": {
+                    "object": "widget_red",
+                    "where": {"near": "pick_bin"},
+                    "store_as": "red_widget",
+                }
+            },
+            {"grasp": {"target": "$red_widget", "force": "firm"}},
+            {"move_to": {"location": "kitting_tray_red", "carrying": "$red_widget"}},
+            {"release": {"mode": "place", "at": "kitting_tray_red"}},
+            {"move_to": {"location": "home_pose"}},
+            {
+                "report": {
+                    "to": "line_controller",
+                    "facts": {"cycle": "pick_red_to_tray", "result": "ok"},
+                    "status": "success",
+                }
+            },
+        ],
+    },
+}
+
+
+def test_translate_happy_path_industrial(
+    industrial_manifest: dict,
+) -> None:
+    """End-to-end industrial translate: provider returns a valid program, bridge accepts."""
+    provider = EchoProvider(scripted=[json.dumps(PICK_RED_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=industrial_manifest,
+        profiles=("industrial",),
+        max_revisions=2,
+    )
+    result = bridge.translate(
+        "Pick a red widget from the bin and place it in the red kitting tray."
+    )
+    assert result.accepted is True
+    assert result.revision_count == 0
+    assert result.program == PICK_RED_PROGRAM
+
+
+# ---------------------------------------------------------------------------
+# Multilingual round-trips: Japanese
+#
+# Per the manifesto's multilingual commitment (CLAUDE.md §Strategic Posture),
+# the natural-language layer must accept non-English requests. The Bridge is
+# language-agnostic by design — it forwards the user's string to the LLM
+# verbatim — but these tests pin that contract: a Japanese request must flow
+# through bridge → validator → accepted URML without truncation, encoding
+# loss, or schema-side rejection. Companion `.ja.txt` files live alongside
+# the canonical English prompts under examples/{drone,industrial}/.
+# ---------------------------------------------------------------------------
+
+
+_JA_DRONE_REQUEST = "北側の屋根を点検して、損傷の写真を持ってきてください。"
+_JA_INDUSTRIAL_REQUEST = "ビンから赤いウィジェットを取って、赤いトレイに置いてください。"
+
+
+def test_translate_happy_path_drone_japanese(
+    drone_manifest: dict,
+    drone_envelope: dict,
+) -> None:
+    """A Japanese drone request flows through the bridge without encoding loss."""
+    provider = EchoProvider(scripted=[json.dumps(ROOF_INSPECTION_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=drone_manifest,
+        envelope=drone_envelope,
+        profiles=("drone",),
+        max_revisions=2,
+    )
+    result = bridge.translate(_JA_DRONE_REQUEST)
+    assert result.accepted is True
+    assert result.program == ROOF_INSPECTION_PROGRAM
+    # The Japanese characters reach the provider intact (no mojibake, no
+    # silent ASCII-only coercion in the prompt assembly path).
+    assert _JA_DRONE_REQUEST in provider.call_log[0]["user"]
+
+
+def test_translate_happy_path_industrial_japanese(
+    industrial_manifest: dict,
+) -> None:
+    """A Japanese industrial request flows through the bridge without encoding loss."""
+    provider = EchoProvider(scripted=[json.dumps(PICK_RED_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=industrial_manifest,
+        profiles=("industrial",),
+        max_revisions=2,
+    )
+    result = bridge.translate(_JA_INDUSTRIAL_REQUEST)
+    assert result.accepted is True
+    assert result.program == PICK_RED_PROGRAM
+    assert _JA_INDUSTRIAL_REQUEST in provider.call_log[0]["user"]
 
 
 # ---------------------------------------------------------------------------

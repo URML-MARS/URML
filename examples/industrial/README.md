@@ -1,14 +1,18 @@
 # Industrial Examples
 
-**Status:** Reserved. Populated when the industrial-profile Layer-2 vocabulary is drafted (Phase 3 per [`MANIFESTO.md`](../../MANIFESTO.md) §Roadmap Snapshot).
+End-to-end industrial-profile programs. Each scenario ships as three companion files: the natural-language prompt (`*.en.txt`), the URML program (`*.urml.yaml`), and a self-contained capability manifest (`*.manifest.yaml`) with US-federal-compliant provenance.
 
-The industrial profile scenarios from the Manifesto (the "line reconfiguration" — *"same as before, but pick red instead of blue, and slow down by twenty percent"*) require Layer-2 primitive signatures (`pick_from`, `place_at`, constrained `move_to`, profile-specific `grasp` force-ceiling defaults) that do not yet exist. Examples will land here once those signatures stabilize.
+## Scenarios
 
-When this directory is populated, expect at least:
+- **`simple-pick-and-place`** — the minimum-viable industrial example for first-time integrators. One pick-place cycle: navigate to a pick bin, detect a red widget, grasp it, move to the red kitting tray, place it, return home, report cycle completion to the line controller. Modeled on the line-reconfiguration scenario in [`MANIFESTO.md`](../../MANIFESTO.md) §Motivating Scenarios.
 
-- `line-reconfiguration.urml.yaml` + `line-reconfiguration.en.txt` — the manifesto's pick-and-place re-color + slow-down scenario, exercising natural-language re-parameterization against a stored prior program.
-- `simple-pick-and-place.urml.yaml` + `simple-pick-and-place.en.txt` — a minimum-viable industrial example for first-time integrators.
+## Validate
 
-Both will validate against an industrial-profile capability manifest (in [`/spec/profiles/industrial/`](../../spec/profiles/industrial/) when drafted) and against the cell-perimeter, safety-door-interlock, and force-ceiling safety envelope defaults.
+```
+urml validate simple-pick-and-place.urml.yaml \
+  -m simple-pick-and-place.manifest.yaml --profile industrial
+```
+
+The companion manifest declares third-party-audited US provenance, so the bundled default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5 when exercising programs against manifests without provenance blocks.
 
 See the examples convention in [`/examples/README.md`](../README.md).

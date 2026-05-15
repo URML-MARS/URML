@@ -27,6 +27,7 @@ from urml_llm_bridge.errors import (
 from urml_llm_bridge.few_shot import (
     FewShot,
     default_few_shots,
+    drone_few_shots,
     few_shots_for,
     home_few_shots,
     industrial_few_shots,
@@ -48,6 +49,7 @@ __all__ = [
     "__version__",
     "build_system_prompt",
     "default_few_shots",
+    "drone_few_shots",
     "few_shots_for",
     "home_few_shots",
     "industrial_few_shots",

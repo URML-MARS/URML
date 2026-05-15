@@ -1,0 +1,38 @@
+name: drone/scan_positive
+description: >
+  Drone surveys a bounded area in serpentine pattern with photo media.
+  Exercises the scan primitive's positive path on the civilian drone
+  manifest. The default MockROSAdapter.run_scan returns
+  {samples: [], coverage: 1.0, anomalies: []} which is bound into the
+  declared store_as variable.
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - scan:
+          area:
+            bounding_box: { min_x: 0.0, max_x: 20.0, min_y: 0.0, max_y: 10.0 }
+          pattern: serpentine
+          overlap: 0.3
+          altitude: 30.0
+          media: photo
+          sensor: downward
+          store_as: survey
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - run_scan
+  bindings_contains:
+    survey:
+      coverage: 1.0

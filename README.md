@@ -8,19 +8,22 @@ URML is a **specification** and a set of **reference implementations**, not a ro
 
 ---
 
-## Try it in three commands
+## Try it in five commands
+
+URML is in Phase 0 (pre-public draft). Installation is from a local clone via editable installs; PyPI packages land in Phase 1.
 
 ```bash
-pip install urml-validator urml-llm-bridge[anthropic]
+git clone https://github.com/URML-MARS/URML.git && cd URML
+python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -e reference/validator -e reference/llm-bridge
 
 urml init my-robot --profile home && cd my-robot
-
 urml validate program.urml.yaml \
     --manifest manifest.yaml --envelope envelope.yaml --profile home
 # → Validation passed
 ```
 
-That's it. The validator runs five passes (argument typing → capability → safety envelope → variable bindings → compliance policy) and emits structured errors the LLM bridge can revise against. The `--profile home` flag activates the home-profile constraints; `--policy` and `--no-policy` flags control the compliance pass.
+That's it. The validator runs five passes (argument typing → capability → safety envelope → variable bindings → compliance policy) and emits structured errors the LLM bridge can revise against. `--profile home`, `--profile drone`, and `--profile industrial` are all supported by `urml init`; `--policy` and `--no-policy` flags control the compliance pass.
 
 See [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
 

@@ -1,53 +1,78 @@
-# PX4 Reference Runtime
+# urml-px4-runtime
 
-**Status:** Pre-implementation. Phase 2 target.
+**PX4 / MAVLink reference runtime for URML** — the second reference substrate, after [urml-ros2-runtime](../ros2-runtime/). Proves URML's substrate-neutrality concretely: this adapter has **no ROS 2 dependency**. It talks MAVLink directly via [pymavlink](https://github.com/ArduPilot/pymavlink) to a PX4 autopilot (real hardware, or PX4 SITL simulator).
 
-## What this is
+A single reference runtime — no matter how clean — risks the spec accidentally encoding substrate assumptions. A second runtime on an entirely different stack (no rclpy, no Nav2, no ROS topics, just MAVLink frames over UDP/serial) keeps the spec honest. The two reference runtimes share the same `ROSAdapter` Protocol (the "ROS" in the name is vestigial — the Protocol is substrate-neutral) and pass the same conformance fixtures via the `ConformanceRunner.adapter_factory` hook.
 
-The **second** URML reference runtime. Targets the [drone profile](../../spec/profiles/drone/) (civilian). Translates a validated URML program into PX4 / MAVLink commands; honors declared altitude, geofence, weather, and people-occupancy envelope checks before any motor spins.
+## Method coverage
 
-Why a *second* reference runtime exists at all: it is the strongest evidence the URML specification is genuinely substrate-neutral. A single reference runtime — no matter how clean — risks the spec accidentally encoding ROS-2 assumptions. A second runtime on an entirely different substrate (no ROS dependency) keeps the spec honest. This is the substrate-neutrality acid test enforced at the implementation level, not just on paper.
+Full `ROSAdapter` Protocol (12 core methods + 3 drone-profile methods), wired against MAVLink commands:
 
-## Substrate
+| URML primitive | MAVLink mapping |
+|---|---|
+| `take_off` | `MAV_CMD_NAV_TAKEOFF` |
+| `land` | `MAV_CMD_NAV_LAND` |
+| `return_to_home` | `MAV_CMD_NAV_RETURN_TO_LAUNCH` |
+| `move_to` | `SET_POSITION_TARGET_LOCAL_NED` (offboard mode) |
+| `hover` | `SET_POSITION_TARGET_LOCAL_NED` with zero velocity |
+| `wait` | timed sleep |
+| `wait_for` | MAVLink message-stream subscribe-once with predicate |
+| `measure` | sensor telemetry stream (`DISTANCE_SENSOR`, `BATTERY_STATUS`, etc.) |
+| `report` | `STATUSTEXT` MAVLink message |
+| `scan` | stub success (full waypoint expansion is a follow-up) |
 
-- **PX4 Autopilot** (current stable releases). Tracks PX4's own release cadence.
-- **MAVLink** as the command-and-control protocol.
-- Optional **uXRCE-DDS** bridge for runtimes that want to share data with ROS-2 components without becoming ROS-2-dependent.
+The not-applicable primitives — `dock`, `grasp`, `release`, `detect`, `capture`, `speak`, `listen` — return `NavigationResult(success=False, reason="not_supported_on_bare_autopilot: ...")` rather than raising. Real drone deployments typically pair a PX4 autopilot with a ROS 2 companion computer for perception / manipulation / speech; in those stacks, dispatch through a composite adapter (a near-term follow-up).
 
-The runtime does **not** require ROS 2 to function. That is by design.
+## Install
 
-## Language
+```bash
+pip install -e reference/px4-runtime[px4]
+```
 
-- **Python** for the URML-to-MAVLink compiler, the validator bridge, tests, and the command dispatcher.
-- **C++17** if any per-tick hot-path component is needed; expected to be small (PX4 itself runs the real-time loop).
+The `[px4]` extra installs `pymavlink` — a normal PyPI package, unlike `rclpy` which ships with the ROS 2 distribution.
 
-## Conformance contract
+## Use
 
-Conformant when it passes the published conformance suite for the supported drone-profile spec versions. Declared conformance lives in a `CONFORMANCE.md` alongside this README when the first version cuts.
+```python
+from urml_px4_runtime import PX4Adapter, PX4AdapterConfig
 
-## Architecture (planned)
+config = PX4AdapterConfig(
+    connection_url="udp:127.0.0.1:14550",  # PX4 SITL default
+    system_id=1,
+    component_id=1,
+)
+with PX4Adapter(config) as adapter:
+    result = adapter.send_takeoff_goal(altitude=30.0)
+    assert result.success
+```
 
-Three responsibilities, mirroring the ROS 2 runtime:
+Drop the adapter into the URML runtime:
 
-1. **Validate.** Run the program through [`/reference/validator/`](../validator/) against the connected aircraft's capability manifest. Drone-specific manifest fields (service ceiling, endurance, communication-link policy) are checked here.
-2. **Translate.** Compile each primitive into MAVLink commands:
-   - `take_off(altitude)` → `MAV_CMD_NAV_TAKEOFF` with the altitude clamped to the manifest's declared ceiling.
-   - `move_to({lat, lon, alt})` → `MAV_CMD_NAV_WAYPOINT`; validated against the declared geofence.
-   - `hover(over: target, duration: t)` → `MAV_CMD_NAV_LOITER_TIME`.
-   - `scan(area: polygon, pattern: serpentine, overlap: 0.3)` → a sequence of waypoints with the photo trigger configured (Layer-3 composes the scan; this layer compiles each waypoint).
-   - `return_to_home` → `MAV_CMD_NAV_RETURN_TO_LAUNCH`.
-   - `land(at: location)` → `MAV_CMD_NAV_LAND`.
-3. **Honor composition.** Layer-3 sequence / branch / parallel / retry / on-error mapped to mission protocol + offboard-mode setpoints where the mission protocol is too coarse.
+```python
+from urml_ros2_runtime import URMLRuntime
+runtime = URMLRuntime(adapter)
+runtime.execute(program, manifest, envelope, profiles=("drone",))
+```
 
-## Drone-profile-specific safety enforcement
+Or through the conformance suite:
 
-Beyond the standard validator pass:
+```python
+from urml_conformance import ConformanceRunner
+runner = ConformanceRunner(adapter_factory=lambda: PX4Adapter(config))
+report = runner.run()
+```
 
-- **Altitude cap.** Every emitted waypoint is clamped to `min(manifest.service_ceiling, deployment.altitude_cap)`. Programs whose declared targets exceed this are rejected.
-- **Geofence.** Mission upload is preceded by a polygon check.
-- **Weather.** The runtime reads a configured weather source (or refuses takeoff if the source is missing or stale beyond a declared threshold).
-- **Link-loss policy.** Honored per manifest declaration; programs cannot override.
-- **People-occupancy.** Programs whose declared scan or move-to areas overlap declared people-occupancy zones are rejected unless an explicit operator override is in the manifest.
+## Status
+
+**v0.1 (this release):**
+- Adapter loads on every host (lazy pymavlink import; clear actionable error if `pymavlink` is missing).
+- Unit tests with mocked pymavlink cover all 15 Protocol methods (including the not-applicable ones).
+- Integration testing against a live PX4 SITL is a documented follow-up; the test scaffold lives in `tests/integration/`.
+
+**Follow-ups (not in v0.1):**
+- PX4 SITL integration tests in a gated Linux workflow (matches the ROS 2 runtime's pattern).
+- Composite adapter for stacks that pair PX4 with ROS 2 perception.
+- Full geofence polygon-containment math in the safety-envelope pass.
 
 ## Core Commitment
 
@@ -58,4 +83,5 @@ This runtime is part of the [Core Commitment](../../CORE_COMMITMENT.md). It will
 - [`/spec/profiles/drone/`](../../spec/profiles/drone/) — the profile this runtime targets.
 - [`/spec/layer-1-hal/`](../../spec/layer-1-hal/) — manifest schema, including drone-specific fields.
 - [`/conformance/`](../../conformance/) — the test suite that decides conformance.
+- [`/reference/ros2-runtime/INTEGRATION.md`](../ros2-runtime/INTEGRATION.md) — the ROS 2 runtime's parallel design notes.
 - [`MANIFESTO.md`](../../MANIFESTO.md) §Motivating Scenarios — *Drone: the citizen inspector*.

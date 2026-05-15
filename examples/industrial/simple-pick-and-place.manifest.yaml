@@ -1,0 +1,133 @@
+# Companion manifest for examples/industrial/simple-pick-and-place.urml.yaml —
+# demonstrates a fully US-federal-compliant provenance declaration alongside
+# the canonical industrial-profile program.
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are
+# fictional; country codes are real ISO 3166-1 alpha-2 values. The integrity
+# hashes are zeroed placeholders. Do not deploy from this file; use it to
+# see what a manifest that passes both the validator's capability checks AND
+# the bundled US-federal compliance policy (RFC-0004) looks like end-to-end.
+#
+# Validate with the bundled default policy active:
+#   urml validate simple-pick-and-place.urml.yaml \
+#     -m simple-pick-and-place.manifest.yaml --profile industrial
+#
+# Demonstrate the override path (skip Pass 5):
+#   urml validate simple-pick-and-place.urml.yaml \
+#     -m simple-pick-and-place.manifest.yaml --profile industrial --no-policy
+
+manifest_version: "0.1"
+robot_id: cell_a1_demo
+description: Single-arm pick-and-place cell, US-compliant illustrative manifest.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+    description: Source bin for unsorted widgets.
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+    description: Destination tray for red widgets.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-origin manufacture and assembly, references an HBOM document, and
+# carries the third-party-audited attestation level required by the
+# bundled default policy.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/cell_a1_demo.signed
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: example_arm_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: wrist_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/wrist_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: pneumatic_gripper
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: DE
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/pneumatic_gripper.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: tcp_force_sensor
+      role: critical
+      vendor: example_sensor_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/tcp_force_sensor.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

@@ -44,6 +44,9 @@ class MockROSAdapter:
         # Overrides — None means "use the sensible default for this call".
         self._navigation_override: NavigationResult | None = None
         self._dock_override: NavigationResult | None = None
+        self._takeoff_override: NavigationResult | None = None
+        self._land_override: NavigationResult | None = None
+        self._rth_override: NavigationResult | None = None
         self._manipulation_override: ManipulationResult | None = None
         self._detection_override: DetectionResult | None = None
         self._scan_override: ScanResult | None = None
@@ -63,6 +66,15 @@ class MockROSAdapter:
 
     def set_dock_result(self, result: NavigationResult) -> None:
         self._dock_override = result
+
+    def set_takeoff_result(self, result: NavigationResult) -> None:
+        self._takeoff_override = result
+
+    def set_land_result(self, result: NavigationResult) -> None:
+        self._land_override = result
+
+    def set_return_to_home_result(self, result: NavigationResult) -> None:
+        self._rth_override = result
 
     def set_manipulation_result(self, result: ManipulationResult) -> None:
         self._manipulation_override = result
@@ -397,3 +409,60 @@ class MockROSAdapter:
                 "choice_index": None,
             }
         return ListenResult(success=True, timed_out=False, payload=payload)
+
+    # ----- Drone-profile dispatch -----
+
+    def send_takeoff_goal(
+        self,
+        *,
+        altitude: float,
+        climb_rate: float | None = None,
+    ) -> NavigationResult:
+        self.call_log.append(
+            {
+                "method": "send_takeoff_goal",
+                "altitude": altitude,
+                "climb_rate": climb_rate,
+            }
+        )
+        if self._takeoff_override is not None:
+            return self._takeoff_override
+        return NavigationResult(
+            success=True,
+            final_pose={"x": 0.0, "y": 0.0, "z": altitude},
+            frame="agl",
+        )
+
+    def send_land_goal(
+        self,
+        *,
+        at: str | None = None,
+        precision: Literal["standard", "precise"] = "standard",
+    ) -> NavigationResult:
+        self.call_log.append(
+            {
+                "method": "send_land_goal",
+                "at": at,
+                "precision": precision,
+            }
+        )
+        if self._land_override is not None:
+            return self._land_override
+        return NavigationResult(success=True, final_pose={"x": 0.0, "y": 0.0, "z": 0.0}, frame="agl")
+
+    def send_return_to_home_goal(
+        self,
+        *,
+        speed: float | None = None,
+        altitude: float | None = None,
+    ) -> NavigationResult:
+        self.call_log.append(
+            {
+                "method": "send_return_to_home_goal",
+                "speed": speed,
+                "altitude": altitude,
+            }
+        )
+        if self._rth_override is not None:
+            return self._rth_override
+        return NavigationResult(success=True)

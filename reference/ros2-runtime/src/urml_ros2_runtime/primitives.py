@@ -24,13 +24,16 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     GraspArgs,
     HoverArgs,
+    LandArgs,
     ListenArgs,
     MeasureArgs,
     MoveToArgs,
     ReleaseArgs,
     ReportArgs,
+    ReturnToHomeArgs,
     ScanArgs,
     SpeakArgs,
+    TakeOffArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -474,6 +477,39 @@ def exec_listen(
     )
 
 
+def exec_take_off(
+    args: TakeOffArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Drone profile: ascend from ground to declared altitude."""
+    result = adapter.send_takeoff_goal(
+        altitude=args.altitude,
+        climb_rate=args.climb_rate,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_land(
+    args: LandArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Drone profile: descend to declared landing location (or current position)."""
+    result = adapter.send_land_goal(
+        at=args.at,
+        precision=args.precision,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_return_to_home(
+    args: ReturnToHomeArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Drone profile: abort current intent and fly to declared home."""
+    result = adapter.send_return_to_home_goal(
+        speed=args.speed,
+        altitude=args.altitude,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -496,6 +532,9 @@ PRIMITIVE_EXECUTORS: dict[
     "report": exec_report,
     "speak": exec_speak,
     "listen": exec_listen,
+    "take_off": exec_take_off,
+    "land": exec_land,
+    "return_to_home": exec_return_to_home,
 }
 
 

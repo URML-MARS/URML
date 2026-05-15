@@ -1,0 +1,30 @@
+name: drone/hover_positive
+description: >
+  Drone holds station over a declared location. Exercises the hover
+  primitive's positive path: a multirotor manifest with station_keeping
+  enabled, hovering over the declared `home` location. The executor
+  dispatches hover to send_navigation_goal with speed=0, matching the
+  station-keeping contract in the substrate base.
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - hover:
+          over: home
+          duration: 5s
+          tolerance: 0.5
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - send_navigation_goal
