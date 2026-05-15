@@ -96,3 +96,9 @@ desktop.ini
 *.tmp
 .local/
 .scratch/
+
+# --- Outreach campaign artifacts (operational, not part of the open standard) ---
+# Target lists, message drafts, tracking data, and the launch-approval record
+# stay local. They are private to the maintainer; committing them would
+# telegraph the campaign before launch and could embarrass listed projects.
+outreach/
