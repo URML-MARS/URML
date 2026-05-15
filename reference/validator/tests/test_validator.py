@@ -418,6 +418,209 @@ def test_forward_reference_rejected(
 
 
 # ---------------------------------------------------------------------------
+# Pass 4: cross-primitive variable type checking
+# ---------------------------------------------------------------------------
+
+
+def test_grasp_target_must_be_an_object(turtlebot_manifest: dict, home_envelope: dict) -> None:
+    """A measure binding (type `measurement`) cannot satisfy grasp.target (`object`)."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"measure": {"what": "speech", "sensor": "mic_array", "store_as": "reading"}},
+                {"grasp": {"target": "$reading"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.BINDING_TYPE_MISMATCH)
+
+
+def test_move_to_carrying_must_be_an_object(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """A capture binding (type `media_handle`) cannot satisfy move_to.carrying (`object`)."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"capture": {"media": "photo", "store_as": "snapshot"}},
+                {"move_to": {"location": "kitchen", "carrying": "$snapshot"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.BINDING_TYPE_MISMATCH)
+
+
+def test_object_binding_satisfies_grasp_target(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """Sanity: a detect binding (type `object`) DOES satisfy grasp.target."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"detect": {"object": "mug", "store_as": "target"}},
+                {"grasp": {"target": "$target"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    # Sanity test for the *opposite* of the rejection above: a binding
+    # of the right type must NOT trigger a type-mismatch error. We don't
+    # assert result.accepted overall because envelope/policy passes may
+    # have unrelated complaints — we only check the specific code.
+    assert not result.has(ErrorCode.BINDING_TYPE_MISMATCH)
+
+
+def test_report_attachments_accepts_any_binding(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """report.attachments is intentionally loose — any binding type is allowed."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"measure": {"what": "speech", "sensor": "mic_array", "store_as": "r"}},
+                {
+                    "report": {
+                        "to": "user",
+                        "facts": {"message": "done"},
+                        "attachments": ["$r"],
+                        "status": "success",
+                    }
+                },
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    assert not result.has(ErrorCode.BINDING_TYPE_MISMATCH)
+
+
+# ---------------------------------------------------------------------------
+# Pass 3: geofence polygon containment
+# ---------------------------------------------------------------------------
+
+
+def _drone_civilian_manifest() -> dict:
+    return _load_yaml(FIXTURE_ROOT / "manifests" / "drone_civilian.yaml")
+
+
+def _drone_geofence_envelope() -> dict:
+    return _load_yaml(FIXTURE_ROOT / "envelopes" / "drone_with_geofence.yaml")
+
+
+def test_move_to_pose_outside_geofence_rejected() -> None:
+    """A move_to pose outside the only declared geofence triggers the violation."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {"move_to": {"pose": {"x": 50.0, "y": 50.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_geofence_envelope(),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.accepted
+    assert result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+def test_move_to_pose_inside_geofence_accepted() -> None:
+    """A move_to pose inside the declared geofence does NOT trigger the violation."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {"move_to": {"pose": {"x": 5.0, "y": 5.0, "z": 30.0}, "frame": "agl"}},
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_geofence_envelope(),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+def test_geofence_check_is_noop_when_envelope_declares_none(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """Programs targeting any pose are accepted when the envelope declares no geofences."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"move_to": {"pose": {"x": 9999.0, "y": 9999.0}, "frame": "map"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, home_envelope)
+    # The envelope declares no geofences, so this check abstains entirely.
+    assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+def test_scan_bounding_box_partially_outside_geofence_rejected() -> None:
+    """A scan whose bounding-box corners straddle the geofence is rejected."""
+    program: dict[str, Any] = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"take_off": {"altitude": 30.0}},
+                {
+                    "scan": {
+                        "area": {
+                            "bounding_box": {
+                                "min_x": 0.0,
+                                "max_x": 100.0,
+                                "min_y": 0.0,
+                                "max_y": 100.0,
+                            },
+                        },
+                        "altitude": 30.0,
+                        "store_as": "survey",
+                    }
+                },
+                {"land": {}},
+            ],
+        },
+    }
+    result = validate(
+        program,
+        _drone_civilian_manifest(),
+        _drone_geofence_envelope(),
+        profiles=("drone",),
+        policy="DEFAULT",
+    )
+    assert not result.accepted
+    assert result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+# ---------------------------------------------------------------------------
 # Composition coverage: the walker visits steps inside nested behaviors.
 # ---------------------------------------------------------------------------
 

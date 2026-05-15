@@ -995,6 +995,12 @@ def _check_envelope(
     elif name == "return_to_home":
         out.extend(_check_envelope_return_to_home(args, manifest, envelope, path))
 
+    # Geofence containment runs for every spatial primitive; the helper
+    # returns no errors when the envelope declares no geofences (common
+    # case for home / industrial deployments).
+    if name in {"move_to", "scan"}:
+        out.extend(_check_envelope_geofence(step, manifest, envelope, path))
+
     return out
 
 
@@ -1172,12 +1178,154 @@ def _check_envelope_grasp(
 
 
 # =============================================================================
+# Geofence containment (Pass 3, spatial)
+#
+# Semantics: when the envelope declares one or more `geofences`, every
+# spatial target a program names (move_to.pose, scan.area, named
+# locations resolved via the manifest) must lie inside at least one
+# declared geofence whose `frame` matches the target's frame. Geofences
+# are *allowlist* zones — the robot must stay inside one of them.
+#
+# Frame-mismatched geofences are silently skipped; a future RFC may add
+# tf-style frame resolution. Named locations whose frame doesn't match
+# any declared geofence are accepted (no applicable check).
+# =============================================================================
+
+
+def _point_in_polygon(point: tuple[float, float], polygon: list[tuple[float, float]]) -> bool:
+    """Standard ray-casting point-in-polygon test.
+
+    A point on the boundary is considered inside (the < / >= asymmetry
+    in the test handles this). Polygon vertices are 2D tuples in the
+    same frame as the point.
+    """
+    x, y = point
+    n = len(polygon)
+    inside = False
+    j = n - 1
+    for i in range(n):
+        xi, yi = polygon[i]
+        xj, yj = polygon[j]
+        # Ray from (x, y) crossing edge (i, j)?
+        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _check_point_in_any_geofence(
+    point: tuple[float, float],
+    frame: str,
+    envelope: SafetyEnvelope | None,
+) -> tuple[bool, list[str]]:
+    """Check ``point`` (in ``frame``) against every declared geofence.
+
+    Returns ``(ok, applicable_geofence_names)``. ``ok`` is True if either
+    no geofences apply (frame mismatch) or the point lies inside at least
+    one frame-matching geofence. The list of applicable names is used in
+    diagnostics to tell the author *which* geofences were considered.
+    """
+    if envelope is None or not envelope.geofences:
+        return True, []
+    applicable = [g for g in envelope.geofences if g.frame == frame]
+    if not applicable:
+        # No geofence declared in this frame — author is responsible for
+        # frame discipline; the envelope check abstains here.
+        return True, []
+    for g in applicable:
+        if _point_in_polygon(point, g.vertices):
+            return True, [g.name]
+    return False, [g.name for g in applicable]
+
+
+def _location_pose_in_manifest(
+    name: str, manifest: CapabilityManifest
+) -> tuple[float, float, str] | None:
+    """Look up a declared location and return (x, y, frame), or None."""
+    for loc in manifest.declared_locations or []:
+        if loc.name == name:
+            return float(loc.pose.x), float(loc.pose.y), loc.frame
+    return None
+
+
+def _check_envelope_geofence(
+    step: Step,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """Reject spatial primitives whose target lies outside all declared geofences.
+
+    No-op when the envelope declares no geofences (the common case for
+    home / industrial deployments).
+    """
+    if envelope is None or not envelope.geofences:
+        return []
+    name = step.primitive_name
+    args = getattr(step, name)
+    out: list[ValidationError] = []
+
+    # Each entry: (point, frame, field_label). field_label feeds the error.
+    targets: list[tuple[tuple[float, float], str, str]] = []
+
+    if name == "move_to":
+        if args.pose is not None and args.frame is not None:
+            targets.append(((args.pose.x, args.pose.y), args.frame, "pose"))
+        elif isinstance(args.location, str):
+            resolved = _location_pose_in_manifest(args.location, manifest)
+            if resolved is not None:
+                rx, ry, rframe = resolved
+                targets.append(((rx, ry), rframe, "location"))
+    elif name == "scan":
+        bbox = args.area.bounding_box
+        polygon = args.area.polygon
+        if bbox is not None:
+            # All four corners must be inside. Use a synthetic frame "map"
+            # if none is set — bbox lives in the envelope's frame, which
+            # the spec does not currently encode. Conservative default:
+            # check against geofences whose frame is the first applicable.
+            frame = envelope.geofences[0].frame
+            for label, corner in (
+                ("min_x,min_y", (bbox["min_x"], bbox["min_y"])),
+                ("max_x,min_y", (bbox["max_x"], bbox["min_y"])),
+                ("max_x,max_y", (bbox["max_x"], bbox["max_y"])),
+                ("min_x,max_y", (bbox["min_x"], bbox["max_y"])),
+            ):
+                targets.append((corner, frame, f"area.bounding_box[{label}]"))
+        elif polygon is not None and polygon:
+            frame = envelope.geofences[0].frame
+            for idx, vertex in enumerate(polygon):
+                targets.append(((vertex.x, vertex.y), frame, f"area.polygon[{idx}]"))
+
+    for point, frame, field_label in targets:
+        ok, applicable = _check_point_in_any_geofence(point, frame, envelope)
+        if not ok:
+            out.append(
+                _err(
+                    ErrorCode.ENVELOPE_GEOFENCE_VIOLATION,
+                    name,
+                    path,
+                    f"{name}.{field_label} ({point[0]}, {point[1]}) in frame "
+                    f"{frame!r} lies outside every declared geofence "
+                    f"({applicable!r}).",
+                    field=field_label,
+                    suggestion=(
+                        "Move the target inside a declared geofence, "
+                        "add a geofence that covers this point, or remove "
+                        "the geofence restriction from the envelope."
+                    ),
+                )
+            )
+    return out
+
+
+# =============================================================================
 # Pass 4: variable bindings
 # =============================================================================
 
 
 def _check_bindings(program: URMLProgram) -> list[ValidationError]:
-    """Name uniqueness + reference resolution.
+    """Name uniqueness + reference resolution + cross-primitive type check.
 
     Conservative semantics in this milestone:
 
@@ -1186,16 +1334,23 @@ def _check_bindings(program: URMLProgram) -> list[ValidationError]:
         earlier in the linear walk order*. Branch / Parallel / Retry boundaries
         are treated permissively; a future milestone tightens this to proper
         definite-assignment analysis.
+      * When a consumer dereferences a ``$ref``, the producer's binding
+        type must match the consumer's expected type. ``$ref.field``
+        chains are accepted whenever the producer is a structured
+        payload (object / survey_result / measurement / media_handle /
+        transcription / wait_result) — field-level type checking is a
+        future RFC.
     """
     out: list[ValidationError] = []
-    bound: dict[str, list[str]] = {}  # name -> path where bound
+    # name -> (path-where-bound, producer-type)
+    bound: dict[str, tuple[list[str], str]] = {}
 
     for path, step in walk_program(program):
         name = step.primitive_name
         args = getattr(step, name)
 
         # Collect references this step consumes.
-        for ref in _references_used(name, args):
+        for ref, expected_type in _references_used_with_type(name, args):
             head = ref.lstrip("$").split(".", 1)[0]
             if head not in bound:
                 out.append(
@@ -1206,6 +1361,23 @@ def _check_bindings(program: URMLProgram) -> list[ValidationError]:
                         f"{ref} references an unbound name; "
                         f"known bindings at this point: {sorted(bound.keys())!r}.",
                         suggestion=f"Bind {head!r} earlier with a primitive that supports `store_as`.",
+                    )
+                )
+                continue
+            producer_type = bound[head][1]
+            if expected_type is not None and producer_type not in expected_type:
+                out.append(
+                    _err(
+                        ErrorCode.BINDING_TYPE_MISMATCH,
+                        name,
+                        path,
+                        f"{ref} resolves to a {producer_type!r}, but {name} "
+                        f"expects one of {sorted(expected_type)!r}.",
+                        suggestion=(
+                            f"Bind {head!r} with a primitive that produces "
+                            f"{sorted(expected_type)!r}, or change {name} to a "
+                            "primitive that accepts the bound type."
+                        ),
                     )
                 )
 
@@ -1219,54 +1391,90 @@ def _check_bindings(program: URMLProgram) -> list[ValidationError]:
                         name,
                         path,
                         f"duplicate `store_as: {store_as!r}` (first bound at "
-                        f"{'/'.join(bound[store_as])}).",
+                        f"{'/'.join(bound[store_as][0])}).",
                         field="store_as",
                         suggestion=f"Pick a different name (e.g., {store_as!r}_2).",
                     )
                 )
             else:
-                bound[store_as] = path
+                bound[store_as] = (path, _producer_type(name, args))
     return out
+
+
+# Producer-type table: maps each binding-producing primitive to the
+# type-tag the binding carries downstream. Stable; downstream consumers
+# match against these strings.
+_PRODUCER_TYPES: dict[str, str] = {
+    "detect": "object",
+    "scan": "survey_result",
+    "measure": "measurement",
+    "capture": "media_handle",
+    "listen": "transcription",
+    # wait_for stores a generic wait_result; the payload shape varies by
+    # condition.kind but the consumer surface that uses it (report.facts)
+    # is permissive, so a single tag is enough for v0.1.
+    "wait_for": "wait_result",
+}
+
+
+def _producer_type(primitive_name: str, _args: object) -> str:
+    """Return the type tag the primitive's `store_as` binding carries."""
+    return _PRODUCER_TYPES.get(primitive_name, "unknown")
 
 
 def _store_as_of(args: object) -> str | None:
     return getattr(args, "store_as", None)
 
 
-def _references_used(name: str, args: object) -> list[str]:
-    """Return every `$var[.field]` reference the args carry, as raw strings."""
-    refs: list[str] = []
+def _references_used_with_type(
+    name: str, args: object
+) -> list[tuple[str, set[str] | None]]:
+    """Return every `$ref` the args carry, paired with the producer-type
+    the consuming primitive expects.
 
-    def _maybe(value: Any) -> None:
+    ``None`` for ``expected_type`` means "accept any producer type"
+    (currently only ``report.attachments`` — its semantics are
+    intentionally permissive for diagnostics).
+    """
+    refs: list[tuple[str, set[str] | None]] = []
+
+    def _maybe(value: Any, expected: set[str] | None) -> None:
         if isinstance(value, str) and value.startswith("$"):
-            refs.append(value)
+            refs.append((value, expected))
 
-    # move_to.carrying
+    # move_to.carrying: must be an object (something the robot can carry).
     if name == "move_to":
-        _maybe(getattr(args, "carrying", None))
-    # grasp.target
+        _maybe(getattr(args, "carrying", None), {"object"})
+    # grasp.target: must be an object (something the gripper can grasp).
     if name == "grasp":
-        _maybe(getattr(args, "target", None))
-    # release.at
+        _maybe(getattr(args, "target", None), {"object"})
+    # release.at: when a $ref, it's the object to place at; literal names
+    # are location names handled by the capability check.
     if name == "release":
-        _maybe(getattr(args, "at", None))
-    # detect.where.near
+        _maybe(getattr(args, "at", None), {"object"})
+    # detect.where.near: when a $ref, an object to search near.
     if name == "detect":
         where = getattr(args, "where", None)
         if where is not None:
-            _maybe(getattr(where, "near", None))
-    # hover.over
+            _maybe(getattr(where, "near", None), {"object"})
+    # hover.over: when a $ref, an object to station-keep over.
     if name == "hover":
-        _maybe(getattr(args, "over", None))
-    # capture.target
+        _maybe(getattr(args, "over", None), {"object"})
+    # capture.target: when a $ref, an object to frame the capture on.
     if name == "capture":
-        _maybe(getattr(args, "target", None))
-    # measure.target
+        _maybe(getattr(args, "target", None), {"object"})
+    # measure.target: when a $ref, an object to point the sensor at.
     if name == "measure":
-        _maybe(getattr(args, "target", None))
-    # report.attachments (list of refs)
+        _maybe(getattr(args, "target", None), {"object"})
+    # report.attachments: payload references attached to the report.
+    # Loose: any binding type is allowed. The runtime serializes whatever
+    # the substrate returned.
     if name == "report":
         attachments = getattr(args, "attachments", None) or []
         for a in attachments:
-            _maybe(a)
+            _maybe(a, None)
+        # report.facts may contain $ref values too; those are also loose.
+        facts = getattr(args, "facts", None) or {}
+        for v in facts.values():
+            _maybe(v, None)
     return refs

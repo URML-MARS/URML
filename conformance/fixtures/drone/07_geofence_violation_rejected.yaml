@@ -1,0 +1,30 @@
+name: drone/geofence_violation_rejected
+description: >
+  Drone program with a move_to pose that lies outside the envelope's
+  declared geofence allowlist. Pass 3 (safety envelope) must emit
+  `envelope.geofence_violation` and reject the program. The geofence
+  polygon (declared in `drone_with_geofence` envelope) covers
+  (-5,-5)..(15,15) in the `agl` frame; the program targets (50, 50),
+  which is well outside.
+
+manifest: drone_civilian
+envelope: drone_with_geofence
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to:
+          pose: { x: 50.0, y: 50.0, z: 30.0 }
+          frame: agl
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

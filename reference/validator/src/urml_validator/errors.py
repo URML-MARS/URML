@@ -58,10 +58,12 @@ class ErrorCode(StrEnum):
     ENVELOPE_ALTITUDE_EXCEEDED = "envelope.altitude_exceeded"
     ENVELOPE_PAYLOAD_EXCEEDED = "envelope.payload_exceeded"
     ENVELOPE_FORCE_EXCEEDED = "envelope.force_exceeded"
+    ENVELOPE_GEOFENCE_VIOLATION = "envelope.geofence_violation"
 
     # Pass 4 — variable bindings.
     BINDING_DUPLICATE_STORE_AS = "binding.duplicate_store_as"
     BINDING_UNRESOLVED_REFERENCE = "binding.unresolved_reference"
+    BINDING_TYPE_MISMATCH = "binding.type_mismatch"
 
     # Pass 5 — compliance policy (RFC-0004).
     # The policy namespace is reserved; policy authors may emit any

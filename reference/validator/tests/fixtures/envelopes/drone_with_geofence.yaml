@@ -1,0 +1,20 @@
+# Fixture: drone envelope with a declared geofence.
+# A small allowlist polygon centered near origin in the `agl` frame.
+# Used by the geofence rejection conformance fixture; the drone manifest's
+# declared `home` (0, 0) and `roof_north` (10, 5) both lie inside.
+
+envelope_version: "0.1"
+deployment_id: drone_geofenced
+description: Drone envelope with a tight geofence around the inspection area.
+
+max_velocity: 10.0
+max_altitude: 120.0
+
+geofences:
+  - name: inspection_area
+    frame: agl
+    vertices:
+      - [-5.0, -5.0]
+      - [15.0, -5.0]
+      - [15.0, 15.0]
+      - [-5.0, 15.0]
