@@ -44,7 +44,7 @@ See [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.m
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI shipped; EchoProvider for tests); revision loop with policy-error short-circuit | ✅ 67 unit tests |
 | **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass | ✅ 24 fixtures (home + drone + compliance + policy-override) |
-| **CLI** — `urml validate`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init` | ✅ All five subcommands |
+| **CLI** — `urml validate`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All six subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
 | **Real ROS 2 adapter** — production-grade rclpy adapter | ⏳ Phase 1+ |
 | **PX4 reference runtime** — second reference runtime, targets the drone profile | ⏳ Phase 2 |
@@ -114,6 +114,8 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 | Connect URML to an LLM | [Tutorial 3: Natural language to URML](docs/tutorials/03-natural-language-to-urml.md) |
 | Understand governance and the open-source posture | [`GOVERNANCE.md`](GOVERNANCE.md), [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) |
 | Contribute (Phase 1+) | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| List your runtime in the registry | [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md) |
+| Browse runtimes that report URML compatibility | [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) |
 | Report a security issue | [`SECURITY.md`](SECURITY.md) |
 
 ---
@@ -123,6 +125,12 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 For the duration of Phase 0, the artifact under review is the manifesto and the v0.1 implementation. The author welcomes critique of the primitive vocabulary, the layer boundaries, the strategic posture, pointers to prior art, and use cases that strain the current architecture.
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to reach the author.
+
+---
+
+## Compatible Runtimes
+
+If you build a runtime that translates URML into a substrate (ROS 2, PX4, vendor SDK, anything else), you can self-report compatibility by running the public conformance suite and opening a PR. See [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md) for the five-step flow, [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) for the current entries, and [`TRADEMARK.md`](TRADEMARK.md) for what listing does and does not grant. The registry is free and opt-in. There is no URML-Certified mark in use yet; that is a Phase 4 program.
 
 ---
 

@@ -3,12 +3,17 @@
 Subcommands:
 
   urml validate PROGRAM --manifest MANIFEST [--envelope ENVELOPE] [--profile NAME]... [--json]
+  urml schema --name NAME | --all --out-dir DIR
+  urml translate REQUEST --manifest MANIFEST [...]
+  urml emit-prompt --manifest MANIFEST [...]
+  urml init DIRECTORY [--profile NAME] [--force]
+  urml conformance run [--output PATH]
 
 Exit codes:
 
-  0   validation accepted (no errors; warnings are still printed)
-  1   validation failed (one or more error-severity errors)
-  2   usage error (missing files, bad YAML, bad arguments)
+  0   command succeeded (validation accepted, conformance all-passed, etc.)
+  1   command failed at the spec level (validation errors, conformance failures)
+  2   usage error (missing files, bad YAML, bad arguments, optional dep missing)
   64  internal error (an unhandled exception bubbled out of validate())
 
 The CLI is a thin wrapper around `urml_validator.validate()`. All semantics
@@ -336,6 +341,38 @@ def build_parser() -> argparse.ArgumentParser:
         help="Allow writing into a non-empty directory; existing files are overwritten.",
     )
     p_init.set_defaults(func=cmd_init)
+
+    # ---- urml conformance ----
+    p_conformance = subparsers.add_parser(
+        "conformance",
+        help="Run the URML conformance suite against a runtime.",
+        description=(
+            "Run the public URML conformance suite and emit a structured report. "
+            "Used by runtime authors to produce the JSON artifact required for "
+            "the Compatible Runtimes registry. Requires the urml-conformance "
+            "package (install with: pip install urml-conformance)."
+        ),
+    )
+    p_conformance_sub = p_conformance.add_subparsers(
+        dest="conformance_command", required=True, metavar="SUBCOMMAND"
+    )
+    p_conformance_run = p_conformance_sub.add_parser(
+        "run",
+        help="Run every fixture in the bundled suite and emit a report.",
+        description=(
+            "Run every fixture against the default hermetic adapter and emit a "
+            "ConformanceReport. Exit 0 if all fixtures pass, 1 if any fail."
+        ),
+    )
+    p_conformance_run.add_argument(
+        "--output",
+        "-o",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Write the JSON report to PATH (creates parents as needed).",
+    )
+    p_conformance_run.set_defaults(func=cmd_conformance_run)
 
     return parser
 
@@ -740,6 +777,40 @@ def cmd_init(args: argparse.Namespace) -> int:
         file=sys.stderr,
     )
     return 0
+
+
+# ---------------------------------------------------------------------------
+# `urml conformance run`
+# ---------------------------------------------------------------------------
+
+
+def cmd_conformance_run(args: argparse.Namespace) -> int:
+    """Implement the `urml conformance run` subcommand.
+
+    The `urml-conformance` package is an optional dependency of `urml-validator`
+    (it depends on the validator, so installing it pulls validator in but not
+    vice versa). The import is lazy so `urml validate` and `urml schema` work
+    even when the conformance suite isn't installed.
+    """
+    try:
+        from urml_conformance import ConformanceRunner  # type: ignore[import-not-found,unused-ignore]
+    except ImportError:
+        print(
+            "urml: error: `conformance` requires urml-conformance.\n"
+            "  Install with: pip install urml-conformance",
+            file=sys.stderr,
+        )
+        return 2
+
+    report = ConformanceRunner().run()
+
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(report.model_dump_json(indent=2), encoding="utf-8")
+        print(f"wrote {args.output}", file=sys.stderr)
+
+    print(report.render(), file=sys.stderr)
+    return 0 if report.all_passed else 1
 
 
 # ---------------------------------------------------------------------------

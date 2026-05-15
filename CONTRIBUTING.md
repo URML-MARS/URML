@@ -97,6 +97,14 @@ From [`CLAUDE.md`](CLAUDE.md) §Working Conventions:
 - All examples in spec documents must be runnable against the current reference runtime. A broken example is fixed or removed in the same commit — never left dangling.
 - One thought per paragraph. Bullets only when the items are genuinely parallel and discrete.
 
+## Listing a Runtime in the Compatible Runtimes Registry
+
+Runtime authors (third parties or the URML organization itself) who want their runtime listed in [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) follow a separate flow from code or spec contributions. The flow is documented in [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md). At a glance: run the conformance suite against your runtime, commit the report at a pinned commit in your repo, open a PR adding a row.
+
+The registry is self-reported. The maintainer reviews PRs for completeness, not for code or fitness. The URML-Certified mark, the future paid certification program, is reserved for Phase 4 and is not part of the registry. See [`TRADEMARK.md`](TRADEMARK.md) for the boundary.
+
+Registry submissions use a dedicated PR template (`?template=registry-submission.md`) so the row data and the trademark-acknowledgement checkbox land in one place.
+
 ## Code of Conduct
 
 This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). All contributors and engagement participants — including during Phase 0 — are expected to follow it.
