@@ -17,9 +17,16 @@ from urml_validator.schemas.common import Identifier
 
 
 class GeofencePolygon(BaseModel):
-    """A polygon outside which the robot refuses to move.
+    """A 2D polygon (footprint) optionally bounded above and below by altitude.
 
-    Coordinates are expressed in the frame named by `frame`.
+    Coordinates are expressed in the frame named by `frame`. The robot
+    must stay inside the polygon's footprint AND (when set) within the
+    declared altitude band. ``min_altitude`` and ``max_altitude`` are
+    independent — supply only the bounds the deployment actually needs.
+
+    Altitudes are in the frame's altitude reference (typically meters AGL
+    for `agl` frames). The validator treats containment as inclusive at
+    both bounds (a point exactly at `max_altitude` is inside).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -27,6 +34,15 @@ class GeofencePolygon(BaseModel):
     name: Identifier
     frame: Identifier
     vertices: list[tuple[float, float]] = Field(..., min_length=3)
+    min_altitude: float | None = Field(
+        None,
+        description="Lower altitude bound (inclusive). When omitted, no floor is enforced.",
+    )
+    max_altitude: float | None = Field(
+        None,
+        ge=0,
+        description="Upper altitude bound (inclusive). When omitted, no ceiling is enforced.",
+    )
 
 
 class WeatherThresholds(BaseModel):

@@ -1,0 +1,32 @@
+name: drone/altitude_band_violation_rejected
+description: >
+  Drone program with a move_to pose whose footprint lies inside the
+  declared geofence but whose altitude exceeds the geofence's
+  max_altitude (50 m AGL). Pass 3 must emit
+  `envelope.geofence_violation` with an "altitude band" message and
+  reject the program. Demonstrates the distinct failure mode the 3D
+  geofence schema enables: footprint OK, altitude not OK.
+
+manifest: drone_civilian
+envelope: drone_with_altitude_band
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      # Inside the footprint (-5..15, -5..15) but altitude (90 m) is
+      # well above the band's max (50 m).
+      - move_to:
+          pose: { x: 5.0, y: 5.0, z: 90.0 }
+          frame: agl
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

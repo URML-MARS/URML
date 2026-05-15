@@ -995,11 +995,13 @@ def _check_envelope(
     elif name == "return_to_home":
         out.extend(_check_envelope_return_to_home(args, manifest, envelope, path))
 
-    # Geofence containment runs for every spatial primitive; the helper
-    # returns no errors when the envelope declares no geofences (common
-    # case for home / industrial deployments).
+    # Geofence containment + occupancy-zone intrusion run for every
+    # spatial primitive. Each helper returns no errors when the envelope
+    # declares no zones of its kind (the common case for home /
+    # industrial deployments).
     if name in {"move_to", "scan"}:
         out.extend(_check_envelope_geofence(step, manifest, envelope, path))
+        out.extend(_check_envelope_occupancy_zones(step, manifest, envelope, path))
 
     return out
 
@@ -1213,39 +1215,151 @@ def _point_in_polygon(point: tuple[float, float], polygon: list[tuple[float, flo
     return inside
 
 
+def _altitude_in_band(z: float | None, geofence: Any) -> bool:
+    """True iff ``z`` satisfies the geofence's altitude band (if any).
+
+    Returns True when ``z`` is None (caller has no altitude information —
+    treat as "altitude unconstrained at this site"). Returns True when
+    the geofence declares no altitude bounds. Otherwise enforces
+    ``min_altitude <= z <= max_altitude`` inclusively, with either bound
+    treated as -inf / +inf when omitted.
+    """
+    if z is None:
+        return True
+    min_alt = getattr(geofence, "min_altitude", None)
+    max_alt = getattr(geofence, "max_altitude", None)
+    if min_alt is not None and z < min_alt:
+        return False
+    if max_alt is not None and z > max_alt:
+        return False
+    return True
+
+
 def _check_point_in_any_geofence(
     point: tuple[float, float],
     frame: str,
     envelope: SafetyEnvelope | None,
-) -> tuple[bool, list[str]]:
+    z: float | None = None,
+) -> tuple[bool, list[str], str | None]:
     """Check ``point`` (in ``frame``) against every declared geofence.
 
-    Returns ``(ok, applicable_geofence_names)``. ``ok`` is True if either
-    no geofences apply (frame mismatch) or the point lies inside at least
-    one frame-matching geofence. The list of applicable names is used in
-    diagnostics to tell the author *which* geofences were considered.
+    Returns ``(ok, applicable_geofence_names, failure_reason)``. ``ok`` is
+    True if either no geofences apply (frame mismatch) or the point lies
+    inside at least one frame-matching geofence AND (when ``z`` is
+    provided) within that geofence's altitude band. The list of
+    applicable names is used in diagnostics to tell the author *which*
+    geofences were considered. ``failure_reason`` is ``"footprint"`` if
+    the (x, y) was outside every footprint, or ``"altitude"`` if at least
+    one footprint matched but no matching geofence's altitude band
+    accepted ``z``; it is None on success.
     """
     if envelope is None or not envelope.geofences:
-        return True, []
+        return True, [], None
     applicable = [g for g in envelope.geofences if g.frame == frame]
     if not applicable:
         # No geofence declared in this frame — author is responsible for
         # frame discipline; the envelope check abstains here.
-        return True, []
+        return True, [], None
+    footprint_match = False
     for g in applicable:
         if _point_in_polygon(point, g.vertices):
-            return True, [g.name]
-    return False, [g.name for g in applicable]
+            footprint_match = True
+            if _altitude_in_band(z, g):
+                return True, [g.name], None
+    reason = "altitude" if footprint_match else "footprint"
+    return False, [g.name for g in applicable], reason
+
+
+def _check_point_in_any_occupancy_zone(
+    point: tuple[float, float],
+    frame: str,
+    envelope: SafetyEnvelope | None,
+) -> tuple[bool, str | None]:
+    """Check ``point`` against people-occupancy zones.
+
+    Returns ``(ok, intruded_zone_name)``. **Denylist** semantics: ``ok``
+    is False iff the point lies inside at least one frame-matching
+    occupancy zone whose ``allow_override`` is False. Zones with
+    ``allow_override: true`` are deployer-acknowledged risks and do not
+    reject the program (the deployment has accepted the trade-off).
+    """
+    if envelope is None or not envelope.people_occupancy_zones:
+        return True, None
+    for zone in envelope.people_occupancy_zones:
+        if zone.frame != frame:
+            continue
+        if zone.allow_override:
+            continue
+        if _point_in_polygon(point, zone.vertices):
+            return False, zone.name
+    return True, None
 
 
 def _location_pose_in_manifest(
     name: str, manifest: CapabilityManifest
-) -> tuple[float, float, str] | None:
-    """Look up a declared location and return (x, y, frame), or None."""
+) -> tuple[float, float, float | None, str] | None:
+    """Look up a declared location and return (x, y, z_or_None, frame), or None."""
     for loc in manifest.declared_locations or []:
         if loc.name == name:
-            return float(loc.pose.x), float(loc.pose.y), loc.frame
+            z = float(loc.pose.z) if loc.pose.z is not None else None
+            return float(loc.pose.x), float(loc.pose.y), z, loc.frame
     return None
+
+
+def _collect_spatial_targets(
+    step: Step,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope,
+) -> list[tuple[tuple[float, float], float | None, str, str]]:
+    """Return spatial targets a step exposes for geofence/occupancy checks.
+
+    Each entry: ``((x, y), z_or_None, frame, field_label)``. Shared
+    between the geofence and occupancy-zone checks so a primitive whose
+    target violates both surfaces produces both errors with consistent
+    field labels.
+    """
+    name = step.primitive_name
+    args = getattr(step, name)
+    targets: list[tuple[tuple[float, float], float | None, str, str]] = []
+
+    if name == "move_to":
+        if args.pose is not None and args.frame is not None:
+            z = float(args.pose.z) if args.pose.z is not None else None
+            targets.append(((args.pose.x, args.pose.y), z, args.frame, "pose"))
+        elif isinstance(args.location, str):
+            resolved = _location_pose_in_manifest(args.location, manifest)
+            if resolved is not None:
+                rx, ry, rz, rframe = resolved
+                targets.append(((rx, ry), rz, rframe, "location"))
+    elif name == "scan":
+        bbox = args.area.bounding_box
+        polygon = args.area.polygon
+        # scan.altitude applies to the whole surveyed area; same z for every corner/vertex.
+        scan_z = float(args.altitude) if args.altitude is not None else None
+        # Pick the first applicable frame from whichever envelope surface
+        # has zones declared. Geofence frame first; fall back to
+        # occupancy-zone frame; finally the literal "map" sentinel.
+        frame = (
+            envelope.geofences[0].frame
+            if envelope.geofences
+            else (
+                envelope.people_occupancy_zones[0].frame
+                if envelope.people_occupancy_zones
+                else "map"
+            )
+        )
+        if bbox is not None:
+            for label, corner in (
+                ("min_x,min_y", (bbox["min_x"], bbox["min_y"])),
+                ("max_x,min_y", (bbox["max_x"], bbox["min_y"])),
+                ("max_x,max_y", (bbox["max_x"], bbox["max_y"])),
+                ("min_x,max_y", (bbox["min_x"], bbox["max_y"])),
+            ):
+                targets.append((corner, scan_z, frame, f"area.bounding_box[{label}]"))
+        elif polygon is not None and polygon:
+            for idx, vertex in enumerate(polygon):
+                targets.append(((vertex.x, vertex.y), scan_z, frame, f"area.polygon[{idx}]"))
+    return targets
 
 
 def _check_envelope_geofence(
@@ -1257,62 +1371,94 @@ def _check_envelope_geofence(
     """Reject spatial primitives whose target lies outside all declared geofences.
 
     No-op when the envelope declares no geofences (the common case for
-    home / industrial deployments).
+    home / industrial deployments). When a geofence declares an altitude
+    band (``min_altitude`` / ``max_altitude``), targets whose footprint
+    is inside but altitude is outside the band also reject — with a
+    distinct ``failure_reason`` of ``"altitude"`` so authors know whether
+    to move the target in plan, in altitude, or both.
     """
     if envelope is None or not envelope.geofences:
         return []
     name = step.primitive_name
-    args = getattr(step, name)
     out: list[ValidationError] = []
 
-    # Each entry: (point, frame, field_label). field_label feeds the error.
-    targets: list[tuple[tuple[float, float], str, str]] = []
-
-    if name == "move_to":
-        if args.pose is not None and args.frame is not None:
-            targets.append(((args.pose.x, args.pose.y), args.frame, "pose"))
-        elif isinstance(args.location, str):
-            resolved = _location_pose_in_manifest(args.location, manifest)
-            if resolved is not None:
-                rx, ry, rframe = resolved
-                targets.append(((rx, ry), rframe, "location"))
-    elif name == "scan":
-        bbox = args.area.bounding_box
-        polygon = args.area.polygon
-        if bbox is not None:
-            # All four corners must be inside. Use a synthetic frame "map"
-            # if none is set — bbox lives in the envelope's frame, which
-            # the spec does not currently encode. Conservative default:
-            # check against geofences whose frame is the first applicable.
-            frame = envelope.geofences[0].frame
-            for label, corner in (
-                ("min_x,min_y", (bbox["min_x"], bbox["min_y"])),
-                ("max_x,min_y", (bbox["max_x"], bbox["min_y"])),
-                ("max_x,max_y", (bbox["max_x"], bbox["max_y"])),
-                ("min_x,max_y", (bbox["min_x"], bbox["max_y"])),
-            ):
-                targets.append((corner, frame, f"area.bounding_box[{label}]"))
-        elif polygon is not None and polygon:
-            frame = envelope.geofences[0].frame
-            for idx, vertex in enumerate(polygon):
-                targets.append(((vertex.x, vertex.y), frame, f"area.polygon[{idx}]"))
-
-    for point, frame, field_label in targets:
-        ok, applicable = _check_point_in_any_geofence(point, frame, envelope)
+    for point, z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
+        ok, applicable, reason = _check_point_in_any_geofence(point, frame, envelope, z=z)
         if not ok:
+            if reason == "altitude":
+                # Footprint matched, altitude band did not.
+                message = (
+                    f"{name}.{field_label} ({point[0]}, {point[1]}, alt={z}) is inside "
+                    f"the footprint of a declared geofence but outside its altitude "
+                    f"band ({applicable!r})."
+                )
+                suggestion = (
+                    "Choose an altitude within the geofence's "
+                    "[min_altitude, max_altitude] band, widen the band, or remove "
+                    "the band entirely."
+                )
+            else:
+                message = (
+                    f"{name}.{field_label} ({point[0]}, {point[1]}) in frame "
+                    f"{frame!r} lies outside every declared geofence "
+                    f"({applicable!r})."
+                )
+                suggestion = (
+                    "Move the target inside a declared geofence, "
+                    "add a geofence that covers this point, or remove "
+                    "the geofence restriction from the envelope."
+                )
             out.append(
                 _err(
                     ErrorCode.ENVELOPE_GEOFENCE_VIOLATION,
                     name,
                     path,
+                    message,
+                    field=field_label,
+                    suggestion=suggestion,
+                )
+            )
+    return out
+
+
+def _check_envelope_occupancy_zones(
+    step: Step,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """Reject spatial primitives that enter declared people-occupancy zones.
+
+    Denylist semantics: a target inside *any* declared occupancy zone
+    (whose ``allow_override`` is False) rejects the program. Zones with
+    ``allow_override: true`` are deployer-acknowledged risks and the
+    validator abstains on them.
+
+    No-op when the envelope declares no occupancy zones.
+    """
+    if envelope is None or not envelope.people_occupancy_zones:
+        return []
+    name = step.primitive_name
+    out: list[ValidationError] = []
+
+    for point, _z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
+        ok, zone_name = _check_point_in_any_occupancy_zone(point, frame, envelope)
+        if not ok:
+            out.append(
+                _err(
+                    ErrorCode.ENVELOPE_OCCUPANCY_ZONE_INTRUSION,
+                    name,
+                    path,
                     f"{name}.{field_label} ({point[0]}, {point[1]}) in frame "
-                    f"{frame!r} lies outside every declared geofence "
-                    f"({applicable!r}).",
+                    f"{frame!r} enters the declared people-occupancy zone "
+                    f"{zone_name!r}. Programs that route the robot through "
+                    "people-occupancy zones are rejected by default.",
                     field=field_label,
                     suggestion=(
-                        "Move the target inside a declared geofence, "
-                        "add a geofence that covers this point, or remove "
-                        "the geofence restriction from the envelope."
+                        "Re-route the target around the occupancy zone, OR "
+                        "mark the zone with `allow_override: true` in the "
+                        "envelope if the deployment has explicitly accepted "
+                        "the risk."
                     ),
                 )
             )

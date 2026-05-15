@@ -59,6 +59,7 @@ class ErrorCode(StrEnum):
     ENVELOPE_PAYLOAD_EXCEEDED = "envelope.payload_exceeded"
     ENVELOPE_FORCE_EXCEEDED = "envelope.force_exceeded"
     ENVELOPE_GEOFENCE_VIOLATION = "envelope.geofence_violation"
+    ENVELOPE_OCCUPANCY_ZONE_INTRUSION = "envelope.occupancy_zone_intrusion"
 
     # Pass 4 — variable bindings.
     BINDING_DUPLICATE_STORE_AS = "binding.duplicate_store_as"

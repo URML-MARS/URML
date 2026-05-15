@@ -1,0 +1,29 @@
+name: drone/occupancy_zone_intrusion_rejected
+description: >
+  Drone program with a move_to pose that enters a declared
+  people-occupancy zone. Pass 3 must emit
+  `envelope.occupancy_zone_intrusion` and reject the program. The
+  occupancy zone (-3,-3)..(3,3) covers a spectator area near origin;
+  the program targets (0, 0), squarely inside.
+
+manifest: drone_civilian
+envelope: drone_with_occupancy_zone
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to:
+          pose: { x: 0.0, y: 0.0, z: 30.0 }
+          frame: agl
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

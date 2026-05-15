@@ -1,0 +1,23 @@
+# Fixture: drone envelope with a 3D geofence (footprint + altitude band).
+# Same footprint as drone_with_geofence (-5,-5)..(15,15) but with a tight
+# 10..50 m AGL altitude band. Used by the altitude-band rejection
+# conformance fixture; a move_to inside the footprint but above 50 m
+# triggers `envelope.geofence_violation` with an "altitude band" message.
+
+envelope_version: "0.1"
+deployment_id: drone_capped_altitude
+description: Drone envelope with a 3D geofence (footprint + altitude band).
+
+max_velocity: 10.0
+max_altitude: 120.0
+
+geofences:
+  - name: inspection_area_capped
+    frame: agl
+    vertices:
+      - [-5.0, -5.0]
+      - [15.0, -5.0]
+      - [15.0, 15.0]
+      - [-5.0, 15.0]
+    min_altitude: 10.0
+    max_altitude: 50.0
