@@ -6,4 +6,4 @@ string without triggering circular imports through `__init__.py`.
 
 from __future__ import annotations
 
-__version__: str = "0.1.0a1"
+__version__: str = "0.1.0"
