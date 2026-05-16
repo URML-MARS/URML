@@ -37,17 +37,20 @@ See [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.m
 
 ## What URML gives you
 
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (as of 2026-05-16).
+
 | Capability | State |
 |---|---|
-| **Five-pass static validator** — argument typing, capability checks against a manifest, safety-envelope tightening, variable-binding analysis, compliance policy | ✅ Implemented, 134 unit tests |
-| **17 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 5 profile-extensions across home (`speak`, `listen`) and drone (`take_off`, `land`, `return_to_home`) | ✅ Validator + home runtime; drone runtime is a near-term follow-up |
+| **Five-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 188 unit tests |
+| **17 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 5 profile-extensions across home (`speak`, `listen`) and drone (`take_off`, `land`, `return_to_home`) | ✅ Validator + reference-runtime executors for all 17 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
-| **LLM bridge** — provider-agnostic (Anthropic + OpenAI shipped; EchoProvider for tests); revision loop with policy-error short-circuit | ✅ 67 unit tests |
-| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass | ✅ 24 fixtures (home + drone + compliance + policy-override) |
+| **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial few-shots | ✅ 77 unit tests |
+| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run` | ✅ 32 fixtures (home + drone + industrial + compliance + policy-override) |
 | **CLI** — `urml validate`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All six subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
-| **Real ROS 2 adapter** — production-grade rclpy adapter | ⏳ Phase 1+ |
-| **PX4 reference runtime** — second reference runtime, targets the drone profile | ⏳ Phase 2 |
+| **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; end-to-end verified against a live TurtleBot 4 + Nav2 Gazebo simulation (gated CI, green ×3) |
+| **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
+| **CompositeAdapter** — one URML program across two substrates: PX4 flight + a ROS 2 companion, per-method routing | ✅ Implemented |
 
 ---
 
@@ -97,7 +100,7 @@ See [RFC-0003](docs/rfcs/0003-us-alignment.md) for the strategic decision and tr
 
 **Phase 0** — pre-public draft, solo author working in public. The artifact under review is the manifesto itself plus the implementation that backs it. Direct code contributions open in Phase 1 (see [`GOVERNANCE.md`](GOVERNANCE.md) for the phased plan).
 
-What works today is what the table above lists as `✅`. What's planned is in [`MANIFESTO.md`](MANIFESTO.md) §Roadmap Snapshot. The decision history is in [`docs/rfcs/`](docs/rfcs/); five RFCs are filed as of this writing.
+What works today is what the table above lists as `✅`. What's planned is in [`MANIFESTO.md`](MANIFESTO.md) §Roadmap Snapshot. The decision history is in [`docs/rfcs/`](docs/rfcs/); seven RFCs are filed and accepted (0001–0007).
 
 ---
 
