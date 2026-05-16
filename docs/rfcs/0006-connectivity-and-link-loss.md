@@ -2,7 +2,7 @@
 rfc: 0006
 title: Connectivity as an abstract capability and link-loss as a validated safety contract
 author: Ido Yahalomi (ido@jacob-ai.com)
-state: Accepted
+state: Implemented
 created: 2026-05-16
 updated: 2026-05-16
 supersedes: —
