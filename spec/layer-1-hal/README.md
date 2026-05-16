@@ -80,6 +80,16 @@ Field-by-field:
 
 The `provenance:` block is part of the v0.1 schema (`manifest_version: "0.1"`) and is fully implemented in the reference validator. The accompanying policy enforcement specification is in [`policy.md`](policy.md); the strategic and technical decision history is in [RFC-0003](../../docs/rfcs/0003-us-alignment.md) and [RFC-0004](../../docs/rfcs/0004-compliance-policy.md).
 
+## Connectivity (RFC-0006)
+
+Added by [RFC-0006](../../docs/rfcs/0006-connectivity-and-link-loss.md). The capability manifest carries an optional `connectivity:` block declaring the abstract *link roles* the robot supports. Like `provenance:`, it is opt-in: a manifest without a `connectivity:` block, paired with an envelope that declares no link-loss rule, triggers no connectivity errors.
+
+A link *role* is an abstraction — `command_link` (operator/supervisor → robot control), `telemetry_link` (robot → operator status), `peer_link` (robot ↔ robot; declared now, no behavioural semantics until a future multi-robot RFC), `payload_link` (bulk mission/sensor data). **The transport medium that carries a role — WiFi, 5G, LTE, RF, fibre — is Layer 0 and is deliberately not modelled by URML.** This is a hard boundary, not an omission: a manifest that named a radio would fail the substrate-neutrality acid test.
+
+Each declared link carries abstract properties only: `required_for_operation`, `autonomous_when_lost`, an optional declared `max_outage_seconds` tolerance, and an ordered `assurance_class` (`best_effort` < `monitored` < `assured` < `safety_critical`). `assurance_class` is the reconciliation of "express the communications requirement as intent" without coupling to a medium: intent may depend on a link's *assurance*, never on its radio. The ordering is deliberate so a future regulatory rule (e.g. a beyond-visual-line-of-sight command-and-control assurance floor) can require `>= assured` additively; RFC-0006 itself ships no such rule.
+
+The deployment-time counterpart — what the robot must *do* when a declared link is lost — lives in the safety envelope's `link_loss_policy`, not here. The validator (Pass 2 and Pass 3) statically rejects a policy whose action the manifest cannot satisfy; see [RFC-0006](../../docs/rfcs/0006-connectivity-and-link-loss.md) §Detailed design.
+
 ## Conformance points
 
 When this layer is drafted, the conformance suite will test:
