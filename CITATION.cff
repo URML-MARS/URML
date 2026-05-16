@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: >-
+  If you use or reference URML (the Universal Robot Language) in academic
+  work, please cite it using these metadata.
+title: "URML — Universal Robot Language"
+abstract: >-
+  An open specification and reference implementation for describing robot
+  intent: a small, human-readable language that sits above robot operating
+  systems (ROS 2, PX4, vendor SDKs) and below language models. Every URML
+  program is statically verified against the robot's declared capabilities,
+  the active safety envelope, and a deployment compliance policy before any
+  actuator moves.
+type: software
+authors:
+  - given-names: Ido
+    family-names: Yahalomi
+    email: greenvh@gmail.com
+repository-code: "https://github.com/URML-MARS/URML"
+url: "https://github.com/URML-MARS/URML"
+license: Apache-2.0
+keywords:
+  - robotics
+  - large language models
+  - formal verification
+  - ROS 2
+  - PX4
+  - robot safety
+# `version` and `date-released` are intentionally omitted until the first
+# tagged PyPI release. Cite the repository + commit until then; this avoids
+# asserting a released version that does not yet exist (RELEASING.md).
