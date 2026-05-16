@@ -15,6 +15,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0004](0004-compliance-policy.md) | Compliance policy enforcement | Accepted | 2026-05-13 |
 | [0005](0005-hbom-parsing.md) | Structured HBOM parsing for Pass 5 | Draft | 2026-05-13 |
 | [0006](0006-connectivity-and-link-loss.md) | Connectivity as an abstract capability and link-loss as a validated safety contract | Implemented | 2026-05-16 |
+| [0007](0007-manufacturer-go-to-market.md) | Manufacturer go-to-market: URML as an opportunity and a channel for robot OEMs and component makers | Draft | 2026-05-16 |
 
 ## Lifecycle states
 
