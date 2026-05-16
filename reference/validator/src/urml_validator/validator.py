@@ -48,6 +48,7 @@ from pydantic import ValidationError as PydanticValidationError
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
 from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
+from urml_validator.schemas.connectivity import LinkLossAction
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
@@ -175,10 +176,14 @@ def validate(
     # ----- Pass 2: capability checks -----
     for path, step in walk_program(program_model):
         errors.extend(_check_capabilities(step, manifest_model, path))
+    # RFC-0006: connectivity is a whole-program capability check.
+    errors.extend(_check_connectivity_caps(manifest_model, envelope_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
         errors.extend(_check_envelope(step, manifest_model, envelope_model, path))
+    # RFC-0006: link-loss policy coherence is a whole-envelope check.
+    errors.extend(_check_link_loss_coherence(manifest_model, envelope_model))
 
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
@@ -1460,6 +1465,224 @@ def _check_envelope_occupancy_zones(
                         "envelope if the deployment has explicitly accepted "
                         "the risk."
                     ),
+                )
+            )
+    return out
+
+
+# =============================================================================
+# RFC-0006: connectivity capability (Pass 2) + link-loss coherence (Pass 3)
+# =============================================================================
+#
+# These are whole-program checks, not per-step: they reason over the manifest's
+# abstract `connectivity` block and the envelope's structured `link_loss_policy`.
+# They are appended after the existing Pass-2 and Pass-3 step loops in
+# `validate()`. Both are no-ops when the envelope declares no link-loss rules
+# (the feature is opt-in at both ends, exactly like `provenance`/Pass 5).
+#
+# Role-existence is owned by Pass 2; action/outage coherence is owned by Pass 3.
+# The two are mutually exclusive by construction (Pass 3 skips a rule whose role
+# is undeclared), so a single root cause never produces two reports:
+#   - `capability.missing_link_role`        : manifest declares no `connectivity`
+#                                             block at all, but a rule needs one.
+#   - `envelope.link_loss_undeclared_role`  : `connectivity` exists but omits the
+#                                             specific role a rule governs.
+
+
+def _link_loss_envelope_error(
+    code: ErrorCode,
+    rule_index: int,
+    message: str,
+    suggestion: str,
+) -> ValidationError:
+    """Build an envelope-scoped (non-primitive) link-loss error.
+
+    Uses the same shape as `_err` so the LLM-bridge revision contract is
+    unchanged; `primitive` is None because link-loss is a deployment concern,
+    not a program step.
+    """
+    return ValidationError(
+        code=code,
+        primitive=None,
+        path=["<envelope>", "link_loss_policy", str(rule_index)],
+        field="action",
+        message=message,
+        suggestion=suggestion,
+    )
+
+
+def _check_connectivity_caps(
+    manifest: CapabilityManifest, envelope: SafetyEnvelope | None
+) -> list[ValidationError]:
+    """Pass 2: a manifest with no `connectivity` block cannot honor a policy.
+
+    Fires once (deduped by role) when the envelope declares a link-loss rule
+    but the manifest declares no connectivity at all. The narrower
+    "connectivity present but this role missing" case is owned by Pass 3.
+    """
+    out: list[ValidationError] = []
+    if envelope is None or not envelope.link_loss_policy:
+        return out
+    if manifest.connectivity is not None:
+        return out  # role-level coherence is Pass 3's job
+    seen: set[str] = set()
+    for rule in envelope.link_loss_policy:
+        if rule.role.value in seen:
+            continue
+        seen.add(rule.role.value)
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_MISSING_LINK_ROLE,
+                primitive=None,
+                path=["<manifest>", "connectivity"],
+                field="connectivity",
+                message=(
+                    f"envelope.link_loss_policy governs link role "
+                    f"{rule.role.value!r}, but the manifest declares no "
+                    f"`connectivity` block."
+                ),
+                suggestion=(
+                    "Add a `connectivity` block to the manifest declaring the "
+                    f"{rule.role.value!r} link (and any other links the "
+                    "deployment's link-loss policy governs)."
+                ),
+            )
+        )
+    return out
+
+
+def _check_link_loss_coherence(
+    manifest: CapabilityManifest, envelope: SafetyEnvelope | None
+) -> list[ValidationError]:
+    """Pass 3: each link-loss rule's action must be satisfiable by the manifest.
+
+    Reuses the same predicates the drone/hover capability checks use so the
+    contract is consistent: `return_to_home` needs a declared `home` and an
+    aerial drive_type, `hover` needs station-keeping, etc. A rule may only
+    *tighten* the manifest's declared outage tolerance, never relax it.
+    """
+    out: list[ValidationError] = []
+    if envelope is None or not envelope.link_loss_policy:
+        return out
+    connectivity = manifest.connectivity
+    mobility = manifest.mobility
+
+    for idx, rule in enumerate(envelope.link_loss_policy):
+        declared = connectivity.link_for(rule.role) if connectivity is not None else None
+
+        # Role-existence within an existing connectivity block (Pass 2 owns the
+        # "no connectivity block at all" case; skip the rest if undeclared).
+        if connectivity is not None and declared is None:
+            out.append(
+                _link_loss_envelope_error(
+                    ErrorCode.ENVELOPE_LINK_LOSS_UNDECLARED_ROLE,
+                    idx,
+                    f"link_loss_policy rule governs link role {rule.role.value!r}, "
+                    f"which the manifest's `connectivity` block does not declare.",
+                    f"Add a {rule.role.value!r} link to manifest.connectivity.links, "
+                    "or remove the rule.",
+                )
+            )
+            continue
+        if declared is None:
+            # No connectivity block at all — reported by Pass 2; nothing more
+            # this rule can be checked against.
+            continue
+
+        action = rule.action
+        if action == LinkLossAction.RETURN_TO_HOME:
+            if not _location_declared(manifest, "home"):
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        "link_loss_policy action 'return_to_home' requires a "
+                        "declared location named 'home' in manifest.declared_locations.",
+                        "Declare a 'home' location, or choose an action the "
+                        "manifest can satisfy (e.g. 'halt_and_report').",
+                    )
+                )
+            if mobility is None or mobility.drive_type not in _AERIAL_DRIVE_TYPES:
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        "link_loss_policy action 'return_to_home' requires an "
+                        "aerial drive_type (multirotor / fixed_wing / vtol).",
+                        "Use 'return_to_home' only on an aerial manifest, or "
+                        "choose a ground-appropriate action like 'halt_and_report'.",
+                    )
+                )
+        elif action == LinkLossAction.LAND_NOW:
+            if mobility is None or mobility.drive_type not in _AERIAL_DRIVE_TYPES:
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        "link_loss_policy action 'land_now' requires an aerial "
+                        "drive_type (multirotor / fixed_wing / vtol).",
+                        "Choose a ground-appropriate action like 'halt_and_report'.",
+                    )
+                )
+        elif action == LinkLossAction.HOVER:
+            if mobility is None or not mobility.station_keeping:
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        "link_loss_policy action 'hover' requires "
+                        "manifest.mobility.station_keeping: true.",
+                        "Set mobility.station_keeping: true if the robot can "
+                        "hold position, or choose another action.",
+                    )
+                )
+        elif action == LinkLossAction.HALT_AND_REPORT:
+            # Deliberately weak in v0.1: requires only that the robot has
+            # mobility (something able to stop). Documented limitation.
+            if mobility is None:
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        "link_loss_policy action 'halt_and_report' requires the "
+                        "manifest to declare `mobility`.",
+                        "Add a `mobility` block, or remove the link-loss rule.",
+                    )
+                )
+        elif action == LinkLossAction.CONTINUE_AUTONOMOUS:
+            if not declared.autonomous_when_lost:
+                out.append(
+                    _link_loss_envelope_error(
+                        ErrorCode.ENVELOPE_LINK_LOSS_INCOHERENT,
+                        idx,
+                        f"link_loss_policy action 'continue_autonomous' for link "
+                        f"{rule.role.value!r} requires that link to declare "
+                        f"`autonomous_when_lost: true`, but the manifest declares "
+                        f"it false.",
+                        "Set autonomous_when_lost: true on the declared link if "
+                        "the robot can truly continue without it, or choose a "
+                        "fail-safe action like 'return_to_home' / 'halt_and_report'.",
+                    )
+                )
+
+        # Outage tightening: a rule may only tighten the manifest's declared
+        # tolerance, never relax it (the invariant the envelope module exists for).
+        if (
+            rule.max_outage_seconds is not None
+            and declared.max_outage_seconds is not None
+            and rule.max_outage_seconds > declared.max_outage_seconds
+        ):
+            out.append(
+                _link_loss_envelope_error(
+                    ErrorCode.ENVELOPE_LINK_OUTAGE_EXCEEDS_DECLARED,
+                    idx,
+                    f"link_loss_policy rule allows a {rule.max_outage_seconds}s "
+                    f"outage for {rule.role.value!r}, looser than the manifest's "
+                    f"declared {declared.max_outage_seconds}s tolerance. An "
+                    f"envelope may only tighten, never relax.",
+                    f"Set the rule's max_outage_seconds to at most "
+                    f"{declared.max_outage_seconds}, or relax the manifest if the "
+                    "robot truly tolerates a longer outage.",
                 )
             )
     return out

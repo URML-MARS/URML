@@ -112,6 +112,17 @@ provenance:
         format: cyclonedx-1.7
         uri: ./hbom/depth_camera.cdx.json
         sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+
+# Abstract connectivity (RFC-0006). Optional: declares the link roles this
+# robot supports. Roles are abstract -- the transport medium (WiFi/5G/RF/...)
+# is the substrate's concern, never URML's. The envelope's link_loss_policy
+# governs what happens when a declared link is lost.
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: false   # a validated program runs offline
+      autonomous_when_lost: false
+      assurance_class: best_effort
 """
 
 
@@ -128,7 +139,11 @@ max_grip_force_n: 3.0
 people_occupancy_zones: []
 geofences: []
 
-link_loss_policy: halt_and_report
+# RFC-0006: structured per-role link-loss policy. If the command link drops,
+# the robot halts and reports rather than continuing blind.
+link_loss_policy:
+  - role: command_link
+    action: halt_and_report
 """
 
 

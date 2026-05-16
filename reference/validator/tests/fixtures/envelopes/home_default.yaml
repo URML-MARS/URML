@@ -11,4 +11,7 @@ max_grip_force_n: 3.0      # Below the gripper's declared 5.0 N max.
 people_occupancy_zones: []
 geofences: []
 
-link_loss_policy: halt_and_report
+# RFC-0006: link_loss_policy is now a structured per-role rule list. Empty
+# here so the red-mug regression stays green without requiring a connectivity
+# block on the manifest; the fully-declared home posture lands in RFC-0006 PR-2.
+link_loss_policy: []
