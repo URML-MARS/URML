@@ -48,6 +48,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
     "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
     "drone_civilian": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml",
+    # RFC-0006: connectivity-bearing variants.
+    "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
+    "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",
+    "ground_connectivity_no_station_keeping": _VALIDATOR_FIXTURES / "manifests" / "ground_connectivity_no_station_keeping.yaml",
+    "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
+    "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -56,6 +62,12 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "drone_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_geofence.yaml",
     "drone_with_altitude_band": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_altitude_band.yaml",
     "drone_with_occupancy_zone": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_occupancy_zone.yaml",
+    # RFC-0006: structured link-loss policies.
+    "link_loss_rth": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_rth.yaml",
+    "link_loss_continue_autonomous": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_continue_autonomous.yaml",
+    "link_loss_hover": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_hover.yaml",
+    "link_loss_outage_relaxed": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_outage_relaxed.yaml",
+    "link_loss_halt": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_halt.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

@@ -1,0 +1,25 @@
+name: drone/continue_autonomous_incoherent_rejected
+description: >
+  RFC-0006 Pass 3. The envelope says: on command-link loss, continue the
+  mission autonomously. But the manifest's command_link declares
+  `autonomous_when_lost: false` — the robot itself says it cannot. The
+  validator must reject with `envelope.link_loss_incoherent`. This is the
+  most important negative: a deployment must not assert an autonomy the
+  robot disclaims.
+
+manifest: drone_civilian_connectivity
+envelope: link_loss_continue_autonomous
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait: { duration: 5s }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.link_loss_incoherent

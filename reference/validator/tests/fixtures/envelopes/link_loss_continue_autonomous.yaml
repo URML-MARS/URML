@@ -1,0 +1,11 @@
+# RFC-0006: command-link loss should continue the mission autonomously.
+# Coherent only when the manifest's command_link declares
+# `autonomous_when_lost: true`.
+
+envelope_version: "0.1"
+deployment_id: link_loss_continue_demo
+description: Command-link loss continues autonomously (requires autonomous_when_lost).
+
+link_loss_policy:
+  - role: command_link
+    action: continue_autonomous

@@ -1,0 +1,28 @@
+# Fixture: a ground robot that declares a command_link but cannot hold
+# station (RFC-0006). Used to prove a `hover` link-loss action is rejected
+# as incoherent: hover requires mobility.station_keeping, which is false
+# here. No provenance (Pass 5 opt-in / no-op), keeping the test focused.
+
+manifest_version: "0.1"
+robot_id: ground_no_sk
+description: Differential ground robot with a command link and no station-keeping.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.6
+  station_keeping: false
+
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: false
+      assurance_class: best_effort

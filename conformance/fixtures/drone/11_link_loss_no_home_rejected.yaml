@@ -1,0 +1,23 @@
+name: drone/link_loss_no_home_rejected
+description: >
+  RFC-0006 Pass 3. The manifest declares a command_link, so connectivity
+  is modelled, but it declares no `home` location. A `return_to_home`
+  link-loss action is therefore not satisfiable; the validator must
+  reject with `envelope.link_loss_incoherent`.
+
+manifest: drone_connectivity_no_home
+envelope: link_loss_rth
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait: { duration: 5s }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.link_loss_incoherent

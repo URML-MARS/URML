@@ -14,6 +14,7 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from urml_validator.schemas.common import Identifier
+from urml_validator.schemas.connectivity import LinkLossRule
 
 
 class GeofencePolygon(BaseModel):
@@ -92,5 +93,8 @@ class SafetyEnvelope(BaseModel):
     # Environmental.
     weather: WeatherThresholds | None = None
 
-    # Loss-of-communication policy (aerial: return to home; ground: halt; etc.).
-    link_loss_policy: str | None = None  # free-form for now; tightened later
+    # RFC-0006: structured, validated loss-of-communication policy.
+    # Replaces the old free-form `link_loss_policy: str | None`. Each rule
+    # governs one abstract link role; the validator checks each rule's action
+    # is coherent with the manifest (Pass 2 + Pass 3).
+    link_loss_policy: list[LinkLossRule] = Field(default_factory=list)

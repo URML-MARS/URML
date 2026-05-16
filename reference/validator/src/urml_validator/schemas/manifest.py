@@ -15,6 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from urml_validator.schemas.common import Identifier, Pose
+from urml_validator.schemas.connectivity import Connectivity
 
 
 class Frame(BaseModel):
@@ -285,3 +286,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0004: optional hardware provenance for compliance enforcement.
     provenance: Provenance | None = None
+
+    # RFC-0006: optional abstract connectivity capability.
+    connectivity: Connectivity | None = None

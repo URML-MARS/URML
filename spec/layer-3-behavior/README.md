@@ -32,6 +32,10 @@ Layer 3 must **not** include:
 - The static-checking rules the validator enforces: type compatibility across primitives, termination of retry blocks, no-dangling-variable, no-unreachable-branch.
 - The canonical serialization (YAML) and the equivalent JSON-LD encoding.
 
+## Link-loss handling is not a new operator (RFC-0006)
+
+[RFC-0006](../../docs/rfcs/0006-connectivity-and-link-loss.md) deliberately adds **no** Layer-3 composition operator for connectivity. What the robot does on link loss is a deployment-time declaration in the safety envelope's `link_loss_policy`, statically validated against the Layer-1 `connectivity:` block. The *reactive* handling a program author writes composes from machinery this layer already owns: `on_error: abort_and_report` for the failure path, and the sketched `on_error: substitute(other_behavior)` for a contingency behavior. A connectivity-aware program is therefore an ordinary composed program; it needs no new vocabulary. This is the same composition-over-expansion discipline the Boundaries section states for primitives.
+
 ## Conformance points
 
 When this layer is drafted, the conformance suite will test:

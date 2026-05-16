@@ -52,6 +52,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_DRIVE_TYPE_NOT_AERIAL = "capability.drive_type_not_aerial"
     CAPABILITY_MISSING_SERVICE_CEILING = "capability.missing_service_ceiling"
     CAPABILITY_MISSING_HOME_LOCATION = "capability.missing_home_location"
+    # RFC-0006: a required abstract link role is absent from manifest.connectivity.
+    CAPABILITY_MISSING_LINK_ROLE = "capability.missing_link_role"
 
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"
@@ -60,6 +62,10 @@ class ErrorCode(StrEnum):
     ENVELOPE_FORCE_EXCEEDED = "envelope.force_exceeded"
     ENVELOPE_GEOFENCE_VIOLATION = "envelope.geofence_violation"
     ENVELOPE_OCCUPANCY_ZONE_INTRUSION = "envelope.occupancy_zone_intrusion"
+    # RFC-0006: structured link-loss policy coherence.
+    ENVELOPE_LINK_LOSS_UNDECLARED_ROLE = "envelope.link_loss_undeclared_role"
+    ENVELOPE_LINK_LOSS_INCOHERENT = "envelope.link_loss_incoherent"
+    ENVELOPE_LINK_OUTAGE_EXCEEDS_DECLARED = "envelope.link_outage_exceeds_declared"
 
     # Pass 4 — variable bindings.
     BINDING_DUPLICATE_STORE_AS = "binding.duplicate_store_as"

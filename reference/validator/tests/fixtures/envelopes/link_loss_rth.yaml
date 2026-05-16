@@ -1,0 +1,10 @@
+# RFC-0006: envelope whose only constraint is a command-link-loss policy of
+# return_to_home. Coherent only on an aerial manifest with a declared `home`.
+
+envelope_version: "0.1"
+deployment_id: link_loss_rth_demo
+description: Command-link loss returns the aircraft to home.
+
+link_loss_policy:
+  - role: command_link
+    action: return_to_home

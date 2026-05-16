@@ -74,6 +74,13 @@ people_occupancy_zones: []         # the floor area an operator occupies during 
 safety_door_event: safety_door_closed   # must match a declared event on the manifest.
 emergency_stop_event: emergency_stop
 on_door_open: halt_all_motion           # other options: continue_safe_subset (deferred)
+
+# RFC-0006: an industrial cell runs under a supervisory (operator/PLC) link.
+# Loss of that link stops the cell — the conservative posture for machinery
+# around trained operators.
+link_loss_policy:
+  - role: command_link
+    action: halt_and_report
 ```
 
 ### Mandatory invariants
@@ -81,6 +88,7 @@ on_door_open: halt_all_motion           # other options: continue_safe_subset (d
 - **A program must wait for `safety_door_closed`** at the top of any sequence that includes manipulation or motion. Programs lacking it are accepted in v0.1 (warning, not error) but a follow-up tightening RFC will reject them.
 - **`grasp.force` is at or below `gripper.force_max_n` AND at or below `envelope.max_grip_force_n`** when the envelope sets one. The validator already enforces this through the core envelope pass.
 - **No motion outside the declared cell perimeter** — runtime invariant.
+- **The supervisory link is required for operation (RFC-0006).** The manifest declares a `connectivity` block with a `command_link` that is `required_for_operation: true` (typically `assurance_class: assured`). Loss of that link triggers the declared `link_loss_policy` (default `halt_and_report`); the validator statically verifies the rule is coherent with the manifest.
 
 ## Layer-2 primitives this profile adds
 
