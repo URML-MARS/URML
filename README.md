@@ -106,6 +106,7 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 | You want to... | Read this |
 |---|---|
 | Get URML running in under an hour | [Tutorial 1: Getting started](docs/tutorials/01-getting-started.md) |
+| See an LLM's unsafe program get refused before takeoff | [Safety-rejection walkthrough](docs/demos/safety-rejection.md) |
 | See compliance enforcement in action | [Compliance walkthrough](docs/demos/compliance-walkthrough.md) |
 | Understand the strategic case | [`MANIFESTO.md`](MANIFESTO.md) |
 | Understand the design decisions | [`docs/rfcs/`](docs/rfcs/) (RFC-0002 for primitives; 0003 for US alignment; 0004 for compliance) |
