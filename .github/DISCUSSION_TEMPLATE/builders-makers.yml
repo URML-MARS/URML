@@ -1,0 +1,38 @@
+title: "[Builders & Makers] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For people building on URML rather than asking how to use it:
+        runtime authors translating URML to a substrate, and manufacturers
+        positioning a robot or component. Before posting, the relevant docs:
+        the conformance suite (`conformance/`), the runtime registry
+        (`docs/registry/SUBMISSION.md`), the manufacturer on-ramp
+        (`docs/manufacturers/README.md`), and the federal-validation
+        self-report rules linked from there. The registry and the directory
+        are free, opt-in, and not a certification.
+  - type: dropdown
+    id: who
+    attributes:
+      label: Which are you?
+      options:
+        - Runtime author (translating URML to a substrate)
+        - Manufacturer (robot or component)
+        - Both
+        - Evaluating, not building yet
+    validations:
+      required: true
+  - type: input
+    id: substrate
+    attributes:
+      label: Substrate or product
+      description: ROS 2, PX4, a vendor SDK, OPC UA, a specific robot or part. Whatever applies.
+    validations:
+      required: false
+  - type: textarea
+    id: topic
+    attributes:
+      label: What do you want to discuss?
+      description: Conformance results, a registry or directory submission, the federal-validation self-report, an integration question.
+    validations:
+      required: true

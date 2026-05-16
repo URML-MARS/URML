@@ -1,0 +1,52 @@
+title: "[Q&A] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usage questions about writing manifests, running the validator,
+        the CLI, the LLM bridge, or integrating a runtime. A reproducible
+        defect in a reference runtime is a bug report in Issues instead.
+        The more of the fields below you fill in, the fewer round-trips
+        before you get an answer.
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: One or two sentences. What outcome are you after?
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Profile
+      options:
+        - home
+        - drone
+        - industrial
+        - none / not sure
+        - other (say which below)
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command and inputs
+      description: The full command you ran, plus the manifest, envelope, and program if relevant.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: output
+    attributes:
+      label: What happened
+      description: The full output or error, copied verbatim. Not a paraphrase.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Validator / CLI version
+      description: Output of `urml --version`, or the commit you cloned at.
+    validations:
+      required: false

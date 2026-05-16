@@ -122,15 +122,24 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 | Browse runtimes that report URML compatibility | [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) |
 | Position a robot for URML and federal-procurement readiness | [`docs/manufacturers/README.md`](docs/manufacturers/README.md) |
 | List a robot or product in the manufacturer directory | [`docs/manufacturers/SUBMISSION.md`](docs/manufacturers/SUBMISSION.md) |
+| Ask a question, show what you built, or give feedback | [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) |
 | Report a security issue | [`SECURITY.md`](SECURITY.md) |
 
 ---
 
-## Engagement
+## Community & support
 
-For the duration of Phase 0, the artifact under review is the manifesto and the v0.1 implementation. The author welcomes critique of the primitive vocabulary, the layer boundaries, the strategic posture, pointers to prior art, and use cases that strain the current architecture.
+URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) as its public question and feedback channel, open now in Phase 0:
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to reach the author.
+- [Q&A](https://github.com/URML-MARS/URML/discussions/categories/q-a) — how do I write a manifest, run the validator, integrate a runtime.
+- [Ideas](https://github.com/URML-MARS/URML/discussions/categories/ideas) — pre-RFC ideas for primitives, profiles, or tooling; the front of the funnel that leads to a primitive-proposal issue and then an RFC.
+- [Builders & Makers](https://github.com/URML-MARS/URML/discussions/categories/builders-makers) — runtime authors and manufacturers: conformance, the registry, the directory, the federal-validation self-report.
+- [Show and tell](https://github.com/URML-MARS/URML/discussions/categories/show-and-tell) — what you built on URML.
+- [General](https://github.com/URML-MARS/URML/discussions/categories/general) — everything else, including complaints and critique of the strategic posture.
+
+Issues are scoped to reference-runtime bugs and the primitive-proposal funnel. Security and conduct concerns follow the private process in [`SECURITY.md`](SECURITY.md), never a public thread.
+
+For the duration of Phase 0 the artifact under review is the manifesto and the v0.1 implementation. Critique of the primitive vocabulary, the layer boundaries, and the strategic posture, pointers to prior art, and use cases that strain the current architecture are all welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full routing.
 
 ---
 

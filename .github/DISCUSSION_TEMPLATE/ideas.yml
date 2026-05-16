@@ -1,0 +1,46 @@
+title: "[Idea] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Pre-RFC space for ideas: a new primitive, a new profile, or tooling.
+        This is the front of a funnel. A primitive or profile idea that holds
+        up here graduates to the primitive-proposal issue
+        (`.github/ISSUE_TEMPLATE/primitive_proposal.md`) and then to an RFC
+        under `docs/rfcs/` (process: `docs/rfcs/0001-rfc-process.md`).
+        URML prefers composing existing primitives over adding new ones, and
+        every Layer-2 primitive must be implementable on a runtime with zero
+        ROS dependencies. Address both up front.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of idea is this?
+      options:
+        - Core Layer-2 primitive
+        - Profile-specific primitive or a new profile
+        - Tooling, CLI, validator, or LLM bridge
+        - Documentation or process
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea, in plain English
+      description: One paragraph. What should exist that does not, and why.
+    validations:
+      required: true
+  - type: textarea
+    id: composition
+    attributes:
+      label: Why can't this be composed from existing primitives?
+      description: Show the composition you tried and where it fell short. Skip if this is a tooling or docs idea.
+    validations:
+      required: false
+  - type: textarea
+    id: substrate
+    attributes:
+      label: Substrate neutrality
+      description: If this is a primitive, sketch how it works on ROS 2 and on a runtime with no ROS at all (PX4, a vendor SDK, OPC UA). If it cannot, it is leaking substrate assumptions.
+    validations:
+      required: false

@@ -39,6 +39,10 @@ The plan from the manifesto:
 
 Transitions between phases are themselves RFCs.
 
+### Community Discussions (brought forward)
+
+[RFC-0008](docs/rfcs/0008-community-discussions.md) brings the public GitHub Discussions channel forward into Phase 0, ahead of the permanent organization, because adoption is the moat and the channel is reversible. Discussions carries questions, ideas, manufacturer and runtime-author topics, complaints, and feedback. It carries no decision weight: specification decisions remain RFCs and the precedence order above is unchanged. The routing is documented in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## Default Compliance Policy Maintenance
 
 [RFC-0004](docs/rfcs/0004-compliance-policy.md) added the bundled US-federal compliance policy at `reference/validator/src/urml_validator/policies/us_federal_default.yaml`. [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) item 7 commits it to remain Apache-2.0-forever. The maintenance burden is real: US federal robotics regulation is changing monthly.
@@ -93,7 +97,7 @@ The founder anticipates eventually being affiliated with a commercial entity tha
 
 ## How to Reach the Maintainer
 
-During Phase 0, see [`CONTRIBUTING.md`](CONTRIBUTING.md) for current contact and engagement channels.
+During Phase 0, see [`CONTRIBUTING.md`](CONTRIBUTING.md) for current contact and engagement channels, including the GitHub Discussions routing ([RFC-0008](docs/rfcs/0008-community-discussions.md)).
 
 ## Changing This File
 
