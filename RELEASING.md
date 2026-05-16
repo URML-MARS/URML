@@ -22,23 +22,22 @@ this order:
 
 ## Version coherence
 
-As of this writing the pins are internally coherent but not uniform:
+**Decided:** all five packages are aligned to a single `0.1.0` for a
+clean public debut (easier for adopters to reason about "I have URML
+0.1.0" than mixed `a0`/`a1` pre-releases). The bump was applied in
+lockstep — every `version =`, every `_version.py` `__version__`, and
+every inter-package pin:
 
 | Package | Version | Pins |
 |---|---|---|
-| urml-validator | `0.1.0a1` | — |
-| urml-llm-bridge | `0.1.0a0` | `urml-validator>=0.1.0a1` |
-| urml-ros2-runtime | `0.1.0a0` | `urml-validator>=0.1.0a1` |
-| urml-conformance | `0.1.0a0` | `urml-validator>=0.1.0a1`, `urml-ros2-runtime>=0.1.0a0` |
-| urml-px4-runtime | `0.1.0a0` | `urml-validator>=0.1.0a1`, `urml-ros2-runtime>=0.1.0a0` |
+| urml-validator | `0.1.0` | — |
+| urml-llm-bridge | `0.1.0` | `urml-validator>=0.1.0` |
+| urml-ros2-runtime | `0.1.0` | `urml-validator>=0.1.0` |
+| urml-conformance | `0.1.0` | `urml-validator>=0.1.0`, `urml-ros2-runtime>=0.1.0` |
+| urml-px4-runtime | `0.1.0` | `urml-validator>=0.1.0`, `urml-ros2-runtime>=0.1.0` |
 
-These resolve correctly as-is for a first publish. **Decision for the
-founder before the first real-PyPI release:** whether to align all five
-to a single version (recommended for a clean v0.1.0 — easier for adopters
-to reason about "I have URML 0.1.0") or keep them independently
-versioned. This doc does not bump versions; that is a deliberate call,
-not packaging hygiene. If aligning, bump every `version =` and every
-inter-package pin in lockstep, then rebuild.
+These resolve correctly for a first publish in the dependency order
+above. Future releases bump in lockstep too — keep the five uniform.
 
 ## The discipline (why this is gated)
 

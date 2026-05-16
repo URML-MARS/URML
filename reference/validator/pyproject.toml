@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-validator"
-version = "0.1.0a1"
+version = "0.1.0"
 description = "Static verification engine for URML — Universal Robot Language"
 readme = "README.md"
 license = { text = "Apache-2.0" }

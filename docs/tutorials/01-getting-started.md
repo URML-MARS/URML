@@ -31,7 +31,7 @@ urml --version
 Expected:
 
 ```
-urml-validator 0.1.0a1
+urml-validator 0.1.0
 ```
 
 > Prefer to do it by hand, or only want a subset? The old path still works:
