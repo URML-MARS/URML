@@ -15,7 +15,16 @@ The author welcomes:
 - **Use cases that strain the current architecture** — scenarios the manifesto's three motivating examples (home, drone, industrial) do not cover.
 - **Naming suggestions** if "URML" proves unsuitable. See `MANIFESTO.md` Appendix B, Question 1.
 
-For now, reach the author via the channels in `README.md`. A `discussions` board and a contributor mailing list will be set up when the project moves under its permanent GitHub organization.
+URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions), open now in Phase 0 ([RFC-0008](docs/rfcs/0008-community-discussions.md)). Where things go:
+
+- **Questions** (writing a manifest, running the validator, integrating a runtime): Discussions [Q&A](https://github.com/URML-MARS/URML/discussions/categories/q-a).
+- **Ideas** for a primitive, profile, or tooling: Discussions [Ideas](https://github.com/URML-MARS/URML/discussions/categories/ideas). One that holds up graduates to the [primitive proposal issue](.github/ISSUE_TEMPLATE/primitive_proposal.md) and then an RFC.
+- **Complaints, feedback, posture critique**: Discussions [General](https://github.com/URML-MARS/URML/discussions/categories/general).
+- **Runtime author or manufacturer topics**: Discussions [Builders & Makers](https://github.com/URML-MARS/URML/discussions/categories/builders-makers).
+- **Reproducible reference-runtime bugs**: an [issue](.github/ISSUE_TEMPLATE/bug_report.md).
+- **Security or conduct concerns**: the private process in [`SECURITY.md`](SECURITY.md), never a public thread.
+
+A contributor mailing list will be set up when the project moves under its permanent GitHub organization.
 
 ## What Changes Today
 
@@ -115,4 +124,4 @@ If you find a safety issue in the specification (a primitive that admits unsafe 
 
 ## Questions
 
-If anything in this document is unclear, ambiguous, or contradicts other documents, that is a bug. Open an issue. Documentation bugs are real bugs.
+If anything in this document is unclear, ambiguous, or contradicts other documents, that is a bug. Open an issue; documentation bugs are real bugs. For "how do I" questions rather than documentation defects, use Discussions [Q&A](https://github.com/URML-MARS/URML/discussions/categories/q-a).

@@ -5,7 +5,7 @@ The URML project adopts the **Contributor Covenant, version 2.1**, by reference.
 - Canonical text: https://www.contributor-covenant.org/version/2/1/code_of_conduct/
 - License of the Covenant: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-The Covenant applies to all URML spaces — this repository's issues, pull requests, RFC discussions, and any future contributor mailing list, chat, or in-person event — and to representations of the project in public spaces.
+The Covenant applies to all URML spaces — this repository's issues, pull requests, GitHub Discussions, RFC discussions, and any future contributor mailing list, chat, or in-person event — and to representations of the project in public spaces.
 
 ## Scope and Enforcement
 

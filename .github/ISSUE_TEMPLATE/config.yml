@@ -1,0 +1,21 @@
+# Issues are scoped to reference-implementation bugs, non-spec feature
+# requests, and the high-bar primitive proposal funnel. Everything else
+# (usage questions, ideas, complaints, feedback, manufacturer and runtime
+# questions) belongs in Discussions. RFC-0008 documents this routing.
+blank_issues_enabled: false
+contact_links:
+  - name: Question — how do I build, validate, run, or integrate?
+    url: https://github.com/URML-MARS/URML/discussions/categories/q-a
+    about: Usage questions go to Discussions, Q&A category. Include the profile, the exact command, and the error output.
+  - name: Idea — a primitive, profile, or tooling proposal
+    url: https://github.com/URML-MARS/URML/discussions/categories/ideas
+    about: Float it in Discussions first. A confirmed primitive proposal then graduates to the primitive-proposal issue and an RFC.
+  - name: Feedback or complaint
+    url: https://github.com/URML-MARS/URML/discussions/categories/general
+    about: Posture critique, complaints, and open-ended feedback go to Discussions, General category. A reproducible reference-runtime defect is a bug report here instead.
+  - name: Runtime author or manufacturer question
+    url: https://github.com/URML-MARS/URML/discussions/categories/builders-makers
+    about: Conformance, the compatible-runtimes registry, the manufacturer directory, and the federal-validation self-report go to Discussions, Builders & Makers.
+  - name: Security or conduct concern
+    url: https://github.com/URML-MARS/URML/blob/main/SECURITY.md
+    about: Do not open a public issue or discussion. Follow the private disclosure process in SECURITY.md.
