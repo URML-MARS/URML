@@ -46,15 +46,24 @@ jobs:
       - name: Install URML packages
         run: |
           . /opt/ros/jazzy/setup.sh
-          # Pin pytest>=8 explicitly: the ros:jazzy-ros-base container
-          # ships a system pytest 7.4.4 in dist-packages. An unpinned
-          # `pytest` requirement is treated as already-satisfied by it and
-          # NOT upgraded, but our pyproject sets `minversion = "8.0"` —
-          # so 7.4.4 hard-errors before collecting anything. The pin
-          # forces the upgrade. (gazebo-e2e's bare runner had no
-          # preinstalled pytest so it was fine, but pin both for
-          # determinism.)
-          python3 -m pip install --break-system-packages \
+          # The ros:jazzy-ros-base container's system Python carries
+          # Debian-managed packages (pytest 7.4.4, pluggy 1.4.0) that have
+          # no pip RECORD file, so pip cannot upgrade them even with
+          # --break-system-packages (it refuses to uninstall a
+          # debian-installed dist-package). Our pyproject requires
+          # pytest >= 8, which pulls pluggy >= 1.5 — an upgrade pip can't
+          # perform in system site-packages.
+          #
+          # Fix: an isolated venv created WITH --system-site-packages.
+          # ROS's rclpy (in the inherited dist-packages + sourced ROS
+          # env) stays importable, but pip installs pytest/pluggy/pydantic
+          # into the venv's own site-packages, which takes import
+          # precedence — shadowing the Debian versions with zero
+          # uninstall. This is the standard pip-on-ROS idiom.
+          python3 -m venv --system-site-packages /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
             -e reference/validator \
             -e reference/ros2-runtime \
             -e conformance \
@@ -64,15 +73,20 @@ jobs:
         env:
           URML_ROS2_INTEGRATION: "1"
         run: |
+          # Source ROS first, then activate the venv so its bin is first
+          # on PATH (venv python/pytest preferred) while ROS env vars for
+          # rclpy remain set.
           . /opt/ros/jazzy/setup.sh
+          . /tmp/ci-venv/bin/activate
           cd reference/ros2-runtime
-          python3 -m pytest tests/integration/test_rclpy_adapter_live.py -v
+          python -m pytest tests/integration/test_rclpy_adapter_live.py -v
 
       - name: Re-run hermetic unit tests under real rclpy
         run: |
           . /opt/ros/jazzy/setup.sh
+          . /tmp/ci-venv/bin/activate
           cd reference/ros2-runtime
-          python3 -m pytest tests/test_rclpy_adapter.py -v
+          python -m pytest tests/test_rclpy_adapter.py -v
 
   gazebo-e2e:
     runs-on: ubuntu-24.04
