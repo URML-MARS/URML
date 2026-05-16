@@ -2,7 +2,7 @@
 rfc: 0006
 title: Connectivity as an abstract capability and link-loss as a validated safety contract
 author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+state: Accepted
 created: 2026-05-16
 updated: 2026-05-16
 supersedes: —
@@ -119,8 +119,8 @@ New `ErrorCode` members (additive; `capability.*` / `envelope.*` namespaces):
 
 | Code | Pass | Fires when |
 |---|---|---|
-| `capability.missing_link_role` | 2 | A required link role (governed by a link-loss rule) is absent from `manifest.connectivity`. |
-| `envelope.link_loss_undeclared_role` | 3 | A link-loss rule targets a role the manifest does not declare. |
+| `capability.missing_link_role` | 2 | A link-loss rule governs a role but the manifest declares **no `connectivity` block at all**. |
+| `envelope.link_loss_undeclared_role` | 3 | The manifest **has** a `connectivity` block but it omits the specific role a link-loss rule governs. |
 | `envelope.link_loss_incoherent` | 3 | A rule's action is not satisfiable given the manifest (e.g. `return_to_home` with no declared `home`; `continue_autonomous` on a link with `autonomous_when_lost: false`). |
 | `envelope.link_outage_exceeds_declared` | 3 | A rule's `max_outage_seconds` is *looser* than the manifest's declared tolerance for that role (envelope may only tighten — the invariant the whole envelope module exists to enforce). |
 
@@ -132,10 +132,12 @@ exist (opt-in, exactly like Pass 5 with absent `provenance`).
 Pass 3 — `_check_link_loss_coherence(manifest, envelope)`, per rule, reusing existing
 predicates (`_AERIAL_DRIVE_TYPES`, the `home`-location check, `mobility.station_keeping`):
 
-- role not in manifest → `envelope.link_loss_undeclared_role`; the Pass-2
-  `capability.missing_link_role` for that same role is suppressed when the envelope rule
-  is the sole source (single-report dedup; precedent: the geofence single-vs-double
-  decision in `validator.py`).
+- role-existence is split so the two codes are **mutually exclusive by construction**
+  (no dedup rule, no suppression logic): Pass 2 owns the "manifest declares no
+  `connectivity` block at all" case (`capability.missing_link_role`); Pass 3 owns the
+  "block exists but omits this role" case (`envelope.link_loss_undeclared_role`) and
+  skips the rest of a rule whose role is undeclared. A single root cause therefore
+  never produces two reports — the structural resolution of Drawback 2.
 - `return_to_home` → requires a declared `home` location **and** an aerial `drive_type`.
 - `land_now` → requires an aerial `drive_type`.
 - `hover` → requires `mobility.station_keeping: true`.
@@ -203,12 +205,15 @@ before (the feature is opt-in at both ends, like `provenance`/Pass 5).
 1. **A real breaking change.** Every scalar `link_loss_policy` — including the drone
    profile's own documented default — breaks at Pass 1. Mitigated by the enumerated
    migration table and pre-1.0 status, but it is a genuine break, not a humblebrag.
-2. **Two codes can describe one root cause.** `capability.missing_link_role` (Pass 2)
-   and `envelope.link_loss_undeclared_role` (Pass 3) overlap. This RFC specifies a
-   single-report dedup rule, but a dedup rule is itself surface the LLM bridge must not
-   misread (it could "fix" the program when the manifest is the problem — the exact
-   failure mode RFC-0004 calls out for policy errors). The `suggestion` text must point
-   at the manifest.
+2. **Two codes describe adjacent failures.** `capability.missing_link_role` (Pass 2)
+   and `envelope.link_loss_undeclared_role` (Pass 3) both concern an absent link role.
+   The implementation removes the double-report risk structurally — the two are
+   mutually exclusive by construction (no `connectivity` block at all vs. a block that
+   omits the role), so no fragile dedup rule is needed. The residual concern is
+   real but narrower: both codes' `suggestion` text must point the LLM bridge at the
+   *manifest*, not the program, or the bridge may "fix" the program when the manifest
+   is the problem (the failure mode RFC-0004 calls out for policy errors). The shipped
+   `suggestion` strings do this.
 3. **Coherence is shallow in v0.1.** `halt_and_report` coherence reduces to "mobility
    present." The validator cannot prove the runtime actually halts. This RFC delivers a
    *static-coherence* contract, not a behavioral guarantee, and must not be oversold as
@@ -281,9 +286,15 @@ safety field is the status quo this RFC exists to end.
 3. **`telemetry_link` / `payload_link` coherence.** This RFC's coherence checks are
    meaningful mainly for `command_link`. Do `telemetry`/`payload` losses warrant
    distinct actions beyond the shared enum, or is the shared `LinkLossAction` enough?
-4. **Dedup direction.** The RFC specifies suppressing the Pass-2 code when the envelope
-   rule is the sole source. Confirm this is the right direction for the LLM-bridge story
-   (vs. always emitting both for maximum diagnostic detail).
+4. **Dedup direction — RESOLVED during implementation.** The draft asked whether to
+   suppress one of the two role-absence codes. The shipped design makes the question
+   moot: rather than emit-both-then-suppress, Pass 2 and Pass 3 partition the failure
+   space so the codes are mutually exclusive by construction —
+   `capability.missing_link_role` only when there is no `connectivity` block at all,
+   `envelope.link_loss_undeclared_role` only when a block exists but omits the role.
+   No dedup rule exists to get wrong, and each code carries a distinct, actionable
+   `suggestion` (add a block vs. add a role to the existing block). See Detailed
+   design §Validator changes and Drawback 2.
 
 ## Implementation note
 
