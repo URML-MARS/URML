@@ -6,6 +6,8 @@ This is a **self-reported** registry. URML does not certify, audit, or endorse l
 
 The URML-Certified conformance mark is a separate, future program (Phase 4). It is not in use today, and nothing on this page should be read as a certification claim.
 
+This registry is for **runtime authors** (projects that translate URML down to a substrate). If you make **robots or parts** rather than runtimes, the parallel surface is the [Manufacturer & Product Directory](manufacturers/directory.md).
+
 ## How to submit
 
 Open a PR following [docs/registry/SUBMISSION.md](registry/SUBMISSION.md). It takes five steps and one PR.

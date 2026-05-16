@@ -30,6 +30,10 @@ Describe a runtime, library, or tool as "URML-compatible" if it passes the publi
 
 Submit your runtime for listing in the Compatible Runtimes registry by following [docs/registry/SUBMISSION.md](docs/registry/SUBMISSION.md). Listing reflects a factual record of submission, not an endorsement.
 
+Submit a robot or product for listing in the [Manufacturer & Product Directory](docs/manufacturers/directory.md) by following [docs/manufacturers/SUBMISSION.md](docs/manufacturers/SUBMISSION.md). Same posture as the runtime registry: a factual record of submission, not an endorsement.
+
+State, factually, that a specific manifest "validates clean under URML's open US-federal default compliance policy at URML commit `<hash>`" if it does and you pin the commit. This is a reproducible self-report, not a certification. The exact permitted and forbidden phrasing is in [docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md](docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md); "URML-Certified" and "NDAA compliant by URML" remain off limits (see below).
+
 ## What is off limits
 
 Using the term "URML-Certified" in any form. Reserved until the Phase 4 program launches.
@@ -43,6 +47,8 @@ Modifying the URML conformance suite and continuing to claim conformance against
 ## What listing in the registry does not grant
 
 Listing in [docs/compatible-runtimes.md](docs/compatible-runtimes.md) does not grant any license to use the URML or URML-Certified marks beyond the factual descriptor use above. It does not indicate URML has audited, endorsed, sponsored, or assumed responsibility for the listed runtime. It does not indicate the listed runtime is fit for production, safety-critical, or regulated deployment. The conformance suite tests specification conformance, not fitness for any particular purpose. If a listing is later removed (failed update, withdrawal, delisting), no rights persist.
+
+The same applies to the [Manufacturer & Product Directory](docs/manufacturers/directory.md). Listing there, and any federal-validation self-report linked from it, does not grant any mark license beyond factual descriptor use, does not indicate URML has audited, endorsed, sponsored, or assumed responsibility for the product, does not indicate fitness for production, safety-critical, or regulated deployment, and is not a compliance determination. A validator passing a manifest under the bundled default policy is a reproducible factual result, not a certification. No rights persist after delisting.
 
 ## Phase 4: the full policy
 
