@@ -57,6 +57,16 @@ Transitions between phases are themselves RFCs.
 
 When the project transitions to Phase 1+, the default-policy maintenance role is delegated to a named steering committee member or a dedicated working group.
 
+## Manufacturer Directory Maintenance
+
+[RFC-0007](docs/rfcs/0007-manufacturer-go-to-market.md) added the self-reported manufacturer and product directory at [`docs/manufacturers/directory.md`](docs/manufacturers/directory.md), alongside the existing self-reported [Compatible Runtimes registry](docs/compatible-runtimes.md). Both are free, opt-in, and not a certification.
+
+**Owner:** the sole maintainer, in Phase 0. The maintainer reviews directory submission PRs for completeness only, per [`docs/manufacturers/SUBMISSION.md`](docs/manufacturers/SUBMISSION.md) §"What the maintainer checks": that links resolve at the pinned commit, declared versions are well-formed, any linked federal-validation self-report uses only the permitted factual phrasing and carries the mandatory disclaimer, and the trademark-and-phrasing acknowledgement is ticked. The maintainer does not audit products, run validation independently, or assess fitness for any purpose.
+
+**What is NOT in scope of this role:** granting any mark, certifying or auditing any product, or operating the Phase-4 paid certification program. Those are a separate commercial surface outside this repository (see [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) and [`TRADEMARK.md`](TRADEMARK.md)). No lead generation, directory analytics, or contact capture is operated from this repository.
+
+When the project transitions to Phase 1+, the directory-maintenance role is delegated to a named steering committee member or working group, the same way the default-policy role is.
+
 ## Trademark Policy
 
 The URML name and any conformance mark are trademarked separately from the code:

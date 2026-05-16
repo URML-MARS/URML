@@ -13,6 +13,10 @@ on:
       - "docs/compatible-runtimes.md"
       - "docs/registry/SUBMISSION.md"
       - "TRADEMARK.md"
+      - "docs/manufacturers/README.md"
+      - "docs/manufacturers/directory.md"
+      - "docs/manufacturers/SUBMISSION.md"
+      - "docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md"
 
 jobs:
   notify:
