@@ -183,6 +183,20 @@ def _summarise_manifest(manifest: dict[str, Any]) -> str:
     if outputs.get("named_endpoints"):
         lines.append("Output endpoints: " + ", ".join(outputs["named_endpoints"]))
 
+    connectivity = manifest.get("connectivity") or {}
+    links = connectivity.get("links") or []
+    if links:
+        bits = []
+        for link in links:
+            tags = []
+            if link.get("required_for_operation"):
+                tags.append("required")
+            if link.get("autonomous_when_lost"):
+                tags.append("autonomous-on-loss")
+            tags.append(link.get("assurance_class", "best_effort"))
+            bits.append(f"{link.get('role')}({', '.join(tags)})")
+        lines.append("Connectivity links: " + ", ".join(bits))
+
     return "\n".join(lines)
 
 
@@ -208,8 +222,15 @@ def _summarise_envelope(envelope: dict[str, Any]) -> str:
         bits = [f"{k}={v}" for k, v in w.items() if v is not None]
         if bits:
             lines.append("Weather thresholds: " + ", ".join(bits))
-    if envelope.get("link_loss_policy"):
-        lines.append(f"Link-loss policy: {envelope['link_loss_policy']}")
+    rules = envelope.get("link_loss_policy") or []
+    if rules:
+        summary = []
+        for r in rules:
+            label = f"{r.get('role')}->{r.get('action')}"
+            if r.get("max_outage_seconds") is not None:
+                label += f" (<= {r['max_outage_seconds']}s)"
+            summary.append(label)
+        lines.append("Link-loss policy: " + ", ".join(summary))
     return "\n".join(lines) if lines else "(empty envelope)"
 
 
