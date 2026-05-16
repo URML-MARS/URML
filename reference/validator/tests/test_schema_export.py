@@ -134,6 +134,28 @@ def test_program_schema_mentions_every_primitive() -> None:
 
 
 # ---------------------------------------------------------------------------
+# RFC-0006: connectivity + link-loss reach the exported JSON Schema
+# ---------------------------------------------------------------------------
+
+
+def test_manifest_schema_includes_connectivity_models() -> None:
+    """Regression guard: the abstract connectivity block and its nested models
+    must appear in the emitted manifest schema's $defs. If `connectivity` is
+    ever dropped from CapabilityManifest, this fails early."""
+    schema_text = json.dumps(export_schema("manifest"))
+    for token in ("Connectivity", "DeclaredLink", "LinkRole", "AssuranceClass"):
+        assert token in schema_text, f"manifest schema does not mention {token}"
+
+
+def test_envelope_schema_includes_link_loss_models() -> None:
+    """Regression guard: the structured link-loss policy must be in the
+    emitted envelope schema (it is no longer a free-form string)."""
+    schema_text = json.dumps(export_schema("envelope"))
+    for token in ("LinkLossRule", "LinkLossAction", "link_loss_policy"):
+        assert token in schema_text, f"envelope schema does not mention {token}"
+
+
+# ---------------------------------------------------------------------------
 # Round-trip: the canonical example serializes back to schema-valid YAML
 # (structural check only — full JSON Schema validation is a follow-up).
 # ---------------------------------------------------------------------------
