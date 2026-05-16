@@ -2,7 +2,7 @@
 rfc: 0007
 title: "Manufacturer Go-To-Market: URML as an Opportunity and a Channel for Robot OEMs and Component Makers"
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-16
 updated: 2026-05-16
 supersedes: —
