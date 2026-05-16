@@ -21,7 +21,36 @@ Full `ROSAdapter` Protocol (12 core methods + 3 drone-profile methods), wired ag
 | `report` | `STATUSTEXT` MAVLink message |
 | `scan` | stub success (full waypoint expansion is a follow-up) |
 
-The not-applicable primitives — `dock`, `grasp`, `release`, `detect`, `capture`, `speak`, `listen` — return `NavigationResult(success=False, reason="not_supported_on_bare_autopilot: ...")` rather than raising. Real drone deployments typically pair a PX4 autopilot with a ROS 2 companion computer for perception / manipulation / speech; in those stacks, dispatch through a composite adapter (a near-term follow-up).
+The not-applicable primitives — `dock`, `grasp`, `release`, `detect`, `capture`, `speak`, `listen` — return `NavigationResult(success=False, reason="not_supported_on_bare_autopilot: ...")` rather than raising. Real drone deployments pair a PX4 autopilot with a ROS 2 companion computer for perception / manipulation / speech; in those stacks, dispatch through `CompositeAdapter` (below) instead of `PX4Adapter` alone.
+
+## CompositeAdapter — PX4 flight + ROS 2 companion
+
+`CompositeAdapter` implements the full `ROSAdapter` Protocol by holding two backing adapters and routing each method to whichever one owns that capability. The URML program, manifest, and validator are unchanged and unaware — the split lives entirely at the deployment boundary.
+
+```python
+from urml_px4_runtime import CompositeAdapter, PX4Adapter, PX4AdapterConfig
+from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+from urml_ros2_runtime.substrate.adapter_config import load_adapter_config
+
+flight = PX4Adapter(PX4AdapterConfig(connection_url="udp:127.0.0.1:14540"))
+companion = RclpyAdapter(load_adapter_config("adapter.yaml"))
+
+with CompositeAdapter(flight=flight, companion=companion) as adapter:
+    # take_off/land/RTH/move_to -> PX4 (MAVLink); detect/grasp/capture/
+    # speak -> ROS 2 companion. One URML program, two substrates.
+    runtime = URMLRuntime(adapter)
+    runtime.execute(program, manifest, envelope, profiles=("drone",))
+```
+
+Default routing (the drone-stack policy) sends flight primitives (`take_off`, `land`, `return_to_home`, `move_to`/`hover`, `wait`) to the flight adapter and perception/manipulation/speech (`detect`, `grasp`, `release`, `scan`, `measure`, `capture`, `report`, `speak`, `listen`, `wait_for`) to the companion. It is explicit and overridable per method:
+
+```python
+# This airframe reads its rangefinder over MAVLink, not the companion:
+CompositeAdapter(flight=flight, companion=companion,
+                 routing={"take_measurement": "flight"})
+```
+
+Unknown method names or backend values other than `flight`/`companion` are rejected at construction, so a routing typo can't silently send a goal to the wrong box. `CompositeAdapter` imports neither pymavlink nor rclpy — it depends only on the substrate-neutral Protocol, loads on every host, and is hermetically unit-tested against two mock backends (24 tests).
 
 ## Install
 
@@ -69,10 +98,13 @@ report = runner.run()
 - Unit tests with mocked pymavlink cover all 15 Protocol methods (including the not-applicable ones).
 - Integration testing against a live PX4 SITL is a documented follow-up; the test scaffold lives in `tests/integration/`.
 
-**Follow-ups (not in v0.1):**
+**Landed since v0.1:**
+- `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).
+- Geofence polygon-containment, 3D altitude bands, and people-occupancy zones in the safety-envelope pass (validator Pass 3).
+
+**Follow-ups (not yet):**
 - PX4 SITL integration tests in a gated Linux workflow (matches the ROS 2 runtime's pattern).
-- Composite adapter for stacks that pair PX4 with ROS 2 perception.
-- Full geofence polygon-containment math in the safety-envelope pass.
+- True fly-and-capture `scan` (waypoint expansion + per-waypoint trigger) instead of the stub.
 
 ## Core Commitment
 
