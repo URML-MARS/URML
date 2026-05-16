@@ -8,22 +8,28 @@ URML is a **specification** and a set of **reference implementations**, not a ro
 
 ---
 
-## Try it in five commands
+## Try it in three commands
 
-URML is in Phase 0 (pre-public draft). Installation is from a local clone via editable installs; PyPI packages land in Phase 1.
+URML is in Phase 0 (pre-public draft). The reference packages are **not on PyPI yet** (that's a deliberate Phase-1 step); you install them editable from the clone. One script does it on any OS — no namespace claimed, nothing published, fully reversible (`make clean` removes every trace).
 
 ```bash
 git clone https://github.com/URML-MARS/URML.git && cd URML
-python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
-pip install -e reference/validator -e reference/llm-bridge
+python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
+make demo               # → Validation passed
+```
 
+`make demo` validates the canonical red-mug example through all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). No make? `bootstrap.py` prints the exact one-line command to run instead. `make help` lists the rest (`install-dev`, `test`, `clean`).
+
+Then scaffold your own project:
+
+```bash
+. .venv/bin/activate                  # Windows: .venv\Scripts\activate
 urml init my-robot --profile home && cd my-robot
 urml validate program.urml.yaml \
     --manifest manifest.yaml --envelope envelope.yaml --profile home
-# → Validation passed
 ```
 
-That's it. The validator runs five passes (argument typing → capability → safety envelope → variable bindings → compliance policy) and emits structured errors the LLM bridge can revise against. `--profile home`, `--profile drone`, and `--profile industrial` are all supported by `urml init`; `--policy` and `--no-policy` flags control the compliance pass.
+`--profile home`, `--profile drone`, and `--profile industrial` are all supported by `urml init`; `--policy` and `--no-policy` flags control the compliance pass.
 
 See [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
 
