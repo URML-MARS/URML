@@ -116,9 +116,34 @@ Replace the action clients with mocks; assert that `send_navigation_goal` sends 
 
 ### 2. Integration tests with Gazebo simulator
 
-A pinned Gazebo + TurtleBot 4 simulator stack. The conformance suite's 21 existing fixtures all run, but instead of `MockROSAdapter` the runner uses `RclpyAdapter` against the simulated robot. Fixtures that pass against the mock should pass against the simulator (modulo nondeterminism for things like timing — see *Open questions* §3).
+A pinned Gazebo + TurtleBot 4 simulator stack. Eventually every navigation-compatible conformance fixture runs through `RclpyAdapter` against the simulated robot instead of `MockROSAdapter`. Fixtures that pass against the mock should pass against the simulator (modulo nondeterminism for things like timing — see *Open questions* §3).
 
-Suggested CI gating: a separate `make integration-test` target that requires a Linux runner with ROS 2 Jazzy + Gazebo. This is **not** the default `pytest` target; integration tests are too heavy for routine CI.
+CI gating: the `gazebo-e2e` job in [`.github/workflows/ros2-integration.yml`](../../.github/workflows/ros2-integration.yml). Manual-dispatch + weekly cron only — never per-push. It uploads sim/Nav2/pytest logs as artifacts on `always()`, so a failed run is diagnosable rather than opaque.
+
+**What runs end-to-end today:** [`tests/integration/test_nav_patrol_gazebo_e2e.py`](tests/integration/test_nav_patrol_gazebo_e2e.py) takes the `home/nav_patrol_positive` fixture (three plain `move_to` goals) and runs it through the *same* `ConformanceRunner` the hermetic suite uses, with `adapter_factory` wired to a live `RclpyAdapter`. This closes the full loop: URML program → validator → ConformanceRunner → RclpyAdapter → Nav2 → a simulated TurtleBot 4 that actually drives. A stock TB4 sim only exposes Nav2 navigation (its dock is iRobot Create 3's `/dock`, not Nav2 `DockRobot`; no gripper/camera), so the navigation slice is what's covered; perception/manipulation/docking e2e need a richer sim and are tracked as follow-ups below.
+
+#### Local repro (WSL2 + ROS 2 Jazzy)
+
+```bash
+# In WSL2 Ubuntu 24.04 with ROS 2 Jazzy installed:
+sudo apt-get install -y ros-jazzy-turtlebot4-simulator \
+  ros-jazzy-turtlebot4-navigation ros-jazzy-nav2-bringup
+
+# Terminal 1 — bring up the sim + Nav2 (headless; drop headless:=true for the GUI):
+source /opt/ros/jazzy/setup.bash
+export LIBGL_ALWAYS_SOFTWARE=1   # only needed on a GPU-less box
+ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py \
+  nav2:=true slam:=true rviz:=false headless:=true
+
+# Terminal 2 — once /navigate_to_pose is up, run the e2e:
+source /opt/ros/jazzy/setup.bash
+cd reference/ros2-runtime
+URML_GAZEBO_E2E=1 python3 -m pytest tests/integration/test_nav_patrol_gazebo_e2e.py -v
+```
+
+The adapter↔world pose mapping lives in [`tests/integration/adapter_nav_patrol.yaml`](tests/integration/adapter_nav_patrol.yaml). If you run a non-default world, edit `location_to_pose` to match — that file *is* the deployment boundary the design intends.
+
+> The CI launch invocations were authored without a Gazebo-capable host. Package and launch-file names follow current TurtleBot 4 / Jazzy docs, but the first real `gazebo-e2e` run is a **calibration run**: if a launch arg or package name differs on the installed TB4 version, the uploaded artifacts show exactly what to pin. Treat the first run's result as setup feedback, not a regression.
 
 ---
 
