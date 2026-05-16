@@ -10,25 +10,21 @@ You should be able to work through this tutorial in under five minutes.
 
 ## Install
 
-URML is shipped as a set of Python packages under `reference/` in the repository. For Phase 0, you install them as editable from a clone:
+URML is shipped as a set of Python packages under `reference/` in the repository. In Phase 0 they are not on PyPI (a deliberate Phase-1 step); `bootstrap.py` installs all five editable into a project-local venv, in dependency order, in one step on any OS:
 
 ```bash
 git clone https://github.com/URML-MARS/URML.git
 cd URML
 
-python -m venv .venv
-. .venv/bin/activate           # Windows: .venv\Scripts\activate
-
-pip install -e reference/validator
-pip install -e reference/llm-bridge        # optional but recommended; needed for `urml translate` and `urml emit-prompt`
-pip install -e reference/ros2-runtime      # optional; needed if you plan to execute programs against the mock substrate
+python bootstrap.py     # creates .venv, installs everything editable
 ```
 
-When PyPI packages land (Phase 1+), this collapses to `pip install urml-validator urml-llm-bridge`.
+Re-running is safe (the venv is reused). It's fully reversible — `make clean` or `rm -rf .venv` removes every trace; nothing is published or claimed. When PyPI packages land (Phase 1+), this collapses to `pip install urml-validator urml-llm-bridge`.
 
-Confirm the CLI is on your PATH:
+Activate the venv, then confirm the CLI:
 
 ```bash
+. .venv/bin/activate           # Windows: .venv\Scripts\activate
 urml --version
 ```
 
@@ -37,6 +33,10 @@ Expected:
 ```
 urml-validator 0.1.0a1
 ```
+
+> Prefer to do it by hand, or only want a subset? The old path still works:
+> `python -m venv .venv && . .venv/bin/activate && pip install -e reference/validator -e reference/llm-bridge`.
+> `bootstrap.py` just automates exactly that for all five packages.
 
 ## Scaffold a starter project
 
