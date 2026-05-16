@@ -1,0 +1,12 @@
+# RFC-0006: a coherent halt_and_report action, but the rule allows a 30 s
+# outage. Rejected against a manifest that declares a tighter (5 s)
+# tolerance — an envelope may only tighten, never relax.
+
+envelope_version: "0.1"
+deployment_id: link_loss_outage_demo
+description: Command-link loss halts and reports, but with a too-loose outage.
+
+link_loss_policy:
+  - role: command_link
+    action: halt_and_report
+    max_outage_seconds: 30.0

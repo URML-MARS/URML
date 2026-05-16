@@ -1,0 +1,88 @@
+# Fixture: drone_civilian + an abstract connectivity block (RFC-0006).
+# Identical to drone_civilian.yaml (aerial, declared `home`, US-compliant
+# provenance) plus a declared command_link. Used by the link-loss
+# conformance fixtures that need a coherent aerial RTH target and by the
+# continue_autonomous negative (the link is not autonomous_when_lost).
+
+manifest_version: "0.1"
+robot_id: civilian_inspector
+description: Civilian multirotor for roof / tower inspection, with a declared command link.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: roof_north
+    pose: { x: 10.0, y: 5.0, z: 30.0 }
+    frame: agl
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  sensors:
+    - name: rangefinder
+      measurement_type: distance
+      range_min: 0.5
+      range_max: 50.0
+      units: m
+  object_vocabulary:
+    - person
+    - vehicle
+
+outputs:
+  named_endpoints: []
+
+# US-compliant illustrative provenance so the bundled default policy passes.
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: example_fc_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/flight_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: imaging_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+
+# RFC-0006: abstract connectivity. command_link is required for operation and
+# is NOT autonomous_when_lost — so a `continue_autonomous` policy is incoherent
+# here, while `return_to_home` (home declared, aerial) is coherent.
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: true
+      autonomous_when_lost: false
+      assurance_class: monitored

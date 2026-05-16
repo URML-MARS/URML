@@ -1,0 +1,10 @@
+# RFC-0006: command-link loss halts the robot and reports. Coherent on any
+# manifest that declares `mobility` (the v0.1 coherence bar for this action).
+
+envelope_version: "0.1"
+deployment_id: link_loss_halt_demo
+description: Command-link loss halts motion and reports to the caller.
+
+link_loss_policy:
+  - role: command_link
+    action: halt_and_report

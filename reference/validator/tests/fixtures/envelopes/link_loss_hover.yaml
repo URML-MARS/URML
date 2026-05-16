@@ -1,0 +1,10 @@
+# RFC-0006: command-link loss should hover in place. Coherent only when the
+# manifest declares mobility.station_keeping: true.
+
+envelope_version: "0.1"
+deployment_id: link_loss_hover_demo
+description: Command-link loss holds station (requires station_keeping).
+
+link_loss_policy:
+  - role: command_link
+    action: hover

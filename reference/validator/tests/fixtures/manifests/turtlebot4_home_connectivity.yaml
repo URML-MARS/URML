@@ -1,0 +1,80 @@
+# Fixture: turtlebot4_home + an abstract connectivity block (RFC-0006).
+# Used by the home-profile link-loss positive: a declared command_link with
+# a coherent `halt_and_report` policy. No provenance (Pass 5 opt-in / no-op).
+
+manifest_version: "0.1"
+robot_id: turtlebot4_demo
+description: TurtleBot 4 for the red-mug demo, with a declared command link.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+    description: Kitchen entry pose.
+  - name: user
+    pose: { x: 0.5, y: 0.5 }
+    frame: map
+    description: User pickup location.
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: mic_array
+      measurement_type: speech
+      units: text
+  object_vocabulary:
+    - mug
+    - cup
+    - person
+
+docking_stations:
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+    services: [park, charge]
+
+outputs:
+  named_endpoints: [speech]
+
+# RFC-0006: a best-effort command link; loss triggers halt_and_report.
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: false
+      autonomous_when_lost: false
+      assurance_class: best_effort

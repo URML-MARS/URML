@@ -1,0 +1,31 @@
+# Fixture: an aerial drone that declares a command_link but NO `home`
+# location (RFC-0006). Used to prove a `return_to_home` link-loss action is
+# rejected as incoherent when the manifest cannot satisfy it. No provenance
+# (Pass 5 is opt-in and a no-op here), keeping the test focused on Pass 3.
+
+manifest_version: "0.1"
+robot_id: drone_no_home
+description: Aerial multirotor with a command link but no declared home location.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: survey_start
+    pose: { x: 2.0, y: 2.0, z: 20.0 }
+    frame: agl
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 12.0
+  station_keeping: true
+  service_ceiling: 100.0
+
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: true
+      assurance_class: monitored
