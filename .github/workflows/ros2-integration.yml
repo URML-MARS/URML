@@ -46,11 +46,19 @@ jobs:
       - name: Install URML packages
         run: |
           . /opt/ros/jazzy/setup.sh
+          # Pin pytest>=8 explicitly: the ros:jazzy-ros-base container
+          # ships a system pytest 7.4.4 in dist-packages. An unpinned
+          # `pytest` requirement is treated as already-satisfied by it and
+          # NOT upgraded, but our pyproject sets `minversion = "8.0"` —
+          # so 7.4.4 hard-errors before collecting anything. The pin
+          # forces the upgrade. (gazebo-e2e's bare runner had no
+          # preinstalled pytest so it was fine, but pin both for
+          # determinism.)
           python3 -m pip install --break-system-packages \
             -e reference/validator \
             -e reference/ros2-runtime \
             -e conformance \
-            pytest
+            "pytest>=8"
 
       - name: Run live integration tests (rclpy smoke only)
         env:
@@ -99,11 +107,19 @@ jobs:
       - name: Install URML packages
         run: |
           . /opt/ros/jazzy/setup.sh
+          # Pin pytest>=8 explicitly: the ros:jazzy-ros-base container
+          # ships a system pytest 7.4.4 in dist-packages. An unpinned
+          # `pytest` requirement is treated as already-satisfied by it and
+          # NOT upgraded, but our pyproject sets `minversion = "8.0"` —
+          # so 7.4.4 hard-errors before collecting anything. The pin
+          # forces the upgrade. (gazebo-e2e's bare runner had no
+          # preinstalled pytest so it was fine, but pin both for
+          # determinism.)
           python3 -m pip install --break-system-packages \
             -e reference/validator \
             -e reference/ros2-runtime \
             -e conformance \
-            pytest
+            "pytest>=8"
 
       - name: Launch TurtleBot 4 Ignition sim + Nav2 (headless)
         run: |
