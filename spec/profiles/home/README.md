@@ -67,9 +67,18 @@ geofences: []                      # optional polygons; deployment-supplied if t
                                    # robot's mapped area is bounded.
 
 # Behavioural defaults.
-link_loss_policy: halt_and_report  # halt motion and `report status: failure` to caller.
+# RFC-0006: link_loss_policy is a structured, per-role, validated rule list.
+link_loss_policy:
+  - role: command_link
+    action: halt_and_report        # halt motion and `report status: failure` to caller.
 emergency_stop_event: emergency_stop  # must match a declared event on the manifest.
 ```
+
+A home robot may declare a `connectivity` block with a `command_link`.
+The home default posture is `required_for_operation: false` (a validated
+program runs fully offline) and `assurance_class: best_effort`; if a
+declared link is lost mid-task the robot halts and reports rather than
+continuing blind.
 
 A reference envelope ships at [`reference/validator/tests/fixtures/envelopes/home_default.yaml`](../../../reference/validator/tests/fixtures/envelopes/home_default.yaml). Deployments are expected to start from it and tighten.
 

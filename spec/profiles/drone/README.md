@@ -88,9 +88,20 @@ weather:
   precipitation_allowed: false
 
 # Behavioural defaults.
-link_loss_policy: return_to_home   # other options: hover, land_now
+# RFC-0006: link_loss_policy is a structured, per-role, validated rule list.
+link_loss_policy:
+  - role: command_link
+    action: return_to_home         # other actions: hover, land_now,
+                                   # halt_and_report, continue_autonomous
 emergency_stop_event: emergency_stop
 ```
+
+The drone manifest is expected to declare a `connectivity` block with at
+least a `command_link` that is `required_for_operation: true` and an
+`assurance_class` of `monitored` or higher (a beyond-visual-line-of-sight
+deployment would declare `assured`; see RFC-0006 §Unresolved questions for
+the regulatory hook). A `telemetry_link` is typically declared but not
+required for operation.
 
 A reference envelope ships at [`reference/validator/tests/fixtures/envelopes/drone_default.yaml`](../../../reference/validator/tests/fixtures/envelopes/drone_default.yaml) (planned; not yet committed as of profile v0.1 Draft state).
 
@@ -99,7 +110,7 @@ A reference envelope ships at [`reference/validator/tests/fixtures/envelopes/dro
 - **`max_altitude` is at or below the local civil aviation authority's cap.** v0.1 does not enforce this against any authority's data; the deployer is responsible. Future RFC may add a jurisdiction-aware altitude-cap policy file.
 - **The drone refuses to fly outside any declared geofence polygon.** Runtime invariant; the validator rejects programs whose declared targets fall outside.
 - **No `scan` or `hover` over declared people-occupancy zones** without an explicit manifest override.
-- **Link loss triggers the declared `link_loss_policy`.** The validator does not (in v0.1) verify the substrate honors this; it is a runtime contract.
+- **Link loss triggers the declared `link_loss_policy`.** Per RFC-0006 the validator statically verifies each rule is *coherent* with the manifest — `return_to_home` requires a declared `home` location and an aerial drive type; the governed link role must be declared in `connectivity`. Honoring the action on a real link drop remains a runtime contract (PX4 maps `return_to_home` to `MAV_CMD_NAV_RETURN_TO_LAUNCH`); an executed link-drop conformance scenario is future work.
 
 ## Layer-2 primitives this profile adds
 
