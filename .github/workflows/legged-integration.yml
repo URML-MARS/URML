@@ -1,0 +1,125 @@
+# Gated legged/quadruped integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push: bosdyn wheel
+# installs, QEMU emulation, and any ROS 2 sim bringup are slow and the
+# coverage doesn't justify the per-PR cost). The hermetic unit suite
+# already gates every PR.
+#
+#   spot-smoke      — install the real bosdyn wheels ([spot] extra) and
+#   run the hermetic legged suite under them. Fast, no robot. The Spot
+#   analog of px4-integration's px4-smoke.
+#
+#   spot-arm64-build — the Jetson-companion signal: under linux/arm64
+#   QEMU, pip-install the [spot] stack and run the hermetic suite.
+#   Spot's companion computer is commonly a Jetson; bosdyn is pure
+#   Python + gRPC with no CUDA/Jetson APIs, so emulation is a faithful
+#   proxy for our code on that board. Mirrors px4-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   legged-sim-e2e  — gated, best-effort, matrixed (spot | anymal).
+#   SKIPS CLEANLY when no sim host / credential is present: Boston
+#   Dynamics' public sim is weaker than PX4 SITL and Isaac-Sim Spot
+#   needs an RTX host (never the Jetson); ANYmal's sim packages are not
+#   public binaries. This job is the honest scaffold, not a green-now
+#   claim — exactly the convention ros2-integration's gazebo-e2e and
+#   px4-integration's px4-sitl-e2e established.
+
+name: legged-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 09:00 UTC (staggered after ros2 06:00 / px4 07:00 / arm 08:00).
+    - cron: '0 9 * * 1'
+
+jobs:
+  spot-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real bosdyn
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/legged-runtime[spot]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic legged suite under real bosdyn
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/legged-runtime
+          python -m pytest tests/test_legged_adapters.py -v
+
+  spot-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [spot] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/legged-runtime[spot]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_legged_runtime, bosdyn.client, platform; print(\"urml_legged_runtime + bosdyn import OK on\", platform.machine())"
+              cd reference/legged-runtime
+              python -m pytest tests/test_legged_adapters.py -q
+            '
+
+  legged-sim-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        brand: [spot, anymal]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gate — skip cleanly without a sim host / credential
+        id: gate
+        run: |
+          # No public, reproducible sim exists for either platform yet
+          # (see the workflow honesty note). The job exits success
+          # without running so the schedule stays green; flip the
+          # secret to opt a self-hosted sim runner in later.
+          if [ -z "${{ secrets.LEGGED_SIM_HOST }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "No LEGGED_SIM_HOST configured — skipping ${{ matrix.brand }} sim e2e (by design)."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Placeholder for ${{ matrix.brand }} sim e2e
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          echo "A LEGGED_SIM_HOST is configured; wire the ${{ matrix.brand }} sim e2e here."
+          exit 1   # fail loudly if someone opts in without finishing the wiring
