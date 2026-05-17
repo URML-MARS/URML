@@ -66,6 +66,8 @@ class Mobility(BaseModel):
         "vtol",
         "manipulator_base",
         "underwater_thrusters",
+        "quadruped",  # RFC-0009: four-legged platforms (Spot, ANYmal, Vision 60)
+        "biped",  # RFC-0009: bipedal/humanoid locomotion (Digit, Optimus, Apollo, NEO)
     ]
     max_velocity: float = Field(..., ge=0, description="Maximum velocity in m/s.")
     max_payload: float | None = Field(None, ge=0, description="Maximum payload in kg.")

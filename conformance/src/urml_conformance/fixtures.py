@@ -54,6 +54,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ground_connectivity_no_station_keeping": _VALIDATOR_FIXTURES / "manifests" / "ground_connectivity_no_station_keeping.yaml",
     "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
+    # RFC-0009: legged/quadruped manifests.
+    "spot_quadruped": _VALIDATOR_FIXTURES / "manifests" / "spot_quadruped.yaml",
+    "unitree_quadruped_denied": _VALIDATOR_FIXTURES / "manifests" / "unitree_quadruped_denied.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {

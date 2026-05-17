@@ -1,0 +1,61 @@
+# Fixture: a quadruped manifest whose critical component vendor is on
+# the bundled US-federal default policy's denylist (FCC Covered List /
+# RFC-0004 covered_vendor_denylist: [dji, autel, hesai, unitree]).
+#
+# Test-only. The vendor string `unitree` is used here as a regulatory
+# marker (it appears on the FCC Covered List), exactly as
+# turtlebot4_home_dji_vendor.yaml uses `dji`. This confirms Unitree is
+# treated identically to DJI under the default policy, consistent with
+# the founder's prior decision to treat denylisted vendors uniformly.
+# It also exercises RFC-0009's `drive_type: quadruped`.
+
+manifest_version: "0.1"
+robot_id: unitree_quadruped_covered_vendor
+description: Quadruped variant with a critical component from a covered vendor (compliance-policy test).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: patrol_waypoint_a
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: quadruped     # RFC-0009
+  max_velocity: 1.6
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: body_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary:
+    - person
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: locomotion_controller
+      role: critical
+      vendor: unitree
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/controller.cdx.json
+        sha256: "2222222222222222222222222222222222222222222222222222222222222222"
