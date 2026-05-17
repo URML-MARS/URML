@@ -16,9 +16,10 @@ URML is in Phase 0 (pre-public draft). The reference packages are **not on PyPI 
 git clone https://github.com/URML-MARS/URML.git && cd URML
 python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
 make demo               # → Validation passed
+make demo-run           # → one English sentence, validated, then executed
 ```
 
-`make demo` validates the canonical red-mug example through all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). No make? `bootstrap.py` prints the exact one-line command to run instead. `make help` lists the rest (`install-dev`, `test`, `clean`).
+`make demo` validates the canonical red-mug example through all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). `make demo-run` goes further: it turns the English sentence "Bring me the red mug from the kitchen." into a URML program, validates it, and executes it step by step, printing the audit trace. Hermetic, no API key, no robot. No make? `bootstrap.py` prints the exact one-line commands to run instead. `make help` lists the rest (`install-dev`, `test`, `clean`).
 
 Then scaffold your own project:
 
@@ -31,7 +32,7 @@ urml validate program.urml.yaml \
 
 `--profile home`, `--profile drone`, and `--profile industrial` are all supported by `urml init`; `--policy` and `--no-policy` flags control the compliance pass.
 
-See [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
+See [`docs/demos/sentence-to-motion.md`](docs/demos/sentence-to-motion.md) for the full sentence-to-execution walkthrough behind `make demo-run`, and [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
 
 ---
 
@@ -46,7 +47,7 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial few-shots | ✅ 77 unit tests |
 | **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run` | ✅ 32 fixtures (home + drone + industrial + compliance + policy-override) |
-| **CLI** — `urml validate`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All six subcommands |
+| **CLI** — `urml validate`, `urml execute`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All seven subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
 | **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; end-to-end verified against a live TurtleBot 4 + Nav2 Gazebo simulation (gated CI, green ×3) |
 | **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
@@ -109,6 +110,7 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 | You want to... | Read this |
 |---|---|
 | Get URML running in under an hour | [Tutorial 1: Getting started](docs/tutorials/01-getting-started.md) |
+| See one English sentence become an executed program | [Sentence-to-motion walkthrough](docs/demos/sentence-to-motion.md) |
 | See an LLM's unsafe program get refused before takeoff | [Safety-rejection walkthrough](docs/demos/safety-rejection.md) |
 | See compliance enforcement in action | [Compliance walkthrough](docs/demos/compliance-walkthrough.md) |
 | Understand the strategic case | [`MANIFESTO.md`](MANIFESTO.md) |
