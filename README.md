@@ -48,7 +48,7 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run` | ✅ 32 fixtures (home + drone + industrial + compliance + policy-override) |
 | **CLI** — `urml validate`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All six subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
-| **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; end-to-end verified against a live TurtleBot 4 + Nav2 Gazebo simulation (gated CI, green ×3) |
+| **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; end-to-end verified against a live TurtleBot 4 + Nav2 Gazebo simulation. Gated-CI `gazebo-e2e` job green on 3 runs; run 25954097635 fully green. See [claims-audit](docs/launch/claims-audit.md) for the job-vs-workflow note. |
 | **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
 | **CompositeAdapter** — one URML program across two substrates: PX4 flight + a ROS 2 companion, per-method routing | ✅ Implemented |
 

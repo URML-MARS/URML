@@ -58,15 +58,24 @@ conformance 40 passed (parametrized over fixtures + loader/smoke).
 **Mock reference runtime.** `reference/ros2-runtime/.../substrate/mock.py`
 (`MockROSAdapter`). Default substrate for the hermetic suites.
 
-**Real ROS 2 adapter (`RclpyAdapter`) — end-to-end verified ×3.**
+**Real ROS 2 adapter (`RclpyAdapter`), `gazebo-e2e` job green ×3.**
 `reference/ros2-runtime/src/urml_ros2_runtime/substrate/rclpy_adapter.py`
 (full ROSAdapter Protocol, lazy `rclpy`). End-to-end: the
 `home/nav_patrol_positive` conformance fixture run through `ConformanceRunner`
-with a live `RclpyAdapter` driving a TurtleBot 4 + Nav2 Gazebo simulation,
-green on three calibration runs of `.github/workflows/ros2-integration.yml`
-(`gazebo-e2e` job): runs **25953413044, 25953936578, 25954097635**. The
-`rclpy-smoke` job (real rclpy, no sim) also green after the venv calibration
-(merged in #45).
+with a live `RclpyAdapter` driving a TurtleBot 4 + Nav2 Gazebo simulation.
+
+Headline evidence is run **25954097635**, which is fully green: *both* the
+`gazebo-e2e` job and the `rclpy-smoke` job passed.
+
+The two earlier calibration runs, **25953413044** and **25953936578**, show
+a red workflow badge. Read the job level, not the workflow level: in both,
+the `gazebo-e2e` job (the one that proves the adapter) passed; the workflow
+is red only because the sibling `rclpy-smoke` job (real rclpy, no sim) was
+failing on a venv issue, fixed in #45. Verify with
+`gh run view <id> --json jobs`. So the live-sim end-to-end ran green on all
+three (`gazebo-e2e`); the final run added a green `rclpy-smoke` on top.
+
+`.github/workflows/ros2-integration.yml`, `gazebo-e2e` job.
 
 **PX4 / MAVLink reference runtime (`PX4Adapter`).**
 `reference/px4-runtime/src/urml_px4_runtime/adapter.py` — full Protocol via

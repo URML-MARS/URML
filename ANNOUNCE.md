@@ -35,8 +35,12 @@ system; it targets the ones that exist.
   and `PX4Adapter` (MAVLink, no ROS dependency), plus a `CompositeAdapter`
   that runs one program across a PX4 flight controller + a ROS 2 companion.
 - **End-to-end verified** — a conformance fixture drives a *simulated
-  TurtleBot 4* through Nav2 via the real adapter, green on three independent
-  CI runs. Not "should work" — reproduced.
+  TurtleBot 4* through Nav2 via the real adapter. The `gazebo-e2e` CI job
+  passed on three runs; one of them (25954097635) is fully green end to end.
+  The two earlier runs show a red workflow badge from an unrelated sibling
+  job, not the sim test; the claims audit explains the job-vs-workflow
+  distinction so a skeptic clicking through is not misled. Reproduced, not
+  "should work".
 - **Compliance is enforced, not documented** — the bundled default policy
   encodes US-federal procurement rules (NDAA §889/FY26, FCC Covered List, EO
   14307, ASRA); a covered-foreign-country component is rejected *at validation
