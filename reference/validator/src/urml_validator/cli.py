@@ -734,9 +734,8 @@ def _build_execute_adapter(args: argparse.Namespace, cleanup: list[Any]) -> Any:
             adapter = PX4Adapter(config)
         except Exception as exc:  # noqa: BLE001 — surface pymavlink-missing etc. as usage error
             raise _CLILoadError(
-                f"could not construct the px4 adapter: {exc}. Ensure pymavlink "
-                f"is installed (pip install urml-px4-runtime[mavlink]) and a "
-                f"PX4 SITL/autopilot is reachable."
+                f"could not construct the px4 adapter: {exc} "
+                f"(a reachable PX4 SITL/autopilot is also required to execute)."
             ) from exc
         close = getattr(adapter, "close", None)
         if callable(close):
