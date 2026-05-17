@@ -1,0 +1,42 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: drone/bridge-survey
+# Source NL: "Survey the bridge deck from the air, hover to inspect the
+#             main span, and measure the clearance underneath."
+#            (see bridge-survey.en.txt)
+#
+# A drone-profile inspection survey. Demonstrates the area-survey,
+# active-position-hold, and single-reading primitives (`scan`, `hover`,
+# `measure`) on top of the flight primitives. Validatable end-to-end via
+# the companion manifest:
+#
+#   urml validate bridge-survey.urml.yaml \
+#     -m bridge-survey.manifest.yaml --profile drone
+#
+# The companion manifest declares US-compliant provenance, so the bundled
+# default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5.
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 25.0
+    - scan:
+        area:
+          bounding_box: { min_x: 0.0, max_x: 12.0, min_y: 0.0, max_y: 8.0 }
+        pattern: serpentine
+        media: photo
+        store_as: deck_scan
+    - hover:
+        duration: 15s
+    - measure:
+        what: distance
+        store_as: clearance
+    - report:
+        to: user
+        facts:
+          surveyed: bridge_deck
+    - return_to_home: {}
+    - land: {}

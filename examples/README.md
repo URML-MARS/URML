@@ -7,10 +7,11 @@ Runnable demonstrations of URML, organized per profile. Examples are how new rea
 ```
 examples/
 ├── home/                       v1.0 profile.
-│   ├── red-mug.urml.yaml           # The structured program.
-│   └── red-mug.en.txt              # The English natural-language prompt.
+│   ├── red-mug.*                   # The manifesto example (move/detect/grasp/release).
+│   └── evening-routine.*           # Conversational routine (speak/listen/wait_for/dock/wait).
 ├── drone/                      drone-profile programs (v0.1).
-│   └── roof-inspection.*           # Citizen-inspector roof scan.
+│   ├── roof-inspection.*           # Citizen-inspector roof scan (take_off/capture/RTH/land).
+│   └── bridge-survey.*             # Structure survey (scan/hover/measure).
 └── industrial/                 industrial-profile programs (v0.1).
     └── simple-pick-and-place.*     # MVP pick-place cycle.
 ```
@@ -42,8 +43,8 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 
 | Profile | v0.1 content | How it grows |
 |---|---|---|
-| [`home/`](home/) | `red-mug` (the manifesto example). | Additional home scenarios land alongside the home-profile spec. |
-| [`drone/`](drone/) | `roof-inspection` (citizen-inspector). | Additional drone scenarios land alongside the drone-profile spec. |
+| [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock). | Additional home scenarios land alongside the home-profile spec. |
+| [`drone/`](drone/) | `roof-inspection` (citizen-inspector); `bridge-survey` (scan/hover/measure). | Additional drone scenarios land alongside the drone-profile spec. |
 | [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
 
 ## Adding a new example

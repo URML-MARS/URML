@@ -2,9 +2,9 @@
 rfc: 0002
 title: Initial Layer-2 Primitive Vocabulary
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Accepted
+state: Implemented
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-05-17
 supersedes: —
 superseded-by: —
 ---
@@ -501,6 +501,16 @@ The expected sequence:
 - **Month 3:** Conformance tests + example update; RFC moves to Implemented.
 
 The PX4 runtime's subset implementation tracks the drone profile RFC (a separate RFC, planned as RFC-0005 or thereabouts), not this one.
+
+**Status — Implemented (2026-05-17).** All five criteria are met: (1) the
+normative spec document [`spec/layer-2-primitives/v0.1.0.md`](../../spec/layer-2-primitives/v0.1.0.md)
+covers all seventeen primitives (twelve core + five profile-scoped); (2) the
+five-pass validator; (3) the ros2-runtime implements all seventeen; (4) the
+conformance suite carries positive and negative fixtures per primitive; (5)
+the runnable examples cover every primitive. The cell-by-cell proof is
+[`docs/spec-coverage.md`](../spec-coverage.md). The vocabulary moved faster
+than the Phase-1 month-by-month sequence above anticipated; the sequence is
+left as written for the decision record.
 
 ## Appendix A: Prior-art mapping
 

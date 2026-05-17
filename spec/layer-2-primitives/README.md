@@ -1,6 +1,6 @@
 # Layer 2 — Intent Primitives
 
-**Status:** Pre-draft. The specification document for this layer is targeted for v0.1; see roadmap in [`MANIFESTO.md`](../../MANIFESTO.md).
+**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — seventeen primitives (twelve core + five profile-scoped), transcribed from the [RFC-0002](../../docs/rfcs/0002-initial-primitive-vocabulary.md) decision record. This README is the orientation; `v0.1.0.md` is what a runtime must implement.
 
 ## Purpose
 
@@ -23,9 +23,9 @@ Layer 2 must **not** include:
 
 Per [`MANIFESTO.md`](../../MANIFESTO.md) §Design Principles and [`CLAUDE.md`](../../CLAUDE.md), every primitive in this layer must be **cleanly implementable on a runtime with zero ROS dependencies**. The Issue template at [`.github/ISSUE_TEMPLATE/primitive_proposal.md`](../../.github/ISSUE_TEMPLATE/primitive_proposal.md) forces every proposer to sketch both a ROS-2 implementation and a non-ROS implementation up front, before the RFC stage. A primitive that fails the acid test is leaking substrate assumptions and needs rework.
 
-## What goes here when this document is drafted
+## What the normative document specifies
 
-For each primitive:
+[`v0.1.0.md`](v0.1.0.md) carries, for each primitive:
 
 - The verb name (snake_case).
 - The argument schema (JSON Schema or YAML equivalent).
@@ -35,11 +35,11 @@ For each primitive:
 - Variable-binding behavior (which arguments may bind a `$name` variable; which output is bound to a `store_as`).
 - A "what NOT to assume" subsection naming substrate-leaks proposers must avoid.
 
-The initial vocabulary will be drafted as **RFC-0002: Initial Layer-2 Primitive Vocabulary**.
+The initial vocabulary was decided in **RFC-0002: Initial Layer-2 Primitive Vocabulary** and is now normatively specified in [`v0.1.0.md`](v0.1.0.md).
 
 ## Conformance points
 
-When this layer is drafted, the conformance suite will test:
+The conformance suite (`/conformance/fixtures/`) tests:
 
 - For each primitive, that conformant runtimes correctly execute it given a valid manifest and accept/reject the documented edge cases.
 - That the validator correctly rejects programs that use primitives the manifest doesn't support.
