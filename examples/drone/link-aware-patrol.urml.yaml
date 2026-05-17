@@ -1,0 +1,34 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: drone/link-aware-patrol
+# Source NL: "Patrol the perimeter and photograph the gate; if you lose the
+#             command link, come home." (see link-aware-patrol.en.txt)
+#
+# A Layer-1 example: the manifest declares an abstract `connectivity:`
+# block (a required command_link), and the companion safety envelope
+# declares a `link_loss_policy` of return_to_home. The program itself is
+# an ordinary composed program — RFC-0006's point is that connectivity
+# awareness needs no new vocabulary; the validator (Pass 2 + Pass 3)
+# statically checks the policy is coherent with the declared link.
+#
+#   urml validate link-aware-patrol.urml.yaml \
+#     -m link-aware-patrol.manifest.yaml \
+#     --envelope link-aware-patrol.envelope.yaml --profile drone
+#
+# The companion manifest declares US-compliant provenance, so the bundled
+# default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5.
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 30.0
+    - move_to:
+        location: perimeter_gate
+    - capture:
+        media: photo
+        store_as: gate_photo
+    - return_to_home: {}
+    - land: {}

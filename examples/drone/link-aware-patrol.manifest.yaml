@@ -1,0 +1,119 @@
+# Companion manifest for examples/drone/link-aware-patrol.urml.yaml — a
+# civilian multirotor that declares an abstract RFC-0006 `connectivity:`
+# block (a required, non-autonomous command_link). This is the example
+# that exercises the Layer-1 connectivity surface end-to-end.
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are
+# fictional; country codes are real ISO 3166-1 alpha-2 values. The integrity
+# hashes are zeroed placeholders. Do not deploy from this file; use it to see
+# a manifest that passes the validator's capability checks AND the bundled
+# US-federal compliance policy (RFC-0004) end-to-end.
+#
+# Validate with the companion link-loss envelope:
+#   urml validate link-aware-patrol.urml.yaml \
+#     -m link-aware-patrol.manifest.yaml \
+#     --envelope link-aware-patrol.envelope.yaml --profile drone
+#
+# Demonstrate the override path (skip Pass 5):
+#   urml validate link-aware-patrol.urml.yaml \
+#     -m link-aware-patrol.manifest.yaml \
+#     --envelope link-aware-patrol.envelope.yaml --profile drone --no-policy
+
+manifest_version: "0.1"
+robot_id: civilian_link_aware_patrol
+description: Civilian multirotor for perimeter patrol, with a declared command link.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: perimeter_gate
+    pose: { x: 8.0, y: 3.0, z: 30.0 }
+    frame: agl
+    description: Perimeter gate inspection station.
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  sensors:
+    - name: rangefinder
+      measurement_type: distance
+      range_min: 0.5
+      range_max: 50.0
+      units: m
+  object_vocabulary:
+    - person
+    - vehicle
+
+outputs:
+  named_endpoints: []
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-origin manufacture and assembly, references an HBOM document, and
+# carries the third-party-audited attestation level the default policy
+# requires.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/civilian_link_aware_patrol.signed
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: example_fc_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/flight_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: imaging_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/imaging_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: rangefinder_module
+      role: critical
+      vendor: example_sensor_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/rangefinder.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+
+# RFC-0006: abstract connectivity. The command_link is required for
+# operation and is NOT autonomous_when_lost — so the deployment's
+# return_to_home link-loss policy (see the companion envelope) is the
+# coherent contingency. The transport medium is deliberately not modelled.
+connectivity:
+  links:
+    - role: command_link
+      required_for_operation: true
+      autonomous_when_lost: false
+      assurance_class: monitored
+      description: Operator command-and-control uplink.

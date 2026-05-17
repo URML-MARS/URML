@@ -12,6 +12,7 @@ a claim ("the standard is complete") mapped cell-by-cell to the artifact that
 backs it. It grows one layer at a time; regenerate the relevant section
 whenever a construct is added or a leg moves.
 
+- **[Layer 1 — capability manifest](#layer-1--capability-manifest)** — 12/12 covered.
 - **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 17/17 covered.
 - **[Layer 3 — behavior composition](#layer-3--behavior-composition)** — 6/6 covered.
 
@@ -206,3 +207,78 @@ urml validate examples/drone/parallel-watch.urml.yaml \
 
 Both print `Validation passed`. The validator and conformance suites remain
 green; the only runtime touch is a docstring correction in `runtime.py`.
+
+---
+
+# Layer 1 — capability manifest
+
+The authoritative block set is the manifest schema in
+[`reference/validator/.../schemas/manifest.py`](../reference/validator/src/urml_validator/schemas/manifest.py)
+(plus `connectivity.py`). "Construct" here is a manifest block. Legs:
+
+- **Spec** — a normative section in
+  [`spec/layer-1-hal/v0.1.0.md`](../spec/layer-1-hal/v0.1.0.md); the Pass-5
+  policy that consumes `provenance` is specified in
+  [`spec/layer-1-hal/policy.md`](../spec/layer-1-hal/policy.md).
+- **Schema** — a Pydantic model in `manifest.py` / `connectivity.py`.
+- **Consumer** — the validator pass that enforces the block (Pass 2 capability
+  / Pass 3 envelope / Pass 5 policy), in
+  [`reference/validator/.../validator.py`](../reference/validator/src/urml_validator/validator.py).
+- **Conformance** — a fixture manifest that exercises the block.
+- **Example** — an example manifest in [`examples/`](../examples/) that
+  declares the block, validated end-to-end with `urml validate`.
+
+## What this audit found and closed
+
+One real gap, closed in the PR that adds this section: **no example manifest
+declared a `connectivity:` block.** Eleven of the twelve blocks appeared in
+the nine shipped example manifests; `connectivity:` (RFC-0006) appeared in
+zero, though it is schema-defined, validator-enforced (Pass 2 + Pass 3), and
+covered by validator fixtures. A new scenario closes it:
+[`examples/drone/link-aware-patrol`](../examples/drone/link-aware-patrol.urml.yaml)
+— a manifest declaring a required `command_link` plus a companion
+`*.envelope.yaml` declaring a `return_to_home` link-loss policy; it passes
+`urml validate` end-to-end including the Pass-5 default policy.
+
+## The matrix
+
+All twelve blocks are covered.
+
+| Block | Spec | Schema | Consumer | Conformance | Example |
+|---|---|---|---|---|---|
+| `manifest_version` / `robot_id` | v0.1.0 §2 | `CapabilityManifest` | Pass 1 | all manifests | `home/red-mug` |
+| `frames` | v0.1.0 §2.1 | `Frame` | Pass 2 | all manifests | `home/red-mug` |
+| `declared_locations` | v0.1.0 §2.2 | `DeclaredLocation` | Pass 2 | all manifests | `home/red-mug` |
+| `declared_events` | v0.1.0 §2.3 | `CapabilityManifest` | Pass 2 (`wait_for`) | `home/11_emergency_stop_handling` | `home/evening-routine` |
+| `mobility` | v0.1.0 §2.4 | `Mobility` | Pass 2 (`move_to`/`hover`/…) | all motion fixtures | `home/red-mug` |
+| `manipulation` | v0.1.0 §2.5 | `Manipulation`/`Gripper` | Pass 2 (`grasp`/`release`) | `home/01_red_mug_positive` | `home/red-mug` |
+| `perception` | v0.1.0 §2.6 | `Perception`/`Camera`/`Sensor` | Pass 2 (`detect`/`scan`/…) | `drone/06_measure_positive` | `drone/bridge-survey` |
+| `docking_stations` | v0.1.0 §2.7 | `DockingStation` | Pass 2 (`dock`) | `home/13_dock_positive` | `home/evening-routine` |
+| `outputs` | v0.1.0 §2.8 | `Outputs` | Pass 2 (`report`/`speak`) | `industrial/01_pick_red_positive` | `home/evening-routine` |
+| `provenance` | v0.1.0 §2.9 + `policy.md` | `Provenance` | Pass 5 | `home/07_policy_country_denied` | `home/red-mug` |
+| `connectivity` | v0.1.0 §2.10 | `Connectivity`/`DeclaredLink` | Pass 2 + Pass 3 | `drone/10_link_role_undeclared_rejected` | `drone/link-aware-patrol` |
+| `link_loss_policy` (envelope side) | v0.1.0 §2.10 | `LinkLossRule` | Pass 3 | `drone/13_link_loss_rth_positive` | `drone/link-aware-patrol` |
+
+## Notes (honest deferrals, not gaps)
+
+- **No URDF/SDF cross-reference.** The manifest has no `urdf_ref:` and the
+  validator performs no manifest↔URDF frame check. Stated in `v0.1.0.md` §5;
+  a candidate future RFC, not a hidden gap.
+- **Safety envelope is a separate artifact.** Specified at deployment time
+  (`envelope.py` + profile defaults), referenced by Layer 1, not part of
+  `CapabilityManifest` (`v0.1.0.md` §1.2). The `link_loss_policy` row above is
+  the envelope side, included because Pass 3 conjoins it with the manifest
+  `connectivity` block.
+- **HBOM opaque, hash unverified, `manifest_version` fixed `"0.1"`.** Recorded
+  in `v0.1.0.md` §5; deliberate v0.1 scope lines.
+
+## Verification
+
+```
+urml validate examples/drone/link-aware-patrol.urml.yaml \
+  -m examples/drone/link-aware-patrol.manifest.yaml \
+  --envelope examples/drone/link-aware-patrol.envelope.yaml --profile drone
+```
+
+Prints `Validation passed`. The validator and conformance suites remain
+green; this section's PR touches no runtime code.
