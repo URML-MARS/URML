@@ -1,0 +1,20 @@
+# PX4 adapter config for the sentence-to-flight demo.
+#
+# The validator resolves location names against the manifest; this file
+# binds those names to local-NED coordinates the PX4 autopilot
+# understands. roof_north sits 15m north of launch at 30m AGL; home is
+# the launch point. Edit these to match your SITL terrain or aircraft.
+#
+# connection_url is PX4 SITL's standard offboard MAVLink port.
+
+connection_url: "udp:127.0.0.1:14540"
+
+location_to_pose:
+  roof_north:
+    north: 15.0
+    east: 0.0
+    alt: 30.0
+  home:
+    north: 0.0
+    east: 0.0
+    alt: 0.0
