@@ -773,8 +773,17 @@ def _emit_execute_pretty(rr: Any, adapter_name: str, *, program_path: Path) -> N
     if audit:
         for i, entry in enumerate(audit, start=1):
             print(_format_audit_entry(i, entry), file=out)
+    elif rr.steps_executed > 0:
+        # Steps ran but the adapter records no call log. This is true of
+        # PX4Adapter, whose effects are MAVLink commands to an autopilot,
+        # not recordable mock calls. Do not imply nothing happened.
+        print(
+            f"    ({rr.steps_executed} step(s) dispatched; this adapter keeps "
+            "no call log, so there is no per-step trace. See RESULT below.)",
+            file=out,
+        )
     else:
-        print("    (no adapter calls — the program's behavior tree was empty)", file=out)
+        print("    (no steps executed; the program's behavior tree was empty)", file=out)
 
     if rr.bindings:
         print("\n  bindings:", file=out)

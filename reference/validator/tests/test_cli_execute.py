@@ -12,9 +12,13 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import pytest
+
+from urml_validator.cli import _emit_execute_pretty
 
 from urml_validator.cli import build_parser, main
 
@@ -250,3 +254,44 @@ def test_execute_adapter_config_not_found_exits_2(
     assert rc == 2
     assert "adapter-config file not found" in err.lower()
     assert "Traceback" not in err
+
+
+# ---------------------------------------------------------------------------
+# The trace renderer does not imply "nothing happened" when an adapter
+# simply keeps no call log (the PX4Adapter case the flight demo relies on)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class _StubResult:
+    """Minimal stand-in for RuntimeResult for the pretty-printer."""
+
+    success: bool
+    steps_executed: int
+    audit_log: list[dict[str, Any]] = field(default_factory=list)
+    bindings: dict[str, Any] = field(default_factory=dict)
+    last_outcome: Any = None
+
+
+def test_trace_render_no_call_log_does_not_claim_empty_tree(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Steps ran but the adapter logged nothing (px4): say so, honestly."""
+    rr = _StubResult(success=True, steps_executed=4, audit_log=[])
+    _emit_execute_pretty(rr, "px4", program_path=Path("flight.yaml"))
+    out = capsys.readouterr().out
+    assert "4 step(s) dispatched" in out
+    assert "keeps\n    no call log" in out or "keeps no call log" in out
+    # The misleading old wording must not appear when steps actually ran.
+    assert "behavior tree was empty" not in out
+    assert "RESULT: SUCCESS" in out
+
+
+def test_trace_render_empty_tree_when_zero_steps(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Genuinely-empty behavior tree still reports as empty."""
+    rr = _StubResult(success=True, steps_executed=0, audit_log=[])
+    _emit_execute_pretty(rr, "mock", program_path=Path("empty.yaml"))
+    out = capsys.readouterr().out
+    assert "behavior tree was empty" in out
