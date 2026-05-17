@@ -1,0 +1,104 @@
+# Companion manifest for examples/drone/bridge-survey.urml.yaml —
+# a civilian inspection multirotor with a downward camera and a rangefinder,
+# so the `scan` / `hover` / `measure` primitives validate.
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are
+# fictional; country codes are real ISO 3166-1 alpha-2 values. The integrity
+# hashes are zeroed placeholders. Do not deploy from this file; use it to see
+# a manifest that passes the validator's capability checks AND the bundled
+# US-federal compliance policy (RFC-0004) end-to-end.
+#
+# Validate with the bundled default policy active:
+#   urml validate bridge-survey.urml.yaml \
+#     -m bridge-survey.manifest.yaml --profile drone
+#
+# Demonstrate the override path (skip Pass 5):
+#   urml validate bridge-survey.urml.yaml \
+#     -m bridge-survey.manifest.yaml --profile drone --no-policy
+
+manifest_version: "0.1"
+robot_id: civilian_bridge_survey_demo
+description: Civilian multirotor for bridge / structure survey, US-compliant illustrative manifest.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: span_center
+    pose: { x: 6.0, y: 4.0, z: 25.0 }
+    frame: agl
+    description: Main-span inspection station.
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  sensors:
+    - name: rangefinder
+      measurement_type: distance
+      range_min: 0.5
+      range_max: 50.0
+      units: m
+  object_vocabulary:
+    - person
+    - vehicle
+
+outputs:
+  named_endpoints: []
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-origin manufacture and assembly, references an HBOM document, and
+# carries the third-party-audited attestation level the default policy
+# requires.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/civilian_bridge_survey_demo.signed
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: example_fc_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/flight_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: imaging_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/imaging_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: rangefinder_module
+      role: critical
+      vendor: example_sensor_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/rangefinder.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
