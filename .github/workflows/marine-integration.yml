@@ -1,0 +1,131 @@
+# Gated ArduSub (BlueROV2) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   marine-smoke      — install the real pymavlink wheel ([marine]
+#   extra) and run the hermetic marine suite under it. Fast, no robot.
+#   The marine analog of px4-integration's px4-smoke.
+#
+#   marine-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The marine stack is pure Python + pymavlink with no CUDA/Jetson
+#   APIs, so emulation is a faithful proxy for our code on a
+#   Jetson-class board. Mirrors px4-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   marine-sitl-e2e   — the real end-to-end: the
+#   conformance marine/bluerov_survey_positive fixture run through
+#   ConformanceRunner with a live BlueRovAdapter flying an ArduSub SITL
+#   over MAVLink. Heavy, best-effort.
+#
+# HONESTY NOTE: the ArduSub SITL bringup below was authored without the
+# ability to run it. The ArduPilot `sim_vehicle.py -v ArduSub`
+# invocation matches the ArduSub developer docs but the FIRST real run
+# will need a port/arming/mode tweak (ArduSub may need an explicit
+# GUIDED-mode + arm step before it accepts position targets). Every
+# diagnostic is uploaded on always(); a red first run tells you what to
+# pin. Do not treat the first marine-sitl-e2e run as a regression
+# signal; treat it as the calibration run, exactly as px4-integration's
+# px4-sitl-e2e and ros2-integration's gazebo-e2e were treated.
+
+name: marine-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 12:00 UTC (staggered after the other integration lanes).
+    - cron: '0 12 * * 1'
+
+jobs:
+  marine-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real pymavlink
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/marine-runtime[marine]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic marine suite under real pymavlink
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/marine-runtime
+          python -m pytest tests/test_bluerov_adapter.py -v
+
+  marine-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [marine] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/marine-runtime[marine]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_marine_runtime, pymavlink, platform; print(\"urml_marine_runtime + pymavlink import OK on\", platform.machine())"
+              cd reference/marine-runtime
+              python -m pytest tests/test_bluerov_adapter.py -q
+            '
+
+  marine-sitl-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ArduPilot SITL toolchain
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y git python3-pip python3-venv build-essential
+
+      - name: Placeholder for ArduSub SITL e2e
+        run: |
+          # Wiring (calibration step): clone ArduPilot, build + launch
+          #   Tools/autotest/sim_vehicle.py -v ArduSub --no-mavproxy
+          # then run, with URML_MARINE_SITL=1:
+          #   ConformanceRunner(cases=[marine/bluerov_survey_positive],
+          #     adapter_factory=lambda: BlueRovAdapter(MarineConfig(
+          #       connection_url="udp:127.0.0.1:14550")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "ArduSub SITL bringup is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marine-sitl-e2e-diagnostics
+          path: ~/.ardupilot/logs
+          retention-days: 14

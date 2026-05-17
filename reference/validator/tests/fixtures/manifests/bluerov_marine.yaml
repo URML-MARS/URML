@@ -1,0 +1,63 @@
+# Fixture: a BlueROV2-class underwater vehicle manifest.
+# Exercises mobility.drive_type: underwater_thrusters (already in the
+# v0.1 schema; no RFC needed). No provenance block -> the bundled
+# US-federal default policy has nothing to deny. Modeled on
+# industrial_cell.yaml. Blue Robotics is US-based; the conformance
+# fixture is navigation-only so it runs hermetically.
+
+manifest_version: "0.1"
+robot_id: bluerov2_survey_1
+description: Small observation-class ROV with a depth sensor and an HD camera.
+
+frames:
+  - name: water
+    parent: null
+  - name: body
+    parent: water
+
+declared_locations:
+  - name: survey_start
+    pose: { x: 0.0, y: 0.0, z: -2.0 }
+    frame: water
+    description: Descent point, 2 m depth.
+  - name: reef_transect
+    pose: { x: 12.0, y: 0.0, z: -5.0 }
+    frame: water
+    description: Transect waypoint, 5 m depth.
+  - name: ascent_point
+    pose: { x: 0.0, y: 0.0, z: -1.0 }
+    frame: water
+    description: Safe-ascent hold, 1 m depth.
+
+declared_events:
+  - leak_detected
+  - surface_clear
+
+mobility:
+  drive_type: underwater_thrusters
+  max_velocity: 1.0
+  station_keeping: true     # ArduSub position/depth hold
+
+perception:
+  cameras:
+    - name: hd_cam
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: depth
+      measurement_type: depth
+      range_min: 0.0
+      range_max: 100.0
+      units: m
+  object_vocabulary:
+    - diver
+    - obstacle
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - topside_log

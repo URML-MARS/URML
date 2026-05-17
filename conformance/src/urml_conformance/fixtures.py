@@ -54,6 +54,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ground_connectivity_no_station_keeping": _VALIDATOR_FIXTURES / "manifests" / "ground_connectivity_no_station_keeping.yaml",
     "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
+    # BlueROV2 / ArduSub — exercises drive_type: underwater_thrusters.
+    "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {

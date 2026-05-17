@@ -1,0 +1,33 @@
+name: marine/bluerov_survey_positive
+description: >
+  Navigation-only underwater survey on a BlueROV2 manifest with
+  mobility.drive_type: underwater_thrusters (already in the v0.1
+  schema). Descend, run a transect, hold for ascent. Proves the
+  underwater path validates and executes. Nav-only, so it runs
+  hermetically against MockROSAdapter and adapter-agnostically against
+  BlueRovAdapter (MAVLink). The depth waypoints are declared *locations*
+  (z = depth), not docking actions.
+
+manifest: bluerov_marine
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: survey_start }
+      - move_to: { location: reef_transect }
+      - move_to: { location: ascent_point }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal
