@@ -25,8 +25,10 @@ from urml_industrial_arm_runtime._version import __version__
 from urml_industrial_arm_runtime.adapter import (
     AbbAdapter,
     FanucAdapter,
+    FrankaAdapter,
     IndustrialArmAdapter,
     KukaAdapter,
+    UrAdapter,
     YaskawaAdapter,
 )
 
@@ -35,14 +37,18 @@ BRAND_ADAPTERS: dict[str, type[IndustrialArmAdapter]] = {
     "fanuc": FanucAdapter,
     "kuka": KukaAdapter,
     "yaskawa": YaskawaAdapter,
+    "ur": UrAdapter,
+    "franka": FrankaAdapter,
 }
 
 __all__ = [
     "BRAND_ADAPTERS",
     "AbbAdapter",
     "FanucAdapter",
+    "FrankaAdapter",
     "IndustrialArmAdapter",
     "KukaAdapter",
+    "UrAdapter",
     "YaskawaAdapter",
     "__version__",
 ]

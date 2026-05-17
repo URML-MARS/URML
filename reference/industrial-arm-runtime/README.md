@@ -1,6 +1,6 @@
 # urml-industrial-arm-runtime
 
-**ROS-Industrial / MoveIt 2 reference runtime for URML** — one first-class adapter per arm vendor: **ABB, FANUC, KUKA, YASKAWA**.
+**ROS-Industrial / MoveIt 2 reference runtime for URML** — one first-class adapter per arm vendor: **ABB, FANUC, KUKA, YASKAWA, Universal Robots, Franka Emika**.
 
 An industrial manipulator is a fixed-base arm. Its load-bearing URML primitives are `grasp` / `release` (a gripper action) and `move_to` (an end-effector move via MoveIt 2). That dispatch shape is identical to the one the ROS 2 runtime's [`RclpyAdapter`](../ros2-runtime/) already implements, so the substrate plumbing is single-sourced: each brand adapter **composes** a `RclpyAdapter` rather than re-implementing MoveIt 2. The per-brand surface is still real and first-class — distinct classes, distinct default configs (each vendor's ROS-Industrial action-server conventions), distinct not-supported tag. "One adapter per brand", no duplicated substrate code.
 
@@ -54,7 +54,7 @@ report = runner.run()
 ## Status
 
 **v0.1 (this release):**
-- Four first-class brand adapters (`AbbAdapter`, `FanucAdapter`, `KukaAdapter`, `YaskawaAdapter`) over a shared `IndustrialArmAdapter` core that composes `RclpyAdapter`.
+- Six first-class brand adapters (`AbbAdapter`, `FanucAdapter`, `KukaAdapter`, `YaskawaAdapter`, `UrAdapter`, `FrankaAdapter`) over a shared `IndustrialArmAdapter` core that composes `RclpyAdapter`. UR (Denmark/Teradyne) is the dominant cobot; Franka (Germany) is the dominant research arm and the educational-community flywheel — both pass the default US-federal policy.
 - `BRAND_ADAPTERS` name→class registry for config-driven selection (CI matrices, the conformance `adapter_factory`).
 - Hermetic unit tests: every brand, every delegated primitive, every not-supported sentinel, the conformance hook, `runtime_checkable` Protocol conformance, and context-manager teardown — no ROS 2 install required.
 - Gated `.github/workflows/industrial-arm-integration.yml` (matrixed abb/fanuc/kuka/yaskawa) running the existing `conformance/fixtures/industrial/pick_red_positive` fixture through each brand adapter against a ROS 2 + MoveIt 2 sim, plus a gated `tests/integration/` scaffold. Modelled on `ros2-integration.yml`; first runs per brand are calibration runs by design, not regression signals.

@@ -24,12 +24,14 @@ from urml_ros2_runtime.substrate.base import (
 from urml_industrial_arm_runtime import (
     AbbAdapter,
     FanucAdapter,
+    FrankaAdapter,
     IndustrialArmAdapter,
     KukaAdapter,
+    UrAdapter,
     YaskawaAdapter,
 )
 
-BRAND_CLASSES = [AbbAdapter, FanucAdapter, KukaAdapter, YaskawaAdapter]
+BRAND_CLASSES = [AbbAdapter, FanucAdapter, KukaAdapter, YaskawaAdapter, UrAdapter, FrankaAdapter]
 BRAND_IDS = [c.BRAND for c in BRAND_CLASSES]
 
 

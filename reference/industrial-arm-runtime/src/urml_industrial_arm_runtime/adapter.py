@@ -60,8 +60,10 @@ from urml_industrial_arm_runtime._version import __version__
 __all__ = [
     "AbbAdapter",
     "FanucAdapter",
+    "FrankaAdapter",
     "IndustrialArmAdapter",
     "KukaAdapter",
+    "UrAdapter",
     "YaskawaAdapter",
     "__version__",
 ]
@@ -84,6 +86,8 @@ _BRAND_GRIPPER_SERVER = {
     "fanuc": "/fanuc/gripper/gripper_cmd",
     "kuka": "/kuka/gripper/gripper_cmd",
     "yaskawa": "/motoman/gripper/gripper_cmd",  # YASKAWA's ROS-Industrial driver is `motoman`.
+    "ur": "/ur/robotiq_gripper/gripper_cmd",  # UR cobots most commonly carry a Robotiq gripper.
+    "franka": "/franka/franka_gripper/gripper_cmd",  # Franka's ROS package is `franka_gripper`.
 }
 
 InnerFactory = Callable[[], ROSAdapter]
@@ -350,3 +354,26 @@ class YaskawaAdapter(IndustrialArmAdapter):
     """YASKAWA (Motoman) arm via the ``motoman`` ROS-Industrial driver + MoveIt 2."""
 
     BRAND = "yaskawa"
+
+
+class UrAdapter(IndustrialArmAdapter):
+    """Universal Robots cobot via the ``ur_robot_driver`` (ROS 2) + MoveIt 2.
+
+    UR is the dominant collaborative arm; it uses the same MoveIt 2 /
+    ``control_msgs`` dispatch as the other industrial brands, so it is a
+    pure brand specialization of the shared core. Denmark-made,
+    Teradyne (US) owned — passes the default US-federal policy.
+    """
+
+    BRAND = "ur"
+
+
+class FrankaAdapter(IndustrialArmAdapter):
+    """Franka Emika arm via ``franka_ros2`` + MoveIt 2.
+
+    The dominant research/teaching arm; first-class here because the
+    educational community is a core adoption flywheel. Germany-made —
+    passes the default US-federal policy.
+    """
+
+    BRAND = "franka"

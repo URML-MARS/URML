@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        brand: [abb, fanuc, kuka, yaskawa]
+        brand: [abb, fanuc, kuka, yaskawa, ur, franka]
     steps:
       - uses: actions/checkout@v4
 
