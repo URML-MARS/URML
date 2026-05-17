@@ -1,0 +1,15 @@
+# Companion safety envelope for examples/drone/link-aware-patrol.urml.yaml.
+#
+# Deployment-time artifact (Layer 1 references it; it is not part of the
+# capability manifest). Its only constraint is an RFC-0006 link-loss
+# policy: if the command_link is lost, return to home. The validator
+# (Pass 2 + Pass 3) statically checks this is coherent with the manifest's
+# declared command_link, aerial drive type, and declared `home`.
+
+envelope_version: "0.1"
+deployment_id: link_aware_patrol_demo
+description: Command-link loss returns the aircraft to home.
+
+link_loss_policy:
+  - role: command_link
+    action: return_to_home
