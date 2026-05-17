@@ -1,6 +1,6 @@
 # Layer 4 — Natural Language Interface
 
-**Status:** Pre-draft. The specification document for this layer is targeted for v0.1; see roadmap in [`MANIFESTO.md`](../../MANIFESTO.md).
+**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the published prompt contract: the system-prompt surface, the few-shot library, the bounded validator-feedback revision loop, and the provider-neutral interface (Layer 4 has no dedicated RFC; the contract is the shipped `reference/llm-bridge/`). This README is the orientation; `v0.1.0.md` is what an integration must implement.
 
 ## Purpose
 
@@ -22,7 +22,12 @@ Layer 4 must **not** include:
 - The robot's world model. Layer 4 may *describe* what world-model facts an LLM is allowed to reference (e.g., named locations from the capability manifest), but the world model itself lives at the substrate.
 - A natural-language *grammar* in the formal-linguistics sense. The "grammar" in this layer's name is loose — what is specified is the *output* an LLM produces (URML), not the *input* (English / Hebrew / Spanish / ...).
 
-## What goes here when this document is drafted
+## What the normative document specifies
+
+[`v0.1.0.md`](v0.1.0.md) carries the items below. Note its §5: the interactive
+disambiguation protocol described next is **not** in v0.1 — ambiguity is
+resolved by a manifest-grounded default or a `report(status: failure)`, and
+the only loop is the deterministic validator-feedback loop.
 
 - The JSON Schema for a complete URML program.
 - The few-shot example library: at least three examples per supported profile, demonstrating the common cases plus at least one error-handling case.
@@ -44,7 +49,7 @@ The provider-agnostic glue lives in [`/reference/llm-bridge/`](../../reference/l
 
 ## Conformance points
 
-When this layer is drafted, the conformance suite will test:
+The test + conformance surface covers:
 
 - That the JSON Schema correctly accepts every shipped example and rejects a documented set of malformed programs.
 - That the validator-feedback format is stable across the supported error categories.

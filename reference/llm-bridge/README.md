@@ -1,6 +1,6 @@
 # LLM Bridge
 
-**Status:** Phase 1 in flight. **Skeleton + provider-agnostic Bridge + revision loop + real Anthropic / OpenAI adapters landed** at `0.1.0a0` (pre-alpha). CLI integration and profile-specific few-shot libraries are the next milestone.
+**Status:** `0.1.0`, aligned with the other four packages. Shipped: the provider-agnostic `Bridge` + bounded validator-feedback revision loop, real Anthropic / OpenAI adapters (lazy-imported) + the hermetic `EchoProvider`, the `urml translate` / `urml emit-prompt` CLI, and profile-scoped few-shot libraries (home / industrial / drone). The normative contract is [`spec/layer-4-nl-grammar/v0.1.0.md`](../../spec/layer-4-nl-grammar/); a hermetic end-to-end walkthrough is [`docs/demos/bridge-roundtrip.md`](../../docs/demos/bridge-roundtrip.md).
 
 ## What this is
 
@@ -12,7 +12,7 @@ The **provider-agnostic glue** between natural-language input and a validated UR
 4. Calls the [validator](../validator/) to statically verify the emission.
 5. On rejection, surfaces the structured error back to the LLM and requests a revision. Repeats up to a configured bound.
 6. On acceptance, hands the validated program to the runtime for execution.
-7. When the natural-language request is ambiguous, the LLM is expected to ask the user a small number of structured questions before emitting URML.
+7. When the request needs a capability the manifest does not declare, the model emits a `report(status: failure)` naming what is missing rather than fabricating capability. (An *interactive* clarifying-question protocol is **not** in v0.1 — see [`spec/layer-4-nl-grammar/v0.1.0.md`](../../spec/layer-4-nl-grammar/) §5.)
 
 ## Provider neutrality is non-negotiable
 
