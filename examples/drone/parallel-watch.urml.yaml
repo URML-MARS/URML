@@ -1,0 +1,39 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: drone/parallel-watch
+# Source NL: "Survey the field, but if the battery gets low first, stop —
+#             either way come home." (see parallel-watch.en.txt)
+#
+# A Layer-3 composition example: a `parallel` block with
+# `complete_when: first_to_succeed` racing the survey against a
+# low-battery watch, so whichever finishes first ends the block and the
+# drone returns home. Validatable end-to-end via the companion manifest:
+#
+#   urml validate parallel-watch.urml.yaml \
+#     -m parallel-watch.manifest.yaml --profile drone
+#
+# The companion manifest declares US-compliant provenance, so the bundled
+# default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5.
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 20.0
+    - type: parallel
+      complete_when: first_to_succeed
+      branches:
+        - scan:
+            area:
+              bounding_box: { min_x: 0.0, max_x: 12.0, min_y: 0.0, max_y: 8.0 }
+            pattern: serpentine
+            media: photo
+            store_as: field_scan
+        - wait_for:
+            condition:
+              event: low_battery
+            timeout: 600s
+    - return_to_home: {}
+    - land: {}

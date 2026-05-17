@@ -1,15 +1,23 @@
-# Layer-2 primitive coverage audit
+# URML spec-coverage audit
 
 This document is the auditable proof that the URML standard is complete and
-self-consistent: every Layer-2 primitive that the validator enforces has, per
+self-consistent: every construct the validator enforces has, per
 [`CLAUDE.md`](../CLAUDE.md) §Code ("the bar"), all five legs —
 
 > a spec document section, a JSON Schema, a reference implementation in at
 > least one runtime, conformance tests, and a runnable example.
 
 It is the spec-side analogue of [`docs/launch/claims-audit.md`](launch/claims-audit.md):
-a claim ("Layer 2 is complete") mapped cell-by-cell to the artifact that backs
-it. Regenerate it whenever a primitive is added or a leg moves.
+a claim ("the standard is complete") mapped cell-by-cell to the artifact that
+backs it. It grows one layer at a time; regenerate the relevant section
+whenever a construct is added or a leg moves.
+
+- **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 17/17 covered.
+- **[Layer 3 — behavior composition](#layer-3--behavior-composition)** — 6/6 covered.
+
+---
+
+# Layer 2 — intent primitives
 
 ## Method
 
@@ -118,4 +126,83 @@ urml validate examples/drone/bridge-survey.urml.yaml \
 ```
 
 Both print `Validation passed`. The five package suites and the conformance
-suite remain green (the PR does not touch runtime code).
+suite remain green (that PR does not touch runtime code).
+
+---
+
+# Layer 3 — behavior composition
+
+The authoritative construct set is the composition schema in
+[`reference/validator/.../schemas/composition.py`](../reference/validator/src/urml_validator/schemas/composition.py)
+— four operators plus the `on_error` model and the variable system; condition
+expressions are the sublanguage of `branch.condition` / `retry.until`. Legs:
+
+- **Spec** — a normative section in
+  [`spec/layer-3-behavior/v0.1.0.md`](../spec/layer-3-behavior/v0.1.0.md)
+  (Layer 3 has no dedicated RFC; RFC-0002 deferred the formal grammar, so the
+  spec is transcribed from the shipped implementation).
+- **Schema** — a Pydantic model in `composition.py`
+  (`Sequence`/`Branch`/`Parallel`/`Retry`/`Step`/`OnError`), part of the
+  JSON-Schema export.
+- **Impl** — a `_exec_*` method in
+  [`reference/ros2-runtime/.../runtime.py`](../reference/ros2-runtime/src/urml_ros2_runtime/runtime.py),
+  with the condition evaluator in `conditions.py` and binding resolution in
+  `bindings.py`.
+- **Conformance** — at least one fixture in
+  [`conformance/fixtures/`](../conformance/fixtures/).
+- **Example** — at least one runnable program in [`examples/`](../examples/),
+  validated end-to-end with `urml validate`.
+
+## What this audit found and closed
+
+One real gap, closed in the PR that adds this section: **`branch`,
+`parallel`, and `retry` had no runnable example.** Every shipped example
+program was a flat `sequence`. Two new scenarios close it:
+[`examples/home/patient-fetch`](../examples/home/patient-fetch.urml.yaml)
+(retry + branch + nested sequence + variables + condition expressions) and
+[`examples/drone/parallel-watch`](../examples/drone/parallel-watch.urml.yaml)
+(parallel / `first_to_succeed` + wait_for). Both pass `urml validate`
+end-to-end including the Pass-5 default policy. The sweep also wrote the
+missing normative spec (`spec/layer-3-behavior/v0.1.0.md`) and corrected a
+stale "Sequence-only skeleton" docstring in `runtime.py` that the code had
+long outgrown.
+
+## The matrix
+
+All six constructs are fully covered.
+
+| Construct | Spec | Schema | Impl (ros2) | Conformance | Example |
+|---|---|---|---|---|---|
+| `sequence` | v0.1.0 §2.1 | `Sequence` | `_exec_sequence` | `home/01_red_mug_positive` | `home/red-mug` |
+| `branch` | v0.1.0 §2.2 | `Branch` | `_exec_branch` | `home/04_branch_on_color` | `home/patient-fetch` |
+| `parallel` | v0.1.0 §2.3 | `Parallel` | `_exec_parallel` | `home/06_parallel_first_to_succeed` | `drone/parallel-watch` |
+| `retry` | v0.1.0 §2.4 | `Retry` | `_exec_retry` | `home/05_retry_until_confidence` | `home/patient-fetch` |
+| `on_error` | v0.1.0 §3 | `OnError` | `_exec_sequence` | `home/02_red_mug_nav_failure` | `home/red-mug` |
+| variables (`store_as`/`$ref`) | v0.1.0 §4–5 | Pass 4 / `conditions.py` | `bindings.py` | `home/04_branch_on_color` | `home/patient-fetch` |
+
+## Notes (honest deferrals, not gaps)
+
+- **`on_error: substitute(other_behavior)`** is sketched in the README but
+  **not** in v0.1; the shipped `OnError` enum is exactly
+  `abort_and_report | continue | retry`. `v0.1.0.md` §3 says so plainly.
+- **Condition expressions are not statically validated in v0.1.** A malformed
+  `condition`/`until` is caught at execution, not by the validator. Documented
+  future tightening (`v0.1.0.md` §5–6), not a hidden gap.
+- **Definite-assignment across branch/parallel/retry arms** is approximated by
+  a permissive linear walk in Pass 4; the stricter analysis is deferred
+  (`v0.1.0.md` §4, §6).
+- **JSON-LD encoding** named in the README is deferred; YAML is the only
+  normative surface in v0.1.
+
+## Verification
+
+```
+# new Layer-3 examples validate end-to-end (incl. Pass-5 policy)
+urml validate examples/home/patient-fetch.urml.yaml \
+  -m examples/home/patient-fetch.manifest.yaml --profile home
+urml validate examples/drone/parallel-watch.urml.yaml \
+  -m examples/drone/parallel-watch.manifest.yaml --profile drone
+```
+
+Both print `Validation passed`. The validator and conformance suites remain
+green; the only runtime touch is a docstring correction in `runtime.py`.

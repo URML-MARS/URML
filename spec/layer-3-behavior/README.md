@@ -1,6 +1,6 @@
 # Layer 3 — Behavior Composition
 
-**Status:** Pre-draft. The specification document for this layer is targeted for v0.1; see roadmap in [`MANIFESTO.md`](../../MANIFESTO.md).
+**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the four composition operators (`sequence`/`branch`/`parallel`/`retry`), the `on_error` model, the variable system, and the condition-expression grammar, transcribed from the shipped implementation (Layer 3 has no dedicated RFC; RFC-0002 deferred the formal grammar). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
 
 ## Purpose
 
@@ -24,7 +24,9 @@ Layer 3 must **not** include:
 - Substrate-specific composition (ROS lifecycle states, MAVLink modes, vendor finite-state machines). Those are Layer 0 concerns.
 - Trajectory or control-loop composition. A `parallel` block of two `move_to`s does *not* prescribe how the runtime coordinates the two motions; it prescribes that both motions should happen and gives the runtime the freedom to coordinate.
 
-## What goes here when this document is drafted
+## What the normative document specifies
+
+[`v0.1.0.md`](v0.1.0.md) carries:
 
 - The full composition grammar: every operator's syntax, semantics, and termination conditions.
 - The error-handling model: which primitives can fail, what failure looks like at the composition layer, how `on_error` interacts with `retry` and `parallel`.
@@ -38,7 +40,7 @@ Layer 3 must **not** include:
 
 ## Conformance points
 
-When this layer is drafted, the conformance suite will test:
+The conformance suite (`/conformance/fixtures/`) tests:
 
 - That conformant runtimes execute every operator's documented semantics, including edge cases (empty sequence, single-branch parallel, retry with zero bound).
 - That the validator rejects every documented invalid construction (untyped variable reference, infinite retry, unreachable branch, type-mismatched primitive arguments).
