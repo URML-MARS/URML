@@ -137,12 +137,18 @@ def test_spot_unsupported_returns_sentinel(fake_bosdyn: _FakeSdk) -> None:
         assert r.reason is not None and r.reason.startswith("not_supported_on_spot")
 
 
-def test_spot_missing_bosdyn_is_actionable() -> None:
-    """Without the [spot] extra, construction raises a clear error."""
+def test_spot_missing_bosdyn_is_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Without the [spot] extra, construction raises a clear error.
+
+    Setting the sys.modules entry to None forces ``import bosdyn`` to
+    raise ImportError deterministically, whether or not bosdyn is
+    actually installed in the test environment (the spot-smoke CI job
+    installs the [spot] extra, so a plain pop() would not suffice).
+    """
     from urml_legged_runtime import SpotAdapter
 
-    sys.modules.pop("bosdyn", None)
-    sys.modules.pop("bosdyn.client", None)
+    monkeypatch.setitem(sys.modules, "bosdyn", None)
+    monkeypatch.setitem(sys.modules, "bosdyn.client", None)
     with pytest.raises(RuntimeError, match=r"\[spot\] extra"):
         SpotAdapter()
 
