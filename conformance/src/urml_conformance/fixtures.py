@@ -54,6 +54,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ground_connectivity_no_station_keeping": _VALIDATOR_FIXTURES / "manifests" / "ground_connectivity_no_station_keeping.yaml",
     "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
+    # Clearpath AMR + declared-parts (Robotiq/RealSense compliant; Hesai denied).
+    "clearpath_husky": _VALIDATOR_FIXTURES / "manifests" / "clearpath_husky.yaml",
+    "hesai_lidar_denied": _VALIDATOR_FIXTURES / "manifests" / "hesai_lidar_denied.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
