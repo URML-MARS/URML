@@ -1,0 +1,46 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: home/evening-routine
+# Source NL: "When I say goodnight, do a quick kitchen check and then dock
+#             for the night." (see evening-routine.en.txt)
+#
+# A home-profile conversational routine. Demonstrates the home-profile
+# speech primitives (`speak`, `listen`) and the passive-wait primitives
+# (`wait_for` on a declared event, `wait` for a fixed duration) alongside
+# `dock`. Validatable end-to-end via the companion manifest:
+#
+#   urml validate evening-routine.urml.yaml \
+#     -m evening-routine.manifest.yaml --profile home
+#
+# The companion manifest declares US-compliant provenance, so the bundled
+# default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - listen:
+        prompt: "Say goodnight whenever you're ready for me to dock."
+        expected: confirmation
+        store_as: goodnight
+    - speak:
+        utterance: "Goodnight. I'll do a quick kitchen check and then dock."
+        style: conversational
+    - move_to:
+        location: kitchen
+    - wait_for:
+        condition:
+          event: user_present
+        timeout: 30s
+        on_timeout: continue
+    - move_to:
+        location: charging_dock
+    - dock:
+        at: charging_dock
+        service: park
+        until: full
+    - wait:
+        duration: 5s
+    - speak:
+        utterance: "Docked for the night. Sleep well."

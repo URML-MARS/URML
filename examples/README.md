@@ -7,10 +7,14 @@ Runnable demonstrations of URML, organized per profile. Examples are how new rea
 ```
 examples/
 ├── home/                       v1.0 profile.
-│   ├── red-mug.urml.yaml           # The structured program.
-│   └── red-mug.en.txt              # The English natural-language prompt.
+│   ├── red-mug.*                   # The manifesto example (move/detect/grasp/release).
+│   ├── evening-routine.*           # Conversational routine (speak/listen/wait_for/dock/wait).
+│   └── patient-fetch.*             # Layer-3: retry + branch + variables.
 ├── drone/                      drone-profile programs (v0.1).
-│   └── roof-inspection.*           # Citizen-inspector roof scan.
+│   ├── roof-inspection.*           # Citizen-inspector roof scan (take_off/capture/RTH/land).
+│   ├── bridge-survey.*             # Structure survey (scan/hover/measure).
+│   ├── parallel-watch.*            # Layer-3: parallel (first_to_succeed) + wait_for.
+│   └── link-aware-patrol.*         # Layer-1: connectivity block + link-loss envelope.
 └── industrial/                 industrial-profile programs (v0.1).
     └── simple-pick-and-place.*     # MVP pick-place cycle.
 ```
@@ -27,6 +31,7 @@ The reserved languages from [`CLAUDE.md`](../CLAUDE.md) §Strategic Posture (Heb
 A scenario may also include:
 
 - **`<scenario>.manifest.yaml`** — a capability manifest the program is validated against, when no shared profile manifest fits.
+- **`<scenario>.envelope.yaml`** — a deployment safety envelope, when the scenario exercises an envelope constraint the profile default does not (e.g. an RFC-0006 link-loss policy). Pass it with `--envelope`.
 - **`<scenario>.expected.json`** — the expected validator output (for testing).
 
 These are added per-scenario only when needed. The minimum example is one `*.urml.yaml` plus one `*.en.txt`.
@@ -42,8 +47,8 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 
 | Profile | v0.1 content | How it grows |
 |---|---|---|
-| [`home/`](home/) | `red-mug` (the manifesto example). | Additional home scenarios land alongside the home-profile spec. |
-| [`drone/`](drone/) | `roof-inspection` (citizen-inspector). | Additional drone scenarios land alongside the drone-profile spec. |
+| [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock); `patient-fetch` (retry/branch). | Additional home scenarios land alongside the home-profile spec. |
+| [`drone/`](drone/) | `roof-inspection` (citizen-inspector); `bridge-survey` (scan/hover/measure); `parallel-watch` (parallel); `link-aware-patrol` (connectivity + link-loss). | Additional drone scenarios land alongside the drone-profile spec. |
 | [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
 
 ## Adding a new example

@@ -1,0 +1,106 @@
+# Companion manifest for examples/home/evening-routine.urml.yaml —
+# a home-service robot that additionally declares a speech I/O channel and
+# a charging dock, so the `speak` / `listen` / `dock` primitives validate.
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are
+# fictional; country codes are real ISO 3166-1 alpha-2 values. The integrity
+# hashes are zeroed placeholders. Do not deploy from this file; use it to see
+# a manifest that passes the validator's capability checks AND the bundled
+# US-federal compliance policy (RFC-0004) end-to-end.
+#
+# Validate with the bundled default policy active:
+#   urml validate evening-routine.urml.yaml \
+#     -m evening-routine.manifest.yaml --profile home
+#
+# Demonstrate the override path (skip Pass 5):
+#   urml validate evening-routine.urml.yaml \
+#     -m evening-routine.manifest.yaml --profile home --no-policy
+
+manifest_version: "0.1"
+robot_id: turtlebot4_evening_routine
+description: TurtleBot 4 home-service robot with speech I/O and a charging dock.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+    description: Kitchen entry pose.
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+    description: Charging dock home pose.
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: oakd_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: mic_array
+      measurement_type: speech
+      units: text
+  object_vocabulary:
+    - person
+
+docking_stations:
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+    services: [park, charge]
+
+outputs:
+  named_endpoints: [speech]
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-origin manufacture and assembly, references an HBOM document, and
+# carries the third-party-audited attestation level the default policy
+# requires.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/turtlebot4_evening_routine.signed
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_drive_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/drive_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: depth_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/depth_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: mic_array_module
+      role: critical
+      vendor: example_audio_vendor
+      country_of_origin: JP
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/mic_array.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

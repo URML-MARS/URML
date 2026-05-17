@@ -1,6 +1,6 @@
 # Layer 1 — Hardware Abstraction
 
-**Status:** Pre-draft. The specification document for this layer is targeted for v0.1; see roadmap in [`MANIFESTO.md`](../../MANIFESTO.md).
+**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the capability-manifest schema (frames, locations, events, mobility, manipulation, perception, docking, outputs) plus the `provenance:` (RFC-0004) and `connectivity:` (RFC-0006) blocks. The Pass-5 compliance policy is specified in [`policy.md`](policy.md). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
 
 ## Purpose
 
@@ -21,7 +21,9 @@ Layer 1 must also **not** absorb concerns from adjacent layers:
 - **From Layer 2:** what a primitive *does*. Layer 1 says the robot has a gripper; Layer 2 defines `grasp(...)`.
 - **From Layer 3:** composition. Manifests describe atomic capability, not behavior.
 
-## What goes here when this document is drafted
+## What the normative document specifies
+
+[`v0.1.0.md`](v0.1.0.md) carries the manifest schema in full; the items below were the original drafting checklist (see `v0.1.0.md` §5 for the two — URDF cross-reference, envelope-schema folding — that the shipped schema deliberately does *not* implement):
 
 - The capability manifest schema (YAML canonical; JSON-LD for tooling). Sections: mobility, manipulation, perception, frames, limits, safety envelope.
 - The safety-envelope schema: declared maximums (velocity, payload, force), declared forbidden zones, declared required preconditions.
@@ -92,7 +94,7 @@ The deployment-time counterpart — what the robot must *do* when a declared lin
 
 ## Conformance points
 
-When this layer is drafted, the conformance suite will test:
+The conformance suite (`/conformance/fixtures/`) tests:
 
 - Every required field is present.
 - Declared limits are internally consistent (e.g., declared `max_velocity` is non-negative and finite).

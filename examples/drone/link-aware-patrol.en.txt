@@ -1,0 +1,3 @@
+Fly a quick perimeter patrol and take a photo of the gate, then come back
+and land. You need the command link to operate — if you lose it at any
+point, abandon the patrol and return home on your own.

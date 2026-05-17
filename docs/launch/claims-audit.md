@@ -14,13 +14,16 @@ invocation collides on collection — run each separately).
 | validator | `cd reference/validator && python -m pytest` | **188 passed** |
 | llm-bridge | `cd reference/llm-bridge && python -m pytest` | **77 passed** |
 | ros2-runtime | `cd reference/ros2-runtime && python -m pytest` | **114 passed, 4 skipped** |
-| px4-runtime | `cd reference/px4-runtime && python -m pytest` | **54 passed** |
-| conformance | `python -m pytest conformance/tests` | **40 passed** |
-| **Total** | | **473 passed + 4 gated-skipped** |
+| px4-runtime | `cd reference/px4-runtime && python -m pytest` | **54 passed, 1 skipped** |
+| conformance | `python -m pytest conformance/tests` | **41 passed** |
+| **Total** | | **474 passed + 5 gated-skipped** |
 
-The 4 skips are the live ROS 2 / Gazebo integration tests, gated behind
-`URML_ROS2_INTEGRATION=1` / `URML_GAZEBO_E2E=1` (no rclpy/sim on a dev box);
-they are *run* by the gated CI workflow — see the ROS 2 row below.
+The 5 skips are the live integration tests, gated behind
+`URML_ROS2_INTEGRATION=1` / `URML_GAZEBO_E2E=1` (ROS 2 / Gazebo) and
+`URML_PX4_SITL=1` (PX4 SITL) — no rclpy/sim/SITL on a dev box. They are
+*run* by the gated CI workflows: the ROS 2 ones by
+`ros2-integration.yml` (see the ROS 2 row below), the PX4 SITL one by
+`px4-integration.yml` (see the PX4 row below).
 
 ## Per-row backing
 
@@ -47,10 +50,12 @@ commands reproduce verbatim.
 with `BridgePolicyViolation` short-circuit; home/drone/industrial few-shots.
 Evidence: llm-bridge 77 passed.
 
-**Conformance suite — 32 fixtures, `urml conformance run`.**
-`conformance/fixtures/**/*.yaml` = 32 files (home + drone + industrial +
+**Conformance suite — 33 fixtures, `urml conformance run`.**
+`conformance/fixtures/**/*.yaml` = 33 files (home + drone + industrial +
 compliance + policy-override). CLI: `urml conformance run`. Evidence:
-conformance 40 passed (parametrized over fixtures + loader/smoke).
+conformance 41 passed (parametrized over fixtures + loader/smoke). The
+33rd is `drone/flight_only_positive`, the pure-flight fixture the PX4
+SITL e2e flies (see the PX4 row).
 
 **CLI — six subcommands.** `urml --help` →
 `validate schema translate emit-prompt init conformance`.
@@ -72,6 +77,19 @@ green on three calibration runs of `.github/workflows/ros2-integration.yml`
 `reference/px4-runtime/src/urml_px4_runtime/adapter.py` — full Protocol via
 `pymavlink`, no ROS dependency; flight primitives real, perception/manipulation
 return a documented not-supported result. Evidence: px4-runtime 54 passed.
+
+**PX4 SITL end-to-end — added and gated, NOT yet calibrated.**
+`reference/px4-runtime/tests/integration/test_px4_sitl_e2e.py` flies the
+`drone/flight_only_positive` conformance fixture through `ConformanceRunner`
+with a live `PX4Adapter` against PX4 SITL, gated behind `URML_PX4_SITL=1`.
+The gated CI job is `px4-sitl-e2e` in `.github/workflows/px4-integration.yml`
+(workflow_dispatch + weekly cron). Honest status: this is the PX4 analog of
+the ROS 2 `gazebo-e2e` job *before* its calibration runs. No green run is
+claimed here — the workflow has not been executed yet; its first run is the
+calibration run, exactly as `gazebo-e2e` was treated, and a green run ID will
+be recorded in this row only once one exists. Hermetic evidence today:
+px4-runtime 54 passed, 1 skipped (the gated e2e), conformance 41 passed
+(incl. the fixture it flies).
 
 **CompositeAdapter.**
 `reference/px4-runtime/src/urml_px4_runtime/composite.py` — routes each

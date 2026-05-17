@@ -1,0 +1,42 @@
+name: drone/flight_only_positive
+description: >
+  Pure-flight slice: take off, fly to a declared inspection waypoint,
+  return to launch, land. This is the one drone-profile fixture that
+  exercises ONLY flight primitives (no capture, scan, or measure),
+  which makes it the fixture the PX4 SITL end-to-end test runs against
+  a live PX4 autopilot. The PX4 reference adapter implements the flight
+  primitives for real and returns a documented not-supported result for
+  perception/manipulation, so roof-inspection (which captures a photo)
+  cannot run against PX4 but take_off, move_to, return_to_home, land
+  can. Against MockROSAdapter it behaves identically, so it also runs
+  in the default hermetic suite.
+
+  expected_execution deliberately omits audit_methods. The PX4 adapter
+  does not maintain a call_log: its effects are MAVLink commands to an
+  autopilot, not recordable mock calls, so the audit trace is empty
+  under PX4Adapter by design. success and steps_executed are
+  adapter-independent and are asserted.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off:
+          altitude: 30.0
+      - move_to:
+          location: roof_north
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4

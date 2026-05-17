@@ -142,3 +142,5 @@ A working URML installation, a starter project on disk, and a fast feedback loop
 If you want to understand what's *in* the program you just validated — the layered architecture, the primitive vocabulary, the variable bindings — read [Tutorial 2: Anatomy of a URML program](02-anatomy-of-a-program.md).
 
 If you want to skip ahead to LLM translation, read [Tutorial 3: Natural language to URML](03-natural-language-to-urml.md).
+
+If you want to see the whole loop now — one English sentence turned into a program, validated, then executed step by step, hermetically and with no API key — run `make demo-run` and read [the sentence-to-motion walkthrough](../demos/sentence-to-motion.md).

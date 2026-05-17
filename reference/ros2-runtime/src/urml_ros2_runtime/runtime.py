@@ -6,7 +6,7 @@
               v                                v
         URMLRuntime.execute(program, manifest, envelope?)
               |
-              | walk behavior tree (Sequence only in this skeleton)
+              | walk the full behavior tree (Layer-3 v0.1.0)
               |
               v
         per-step: PrimitiveExecutor -> ROSAdapter call -> outcome
@@ -17,21 +17,19 @@
         RuntimeResult(success, audit, bindings)
 ```
 
-Scope of this skeleton:
+Scope (Layer-3 v0.1.0 — see spec/layer-3-behavior/v0.1.0.md):
 
-- Sequence composition with `on_error: abort_and_report | continue`.
-- All 12 primitives dispatch through the executors in `primitives.py`.
+- All four composition operators execute: `Sequence`, `Branch`, `Parallel`
+  (`all` / `any` / `first_to_succeed`), and `Retry`, plus the `on_error`
+  model (`abort_and_report` | `continue` | `retry`).
+- All 17 primitives (12 core + 5 profile-scoped) dispatch through the
+  executors in `primitives.py`.
 - Defense-in-depth: the runtime re-validates the program before executing.
   Bypassing the validator at runtime is prohibited per CLAUDE.md.
 
-Not in this PR (separate milestones):
-
-- `Branch`, `Parallel`, `Retry` execution (raises `UnsupportedCompositionError`
-  with a clear message).
-- Real `rclpy`-backed adapter.
-- Variable-binding resolution into `$ref.field` accesses inside primitive
-  arguments (the runtime forwards the literal `$ref` strings; the adapter
-  is responsible). Tightens in a follow-up.
+Substrate: the real `rclpy`-backed adapter ships alongside `MockROSAdapter`;
+both satisfy the substrate-neutral `ROSAdapter` Protocol. Variable bindings
+(`$ref` / `$ref.field`) resolve via `bindings.py` before the adapter call.
 """
 
 from __future__ import annotations
