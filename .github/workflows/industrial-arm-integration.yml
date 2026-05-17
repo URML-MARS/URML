@@ -1,0 +1,126 @@
+# Gated ROS-Industrial / MoveIt 2 integration workflow.
+#
+# One matrixed job (abb | fanuc | kuka | yaskawa), gated to manual
+# dispatch + weekly cron (never per-push: the ROS 2 + MoveIt 2 + vendor
+# sim apt install and bringup are slow and the coverage doesn't justify
+# the per-PR cost). The hermetic unit suite already gates every PR.
+#
+#   arm-sim-e2e — the real end-to-end: the existing
+#   industrial/pick_red_positive conformance fixture run through
+#   ConformanceRunner with a live brand arm adapter composed with a
+#   vision companion (urml_px4_runtime.CompositeAdapter, a generic
+#   two-backend router). Heavy, best-effort. The industrial analog of
+#   ros2-integration's gazebo-e2e and px4-integration's px4-sitl-e2e.
+#
+# WHY A COMPOSITE: URML `grasp` requires a detected `$target`, so a
+# pick-place program always contains a `detect` step. A bare fixed-base
+# arm has no onboard perception, exactly as a bare PX4 autopilot has
+# none. The arm owns motion/manipulation/report; a vision companion
+# owns detection. This mirrors the drone stack's flight+companion split.
+#
+# HONESTY NOTE: the ROS 2 / MoveIt 2 bringup and the per-vendor
+# moveit_config / launch names below were authored without the ability
+# to run the sim. The package names follow the MoveIt 2 + ROS-Industrial
+# documentation but the FIRST real run per brand will need launch-name,
+# moveit_config, or detection-publisher tweaks (the fixture's detect
+# step needs a vision source in the sim; wiring it is part of
+# calibration). Every diagnostic is uploaded on `always()`, so a red
+# first run tells you what to pin rather than failing opaquely. Do not
+# treat the first arm-sim-e2e run as a regression signal; treat it as
+# the calibration run, exactly as the ros2-integration gazebo-e2e and
+# px4-integration px4-sitl-e2e jobs were treated.
+
+name: industrial-arm-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 08:00 UTC (staggered after ros2 06:00 and px4 07:00).
+    - cron: '0 8 * * 1'
+
+jobs:
+  arm-sim-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        brand: [abb, fanuc, kuka, yaskawa]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ROS 2 Jazzy + MoveIt 2
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common curl gnupg lsb-release
+          sudo add-apt-repository universe -y
+          curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+            | sudo gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+          sudo apt-get update
+          # ros-base + MoveIt 2 + the move_group demo (fake controllers,
+          # no GPU). Vendor moveit_config binaries vary by distro; the
+          # demo move_group is the portable lowest common denominator and
+          # exposes the /move_action server the adapter targets.
+          sudo apt-get install -y \
+            ros-jazzy-ros-base \
+            ros-jazzy-moveit \
+            ros-jazzy-moveit-resources \
+            python3-pip xvfb
+
+      - name: Install URML packages
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          # ros2-runtime backs the brand adapter (MoveIt 2) and the
+          # vision companion. px4-runtime supplies the generic
+          # CompositeAdapter (no industrial-specific composite code).
+          python3 -m pip install --break-system-packages \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/px4-runtime \
+            -e reference/industrial-arm-runtime \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Launch MoveIt 2 move_group (fake controllers, headless)
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          mkdir -p "$HOME/e2e-logs"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          # Best-effort: the panda moveit demo brings up /move_action
+          # with fake controllers and needs no GPU. If the launch/arg
+          # names differ on the installed MoveIt version, the artifact
+          # upload captures the error (calibration run).
+          nohup xvfb-run -a ros2 launch moveit2_tutorials demo.launch.py \
+            > "$HOME/e2e-logs/moveit.log" 2>&1 &
+          echo $! > "$HOME/e2e-logs/moveit.pid"
+          # Give move_group + the (planned) detection source a head start.
+          sleep 60
+
+      - name: Run the pick-place end-to-end conformance test
+        env:
+          URML_INDUSTRIAL_ARM_SIM: "1"
+          URML_ARM_BRAND: ${{ matrix.brand }}
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          cd reference/industrial-arm-runtime
+          python3 -m pytest tests/integration/test_industrial_arm_sim_e2e.py -v \
+            | tee "$HOME/e2e-logs/pytest-${{ matrix.brand }}.log"
+
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          set +e
+          cp -r "$HOME/.ros/log" "$HOME/e2e-logs/ros-log" 2>/dev/null || true
+          ros2 node list > "$HOME/e2e-logs/node-list.txt" 2>&1 || true
+          ros2 action list > "$HOME/e2e-logs/action-list.txt" 2>&1 || true
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm-sim-e2e-diagnostics-${{ matrix.brand }}
+          path: ~/e2e-logs
+          retention-days: 14

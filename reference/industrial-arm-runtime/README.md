@@ -57,11 +57,13 @@ report = runner.run()
 - Four first-class brand adapters (`AbbAdapter`, `FanucAdapter`, `KukaAdapter`, `YaskawaAdapter`) over a shared `IndustrialArmAdapter` core that composes `RclpyAdapter`.
 - `BRAND_ADAPTERS` name→class registry for config-driven selection (CI matrices, the conformance `adapter_factory`).
 - Hermetic unit tests: every brand, every delegated primitive, every not-supported sentinel, the conformance hook, `runtime_checkable` Protocol conformance, and context-manager teardown — no ROS 2 install required.
+- Gated `.github/workflows/industrial-arm-integration.yml` (matrixed abb/fanuc/kuka/yaskawa) running the existing `conformance/fixtures/industrial/pick_red_positive` fixture through each brand adapter against a ROS 2 + MoveIt 2 sim, plus a gated `tests/integration/` scaffold. Modelled on `ros2-integration.yml`; first runs per brand are calibration runs by design, not regression signals.
+
+**Why a vision companion.** `GraspArgs.target` is a required `VarRef` — URML `grasp` always acts on a *detected* target, so any pick-place program contains a `detect` step. A bare fixed-base arm has no onboard perception (returns `not_supported_on_industrial_arm`), exactly as a bare PX4 autopilot has none. The gated test pairs the brand arm with a vision companion via the already-tested generic `urml_px4_runtime.CompositeAdapter` (arm owns motion/manipulation/report; companion owns detection) — no industrial-specific composite code is duplicated. This mirrors the drone stack's flight+companion split.
 
 **Follow-ups (not yet):**
-- Per-brand US-compliant capability manifests + `MANIFEST_REGISTRY` entries.
-- `conformance/fixtures/industrial-arm/` fixtures (a pick-place positive per brand) and a gated `industrial-arm-integration.yml` workflow running them against each vendor's ROS-Industrial Gazebo + MoveIt 2 sim — modelled on `ros2-integration.yml`. First runs are calibration runs by design, not regression signals.
-- Optional vision companion wiring (a `CompositeAdapter`-style split for `detect` in a cell with a camera).
+- Per-brand US-compliant provenance manifests (ABB Sweden, FANUC/YASKAWA Japan, KUKA Germany). v0.1 reuses the existing compliant `industrial_cell` manifest; the profile README already documents that ABB/FANUC/KUKA controllers pass the default US-federal policy.
+- A detection source wired into the sim so the gated `detect` step resolves against the real `RclpyAdapter` companion (part of the documented first-run calibration).
 
 ## Core Commitment
 
