@@ -31,6 +31,8 @@ The canonical URML organization maintains profiles within its declared scope: **
 | [`home/`](home/) | Phase 1 target | Indoor service robots: fetch-and-carry, navigation in human-occupied spaces, charging-station docking, voice-/text-driven natural-language flows. |
 | [`drone/`](drone/) | Phase 2 target (**civilian only**) | Small unmanned aircraft used for inspection, photography, mapping, and similar non-combat tasks. Hard ceiling on altitude per civil aviation authority defaults; configurable by deployment. |
 | [`industrial/`](industrial/) | Phase 3 target | Single-arm manipulators and mobile bases in controlled industrial cells: pick-and-place, line reconfiguration, safety-door-gated motion. |
+| [`educational/`](educational/) | Draft ([RFC-0011](../../docs/rfcs/0011-educational-profile.md)) | Low-cost classroom/teaching robots, beginner authors, students nearby: conservative fail-loud defaults. v0.1 adds no primitives. |
+| [`research/`](research/) | Draft ([RFC-0012](../../docs/rfcs/0012-research-profile.md)) | Robotics research platforms in attended labs: reproducibility-first (required provenance, explicit error policy), pose-based motion permitted. v0.1 adds no primitives. |
 
 ## Stretch profiles
 
@@ -40,8 +42,9 @@ Named in [`MANIFESTO.md`](../../MANIFESTO.md) §Scope as v1.x stretch targets, n
 - Autonomous vehicle (research-grade; not production safety-certified)
 - Healthcare / assistive
 - Search-and-rescue
-- Education (low-cost platforms: TurtleBot, micro:bit, VEX)
 - Underwater
+
+(Education has moved out of stretch: it is now drafted as the [`educational/`](educational/) profile above. The canonical maintenance scope — civilian, consumer, educational, industrial, research — is now fully stubbed.)
 
 Each becomes a subdirectory under `/spec/profiles/` when its drafting begins.
 
