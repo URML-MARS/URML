@@ -60,6 +60,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # Clearpath AMR + declared-parts (Robotiq/RealSense compliant; Hesai denied).
     "clearpath_husky": _VALIDATOR_FIXTURES / "manifests" / "clearpath_husky.yaml",
     "hesai_lidar_denied": _VALIDATOR_FIXTURES / "manifests" / "hesai_lidar_denied.yaml",
+    # BlueROV2 / ArduSub — exercises drive_type: underwater_thrusters.
+    "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
