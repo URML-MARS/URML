@@ -110,6 +110,8 @@ From [`CLAUDE.md`](CLAUDE.md) §Working Conventions:
 
 Runtime authors (third parties or the URML organization itself) who want their runtime listed in [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) follow a separate flow from code or spec contributions. The flow is documented in [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md). At a glance: run the conformance suite against your runtime, commit the report at a pinned commit in your repo, open a PR adding a row.
 
+How to run it against your own runtime, including the bring-your-own-adapter one-liner (`python -m urml_conformance --adapter your_pkg:YourAdapter`), is documented in [`conformance/CONFORMANCE_KIT.md`](conformance/CONFORMANCE_KIT.md). You implement one substrate-neutral Protocol; no reference runtime, robot, or ROS is required.
+
 The registry is self-reported. The maintainer reviews PRs for completeness, not for code or fitness. The URML-Certified mark, the future paid certification program, is reserved for Phase 4 and is not part of the registry. See [`TRADEMARK.md`](TRADEMARK.md) for the boundary.
 
 Registry submissions use a dedicated PR template (`?template=registry-submission.md`) so the row data and the trademark-acknowledgement checkbox land in one place.
