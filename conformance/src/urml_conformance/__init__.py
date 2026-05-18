@@ -10,9 +10,12 @@ Public API:
 
 The suite ships a set of declarative fixture cases under
 ``conformance/fixtures/`` that any URML-compatible runtime must satisfy.
-For v0.1, the runner targets ``URMLRuntime`` + ``MockROSAdapter``; a v1.0
-runner will accept a substrate-adapter factory so real adapters
-(``rclpy``, PX4, vendor SDKs) can be exercised through the same suite.
+The runner defaults to ``URMLRuntime`` + ``MockROSAdapter`` for a
+hermetic self-test, and accepts an ``adapter_factory=`` so real adapters
+(``rclpy``, PX4, vendor SDKs) run through the same suite. The
+bring-your-own-adapter entrypoint wraps this:
+``python -m urml_conformance --adapter your_pkg:YourAdapter`` (see
+``conformance/CONFORMANCE_KIT.md``).
 
 The fixtures themselves are Apache 2.0 and part of the URML Core
 Commitment — they're the contract a runtime claims compatibility with.
