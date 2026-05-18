@@ -1,0 +1,23 @@
+name: biped/optimus_manifest_accepted
+description: >
+  RFC-0009 follow-up, manifest + spec only. Tesla Optimus has no
+  public SDK, so there is no adapter; per the multi-brand plan it is
+  covered by validator acceptance, not execution. This is a
+  validator-only case: the biped manifest + a minimal program must be
+  accepted (drive_type: biped from RFC-0009, US origin compliant).
+  No expected_execution, so the runner stops after validation by
+  design.
+
+manifest: optimus_biped
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: waypoint_a }
+
+expected_validation:
+  accepted: true

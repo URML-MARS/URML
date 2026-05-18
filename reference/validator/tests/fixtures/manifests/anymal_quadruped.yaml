@@ -1,0 +1,73 @@
+# Fixture: ANYbotics ANYmal — RFC-0009 follow-up manifest.
+# drive_type: quadruped (RFC-0009). Provenance declares a compliant
+# origin (Switzerland; ANYbotics is not on any covered list), so the
+# bundled US-federal default policy (RFC-0004) accepts it. Companion
+# to the legged runtime's AnymalAdapter; the conformance fixture is
+# navigation-only so it runs hermetically.
+
+manifest_version: "0.1"
+robot_id: anymal_inspect_1
+description: Four-legged industrial inspection robot with a body camera.
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: valve_07
+    pose: { x: 8.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: gauge_panel
+    pose: { x: 8.0, y: 5.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+  - area_clear
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 1.3
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: inspection_cam
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "4k"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - valve
+    - gauge
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - inspection_log
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: anymal_compute
+      role: critical
+      vendor: anybotics
+      country_of_origin: CH
+      country_of_final_assembly: CH
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/anymal_compute.cdx.json
+        sha256: "6666666666666666666666666666666666666666666666666666666666666666"

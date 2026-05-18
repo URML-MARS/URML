@@ -1,0 +1,62 @@
+# Fixture: 1X NEO — RFC-0009 follow-up, manifest + spec only.
+# No public SDK, so no adapter; manifest + spec coverage only per the
+# multi-brand plan. drive_type: biped (RFC-0009). Norway origin (1X
+# Technologies) — an allied, non-covered country, compliant under the
+# bundled US-federal default policy (the policy denies CN/RU/IR/KP
+# critical origin and a covered-vendor list; NO and `onex` are
+# neither).
+
+manifest_version: "0.1"
+robot_id: neo_1
+description: Bipedal home/general humanoid (manifest + spec coverage only; no public SDK).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: waypoint_a
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.2
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary: []
+
+docking_stations: []
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: neo_compute
+      role: critical
+      vendor: onex
+      country_of_origin: "NO"
+      country_of_final_assembly: "NO"
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/neo_compute.cdx.json
+        sha256: "1212121212121212121212121212121212121212121212121212121212121212"
