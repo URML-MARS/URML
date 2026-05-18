@@ -1,0 +1,24 @@
+name: mobile/hesai_component_denied
+description: >
+  RFC-0004 at component ("part") granularity: a Clearpath AMR that is
+  compliant except for a single critical LIDAR whose vendor (`hesai`)
+  is on the bundled US-federal default policy's covered-vendor
+  denylist. Pass 5 rejects with policy.vendor_denied. Confirms a
+  denylisted *part* taints an otherwise-compliant robot, exactly as a
+  denylisted whole-robot vendor does (cf. home/policy_vendor_denylist,
+  quadruped/unitree_vendor_denied).
+
+manifest: hesai_lidar_denied
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: waypoint_a }
+
+expected_validation:
+  accepted: false
+  error_codes: [policy.vendor_denied]

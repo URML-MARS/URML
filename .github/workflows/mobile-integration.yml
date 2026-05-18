@@ -1,0 +1,151 @@
+# Gated Clearpath AMR integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   mobile-smoke      — install URML + run the hermetic mobile suite.
+#   Fast, no robot. The AMR analog of px4-integration's px4-smoke.
+#
+#   mobile-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The mobile stack is pure Python (composes RclpyAdapter, rclpy lazy)
+#   with no CUDA/Jetson APIs, so emulation is a faithful proxy for our
+#   code on a Jetson-class board. Mirrors px4-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   mobile-sim-e2e    — gated, best-effort, matrixed (husky | jackal):
+#   the conformance mobile/clearpath_patrol_positive fixture run through
+#   the brand adapter against the Clearpath Gazebo sim. Heavy.
+#
+# HONESTY NOTE: the ROS 2 + Clearpath sim bringup below was authored
+# without the ability to run it. Package/launch names follow the
+# Clearpath + ROS 2 Jazzy docs but the FIRST real run per brand will
+# need launch-name / arg tweaks. Every diagnostic is uploaded on
+# always(), so a red first run tells you what to pin. Do not treat the
+# first mobile-sim-e2e run as a regression signal; treat it as the
+# calibration run — the convention ros2-integration's gazebo-e2e and
+# px4-integration's px4-sitl-e2e established.
+
+name: mobile-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 11:00 UTC (staggered after the other integration lanes).
+    - cron: '0 11 * * 1'
+
+jobs:
+  mobile-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/mobile-runtime \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic mobile suite
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/mobile-runtime
+          python -m pytest tests/test_mobile_adapters.py -v
+
+  mobile-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/mobile-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_mobile_runtime, platform; print(\"urml_mobile_runtime import OK on\", platform.machine())"
+              cd reference/mobile-runtime
+              python -m pytest tests/test_mobile_adapters.py -q
+            '
+
+  mobile-sim-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        brand: [husky, jackal]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ROS 2 Jazzy + Clearpath sim
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common curl gnupg lsb-release
+          sudo add-apt-repository universe -y
+          curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+            | sudo gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y \
+            ros-jazzy-ros-base \
+            ros-jazzy-nav2-bringup \
+            python3-pip xvfb
+
+      - name: Install URML packages
+        run: |
+          . /opt/ros/jazzy/setup.sh
+          python3 -m pip install --break-system-packages \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/mobile-runtime \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Placeholder for ${{ matrix.brand }} Clearpath sim e2e
+        run: |
+          # The Clearpath Gazebo sim packages (clearpath_gz) are not in
+          # the ROS 2 binary index for every distro; bringing them up is
+          # the calibration step. Until pinned, this job documents the
+          # intended wiring and fails loudly rather than green-washing.
+          echo "Wire: ros2 launch clearpath_gz simulation.launch.py, then"
+          echo "ConformanceRunner(cases=[mobile/clearpath_patrol_positive],"
+          echo "  adapter_factory=lambda: MOBILE_ADAPTERS['${{ matrix.brand }}']())"
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-sim-e2e-${{ matrix.brand }}
+          path: ~/.ros/log
+          retention-days: 14
