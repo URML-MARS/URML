@@ -2,6 +2,8 @@
 
 Runnable demonstrations of URML, organized per profile. Examples are how new readers learn what URML *looks like* — keep them small, honest, and runnable.
 
+New here? Start with [`WALKTHROUGH.md`](WALKTHROUGH.md): the full path from a natural-language sentence to a verified robot action, reproducible on any machine in under a minute, no robot or install beyond the open packages.
+
 ## Layout
 
 ```
@@ -26,7 +28,7 @@ Each scenario is a pair (or small group) of files sharing a base name:
 - **`<scenario>.urml.yaml`** — the URML program. YAML is canonical. One program per file.
 - **`<scenario>.<lang>.txt`** — the natural-language prompt that yields the program. `<lang>` is an ISO 639-1 code: `en` for English, `he` for Hebrew, `es` for Spanish, `ja` for Japanese, `zh` for Mandarin.
 
-The reserved languages from [`CLAUDE.md`](../CLAUDE.md) §Strategic Posture (Hebrew, Spanish, Japanese, Mandarin) get slots reserved by file naming. **V0.1 coverage is English-only;** other slots will fill in as multilingual fixtures land in later versions.
+The reserved languages from [`CLAUDE.md`](../CLAUDE.md) §Strategic Posture (Hebrew, Spanish, Japanese, Mandarin) get slots reserved by file naming. The canonical `home/red-mug` example leads: it ships all five (`en`, `es`, `ja`, `zh`, `he`). Other scenarios remain English-only for now and fill their slots as multilingual fixtures land.
 
 A scenario may also include:
 
