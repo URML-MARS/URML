@@ -1,0 +1,31 @@
+name: quadruped/anymal_patrol_positive
+description: >
+  RFC-0009 follow-up: a navigation-only inspection patrol on the
+  compliant ANYbotics ANYmal manifest (drive_type: quadruped,
+  Switzerland origin, accepted by the default US-federal policy).
+  Nav-only, so it runs hermetically against MockROSAdapter and
+  adapter-agnostically against the legged runtime's AnymalAdapter.
+
+manifest: anymal_quadruped
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: valve_07 }
+      - move_to: { location: gauge_panel }
+      - move_to: { location: dock }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

@@ -1,0 +1,61 @@
+# Fixture: Tesla Optimus — RFC-0009 follow-up, manifest + spec only.
+# No public SDK exists, so there is no adapter; per the multi-brand
+# plan this robot is covered manifest + spec only. drive_type: biped
+# (RFC-0009). US origin (Tesla), compliant under the bundled
+# US-federal default policy. The conformance fixture is
+# validator-acceptance only (no execution).
+
+manifest_version: "0.1"
+robot_id: optimus_1
+description: Bipedal general-purpose humanoid (manifest + spec coverage only; no public SDK).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: waypoint_a
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.4
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors: []
+  object_vocabulary: []
+
+docking_stations: []
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: optimus_compute
+      role: critical
+      vendor: tesla
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/optimus_compute.cdx.json
+        sha256: "8888888888888888888888888888888888888888888888888888888888888888"

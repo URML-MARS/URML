@@ -1,0 +1,21 @@
+name: biped/neo_manifest_accepted
+description: >
+  RFC-0009 follow-up, manifest + spec only. 1X NEO has no public SDK;
+  covered by validator acceptance, not execution. The biped manifest +
+  a minimal program must be accepted (drive_type: biped; Norway
+  origin — an allied, non-covered country, so the default US-federal
+  policy accepts it). No expected_execution by design.
+
+manifest: neo_biped
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: waypoint_a }
+
+expected_validation:
+  accepted: true

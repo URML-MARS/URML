@@ -1,0 +1,32 @@
+name: biped/digit_patrol_positive
+description: >
+  RFC-0009 follow-up: a navigation-only patrol on the compliant
+  Agility Digit manifest (drive_type: biped, US origin). The
+  locomotion subset the humanoid runtime's DigitAdapter implements in
+  v0.1 (manipulation is the RFC-0010 deferral). Nav-only, so it runs
+  hermetically against MockROSAdapter and adapter-agnostically against
+  DigitAdapter.
+
+manifest: digit_biped
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: staging_a }
+      - move_to: { location: staging_b }
+      - move_to: { location: dock }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal
