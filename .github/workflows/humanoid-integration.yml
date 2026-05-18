@@ -1,0 +1,111 @@
+# Gated humanoid integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   digit-smoke       — install URML + run the hermetic Digit suite.
+#   Fast, no robot. The Digit analog of px4-integration's px4-smoke.
+#
+#   digit-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The Digit stack is pure Python (composes RclpyAdapter, rclpy lazy)
+#   with no CUDA/Jetson APIs, so emulation is a faithful proxy for our
+#   code on a Jetson-class board. Mirrors px4-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   digit-sim-e2e     — gated, best-effort. SKIPS CLEANLY without a sim
+#   host: an Agility Digit MuJoCo/Gazebo sim is not a public,
+#   reproducible CI artifact. Honest scaffold, not a green-now claim —
+#   the convention ros2-integration's gazebo-e2e and px4-integration's
+#   px4-sitl-e2e established.
+
+name: humanoid-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 10:00 UTC (staggered after the other integration lanes).
+    - cron: '0 10 * * 1'
+
+jobs:
+  digit-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/humanoid-runtime \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic Digit suite
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/humanoid-runtime
+          python -m pytest tests/test_digit_adapter.py -v
+
+  digit-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/humanoid-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_humanoid_runtime, platform; print(\"urml_humanoid_runtime import OK on\", platform.machine())"
+              cd reference/humanoid-runtime
+              python -m pytest tests/test_digit_adapter.py -q
+            '
+
+  digit-sim-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gate — skip cleanly without a sim host
+        id: gate
+        run: |
+          if [ -z "${{ secrets.DIGIT_SIM_HOST }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "No DIGIT_SIM_HOST configured — skipping digit sim e2e (by design)."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Placeholder for digit sim e2e
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          echo "A DIGIT_SIM_HOST is configured; wire the Digit sim e2e here."
+          exit 1

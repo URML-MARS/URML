@@ -1,14 +1,27 @@
-# Gated PX4 SITL integration workflow.
+# Gated PX4 SITL + ARM64-emulation workflow.
 #
-# One job, gated to manual dispatch + weekly cron (never per-push: the
-# PX4-Autopilot clone + submodule fetch + SITL build is slow and the
-# coverage doesn't justify the per-PR cost):
+# Three jobs, gated to manual dispatch + weekly cron (never per-push:
+# the PX4-Autopilot clone + submodule fetch + SITL build and the QEMU
+# emulation are slow and the coverage doesn't justify the per-PR cost):
 #
-#   px4-sitl-e2e — the real end-to-end: the drone/flight_only_positive
+#   px4-smoke       — the light gate: install the real `pymavlink`
+#   wheel, confirm PX4Adapter constructs against it (no SITL, no
+#   connection) and that ConformanceRunner.adapter_factory accepts a
+#   live factory, then re-run the mocked-pymavlink unit suite under the
+#   real wheel. The PX4 analog of ros2-integration's `rclpy-smoke`.
+#
+#   px4-sitl-e2e    — the real end-to-end: the drone/flight_only_positive
 #   conformance fixture run through ConformanceRunner with a live
 #   PX4Adapter flying a PX4 SITL autopilot over MAVLink. Heavy,
-#   best-effort. This is the PX4 analog of ros2-integration's
-#   gazebo-e2e job.
+#   best-effort. The PX4 analog of ros2-integration's gazebo-e2e job.
+#
+#   px4-arm64-build — the Jetson-relevant signal: under linux/arm64
+#   QEMU emulation, pip-install the URML + [px4] stack and run the
+#   hermetic unit suite. URML's adapters are pure Python + pymavlink
+#   with zero CUDA/Jetson APIs, so emulation is a faithful proxy for
+#   *our* code on a Jetson-class board. Real Jetson + real-robot HIL is
+#   deferred until hardware exists; this is the honest pre-hardware
+#   ARM64 gate, not a hardware-verification claim.
 #
 # HONESTY NOTE: the SITL boot invocation below was authored on a
 # Windows box with no ability to run PX4 SITL. The PX4-Autopilot build
@@ -31,6 +44,49 @@ on:
     - cron: '0 7 * * 1'
 
 jobs:
+  px4-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real pymavlink
+        run: |
+          # urml-px4-runtime depends on urml-ros2-runtime (it imports the
+          # substrate-neutral Protocol from urml_ros2_runtime.substrate.base)
+          # and urml-validator. Install all editable so pip never reaches
+          # for an unpublished PyPI dist. pymavlink is the [px4] extra's
+          # only dep; install the real wheel explicitly.
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/px4-runtime \
+            -e conformance \
+            pymavlink \
+            "pytest>=8"
+
+      - name: Live smoke (real pymavlink, no SITL)
+        env:
+          URML_PX4_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/px4-runtime
+          python -m pytest tests/integration/test_px4_adapter_live.py -v
+
+      - name: Re-run hermetic unit tests under real pymavlink
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/px4-runtime
+          python -m pytest tests/test_px4_adapter.py tests/test_composite_adapter.py -v
+
   px4-sitl-e2e:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -96,3 +152,44 @@ jobs:
           name: px4-sitl-e2e-diagnostics
           path: ~/e2e-logs
           retention-days: 14
+
+  px4-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install URML + [px4] and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          # Stock arm64 Python image under QEMU. No custom Dockerfile and
+          # no image push: this is a faithful proxy for *our* code on a
+          # Jetson-class board (pure Python + pymavlink, zero CUDA/Jetson
+          # APIs), not a hardware-verification claim. pymavlink publishes
+          # aarch64 wheels; gcc/python3-dev are installed only as a
+          # fallback in case pip has to build from sdist. A red first run
+          # is a calibration signal (e.g. a missing build dep), exactly
+          # as the px4-sitl-e2e and ros2-integration jobs are treated.
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/px4-runtime \
+                -e conformance \
+                pymavlink \
+                "pytest>=8"
+              python -c "import urml_px4_runtime, pymavlink, platform; print(\"urml_px4_runtime + pymavlink import OK on\", platform.machine())"
+              cd reference/px4-runtime
+              python -m pytest tests/test_px4_adapter.py tests/test_composite_adapter.py -q
+            '

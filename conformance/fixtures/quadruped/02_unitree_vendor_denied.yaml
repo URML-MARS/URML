@@ -1,0 +1,24 @@
+name: quadruped/unitree_vendor_denied
+description: >
+  RFC-0009 + RFC-0004: a `quadruped` manifest whose critical component
+  vendor (`unitree`) is on the bundled US-federal default policy's
+  covered-vendor denylist (FCC Covered List). The validator's Pass 5
+  rejects with policy.vendor_denied. Confirms Unitree is treated
+  exactly like DJI (cf. home/policy_vendor_denylist) — denylisted
+  vendors are handled uniformly — while also exercising RFC-0009's
+  `mobility.drive_type: quadruped`.
+
+manifest: unitree_quadruped_denied
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: patrol_waypoint_a }
+
+expected_validation:
+  accepted: false
+  error_codes: [policy.vendor_denied]
