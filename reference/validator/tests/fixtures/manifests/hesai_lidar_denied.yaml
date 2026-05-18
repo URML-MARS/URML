@@ -1,0 +1,59 @@
+# Fixture: a Clearpath AMR whose critical LIDAR component vendor is on
+# the bundled US-federal default policy's covered-vendor denylist
+# (RFC-0004 covered_vendor_denylist: [dji, autel, hesai, unitree]).
+#
+# Test-only. The vendor string `hesai` is used as a regulatory marker
+# (Hesai appears on the FCC Covered List), exactly as
+# turtlebot4_home_dji_vendor.yaml uses `dji`. This pushes the
+# denylisted-vendor check down to the *component* ("part") granularity:
+# a compliant robot becomes non-compliant solely because one declared
+# part's vendor is covered. Pass 5 rejects with policy.vendor_denied.
+
+manifest_version: "0.1"
+robot_id: husky_amr_covered_lidar
+description: Clearpath Husky variant with a covered-vendor LIDAR (compliance-policy test).
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: waypoint_a
+    pose: { x: 4.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: false
+
+perception:
+  cameras: []
+  sensors:
+    - name: lidar
+      measurement_type: distance
+      range_min: 0.1
+      range_max: 100.0
+      units: m
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: lidar_unit
+      role: critical
+      vendor: hesai
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/lidar.cdx.json
+        sha256: "5555555555555555555555555555555555555555555555555555555555555555"

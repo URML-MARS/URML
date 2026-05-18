@@ -96,14 +96,16 @@ report = runner.run()
 **v0.1 (this release):**
 - Adapter loads on every host (lazy pymavlink import; clear actionable error if `pymavlink` is missing).
 - Unit tests with mocked pymavlink cover all 15 Protocol methods (including the not-applicable ones).
-- Integration testing against a live PX4 SITL is a documented follow-up; the test scaffold lives in `tests/integration/`.
+- Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`).
 
 **Landed since v0.1:**
 - `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).
 - Geofence polygon-containment, 3D altitude bands, and people-occupancy zones in the safety-envelope pass (validator Pass 3).
+- Gated `.github/workflows/px4-integration.yml` with three jobs: `px4-smoke` (real pymavlink, no SITL — the `rclpy-smoke` analog), `px4-sitl-e2e` (the flight e2e — the `gazebo-e2e` analog), and `px4-arm64-build` (the hermetic suite under linux/arm64 QEMU emulation — the pre-hardware Jetson-class signal).
 
 **Follow-ups (not yet):**
-- PX4 SITL integration tests in a gated Linux workflow (matches the ROS 2 runtime's pattern).
+- First calibration run of `px4-sitl-e2e` on a Linux runner — the SITL boot invocation was authored without a machine able to run PX4 SITL, so the first run pins target/port/arming details rather than signalling regression (same convention as `ros2-integration`'s `gazebo-e2e`).
+- Real Jetson + real-robot hardware-in-the-loop. QEMU emulation is a faithful proxy for our pure-Python + pymavlink code, not a hardware-verification claim.
 - True fly-and-capture `scan` (waypoint expansion + per-waypoint trigger) instead of the stub.
 
 ## Core Commitment

@@ -54,6 +54,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ground_connectivity_no_station_keeping": _VALIDATOR_FIXTURES / "manifests" / "ground_connectivity_no_station_keeping.yaml",
     "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
+    # RFC-0009: legged/quadruped manifests.
+    "spot_quadruped": _VALIDATOR_FIXTURES / "manifests" / "spot_quadruped.yaml",
+    "unitree_quadruped_denied": _VALIDATOR_FIXTURES / "manifests" / "unitree_quadruped_denied.yaml",
+    # Clearpath AMR + declared-parts (Robotiq/RealSense compliant; Hesai denied).
+    "clearpath_husky": _VALIDATOR_FIXTURES / "manifests" / "clearpath_husky.yaml",
+    "hesai_lidar_denied": _VALIDATOR_FIXTURES / "manifests" / "hesai_lidar_denied.yaml",
     # BlueROV2 / ArduSub — exercises drive_type: underwater_thrusters.
     "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
 }
