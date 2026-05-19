@@ -28,11 +28,14 @@ from urml_validator.schemas.primitives import (
     ListenArgs,
     MeasureArgs,
     MoveToArgs,
+    PickFromArgs,
+    PlaceAtArgs,
     ReleaseArgs,
     ReportArgs,
     ReturnToHomeArgs,
     ScanArgs,
     SpeakArgs,
+    SwapToolArgs,
     TakeOffArgs,
     WaitArgs,
     WaitForArgs,
@@ -510,6 +513,100 @@ def exec_return_to_home(
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
+def exec_pick_from(
+    args: PickFromArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Industrial profile: navigate to a station, detect, and grasp.
+
+    Composes the existing navigation / detection / manipulation adapter
+    calls — no new substrate Protocol method (RFC-0013). Binds the detected
+    object (same payload shape as `detect`) when `store_as` is set, so
+    `place_at.held` can reference it.
+    """
+    nav = adapter.send_navigation_goal(
+        location=args.source,
+        pose=None,
+        frame=None,
+        carrying=None,
+        speed=None,
+    )
+    if not nav.success:
+        return PrimitiveOutcome(success=False, reason=nav.reason, raw=nav)
+    attributes = args.attributes.model_dump(exclude_none=True) if args.attributes else None
+    det = adapter.query_detection(
+        object_class=args.object,
+        attributes=attributes,
+        where_near=args.source,
+        where_within=None,
+    )
+    if not det.success or det.payload is None:
+        return PrimitiveOutcome(success=False, reason=det.reason, raw=det)
+    grip = adapter.send_manipulation_goal(
+        action="grasp",
+        target=det.payload if isinstance(det.payload, dict) else None,
+        force_n=_force_newtons(args.force),
+        approach="auto",
+        release_mode=None,
+        release_at=None,
+    )
+    new_bindings: dict[str, Any] = {}
+    if args.store_as is not None:
+        new_bindings[args.store_as] = det.payload
+    return PrimitiveOutcome(
+        success=grip.success, reason=grip.reason, raw=grip, bindings=new_bindings
+    )
+
+
+def exec_place_at(
+    args: PlaceAtArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Industrial profile: navigate to a station and release the held object.
+
+    Composes navigation (carrying the resolved held object) + release. No
+    new substrate Protocol method (RFC-0013). `height` is advisory in v0.1
+    (the manipulation surface has no height parameter).
+    """
+    resolved = resolve(args.held, bindings)
+    carrying = resolved if isinstance(resolved, dict) else None
+    nav = adapter.send_navigation_goal(
+        location=args.target,
+        pose=None,
+        frame=None,
+        carrying=carrying,
+        speed=None,
+    )
+    if not nav.success:
+        return PrimitiveOutcome(success=False, reason=nav.reason, raw=nav)
+    rel = adapter.send_manipulation_goal(
+        action="release",
+        target=None,
+        force_n=None,
+        approach="auto",
+        release_mode=args.mode,
+        release_at=args.target,
+    )
+    return PrimitiveOutcome(success=rel.success, reason=rel.reason, raw=rel)
+
+
+def exec_swap_tool(
+    args: SwapToolArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Industrial profile: change the end-of-arm tool at a tool-change station.
+
+    Rides the existing docking-station service mechanism (RFC-0013): the
+    target tool name travels in `until`. This intentionally reuses
+    `send_docking_goal` rather than adding a substrate Protocol method, so
+    every adapter supports it for free. The `until`-carries-tool-name
+    overload is documented in RFC-0013 Drawbacks.
+    """
+    result = adapter.send_docking_goal(
+        station=args.at,
+        service="swap_tool",
+        until=args.to,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -535,6 +632,9 @@ PRIMITIVE_EXECUTORS: dict[
     "take_off": exec_take_off,
     "land": exec_land,
     "return_to_home": exec_return_to_home,
+    "pick_from": exec_pick_from,
+    "place_at": exec_place_at,
+    "swap_tool": exec_swap_tool,
 }
 
 

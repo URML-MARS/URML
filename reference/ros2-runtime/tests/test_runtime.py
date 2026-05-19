@@ -54,6 +54,64 @@ def home_envelope() -> dict[str, Any]:
     return _load(VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml")
 
 
+@pytest.fixture
+def industrial_cell_manifest() -> dict[str, Any]:
+    return _load(VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml")
+
+
+def test_industrial_primitives_execute_end_to_end(
+    industrial_cell_manifest: dict[str, Any],
+) -> None:
+    """RFC-0013: pick_from / place_at / swap_tool run through the mock.
+
+    swap_tool rides send_docking_goal (no new substrate method); pick_from
+    composes nav+detect+grasp and binds the picked object; place_at resolves
+    that binding and composes nav(carrying)+release.
+    """
+    program: dict[str, Any] = {
+        "profile": "industrial",
+        "behavior": {
+            "type": "sequence",
+            "on_error": "abort_and_report",
+            "steps": [
+                {"wait_for": {"condition": {"event": "safety_door_closed"}}},
+                {"swap_tool": {"at": "tool_change_station", "to": "gripper_wide"}},
+                {"pick_from": {"source": "pick_bin", "object": "widget_red",
+                               "attributes": {"color": "red"}, "force": "firm",
+                               "store_as": "red_widget"}},
+                {"place_at": {"target": "kitting_tray_red", "held": "$red_widget"}},
+            ],
+        },
+    }
+    adapter = MockROSAdapter()
+    result = URMLRuntime(adapter).execute(
+        program, industrial_cell_manifest, None, profiles=("industrial",)
+    )
+    assert result.success is True, result.audit_log
+    assert result.steps_executed == 4
+    methods = [e["method"] for e in result.audit_log]
+    assert methods == [
+        "wait_for_condition",     # wait_for safety_door_closed
+        "send_docking_goal",      # swap_tool (rides docking)
+        "send_navigation_goal",   # pick_from: navigate to source
+        "query_detection",        # pick_from: detect
+        "send_manipulation_goal", # pick_from: grasp
+        "send_navigation_goal",   # place_at: navigate to target (carrying)
+        "send_manipulation_goal", # place_at: release
+    ]
+    # swap_tool carried the tool name through `until` (RFC-0013 Drawback 1).
+    swap = next(e for e in result.audit_log if e["method"] == "send_docking_goal")
+    assert swap["service"] == "swap_tool"
+    assert swap["until"] == "gripper_wide"
+    # pick_from bound the picked object; place_at resolved it as `carrying`.
+    assert result.bindings["red_widget"]["class"] == "widget_red"
+    carry = next(
+        e for e in result.audit_log
+        if e["method"] == "send_navigation_goal" and e.get("carrying")
+    )
+    assert carry["carrying"]["class"] == "widget_red"
+
+
 # ---------------------------------------------------------------------------
 # End-to-end happy path
 # ---------------------------------------------------------------------------

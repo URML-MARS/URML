@@ -22,7 +22,7 @@ Scope (Layer-3 v0.1.0 — see spec/layer-3-behavior/v0.1.0.md):
 - All four composition operators execute: `Sequence`, `Branch`, `Parallel`
   (`all` / `any` / `first_to_succeed`), and `Retry`, plus the `on_error`
   model (`abort_and_report` | `continue` | `retry`).
-- All 17 primitives (12 core + 5 profile-scoped) dispatch through the
+- All 20 primitives (12 core + 8 profile-scoped) dispatch through the
   executors in `primitives.py`.
 - Defense-in-depth: the runtime re-validates the program before executing.
   Bypassing the validator at runtime is prohibited per CLAUDE.md.
