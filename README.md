@@ -58,20 +58,21 @@ See [`docs/demos/sentence-to-motion.md`](docs/demos/sentence-to-motion.md) for t
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (as of 2026-05-16).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-05-19: **614 passed + 20 gated-skipped** across 14 packages).
 
 | Capability | State |
 |---|---|
-| **Five-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 188 unit tests |
+| **Five-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 242 unit tests |
 | **20 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 8 profile-extensions across home (`speak`, `listen`), drone (`take_off`, `land`, `return_to_home`), and industrial (`pick_from`, `place_at`, `swap_tool`) | ✅ Validator + reference-runtime executors for all 20 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial few-shots | ✅ 77 unit tests |
-| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run` | ✅ 32 fixtures (home + drone + industrial + compliance + policy-override) |
+| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 52 fixtures (home, drone, industrial, biped, quadruped, mobile, marine, educational) |
 | **CLI** — `urml validate`, `urml execute`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All seven subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
-| **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; end-to-end verified against a live TurtleBot 4 + Nav2 Gazebo simulation (gated CI, green ×3) |
+| **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; the `gazebo-e2e` job (live TurtleBot 4 + Nav2 sim) passed ×3 — [job-level, badge caveat explained](docs/launch/claims-audit.md) |
 | **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
 | **CompositeAdapter** — one URML program across two substrates: PX4 flight + a ROS 2 companion, per-method routing | ✅ Implemented |
+| **Nine further reference runtimes** — `marine` (BlueROV2/ArduSub), `industrial-arm` (ABB/FANUC/KUKA/YASKAWA/UR/Franka), `legged` (Spot/ANYmal), `humanoid` (Digit), `mobile` (Husky/Jackal), and the zero-ROS `opcua` (OPC UA Robotics), `cobot` (UR RTDE + Franka FCI), `mujoco` (sim), `embedded` (micro:bit/Arduino) | ✅ Hermetic suites green; live e2e is gated CI (calibration-staged, **not** a hardware claim) — see [audit](docs/launch/claims-audit.md) |
 
 ---
 

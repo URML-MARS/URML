@@ -19,125 +19,152 @@ a passing test or recorded CI run. This document is the backing evidence. It
 exists so a reader can verify the front page is not overselling — and so the
 maintainer can re-check before each public update.
 
-**Measured 2026-05-16, on `main`.** Test counts are `pytest` pass totals, run
-per package (the packages share test-module names, so a single combined
-invocation collides on collection — run each separately).
+**Measured 2026-05-19, on `main`** (commit `148cd7d`). This is the dedicated
+refresh the previous revision's stale-numbers note asked for: the figures below
+were re-measured from scratch after the substrate-runtime, conformance, and RFC
+work merged since 2026-05-16. Test counts are `pytest` pass totals, run per
+package (the packages share test-module names, so a single combined invocation
+collides on collection — run each separately, against a `PYTHONPATH` of the
+package plus `reference/validator/src`, `reference/ros2-runtime/src`, and
+`conformance/src`).
 
-| Suite | Command | Result |
-|---|---|---|
-| validator | `cd reference/validator && python -m pytest` | **188 passed** |
-| llm-bridge | `cd reference/llm-bridge && python -m pytest` | **77 passed** |
-| ros2-runtime | `cd reference/ros2-runtime && python -m pytest` | **114 passed, 4 skipped** |
-| px4-runtime | `cd reference/px4-runtime && python -m pytest` | **54 passed, 1 skipped** |
-| conformance | `python -m pytest conformance/tests` | **41 passed** |
-| **Total** | | **474 passed + 5 gated-skipped** |
+| Suite | Result |
+|---|---|
+| validator | **242 passed** |
+| llm-bridge | **77 passed** |
+| ros2-runtime | **115 passed, 4 skipped** |
+| px4-runtime | **54 passed, 4 skipped** |
+| conformance | **66 passed** |
+| marine-runtime | **4 passed** |
+| industrial-arm-runtime | **25 passed, 1 skipped** |
+| legged-runtime | **5 passed** |
+| humanoid-runtime | **4 passed** |
+| mobile-runtime | **4 passed** |
+| opcua-runtime | **4 passed, 3 skipped** |
+| cobot-runtime | **5 passed, 2 skipped** |
+| mujoco-runtime | **5 passed, 3 skipped** |
+| embedded-runtime | **4 passed, 3 skipped** |
+| **Total** | **614 passed + 20 gated-skipped** |
 
-The 5 skips are the live integration tests, gated behind
-`URML_ROS2_INTEGRATION=1` / `URML_GAZEBO_E2E=1` (ROS 2 / Gazebo) and
-`URML_PX4_SITL=1` (PX4 SITL) — no rclpy/sim/SITL on a dev box. They are
-*run* by the gated CI workflows: the ROS 2 ones by
-`ros2-integration.yml` (see the ROS 2 row below), the PX4 SITL one by
-`px4-integration.yml` (see the PX4 row below).
+The 20 skips are live integration tests, gated behind per-runtime environment
+flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
+`URML_OPCUA_INTEGRATION` / `URML_COBOT_INTEGRATION` / `URML_MUJOCO_INTEGRATION`
+/ `URML_EMBEDDED_INTEGRATION`, plus the industrial-arm sim flag) — no
+rclpy/sim/SITL/vendor-SDK on a dev box. They are *run* by the gated CI
+workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each of which
+also carries a top-of-file honesty note: the first run of any live e2e is a
+calibration run, not a regression signal.
+
+Conformance fixtures: **52** YAML cases under `conformance/fixtures/` — drone
+14, home 17, industrial 8, biped 5, quadruped 4, mobile 2, marine 1,
+educational 1. Auto-discovered by the runner; all pass hermetically against
+`MockROSAdapter`.
 
 ## Per-row backing
 
-**Five-pass static validator — 188 unit tests.**
+**Five-pass static validator — 242 unit tests.**
 `reference/validator/src/urml_validator/validator.py` (`validate()` runs Pass
 1–5); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
-people-occupancy: `_check_envelope_geofence`, `_altitude_in_band`,
-`_check_envelope_occupancy_zones`. Pass 4 cross-primitive type check:
-`binding.type_mismatch`. Evidence: validator suite 188 passed.
+people-occupancy; Pass 4 cross-primitive type check. Evidence: validator suite
+242 passed.
 
 **20 primitives — validator + reference-runtime executors for all 20.**
-Schemas: `reference/validator/src/urml_validator/schemas/`. Runtime executors
-incl. drone `take_off`/`land`/`return_to_home` and industrial
-`pick_from`/`place_at`/`swap_tool` (RFC-0013):
-`reference/ros2-runtime/src/urml_ros2_runtime/` (dispatched by RclpyAdapter /
-MockROSAdapter). Evidence: `PRIMITIVE_MODELS` has 20 entries; ros2-runtime
-`test_industrial_primitives_execute_end_to_end`; `industrial/04`–`06`
-conformance fixtures.
-
-> **Stale-numbers note (reported, not silently rewritten).** This file's
-> suite totals and fixture count above were measured 2026-05-16 and have
-> drifted: substantial unrelated work merged since (the `urml execute`
-> command, the marine/mobile/legged/humanoid/industrial-arm runtimes, the
-> educational/research profiles). RFC-0013's own delta is **+3 conformance
-> fixtures** (`industrial/04`–`06`), **+1 ros2-runtime test**, **+~8
-> validator tests**, and **17 → 20 primitives**. The other figures
-> (validator 188, conformance 41, 33 fixtures, "six subcommands") are
-> pre-RFC-0013 drift and want a dedicated audit refresh — out of scope for
-> this change, which moves only the primitive count it is responsible for.
+The 12 core plus 8 profile-extensions (home `speak`/`listen`, drone
+`take_off`/`land`/`return_to_home`, industrial `pick_from`/`place_at`/
+`swap_tool`, RFC-0013). Still exactly 20: the substrate work added **no**
+primitive. RFC-0015 (`call_program`) and RFC-0017 (`set_output`) are **Draft
+proposals**, surfaced honestly by the new runtimes' `SPEC-GAPS.md`, not
+shipped. Evidence: `PRIMITIVE_MODELS` has 20 entries; ros2-runtime
+industrial-primitive e2e tests; `industrial/04`–`08` conformance fixtures.
 
 **Compliance enforcement — `--no-policy` opt-out.**
-`reference/validator/src/urml_validator/policy.py` + bundled default policy;
-RFC-0004. Evidence: validator suite policy tests; `compliance-walkthrough.md`
-commands reproduce verbatim.
+`reference/validator/src/urml_validator/policy.py` + bundled default policy
+(RFC-0004). Evidence: validator-suite policy tests; the new
+`opcua_cell`/`cobot_cell` US-or-allied-provenance manifests are accepted, and
+`unitree_quadruped_denied`/`hesai_lidar_denied` rejected, under the bundled
+policy — all exercised by the conformance suite.
 
 **LLM bridge — 77 unit tests.**
-`reference/llm-bridge/` — `providers/` (anthropic, openai, echo); revision loop
-with `BridgePolicyViolation` short-circuit; home/drone/industrial few-shots.
-Evidence: llm-bridge 77 passed.
+`reference/llm-bridge/` — provider-agnostic (anthropic, openai, echo); revision
+loop with `BridgePolicyViolation` short-circuit. Evidence: llm-bridge 77 passed.
 
-**Conformance suite — 33 fixtures, `urml conformance run`.**
-`conformance/fixtures/**/*.yaml` = 33 files (home + drone + industrial +
-compliance + policy-override). CLI: `urml conformance run`. Evidence:
-conformance 41 passed (parametrized over fixtures + loader/smoke). The
-33rd is `drone/flight_only_positive`, the pure-flight fixture the PX4
-SITL e2e flies (see the PX4 row).
+**Conformance suite — 52 fixtures, `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 52 cases.
+[RFC-0014](../rfcs/0014-substrate-conformance.md) now *defines*, normatively,
+what makes a runtime URML-compatible (manifest intake, the frozen substrate
+Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
+spec-gap loop) — so "any URML-compatible runtime must pass this" has a written
+contract behind it, not just a suite. Evidence: conformance 66 passed
+(parametrized over the 52 fixtures + loader/registry/smoke).
 
-**CLI — six subcommands.** `urml --help` →
-`validate schema translate emit-prompt init conformance`.
+**CLI — seven subcommands.** `urml --help` →
+`validate execute schema translate emit-prompt init conformance`.
 
 **Mock reference runtime.** `reference/ros2-runtime/.../substrate/mock.py`
-(`MockROSAdapter`). Default substrate for the hermetic suites.
+(`MockROSAdapter`). Default substrate for every hermetic suite.
 
-**Real ROS 2 adapter (`RclpyAdapter`) — end-to-end verified ×3.**
-`reference/ros2-runtime/src/urml_ros2_runtime/substrate/rclpy_adapter.py`
-(full ROSAdapter Protocol, lazy `rclpy`). End-to-end: the
-`home/nav_patrol_positive` conformance fixture run through `ConformanceRunner`
-with a live `RclpyAdapter` driving a TurtleBot 4 + Nav2 Gazebo simulation,
-green on three calibration runs of `.github/workflows/ros2-integration.yml`
-(`gazebo-e2e` job): runs **25953413044, 25953936578, 25954097635**. The
-`rclpy-smoke` job (real rclpy, no sim) also green after the venv calibration
-(merged in #45).
+**Real ROS 2 adapter (`RclpyAdapter`) — end-to-end verified, job-level green
+×3.** `reference/ros2-runtime/.../substrate/rclpy_adapter.py` (full Protocol,
+lazy `rclpy`). End-to-end: the `home/nav_patrol_positive` fixture through
+`ConformanceRunner` with a live `RclpyAdapter` driving a TurtleBot 4 + Nav2
+Gazebo sim. The proving job is **`gazebo-e2e`** in
+`.github/workflows/ros2-integration.yml`; it passed on three runs —
+**25953413044, 25953936578, 25954097635**. Honest detail a skeptic will hit:
+on the first two of those runs the *workflow badge is red* because the
+unrelated, pre-calibration `rclpy-smoke` job failed (fixed in #45); only run
+**25954097635** is green at the workflow level. The claim is "the adapter's
+proving job is green ×3," verifiable with `gh run view <id> --json jobs`, not
+"the workflow is green ×3." This precision is the substance of PR #54, carried
+forward here.
 
-**PX4 / MAVLink reference runtime (`PX4Adapter`).**
-`reference/px4-runtime/src/urml_px4_runtime/adapter.py` — full Protocol via
-`pymavlink`, no ROS dependency; flight primitives real, perception/manipulation
-return a documented not-supported result. Evidence: px4-runtime 54 passed.
+**PX4 / MAVLink reference runtime (`PX4Adapter`) — 54 tests, zero ROS.**
+`reference/px4-runtime/` — full Protocol via `pymavlink`. Evidence: px4-runtime
+54 passed, 4 skipped (gated SITL/live).
 
-**PX4 SITL end-to-end — added and gated, NOT yet calibrated.**
-`reference/px4-runtime/tests/integration/test_px4_sitl_e2e.py` flies the
-`drone/flight_only_positive` conformance fixture through `ConformanceRunner`
-with a live `PX4Adapter` against PX4 SITL, gated behind `URML_PX4_SITL=1`.
-The gated CI job is `px4-sitl-e2e` in `.github/workflows/px4-integration.yml`
-(workflow_dispatch + weekly cron). Honest status: this is the PX4 analog of
-the ROS 2 `gazebo-e2e` job *before* its calibration runs. No green run is
-claimed here — the workflow has not been executed yet; its first run is the
-calibration run, exactly as `gazebo-e2e` was treated, and a green run ID will
-be recorded in this row only once one exists. Hermetic evidence today:
-px4-runtime 54 passed, 1 skipped (the gated e2e), conformance 41 passed
-(incl. the fixture it flies).
+**PX4 SITL end-to-end — gated, NOT yet calibrated.** Unchanged honest status:
+`px4-sitl-e2e` in `px4-integration.yml` has not been executed; its first run is
+the calibration run. No green run is claimed.
 
-**CompositeAdapter.**
-`reference/px4-runtime/src/urml_px4_runtime/composite.py` — routes each
-Protocol method to a flight (PX4) or companion (ROS 2) backend; explicit
-overridable routing table. Evidence: px4-runtime 54 passed (incl. composite
-routing/lifecycle tests).
+**CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
+routing across a flight + companion backend. Evidence: px4-runtime suite.
 
-**Seven RFCs (0001–0007).** `docs/rfcs/` — `0001`–`0007` (`0000` is the
-template). RFC-0006 (connectivity/link-loss) and RFC-0007 (manufacturer
-go-to-market) are accepted and implemented.
+**Nine further reference runtimes — hermetic-tested, live CI gated (no
+hardware claim).** Beyond ROS 2 and PX4, `main` ships:
+`marine-runtime` (BlueROV2/ArduSub, MAVLink), `industrial-arm-runtime`
+(ABB/FANUC/KUKA/YASKAWA/UR/Franka via ROS-Industrial + MoveIt 2),
+`legged-runtime` (Spot/ANYmal), `humanoid-runtime` (Digit),
+`mobile-runtime` (Husky/Jackal), and the four zero-ROS additions
+`opcua-runtime` (OPC UA Robotics), `cobot-runtime` (UR RTDE + Franka FCI,
+native SDKs), `mujoco-runtime` (simulator), `embedded-runtime`
+(micro:bit/Arduino over serial). **Honest scope:** each ships a hermetic unit
+suite that passes today (counts in the table above; vendor SDKs are lazy, so
+the suites run with the SDK absent) and a gated `*-integration.yml` whose live
+e2e is an explicit calibration placeholder that fails loudly until wired —
+exactly the PX4-SITL posture. These prove *our code* across the substrate set
+and the zero-ROS acid test (RFC-0014); they are **not** hardware-verification
+claims. Each carries a `SPEC-GAPS.md` recording anything the substrate needed
+that URML cannot yet express, promoted to a Draft RFC (0015–0018) rather than
+silently bolted on.
+
+**RFCs 0001–0018.** `docs/rfcs/`. States are tracked per-RFC header
+(RFC-0001 §Lifecycle is authoritative). 0015–0018 are the four Draft proposals
+the substrate work surfaced; 0014 (substrate conformance) defines the runtime
+contract referenced above. No primitive or schema changed without an accepted
+RFC.
 
 ## Re-running this audit
 
+`pytest`'s terminal summary can be truncated by some shells; the reliable
+count is via `--junit-xml`. Per package, with `PYTHONPATH` set to the package
+`src` plus `reference/validator/src`, `reference/ros2-runtime/src`,
+`reference/px4-runtime/src`, `conformance/src`:
+
 ```bash
-for d in reference/validator reference/llm-bridge reference/ros2-runtime reference/px4-runtime; do
-  echo -n "$d: "; (cd "$d" && python -m pytest -q | tail -1)
-done
-python -m pytest conformance/tests -q | tail -1
-find conformance/fixtures -name '*.yaml' | wc -l   # fixtures
-ls docs/rfcs/ | grep -E '^000[1-9]'                 # RFCs (exclude 0000-template)
+python -m pytest <pkg>/tests -q --tb=no --junit-xml=j.xml
+python -c "import xml.etree.ElementTree as E;print(E.parse('j.xml').getroot().find('testsuite').attrib)"
+python -m pytest conformance/tests -q --tb=no --junit-xml=c.xml
+find conformance/fixtures -name '*.yaml' | wc -l   # fixtures (52)
+ls docs/rfcs/ | grep -E '^00[0-1][0-9]'             # RFCs (exclude 0000-template)
 urml --help                                          # subcommands
 ```
 

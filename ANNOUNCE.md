@@ -44,18 +44,24 @@ system; it targets the ones that exist.
 
 - **Five-pass validator** — argument typing → capability → safety envelope
   (incl. geofence, 3D altitude bands, people-occupancy zones) → variable +
-  cross-primitive type analysis → compliance policy. 188 tests.
-- **Two real reference runtimes** — `RclpyAdapter` (ROS 2, via `rclpy`/Nav2)
-  and `PX4Adapter` (MAVLink, no ROS dependency), plus a `CompositeAdapter`
-  that runs one program across a PX4 flight controller + a ROS 2 companion.
+  cross-primitive type analysis → compliance policy. 242 tests.
+- **Eleven reference runtimes** — `RclpyAdapter` (ROS 2, `rclpy`/Nav2) and
+  `PX4Adapter` (MAVLink, no ROS), a `CompositeAdapter` across both, plus
+  marine, industrial-arm, legged, humanoid, mobile, and the zero-ROS
+  OPC UA / native-cobot / MuJoCo / serial-MCU runtimes. The runtime contract
+  is defined normatively in RFC-0014 (the zero-ROS acid test is a gate).
 - **End-to-end verified** — a conformance fixture drives a *simulated
-  TurtleBot 4* through Nav2 via the real adapter, green on three independent
-  CI runs. Not "should work" — reproduced.
+  TurtleBot 4* through Nav2 via the real adapter: the `gazebo-e2e` CI job
+  passed three times (runs 25953413044/25953936578/25954097635; the workflow
+  badge is red on the first two from an unrelated pre-calibration job — the
+  *adapter's* job is green ×3, verifiable with `gh run view --json jobs`).
+  The other ten runtimes' hermetic suites are green; their live e2e is
+  gated, calibration-staged CI — not a hardware claim.
 - **Compliance is enforced, not documented** — the bundled default policy
   encodes US-federal procurement rules (NDAA §889/FY26, FCC Covered List, EO
   14307, ASRA); a covered-foreign-country component is rejected *at validation
   time*. Override is one flag for other jurisdictions.
-- **473 tests across five packages**, all green. Every front-page claim is
+- **614 tests across 14 packages** (+20 gated-skipped), all green. Every front-page claim is
   mapped to a file and a passing run in [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md).
 
 ## See it in 90 seconds
