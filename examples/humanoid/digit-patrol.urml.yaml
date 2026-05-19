@@ -1,0 +1,33 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: humanoid/digit-patrol
+# Source NL: "Walk the two staging points, then return to the dock."
+#            (see digit-patrol.en.txt)
+#
+# Navigation-only patrol on a biped manifest (Agility Digit; US origin,
+# mobility.drive_type: biped, RFC-0009). This is the locomotion subset
+# the humanoid runtime's DigitAdapter implements in v0.1 — whole-body /
+# bimanual manipulation is the explicit RFC-0010 deferral, so this
+# example stays nav-only and runs hermetically against the mock and
+# adapter-agnostically against DigitAdapter. Uses the `home` profile:
+# bipedal locomotion needs no new profile (profiles over forks),
+# matching the biped conformance fixtures. Validatable end-to-end:
+#
+#   urml validate digit-patrol.urml.yaml \
+#     -m digit-patrol.manifest.yaml --profile home
+#
+# `dock` is a declared *location* (it has a pose), not a docking action.
+# Pass `--no-policy` to skip Pass 5 against a manifest without a
+# provenance block.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: staging_a
+    - move_to:
+        location: staging_b
+    - move_to:
+        location: dock

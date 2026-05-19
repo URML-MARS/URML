@@ -1,0 +1,33 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: legged/spot-patrol
+# Source NL: "Patrol the two waypoints, then return to the dock."
+#            (see spot-patrol.en.txt)
+#
+# Navigation-only patrol on a quadruped manifest (Boston Dynamics Spot;
+# mobility.drive_type: quadruped, RFC-0009). Core vocabulary only — no
+# perception, manipulation, speech, or docking action — so it runs
+# hermetically against the mock and adapter-agnostically against the
+# legged runtime's SpotAdapter / AnymalAdapter. Uses the `home` profile:
+# legged locomotion needs no new profile (profiles over forks), matching
+# the quadruped conformance fixtures. Validatable end-to-end via the
+# companion manifest:
+#
+#   urml validate spot-patrol.urml.yaml \
+#     -m spot-patrol.manifest.yaml --profile home
+#
+# `dock` is a declared *location* (it has a pose), not a docking action.
+# Pass `--no-policy` to skip Pass 5 against a manifest without a
+# provenance block.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: patrol_waypoint_a
+    - move_to:
+        location: patrol_waypoint_b
+    - move_to:
+        location: dock

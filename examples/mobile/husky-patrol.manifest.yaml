@@ -1,0 +1,102 @@
+# Fixture: a Clearpath Husky mobile manipulator with declared parts.
+#
+# Demonstrates capability "parts" as first-class provenance components:
+# a Robotiq gripper and an Intel RealSense depth camera on a Clearpath
+# base. All three vendors are compliant under the bundled US-federal
+# default policy (RFC-0004): Clearpath (Canada / Rockwell-US), Robotiq
+# (Canada), Intel (US) — none on the FCC Covered List denylist. The
+# conformance fixture that uses this manifest is navigation-only, so it
+# runs hermetically; the manipulation/perception blocks exist to make
+# the declared-parts point concrete. Modeled on industrial_cell.yaml.
+
+manifest_version: "0.1"
+robot_id: husky_amr_1
+description: Clearpath Husky UGV with a UR-class arm, Robotiq gripper, and Intel RealSense.
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: waypoint_a
+    pose: { x: 4.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: waypoint_b
+    pose: { x: 4.0, y: 6.0, z: 0.0 }
+    frame: site
+  - name: charge_point
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+  - path_clear
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: robotiq_2f85
+      kind: servo_electric
+      force_min_n: 5.0
+      force_max_n: 235.0
+      accepted_classes: [tote, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: realsense_d435
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - tote
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - fleet_manager
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: clearpath_base
+      role: critical
+      vendor: clearpath
+      country_of_origin: CA
+      country_of_final_assembly: CA
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/husky_base.cdx.json
+        sha256: "3333333333333333333333333333333333333333333333333333333333333333"
+    - id: robotiq_2f85_gripper
+      role: non_critical
+      vendor: robotiq
+      country_of_origin: CA
+      country_of_final_assembly: CA
+    - id: intel_realsense_d435
+      role: critical
+      vendor: intel
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/realsense.cdx.json
+        sha256: "4444444444444444444444444444444444444444444444444444444444444444"

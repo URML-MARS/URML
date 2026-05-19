@@ -1,0 +1,1 @@
+Patrol the two waypoints, then return to the dock.
