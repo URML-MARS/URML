@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Layer 2 — Intent Primitives
 
 **Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — seventeen primitives (twelve core + five profile-scoped), transcribed from the [RFC-0002](../../docs/rfcs/0002-initial-primitive-vocabulary.md) decision record. This README is the orientation; `v0.1.0.md` is what a runtime must implement.

@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Open Questions
 
 The working list of decisions that are still open. Extends [`MANIFESTO.md`](../MANIFESTO.md) Appendix B. Items move out of this file when an RFC resolves them — the RFC stays as the historical record; the entry here is deleted (the file should always reflect the *current* set of open questions, not the cumulative one).

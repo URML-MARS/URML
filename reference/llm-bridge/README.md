@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # LLM Bridge
 
 **Status:** Phase 1 in flight. **Skeleton + provider-agnostic Bridge + revision loop + real Anthropic / OpenAI adapters landed** at `0.1.0a0` (pre-alpha). CLI integration and profile-specific few-shot libraries are the next milestone.

@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # ROS 2 Integration — `RclpyAdapter`
 
 **Status (v0.1):** Reference `RclpyAdapter` ships in `substrate/rclpy_adapter.py`. Unit tests with mocked rclpy run on every host (including Windows) as part of the default suite. Integration tests against a live ROS 2 + Gazebo stack are gated to a separate Linux-only CI workflow — see `.github/workflows/ros2-integration.yml`.

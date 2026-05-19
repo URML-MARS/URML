@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Layer 3 — Behavior Composition
 
 **Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the four composition operators (`sequence`/`branch`/`parallel`/`retry`), the `on_error` model, the variable system, and the condition-expression grammar, transcribed from the shipped implementation (Layer 3 has no dedicated RFC; RFC-0002 deferred the formal grammar). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
