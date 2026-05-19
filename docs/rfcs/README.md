@@ -17,6 +17,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0006](0006-connectivity-and-link-loss.md) | Connectivity as an abstract capability and link-loss as a validated safety contract | Implemented | 2026-05-16 |
 | [0007](0007-manufacturer-go-to-market.md) | Manufacturer go-to-market: URML as an opportunity and a channel for robot OEMs and component makers | Implemented | 2026-05-16 |
 | [0008](0008-community-discussions.md) | Community Discussions: a public Q&A and feedback channel brought forward into Phase 0 | Implemented | 2026-05-16 |
+| [0013](0013-industrial-layer2-primitives.md) | Industrial-profile Layer-2 primitives — pick_from, place_at, swap_tool | Draft | 2026-05-19 |
 
 ## Lifecycle states
 
