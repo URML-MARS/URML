@@ -1,0 +1,50 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: industrial/pick-place-tool-change
+# Source NL: "Once the safety door is closed, fit the wide gripper, pick the
+#             red widget from the bin, and place it on the red tray."
+#            (see pick-place-tool-change.en.txt)
+#
+# The RFC-0013 industrial-primitive example: the same line-reconfiguration
+# story as simple-pick-and-place, but written with the industrial profile's
+# own verbs — `swap_tool`, `pick_from`, `place_at` — instead of the
+# move_to + detect + grasp + move_to + release composition. Both forms are
+# valid; simple-pick-and-place.urml.yaml is kept as the documented
+# composition-equivalent (see this directory's README).
+#
+#   urml validate pick-place-tool-change.urml.yaml \
+#     -m pick-place-tool-change.manifest.yaml --profile industrial
+#
+# The companion manifest declares US-compliant provenance, so the bundled
+# default policy (RFC-0004) accepts it. Pass `--no-policy` to skip Pass 5
+# when exercising the program against a manifest without provenance.
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait_for:
+        condition:
+          event: safety_door_closed
+    - swap_tool:
+        at: tool_change_station
+        to: gripper_wide
+    - pick_from:
+        source: pick_bin
+        object: widget_red
+        attributes:
+          color: red
+        force: firm
+        store_as: red_widget
+    - place_at:
+        target: kitting_tray_red
+        held: $red_widget
+        mode: place
+    - report:
+        to: line_controller
+        facts:
+          cycle: pick_red_to_tray
+          tool: gripper_wide
+          result: ok
+        status: success
