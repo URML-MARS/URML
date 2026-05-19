@@ -68,6 +68,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "opcua_cell": _VALIDATOR_FIXTURES / "manifests" / "opcua_cell.yaml",
     # Zero-ROS collaborative arm (UR / Franka native SDKs).
     "cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell.yaml",
+    # Educational micro:bit/Arduino buggy (zero ROS, serial).
+    "microbit_edu": _VALIDATOR_FIXTURES / "manifests" / "microbit_edu.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.

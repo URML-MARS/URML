@@ -1,0 +1,129 @@
+# Gated educational-MCU (micro:bit / Arduino) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   embedded-smoke      — install real pyserial ([serial] extra) and
+#   run the hermetic embedded suite + the loop:// live smoke under it.
+#   Fast, no board. The MCU analog of px4-integration's px4-smoke.
+#
+#   embedded-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The stack is pure-Python (pyserial) with no CUDA/Jetson APIs, so
+#   emulation is a faithful proxy for our code on a Jetson-class
+#   classroom host. Mirrors px4/marine-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   embedded-board-e2e  — the real end-to-end: the conformance
+#   educational/buggy_patrol_positive fixture run through
+#   ConformanceRunner with a live EmbeddedAdapter driving a real
+#   micro:bit/Arduino buggy over serial. Heavy, best-effort.
+#
+# HONESTY NOTE: the board-e2e below was authored without a physical
+# micro:bit/Arduino + a known firmware command set. The adapter +
+# fixture are exercised hermetically (MockROSAdapter) on every PR; the
+# board-driven run needs real hardware (or a flashed emulator) and a
+# command mapping pinned in embedded_adapter.yaml. The job fails loudly
+# until wired rather than green-washing. Do not treat the first
+# embedded-board-e2e run as a regression signal; treat it as the
+# calibration run, exactly as px4-integration's px4-sitl-e2e and
+# marine-integration's marine-sitl-e2e were treated.
+
+name: embedded-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 16:00 UTC (staggered after the other integration lanes).
+    - cron: '0 16 * * 1'
+
+jobs:
+  embedded-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real pyserial
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/embedded-runtime[serial]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic embedded suite + loopback smoke under real pyserial
+        env:
+          URML_EMBEDDED_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/embedded-runtime
+          python -m pytest tests/ -v
+
+  embedded-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [serial] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/embedded-runtime[serial]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_embedded_runtime, serial, platform; print(\"urml_embedded_runtime + pyserial import OK on\", platform.machine())"
+              cd reference/embedded-runtime
+              python -m pytest tests/test_embedded_adapter.py -q
+            '
+
+  embedded-board-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for micro:bit/Arduino board-driven e2e
+        run: |
+          # Wiring (calibration step): flash a buggy firmware with a
+          # known command set, point at its serial port, pin the
+          # command mapping in an embedded_adapter.yaml, then with
+          # URML_EMBEDDED_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[educational/buggy_patrol_positive],
+          #     adapter_factory=lambda: EmbeddedAdapter(load_embedded_config(
+          #       "embedded_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A real micro:bit/Arduino + firmware command set is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: embedded-board-e2e-diagnostics
+          path: ~/.cache/urml-embedded
+          retention-days: 14

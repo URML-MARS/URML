@@ -1,0 +1,65 @@
+# Fixture: a micro:bit/Arduino-class educational buggy.
+# Substrate = urml-embedded-runtime (EmbeddedAdapter) over serial, zero
+# ROS — URML scales DOWN to an MCU (RFC-0011 educational flywheel). A
+# 2-wheel buggy is honestly differential drive; this is the green,
+# schema-valid path. The genuinely-unrepresentable minimal MCU class
+# (a fixed LED/sensor node with no mobility) is the RFC-0018 gap, NOT
+# faked here. No provenance block: a classroom buggy attests no covered
+# hardware, so the bundled US-federal default policy (RFC-0004)
+# ACCEPTS it (nothing to deny) — as turtlebot4_home / spot_quadruped do.
+
+manifest_version: "0.1"
+robot_id: microbit_buggy_1
+description: Two-wheel micro:bit/Arduino classroom buggy with a light sensor and a claw servo.
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: start_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+  - name: waypoint_a
+    pose: { x: 0.5, y: 0.0 }
+    frame: floor
+  - name: home_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+
+declared_events:
+  - line_detected
+  - button_pressed
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.2
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_servo
+      kind: servo_electric
+      force_min_n: 0.1
+      force_max_n: 2.0
+      accepted_classes: [block, ball]
+      movable: false
+  reachable_workspace_m: 0.08
+
+perception:
+  sensors:
+    - name: light
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 1023.0
+      units: adc
+  object_vocabulary:
+    - block
+    - ball
+
+outputs:
+  named_endpoints:
+    - classroom_log
