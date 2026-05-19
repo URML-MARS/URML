@@ -10,6 +10,16 @@
 #      conformance fixture run through ConformanceRunner with a live
 #      RclpyAdapter driving a TurtleBot 4 Ignition sim via Nav2. Heavy,
 #      best-effort.
+#   3. ros2-arm64-build — the Jetson-companion signal: under linux/arm64
+#      QEMU, pip-install validator + ros2-runtime + conformance and run
+#      the hermetic ros2-runtime suite. RclpyAdapter imports rclpy
+#      lazily, so module import works with rclpy absent and the
+#      hermetic suite (which fakes rclpy) passes under emulation —
+#      proving our pure-Python code runs on a Jetson-class board.
+#      CAVEAT: rclpy has no pip/arm64 wheel (it ships with a ROS
+#      distro), so this job deliberately does NOT assert a real-rclpy
+#      arm64 build — that stays the gated x86 rclpy-smoke lane. Not a
+#      hardware-verification claim. Mirrors px4-arm64-build.
 #
 # HONESTY NOTE ON gazebo-e2e: the sim/Nav2 launch invocations below were
 # authored on a Windows box with no ability to run Gazebo. The package
@@ -87,6 +97,42 @@ jobs:
           . /tmp/ci-venv/bin/activate
           cd reference/ros2-runtime
           python -m pytest tests/test_rclpy_adapter.py -v
+
+  ros2-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install the stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              # No rclpy wheel is installed (none exists for arm64);
+              # RclpyAdapter imports rclpy lazily, so module import
+              # works without it and the hermetic suite fakes rclpy.
+              # This proves our pure-Python code on a Jetson-class
+              # board, not a real-ROS arm64 build.
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_ros2_runtime, urml_ros2_runtime.substrate.rclpy_adapter, platform; print(\"urml_ros2_runtime import OK (rclpy lazy/absent) on\", platform.machine())"
+              cd reference/ros2-runtime
+              python -m pytest tests/test_rclpy_adapter.py tests/test_mock_adapter.py tests/test_runtime.py tests/test_bindings.py tests/test_conditions.py -q
+            '
 
   gazebo-e2e:
     runs-on: ubuntu-24.04
