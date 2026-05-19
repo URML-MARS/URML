@@ -12,6 +12,19 @@
 #   two-backend router). Heavy, best-effort. The industrial analog of
 #   ros2-integration's gazebo-e2e and px4-integration's px4-sitl-e2e.
 #
+#   industrial-arm-arm64-build — the Jetson-companion signal: under
+#   linux/arm64 QEMU, pip-install the stack and run the hermetic
+#   industrial-arm suite. A Jetson is a standard arm companion and our
+#   adapter is pure Python (rclpy is imported lazily by RclpyAdapter
+#   and is absent here), so emulation is a faithful proxy for our code
+#   on that board. Mirrors px4-arm64-build / spot-arm64-build.
+#   CAVEAT: unlike px4/spot, whose arm64 job also exercises a real
+#   vendor wheel, rclpy has no pip/arm64 wheel (it ships with a ROS
+#   distro), so this job proves the pure-Python + fake-rclpy hermetic
+#   suite under arm64 ONLY — it deliberately does NOT assert a
+#   real-rclpy arm64 build (that stays the gated x86 lane). Not a
+#   hardware-verification claim.
+#
 # WHY A COMPOSITE: URML `grasp` requires a detected `$target`, so a
 # pick-place program always contains a `detect` step. A bare fixed-base
 # arm has no onboard perception, exactly as a bare PX4 autopilot has
@@ -124,3 +137,41 @@ jobs:
           name: arm-sim-e2e-diagnostics-${{ matrix.brand }}
           path: ~/e2e-logs
           retention-days: 14
+
+  industrial-arm-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install the stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              # px4-runtime supplies the generic CompositeAdapter the
+              # adapter composes with a vision companion; no rclpy wheel
+              # is installed (none exists for arm64) — RclpyAdapter
+              # imports it lazily, so the hermetic suite (which fakes
+              # rclpy) runs without it. That is exactly the point.
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/px4-runtime \
+                -e reference/industrial-arm-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_industrial_arm_runtime, platform; print(\"urml_industrial_arm_runtime import OK (rclpy lazy/absent) on\", platform.machine())"
+              cd reference/industrial-arm-runtime
+              python -m pytest tests/test_industrial_arm_adapter.py -q
+            '
