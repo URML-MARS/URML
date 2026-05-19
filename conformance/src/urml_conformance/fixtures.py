@@ -64,6 +64,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
     # MuJoCo simulator substrate (zero ROS) — sentence→motion acid-test proof.
     "mujoco_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "mujoco_arm_sim.yaml",
+    # OPC UA Robotics industrial cell (zero ROS, US provenance).
+    "opcua_cell": _VALIDATOR_FIXTURES / "manifests" / "opcua_cell.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
