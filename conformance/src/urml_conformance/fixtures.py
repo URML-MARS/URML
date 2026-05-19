@@ -62,6 +62,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "hesai_lidar_denied": _VALIDATOR_FIXTURES / "manifests" / "hesai_lidar_denied.yaml",
     # BlueROV2 / ArduSub — exercises drive_type: underwater_thrusters.
     "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
+    # MuJoCo simulator substrate (zero ROS) — sentence→motion acid-test proof.
+    "mujoco_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "mujoco_arm_sim.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     "digit_biped": _VALIDATOR_FIXTURES / "manifests" / "digit_biped.yaml",
