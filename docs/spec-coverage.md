@@ -29,6 +29,7 @@ whenever a construct is added or a leg moves.
 - **[Layer 1 — capability manifest](#layer-1--capability-manifest)** — 12/12 covered.
 - **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 20/20 covered.
 - **[Layer 3 — behavior composition](#layer-3--behavior-composition)** — 6/6 covered.
+- **[Layer 4 — natural-language prompt contract](#layer-4--natural-language-prompt-contract)** — 6/6 covered. *(Completes the layer set; URML is now normative end to end.)*
 
 ---
 
@@ -300,3 +301,86 @@ urml validate examples/drone/link-aware-patrol.urml.yaml \
 
 Prints `Validation passed`. The validator and conformance suites remain
 green; this section's PR touches no runtime code.
+
+---
+
+# Layer 4 — natural-language prompt contract
+
+The authoritative surface is [`reference/llm-bridge/`](../reference/llm-bridge/)
+— the published, provider-neutral contract for translating natural language
+into validated URML. "Construct" here is a contract element. Legs:
+
+- **Spec** — a normative section in
+  [`spec/layer-4-nl-grammar/v0.1.0.md`](../spec/layer-4-nl-grammar/v0.1.0.md)
+  (Layer 4 has no dedicated RFC; the contract is the shipped bridge).
+- **Schema/contract artifact** — the Pydantic/code surface in
+  `reference/llm-bridge/src/urml_llm_bridge/`.
+- **Impl** — the same module (the bridge *is* the reference implementation).
+- **Conformance** — a test in
+  [`reference/llm-bridge/tests/`](../reference/llm-bridge/tests/).
+- **Example** — a runnable artifact: the paired
+  [`examples/`](../examples/) `*.en.txt` ↔ `*.urml.yaml` scenarios (the
+  human-facing few-shot fixtures) and the hermetic walkthrough
+  [`docs/demos/bridge-roundtrip.md`](demos/bridge-roundtrip.md).
+
+## What this audit found and closed
+
+One real gap, closed in the PR that adds this section: **no runnable
+walkthrough of the prompt contract / bridge round-trip.** The validator has
+`docs/demos/compliance-walkthrough.md` and `safety-rejection.md`; Layer 4 had
+no equivalent — `urml emit-prompt` and the hermetic `urml translate --provider
+echo` shipped but were undiscoverable. [`docs/demos/bridge-roundtrip.md`](demos/bridge-roundtrip.md)
+closes it: a verified, no-network walkthrough (emit the contract → echo-backed
+round-trip → the revision-loop reference). The sweep also wrote the missing
+normative spec and corrected two stale status claims (the `llm-bridge`
+README's "Phase 1 in flight / 0.1.0a0 pre-alpha / CLI is next milestone", and
+its item 7 over-promising an interactive disambiguation protocol).
+
+## The matrix
+
+All six contract elements are covered.
+
+| Construct | Spec | Artifact | Impl | Conformance | Example |
+|---|---|---|---|---|---|
+| Program JSON Schema (emission target) | v0.1.0 §2 | `urml_validator.export_schema` | `bridge.py` (`_schema`) | validator schema-export guard | all 8 `examples/*` pairs |
+| System-prompt assembly | v0.1.0 §2 | `prompt.py` | `build_system_prompt` | `test_emit_prompt_cli` | `docs/demos/bridge-roundtrip.md` |
+| Few-shot library | v0.1.0 §2.2 | `few_shot.py` | `few_shots_for` | `test_few_shot_library` | `examples/home/red-mug` (+ profile sets) |
+| Validator-feedback revision loop | v0.1.0 §3 | `bridge.py` | `Bridge.translate` | `test_bridge` | `docs/demos/bridge-roundtrip.md` |
+| Provider-neutral interface | v0.1.0 §1 | `providers/base.py` | `LLMProvider` + echo/anthropic/openai | `test_providers_*` | `EchoProvider` (the demo) |
+| Policy short-circuit (RFC-0004) | v0.1.0 §3 | `bridge.py` | `BridgePolicyViolation` | `test_bridge` | `home/red-mug` (compliant manifest) |
+
+## Notes (honest deferrals, not gaps)
+
+- **No interactive disambiguation protocol in v0.1.** The README family
+  described "structured questions the LLM asks when ambiguous"; the shipped
+  bridge is one-shot emit + the deterministic validator-feedback loop.
+  Ambiguity → manifest-grounded default, or `report(status: failure)`. Stated
+  in `v0.1.0.md` §5; the `llm-bridge` README item 7 was corrected to match.
+- **Multilingual is structural, not content.** `<scenario>.<lang>.txt` slots
+  are reserved; v0.1 content is English-only. The contract is
+  language-agnostic; no schema/loop change is needed for non-English input.
+- **The bridge does not execute URML.** It returns validated programs;
+  execution is the caller's job.
+
+## Verification
+
+```
+# the contract the model is given (no network)
+urml emit-prompt -m examples/home/red-mug.manifest.yaml --profile home
+
+# a hermetic NL -> validated-URML round-trip (no API key)
+urml translate "Bring me the red mug from the kitchen." \
+  -m examples/home/red-mug.manifest.yaml --profile home \
+  --provider echo --echo-response-file /tmp/echo_redmug.json
+```
+
+The second prints `Translation accepted after 0 revision(s)`. The
+llm-bridge, validator, and conformance suites remain green; this section's
+PR touches no runtime code.
+
+---
+
+*The layer set is complete: Layers 1–4 each have a normative `v0.1.0.md`, a
+schema, a reference implementation, conformance tests, and a runnable example.
+URML is normative end to end, and every public completeness claim is
+cell-backed here.*
