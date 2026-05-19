@@ -1,0 +1,35 @@
+name: educational/buggy_patrol_positive
+description: >
+  URML scales DOWN to a microcontroller (RFC-0014 substrate proof,
+  RFC-0011 educational profile). A micro:bit/Arduino-class differential
+  buggy drives start → waypoint → home — navigation-only, core
+  vocabulary, so it runs hermetically against MockROSAdapter and
+  adapter-agnostically against the embedded runtime's EmbeddedAdapter
+  (which writes firmware commands over serial). First fixture under the
+  new `educational/` profile directory; `profile: educational` is an
+  open Identifier so it validates with no schema change, and RFC-0011
+  is documented-not-enforced in v0.1, so this is honest.
+
+manifest: microbit_edu
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: start_mat }
+      - move_to: { location: waypoint_a }
+      - move_to: { location: home_mat }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal
