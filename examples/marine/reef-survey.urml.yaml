@@ -1,0 +1,34 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: marine/reef-survey
+# Source NL: "Descend to the survey start, run the reef transect, then
+#            hold at the ascent point." (see reef-survey.en.txt)
+#
+# Navigation-only underwater survey on a BlueROV2 manifest
+# (mobility.drive_type: underwater_thrusters — already in the v0.1
+# schema). Descend, run a transect, hold for ascent. Core vocabulary
+# only, so it runs hermetically against the mock and adapter-
+# agnostically against the marine runtime's BlueRovAdapter (MAVLink,
+# zero ROS — proves a primitive is not ROS-coupled). Uses the `home`
+# profile: underwater navigation needs no new profile (profiles over
+# forks), matching the marine conformance fixture. Validatable
+# end-to-end:
+#
+#   urml validate reef-survey.urml.yaml \
+#     -m reef-survey.manifest.yaml --profile home
+#
+# The depth waypoints are declared *locations* (z = depth), not
+# docking actions. Pass `--no-policy` to skip Pass 5 against a manifest
+# without a provenance block.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: survey_start
+    - move_to:
+        location: reef_transect
+    - move_to:
+        location: ascent_point
