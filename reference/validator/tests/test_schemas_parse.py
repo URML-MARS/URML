@@ -102,7 +102,8 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     # Profile-extension primitives. New entries here track profile specs.
     home_extensions = {"speak", "listen"}
     drone_extensions = {"take_off", "land", "return_to_home"}
-    expected = core | home_extensions | drone_extensions
+    industrial_extensions = {"pick_from", "place_at", "swap_tool"}  # RFC-0013
+    expected = core | home_extensions | drone_extensions | industrial_extensions
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected
     # The RFC-0002 core set must remain a subset of the registry — the
@@ -139,6 +140,18 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         (
             "report",
             {"to": "user", "facts": {"message": "done"}},
+        ),
+        (
+            "pick_from",
+            {"source": "pick_bin", "object": "widget_red", "store_as": "w"},
+        ),
+        (
+            "place_at",
+            {"target": "kitting_tray_red", "held": "$w"},
+        ),
+        (
+            "swap_tool",
+            {"at": "tool_change_station", "to": "gripper_wide"},
         ),
     ],
 )

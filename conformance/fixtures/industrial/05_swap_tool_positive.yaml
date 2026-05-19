@@ -1,0 +1,31 @@
+name: industrial/swap_tool_positive
+description: >
+  RFC-0013: `swap_tool` changes the end-of-arm tool at a declared
+  tool-change station. The decision under test is that swap_tool rides
+  the existing docking-station service mechanism rather than adding a
+  substrate Protocol method: the single audit method is
+  `send_docking_goal`, with `service: swap_tool` and the tool name
+  carried in `until`. The `industrial_cell` manifest declares a
+  `tool_change_station` offering the `swap_tool` service.
+
+manifest: industrial_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - swap_tool:
+          at: tool_change_station
+          to: gripper_wide
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - send_docking_goal

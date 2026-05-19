@@ -1,0 +1,137 @@
+# Companion manifest for examples/industrial/pick-place-tool-change.urml.yaml —
+# the RFC-0013 industrial-primitive example (pick_from / place_at / swap_tool)
+# with a fully US-federal-compliant provenance declaration.
+#
+# Illustrative only. Vendor identifiers (`example_*`) are fictional; country
+# codes are real ISO 3166-1 alpha-2 values; integrity hashes are zeroed
+# placeholders. Do not deploy from this file.
+#
+# Validate with the bundled default policy active:
+#   urml validate pick-place-tool-change.urml.yaml \
+#     -m pick-place-tool-change.manifest.yaml --profile industrial
+#
+# Execute on the hermetic mock (no robot, no policy gate):
+#   urml execute pick-place-tool-change.urml.yaml \
+#     -m pick-place-tool-change.manifest.yaml --profile industrial --no-policy
+
+manifest_version: "0.1"
+robot_id: cell_a2_demo
+description: Single-arm cell with a tool-change station, US-compliant illustrative manifest.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+    description: Source bin for unsorted widgets.
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+    description: Destination tray for red widgets.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+# The tool-change station the `swap_tool` primitive targets. swap_tool
+# rides the docking-station service mechanism (RFC-0013): the station
+# must declare the `swap_tool` service.
+docking_stations:
+  - name: tool_change_station
+    pose: { x: 0.2, y: 0.5, z: 0.20 }
+    frame: cell
+    services: [swap_tool, park]
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+# Hardware provenance (RFC-0004). Every critical component declares
+# US-final-assembly and carries the third-party-audited attestation the
+# bundled default policy requires.
+provenance:
+  manifest_attestation: third_party_audited
+  attestation_uri: https://example.com/attestations/cell_a2_demo.signed
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: example_arm_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: wrist_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/wrist_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: tool_changer
+      role: critical
+      vendor: example_toolchanger_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/tool_changer.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: tcp_force_sensor
+      role: critical
+      vendor: example_sensor_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/tcp_force_sensor.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

@@ -43,7 +43,7 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | Capability | State |
 |---|---|
 | **Five-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 188 unit tests |
-| **17 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 5 profile-extensions across home (`speak`, `listen`) and drone (`take_off`, `land`, `return_to_home`) | ✅ Validator + reference-runtime executors for all 17 |
+| **20 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 8 profile-extensions across home (`speak`, `listen`), drone (`take_off`, `land`, `return_to_home`), and industrial (`pick_from`, `place_at`, `swap_tool`) | ✅ Validator + reference-runtime executors for all 20 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial few-shots | ✅ 77 unit tests |
 | **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run` | ✅ 32 fixtures (home + drone + industrial + compliance + policy-override) |
@@ -82,6 +82,7 @@ See [RFC-0003](docs/rfcs/0003-us-alignment.md) for the strategic decision and tr
 ├──────────────────────────────────────────────────────────────────┤
 │  Layer 2: Intent Primitives                                       │
 │  12 core + home (speak / listen) + drone (take_off / land / RTH)  │
+│  + industrial (pick_from / place_at / swap_tool)  [RFC-0013]      │
 ├──────────────────────────────────────────────────────────────────┤
 │  Layer 1: Hardware Abstraction Layer                              │
 │  capability manifest + provenance + safety envelope               │

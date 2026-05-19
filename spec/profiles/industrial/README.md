@@ -92,13 +92,13 @@ link_loss_policy:
 
 ## Layer-2 primitives this profile adds
 
-[RFC-0002 §Detailed Design](../../../docs/rfcs/0002-initial-primitive-vocabulary.md) authorizes per-profile primitive additions. The industrial profile adds three: `pick_from`, `place_at`, and `swap_tool`. Implementation follows the same pattern as home (PR #25) and drone (PR #30) extensions; the spec defines the surface and the implementation lands in a separate PR.
+[RFC-0002 §Detailed Design](../../../docs/rfcs/0002-initial-primitive-vocabulary.md) authorizes per-profile primitive additions. The industrial profile adds three: `pick_from`, `place_at`, and `swap_tool`. They are **specified and implemented** by [RFC-0013](../../../docs/rfcs/0013-industrial-layer2-primitives.md) (schema + validator Pass-2 checks + ROS-2 executors + conformance fixtures + a runnable example), following the same pattern as the home (`speak`/`listen`) and drone (`take_off`/`land`/`return_to_home`) extensions. The normative per-primitive reference is [`spec/layer-2-primitives/v0.1.0.md`](../../layer-2-primitives/v0.1.0.md) §3.6–3.8; the signatures below are normative and mirror it.
 
 ### `pick_from`
 
 Convenience over `move_to + detect + grasp` for the most-common industrial pattern.
 
-**Signature (preview; full surface defined when implementation lands):**
+**Signature (normative; see Layer-2 §3.6):**
 
 ```yaml
 - pick_from:
@@ -121,7 +121,7 @@ Convenience over `move_to + detect + grasp` for the most-common industrial patte
 
 Symmetric to `pick_from`. Convenience over `move_to + release(mode: place)`.
 
-**Signature (preview):**
+**Signature (normative; see Layer-2 §3.7):**
 
 ```yaml
 - place_at:
@@ -137,7 +137,7 @@ Symmetric to `pick_from`. Convenience over `move_to + release(mode: place)`.
 
 End-of-arm tool changes for cells with declared tool-change stations.
 
-**Signature (preview):**
+**Signature (normative; see Layer-2 §3.8):**
 
 ```yaml
 - swap_tool:
@@ -147,7 +147,7 @@ End-of-arm tool changes for cells with declared tool-change stations.
 
 **Semantics.** Move to the tool-change station, execute the substrate's tool-change procedure, return.
 
-**Capability requirements:** `manifest.docking_stations[].services` includes `swap_tool` at the target station; the named tool is in the station's declared `accepted_tools` list (a profile-extension manifest field; deferred).
+**Capability requirements:** `manifest.docking_stations[].services` includes `swap_tool` at the target station. The named tool being in the station's declared `accepted_tools` list is a profile-extension manifest field that remains **deferred** — v0.1 validates only that the station declares the `swap_tool` service, not that `to` is an accepted tool (see [RFC-0013](../../../docs/rfcs/0013-industrial-layer2-primitives.md) Drawbacks). `swap_tool` reuses the `dock` dispatch path (`send_docking_goal`), so no new substrate Protocol method is introduced.
 
 ## Layer-2 primitives this profile constrains
 
@@ -199,18 +199,22 @@ Deployers outside the US should override the default with their own policy.
 
 ## Conformance points
 
-The conformance suite at `/conformance/fixtures/industrial/` (not yet created) will include the following when the profile reaches **Implemented** state:
+The conformance suite at `/conformance/fixtures/industrial/` ships these fixtures:
 
-| Future fixture | What it tests |
+| Fixture | What it tests |
 |---|---|
-| `01_pick_red_to_tray_positive.yaml` | Canonical line-reconfiguration scenario: pick a red widget from `pick_bin`, place it on `kitting_tray_red`. Happy path. |
-| `02_force_ceiling_rejected.yaml` | `grasp(force: 30)` against a gripper with `force_max_n: 25` rejected with `envelope.force_exceeded`. |
-| `03_safety_door_warning.yaml` | A program lacking `wait_for(safety_door_closed)` at the top emits a profile-warning (v0.1; promoted to error in a follow-up). |
-| `04_undeclared_object_rejected.yaml` | `detect(object: widget_purple)` against a manifest declaring only red/blue rejected with `capability.missing_object_class`. |
-| `05_undeclared_station_rejected.yaml` | `pick_from(source: bin_xyz)` against a manifest without `bin_xyz` in declared_locations rejected. |
-| `06_line_reconfiguration_diff.yaml` | The bridge's reconfiguration flow — *"same as before, but red"* — produces the expected URML diff against a stored prior program. (Bridge integration test, not pure validator.) |
+| `01_pick_red_positive.yaml` | Canonical line scenario written with the **core twelve** (`move_to + detect + grasp + move_to + release`) — the documented composition-equivalent of `pick_from`/`place_at`. |
+| `02_type_mismatch_rejected.yaml` | A `measure` result fed to `grasp.target` is rejected with `binding.type_mismatch` (Pass 4). |
+| `03_link_outage_relaxed_rejected.yaml` | RFC-0006 link-outage coherence on the connectivity manifest variant. |
+| `04_pick_from_positive.yaml` | RFC-0013 happy path: `wait_for(safety_door_closed)` + `pick_from` + `place_at` + `report`; asserts the composed audit-method order and the `pick_from` → `place_at` binding flow. |
+| `05_swap_tool_positive.yaml` | RFC-0013: `swap_tool` at a declared `tool_change_station`; asserts the single audit method is `send_docking_goal` (swap_tool rides the docking-service mechanism). |
+| `06_swap_tool_undeclared_service_rejected.yaml` | RFC-0013 negative: `swap_tool` targeting a location that is not a docking station is rejected with `capability.missing_docking_station` before execution. |
 
-Fixtures and the supporting `examples/industrial/` programs follow in separate PRs once the industrial-primitive validator implementation lands.
+The runnable `examples/industrial/` programs are `simple-pick-and-place` (the
+core-twelve composition) and `pick-place-tool-change` (the RFC-0013 primitives).
+Further negatives (force-ceiling, safety-door warning promoted to error, the
+bridge line-reconfiguration diff) are tracked follow-ups, not blockers for
+RFC-0013.
 
 ## Related documents
 

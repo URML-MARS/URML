@@ -13,7 +13,7 @@ backs it. It grows one layer at a time; regenerate the relevant section
 whenever a construct is added or a leg moves.
 
 - **[Layer 1 — capability manifest](#layer-1--capability-manifest)** — 12/12 covered.
-- **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 17/17 covered.
+- **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 20/20 covered.
 - **[Layer 3 — behavior composition](#layer-3--behavior-composition)** — 6/6 covered.
 
 ---
@@ -24,8 +24,9 @@ whenever a construct is added or a leg moves.
 
 The authoritative primitive set is `PRIMITIVE_MODELS` in
 [`reference/validator/src/urml_validator/schemas/primitives.py`](../reference/validator/src/urml_validator/schemas/primitives.py)
-— seventeen verbs: twelve core (RFC-0002) plus five profile-scoped
-(`speak`/`listen` home, `take_off`/`land`/`return_to_home` drone). Each leg is
+— twenty verbs: twelve core (RFC-0002) plus eight profile-scoped
+(`speak`/`listen` home, `take_off`/`land`/`return_to_home` drone,
+`pick_from`/`place_at`/`swap_tool` industrial — RFC-0013). Each leg is
 verified by path:
 
 - **Spec** — a normative section in
@@ -38,7 +39,7 @@ verified by path:
 - **Impl** — a `PRIMITIVE_EXECUTORS` entry in
   [`reference/ros2-runtime/.../primitives.py`](../reference/ros2-runtime/src/urml_ros2_runtime/primitives.py)
   (the bar requires "at least one runtime"; ros2-runtime implements all
-  seventeen). PX4 coverage is the RFC-0002-defined drone subset; see Notes.
+  twenty). PX4 coverage is the RFC-0002-defined drone subset; see Notes.
 - **Conformance** — at least one fixture in
   [`conformance/fixtures/`](../conformance/fixtures/) exercising the primitive.
 - **Example** — at least one runnable program in
@@ -68,7 +69,7 @@ Two real gaps, both closed in the PR that adds this document:
 
 ## The matrix
 
-All seventeen primitives are fully covered. Fixture column cites one
+All twenty primitives are fully covered. Fixture column cites one
 representative fixture; most primitives have several (positive and negative).
 
 | # | Primitive | Spec | Schema | Impl (ros2) | Conformance (representative) | Example |
@@ -90,6 +91,9 @@ representative fixture; most primitives have several (positive and negative).
 | 15 | `take_off` | v0.1.0 §3.3 | `TakeOffArgs` | `exec_take_off` | `drone/01_inspect_roof_positive` | `drone/roof-inspection` |
 | 16 | `land` | v0.1.0 §3.4 | `LandArgs` | `exec_land` | `drone/01_inspect_roof_positive` | `drone/roof-inspection` |
 | 17 | `return_to_home` | v0.1.0 §3.5 | `ReturnToHomeArgs` | `exec_return_to_home` | `drone/13_link_loss_rth_positive` | `drone/roof-inspection` |
+| 18 | `pick_from` | v0.1.0 §3.6 | `PickFromArgs` | `exec_pick_from` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
+| 19 | `place_at` | v0.1.0 §3.7 | `PlaceAtArgs` | `exec_place_at` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
+| 20 | `swap_tool` | v0.1.0 §3.8 | `SwapToolArgs` | `exec_swap_tool` | `industrial/05_swap_tool_positive` | `industrial/pick-place-tool-change` |
 
 ## Notes (honest deferrals, not gaps)
 
@@ -98,7 +102,7 @@ representative fixture; most primitives have several (positive and negative).
   `wait_for`, `scan`, `capture`, `report`, `dock`, `measure`, plus the drone
   profile verbs; `grasp`/`release`/object-pickup `detect` are out of the drone
   profile by design. The "at least one runtime" bar is met by ros2-runtime for
-  all seventeen.
+  all twenty.
 - **`PX4Adapter.run_scan` is a v0.1 stub.** It returns a documented
   not-yet-implemented result; full waypoint-expansion + capture needs a
   companion adapter (see px4-runtime README and `CompositeAdapter`). This is

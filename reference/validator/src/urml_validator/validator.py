@@ -62,11 +62,14 @@ from urml_validator.schemas.primitives import (
     ListenArgs,
     MeasureArgs,
     MoveToArgs,
+    PickFromArgs,
+    PlaceAtArgs,
     ReleaseArgs,
     ReportArgs,
     ReturnToHomeArgs,
     ScanArgs,
     SpeakArgs,
+    SwapToolArgs,
     TakeOffArgs,
     WaitForArgs,
 )
@@ -327,6 +330,9 @@ _PRIMITIVE_NAMES_FROZEN = (
     "take_off",
     "land",
     "return_to_home",
+    "pick_from",
+    "place_at",
+    "swap_tool",
 )
 
 
@@ -384,6 +390,12 @@ def _check_capabilities(
         return _check_land_caps(args, manifest, path)
     if name == "return_to_home":
         return _check_return_to_home_caps(args, manifest, path)
+    if name == "pick_from":
+        return _check_pick_from_caps(args, manifest, path)
+    if name == "place_at":
+        return _check_place_at_caps(args, manifest, path)
+    if name == "swap_tool":
+        return _check_swap_tool_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -661,6 +673,174 @@ def _check_detect_caps(
                 field="object",
                 suggestion=f"Add {args.object!r} to manifest.perception.object_vocabulary, "
                 "or pick a declared class.",
+            )
+        )
+    return out
+
+
+# ---- Industrial-profile capability checks (RFC-0013) -----------------------
+
+
+def _check_pick_from_caps(
+    args: PickFromArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """pick_from = navigate(source) + detect(object) + grasp(force).
+
+    Composes the move_to / detect / grasp capability requirements, with
+    errors attributed to `pick_from`.
+    """
+    out: list[ValidationError] = []
+    if manifest.mobility is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MOBILITY,
+                "pick_from",
+                path,
+                "pick_from requires the manifest to declare `mobility` (to reach the source station).",
+                suggestion="Add a `mobility` block to the manifest.",
+            )
+        )
+    if not _location_declared(manifest, args.source):
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_LOCATION,
+                "pick_from",
+                path,
+                f"pick_from references undeclared source station {args.source!r}.",
+                field="source",
+                suggestion=f"Add {args.source!r} to manifest.declared_locations.",
+            )
+        )
+    perception = manifest.perception
+    if perception is None or (not perception.cameras and not perception.sensors):
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_PERCEPTION,
+                "pick_from",
+                path,
+                "pick_from requires the manifest to declare `perception` with at least "
+                "one camera or sensor (to detect the object).",
+            )
+        )
+    elif args.object not in perception.object_vocabulary:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_OBJECT_CLASS,
+                "pick_from",
+                path,
+                f"pick_from references object class {args.object!r} which is not in the "
+                "manifest's perception.object_vocabulary.",
+                field="object",
+                suggestion=f"Add {args.object!r} to manifest.perception.object_vocabulary, "
+                "or pick a declared class.",
+            )
+        )
+    if manifest.manipulation is None or not manifest.manipulation.grippers:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MANIPULATION,
+                "pick_from",
+                path,
+                "pick_from requires the manifest to declare `manipulation` with at least one gripper.",
+                suggestion="Add a `manipulation.grippers` list with at least one gripper.",
+            )
+        )
+    else:
+        force_val = _resolve_force(args.force)
+        if force_val is not None:
+            usable = [
+                g for g in manifest.manipulation.grippers if _gripper_in_range(g, force_val)
+            ]
+            if not usable:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_MISSING_GRIPPER,
+                        "pick_from",
+                        path,
+                        f"no declared gripper supports the requested force ({force_val} N). "
+                        f"Declared ranges: "
+                        f"{[(g.name, g.force_min_n, g.force_max_n) for g in manifest.manipulation.grippers]!r}.",
+                        field="force",
+                        suggestion="Pick a softer/firmer level, or declare a gripper covering the range.",
+                    )
+                )
+    return out
+
+
+def _check_place_at_caps(
+    args: PlaceAtArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """place_at = navigate(target) + release. Composes move_to + release caps."""
+    out: list[ValidationError] = []
+    if manifest.mobility is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MOBILITY,
+                "place_at",
+                path,
+                "place_at requires the manifest to declare `mobility` (to reach the target station).",
+                suggestion="Add a `mobility` block to the manifest.",
+            )
+        )
+    if not _location_declared(manifest, args.target):
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_LOCATION,
+                "place_at",
+                path,
+                f"place_at references undeclared target station {args.target!r}.",
+                field="target",
+                suggestion=f"Add {args.target!r} to manifest.declared_locations.",
+            )
+        )
+    if manifest.manipulation is None or not manifest.manipulation.grippers:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MANIPULATION,
+                "place_at",
+                path,
+                "place_at requires the manifest to declare `manipulation` with at least one gripper.",
+                suggestion="Add a `manipulation.grippers` list with at least one gripper.",
+            )
+        )
+    return out
+
+
+def _check_swap_tool_caps(
+    args: SwapToolArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """swap_tool rides the docking-station service mechanism.
+
+    The station named by `at` must be declared and must offer the
+    `swap_tool` service. Unlike `dock`, `at` is required (no default-station
+    fallback). The `to` tool name is not validated against an accepted-tool
+    list in v0.1 — the `accepted_tools` manifest field is deferred (RFC-0013).
+    """
+    out: list[ValidationError] = []
+    target = next((s for s in manifest.docking_stations if s.name == args.at), None)
+    if target is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_DOCKING_STATION,
+                "swap_tool",
+                path,
+                f"swap_tool references docking station {args.at!r}, which is not "
+                "declared in manifest.docking_stations.",
+                field="at",
+                suggestion=f"Declare a docking station named {args.at!r} with a "
+                "'swap_tool' service in manifest.docking_stations.",
+            )
+        )
+    elif "swap_tool" not in target.services:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_DOCKING_SERVICE,
+                "swap_tool",
+                path,
+                f"docking station {target.name!r} does not declare the 'swap_tool' service.",
+                field="at",
+                suggestion=f"Add 'swap_tool' to manifest.docking_stations[{target.name!r}].services "
+                f"(declared services: {target.services!r}).",
             )
         )
     return out
@@ -1775,6 +1955,9 @@ def _check_bindings(program: URMLProgram) -> list[ValidationError]:
 # match against these strings.
 _PRODUCER_TYPES: dict[str, str] = {
     "detect": "object",
+    # pick_from binds the picked object — same payload shape as detect, so
+    # place_at.held / grasp.target / move_to.carrying interoperate (RFC-0013).
+    "pick_from": "object",
     "scan": "survey_result",
     "measure": "measurement",
     "capture": "media_handle",
@@ -1821,6 +2004,10 @@ def _references_used_with_type(
     # are location names handled by the capability check.
     if name == "release":
         _maybe(getattr(args, "at", None), {"object"})
+    # place_at.held: always a $ref to the held object (from a prior
+    # pick_from / detect). RFC-0013.
+    if name == "place_at":
+        _maybe(getattr(args, "held", None), {"object"})
     # detect.where.near: when a $ref, an object to search near.
     if name == "detect":
         where = getattr(args, "where", None)

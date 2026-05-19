@@ -34,11 +34,25 @@ people-occupancy: `_check_envelope_geofence`, `_altitude_in_band`,
 `_check_envelope_occupancy_zones`. Pass 4 cross-primitive type check:
 `binding.type_mismatch`. Evidence: validator suite 188 passed.
 
-**17 primitives — validator + reference-runtime executors for all 17.**
+**20 primitives — validator + reference-runtime executors for all 20.**
 Schemas: `reference/validator/src/urml_validator/schemas/`. Runtime executors
-incl. drone `take_off`/`land`/`return_to_home`:
+incl. drone `take_off`/`land`/`return_to_home` and industrial
+`pick_from`/`place_at`/`swap_tool` (RFC-0013):
 `reference/ros2-runtime/src/urml_ros2_runtime/` (dispatched by RclpyAdapter /
-MockROSAdapter). Evidence: ros2-runtime 114 passed; conformance drone fixtures.
+MockROSAdapter). Evidence: `PRIMITIVE_MODELS` has 20 entries; ros2-runtime
+`test_industrial_primitives_execute_end_to_end`; `industrial/04`–`06`
+conformance fixtures.
+
+> **Stale-numbers note (reported, not silently rewritten).** This file's
+> suite totals and fixture count above were measured 2026-05-16 and have
+> drifted: substantial unrelated work merged since (the `urml execute`
+> command, the marine/mobile/legged/humanoid/industrial-arm runtimes, the
+> educational/research profiles). RFC-0013's own delta is **+3 conformance
+> fixtures** (`industrial/04`–`06`), **+1 ros2-runtime test**, **+~8
+> validator tests**, and **17 → 20 primitives**. The other figures
+> (validator 188, conformance 41, 33 fixtures, "six subcommands") are
+> pre-RFC-0013 drift and want a dedicated audit refresh — out of scope for
+> this change, which moves only the primitive count it is responsible for.
 
 **Compliance enforcement — `--no-policy` opt-out.**
 `reference/validator/src/urml_validator/policy.py` + bundled default policy;
