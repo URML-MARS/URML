@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run test clean
+.PHONY: help install install-dev demo demo-run demo-record test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -23,6 +23,7 @@ help:
 	@echo "  make install-dev  Same, plus each package's [dev] extra (pytest/ruff/mypy)."
 	@echo "  make demo         Validate the canonical red-mug example end-to-end."
 	@echo "  make demo-run     Sentence -> URML -> validate -> execute (hermetic, no creds)."
+	@echo "  make demo-record  Regenerate the README hero SVG (deterministic, any OS)."
 	@echo "  make test         Run every package's test suite (each in its own process)."
 	@echo "  make clean        Remove .venv (full, reversible teardown)."
 	@echo ""
@@ -55,6 +56,15 @@ demo-run:
 	    --manifest examples/home/red-mug.manifest.yaml --profile home --no-policy
 	$(URML) execute $(VENV)/redmug.generated.yaml \
 	    --manifest examples/home/red-mug.manifest.yaml --profile home --no-policy
+
+# Regenerate the README hero (docs/assets/sentence-to-motion.svg): the
+# committed, CSS-animated terminal SVG of the demo-run loop. Pure Python,
+# no asciinema/ffmpeg/node — deterministic and any-OS (unlike the
+# asciinema docs/demos/record-*.sh scripts). The committed asset is the
+# deliverable; CI (test_demo_svg.py) asserts it is in sync and that every
+# line it shows is real `urml` output.
+demo-record:
+	$(PYBIN)/python tools/scripts/gen_demo_svg.py
 
 # Each suite runs in its own pytest process: the packages have
 # same-named test modules, so a single combined invocation collides on
