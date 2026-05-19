@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/urml-banner.svg" alt="URML.dev — The Universal Robot Language" width="720" />
+</p>
+
 # URML — Universal Robot Language
 
 A small, opinionated, human-readable language for describing robot **intent**.
