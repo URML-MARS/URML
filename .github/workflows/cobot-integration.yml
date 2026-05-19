@@ -1,0 +1,134 @@
+# Gated cobot (UR RTDE + Franka FCI) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   cobot-smoke      — install the real vendor SDKs ([ur] + [franka]
+#   extras) and run the hermetic cobot suite + the live smoke under
+#   them. Fast, no controller. The cobot analog of px4-integration's
+#   px4-smoke.
+#
+#   cobot-arm64-build — the hermetic suite under linux/arm64 QEMU. The
+#   adapters are pure Python over the vendor SDKs with no CUDA/Jetson
+#   APIs, so emulation is a faithful proxy for our code on a
+#   Jetson-class companion. Mirrors px4/marine-arm64-build. Not a
+#   hardware-verification claim. (ur_rtde may need a source build on
+#   arm64; the job installs build-essential and tolerates that.)
+#
+#   cobot-controller-e2e — the real end-to-end: the conformance
+#   industrial/cobot_cell_positive fixture run through ConformanceRunner
+#   with a live UrRtdeAdapter / FrankaFciAdapter against a real UR
+#   controller / a Franka with FCI enabled. Heavy, best-effort.
+#
+# HONESTY NOTE: the controller-e2e below was authored without a UR
+# controller or an FCI-enabled Franka. The adapters + fixture are
+# exercised hermetically (MockROSAdapter) on every PR; the
+# controller-driven run needs real hardware (or a vendor simulator) and
+# a pose mapping pinned in cobot_adapter.yaml. The job fails loudly
+# until wired rather than green-washing. Do not treat the first
+# cobot-controller-e2e run as a regression signal; treat it as the
+# calibration run, exactly as px4-integration's px4-sitl-e2e and
+# marine-integration's marine-sitl-e2e were treated.
+
+name: cobot-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 15:00 UTC (staggered after the other integration lanes).
+    - cron: '0 15 * * 1'
+
+jobs:
+  cobot-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv build-essential
+
+      - name: Install URML packages + real cobot SDKs
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/cobot-runtime[ur,franka]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic cobot suite + live smoke under real SDKs
+        env:
+          URML_COBOT_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/cobot-runtime
+          python -m pytest tests/ -v
+
+  cobot-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install the stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc g++ python3-dev
+              python -m pip install -U pip
+              # The hermetic suite fakes the vendor SDKs, so it runs
+              # under arm64 with the [ur]/[franka] wheels ABSENT — that
+              # is the point (our pure-Python code on a Jetson-class
+              # board), not a real-SDK arm64 build claim.
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/cobot-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_cobot_runtime, platform; print(\"urml_cobot_runtime import OK (vendor SDKs lazy/absent) on\", platform.machine())"
+              cd reference/cobot-runtime
+              python -m pytest tests/test_cobot_adapters.py -q
+            '
+
+  cobot-controller-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for UR/Franka controller-driven e2e
+        run: |
+          # Wiring (calibration step): point at a UR controller / an
+          # FCI-enabled Franka (or a vendor sim), pin the pose mapping
+          # in a cobot_adapter.yaml, then with URML_COBOT_INTEGRATION=1:
+          #   ConformanceRunner(
+          #     cases=[industrial/cobot_cell_positive],
+          #     adapter_factory=lambda: UrRtdeAdapter(load_cobot_config(
+          #       "cobot_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A real UR/Franka controller (or vendor sim) + pose mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobot-controller-e2e-diagnostics
+          path: ~/.cache/urml-cobot
+          retention-days: 14
