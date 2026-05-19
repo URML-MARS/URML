@@ -2,9 +2,9 @@
 rfc: 0009
 title: Legged and humanoid mobility in the capability manifest
 author: URML Maintainers (maintainers@urml.dev)
-state: Draft
+state: Implemented
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-05-19
 supersedes: —
 superseded-by: —
 ---

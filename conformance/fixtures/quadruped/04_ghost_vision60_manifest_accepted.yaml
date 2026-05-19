@@ -1,0 +1,24 @@
+name: quadruped/ghost_vision60_manifest_accepted
+description: >
+  RFC-0009 follow-up, manifest + spec only. Ghost Robotics Vision 60
+  has an access-gated SDK, so there is no adapter; per the multi-brand
+  plan it is covered by validator acceptance, not execution (the same
+  treatment as the no-SDK humanoids Optimus/Figure/Apollo/NEO). This
+  is a validator-only case: the quadruped manifest + a minimal program
+  must be accepted (drive_type: quadruped from RFC-0009, US origin
+  compliant under the bundled US-federal default policy). No
+  expected_execution, so the runner stops after validation by design.
+
+manifest: ghost_vision60
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: dock }
+
+expected_validation:
+  accepted: true

@@ -1,0 +1,70 @@
+# Fixture: a capability manifest for a quadruped patrol robot.
+# Exercises RFC-0009's `mobility.drive_type: quadruped`. Hand-authored to
+# be the minimum manifest a nav-only patrol fixture needs. No provenance
+# block: with no critical components declared, the bundled US-federal
+# default policy (RFC-0004) has nothing to deny, so this manifest is
+# accepted. Modeled on industrial_cell.yaml.
+#
+# Boston Dynamics Spot is the canonical quadruped here (US / Hyundai-
+# owned, not on any covered list). ANYbotics ANYmal (Switzerland) would
+# use the same shape with a different provenance block — a mechanical
+# follow-up unblocked by RFC-0009.
+
+manifest_version: "0.1"
+robot_id: spot_patrol_1
+description: Four-legged patrol/inspection robot with a body camera.
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: patrol_waypoint_a
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: First patrol station.
+  - name: patrol_waypoint_b
+    pose: { x: 5.0, y: 8.0, z: 0.0 }
+    frame: site
+    description: Second patrol station.
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Charging dock / idle pose.
+
+declared_events:
+  - estop_engaged
+  - site_clear
+
+mobility:
+  drive_type: quadruped     # RFC-0009
+  max_velocity: 1.6         # Spot walk speed cap, m/s
+  station_keeping: true     # actively balances (gates `hover`)
+
+perception:
+  cameras:
+    - name: body_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - person
+    - obstacle
+
+# `dock` is exposed as a declared *location* (above) so the patrol can
+# `move_to` it; no docking-action station is needed for v0.1.
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - ops_log

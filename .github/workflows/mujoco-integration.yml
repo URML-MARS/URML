@@ -1,0 +1,127 @@
+# Gated MuJoCo (simulator substrate) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   mujoco-smoke      — install the real mujoco wheel ([sim] extra) and
+#   run the hermetic mujoco suite + the live smoke under it. Fast, no
+#   model. The simulator analog of px4-integration's px4-smoke.
+#
+#   mujoco-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The mujoco stack is pure-Python bindings over a bundled engine with
+#   no CUDA/Jetson APIs, so emulation is a faithful proxy for our code
+#   on a Jetson-class board. Mirrors px4/marine-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   mujoco-sitl-e2e   — the real end-to-end: the conformance
+#   home/mujoco_sentence_to_motion_positive fixture run through
+#   ConformanceRunner with a live MujocoAdapter stepping a real MJCF
+#   model. Heavy, best-effort.
+#
+# HONESTY NOTE: the e2e below was authored without a bundled MJCF model
+# to step. The MujocoAdapter and the fixture are exercised hermetically
+# (MockROSAdapter) on every PR; the model-driven run needs a committed
+# demo model + a location→ctrl mapping pinned in mujoco_adapter.yaml.
+# The job fails loudly until that is wired rather than green-washing.
+# Do not treat the first mujoco-sitl-e2e run as a regression signal;
+# treat it as the calibration run, exactly as px4-integration's
+# px4-sitl-e2e and marine-integration's marine-sitl-e2e were treated.
+
+name: mujoco-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 13:00 UTC (staggered after the other integration lanes).
+    - cron: '0 13 * * 1'
+
+jobs:
+  mujoco-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real mujoco
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/mujoco-runtime[sim]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic mujoco suite + live smoke under real mujoco
+        env:
+          URML_MUJOCO_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/mujoco-runtime
+          python -m pytest tests/ -v
+
+  mujoco-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [sim] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/mujoco-runtime[sim]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_mujoco_runtime, mujoco, platform; print(\"urml_mujoco_runtime + mujoco import OK on\", platform.machine())"
+              cd reference/mujoco-runtime
+              python -m pytest tests/test_mujoco_adapter.py -q
+            '
+
+  mujoco-sitl-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for MuJoCo model-driven e2e
+        run: |
+          # Wiring (calibration step): commit a small demo MJCF model,
+          # pin its location→ctrl mapping in a mujoco_adapter.yaml, then
+          # with URML_MUJOCO_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[home/mujoco_sentence_to_motion_positive],
+          #     adapter_factory=lambda: MujocoAdapter(load_mujoco_config(
+          #       "mujoco_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A bundled MJCF model + location->ctrl mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mujoco-sitl-e2e-diagnostics
+          path: ~/.mujoco
+          retention-days: 14

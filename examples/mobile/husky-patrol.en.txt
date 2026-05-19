@@ -1,0 +1,1 @@
+Drive the two waypoints, then return to the charge point.
