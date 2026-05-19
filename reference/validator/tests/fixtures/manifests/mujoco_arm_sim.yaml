@@ -1,0 +1,53 @@
+# Fixture: a MuJoCo simulation robot for the home profile.
+# The substrate is a headless physics model (urml-mujoco-runtime,
+# MujocoAdapter) — no ROS, no robot. This manifest exercises the
+# sentence→motion loop end-to-end on a pure simulator: the purest
+# substrate-neutrality acid-test case. Navigation-only, so it runs
+# hermetically against MockROSAdapter and adapter-agnostically against
+# MujocoAdapter. No provenance block: there is no hardware to attest, so
+# the bundled US-federal default policy (RFC-0004) accepts it (nothing
+# to deny), exactly as turtlebot4_home / spot_quadruped do.
+
+manifest_version: "0.1"
+robot_id: mujoco_sim_1
+description: Headless MuJoCo physics model driven through the URML frozen Protocol.
+
+frames:
+  - name: world
+    parent: null
+  - name: base
+    parent: world
+
+declared_locations:
+  - name: sim_start
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+  - name: sim_waypoint
+    pose: { x: 1.0, y: 0.5 }
+    frame: world
+  - name: sim_home
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+
+declared_events:
+  - settled
+  - contact
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: true
+
+perception:
+  sensors:
+    - name: state
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - box
+
+outputs:
+  named_endpoints:
+    - sim_log

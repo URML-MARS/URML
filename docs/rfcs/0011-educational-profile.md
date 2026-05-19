@@ -2,9 +2,9 @@
 rfc: 0011
 title: Educational profile
 author: URML Maintainers (maintainers@urml.dev)
-state: Draft
+state: Accepted
 created: 2026-05-18
-updated: 2026-05-18
+updated: 2026-05-19
 supersedes: —
 superseded-by: —
 ---

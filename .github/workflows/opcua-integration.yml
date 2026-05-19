@@ -1,0 +1,135 @@
+# Gated OPC UA Robotics (industrial cell) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   opcua-smoke      — install the real asyncua wheel ([opcua] extra)
+#   and run the hermetic opcua suite + the live smoke under it. Fast,
+#   no server. The OPC UA analog of px4-integration's px4-smoke.
+#
+#   opcua-arm64-build — the hermetic suite under linux/arm64 QEMU. The
+#   opcua stack is pure Python (asyncua) with no CUDA/Jetson APIs, so
+#   emulation is a faithful proxy for our code on a Jetson-class
+#   companion (a standard industrial-edge form factor). Mirrors
+#   px4/marine-arm64-build. Not a hardware-verification claim.
+#
+#   opcua-server-e2e — the real end-to-end: the conformance
+#   industrial/opcua_cell_positive fixture run through
+#   ConformanceRunner with a live OpcUaAdapter against a local asyncua
+#   demo server exposing MoveTo/Grip/SwapTool method nodes. Heavy,
+#   best-effort.
+#
+# HONESTY NOTE: the server-e2e below was authored without a bundled
+# asyncua demo server + node layout. The OpcUaAdapter and the fixture
+# are exercised hermetically (MockROSAdapter) on every PR; the
+# server-driven run needs a committed demo server script + a node
+# mapping pinned in opcua_adapter.yaml. The job fails loudly until that
+# is wired rather than green-washing. Do not treat the first
+# opcua-server-e2e run as a regression signal; treat it as the
+# calibration run, exactly as px4-integration's px4-sitl-e2e and
+# marine-integration's marine-sitl-e2e were treated.
+#
+# LICENSING NOTE: asyncua is LGPL-3.0; it is an OPTIONAL [opcua] extra
+# imported lazily, never at module load (the rclpy/pymavlink posture).
+# In-repo code is Apache-2.0. The posture is flagged in SPEC-GAPS.md
+# for maintainer ratification.
+
+name: opcua-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 14:00 UTC (staggered after the other integration lanes).
+    - cron: '0 14 * * 1'
+
+jobs:
+  opcua-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real asyncua
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/opcua-runtime[opcua]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic opcua suite + live smoke under real asyncua
+        env:
+          URML_OPCUA_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/opcua-runtime
+          python -m pytest tests/ -v
+
+  opcua-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [opcua] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/opcua-runtime[opcua]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_opcua_runtime, asyncua, platform; print(\"urml_opcua_runtime + asyncua import OK on\", platform.machine())"
+              cd reference/opcua-runtime
+              python -m pytest tests/test_opcua_adapter.py -q
+            '
+
+  opcua-server-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for OPC UA server-driven e2e
+        run: |
+          # Wiring (calibration step): commit a small asyncua demo
+          # server exposing MoveTo/Grip/SwapTool method nodes, pin the
+          # node mapping in an opcua_adapter.yaml, then with
+          # URML_OPCUA_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[industrial/opcua_cell_positive],
+          #     adapter_factory=lambda: OpcUaAdapter(load_opcua_config(
+          #       "opcua_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A bundled asyncua demo server + node mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opcua-server-e2e-diagnostics
+          path: ~/.cache/urml-opcua
+          retention-days: 14

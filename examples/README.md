@@ -31,8 +31,16 @@ examples/
 │   ├── bridge-survey.*             # Structure survey (scan/hover/measure).
 │   ├── parallel-watch.*            # Layer-3: parallel (first_to_succeed) + wait_for.
 │   └── link-aware-patrol.*         # Layer-1: connectivity block + link-loss envelope.
-└── industrial/                 industrial-profile programs (v0.1).
-    └── simple-pick-and-place.*     # MVP pick-place cycle.
+├── industrial/                 industrial-profile programs (v0.1).
+│   └── simple-pick-and-place.*     # MVP pick-place cycle.
+├── legged/                     legged programs (home profile; RFC-0009 quadruped).
+│   └── spot-patrol.*               # MVP nav-only quadruped patrol.
+├── humanoid/                   humanoid programs (home profile; RFC-0009 biped, locomotion subset).
+│   └── digit-patrol.*              # MVP nav-only biped patrol.
+├── mobile/                     wheeled-AMR programs (home profile).
+│   └── husky-patrol.*              # MVP nav-only AMR patrol.
+└── marine/                     underwater programs (home profile; MAVLink, zero ROS).
+    └── reef-survey.*               # MVP nav-only underwater survey.
 ```
 
 ## Pairing convention
@@ -66,6 +74,10 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 | [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock); `patient-fetch` (retry/branch). | Additional home scenarios land alongside the home-profile spec. |
 | [`drone/`](drone/) | `roof-inspection` (citizen-inspector); `bridge-survey` (scan/hover/measure); `parallel-watch` (parallel); `link-aware-patrol` (connectivity + link-loss). | Additional drone scenarios land alongside the drone-profile spec. |
 | [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
+| [`legged/`](legged/) | `spot-patrol` (nav-only quadruped patrol; RFC-0009). | Additional legged scenarios land alongside the legged runtime. |
+| [`humanoid/`](humanoid/) | `digit-patrol` (nav-only biped patrol; RFC-0009 locomotion subset). | Manipulation scenarios land with the RFC-0010 whole-body work. |
+| [`mobile/`](mobile/) | `husky-patrol` (nav-only AMR patrol, compliant declared parts). | Additional mobile scenarios land alongside the mobile runtime. |
+| [`marine/`](marine/) | `reef-survey` (nav-only underwater survey; MAVLink, zero ROS). | Additional marine scenarios land alongside the marine runtime. |
 
 ## Adding a new example
 
