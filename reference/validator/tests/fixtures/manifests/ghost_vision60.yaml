@@ -1,0 +1,77 @@
+# Fixture: Ghost Robotics Vision 60 — RFC-0009 follow-up manifest.
+# drive_type: quadruped (RFC-0009). Ghost Robotics is a US company
+# (Philadelphia, PA); provenance declares a compliant US origin, so
+# the bundled US-federal default policy (RFC-0004) accepts it.
+#
+# Manifest + spec only: the Vision 60 SDK is access-gated, so there is
+# no reference adapter (same treatment as the no-SDK humanoids
+# Optimus/Figure/Apollo/NEO). This describes a civilian site-inspection
+# robot only — URML does not ship military behavior (CLAUDE.md), so no
+# military profile or primitive is implied by this manifest.
+
+manifest_version: "0.1"
+robot_id: ghost_vision60_1
+description: Four-legged site-inspection robot with a body camera.
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: valve_07
+    pose: { x: 8.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: gauge_panel
+    pose: { x: 8.0, y: 5.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+  - area_clear
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 1.6
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: inspection_cam
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "4k"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - valve
+    - gauge
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - inspection_log
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: vision60_compute
+      role: critical
+      vendor: ghost_robotics
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/vision60_compute.cdx.json
+        sha256: "7777777777777777777777777777777777777777777777777777777777777777"

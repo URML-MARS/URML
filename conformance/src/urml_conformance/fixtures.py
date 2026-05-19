@@ -64,6 +64,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
+    # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
+    "ghost_vision60": _VALIDATOR_FIXTURES / "manifests" / "ghost_vision60.yaml",
     "digit_biped": _VALIDATOR_FIXTURES / "manifests" / "digit_biped.yaml",
     "optimus_biped": _VALIDATOR_FIXTURES / "manifests" / "optimus_biped.yaml",
     "figure_biped": _VALIDATOR_FIXTURES / "manifests" / "figure_biped.yaml",
