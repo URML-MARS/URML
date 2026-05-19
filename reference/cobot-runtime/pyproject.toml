@@ -1,0 +1,83 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urml-cobot-runtime"
+version = "0.1.0"
+description = "Collaborative-arm reference runtime for URML — UR (RTDE) + Franka (FCI), zero ROS."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [{ name = "URML Maintainers" }]
+keywords = ["robotics", "cobot", "universal-robots", "franka", "rtde", "fci", "urml", "runtime"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "pydantic>=2.6,<3",
+  "PyYAML>=6.0,<7",
+  "urml-validator>=0.1.0",
+  "urml-ros2-runtime>=0.1.0",
+]
+
+[project.optional-dependencies]
+# The two most-deployed cobots, driven by their NATIVE SDKs with zero
+# ROS — the proof that the popular real arms need no ROS. The existing
+# industrial-arm-runtime's Ur/Franka adapters compose RclpyAdapter (ROS
+# 2 + MoveIt 2); these are the ROS-free siblings, parallel to how
+# marine-runtime is the ROS-free sibling of ros2-runtime. Both SDKs are
+# imported lazily, so urml_cobot_runtime imports on every host.
+ur = [
+  # Universal Robots RTDE (rtde_control / rtde_receive).
+  "ur_rtde>=1.5,<2",
+]
+franka = [
+  # Franka FCI via panda-py (Apache-2.0; preferred over GPL franky).
+  "panda-python>=0.7",
+]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.5",
+  "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/URML-MARS/URML"
+Repository = "https://github.com/URML-MARS/URML"
+Issues = "https://github.com/URML-MARS/URML/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urml_cobot_runtime"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "ANN", "RUF"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["urml_cobot_runtime"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["-q", "--strict-markers"]
