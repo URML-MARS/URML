@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # URML Profiles
 
 A **profile** is a domain-specific extension to the core URML specification. The core stays small and substrate-neutral; domain richness lives in profiles. This pattern lets URML serve very different settings (a kitchen, a roof inspection, a manufacturing cell) without bloating the core vocabulary.

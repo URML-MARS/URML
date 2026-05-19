@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # ROS 2 Reference Runtime
 
 **Status:** Phase 1 in flight. **Skeleton + substrate Protocol + hermetic MockROSAdapter + end-to-end red-mug execution + full composition (Sequence + Branch + Parallel + Retry) landed** at `0.1.0a0` (pre-alpha). The real `rclpy`-backed adapter is the next milestone.

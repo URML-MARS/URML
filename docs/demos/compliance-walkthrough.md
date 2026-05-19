@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Compliance walkthrough — five minutes, three commands
 
 A demo that shows what URML's compliance enforcement actually does. The same red-mug program from the manifesto, validated against three variants of the same robot's manifest: one fully US-compliant, one with a covered-foreign-country critical component, one with a vendor on the FCC Covered List. Then the `--no-policy` override.

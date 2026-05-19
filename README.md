@@ -1,10 +1,18 @@
 <p align="center">
-  <img src="docs/assets/urml-banner.svg" alt="URML.dev — The Universal Robot Language" width="720" />
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
 </p>
 
-# URML — Universal Robot Language
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
 
-A small, opinionated, human-readable language for describing robot **intent**.
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
+# URML — Universal Robot Language
 
 URML sits above existing robot operating systems (ROS 2, PX4, OPC UA Robotics, vendor SDKs) and lets humans, large language models, and robots share one vocabulary for *what should happen* — independent of which motors, joints, or frames carry it out. Every URML program is statically verified against the robot's declared capabilities, the active safety envelope, and the deployment's compliance policy **before a single actuator moves**.
 

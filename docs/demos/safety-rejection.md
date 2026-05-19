@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Safety-rejection walkthrough — the LLM proposed it, URML refused it
 
 The one-line story behind URML: *a language model can propose an unsafe action, and the system statically refuses it before a single actuator moves — handing back a structured error precise enough to drive an automated correction.*

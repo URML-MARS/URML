@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Validator
 
 **Status:** Phase 1 in flight. **Schemas + four-pass validator + `urml` CLI + JSON Schema export landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and the LLM bridge are the next milestones.

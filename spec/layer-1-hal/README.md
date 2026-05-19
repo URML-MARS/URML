@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # Layer 1 — Hardware Abstraction
 
 **Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the capability-manifest schema (frames, locations, events, mobility, manipulation, perception, docking, outputs) plus the `provenance:` (RFC-0004) and `connectivity:` (RFC-0006) blocks. The Pass-5 compliance policy is specified in [`policy.md`](policy.md). This README is the orientation; `v0.1.0.md` is what a runtime must implement.

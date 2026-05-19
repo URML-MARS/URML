@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://urml.dev"><img src="https://urml.dev/favicon.svg" alt="URML" width="72" height="72"></a>
+</p>
+
+<p align="center">
+  A small, opinionated, human-readable language for describing robot intent.
+</p>
+
+<p align="center">
+  <a href="https://urml.dev"><b>urml.dev</b></a>
+</p>
+
+---
+
 # URML Glossary
 
 Working definitions of terms used across the specification, reference implementations, and conformance suite. This file extends [`MANIFESTO.md`](../MANIFESTO.md) Appendix A and is the authoritative entry when a term appears in any URML document without a local definition.
