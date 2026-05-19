@@ -24,6 +24,14 @@ Useful for: the first thing to show someone who asks "what is URML." It is the
 language doing something, reproducibly, by anyone, not a description of what it
 would do.
 
+<p align="center">
+  <img src="../assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program becomes an executed step-by-step trace, on a hermetic mock." width="760">
+</p>
+
+<p align="center">
+  <sub>The loop below, animated. Every line is real <code>urml</code> output; the substrate is a labelled mock (no robot moved).</sub>
+</p>
+
 ## Prerequisites
 
 - URML installed from a checkout per [Tutorial 1](../tutorials/01-getting-started.md),

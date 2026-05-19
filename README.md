@@ -31,6 +31,14 @@ make demo               # → Validation passed
 make demo-run           # → one English sentence, validated, then executed
 ```
 
+<p align="center">
+  <a href="docs/demos/sentence-to-motion.md"><img src="docs/assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program becomes an executed step-by-step trace, on a hermetic mock — no API key, no robot." width="760"></a>
+</p>
+
+<p align="center">
+  <sub>Exactly what <code>make demo-run</code> prints. Hermetic mock — the language, validator, and executor end to end; no actuator moved. Every line above is real <code>urml</code> output (asserted in CI). <a href="docs/demos/sentence-to-motion.md">walkthrough</a>.</sub>
+</p>
+
 `make demo` validates the canonical red-mug example through all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). `make demo-run` goes further: it turns the English sentence "Bring me the red mug from the kitchen." into a URML program, validates it, and executes it step by step, printing the audit trace. Hermetic, no API key, no robot. No make? `bootstrap.py` prints the exact one-line commands to run instead. `make help` lists the rest (`install-dev`, `test`, `clean`).
 
 Then scaffold your own project:
