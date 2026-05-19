@@ -417,6 +417,67 @@ class ReturnToHomeArgs(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Industrial-profile primitives (RFC-0002 §Profile-extensibility authorizes
+# these; RFC-0013 operationalizes them).
+# ---------------------------------------------------------------------------
+
+
+class PickFromArgs(BaseModel):
+    """Pick a detected object from a declared station (industrial profile).
+
+    Convenience over `move_to(source) + detect(object) + grasp($target)` for
+    the most-common industrial pattern. Produces an `object` binding (same
+    shape as `detect`) so `place_at.held` can reference it.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: Identifier
+    object: Identifier
+    attributes: DetectAttributes | None = None
+    force: Force | Literal["gentle", "firm"] | float | None = None
+    store_as: Identifier | None = None
+
+
+class PlaceAtArgs(BaseModel):
+    """Place a held object at a declared station (industrial profile).
+
+    Symmetric to `pick_from`; convenience over `move_to(target) +
+    release(mode: place|drop)`. `held` is a `$ref` to a prior `pick_from`
+    (or `detect`) binding.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    target: Identifier
+    held: VarRef
+    mode: Literal["place", "drop"] = "place"
+    height: float | None = Field(None, ge=0)
+
+    @model_validator(mode="after")
+    def _height_iff_drop(self) -> PlaceAtArgs:
+        if self.height is not None and self.mode != "drop":
+            raise ValueError("place_at.height is only allowed when mode == 'drop'")
+        return self
+
+
+class SwapToolArgs(BaseModel):
+    """Change the end-of-arm tool at a declared tool-change station
+    (industrial profile).
+
+    Dispatches through the existing docking-station service mechanism: the
+    station named by `at` must declare a `swap_tool` service. The
+    `accepted_tools` per-station manifest field is deferred, so `to` is not
+    validated against an accepted-tool list in v0.1 (see RFC-0013).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    at: Identifier
+    to: Identifier
+
+
+# ---------------------------------------------------------------------------
 # Registry of primitive names -> arg-model classes.
 # ---------------------------------------------------------------------------
 
@@ -438,6 +499,9 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "take_off",
     "land",
     "return_to_home",
+    "pick_from",
+    "place_at",
+    "swap_tool",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -458,4 +522,7 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "take_off": TakeOffArgs,
     "land": LandArgs,
     "return_to_home": ReturnToHomeArgs,
+    "pick_from": PickFromArgs,
+    "place_at": PlaceAtArgs,
+    "swap_tool": SwapToolArgs,
 }

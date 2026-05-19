@@ -45,6 +45,11 @@ def red_mug_program() -> dict:
     return _load_yaml(EXAMPLES_ROOT / "home" / "red-mug.urml.yaml")
 
 
+@pytest.fixture
+def industrial_cell_manifest() -> dict:
+    return _load_yaml(FIXTURE_ROOT / "manifests" / "industrial_cell.yaml")
+
+
 # ---------------------------------------------------------------------------
 # End-to-end: the canonical example is accepted.
 # ---------------------------------------------------------------------------
@@ -211,6 +216,104 @@ def test_unknown_docking_service(
         },
     }
     result = validate(program, turtlebot_manifest, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_DOCKING_SERVICE)
+
+
+# ---------------------------------------------------------------------------
+# Industrial-profile primitives (RFC-0013): pick_from / place_at / swap_tool
+# ---------------------------------------------------------------------------
+
+
+def _industrial_seq(*steps: dict) -> dict[str, Any]:
+    return {
+        "profile": "industrial",
+        "behavior": {"type": "sequence", "on_error": "abort_and_report",
+                     "steps": list(steps)},
+    }
+
+
+def test_pick_from_place_at_swap_tool_accepted(
+    industrial_cell_manifest: dict,
+) -> None:
+    """The canonical RFC-0013 happy path validates against the industrial cell."""
+    program = _industrial_seq(
+        {"wait_for": {"condition": {"event": "safety_door_closed"}}},
+        {"swap_tool": {"at": "tool_change_station", "to": "gripper_wide"}},
+        {"pick_from": {"source": "pick_bin", "object": "widget_red",
+                       "attributes": {"color": "red"}, "force": "firm",
+                       "store_as": "red_widget"}},
+        {"place_at": {"target": "kitting_tray_red", "held": "$red_widget"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_pick_from_undeclared_source_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    program = _industrial_seq(
+        {"pick_from": {"source": "no_such_bin", "object": "widget_red",
+                       "store_as": "w"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_LOCATION)
+
+
+def test_pick_from_undeclared_object_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    program = _industrial_seq(
+        {"pick_from": {"source": "pick_bin", "object": "widget_purple",
+                       "store_as": "w"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_OBJECT_CLASS)
+
+
+def test_place_at_held_must_resolve_to_an_object(
+    industrial_cell_manifest: dict,
+) -> None:
+    """place_at.held referencing an unbound name is a binding error."""
+    program = _industrial_seq(
+        {"place_at": {"target": "kitting_tray_red", "held": "$nope"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.BINDING_UNRESOLVED_REFERENCE)
+
+
+def test_swap_tool_undeclared_station_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    program = _industrial_seq(
+        {"swap_tool": {"at": "pick_bin", "to": "gripper_wide"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_DOCKING_STATION)
+
+
+def test_swap_tool_station_without_service_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    """A docking station that does not declare `swap_tool` is rejected."""
+    industrial_cell_manifest["docking_stations"] = [
+        {"name": "park_only", "pose": {"x": 0.0, "y": 0.0, "z": 0.0},
+         "frame": "cell", "services": ["park"]}
+    ]
+    program = _industrial_seq(
+        {"swap_tool": {"at": "park_only", "to": "gripper_wide"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
     assert not result.accepted
     assert result.has(ErrorCode.CAPABILITY_MISSING_DOCKING_SERVICE)
 

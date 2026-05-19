@@ -72,7 +72,11 @@ perception:
     - widget_blue
     - small_part
 
-docking_stations: []
+docking_stations:
+  - name: tool_change_station
+    pose: { x: 0.2, y: 0.5, z: 0.20 }
+    frame: cell
+    services: [swap_tool, park]   # swap_tool: RFC-0013 end-of-arm tool change
 
 outputs:
   named_endpoints:
