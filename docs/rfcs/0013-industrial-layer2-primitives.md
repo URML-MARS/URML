@@ -2,7 +2,7 @@
 rfc: 0013
 title: Industrial-profile Layer-2 primitives — pick_from, place_at, swap_tool
 author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+state: Implemented
 created: 2026-05-19
 updated: 2026-05-19
 supersedes: —
