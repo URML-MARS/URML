@@ -124,7 +124,10 @@ The fixture is picked up automatically by `discover_fixtures()` and exercised by
 
 ## What's in the v0.1 fixture set
 
-7 cases shipping today:
+A representative selection (the full set is discovered automatically from
+`conformance/fixtures/**/*.yaml` by `discover_fixtures()` and has grown well
+beyond the rows below as profiles and runtimes landed — run `urml conformance
+run` for the live count):
 
 | Fixture | Exercises |
 |---|---|
@@ -134,7 +137,10 @@ The fixture is picked up automatically by `discover_fixtures()` and exercised by
 | `home/branch_on_color` | Branch composition + `$ref.field.subfield` condition evaluation. |
 | `home/retry_until_confidence` | Retry composition with `until` short-circuit. |
 | `home/parallel_first_to_succeed` | Parallel composition with `first_to_succeed` mode. |
-| `industrial/pick_red_positive` | Industrial-profile pick-and-place; structured report to line controller. |
+| `industrial/pick_red_positive` | Industrial pick-and-place written with the core twelve (composition-equivalent). |
+| `industrial/pick_from_positive` | RFC-0013: `pick_from` + `place_at`; the picked-object binding flows between them. |
+| `industrial/swap_tool_positive` | RFC-0013: `swap_tool` rides the docking-service path (`send_docking_goal`). |
+| `industrial/swap_tool_undeclared_service_rejected` | RFC-0013 negative: `swap_tool` at a non-station → `capability.missing_docking_station`. |
 
 ## Related documents
 
