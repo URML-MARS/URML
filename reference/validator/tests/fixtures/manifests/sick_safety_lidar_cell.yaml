@@ -1,0 +1,83 @@
+# Fixture: industrial cell with a SICK microScan3 safety laser scanner.
+# Vendor: sick (DE, allied; not on denylist). Exercises perception.sensors
+# with measurement_type: distance for area-monitoring. Default policy ACCEPTS.
+
+manifest_version: "0.1"
+robot_id: sick_safety_lidar_cell_1
+description: Pick-and-place cell with a SICK microScan3 area-monitoring safety laser scanner.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+  - safety_field_violation
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: sick_microscan3_safety
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 9.0
+      units: m
+  object_vocabulary:
+    - widget
+    - widget_red
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: sick_microscan3_safety_scanner
+      role: critical
+      vendor: sick
+      country_of_origin: DE
+      country_of_final_assembly: DE
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/sick_microscan3.cdx.json
+        sha256: "0707070707070707070707070707070707070707070707070707070707070707"

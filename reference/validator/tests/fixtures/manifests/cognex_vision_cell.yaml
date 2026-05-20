@@ -1,0 +1,91 @@
+# Fixture: industrial cell with a Cognex In-Sight 2800 vision sensor.
+# Vendor: cognex (US, compliant origin; not on denylist). Exercises
+# perception.cameras with supports_photo. Default policy ACCEPTS.
+
+manifest_version: "0.1"
+robot_id: cognex_vision_cell_1
+description: Pick-and-place cell with a Cognex In-Sight 2800 industrial vision camera.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+  - name: inspection_station
+    pose: { x: 0.0, y: 0.4, z: 0.20 }
+    frame: cell
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: cognex_insight_2800
+      movable: false
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "2.3mp"
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: cognex_insight_2800_vision
+      role: critical
+      vendor: cognex
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/cognex_insight_2800.cdx.json
+        sha256: "f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6"
