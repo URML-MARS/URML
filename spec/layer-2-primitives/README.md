@@ -14,7 +14,7 @@
 
 # Layer 2 — Intent Primitives
 
-**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — seventeen primitives (twelve core + five profile-scoped), transcribed from the [RFC-0002](../../docs/rfcs/0002-initial-primitive-vocabulary.md) decision record. This README is the orientation; `v0.1.0.md` is what a runtime must implement.
+**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — twenty primitives (twelve core + eight profile-scoped), transcribed from [RFC-0002](../../docs/rfcs/0002-initial-primitive-vocabulary.md) (the initial seventeen) and extended by [RFC-0013](../../docs/rfcs/0013-industrial-layer2-primitives.md) (`pick_from`, `place_at`, `swap_tool` for the industrial profile). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
 
 ## Purpose
 
