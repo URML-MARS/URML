@@ -24,10 +24,15 @@ from __future__ import annotations
 from urml_industrial_arm_runtime._version import __version__
 from urml_industrial_arm_runtime.adapter import (
     AbbAdapter,
+    ComauAdapter,
+    DensoAdapter,
     FanucAdapter,
     FrankaAdapter,
     IndustrialArmAdapter,
+    KawasakiAdapter,
     KukaAdapter,
+    MitsubishiAdapter,
+    StaubliAdapter,
     UrAdapter,
     YaskawaAdapter,
 )
@@ -39,15 +44,25 @@ BRAND_ADAPTERS: dict[str, type[IndustrialArmAdapter]] = {
     "yaskawa": YaskawaAdapter,
     "ur": UrAdapter,
     "franka": FrankaAdapter,
+    "kawasaki": KawasakiAdapter,
+    "staubli": StaubliAdapter,
+    "comau": ComauAdapter,
+    "mitsubishi": MitsubishiAdapter,
+    "denso": DensoAdapter,
 }
 
 __all__ = [
     "BRAND_ADAPTERS",
     "AbbAdapter",
+    "ComauAdapter",
+    "DensoAdapter",
     "FanucAdapter",
     "FrankaAdapter",
     "IndustrialArmAdapter",
+    "KawasakiAdapter",
     "KukaAdapter",
+    "MitsubishiAdapter",
+    "StaubliAdapter",
     "UrAdapter",
     "YaskawaAdapter",
     "__version__",

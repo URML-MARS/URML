@@ -78,6 +78,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ati_ft_cell": _VALIDATOR_FIXTURES / "manifests" / "ati_ft_cell.yaml",
     "cognex_vision_cell": _VALIDATOR_FIXTURES / "manifests" / "cognex_vision_cell.yaml",
     "sick_safety_lidar_cell": _VALIDATOR_FIXTURES / "manifests" / "sick_safety_lidar_cell.yaml",
+    # Track A — additional ROS-Industrial arm brands (all allied origins).
+    "kawasaki_cell": _VALIDATOR_FIXTURES / "manifests" / "kawasaki_cell.yaml",
+    "staubli_cell": _VALIDATOR_FIXTURES / "manifests" / "staubli_cell.yaml",
+    "comau_cell": _VALIDATOR_FIXTURES / "manifests" / "comau_cell.yaml",
+    "mitsubishi_cell": _VALIDATOR_FIXTURES / "manifests" / "mitsubishi_cell.yaml",
+    "denso_cell": _VALIDATOR_FIXTURES / "manifests" / "denso_cell.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
