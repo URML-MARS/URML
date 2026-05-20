@@ -53,6 +53,51 @@ class _FakePanda:
         pass
 
 
+class _FakeDoosanRobot:
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        self.moves: list[Any] = []
+
+    def movel(self, vec: Any, speed: float) -> None:
+        self.moves.append((vec, speed))
+
+    def get_tool_force(self) -> list[float]:
+        return [9.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def disconnect(self) -> None:
+        pass
+
+
+class _FakeTechmanClient:
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        self.moves: list[Any] = []
+
+    def move_to_point_line(self, vec: Any, speed: float) -> None:
+        self.moves.append((vec, speed))
+
+    def get_tcp_force(self) -> list[float]:
+        return [4.4, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def disconnect(self) -> None:
+        pass
+
+
+class _FakeKinovaBase:
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        self.poses: list[Any] = []
+
+    def send_pose_command(self, vec: Any, speed: float) -> None:
+        self.poses.append((vec, speed))
+
+    def get_tool_external_wrench(self) -> list[float]:
+        return [6.6, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def disconnect(self) -> None:
+        pass
+
+
 @pytest.fixture
 def fake_sdks() -> Iterator[None]:
     rc = ModuleType("rtde_control")
@@ -61,11 +106,20 @@ def fake_sdks() -> Iterator[None]:
     rr.RTDEReceiveInterface = _FakeRtdeReceive  # type: ignore[attr-defined]
     pp = ModuleType("panda_py")
     pp.Panda = _FakePanda  # type: ignore[attr-defined]
-    keys = ("rtde_control", "rtde_receive", "panda_py")
+    drfl = ModuleType("DRFL")
+    drfl.Robot = _FakeDoosanRobot  # type: ignore[attr-defined]
+    tm = ModuleType("techmanpy")
+    tm.connect_sct = lambda ip: _FakeTechmanClient(ip)  # type: ignore[attr-defined]
+    kx = ModuleType("kortex_api")
+    kx.BaseClient = _FakeKinovaBase  # type: ignore[attr-defined]
+    keys = ("rtde_control", "rtde_receive", "panda_py", "DRFL", "techmanpy", "kortex_api")
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["rtde_control"] = rc
     sys.modules["rtde_receive"] = rr
     sys.modules["panda_py"] = pp
+    sys.modules["DRFL"] = drfl
+    sys.modules["techmanpy"] = tm
+    sys.modules["kortex_api"] = kx
     try:
         yield
     finally:
@@ -109,6 +163,45 @@ def test_franka_adapter_lifecycle(fake_sdks: None) -> None:
         assert meas.success and meas.payload is not None and meas.payload["value"] == 3.3
 
 
+def test_doosan_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, DoosanDrflAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"pick": Pose(vector=[0.4, -0.3, 0.1, 0.0, 3.14, 0.0])})
+    with DoosanDrflAdapter(cfg) as dr:
+        assert isinstance(dr, ROSAdapter)
+        assert dr.send_navigation_goal(location="pick").success
+        assert dr.send_manipulation_goal(action="grasp", force_n=8.0).success
+        meas = dr.take_measurement(what="tcp_force", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 9.1
+
+
+def test_techman_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, TechmanTmflowAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"pick": Pose(vector=[0.4, -0.3, 0.1, 0.0, 3.14, 0.0])})
+    with TechmanTmflowAdapter(cfg) as tm:
+        assert isinstance(tm, ROSAdapter)
+        assert tm.send_navigation_goal(location="pick").success
+        assert tm.send_manipulation_goal(action="release").success
+        meas = tm.take_measurement(what="tcp_force", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 4.4
+
+
+def test_kinova_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, KinovaKortexAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"home": Pose(vector=[0.0, 0.0, 0.5, 0.0, 0.0, 0.0])})
+    with KinovaKortexAdapter(cfg) as kx:
+        assert isinstance(kx, ROSAdapter)
+        assert kx.send_navigation_goal(location="home").success
+        assert kx.send_manipulation_goal(action="grasp").success
+        meas = kx.take_measurement(what="ext_wrench", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 6.6
+
+
 def test_unsupported_and_not_applicable_sentinels(fake_sdks: None) -> None:
     from urml_cobot_runtime import UrRtdeAdapter
 
@@ -125,21 +218,41 @@ def test_unsupported_and_not_applicable_sentinels(fake_sdks: None) -> None:
 
 def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     """Construction is cheap; the clear error fires on first use without the extra."""
-    from urml_cobot_runtime import FrankaFciAdapter, UrRtdeAdapter
+    from urml_cobot_runtime import (
+        DoosanDrflAdapter,
+        FrankaFciAdapter,
+        KinovaKortexAdapter,
+        TechmanTmflowAdapter,
+        UrRtdeAdapter,
+    )
 
-    monkeypatch.setitem(sys.modules, "rtde_control", None)
-    monkeypatch.setitem(sys.modules, "rtde_receive", None)
-    monkeypatch.setitem(sys.modules, "panda_py", None)
+    for mod in ("rtde_control", "rtde_receive", "panda_py", "DRFL", "techmanpy", "kortex_api"):
+        monkeypatch.setitem(sys.modules, mod, None)
     with pytest.raises(RuntimeError, match=r"\[ur\] extra"):
         UrRtdeAdapter().send_navigation_goal(pose={"x": 0.0})
     with pytest.raises(RuntimeError, match=r"\[franka\] extra"):
         FrankaFciAdapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[doosan\] extra"):
+        DoosanDrflAdapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[techman\] extra"):
+        TechmanTmflowAdapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[kinova\] extra"):
+        KinovaKortexAdapter().send_navigation_goal(pose={"x": 0.0})
 
 
 def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:
     from urml_conformance import ConformanceRunner
 
-    from urml_cobot_runtime import FrankaFciAdapter, UrRtdeAdapter
+    from urml_cobot_runtime import (
+        DoosanDrflAdapter,
+        FrankaFciAdapter,
+        KinovaKortexAdapter,
+        TechmanTmflowAdapter,
+        UrRtdeAdapter,
+    )
 
     assert ConformanceRunner(adapter_factory=lambda: UrRtdeAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: FrankaFciAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: DoosanDrflAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: TechmanTmflowAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: KinovaKortexAdapter()) is not None

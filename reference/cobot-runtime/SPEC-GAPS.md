@@ -9,12 +9,15 @@ maintainer decision — never a silent primitive/schema change.
 
 - **RFC-0017 — digital-I/O actuation.** Cobots fire end-effectors and
   signal PLCs by writing raw digital-output pins (UR `setStandardDigitalOut`,
-  Franka FCI I/O). A raw DO write is not `grasp` (it may be a glue gun,
-  a blow-off, a conveyor handshake), not `report`, and not a station
+  Franka FCI I/O, **Doosan DRFL DO, Techman TMflow `set_digital_output`,
+  Kinova Kortex GPIO**). A raw DO write is not `grasp` (it may be a glue
+  gun, a blow-off, a conveyor handshake), not `report`, and not a station
   service (so RFC-0013's `swap_tool`-rides-`send_docking_goal`
   precedent does not apply). No existing primitive composes it. Filed
   as RFC-0017 (Draft); until decided, the adapters do not expose raw
-  I/O and `grasp`/`release` remain the only effector verbs.
+  I/O and `grasp`/`release` remain the only effector verbs. Track B's
+  three new adapters (Doosan, Techman, Kinova) all surface the **same**
+  gap as UR/Franka — cross-referenced here; **no new RFC**.
 
 ## Composable / watch-item (no RFC)
 

@@ -84,6 +84,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "comau_cell": _VALIDATOR_FIXTURES / "manifests" / "comau_cell.yaml",
     "mitsubishi_cell": _VALIDATOR_FIXTURES / "manifests" / "mitsubishi_cell.yaml",
     "denso_cell": _VALIDATOR_FIXTURES / "manifests" / "denso_cell.yaml",
+    # Track B — additional zero-ROS cobots (all allied origins).
+    "doosan_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "doosan_cobot_cell.yaml",
+    "techman_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "techman_cobot_cell.yaml",
+    "kinova_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "kinova_cobot_cell.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.

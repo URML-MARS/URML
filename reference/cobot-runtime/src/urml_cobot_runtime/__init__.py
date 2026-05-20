@@ -19,14 +19,20 @@ from __future__ import annotations
 from urml_cobot_runtime._version import __version__
 from urml_cobot_runtime.adapter import (
     CobotConfig,
+    DoosanDrflAdapter,
     FrankaFciAdapter,
+    KinovaKortexAdapter,
+    TechmanTmflowAdapter,
     UrRtdeAdapter,
     load_cobot_config,
 )
 
 __all__ = [
     "CobotConfig",
+    "DoosanDrflAdapter",
     "FrankaFciAdapter",
+    "KinovaKortexAdapter",
+    "TechmanTmflowAdapter",
     "UrRtdeAdapter",
     "__version__",
     "load_cobot_config",
