@@ -59,10 +59,20 @@ from urml_industrial_arm_runtime._version import __version__
 
 __all__ = [
     "AbbAdapter",
+    "ComauAdapter",
+    "DensoAdapter",
+    "EpsonAdapter",
     "FanucAdapter",
     "FrankaAdapter",
+    "HanwhaAdapter",
+    "HyundaiAdapter",
     "IndustrialArmAdapter",
+    "KawasakiAdapter",
     "KukaAdapter",
+    "MitsubishiAdapter",
+    "NachiAdapter",
+    "OmronAdapter",
+    "StaubliAdapter",
     "UrAdapter",
     "YaskawaAdapter",
     "__version__",
@@ -93,6 +103,11 @@ _BRAND_GRIPPER_SERVER = {
     "comau": "/comau/gripper/gripper_cmd",  # Comau ROS 2 driver — `comau_ros2_driver`.
     "mitsubishi": "/melfa/gripper/gripper_cmd",  # Mitsubishi Electric MELFA — `melfa_ros2`.
     "denso": "/denso/gripper/gripper_cmd",  # Denso — `denso_robot_ros2`.
+    "hyundai": "/hyundai/gripper/gripper_cmd",  # Hyundai Robotics — `hyundai_robot_ros2`.
+    "nachi": "/nachi/gripper/gripper_cmd",  # Nachi-Fujikoshi — `nachi_robot_ros2`.
+    "epson": "/epson/gripper/gripper_cmd",  # Seiko Epson — `epson_robot_ros2`.
+    "omron": "/omron/gripper/gripper_cmd",  # Omron (Adept legacy) — `omron_industrial_robot`.
+    "hanwha": "/hanwha/gripper/gripper_cmd",  # Hanwha HCR cobot via ROS — `hanwha_hcr_ros2`.
 }
 
 InnerFactory = Callable[[], ROSAdapter]
@@ -430,3 +445,54 @@ class DensoAdapter(IndustrialArmAdapter):
     """
 
     BRAND = "denso"
+
+
+class HyundaiAdapter(IndustrialArmAdapter):
+    """Hyundai Robotics arm via ``hyundai_robot_ros2`` + MoveIt 2.
+
+    South Korea-made — passes the default US-federal policy (KR allied
+    origin; not on the denylist).
+    """
+
+    BRAND = "hyundai"
+
+
+class NachiAdapter(IndustrialArmAdapter):
+    """Nachi-Fujikoshi arm via ``nachi_robot_ros2`` + MoveIt 2.
+
+    Japan-made — passes the default US-federal policy.
+    """
+
+    BRAND = "nachi"
+
+
+class EpsonAdapter(IndustrialArmAdapter):
+    """Seiko Epson SCARA / 6-axis arm via ``epson_robot_ros2`` + MoveIt 2.
+
+    Japan-made — passes the default US-federal policy.
+    """
+
+    BRAND = "epson"
+
+
+class OmronAdapter(IndustrialArmAdapter):
+    """Omron industrial arm (the former Adept line) via ``omron_industrial_robot``
+    ROS-Industrial driver + MoveIt 2.
+
+    Japan-made (Adept Technology was acquired by Omron in 2015) — passes
+    the default US-federal policy.
+    """
+
+    BRAND = "omron"
+
+
+class HanwhaAdapter(IndustrialArmAdapter):
+    """Hanwha HCR collaborative arm via ``hanwha_hcr_ros2`` + MoveIt 2.
+
+    Unlike Doosan/Techman/Kinova (zero-ROS vendor SDKs handled by
+    ``cobot-runtime``), Hanwha publishes a ROS 2 driver shaped exactly
+    like the other ROS-Industrial brands, so it belongs in this runtime.
+    South Korea-made — passes the default US-federal policy.
+    """
+
+    BRAND = "hanwha"

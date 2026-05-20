@@ -93,6 +93,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "comau_cell": _VALIDATOR_FIXTURES / "manifests" / "comau_cell.yaml",
     "mitsubishi_cell": _VALIDATOR_FIXTURES / "manifests" / "mitsubishi_cell.yaml",
     "denso_cell": _VALIDATOR_FIXTURES / "manifests" / "denso_cell.yaml",
+    # Track I-A — more ROS-Industrial arm brands (all allied origins).
+    "hyundai_cell": _VALIDATOR_FIXTURES / "manifests" / "hyundai_cell.yaml",
+    "nachi_cell": _VALIDATOR_FIXTURES / "manifests" / "nachi_cell.yaml",
+    "epson_cell": _VALIDATOR_FIXTURES / "manifests" / "epson_cell.yaml",
+    "omron_cell": _VALIDATOR_FIXTURES / "manifests" / "omron_cell.yaml",
+    "hanwha_cell": _VALIDATOR_FIXTURES / "manifests" / "hanwha_cell.yaml",
     # Track B — additional zero-ROS cobots (all allied origins).
     "doosan_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "doosan_cobot_cell.yaml",
     "techman_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "techman_cobot_cell.yaml",
