@@ -43,6 +43,18 @@ franka = [
   # Franka FCI via panda-py (Apache-2.0; preferred over GPL franky).
   "panda-python>=0.7",
 ]
+doosan = [
+  # Doosan DRFL native Python SDK (no ROS). KR allied origin.
+  "DRFL>=2.7",
+]
+techman = [
+  # Techman TMflow native Python client (Listen Node TCP). TW allied origin.
+  "techmanpy>=0.7",
+]
+kinova = [
+  # Kinova Kortex Python API (Apache-2.0). CA allied origin.
+  "kortex-api>=2.6",
+]
 dev = [
   "pytest>=8",
   "pytest-cov>=5",

@@ -58,7 +58,7 @@ jobs:
           pip install \
             -e reference/validator \
             -e reference/ros2-runtime \
-            -e "reference/cobot-runtime[ur,franka]" \
+            -e "reference/cobot-runtime[ur,franka,doosan,techman,kinova]" \
             -e conformance \
             "pytest>=8"
 

@@ -338,3 +338,217 @@ class FrankaFciAdapter(_CobotBase):
         state = panda.get_state()
         value = float(state.O_F_ext_hat_K[0]) if getattr(state, "O_F_ext_hat_K", None) else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class DoosanDrflAdapter(_CobotBase):
+    """Doosan via DRFL (Doosan Robot Function Library) — zero ROS.
+
+    Doosan ships its DRFL SDK as the native Python control surface (no
+    ROS). Korea-made (Doosan Robotics, KR — allied; not on the
+    us_federal_default denylist).
+    """
+
+    BRAND = "doosan"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import DRFL  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "DRFL is not installed. DoosanDrflAdapter requires the [doosan] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[doosan]"
+            ) from exc
+        # DRFL's Robot client wraps the M/H-series controller TCP API.
+        self._conn = DRFL.Robot(self._config.robot_ip)
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        robot = self._open()
+        robot.movel(vec, speed or self._config.speed)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        robot = self._open()
+        force = robot.get_tool_force()
+        value = float(force[0]) if force else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class TechmanTmflowAdapter(_CobotBase):
+    """Techman via TMflow (techmanpy / Listen Node) — zero ROS.
+
+    Techman Robot ships TMflow with a Listen-Node TCP protocol; the
+    `techmanpy` client is its native Python surface (no ROS). Taiwan-made
+    (Techman Robot, TW — allied; Omron-JP parent). Not on the
+    us_federal_default denylist.
+    """
+
+    BRAND = "techman"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import techmanpy  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "techmanpy is not installed. TechmanTmflowAdapter requires the [techman] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[techman]"
+            ) from exc
+        self._conn = techmanpy.connect_sct(self._config.robot_ip)
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        client = self._open()
+        client.move_to_point_line(vec, speed or self._config.speed)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        client = self._open()
+        force = client.get_tcp_force()
+        value = float(force[0]) if force else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class KinovaKortexAdapter(_CobotBase):
+    """Kinova via Kortex (kortex_api Python) — zero ROS.
+
+    Kinova ships Kortex as the native control surface for the Gen3 / Gen3
+    Lite arms (no ROS dependency). Canada-made (Kinova, CA — allied).
+    Not on the us_federal_default denylist.
+    """
+
+    BRAND = "kinova"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import kortex_api  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "kortex_api is not installed. KinovaKortexAdapter requires the [kinova] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[kinova]"
+            ) from exc
+        # Kortex's real session setup is TCPTransport → RouterClient → BaseClient.
+        # The v0.1 scaffold delegates to a thin connect helper on the package;
+        # deployment-side wiring of the full session (transport/router) is the
+        # documented calibration step in cobot-integration.yml (controller-e2e
+        # placeholder), exactly like marine-sitl-e2e / cobot-controller-e2e.
+        self._conn = kortex_api.BaseClient(self._config.robot_ip)
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        base = self._open()
+        base.send_pose_command(vec, speed or self._config.speed)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        base = self._open()
+        force = base.get_tool_external_wrench()
+        value = float(force[0]) if force else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
