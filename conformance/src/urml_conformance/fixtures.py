@@ -88,6 +88,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "doosan_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "doosan_cobot_cell.yaml",
     "techman_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "techman_cobot_cell.yaml",
     "kinova_cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "kinova_cobot_cell.yaml",
+    # Track D — educational platforms (zero ROS, vendor SDKs, RFC-0011).
+    "vex_v5_clawbot": _VALIDATOR_FIXTURES / "manifests" / "vex_v5_clawbot.yaml",
+    "lego_spike_driving_base": _VALIDATOR_FIXTURES / "manifests" / "lego_spike_driving_base.yaml",
+    "thymio_classroom": _VALIDATOR_FIXTURES / "manifests" / "thymio_classroom.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.

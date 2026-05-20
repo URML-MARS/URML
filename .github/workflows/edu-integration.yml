@@ -1,0 +1,133 @@
+# Gated educational-platform integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   edu-smoke         — install the real vendor SDKs ([vex] + [lego] +
+#   [thymio] extras) and run the hermetic edu suite + the live smoke
+#   under them. Fast, no board. The classroom analog of
+#   cobot-integration's cobot-smoke.
+#
+#   edu-arm64-build  — the hermetic suite under linux/arm64 QEMU. The
+#   adapters are pure Python over vendor SDKs with no CUDA/Jetson APIs,
+#   so emulation is a faithful proxy for our code on a Jetson-class
+#   classroom host. Mirrors cobot-arm64-build. Not a hardware claim.
+#   (vendor SDKs may need a source build under arm64; build-essential
+#   is installed below to tolerate that. The hermetic suite fakes the
+#   modules in sys.modules so it passes even when an SDK fails to
+#   wheel-build under arm64 — that is the point.)
+#
+#   edu-board-e2e    — the real end-to-end: an edu conformance fixture
+#   driven by a live adapter against a real VEX V5 brain / LEGO hub /
+#   Thymio. Heavy, best-effort.
+#
+# HONESTY NOTE: the board-e2e below was authored without a real
+# classroom board. The adapter + fixtures are exercised hermetically
+# (MockROSAdapter) on every PR; the board-driven run needs real
+# hardware (or a vendor simulator) and a command mapping pinned in
+# edu_adapter.yaml. The job fails loudly until wired — exactly the
+# cobot-controller-e2e / marine-sitl-e2e convention.
+
+name: edu-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 18:00 UTC (staggered after cobot 15:00, marine 12:00).
+    - cron: '0 18 * * 1'
+
+jobs:
+  edu-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv build-essential
+
+      - name: Install URML packages + real edu SDKs
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/edu-runtime[vex,lego,thymio]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic edu suite + live smoke under real SDKs
+        env:
+          URML_EDU_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/edu-runtime
+          python -m pytest tests/ -v
+
+  edu-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install the stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc g++ python3-dev
+              python -m pip install -U pip
+              # Hermetic suite fakes the SDK modules, so it runs under
+              # arm64 with [vex]/[lego]/[thymio] wheels ABSENT — that is
+              # the point (our pure-Python code on a Jetson-class
+              # board), not a real-SDK arm64 build claim.
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e reference/edu-runtime \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_edu_runtime, platform; print(\"urml_edu_runtime import OK (vendor SDKs lazy/absent) on\", platform.machine())"
+              cd reference/edu-runtime
+              python -m pytest tests/test_edu_adapters.py -q
+            '
+
+  edu-board-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for VEX/LEGO/Thymio board-driven e2e
+        run: |
+          # Wiring (calibration step): flash a real VEX V5 / LEGO SPIKE
+          # / Thymio with the demo program, point at it (USB, BLE, or
+          # TDM), pin the command mapping in an edu_adapter.yaml, then
+          # with URML_EDU_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[educational/<platform>_patrol_positive],
+          #     adapter_factory=lambda: VexV5Adapter(load_edu_config(
+          #       "edu_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A real classroom board + firmware command set is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: edu-board-e2e-diagnostics
+          path: ~/.cache/urml-edu
+          retention-days: 14

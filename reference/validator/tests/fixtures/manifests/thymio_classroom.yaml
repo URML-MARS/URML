@@ -1,0 +1,75 @@
+# Fixture: Thymio classroom buggy via tdmclient; Mobsya, CH.
+# Substrate = urml-edu-runtime, zero ROS. RFC-0011 educational flywheel.
+# Differential drive is honest for the two-motor buggy form factor; raw
+# LED/buzzer actuation is the RFC-0017 gap, minimal sensor-only nodes are
+# the RFC-0018 gap, both cross-referenced (no new RFC). Default policy ACCEPTS.
+# ACCEPTS it (nothing to deny) — as turtlebot4_home / spot_quadruped do.
+
+manifest_version: "0.1"
+robot_id: thymio_classroom_1
+description: "Thymio classroom buggy via tdmclient; Mobsya, CH."
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: start_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+  - name: waypoint_a
+    pose: { x: 0.5, y: 0.0 }
+    frame: floor
+  - name: home_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+
+declared_events:
+  - line_detected
+  - button_pressed
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.2
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_servo
+      kind: servo_electric
+      force_min_n: 0.1
+      force_max_n: 2.0
+      accepted_classes: [block, ball]
+      movable: false
+  reachable_workspace_m: 0.08
+
+perception:
+  sensors:
+    - name: light
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 1023.0
+      units: adc
+  object_vocabulary:
+    - block
+    - ball
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: thymio_classroom_controller
+      role: critical
+      vendor: mobsya
+      country_of_origin: CH
+      country_of_final_assembly: CH
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/thymio_classroom.cdx.json
+        sha256: "6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d"
+
+outputs:
+  named_endpoints:
+    - classroom_log
