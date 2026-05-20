@@ -1,0 +1,31 @@
+name: educational/lego_patrol_positive
+description: >
+  Track D educational fixture — LEGO SPIKE driving base (zero-ROS, native vendor SDK).
+  RFC-0011 educational profile; URML scales DOWN to a classroom platform.
+  Manifest ACCEPTED under the bundled US-federal default policy (allied
+  origin). Navigation-only patrol against MockROSAdapter; adapter-
+  agnostic for the edu-runtime's Lego-prefixed adapter.
+
+manifest: lego_spike_driving_base
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: start_mat }
+      - move_to: { location: waypoint_a }
+      - move_to: { location: home_mat }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal
