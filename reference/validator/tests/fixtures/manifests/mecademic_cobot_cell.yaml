@@ -1,0 +1,94 @@
+# Fixture: a collaborative-arm cell (CA).
+# Substrate = urml-cobot-runtime (mecademic adapter), zero ROS — vendor-native
+# Python SDK (mecademicpy). Built against the frozen v0.1 substrate Protocol per
+# RFC-0014. Vendor token `mecademic` is allied; not on the
+# us_federal_default denylist; the bundled US-federal default policy
+# (RFC-0004) ACCEPTS this manifest.
+
+manifest_version: "0.1"
+robot_id: mecademic_cobot_cell_1
+description: Mecademic Meca500 R3 compact 6-axis cobot via mecademicpy.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+    description: Source bin for unsorted widgets.
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+    description: Destination tray for red widgets.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: electric_2_finger
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 140.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 150.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+docking_stations:
+  - name: tool_change_station
+    pose: { x: 0.2, y: 0.5, z: 0.20 }
+    frame: cell
+    services: [swap_tool, park]
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: cobot_arm_controller
+      role: critical
+      vendor: mecademic
+      country_of_origin: CA
+      country_of_final_assembly: CA
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/mecademic_controller.cdx.json
+        sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"

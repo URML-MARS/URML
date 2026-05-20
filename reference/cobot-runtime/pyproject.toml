@@ -55,6 +55,20 @@ kinova = [
   # Kinova Kortex Python API (Apache-2.0). CA allied origin.
   "kortex-api>=2.6",
 ]
+mecademic = [
+  # Mecademic native Python SDK (Apache-2.0). CA allied origin.
+  "mecademicpy>=2.0",
+]
+neura = [
+  # Neura Robotics native Python SDK. DE allied origin.
+  "neurapy>=0.3",
+]
+kassow = [
+  # Kassow Robots community-maintained Python TCP client. DK allied origin.
+  # Best-effort substitution pin: deployment may swap to a different wheel
+  # (the adapter's hermetic tests fake the module in sys.modules).
+  "kassow-py>=0.1",
+]
 dev = [
   "pytest>=8",
   "pytest-cov>=5",

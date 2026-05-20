@@ -98,6 +98,55 @@ class _FakeKinovaBase:
         pass
 
 
+class _FakeMecademicRobot:
+    def __init__(self) -> None:
+        self.ip: str | None = None
+        self.poses: list[Any] = []
+        self._joints = [0.5, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def Connect(self, ip: str) -> None:  # noqa: N802 — vendor SDK casing
+        self.ip = ip
+
+    def MovePose(self, *vec: float) -> None:  # noqa: N802
+        self.poses.append(vec)
+
+    def GetJoints(self) -> list[float]:  # noqa: N802
+        return self._joints
+
+    def disconnect(self) -> None:
+        pass
+
+
+class _FakeNeuraRobot:
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        self.moves: list[Any] = []
+
+    def move_joint(self, vec: Any, speed: float) -> None:
+        self.moves.append((vec, speed))
+
+    def get_tcp_wrench(self) -> list[float]:
+        return [2.2, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def disconnect(self) -> None:
+        pass
+
+
+class _FakeKassowClient:
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        self.moves: list[Any] = []
+
+    def movej(self, vec: Any, speed: float) -> None:
+        self.moves.append((vec, speed))
+
+    def get_tcp_wrench(self) -> list[float]:
+        return [7.7, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    def disconnect(self) -> None:
+        pass
+
+
 @pytest.fixture
 def fake_sdks() -> Iterator[None]:
     rc = ModuleType("rtde_control")
@@ -112,7 +161,35 @@ def fake_sdks() -> Iterator[None]:
     tm.connect_sct = lambda ip: _FakeTechmanClient(ip)  # type: ignore[attr-defined]
     kx = ModuleType("kortex_api")
     kx.BaseClient = _FakeKinovaBase  # type: ignore[attr-defined]
-    keys = ("rtde_control", "rtde_receive", "panda_py", "DRFL", "techmanpy", "kortex_api")
+    # Mecademic ships as `mecademicpy.robot.Robot` — recreate the subpath.
+    mec_pkg = ModuleType("mecademicpy")
+    mec_robot = ModuleType("mecademicpy.robot")
+    mec_robot.Robot = _FakeMecademicRobot  # type: ignore[attr-defined]
+    mec_pkg.robot = mec_robot  # type: ignore[attr-defined]
+    # Neura ships as `neurapy.robot.Robot` — recreate the subpath.
+    neura_pkg = ModuleType("neurapy")
+    neura_robot = ModuleType("neurapy.robot")
+    neura_robot.Robot = _FakeNeuraRobot  # type: ignore[attr-defined]
+    neura_pkg.robot = neura_robot  # type: ignore[attr-defined]
+    # Kassow ships as `kassow_py.client.KassowClient` — recreate the subpath.
+    kassow_pkg = ModuleType("kassow_py")
+    kassow_client = ModuleType("kassow_py.client")
+    kassow_client.KassowClient = _FakeKassowClient  # type: ignore[attr-defined]
+    kassow_pkg.client = kassow_client  # type: ignore[attr-defined]
+    keys = (
+        "rtde_control",
+        "rtde_receive",
+        "panda_py",
+        "DRFL",
+        "techmanpy",
+        "kortex_api",
+        "mecademicpy",
+        "mecademicpy.robot",
+        "neurapy",
+        "neurapy.robot",
+        "kassow_py",
+        "kassow_py.client",
+    )
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["rtde_control"] = rc
     sys.modules["rtde_receive"] = rr
@@ -120,6 +197,12 @@ def fake_sdks() -> Iterator[None]:
     sys.modules["DRFL"] = drfl
     sys.modules["techmanpy"] = tm
     sys.modules["kortex_api"] = kx
+    sys.modules["mecademicpy"] = mec_pkg
+    sys.modules["mecademicpy.robot"] = mec_robot
+    sys.modules["neurapy"] = neura_pkg
+    sys.modules["neurapy.robot"] = neura_robot
+    sys.modules["kassow_py"] = kassow_pkg
+    sys.modules["kassow_py.client"] = kassow_client
     try:
         yield
     finally:
@@ -202,6 +285,45 @@ def test_kinova_adapter_lifecycle(fake_sdks: None) -> None:
         assert meas.success and meas.payload is not None and meas.payload["value"] == 6.6
 
 
+def test_mecademic_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, MecademicMeca500Adapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"pick": Pose(vector=[100.0, 0.0, 200.0, 0.0, 90.0, 0.0])})
+    with MecademicMeca500Adapter(cfg) as mc:
+        assert isinstance(mc, ROSAdapter)
+        assert mc.send_navigation_goal(location="pick").success
+        assert mc.send_manipulation_goal(action="release").success
+        meas = mc.take_measurement(what="joint_state", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 0.5
+
+
+def test_neura_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, NeuraMairaAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"pick": Pose(vector=[0.4, -0.3, 0.1, 0.0, 3.14, 0.0])})
+    with NeuraMairaAdapter(cfg) as nu:
+        assert isinstance(nu, ROSAdapter)
+        assert nu.send_navigation_goal(location="pick").success
+        assert nu.send_manipulation_goal(action="grasp", force_n=5.0).success
+        meas = nu.take_measurement(what="tcp_wrench", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 2.2
+
+
+def test_kassow_adapter_lifecycle(fake_sdks: None) -> None:
+    from urml_cobot_runtime import CobotConfig, KassowKrAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    cfg = CobotConfig(location_to_pose={"home": Pose(vector=[0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0])})
+    with KassowKrAdapter(cfg) as ks:
+        assert isinstance(ks, ROSAdapter)
+        assert ks.send_navigation_goal(location="home").success
+        assert ks.send_manipulation_goal(action="release").success
+        meas = ks.take_measurement(what="tcp_wrench", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 7.7
+
+
 def test_unsupported_and_not_applicable_sentinels(fake_sdks: None) -> None:
     from urml_cobot_runtime import UrRtdeAdapter
 
@@ -221,12 +343,28 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     from urml_cobot_runtime import (
         DoosanDrflAdapter,
         FrankaFciAdapter,
+        KassowKrAdapter,
         KinovaKortexAdapter,
+        MecademicMeca500Adapter,
+        NeuraMairaAdapter,
         TechmanTmflowAdapter,
         UrRtdeAdapter,
     )
 
-    for mod in ("rtde_control", "rtde_receive", "panda_py", "DRFL", "techmanpy", "kortex_api"):
+    for mod in (
+        "rtde_control",
+        "rtde_receive",
+        "panda_py",
+        "DRFL",
+        "techmanpy",
+        "kortex_api",
+        "mecademicpy",
+        "mecademicpy.robot",
+        "neurapy",
+        "neurapy.robot",
+        "kassow_py",
+        "kassow_py.client",
+    ):
         monkeypatch.setitem(sys.modules, mod, None)
     with pytest.raises(RuntimeError, match=r"\[ur\] extra"):
         UrRtdeAdapter().send_navigation_goal(pose={"x": 0.0})
@@ -238,6 +376,12 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
         TechmanTmflowAdapter().send_navigation_goal(pose={"x": 0.0})
     with pytest.raises(RuntimeError, match=r"\[kinova\] extra"):
         KinovaKortexAdapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[mecademic\] extra"):
+        MecademicMeca500Adapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[neura\] extra"):
+        NeuraMairaAdapter().send_navigation_goal(pose={"x": 0.0})
+    with pytest.raises(RuntimeError, match=r"\[kassow\] extra"):
+        KassowKrAdapter().send_navigation_goal(pose={"x": 0.0})
 
 
 def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:
@@ -246,7 +390,10 @@ def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:
     from urml_cobot_runtime import (
         DoosanDrflAdapter,
         FrankaFciAdapter,
+        KassowKrAdapter,
         KinovaKortexAdapter,
+        MecademicMeca500Adapter,
+        NeuraMairaAdapter,
         TechmanTmflowAdapter,
         UrRtdeAdapter,
     )
@@ -256,3 +403,6 @@ def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:
     assert ConformanceRunner(adapter_factory=lambda: DoosanDrflAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: TechmanTmflowAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: KinovaKortexAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: MecademicMeca500Adapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: NeuraMairaAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: KassowKrAdapter()) is not None
