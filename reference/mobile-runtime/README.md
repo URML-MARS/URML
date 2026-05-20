@@ -16,6 +16,8 @@
 
 **Wheeled-AMR reference runtime for URML** — `HuskyAdapter` and `JackalAdapter` for **Clearpath Husky / Jackal**, the canonical ROS 2 differential-drive research/field bases.
 
+> **Maturity.** Code complete, hermetically unit-tested, and exercised through the conformance runner (compliant-parts and denied-part fixtures). No live Clearpath hardware run; the gated Gazebo sim lane's first run per brand is a calibration run by design. **Not production-ready.** URML's live-verified surface today is the validator, the `make demo` / `make demo-run` loop, and the ROS 2 runtime; this runtime is not yet in that set.
+
 Husky and Jackal speak ROS 2 + Nav2, so each adapter **composes** the ROS 2 runtime's `RclpyAdapter` — the same single-sourced-substrate pattern the industrial-arm, ANYmal, and Digit families use. Distinct first-class classes, brand-scoped not-supported tag, no duplicated Nav2 plumbing. `differential` `drive_type` is already in the v0.1 manifest schema, so this needs no RFC.
 
 ## Method coverage
@@ -41,7 +43,7 @@ runner = ConformanceRunner(adapter_factory=lambda: MOBILE_ADAPTERS["husky"]())
 
 ## Status
 
-**v0.1 (this release):**
+**v0.1 (this release) — code complete and hermetically tested; no live-substrate end-to-end run yet:**
 - `HuskyAdapter` + `JackalAdapter` over a shared `ClearpathAdapter` core (composes `RclpyAdapter`) + `MOBILE_ADAPTERS` registry.
 - Hermetic unit tests: delegation, every not-supported sentinel, the conformance hook, `runtime_checkable` conformance, teardown — no ROS 2 install required.
 - `clearpath_husky` (compliant parts) + `hesai_lidar_denied` (denied part) manifests + `conformance/fixtures/mobile/` positive & negative fixtures, verified through the conformance runner.

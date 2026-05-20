@@ -14,7 +14,7 @@
 
 # ROS 2 Reference Runtime
 
-**Status:** Phase 1 in flight. **Skeleton + substrate Protocol + hermetic MockROSAdapter + end-to-end red-mug execution + full composition (Sequence + Branch + Parallel + Retry) landed** at `0.1.0a0` (pre-alpha). The real `rclpy`-backed adapter is the next milestone.
+**Status:** Phase 0, runtime at `0.1.0a0` (pre-alpha). `RclpyAdapter` (full `ROSAdapter` Protocol via lazy `rclpy`) and the hermetic `MockROSAdapter` are both implemented, with Layer-3 composition (sequence / branch / parallel / retry / on_error) and end-to-end red-mug + nav-patrol execution. The gated live `gazebo-e2e` job — the `home/nav_patrol_positive` conformance fixture run through `ConformanceRunner` with a live `RclpyAdapter` driving a TurtleBot 4 + Nav2 + Gazebo sim — is green across three recorded runs; the `rclpy-smoke` job (real `rclpy`, no sim) is green after the pytest/venv calibration. Run IDs and the full evidence ledger are in [`docs/launch/claims-audit.md`](../../docs/launch/claims-audit.md). This is URML's one live-sim-verified runtime; the other substrate runtimes are unit-tested with their sim/SITL lanes still pending.
 
 ## What this is
 
@@ -52,7 +52,7 @@ declares:
     home: 0.1.0
 ```
 
-## Architecture (planned)
+## Architecture
 
 The runtime is a thin Layer-0 translator with three responsibilities:
 

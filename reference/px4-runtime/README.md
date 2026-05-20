@@ -16,6 +16,8 @@
 
 **PX4 / MAVLink reference runtime for URML** — the second reference substrate, after [urml-ros2-runtime](../ros2-runtime/). Proves URML's substrate-neutrality concretely: this adapter has **no ROS 2 dependency**. It talks MAVLink directly via [pymavlink](https://github.com/ArduPilot/pymavlink) to a PX4 autopilot (real hardware, or PX4 SITL simulator).
 
+> **Maturity.** Code complete; all 15 Protocol methods unit-tested with mocked pymavlink, and `CompositeAdapter` landed. The live PX4 SITL e2e test is authored but has never run on a SITL-capable machine; its first run is a calibration run by design, not a regression signal, and there is no real-hardware HIL yet. **Not production-ready.** URML's live-verified surface today is the validator, the `make demo` / `make demo-run` loop, and the ROS 2 runtime (the one runtime with a green live-sim e2e); this runtime is not yet in that set.
+
 A single reference runtime — no matter how clean — risks the spec accidentally encoding substrate assumptions. A second runtime on an entirely different stack (no rclpy, no Nav2, no ROS topics, just MAVLink frames over UDP/serial) keeps the spec honest. The two reference runtimes share the same `ROSAdapter` Protocol (the "ROS" in the name is vestigial — the Protocol is substrate-neutral) and pass the same conformance fixtures via the `ConformanceRunner.adapter_factory` hook.
 
 ## Method coverage
@@ -107,10 +109,10 @@ report = runner.run()
 
 ## Status
 
-**v0.1 (this release):**
+**v0.1 (this release) — code complete and unit-tested; PX4 SITL e2e authored but not yet run:**
 - Adapter loads on every host (lazy pymavlink import; clear actionable error if `pymavlink` is missing).
 - Unit tests with mocked pymavlink cover all 15 Protocol methods (including the not-applicable ones).
-- Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`).
+- A live PX4 SITL e2e test is wired to fly the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`) — authored; first run pending, see Follow-ups.
 
 **Landed since v0.1:**
 - `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).

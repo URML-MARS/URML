@@ -16,6 +16,8 @@
 
 **Underwater-vehicle reference runtime for URML** — `BlueRovAdapter` for **BlueROV2 / ArduSub**, via MAVLink.
 
+> **Maturity.** Code complete, hermetically unit-tested, and exercised through the conformance runner (survey fixture). No ArduSub SITL or hardware run yet; the gated SITL lane's first run is a calibration run by design. **Not production-ready.** URML's live-verified surface today is the validator, the `make demo` / `make demo-run` loop, and the ROS 2 runtime; this runtime is not yet in that set.
+
 ArduSub speaks MAVLink exactly like PX4, so this adapter mirrors `PX4Adapter`: lazy `pymavlink`, **no ROS 2 dependency**, a lazily-opened cached connection, failures returned not raised. It is the underwater analog of the PX4 no-ROS proof, and it activates the `underwater_thrusters` `mobility.drive_type` that already exists in the v0.1 manifest schema (so **no RFC is needed** — unlike legged/biped, which needed RFC-0009).
 
 ## Method coverage
@@ -45,7 +47,7 @@ with BlueRovAdapter(MarineConfig(connection_url="udp:127.0.0.1:14550")) as rov:
 
 ## Status
 
-**v0.1 (this release):**
+**v0.1 (this release) — code complete and hermetically tested; no live-substrate end-to-end run yet:**
 - `BlueRovAdapter` + `MarineConfig` (MAVLink, no ROS). `bluerov_marine` manifest exercises `drive_type: underwater_thrusters`; `conformance/fixtures/marine/` survey fixture verified through the runner.
 - Hermetic unit tests: navigation (configured + unmapped), measure, scan-stub, lifecycle, the not-supported / not-applicable-underwater sentinels, the missing-`[marine]`-extra error, the conformance hook — no pymavlink install required.
 - Gated `.github/workflows/marine-integration.yml`: `marine-smoke` (real pymavlink), `marine-arm64-build` (the Jetson-class QEMU signal), and `marine-sitl-e2e` against ArduSub SITL (first run is a calibration run by design — the established px4/ros2 convention).

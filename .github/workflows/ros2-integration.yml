@@ -20,6 +20,12 @@
 # tells you exactly what to pin rather than failing opaquely. Do not
 # treat the first gazebo-e2e run as a regression signal — treat it as
 # the calibration run.
+#
+# UPDATE 2026-05-16: calibration done. The gazebo-e2e job is green on
+# runs 25953413044, 25953936578, 25954097635; rclpy-smoke is green on
+# 25954097635 after the pytest/venv pin (#45). The note above is kept
+# as the rationale for the gated, best-effort, artifact-on-always
+# design — not as a claim that the job has never succeeded.
 
 name: ros2-integration
 

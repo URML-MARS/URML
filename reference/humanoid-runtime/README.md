@@ -16,6 +16,8 @@
 
 **Humanoid reference runtime for URML** — `DigitAdapter` for **Agility Robotics Digit**.
 
+> **Maturity.** Locomotion plus single-arm subset only (whole-body and bimanual manipulation are a deliberate future RFC). Code complete and hermetically unit-tested; no Digit sim or hardware run yet, and the gated sim job skips cleanly without a sim host. **Not production-ready.** URML's live-verified surface today is the validator, the `make demo` / `make demo-run` loop, and the ROS 2 runtime; this runtime is not yet in that set.
+
 Of the humanoids on the multi-brand target list, Digit is the only one with a usable public SDK + simulator. Tesla Optimus, Figure, Apptronik Apollo and 1X NEO have no public developer access, so per the plan they are covered **manifest + spec only** (no adapter — code with nothing to run against would be dishonest). Those manifests land with the Phase-5 `Mobility.drive_type` RFC, since a humanoid manifest cannot validate until that schema gap is closed.
 
 ## Design
@@ -46,7 +48,7 @@ runner = ConformanceRunner(adapter_factory=lambda: HUMANOID_ADAPTERS["digit"]())
 
 ## Status
 
-**v0.1 (this release):**
+**v0.1 (this release) — code complete and hermetically tested; no live-substrate end-to-end run yet:**
 - `DigitAdapter` (composes `RclpyAdapter`, locomotion subset) + `HUMANOID_ADAPTERS` registry.
 - Hermetic unit tests: delegation, every v0.1 not-supported sentinel, the conformance hook, `runtime_checkable` conformance, context-manager teardown — no ROS 2 install required.
 - Gated `.github/workflows/humanoid-integration.yml`: `digit-smoke`, `digit-arm64-build` (hermetic suite under `linux/arm64` QEMU), and a `digit-sim-e2e` that skips cleanly without a sim host (the established px4/ros2 convention).

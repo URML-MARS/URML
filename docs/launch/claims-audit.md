@@ -91,7 +91,7 @@ SITL e2e flies (see the PX4 row).
 **Mock reference runtime.** `reference/ros2-runtime/.../substrate/mock.py`
 (`MockROSAdapter`). Default substrate for the hermetic suites.
 
-**Real ROS 2 adapter (`RclpyAdapter`) — end-to-end verified ×3.**
+**Real ROS 2 adapter (`RclpyAdapter`) — `gazebo-e2e` job green ×3.**
 `reference/ros2-runtime/src/urml_ros2_runtime/substrate/rclpy_adapter.py`
 (full ROSAdapter Protocol, lazy `rclpy`). End-to-end: the
 `home/nav_patrol_positive` conformance fixture run through `ConformanceRunner`

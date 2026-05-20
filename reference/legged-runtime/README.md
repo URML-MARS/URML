@@ -16,6 +16,8 @@
 
 **Legged/quadruped reference runtime for URML** — first-class adapters for **Boston Dynamics Spot** and **ANYbotics ANYmal**.
 
+> **Maturity.** Code complete and hermetically unit-tested against injected fakes (`bosdyn`, `rclpy`). There is no Spot sim or hardware path yet, and quadruped capability manifests are blocked on the `Mobility.drive_type` schema (RFC-0009) and ship with that RFC, not before. **Not production-ready.** URML's live-verified surface today is the validator, the `make demo` / `make demo-run` loop, and the ROS 2 runtime; this runtime is not yet in that set.
+
 Two vendors, two substrates, the same `ROSAdapter` Protocol:
 
 - **`SpotAdapter`** talks the Boston Dynamics `bosdyn` gRPC SDK directly. **No ROS 2 dependency** — like `PX4Adapter` for MAVLink, it is a second proof that URML's spec carries no ROS assumptions. Spot's own companion computer is commonly a Jetson, so the offline, Jetson-class deployment story is native here.
@@ -67,7 +69,7 @@ runner = ConformanceRunner(adapter_factory=lambda: LEGGED_ADAPTERS["spot"]())
 
 ## Status
 
-**v0.1 (this release):**
+**v0.1 (this release) — code complete and hermetically tested; no live-substrate end-to-end run yet:**
 - `SpotAdapter` (standalone bosdyn) + `AnymalAdapter` (composes `RclpyAdapter`) + `LEGGED_ADAPTERS` registry.
 - Hermetic unit tests: Spot against an injected fake `bosdyn` (navigation, dock, wait, measure, scan-stub, every not-supported sentinel, lifecycle power-off, the missing-`[spot]`-extra error); ANYmal against an injected fake inner (delegation + not-supported + conformance hook + `runtime_checkable`).
 - Gated `.github/workflows/legged-integration.yml`: `spot-smoke` (real bosdyn wheels), `spot-arm64-build` (the bosdyn stack under `linux/arm64` QEMU — the Jetson-companion signal, mirroring `px4-arm64-build`), and a gated `legged-sim-e2e` matrix that skips cleanly without a sim/credential.
