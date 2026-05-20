@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urml-isaac-runtime"
+version = "0.1.0"
+description = "Simulator reference runtime for URML — NVIDIA Isaac Sim physics, zero ROS."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [{ name = "URML Maintainers" }]
+keywords = ["robotics", "simulation", "isaacsim", "urml", "runtime"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "pydantic>=2.6,<3",
+  "PyYAML>=6.0,<7",
+  "urml-validator>=0.1.0",
+  "urml-ros2-runtime>=0.1.0",
+]
+
+[project.optional-dependencies]
+# NVIDIA Isaac Sim / Isaac Lab — the Python-native physics-and-render
+# simulator with the official isaacsim pip wheel. Installing
+# urml-isaac-runtime[sim] gives what IsaacAdapter needs to step a
+# scene. isaacsim is imported lazily, so this module loads on every
+# host (Windows included) even without it. Zero ROS — the same
+# substrate-neutrality acid-test proof as mujoco-runtime.
+#
+# DEPLOYMENT PRECONDITION (not a cloud dependency): Isaac Sim / Isaac
+# Lab needs an RTX-class GPU and a local Omniverse runtime to step a
+# scene. The adapter imports cleanly without isaacsim and the hermetic
+# tests run with the wheel ABSENT — that is the point. The live e2e
+# placeholder in isaac-integration.yml is honest about needing a local
+# RTX host (the manifesto's no-cloud rule holds — we never call a
+# remote service).
+sim = [
+  "isaacsim>=4,<5",
+]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.5",
+  "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/URML-MARS/URML"
+Repository = "https://github.com/URML-MARS/URML"
+Issues = "https://github.com/URML-MARS/URML/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urml_isaac_runtime"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "ANN", "RUF"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["urml_isaac_runtime"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["-q", "--strict-markers"]
