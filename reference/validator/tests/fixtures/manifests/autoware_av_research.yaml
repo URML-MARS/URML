@@ -1,0 +1,81 @@
+# Fixture: Autoware research-grade AV (manifest+spec only).
+# Substrate = Autoware Universe (ROS 2) — manifesto-named, stretch-goal
+# research-grade. RFC-0020 (Draft) proposes the av profile + plan_path/
+# follow_trajectory primitives + hd_map/odd/mrm manifest blocks. NONE of
+# those have ratified, so this manifest deliberately uses ONLY the
+# frozen v0.1 schema: it is the manifest-and-spec-only scaffold (the
+# Optimus/Figure/Apollo/NEO/Ghost precedent — substrate exceeds the
+# frozen Protocol → no green adapter, only validator acceptance under
+# the existing research profile).
+#
+# Vendor: tier_iv (JP, allied — founders of Autoware, Autoware
+# Foundation member). Default US-federal policy ACCEPTS (JP origin,
+# third-party-audited attestation, hbom_ref present).
+
+manifest_version: "0.1"
+robot_id: autoware_av_research_1
+description: Research-grade autonomous-vehicle reference (Autoware Universe target; not production safety-certified).
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: garage
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+  - name: test_loop_start
+    pose: { x: 100.0, y: 0.0 }
+    frame: map
+
+declared_events:
+  - vehicle_ready
+  - odd_exit
+
+mobility:
+  drive_type: ackermann
+  max_velocity: 16.7      # ~60 km/h research-loop cap
+  station_keeping: false
+
+perception:
+  cameras:
+    - name: front_rgb
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "4k"
+  sensors:
+    - name: front_lidar
+      measurement_type: distance
+      range_min: 0.5
+      range_max: 200.0
+      units: m
+    - name: imu
+      measurement_type: voltage   # 6DoF imu; v0.1 schema's nearest scalar slot
+      range_min: 0.0
+      range_max: 5.0
+      units: V
+  object_vocabulary:
+    - vehicle
+    - pedestrian
+    - traffic_sign
+
+outputs:
+  named_endpoints:
+    - research_log
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: autoware_av_compute
+      role: critical
+      vendor: tier_iv
+      country_of_origin: JP
+      country_of_final_assembly: JP
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/autoware_av_compute.cdx.json
+        sha256: "8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c"

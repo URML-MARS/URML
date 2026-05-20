@@ -96,6 +96,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "isaac_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "isaac_arm_sim.yaml",
     # Track F — AUTOSAR Adaptive ECU scaffold (RFC-0019 Draft).
     "autosar_ecu_cell": _VALIDATOR_FIXTURES / "manifests" / "autosar_ecu_cell.yaml",
+    # Track G — Autoware research-grade AV (manifest+spec only, RFC-0020 Draft).
+    "autoware_av_research": _VALIDATOR_FIXTURES / "manifests" / "autoware_av_research.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
