@@ -36,6 +36,13 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0011](0011-educational-profile.md) | Educational profile | Accepted | 2026-05-19 |
 | [0012](0012-research-profile.md) | Research profile | Accepted | 2026-05-19 |
 | [0013](0013-industrial-layer2-primitives.md) | Industrial-profile Layer-2 primitives — pick_from, place_at, swap_tool | Implemented | 2026-05-19 |
+| [0014](0014-substrate-conformance.md) | Substrate conformance — what makes a runtime URML-compatible | Draft | 2026-05-19 |
+| [0015](0015-control-program-invocation.md) | Control-program invocation — calling a named substrate program | Draft | 2026-05-19 |
+| [0016](0016-realtime-cyclic-manifest-block.md) | Real-time / cyclic timing declaration in the capability manifest | Draft | 2026-05-19 |
+| [0017](0017-digital-io-actuation.md) | Digital-I/O actuation — driving a named substrate output | Draft | 2026-05-19 |
+| [0018](0018-minimal-mcu-capability-subset.md) | Minimal-MCU capability subset in the manifest | Draft | 2026-05-19 |
+| [0019](0019-autosar-adaptive-substrate.md) | AUTOSAR Adaptive substrate — binding ara::com to URML | Draft | 2026-05-20 |
+| [0020](0020-autoware-av-substrate.md) | Autoware AV substrate — research-grade autonomous-vehicle profile | Draft | 2026-05-20 |
 
 ## Lifecycle states
 
