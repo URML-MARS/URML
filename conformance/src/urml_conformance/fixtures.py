@@ -78,6 +78,15 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ati_ft_cell": _VALIDATOR_FIXTURES / "manifests" / "ati_ft_cell.yaml",
     "cognex_vision_cell": _VALIDATOR_FIXTURES / "manifests" / "cognex_vision_cell.yaml",
     "sick_safety_lidar_cell": _VALIDATOR_FIXTURES / "manifests" / "sick_safety_lidar_cell.yaml",
+    # Track I-C — more compliant parts (grippers, FT, lidar, 3D vision).
+    "robotiq_2f85_cell": _VALIDATOR_FIXTURES / "manifests" / "robotiq_2f85_cell.yaml",
+    "schmalz_vacuum_cell": _VALIDATOR_FIXTURES / "manifests" / "schmalz_vacuum_cell.yaml",
+    "festo_dhep_cell": _VALIDATOR_FIXTURES / "manifests" / "festo_dhep_cell.yaml",
+    "bota_ft_cell": _VALIDATOR_FIXTURES / "manifests" / "bota_ft_cell.yaml",
+    "hokuyo_lidar_cell": _VALIDATOR_FIXTURES / "manifests" / "hokuyo_lidar_cell.yaml",
+    "ouster_3d_lidar_cell": _VALIDATOR_FIXTURES / "manifests" / "ouster_3d_lidar_cell.yaml",
+    "photoneo_motioncam_cell": _VALIDATOR_FIXTURES / "manifests" / "photoneo_motioncam_cell.yaml",
+    "zivid_two_cell": _VALIDATOR_FIXTURES / "manifests" / "zivid_two_cell.yaml",
     # Track A — additional ROS-Industrial arm brands (all allied origins).
     "kawasaki_cell": _VALIDATOR_FIXTURES / "manifests" / "kawasaki_cell.yaml",
     "staubli_cell": _VALIDATOR_FIXTURES / "manifests" / "staubli_cell.yaml",

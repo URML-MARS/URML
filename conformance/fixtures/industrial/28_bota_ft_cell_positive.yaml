@@ -1,0 +1,62 @@
+name: industrial/bota_ft_cell_positive
+description: >
+  Track I-C compliant-part fixture — Bota Systems Rokubi 6-axis force-torque sensor (CH, vendor token
+  `bota_systems`). The manifest validates ACCEPTED under the bundled
+  US-federal default policy (RFC-0004): allied origin not on the denylist,
+  third-party-audited attestation, hbom_ref present. The program exercises
+  the RFC-0013 pick_from/place_at happy path so the part is demonstrated
+  end-to-end through the validator + the MockROSAdapter, hermetically.
+
+manifest: bota_ft_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait_for:
+          condition: { event: safety_door_closed }
+      - pick_from:
+          source: pick_bin
+          object: widget_red
+          attributes: { color: red }
+          force: firm
+          store_as: red_widget
+      - place_at:
+          target: kitting_tray_red
+          held: $red_widget
+          mode: place
+      - report:
+          to: line_controller
+          facts: { cycle: bota_ft_demo, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: widget_red
+      pose: { x: 0.4, y: -0.3, z: 0.10 }
+      frame: cell
+      attributes: { color: red }
+      confidence: 0.93
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4
+  audit_methods:
+    - wait_for_condition
+    - send_navigation_goal
+    - query_detection
+    - send_manipulation_goal
+    - send_navigation_goal
+    - send_manipulation_goal
+    - emit_report
+  bindings_contains:
+    red_widget:
+      class: widget_red
