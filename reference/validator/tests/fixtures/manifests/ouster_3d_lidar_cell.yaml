@@ -1,0 +1,100 @@
+# Fixture: industrial cell with a compliant sensor_dist from `ouster` (US).
+# Track I-C — allied origin, not on us_federal_default denylist. Default
+# policy ACCEPTS.
+
+manifest_version: "0.1"
+robot_id: ouster_3d_lidar_cell_1
+description: Single-arm pick-and-place cell with a wrist-mounted RGB camera and an industrial gripper.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+    description: Source bin for unsorted widgets.
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+    description: Destination tray for red widgets.
+  - name: kitting_tray_blue
+    pose: { x: -0.4, y: -0.2, z: 0.10 }
+    frame: cell
+    description: Destination tray for blue widgets.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50      # arm tip linear velocity cap, m/s
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: ouster_3d_lidar_cell_distance
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 50.0
+      units: m
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+docking_stations:
+  - name: tool_change_station
+    pose: { x: 0.2, y: 0.5, z: 0.20 }
+    frame: cell
+    services: [swap_tool, park]   # swap_tool: RFC-0013 end-of-arm tool change
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: ouster_os1_3d_lidar
+      role: critical
+      vendor: ouster
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/ouster_os1_3d_lidar.cdx.json
+        sha256: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+
+outputs:
+  named_endpoints:
+    - line_controller   # PLC endpoint that the cell reports cycle completion to
