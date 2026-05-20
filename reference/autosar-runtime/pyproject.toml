@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urml-autosar-runtime"
+version = "0.1.0"
+description = "Industrial-automation reference runtime for URML — AUTOSAR Adaptive, zero ROS."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [{ name = "URML Maintainers" }]
+keywords = ["robotics", "industrial", "opc-ua", "autosar", "plc", "fieldbus", "urml", "runtime"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "pydantic>=2.6,<3",
+  "PyYAML>=6.0,<7",
+  "urml-validator>=0.1.0",
+  "urml-ros2-runtime>=0.1.0",
+]
+
+[project.optional-dependencies]
+# AUTOSAR Adaptive — manifesto-named target. There is no broadly-
+# available open-source Python ara::com stack at v0.1; deployments use
+# a vendor adaptive-stack Python binding (Vector Informatik, ETAS,
+# Aptiv) that is not redistributable through PyPI. The [autosar] extra
+# is intentionally a placeholder so the install surface exists; sites
+# point pip at their vendor wheel index. Imports are lazy — the
+# adapter runs hermetic tests with the vendor module ABSENT (the
+# px4/cobot/opcua posture). See SPEC-GAPS.md and isaac-integration.yml
+# style HONESTY NOTE for the calibration-staged live e2e.
+autosar = [
+  # Placeholder. Replace with your vendor's ara::com Python wheel at
+  # deployment time, e.g.:
+  #   "vector-cara>=1.0",
+  #   "etas-rta-vrte-py>=2",
+  # The hermetic suite injects a fake `ara` module into sys.modules so
+  # the test surface holds without any of these.
+]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.5",
+  "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/URML-MARS/URML"
+Repository = "https://github.com/URML-MARS/URML"
+Issues = "https://github.com/URML-MARS/URML/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urml_autosar_runtime"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "ANN", "RUF"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["urml_autosar_runtime"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["-q", "--strict-markers"]
