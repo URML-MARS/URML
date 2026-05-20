@@ -88,6 +88,11 @@ _BRAND_GRIPPER_SERVER = {
     "yaskawa": "/motoman/gripper/gripper_cmd",  # YASKAWA's ROS-Industrial driver is `motoman`.
     "ur": "/ur/robotiq_gripper/gripper_cmd",  # UR cobots most commonly carry a Robotiq gripper.
     "franka": "/franka/franka_gripper/gripper_cmd",  # Franka's ROS package is `franka_gripper`.
+    "kawasaki": "/kawasaki/gripper/gripper_cmd",  # Kawasaki's ROS package is `kawasaki_robot`.
+    "staubli": "/staubli/gripper/gripper_cmd",  # Stäubli VAL3 driver — `staubli_val3_driver`.
+    "comau": "/comau/gripper/gripper_cmd",  # Comau ROS 2 driver — `comau_ros2_driver`.
+    "mitsubishi": "/melfa/gripper/gripper_cmd",  # Mitsubishi Electric MELFA — `melfa_ros2`.
+    "denso": "/denso/gripper/gripper_cmd",  # Denso — `denso_robot_ros2`.
 }
 
 InnerFactory = Callable[[], ROSAdapter]
@@ -377,3 +382,51 @@ class FrankaAdapter(IndustrialArmAdapter):
     """
 
     BRAND = "franka"
+
+
+class KawasakiAdapter(IndustrialArmAdapter):
+    """Kawasaki arm via the ``kawasaki_robot`` ROS-Industrial driver + MoveIt 2.
+
+    Japan-made — passes the default US-federal policy (JP allied origin).
+    """
+
+    BRAND = "kawasaki"
+
+
+class StaubliAdapter(IndustrialArmAdapter):
+    """Stäubli arm via ``staubli_val3_driver`` (VAL 3 protocol bridge) + MoveIt 2.
+
+    Switzerland-made — passes the default US-federal policy (CH allied).
+    """
+
+    BRAND = "staubli"
+
+
+class ComauAdapter(IndustrialArmAdapter):
+    """Comau arm via ``comau_ros2_driver`` + MoveIt 2.
+
+    Italy-made (Stellantis subsidiary) — passes the default US-federal
+    policy (IT allied origin).
+    """
+
+    BRAND = "comau"
+
+
+class MitsubishiAdapter(IndustrialArmAdapter):
+    """Mitsubishi Electric MELFA arm via ``melfa_ros2`` + MoveIt 2.
+
+    Japan-made — passes the default US-federal policy. Vendor token is
+    ``mitsubishi_electric`` in provenance to disambiguate from any other
+    Mitsubishi-prefixed entity.
+    """
+
+    BRAND = "mitsubishi"
+
+
+class DensoAdapter(IndustrialArmAdapter):
+    """Denso arm via ``denso_robot_ros2`` + MoveIt 2.
+
+    Japan-made — passes the default US-federal policy.
+    """
+
+    BRAND = "denso"
