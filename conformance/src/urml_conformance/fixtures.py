@@ -70,6 +70,14 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell.yaml",
     # Educational micro:bit/Arduino buggy (zero ROS, serial).
     "microbit_edu": _VALIDATOR_FIXTURES / "manifests" / "microbit_edu.yaml",
+    # Track C — compliant parts (grippers, FT sensor, vision, safety lidar).
+    "schunk_mpg_cell": _VALIDATOR_FIXTURES / "manifests" / "schunk_mpg_cell.yaml",
+    "piab_vacuum_cell": _VALIDATOR_FIXTURES / "manifests" / "piab_vacuum_cell.yaml",
+    "onrobot_magnetic_cell": _VALIDATOR_FIXTURES / "manifests" / "onrobot_magnetic_cell.yaml",
+    "soft_robotics_compliant_cell": _VALIDATOR_FIXTURES / "manifests" / "soft_robotics_compliant_cell.yaml",
+    "ati_ft_cell": _VALIDATOR_FIXTURES / "manifests" / "ati_ft_cell.yaml",
+    "cognex_vision_cell": _VALIDATOR_FIXTURES / "manifests" / "cognex_vision_cell.yaml",
+    "sick_safety_lidar_cell": _VALIDATOR_FIXTURES / "manifests" / "sick_safety_lidar_cell.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.

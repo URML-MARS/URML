@@ -1,0 +1,63 @@
+name: industrial/ati_ft_positive
+description: >
+  Track C compliant-part fixture — ATI Axia80 six-axis force-torque sensor (US).
+  Manifest ACCEPTED under the bundled US-federal default policy (US-compliant
+  provenance, third-party-audited, hbom_ref present). The new sensor is
+  declared in perception.sensors with measurement_type: pressure. The program
+  is the RFC-0013 pick_from/place_at happy path (the gripper-bearing cell
+  also carries the FT sensor), validating the manifest end-to-end through
+  the validator + MockROSAdapter, hermetically.
+
+manifest: ati_ft_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait_for:
+          condition: { event: safety_door_closed }
+      - pick_from:
+          source: pick_bin
+          object: widget_red
+          attributes: { color: red }
+          force: firm
+          store_as: red_widget
+      - place_at:
+          target: kitting_tray_red
+          held: $red_widget
+          mode: place
+      - report:
+          to: line_controller
+          facts: { cycle: ati_ft_demo, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: widget_red
+      pose: { x: 0.4, y: -0.3, z: 0.10 }
+      frame: cell
+      attributes: { color: red }
+      confidence: 0.93
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4
+  audit_methods:
+    - wait_for_condition
+    - send_navigation_goal
+    - query_detection
+    - send_manipulation_goal
+    - send_navigation_goal
+    - send_manipulation_goal
+    - emit_report
+  bindings_contains:
+    red_widget:
+      class: widget_red
