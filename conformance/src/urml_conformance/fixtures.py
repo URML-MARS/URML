@@ -92,6 +92,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "vex_v5_clawbot": _VALIDATOR_FIXTURES / "manifests" / "vex_v5_clawbot.yaml",
     "lego_spike_driving_base": _VALIDATOR_FIXTURES / "manifests" / "lego_spike_driving_base.yaml",
     "thymio_classroom": _VALIDATOR_FIXTURES / "manifests" / "thymio_classroom.yaml",
+    # Track E — NVIDIA Isaac Sim/Lab simulator substrate (zero ROS, RTX host).
+    "isaac_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "isaac_arm_sim.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.

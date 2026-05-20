@@ -1,0 +1,35 @@
+name: home/isaac_sentence_to_motion_positive
+description: >
+  The sentence→motion loop on a pure simulator substrate (Isaac Sim/Lab) with
+  zero ROS — the purest substrate-neutrality acid-test case (RFC-0014).
+  Navigation-only: drive to a start pose, to a waypoint, then back to
+  the sim home. Exercises ONLY navigation — no perception,
+  manipulation, speech, or docking-action — so it runs hermetically
+  against MockROSAdapter (default suite) and adapter-agnostically
+  against the isaac runtime's IsaacAdapter (which steps an MJCF
+  model). `sim_home` is referenced as a declared *location* (it has a
+  pose), not a docking action.
+
+manifest: isaac_arm_sim
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: sim_start }
+      - move_to: { location: sim_waypoint }
+      - move_to: { location: sim_home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

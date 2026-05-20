@@ -1,0 +1,127 @@
+# Gated Isaac (simulator substrate) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   isaac-smoke      — install the real isaac wheel ([sim] extra) and
+#   run the hermetic isaac suite + the live smoke under it. Fast, no
+#   model. The simulator analog of px4-integration's px4-smoke.
+#
+#   isaac-arm64-build — the hermetic suite under linux/arm64 QEMU.
+#   The isaac stack is pure-Python bindings over a bundled engine with
+#   no CUDA/Jetson APIs, so emulation is a faithful proxy for our code
+#   on a Jetson-class board. Mirrors px4/marine-arm64-build. Not a
+#   hardware-verification claim.
+#
+#   isaac-sitl-e2e   — the real end-to-end: the conformance
+#   home/isaac_sentence_to_motion_positive fixture run through
+#   ConformanceRunner with a live MujocoAdapter stepping a real USD
+#   model. Heavy, best-effort.
+#
+# HONESTY NOTE: the e2e below was authored without a bundled USD model
+# to step. The MujocoAdapter and the fixture are exercised hermetically
+# (MockROSAdapter) on every PR; the model-driven run needs a committed
+# demo model + a location→ctrl mapping pinned in isaac_adapter.yaml.
+# The job fails loudly until that is wired rather than green-washing.
+# Do not treat the first isaac-sitl-e2e run as a regression signal;
+# treat it as the calibration run, exactly as px4-integration's
+# px4-sitl-e2e and marine-integration's marine-sitl-e2e were treated.
+
+name: isaac-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 21:00 UTC (staggered after the other integration lanes).
+    - cron: '0 21 * * 1'
+
+jobs:
+  isaac-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real isaac
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/isaac-runtime[sim]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic isaac suite + live smoke under real isaac
+        env:
+          URML_MUJOCO_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/isaac-runtime
+          python -m pytest tests/ -v
+
+  isaac-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [sim] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/isaac-runtime[sim]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_isaac_runtime, isaac, platform; print(\"urml_isaac_runtime + isaac import OK on\", platform.machine())"
+              cd reference/isaac-runtime
+              python -m pytest tests/test_isaac_adapter.py -q
+            '
+
+  isaac-sitl-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for Isaac model-driven e2e
+        run: |
+          # Wiring (calibration step): commit a small demo USD model,
+          # pin its location→ctrl mapping in a isaac_adapter.yaml, then
+          # with URML_MUJOCO_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[home/isaac_sentence_to_motion_positive],
+          #     adapter_factory=lambda: MujocoAdapter(load_isaac_config(
+          #       "isaac_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A bundled USD model + location->ctrl mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: isaac-sitl-e2e-diagnostics
+          path: ~/.isaac
+          retention-days: 14
