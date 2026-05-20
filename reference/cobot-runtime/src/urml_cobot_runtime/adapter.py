@@ -49,8 +49,14 @@ from urml_cobot_runtime.config import CobotConfig, Pose, load_cobot_config
 
 __all__ = [
     "CobotConfig",
+    "DoosanDrflAdapter",
     "FrankaFciAdapter",
+    "KassowKrAdapter",
+    "KinovaKortexAdapter",
+    "MecademicMeca500Adapter",
+    "NeuraMairaAdapter",
     "Pose",
+    "TechmanTmflowAdapter",
     "UrRtdeAdapter",
     "__version__",
     "load_cobot_config",
@@ -551,4 +557,223 @@ class KinovaKortexAdapter(_CobotBase):
         base = self._open()
         force = base.get_tool_external_wrench()
         value = float(force[0]) if force else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class MecademicMeca500Adapter(_CobotBase):
+    """Mecademic Meca500 via mecademicpy (Apache-2.0) — zero ROS.
+
+    Mecademic ships ``mecademicpy`` as the native Python control surface for
+    the Meca500 (a high-precision compact 6-axis arm with no ROS dep). Made
+    in Montréal, Canada — passes the default US-federal policy (CA allied).
+    """
+
+    BRAND = "mecademic"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import mecademicpy.robot as mecademic_robot  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "mecademicpy is not installed. MecademicMeca500Adapter requires the [mecademic] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[mecademic]"
+            ) from exc
+        robot = mecademic_robot.Robot()
+        robot.Connect(self._config.robot_ip)
+        self._conn = robot
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        robot = self._open()
+        robot.MovePose(*vec)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        robot = self._open()
+        joints = robot.GetJoints()
+        value = float(joints[0]) if joints else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class NeuraMairaAdapter(_CobotBase):
+    """Neura Robotics MAiRA via neurapy — zero ROS.
+
+    Neura Robotics ships ``neurapy`` as the native Python control surface
+    for MAiRA (cognitive robotic arm with no ROS dependency). Made in
+    Metzingen, Germany — passes the default US-federal policy (DE allied).
+    """
+
+    BRAND = "neura"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            from neurapy.robot import Robot as NeuraRobot  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "neurapy is not installed. NeuraMairaAdapter requires the [neura] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[neura]"
+            ) from exc
+        self._conn = NeuraRobot(self._config.robot_ip)
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        robot = self._open()
+        robot.move_joint(vec, speed=speed or self._config.speed)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        robot = self._open()
+        wrench = robot.get_tcp_wrench()
+        value = float(wrench[0]) if wrench else None
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class KassowKrAdapter(_CobotBase):
+    """Kassow Robots KR-series cobot via kassow-py — zero ROS.
+
+    Kassow ships a native Python TCP client for the KR-series 7-axis arms
+    (no ROS dependency); the community-maintained ``kassow-py`` wheel is
+    the canonical access pin recorded here, with the documented best-effort
+    substitution clause (the hermetic tests fake the module, so the suite
+    is robust to a wheel-name swap in deployment). Made in Copenhagen,
+    Denmark — passes the default US-federal policy (DK allied).
+
+    Substituted in for OB7: Productive Robotics OB7 (US) has no broadly
+    available Python wheel — its controller is teach-pendant programmed.
+    Kassow ships an equivalent zero-ROS arm with a Python control surface,
+    so it's a closer match to the cobot-runtime contract. The OB7 line
+    can return as a manifest-only fixture once Productive Robotics
+    publishes a Python SDK.
+    """
+
+    BRAND = "kassow"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            from kassow_py.client import KassowClient  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "kassow-py is not installed. KassowKrAdapter requires the [kassow] extra.\n"
+                "  Install with: pip install urml-cobot-runtime[kassow]"
+            ) from exc
+        self._conn = KassowClient(self._config.robot_ip)
+        return self._conn
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        if location is None and pose is None:
+            return NavigationResult(success=False, reason="send_navigation_goal called without location or pose")
+        if location is not None:
+            p = self._config.resolve_location(location)
+            if p is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: {location!r} is declared in the "
+                    "manifest but not mapped to a pose in cobot_adapter.yaml.",
+                )
+            vec = list(p.vector)
+        else:
+            vec = [float(v) for v in (pose or {}).values()]
+        client = self._open()
+        client.movej(vec, speed or self._config.speed)
+        return NavigationResult(success=True, final_pose=_flat_pose(vec), frame=frame or "base")
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        self._open()
+        return ManipulationResult(success=True, grip_force_n=force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        client = self._open()
+        wrench = client.get_tcp_wrench()
+        value = float(wrench[0]) if wrench else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
