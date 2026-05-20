@@ -1,0 +1,135 @@
+# Gated AUTOSAR Adaptive (industrial cell) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   autosar-smoke      — install the real ara wheel ([autosar] extra)
+#   and run the hermetic autosar suite + the live smoke under it. Fast,
+#   no server. The AUTOSAR Adaptive analog of px4-integration's px4-smoke.
+#
+#   autosar-arm64-build — the hermetic suite under linux/arm64 QEMU. The
+#   autosar stack is pure Python (ara) with no CUDA/Jetson APIs, so
+#   emulation is a faithful proxy for our code on a Jetson-class
+#   companion (a standard industrial-edge form factor). Mirrors
+#   px4/marine-arm64-build. Not a hardware-verification claim.
+#
+#   autosar-server-e2e — the real end-to-end: the conformance
+#   industrial/autosar_cell_positive fixture run through
+#   ConformanceRunner with a live AutosarAdaptiveAdapter against a local ara
+#   demo server exposing MoveTo/Grip/SwapTool method nodes. Heavy,
+#   best-effort.
+#
+# HONESTY NOTE: the server-e2e below was authored without a bundled
+# ara demo server + node layout. The AutosarAdaptiveAdapter and the fixture
+# are exercised hermetically (MockROSAdapter) on every PR; the
+# server-driven run needs a committed demo server script + a node
+# mapping pinned in autosar_adapter.yaml. The job fails loudly until that
+# is wired rather than green-washing. Do not treat the first
+# autosar-server-e2e run as a regression signal; treat it as the
+# calibration run, exactly as px4-integration's px4-sitl-e2e and
+# marine-integration's marine-sitl-e2e were treated.
+#
+# LICENSING NOTE: ara is LGPL-3.0; it is an OPTIONAL [autosar] extra
+# imported lazily, never at module load (the rclpy/pymavlink posture).
+# In-repo code is Apache-2.0. The posture is flagged in SPEC-GAPS.md
+# for maintainer ratification.
+
+name: autosar-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Tuesdays 00:00 (staggered after the other lanes) UTC (staggered after the other integration lanes).
+    - cron: '0 0 * * 1'
+
+jobs:
+  autosar-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages + real ara
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/autosar-runtime[autosar]" \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic autosar suite + live smoke under real ara
+        env:
+          URML_OPCUA_INTEGRATION: "1"
+        run: |
+          . /tmp/ci-venv/bin/activate
+          cd reference/autosar-runtime
+          python -m pytest tests/ -v
+
+  autosar-arm64-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 emulation)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install [autosar] stack and run the hermetic suite under linux/arm64
+        run: |
+          set -eux
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/src -w /src \
+            python:3.11-slim-bookworm \
+            bash -c '
+              set -eux
+              apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
+              python -m pip install -U pip
+              pip install \
+                -e reference/validator \
+                -e reference/ros2-runtime \
+                -e "reference/autosar-runtime[autosar]" \
+                -e conformance \
+                "pytest>=8"
+              python -c "import urml_autosar_runtime, ara, platform; print(\"urml_autosar_runtime + ara import OK on\", platform.machine())"
+              cd reference/autosar-runtime
+              python -m pytest tests/test_autosar_adapter.py -q
+            '
+
+  autosar-server-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for AUTOSAR Adaptive server-driven e2e
+        run: |
+          # Wiring (calibration step): commit a small ara demo
+          # server exposing MoveTo/Grip/SwapTool method nodes, pin the
+          # node mapping in an autosar_adapter.yaml, then with
+          # URML_OPCUA_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[industrial/autosar_cell_positive],
+          #     adapter_factory=lambda: AutosarAdaptiveAdapter(load_autosar_config(
+          #       "autosar_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A bundled ara demo server + node mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autosar-server-e2e-diagnostics
+          path: ~/.cache/urml-autosar
+          retention-days: 14

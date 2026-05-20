@@ -94,6 +94,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "thymio_classroom": _VALIDATOR_FIXTURES / "manifests" / "thymio_classroom.yaml",
     # Track E — NVIDIA Isaac Sim/Lab simulator substrate (zero ROS, RTX host).
     "isaac_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "isaac_arm_sim.yaml",
+    # Track F — AUTOSAR Adaptive ECU scaffold (RFC-0019 Draft).
+    "autosar_ecu_cell": _VALIDATOR_FIXTURES / "manifests" / "autosar_ecu_cell.yaml",
     # RFC-0009 follow-up: compliant legged/biped vendor manifests.
     "anymal_quadruped": _VALIDATOR_FIXTURES / "manifests" / "anymal_quadruped.yaml",
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
