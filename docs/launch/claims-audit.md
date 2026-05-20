@@ -19,12 +19,14 @@ a passing test or recorded CI run. This document is the backing evidence. It
 exists so a reader can verify the front page is not overselling — and so the
 maintainer can re-check before each public update.
 
-**Measured 2026-05-20, on `main`** (commit `ddfc118`). This is the post-Tracks
-A–G refresh — eight new PRs (#91–99) added five reference runtimes, eight new
-brand adapters, seven compliant-part fixtures, and two new RFC Drafts since the
-previous audit. The figures below were re-measured from scratch via per-package
-`PYTHONPATH` + `--junit-xml` (pytest's terminal summary truncates in some
-shells; the xml is the reliable count).
+**Measured 2026-05-20, on `main`** (commit `a19daee`). This is the post-Track-I
+refresh — three new PRs (#102 / #103 / #104) added eight compliant-part fixtures,
+five ROS-Industrial arm-brand adapters, and three zero-ROS cobot-brand adapters
+since the post-A-G audit. No new runtime packages and no new RFCs in this batch
+(parts and brands rode the existing frozen Protocol; the spec-gap loop produced
+nothing inexpressible). The figures below were re-measured from scratch via
+per-package `PYTHONPATH` + `--junit-xml` (pytest's terminal summary truncates in
+some shells; the xml is the reliable count).
 
 | Suite | Result |
 |---|---|
@@ -32,20 +34,20 @@ shells; the xml is the reliable count).
 | llm-bridge | **77 passed** |
 | ros2-runtime | **115 passed, 4 skipped** |
 | px4-runtime | **54 passed, 4 skipped** |
-| conformance | **87 passed** |
+| conformance | **97 passed** |
 | marine-runtime | **4 passed** |
-| industrial-arm-runtime | **45 passed, 1 skipped** (11 brand adapters parameterized) |
+| industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **5 passed** |
 | humanoid-runtime | **4 passed** |
 | mobile-runtime | **4 passed** |
 | opcua-runtime | **4 passed, 3 skipped** |
-| cobot-runtime | **8 passed, 2 skipped** (5 brand adapters parameterized) |
+| cobot-runtime | **11 passed, 2 skipped** (8 brand adapters parameterized) |
 | mujoco-runtime | **5 passed, 3 skipped** |
 | embedded-runtime | **4 passed, 3 skipped** |
 | edu-runtime | **6 passed, 2 skipped** (3 platform adapters parameterized) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
-| **Total** | **673 passed + 28 gated-skipped** |
+| **Total** | **706 passed + 28 gated-skipped** |
 
 The 28 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -57,8 +59,8 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **73** YAML cases under `conformance/fixtures/` — drone
-14, home 18, industrial 24, biped 5, quadruped 4, mobile 2, marine 1,
+Conformance fixtures: **89** YAML cases under `conformance/fixtures/` — drone
+14, home 18, industrial 40, biped 5, quadruped 4, mobile 2, marine 1,
 educational 4, research 1. Auto-discovered; all pass hermetically against
 `MockROSAdapter`.
 
@@ -81,25 +83,29 @@ tests; `industrial/04–08` + `industrial/24` conformance fixtures.
 
 **Compliance enforcement — `--no-policy` opt-out.**
 `reference/validator/src/urml_validator/policy.py` + bundled default policy
-(RFC-0004). Evidence: validator-suite policy tests; the seven new compliant-
-part manifests (schunk / piab / onrobot / soft_robotics / ati / cognex / sick)
-**and** the five new industrial-arm-brand manifests (kawasaki / staubli /
-comau / mitsubishi / denso) and three new cobot manifests (doosan / techman /
-kinova) are all ACCEPTED; `unitree_quadruped_denied` /
-`hesai_lidar_denied` / `turtlebot4_home_dji_vendor` remain rejected. All
-exercised by the conformance suite.
+(RFC-0004). Evidence: validator-suite policy tests; **fifteen** compliant-part
+manifests (Track C: schunk / piab / onrobot / soft_robotics / ati / cognex /
+sick; Track I-C: robotiq / schmalz / festo / bota / hokuyo / ouster / photoneo /
+zivid), **sixteen** industrial-arm-brand manifests (Tracks A + I-A:
+kawasaki / staubli / comau / mitsubishi / denso / hyundai / nachi / epson /
+omron / hanwha, plus the original abb / fanuc / kuka / yaskawa / ur / franka),
+and **eight** zero-ROS cobot manifests (Tracks B + I-B: doosan / techman /
+kinova / mecademic / neura / kassow, plus the original ur / franka) are all
+ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
+`turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
+suite.
 
 **LLM bridge — 77 unit tests.**
 `reference/llm-bridge/` — provider-agnostic (anthropic, openai, echo);
 revision loop with `BridgePolicyViolation` short-circuit. Evidence: llm-bridge
 77 passed.
 
-**Conformance suite — 73 fixtures, `urml conformance run`, and a normative
-runtime contract.** `conformance/fixtures/**/*.yaml` = 73 cases.
+**Conformance suite — 89 fixtures, `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 89 cases.
 [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively, what
 makes a runtime URML-compatible (manifest intake, the frozen substrate
 Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
-spec-gap loop). Evidence: conformance 87 passed (parametrized over the 73
+spec-gap loop). Evidence: conformance 97 passed (parametrized over the 89
 fixtures + loader/registry/smoke).
 
 **CLI — seven subcommands.** `urml --help` →
@@ -135,13 +141,14 @@ routing across a flight + companion backend. Evidence: px4-runtime suite.
 **Twelve further reference runtimes — hermetic-tested, live CI gated (no
 hardware claim).** Beyond ROS 2 and PX4, `main` ships:
 `marine-runtime` (BlueROV2/ArduSub MAVLink), `industrial-arm-runtime`
-(11 brand adapters across ROS-Industrial + MoveIt 2: ABB / FANUC / KUKA /
+(16 brand adapters across ROS-Industrial + MoveIt 2: ABB / FANUC / KUKA /
 YASKAWA / UR / Franka / Kawasaki / Stäubli / Comau / Mitsubishi Electric /
-Denso), `legged-runtime` (Spot/ANYmal), `humanoid-runtime` (Digit),
-`mobile-runtime` (Husky/Jackal), `opcua-runtime` (OPC UA Robotics,
-RFC-0015/0016 spec-gaps), `cobot-runtime` (5 brand adapters via native SDKs:
-UR RTDE, Franka FCI, Doosan DRFL, Techman TMflow, Kinova Kortex; RFC-0017
-spec-gap), `mujoco-runtime` (simulator — pure Protocol proof),
+Denso / Hyundai / Nachi / Epson / Omron / Hanwha), `legged-runtime`
+(Spot/ANYmal), `humanoid-runtime` (Digit), `mobile-runtime` (Husky/Jackal),
+`opcua-runtime` (OPC UA Robotics, RFC-0015/0016 spec-gaps), `cobot-runtime`
+(8 brand adapters via native SDKs: UR RTDE, Franka FCI, Doosan DRFL, Techman
+TMflow, Kinova Kortex, Mecademic mecademicpy, Neura neurapy, Kassow kassow-py;
+RFC-0017 spec-gap), `mujoco-runtime` (simulator — pure Protocol proof),
 `embedded-runtime` (micro:bit/Arduino over serial; RFC-0018 spec-gap),
 `edu-runtime` (VEX V5, LEGO SPIKE via Pybricks, Thymio via Aseba TDM —
 RFC-0011 educational flywheel), `isaac-runtime` (NVIDIA Isaac Sim/Lab — local
@@ -179,7 +186,7 @@ the latest Drafts. No primitive or schema changed without an accepted RFC.
 python -m pytest <pkg>/tests -q --tb=no --junit-xml=j.xml
 python -c "import xml.etree.ElementTree as E;print(E.parse('j.xml').getroot().find('testsuite').attrib)"
 python -m pytest conformance/tests -q --tb=no --junit-xml=c.xml
-find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (73)
+find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (89)
 ls docs/rfcs/ | grep -E '^00[0-2][0-9]'              # RFCs (exclude 0000-template)
 urml --help                                           # subcommands
 ```

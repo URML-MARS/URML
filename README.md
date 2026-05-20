@@ -58,7 +58,7 @@ See [`docs/demos/sentence-to-motion.md`](docs/demos/sentence-to-motion.md) for t
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-05-20: **673 passed + 28 gated-skipped** across 16 packages).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-05-20: **706 passed + 28 gated-skipped** across 16 packages).
 
 | Capability | State |
 |---|---|
@@ -66,13 +66,13 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | **20 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus 8 profile-extensions across home (`speak`, `listen`), drone (`take_off`, `land`, `return_to_home`), and industrial (`pick_from`, `place_at`, `swap_tool`) | ✅ Validator + reference-runtime executors for all 20 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial few-shots | ✅ 77 unit tests |
-| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 73 fixtures (home, drone, industrial, biped, quadruped, mobile, marine, educational, research) |
+| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 89 fixtures (home, drone, industrial, biped, quadruped, mobile, marine, educational, research) |
 | **CLI** — `urml validate`, `urml execute`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All seven subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
 | **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; the `gazebo-e2e` job (live TurtleBot 4 + Nav2 sim) passed ×3 — [job-level, badge caveat explained](docs/launch/claims-audit.md) |
 | **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
 | **CompositeAdapter** — one URML program across two substrates: PX4 flight + a ROS 2 companion, per-method routing | ✅ Implemented |
-| **Twelve further reference runtimes** — `marine` (BlueROV2/ArduSub), `industrial-arm` (ABB/FANUC/KUKA/YASKAWA/UR/Franka/Kawasaki/Stäubli/Comau/Mitsubishi/Denso = 11 brands), `legged` (Spot/ANYmal), `humanoid` (Digit), `mobile` (Husky/Jackal), and the zero-ROS `opcua` (OPC UA Robotics), `cobot` (5 brands: UR/Franka/Doosan/Techman/Kinova native SDKs), `mujoco` + `isaac` (NVIDIA Sim/Lab, local RTX host) sims, `embedded` (micro:bit/Arduino serial), `edu` (VEX/LEGO SPIKE/Thymio), `autosar` (RFC-0019 scaffold) | ✅ Hermetic suites green; live e2e is gated CI (calibration-staged, **not** a hardware claim) — see [audit](docs/launch/claims-audit.md). Autoware ships **manifest+spec only** pending RFC-0020. |
+| **Twelve further reference runtimes** — `marine` (BlueROV2/ArduSub), `industrial-arm` (ABB/FANUC/KUKA/YASKAWA/UR/Franka/Kawasaki/Stäubli/Comau/Mitsubishi/Denso/Hyundai/Nachi/Epson/Omron/Hanwha = 16 brands), `legged` (Spot/ANYmal), `humanoid` (Digit), `mobile` (Husky/Jackal), and the zero-ROS `opcua` (OPC UA Robotics), `cobot` (8 brands: UR/Franka/Doosan/Techman/Kinova/Mecademic/Neura/Kassow native SDKs), `mujoco` + `isaac` (NVIDIA Sim/Lab, local RTX host) sims, `embedded` (micro:bit/Arduino serial), `edu` (VEX/LEGO SPIKE/Thymio), `autosar` (RFC-0019 scaffold) | ✅ Hermetic suites green; live e2e is gated CI (calibration-staged, **not** a hardware claim) — see [audit](docs/launch/claims-audit.md). Autoware ships **manifest+spec only** pending RFC-0020. |
 
 ---
 
