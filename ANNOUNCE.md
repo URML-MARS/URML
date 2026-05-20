@@ -47,8 +47,8 @@ system; it targets the ones that exist.
   cross-primitive type analysis → compliance policy. 242 tests.
 - **Fourteen reference runtimes** — `RclpyAdapter` (ROS 2, `rclpy`/Nav2),
   `PX4Adapter` (MAVLink, no ROS), a `CompositeAdapter` across both, plus
-  marine, industrial-arm (11 brands), legged, humanoid, mobile, and the
-  zero-ROS OPC UA / native-cobot (5 brands) / MuJoCo / NVIDIA Isaac Sim /
+  marine, industrial-arm (16 brands), legged, humanoid, mobile, and the
+  zero-ROS OPC UA / native-cobot (8 brands) / MuJoCo / NVIDIA Isaac Sim /
   serial-MCU / educational-platform (VEX, LEGO SPIKE, Thymio) / AUTOSAR
   Adaptive runtimes. The runtime contract is defined normatively in RFC-0014
   (zero-ROS acid test as a gate). Autoware ships manifest+spec only pending
@@ -64,7 +64,7 @@ system; it targets the ones that exist.
   encodes US-federal procurement rules (NDAA §889/FY26, FCC Covered List, EO
   14307, ASRA); a covered-foreign-country component is rejected *at validation
   time*. Override is one flag for other jurisdictions.
-- **673 tests across 16 packages** (+28 gated-skipped), all green. Every
+- **706 tests across 16 packages** (+28 gated-skipped), all green. Every
   front-page claim is mapped to a file and a passing run in
   [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md).
 
