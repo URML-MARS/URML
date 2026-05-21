@@ -20,6 +20,8 @@
 
 The Apache-2.0, **freely runnable** set of tests that determines whether a runtime is **URML-compatible**. The conformance suite is the bridge between the abstract specification documents in [`/spec`](../spec/) and a concrete claim of compatibility a robot maker can stand behind.
 
+A sibling sub-suite, [`conformance/llm-bridge/`](./llm-bridge/), scores `(model, backend, profile)` triples for the on-device LLM bridge introduced by [RFC-0021](../docs/rfcs/0021-on-device-llm-bridge.md). The runtime sub-suite below answers "does this runtime execute URML correctly"; the LLM-bridge sub-suite answers "how reliably does this model emit URML the validator accepts."
+
 The conformance suite is part of the [Core Commitment](../CORE_COMMITMENT.md). It will always be Apache 2.0. The eventual *certification program* — the trademark *URML-Certified* — may be paid; the *tests themselves* remain free, public, and runnable by anyone. This separation is deliberate: it lets URML's compatibility claim be honest (anyone can verify it) while preserving a commercial moat in the surround (the mark is licensed, not the tests).
 
 ## How conformance is structured
