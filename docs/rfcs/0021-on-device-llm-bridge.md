@@ -194,10 +194,14 @@ revision_attempts_mean: 1.4
 `structural_pass_rate` is meaningful even on cloud backends (Anthropic
 tool-use ~ 1.00, OpenAI json-mode ~ 1.00); `semantic_pass_rate` is the
 number that actually varies by model and backend. Reports land under
-`conformance/llm-bridge/results/<date>/<row>.yaml` and aggregate into a
-table in [`docs/conformance.md`](../../docs/conformance.md). No model is
-default-recommended in the spec; the docs page lists scored models with
-their scores.
+`conformance/llm-bridge/results/<date>/<row>.yaml` and aggregate into the
+published table in
+[`conformance/llm-bridge/README.md`](../../conformance/llm-bridge/README.md).
+No model is default-recommended in the spec; the published table lists
+scored models with their scores. (The sibling registry
+[`docs/compatible-runtimes.md`](../../docs/compatible-runtimes.md) is the
+*runtime*-side equivalent, scoped to substrate runtimes; the two surfaces
+stay distinct because they answer different questions.)
 
 CLI surface (existing `urml conformance run` plus a new sub-suite name):
 
