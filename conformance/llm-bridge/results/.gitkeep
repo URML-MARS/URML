@@ -1,0 +1,3 @@
+# Per-date measurement rows land in this directory once the scoring runner
+# from RFC-0021's follow-up commit is wired up. Empty in v0.1 by design:
+# no measured numbers, no claims (see docs/launch/claims-audit.md).

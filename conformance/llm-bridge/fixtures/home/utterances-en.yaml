@@ -1,0 +1,30 @@
+# RFC-0021: LLM-bridge conformance utterance set, home profile, English.
+# The set is intentionally small in v0.1. Expand by adding rows; do not
+# re-key (row IDs are how results YAMLs index back to utterances).
+profile: home
+language: en
+manifest: turtlebot4_home
+utterances:
+  - id: red_mug
+    text: "Bring me the red mug from the kitchen."
+    expected_kind: positive
+
+  - id: blue_mug
+    text: "Bring me the blue mug from the kitchen."
+    expected_kind: positive
+
+  - id: greet
+    text: "Say hello in the living room."
+    expected_kind: positive
+
+  - id: come_here
+    text: "Come to me."
+    expected_kind: positive
+
+  - id: missing_capability
+    text: "Make me a sandwich in the kitchen."
+    expected_kind: report_failure
+
+  - id: undeclared_room
+    text: "Bring the mug to the attic."
+    expected_kind: report_failure
