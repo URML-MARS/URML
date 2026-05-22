@@ -58,6 +58,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0033](0033-sick-integration.md) | SICK integration — request for comment from SICKAG/sick_safetyscanners2 maintainers | Draft | 2026-05-22 |
 | [0034](0034-festo-integration.md) | Festo integration — request for comment from Festo-se maintainers | Draft | 2026-05-22 |
 | [0035](0035-zivid-integration.md) | Zivid integration — request for comment from zivid/zivid-python maintainers | Draft | 2026-05-22 |
+| [0036](0036-hokuyo-integration.md) | Hokuyo integration — request for comment from Hokuyo-aut/urg_node2 maintainers | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
