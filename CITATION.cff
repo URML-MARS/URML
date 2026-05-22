@@ -25,6 +25,8 @@ keywords:
   - ROS 2
   - PX4
   - robot safety
-# `version` and `date-released` are intentionally omitted until the first
-# tagged PyPI release. Cite the repository + commit until then; this avoids
-# asserting a released version that does not yet exist (RELEASING.md).
+# Uncomment the two lines below at tag time (right after `git tag v0.1.0`
+# and the GitHub Release lands). They are kept commented out until the tag
+# exists so this file does not assert a release that has not yet happened.
+# version: 0.1.0
+# date-released: 2026-05-22

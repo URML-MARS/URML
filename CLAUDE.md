@@ -31,7 +31,7 @@ The repository contains:
 - A conformance test suite that determines whether a runtime is URML-compatible
 - An LLM bridge: prompt contracts, validators, and examples that let language models reliably emit valid URML
 
-Phase 0 is the current phase. The founder is the sole contributor. Conventions documented here are designed to scale from one person to a real engineering organization without rewrites.
+Phase 1 (public) is the current phase as of v0.1.0 (2026-05-22). `pip install urml-validator` ships; external contributions are open per [`CONTRIBUTING.md`](CONTRIBUTING.md). The founder remains the sole maintainer — the phase flip opens the door, not the headcount. Conventions documented here are designed to scale from one person to a real engineering organization without rewrites.
 
 ## Strategic Posture
 

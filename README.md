@@ -10,9 +10,20 @@
   <a href="https://urml.dev"><b>urml.dev</b></a>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
+  <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
+  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-765%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="conformance/"><img src="https://img.shields.io/badge/conformance-101%20fixtures-brightgreen.svg" alt="Conformance"></a>
+  <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-22%20Spec%20%2B%2016%20Outreach-blue.svg" alt="RFCs"></a>
+</p>
+
 ---
 
 # URML — Universal Robot Language
+
+**One vocabulary for robot intent. Statically validated. Runs on any substrate.**
 
 URML sits above existing robot operating systems (ROS 2, PX4, OPC UA Robotics, vendor SDKs) and lets humans, large language models, and robots share one vocabulary for *what should happen* — independent of which motors, joints, or frames carry it out. Every URML program is statically verified against the robot's declared capabilities, the active safety envelope, and the deployment's compliance policy **before a single actuator moves**.
 
@@ -22,13 +33,13 @@ URML is a **specification** and a set of **reference implementations**, not a ro
 
 ## Try it in three commands
 
-URML is in Phase 0 (pre-public draft). The reference packages are **not on PyPI yet** (that's a deliberate Phase-1 step); you install them editable from the clone. One script does it on any OS — no namespace claimed, nothing published, fully reversible (`make clean` removes every trace).
+URML v0.1.0 ships on PyPI. Install the validator and the hermetic mock runtime, scaffold a starter project, validate it. About 30 seconds; no API key, no robot.
 
 ```bash
-git clone https://github.com/URML-MARS/URML.git && cd URML
-python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
-make demo               # → Validation passed
-make demo-run           # → one English sentence, validated, then executed
+pip install urml-validator urml-ros2-runtime urml-llm-bridge
+urml init my-robot --profile home && cd my-robot
+urml validate program.urml.yaml \
+    --manifest manifest.yaml --envelope envelope.yaml --profile home
 ```
 
 <p align="center">
@@ -36,23 +47,23 @@ make demo-run           # → one English sentence, validated, then executed
 </p>
 
 <p align="center">
-  <sub>Exactly what <code>make demo-run</code> prints. Hermetic mock — the language, validator, and executor end to end; no actuator moved. Every line above is real <code>urml</code> output (asserted in CI). <a href="docs/demos/sentence-to-motion.md">walkthrough</a>.</sub>
+  <sub>The sentence-to-motion loop, animated. One English sentence becomes a validated URML program becomes an executed trace, on a hermetic mock (no actuator moved). Every line above is real <code>urml</code> output (asserted in CI). <a href="docs/demos/sentence-to-motion.md">full walkthrough</a>.</sub>
 </p>
 
-`make demo` validates the canonical red-mug example through all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). `make demo-run` goes further: it turns the English sentence "Bring me the red mug from the kitchen." into a URML program, validates it, and executes it step by step, printing the audit trace. Hermetic, no API key, no robot. No make? `bootstrap.py` prints the exact one-line commands to run instead. `make help` lists the rest (`install-dev`, `test`, `clean`).
+`pip install` brings down the validator CLI and a hermetic mock runtime. `urml init` scaffolds a minimal project on disk (manifest, envelope, sample program with its natural-language prompt, Makefile). `urml validate` runs all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). The bundled US-federal default policy is on by default; pass `--no-policy` to skip it, or `--policy <your_file.yaml>` to use your own.
 
-Then scaffold your own project:
+`--profile home`, `--profile drone`, `--profile industrial`, and `--profile warehouse` are all supported by `urml init`. See [`docs/demos/sentence-to-motion.md`](docs/demos/sentence-to-motion.md) for the full sentence-to-execution walkthrough behind the animation above, and [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
+
+### From source (hack on URML itself)
 
 ```bash
-. .venv/bin/activate                  # Windows: .venv\Scripts\activate
-urml init my-robot --profile home && cd my-robot
-urml validate program.urml.yaml \
-    --manifest manifest.yaml --envelope envelope.yaml --profile home
+git clone https://github.com/URML-MARS/URML.git && cd URML
+python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
+make test               # → 765 passed + 28 gated-skipped
+make demo-run           # → the animation above, reproduced live on the mock
 ```
 
-`--profile home`, `--profile drone`, `--profile industrial`, and `--profile warehouse` are all supported by `urml init`; `--policy` and `--no-policy` flags control the compliance pass.
-
-See [`docs/demos/sentence-to-motion.md`](docs/demos/sentence-to-motion.md) for the full sentence-to-execution walkthrough behind `make demo-run`, and [`docs/demos/compliance-walkthrough.md`](docs/demos/compliance-walkthrough.md) for a 90-second walkthrough that shows the compliance pass rejecting a covered-foreign-country component manifest, and the override path.
+`make demo` (validate only) and `make demo-run` (validate + execute) walk through the same flow with the canonical red-mug example. `make help` lists the rest (`install-dev`, `audit`, `demo-record`, `clean`).
 
 ---
 
@@ -121,7 +132,7 @@ See [RFC-0003](docs/rfcs/0003-us-alignment.md) for the strategic decision and tr
 
 ## Status
 
-**Phase 0** — pre-public draft, solo author working in public. The artifact under review is the manifesto itself plus the implementation that backs it. Direct code contributions open in Phase 1 (see [`GOVERNANCE.md`](GOVERNANCE.md) for the phased plan).
+**Phase 1 (public)** — as of v0.1.0 (2026-05-22). External code contributions are open per [`CONTRIBUTING.md`](CONTRIBUTING.md); the RFC process governs spec changes. The author remains the sole maintainer — the phase flip opens the door; it does not assert contributors have arrived. The artifact under review is the manifesto plus the v0.1 implementation; the decision history is in [`docs/rfcs/`](docs/rfcs/).
 
 What works today is what the table above lists as `✅`. What's planned is in [`MANIFESTO.md`](MANIFESTO.md) §Roadmap Snapshot. The decision history is in [`docs/rfcs/`](docs/rfcs/); seven RFCs are filed and accepted (0001–0007).
 
@@ -153,7 +164,7 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 
 ## Community & support
 
-URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) as its public question and feedback channel, open now in Phase 0:
+URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) as its public question and feedback channel:
 
 - [Q&A](https://github.com/URML-MARS/URML/discussions/categories/q-a) — how do I write a manifest, run the validator, integrate a runtime.
 - [Ideas](https://github.com/URML-MARS/URML/discussions/categories/ideas) — pre-RFC ideas for primitives, profiles, or tooling; the front of the funnel that leads to a primitive-proposal issue and then an RFC.
@@ -163,7 +174,7 @@ URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) as
 
 Issues are scoped to reference-runtime bugs and the primitive-proposal funnel. Security and conduct concerns follow the private process in [`SECURITY.md`](SECURITY.md), never a public thread.
 
-For the duration of Phase 0 the artifact under review is the manifesto and the v0.1 implementation. Critique of the primitive vocabulary, the layer boundaries, and the strategic posture, pointers to prior art, and use cases that strain the current architecture are all welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full routing.
+Critique of the primitive vocabulary, the layer boundaries, and the strategic posture, pointers to prior art, and use cases that strain the current architecture are all welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full routing.
 
 ---
 

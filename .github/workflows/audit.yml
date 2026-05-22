@@ -1,0 +1,67 @@
+# Weekly claims-audit refresh.
+#
+# Runs `tools/scripts/refresh_audit.py` on a schedule and on manual
+# dispatch; uploads the output as an artifact and renders it on the
+# workflow-run page via $GITHUB_STEP_SUMMARY so the maintainer sees the
+# drift in one click. Does NOT auto-edit any file — the script reports,
+# the human writes. Matches the project's "report drift, don't silently
+# rewrite" discipline.
+#
+# Cadence: Mondays 09:00 UTC. The Move-#1 outreach window and the
+# per-runtime gated CI cadence both align to weekly; this rides the
+# same beat.
+#
+# Scope honesty: this workflow installs the five canonical packages
+# editable. The twelve further reference runtimes (marine /
+# industrial-arm / legged / humanoid / mobile / opcua / cobot / mujoco /
+# embedded / edu / isaac / autosar) need their own optional extras /
+# sourced env; refresh_audit.py reports them as `n/a` here, which is
+# honest. Each gated `*-integration.yml` workflow remeasures its own
+# runtime separately.
+
+name: audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+
+jobs:
+  refresh-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install the five canonical packages editable
+        run: |
+          python -m pip install -U pip
+          python -m pip install \
+            -e reference/validator \
+            -e reference/llm-bridge \
+            -e reference/ros2-runtime \
+            -e reference/px4-runtime \
+            -e conformance \
+            "pytest>=8" pyyaml
+
+      - name: Run refresh_audit.py
+        run: |
+          python tools/scripts/refresh_audit.py | tee audit-output.md
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Claims-audit refresh" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat audit-output.md >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload audit output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-output
+          path: audit-output.md
+          retention-days: 90
