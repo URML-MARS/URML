@@ -716,6 +716,268 @@ def drone_project(project_name: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# Warehouse profile
+# ---------------------------------------------------------------------------
+
+
+_WAREHOUSE_MANIFEST = """\
+# Capability manifest for a warehouse-profile mobile manipulator AMR.
+# Edit the declared locations, events, gripper, and provenance to match
+# your actual deployment before validating against the bundled US-federal
+# policy.
+
+manifest_version: "0.1"
+robot_id: warehouse_amr_a1
+description: Mobile manipulator AMR for mixed-traffic warehouse aisles.
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: shelf_a3
+    pose: { x: 6.0, y: -2.0, z: 0.50 }
+    frame: site
+  - name: conveyor_a
+    pose: { x: 0.0, y: 4.0, z: 0.40 }
+    frame: site
+  - name: charge_dock_1
+    pose: { x: -4.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - partner_ready
+  - partner_unavailable
+  - obstacle_detected
+  - path_clear
+  - dock_acquired
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.5
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: gripper_2_finger
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 235.0
+      accepted_classes: [tote, parcel, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: front_rgbd
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: front_lidar
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 100.0
+      units: m
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - tote
+    - parcel
+    - small_part
+
+docking_stations:
+  - name: charge_dock_1
+    pose: { x: -4.0, y: 0.0, z: 0.0 }
+    frame: site
+    services: [dock, park]
+  - name: conveyor_a
+    pose: { x: 0.0, y: 4.0, z: 0.40 }
+    frame: site
+    services: [dock]
+
+outputs:
+  named_endpoints:
+    - fleet_manager
+
+# Hardware provenance (RFC-0004). The bundled default US-federal policy
+# checks this block in Pass 5. Replace the placeholder values with real
+# component data before any deployment that claims compliance.
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: amr_base
+      role: critical
+      vendor: example_amr_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/amr_base.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: arm_controller
+      role: critical
+      vendor: example_arm_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: front_lidar
+      role: critical
+      vendor: example_lidar_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/front_lidar.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+"""
+
+
+_WAREHOUSE_ENVELOPE = """\
+# Default safety envelope for a warehouse deployment. Edit to set the
+# aisle speed cap, people-occupancy zones, and any link-loss policy your
+# deployment requires.
+
+envelope_version: "0.1"
+deployment_id: warehouse_demo
+description: Default warehouse envelope.
+
+max_velocity: 1.2
+max_grip_force_n: 50.0
+
+people_occupancy_zones: []
+geofences: []
+
+link_loss_policy: []
+"""
+
+
+_WAREHOUSE_PROGRAM = """\
+# URML program -- generated from the natural-language prompt below.
+# Pick a tote from the shelf, place it on the outbound conveyor, report.
+
+profile: warehouse
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - pick_from:
+        source: shelf_a3
+        object: tote
+        force: gentle
+        store_as: shelf_tote
+    - place_at:
+        target: conveyor_a
+        held: $shelf_tote
+        mode: place
+    - report:
+        to: fleet_manager
+        facts:
+          cycle: shelf_to_conveyor
+          result: ok
+        status: success
+"""
+
+
+_WAREHOUSE_PROMPT = "Pick a tote from shelf A3 and place it on the outbound conveyor.\\n"
+
+
+_WAREHOUSE_README = """\
+# {project_name}
+
+A starter URML project for the **warehouse** profile.
+
+## Files
+
+- `manifest.yaml` -- the AMR's capability declaration (edit to match your hardware).
+- `envelope.yaml` -- safety envelope (aisle speed cap, people-occupancy zones).
+- `program.urml.yaml` -- a sample URML program; pick-to-conveyor cycle.
+- `prompt.en.txt` -- the natural-language request that would produce that program.
+- `Makefile` -- common URML commands.
+
+## What you can run today
+
+```bash
+# Validate the sample program against the manifest and envelope:
+urml validate program.urml.yaml --manifest manifest.yaml --envelope envelope.yaml --profile warehouse
+
+# See the system prompt the LLM bridge would send (no API key required):
+urml emit-prompt --manifest manifest.yaml --profile warehouse
+
+# Translate a natural-language request through an LLM (requires urml-llm-bridge
+# and an API key):
+urml translate "Pick a tote from shelf A3 and place it on the outbound conveyor." \\\\
+    --manifest manifest.yaml --envelope envelope.yaml --profile warehouse \\\\
+    --provider anthropic
+```
+
+## What to edit first
+
+1. **`manifest.yaml`** -- replace `warehouse_amr_a1` with your AMR's identifier; add
+   the real declared locations (aisles, shelves, handoff docks, conveyor stations),
+   declared events, gripper details, and per-component provenance.
+2. **`envelope.yaml`** -- add `people_occupancy_zones` for any floor area where
+   operators or other traffic may share space with the AMR. The warehouse profile
+   spec elevates this from optional to required for mixed-traffic deployments.
+3. **`prompt.en.txt`** -- the natural-language request you want translated.
+
+See the spec for field references:
+
+- Layer 1 (manifest): https://github.com/URML-MARS/URML/tree/main/spec/layer-1-hal
+- Layer 2 (primitives): https://github.com/URML-MARS/URML/tree/main/spec/layer-2-primitives
+- Layer 3 (composition): https://github.com/URML-MARS/URML/tree/main/spec/layer-3-behavior
+- Warehouse profile: https://github.com/URML-MARS/URML/tree/main/spec/profiles/warehouse
+"""
+
+
+_WAREHOUSE_MAKEFILE = """\
+# Convenience targets. Run `make help` for the list.
+
+.PHONY: help validate emit-prompt translate clean
+
+help:
+\\t@echo "validate        Validate program.urml.yaml against the manifest and envelope."
+\\t@echo "emit-prompt     Print the system prompt the bridge would send to an LLM."
+\\t@echo "translate       Translate prompt.en.txt via Anthropic (requires ANTHROPIC_API_KEY)."
+
+validate:
+\\turml validate program.urml.yaml --manifest manifest.yaml --envelope envelope.yaml --profile warehouse
+
+emit-prompt:
+\\turml emit-prompt --manifest manifest.yaml --profile warehouse
+
+translate:
+\\turml translate "$$(cat prompt.en.txt)" \\\\
+\\t    --manifest manifest.yaml --envelope envelope.yaml --profile warehouse \\\\
+\\t    --provider anthropic
+"""
+
+
+def warehouse_project(project_name: str) -> dict[str, str]:
+    """Return the starter file set for a warehouse-profile project."""
+    return {
+        "manifest.yaml": _WAREHOUSE_MANIFEST,
+        "envelope.yaml": _WAREHOUSE_ENVELOPE,
+        "program.urml.yaml": _WAREHOUSE_PROGRAM,
+        "prompt.en.txt": _WAREHOUSE_PROMPT,
+        "README.md": _WAREHOUSE_README.format(project_name=project_name),
+        "Makefile": _WAREHOUSE_MAKEFILE,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Profile registry
 # ---------------------------------------------------------------------------
 
@@ -724,4 +986,5 @@ PROJECT_TEMPLATES = {
     "home": home_project,
     "industrial": industrial_project,
     "drone": drone_project,
+    "warehouse": warehouse_project,
 }

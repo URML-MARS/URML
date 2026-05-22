@@ -1,0 +1,15 @@
+# Fixture: default safety envelope a warehouse-profile deployment applies on
+# top of the capability manifest. Conservative numbers for mixed-traffic
+# aisle operation.
+
+envelope_version: "0.1"
+deployment_id: warehouse_demo
+description: Default warehouse-profile envelope; aisle nominal max, no occupancy zones declared.
+
+max_velocity: 1.2          # 1.2 m/s; below warehouse_cell's declared 1.5 max.
+max_grip_force_n: 50.0     # Well below Robotiq 2F-85's 235 N max; tote handling.
+
+people_occupancy_zones: []
+geofences: []
+
+link_loss_policy: []

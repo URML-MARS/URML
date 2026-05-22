@@ -1,0 +1,168 @@
+# Fixture: a capability manifest for a small warehouse cell.
+#
+# A mobile manipulator AMR (differential-drive base + single arm with gripper)
+# operating in mixed-traffic aisles, with declared handoff and conveyor
+# stations. Hand-authored to be the minimum manifest the warehouse-profile
+# conformance fixtures need to validate end-to-end using only the v0.1 core
+# primitive vocabulary. Mirrors industrial_cell.yaml in structure, with a
+# warehouse-shaped drive type, event set, and station list.
+
+manifest_version: "0.1"
+robot_id: warehouse_amr_1
+description: AMR with single arm and Robotiq-class gripper, operating in mixed-traffic warehouse aisles.
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: shelf_a3
+    pose: { x: 6.0, y: -2.0, z: 0.50 }
+    frame: site
+    description: Storage shelf, aisle A3.
+  - name: shelf_b1
+    pose: { x: 8.0, y: 2.0, z: 0.50 }
+    frame: site
+    description: Storage shelf, aisle B1.
+  - name: conveyor_a
+    pose: { x: 0.0, y: 4.0, z: 0.40 }
+    frame: site
+    description: Outbound conveyor station, packing area.
+  - name: handoff_in_1
+    pose: { x: 2.0, y: 0.0, z: 0.30 }
+    frame: site
+    description: Inbound handoff dock from partner AGV.
+  - name: handoff_out_1
+    pose: { x: 4.0, y: 0.0, z: 0.30 }
+    frame: site
+    description: Outbound handoff dock to partner AGV.
+  - name: reserve_station
+    pose: { x: -2.0, y: 0.0, z: 0.30 }
+    frame: site
+    description: Fallback drop point when a handoff partner is unavailable.
+  - name: charge_dock_1
+    pose: { x: -4.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Charge dock.
+  - name: aisle_3_waypoint
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Mid-aisle navigation waypoint.
+
+declared_events:
+  - partner_ready
+  - partner_unavailable
+  - obstacle_detected
+  - path_clear
+  - dock_acquired
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.5
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: robotiq_2f85
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 235.0
+      accepted_classes: [tote, parcel, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: front_rgbd
+      movable: false
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: front_lidar
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 100.0
+      units: m
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - tote
+    - parcel
+    - small_part
+
+docking_stations:
+  - name: charge_dock_1
+    pose: { x: -4.0, y: 0.0, z: 0.0 }
+    frame: site
+    services: [dock, park]
+  - name: conveyor_a
+    pose: { x: 0.0, y: 4.0, z: 0.40 }
+    frame: site
+    services: [dock]
+  - name: handoff_in_1
+    pose: { x: 2.0, y: 0.0, z: 0.30 }
+    frame: site
+    services: [dock]
+  - name: handoff_out_1
+    pose: { x: 4.0, y: 0.0, z: 0.30 }
+    frame: site
+    services: [dock]
+
+outputs:
+  named_endpoints:
+    - fleet_manager
+    - partner_agv_7
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: amr_base
+      role: critical
+      vendor: clearpath
+      country_of_origin: CA
+      country_of_final_assembly: CA
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/amr_base.cdx.json
+        sha256: "1111111111111111111111111111111111111111111111111111111111111111"
+    - id: arm_controller
+      role: critical
+      vendor: universal_robots
+      country_of_origin: DK
+      country_of_final_assembly: DK
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "2222222222222222222222222222222222222222222222222222222222222222"
+    - id: gripper
+      role: non_critical
+      vendor: robotiq
+      country_of_origin: CA
+      country_of_final_assembly: CA
+    - id: head_camera
+      role: critical
+      vendor: intel
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/head_camera.cdx.json
+        sha256: "3333333333333333333333333333333333333333333333333333333333333333"
+    - id: front_lidar
+      role: critical
+      vendor: ouster
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/front_lidar.cdx.json
+        sha256: "4444444444444444444444444444444444444444444444444444444444444444"
