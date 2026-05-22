@@ -1,0 +1,85 @@
+# Fixture: KUKA ROS-Industrial cell.
+# Vendor: kuka (DE, allied; not on us_federal_default denylist). Default
+# policy ACCEPTS. Adapter: industrial-arm-runtime KukaAdapter (composes
+# RclpyAdapter; kroshu/kuka_drivers EKI/RSI/external-control-SDK lineage).
+# Filed alongside RFC-0025 for symmetry with Track-A/I-A brand fixtures.
+
+manifest_version: "0.1"
+robot_id: kuka_cell_1
+description: KUKA single-arm pick-and-place cell via the kroshu/kuka_drivers ROS 2 driver track (KR C4 / KR C5 EKI/RSI or iiQKA external-control-SDK).
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 1.50
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: kuka_arm_controller
+      role: critical
+      vendor: kuka
+      country_of_origin: DE
+      country_of_final_assembly: DE
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/kuka_controller.cdx.json
+        sha256: "2525252525252525252525252525252525252525252525252525252525252525"
