@@ -14,15 +14,15 @@
 
 # URML Governance
 
-**Status as of Phase 0:** One person.
+**Status as of Phase 1 (v0.1.0, public):** One person.
 
-The maintainer is the founder and sole contributor. This file describes the current state honestly and the phased plan for scaling governance as the project grows. The manifesto says of this file: *"It will say 'one person' until that becomes false."* That commitment is in force.
+The maintainer is the founder; external code contributions are open (Phase 1 since 2026-05-22) but none have arrived yet, so this file still honestly says one person. This file describes the current state and the phased plan for scaling governance as the project grows. The manifesto says of this file: *"It will say 'one person' until that becomes false."* That commitment is in force — the phase flip opened the door, it did not change the headcount.
 
 ---
 
 ## How Decisions Are Made Today
 
-Phase 0 governance is one person plus a documented RFC process. Every change to the specification — adding a primitive, changing a schema, modifying behavior semantics, changing the Core Commitment — is a numbered RFC in [`docs/rfcs/`](docs/rfcs/). See [`docs/rfcs/0001-rfc-process.md`](docs/rfcs/0001-rfc-process.md) for the authoritative process.
+Governance is one person plus a documented RFC process. Every change to the specification — adding a primitive, changing a schema, modifying behavior semantics, changing the Core Commitment — is a numbered RFC in [`docs/rfcs/`](docs/rfcs/). See [`docs/rfcs/0001-rfc-process.md`](docs/rfcs/0001-rfc-process.md) for the authoritative process. The Phase-1 flip (2026-05-22) opens external contributions per [`CONTRIBUTING.md`](CONTRIBUTING.md); the decision process itself is unchanged.
 
 Even with one reviewer, the discipline matters. The author reviews their own work against a documented self-review checklist (in the RFC process document). Future contributors will inherit a real decision history rather than a folkloric one.
 
@@ -46,8 +46,8 @@ The plan from the manifesto:
 
 | Phase | Governance shape |
 |---|---|
-| **0** (now) | One maintainer. RFC process documented and followed. Self-review against checklist. |
-| **1+** | Small steering committee of 3–5 trusted reviewers. Two-reviewer approval becomes the norm for spec-changing RFCs. |
+| **0** | One maintainer. RFC process documented and followed. Self-review against checklist. |
+| **1** (now, v0.1.0) | External code contributions opened. One maintainer still. A small steering committee of 3–5 trusted reviewers, and two-reviewer approval for spec-changing RFCs, becomes the norm as inbound load justifies. |
 | **2+** | Working groups per domain profile (home, drone, industrial, ...). A working group has merge authority within its profile, escalating cross-cutting changes to the steering committee. |
 | **3+** | A US-domiciled foundation owns the standard. Per [RFC-0003](docs/rfcs/0003-us-alignment.md), the realistic targets are a 501(c)(6) industry association, an SDO with strong US ties (IEEE-SA, INCITS), or a sponsored project under an existing US-domiciled foundation (Open Source Security Foundation, Cloud Native Computing Foundation). Trademark and conformance program transferred. The standard outlives its founders. |
 
@@ -55,13 +55,13 @@ Transitions between phases are themselves RFCs.
 
 ### Community Discussions (brought forward)
 
-[RFC-0008](docs/rfcs/0008-community-discussions.md) brings the public GitHub Discussions channel forward into Phase 0, ahead of the permanent organization, because adoption is the moat and the channel is reversible. Discussions carries questions, ideas, manufacturer and runtime-author topics, complaints, and feedback. It carries no decision weight: specification decisions remain RFCs and the precedence order above is unchanged. The routing is documented in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+[RFC-0008](docs/rfcs/0008-community-discussions.md) opened the public GitHub Discussions channel in Phase 0, ahead of the permanent organization, because adoption is the moat and the channel is reversible. Phase 1 inherits it unchanged. Discussions carries questions, ideas, manufacturer and runtime-author topics, complaints, and feedback. It carries no decision weight: specification decisions remain RFCs and the precedence order above is unchanged. The routing is documented in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Default Compliance Policy Maintenance
 
 [RFC-0004](docs/rfcs/0004-compliance-policy.md) added the bundled US-federal compliance policy at `reference/validator/src/urml_validator/policies/us_federal_default.yaml`. [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) item 7 commits it to remain Apache-2.0-forever. The maintenance burden is real: US federal robotics regulation is changing monthly.
 
-**Owner:** the sole maintainer, in Phase 0. The maintainer reviews the bundled policy against current statute at least once per quarter and opens a PR for any required updates. Value updates (a new vendor added to the FCC Covered List) are bare PRs; structural changes to the policy DSL go through the RFC process.
+**Owner:** the sole maintainer. The maintainer reviews the bundled policy against current statute at least once per quarter and opens a PR for any required updates. Value updates (a new vendor added to the FCC Covered List) are bare PRs; structural changes to the policy DSL go through the RFC process.
 
 **Sources tracked:**
 

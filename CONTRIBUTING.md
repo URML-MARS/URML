@@ -14,13 +14,13 @@
 
 # Contributing to URML
 
-Thank you for your interest in URML. This document describes how to engage during Phase 0 and how to contribute from Phase 1 on.
+Thank you for your interest in URML. This document describes how to contribute — code, RFCs, discussions — as of Phase 1 (v0.1.0, 2026-05-22).
 
-> **Phase 0 status (current).** URML is a solo project working in public. The artifact under review is the manifesto itself. The author welcomes critique, prior-art pointers, and use-case descriptions; **direct code contributions open in Phase 1.** This document is in force now so the contribution process is understood before contributions arrive.
+> **Phase 1 status (current, since v0.1.0).** URML is public, on PyPI, and accepting external code contributions per the RFC + DCO process documented below. The author remains the sole maintainer; the phase flip opened the door, not the headcount. The artifact under review is the manifesto plus the v0.1 implementation; the decision history is in [`docs/rfcs/`](docs/rfcs/).
 
 ---
 
-## Ways to Engage Today (Phase 0)
+## Ways to engage
 
 The author welcomes:
 
@@ -29,7 +29,7 @@ The author welcomes:
 - **Use cases that strain the current architecture** — scenarios the manifesto's three motivating examples (home, drone, industrial) do not cover.
 - **Naming suggestions** if "URML" proves unsuitable. See `MANIFESTO.md` Appendix B, Question 1.
 
-URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions), open now in Phase 0 ([RFC-0008](docs/rfcs/0008-community-discussions.md)). Where things go:
+URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions) ([RFC-0008](docs/rfcs/0008-community-discussions.md)). Where things go:
 
 - **Questions** (writing a manifest, running the validator, integrating a runtime): Discussions [Q&A](https://github.com/URML-MARS/URML/discussions/categories/q-a).
 - **Ideas** for a primitive, profile, or tooling: Discussions [Ideas](https://github.com/URML-MARS/URML/discussions/categories/ideas). One that holds up graduates to the [primitive proposal issue](.github/ISSUE_TEMPLATE/primitive_proposal.md) and then an RFC.
@@ -40,13 +40,16 @@ URML uses [GitHub Discussions](https://github.com/URML-MARS/URML/discussions), o
 
 A contributor mailing list will be set up when the project moves under its permanent GitHub organization.
 
-## What Changes Today
+## Pull requests (Phase 1)
 
-When Phase 1 opens, this section is updated. Three things happen at that boundary:
+External code PRs are open. Mechanics:
 
-1. The repository moves under a permanent GitHub organization.
-2. CI is wired up: DCO enforcement, linting, conformance test execution.
-3. This document is updated to describe pull-request mechanics, review SLAs, and merge authority.
+1. **Branch off `main`.** Name it descriptively (`feat/...`, `fix/...`, `docs/...`, `rfc/NNNN-slug`).
+2. **DCO sign-off on every commit** — see below.
+3. **Tests with the change.** New code lands with tests; bug fixes land with a regression test that fails before the fix.
+4. **Open the PR against `main`.** The maintainer reviews. There is no formal review SLA yet (one maintainer, Phase 1); expect days, not minutes.
+5. **Specification changes are RFCs, not PRs** — see [Specification Changes Are RFCs](#specification-changes-are-rfcs) below.
+6. The repository will move under a permanent GitHub organization in a later phase ([`GOVERNANCE.md`](GOVERNANCE.md) §Phased Governance Plan).
 
 ## Developer Certificate of Origin (DCO)
 
@@ -62,7 +65,7 @@ git commit -s -m "Subject line under 72 chars"
 
 This appends a `Signed-off-by: Your Name <your@email>` line to the commit message. By doing so, you assert that you have the right to submit the work under the project's license, per the DCO.
 
-DCO enforcement is wired into CI from Phase 1. Commits without sign-off are rejected; squashing or amending to add `-s` is the normal fix.
+DCO enforcement is wired into CI as of v0.1.0. Commits without sign-off are rejected; squashing or amending to add `-s` is the normal fix.
 
 ## Specification Changes Are RFCs
 
@@ -132,7 +135,7 @@ Registry submissions use a dedicated PR template (`?template=registry-submission
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). All contributors and engagement participants — including during Phase 0 — are expected to follow it.
+This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). All contributors and engagement participants are expected to follow it.
 
 ## Security
 
