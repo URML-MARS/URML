@@ -132,6 +132,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "yaskawa_cell": _VALIDATOR_FIXTURES / "manifests" / "yaskawa_cell.yaml",
     # RFC-0024: Universal Robots integration (Move #1 lighthouse — dual adapter).
     "ur_cell": _VALIDATOR_FIXTURES / "manifests" / "ur_cell.yaml",
+    # RFC-0025: KUKA integration (Move #1 lighthouse).
+    "kuka_cell": _VALIDATOR_FIXTURES / "manifests" / "kuka_cell.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
