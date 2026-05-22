@@ -57,6 +57,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0032](0032-ouster-integration.md) | Ouster integration — request for comment from ouster-lidar/ouster-sdk maintainers | Draft | 2026-05-22 |
 | [0033](0033-sick-integration.md) | SICK integration — request for comment from SICKAG/sick_safetyscanners2 maintainers | Draft | 2026-05-22 |
 | [0034](0034-festo-integration.md) | Festo integration — request for comment from Festo-se maintainers | Draft | 2026-05-22 |
+| [0035](0035-zivid-integration.md) | Zivid integration — request for comment from zivid/zivid-python maintainers | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
