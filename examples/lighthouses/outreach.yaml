@@ -1,0 +1,177 @@
+# Move #1 outreach ledger — one row per Tier-1 lighthouse vendor.
+#
+# This file is the project's record of what was sent, to whom, when, and
+# what (if anything) came back. It is intentionally committed so the
+# repo's history reflects outreach state, not maintainer memory.
+#
+# Phase 0 posture: this is a private working document published in-repo.
+# Do not massage `response`/`last_touch` to look more engaged than reality
+# — `none` is the truthful default until something concrete arrives.
+#
+# Schema:
+#   slug         — matches examples/lighthouses/demo.py::LIGHTHOUSES key;
+#                  the parity test in conformance/tests/test_outreach_ledger.py
+#                  enforces slug-set equality.
+#   rfc          — integer RFC number (0023..0038).
+#   sent_at      — ISO date the outreach was first sent.
+#   channel      — how it was sent (e.g. github, email, discussion_comment,
+#                  linkedin, in_person). Free-form; document in notes if
+#                  the channel changed across touches.
+#   contact      — the public handle/address the message was sent to.
+#   last_touch   — most recent maintainer action on this vendor (date).
+#   response     — none | acked | engaged | declined | wontfix
+#                    none      — nothing back yet
+#                    acked     — they noticed but said nothing substantive
+#                    engaged   — substantive reply / discussion in progress
+#                    declined  — polite no
+#                    wontfix   — not interested / out of scope on their end
+#   next_action  — the maintainer's next planned move; date if relevant.
+#   notes        — free-form. Keep facts, not feelings.
+#
+# To update: edit the row in place; bump `last_touch`; set `response`
+# from the enum above; write the next concrete step into `next_action`.
+
+- slug: yaskawa
+  rfc: 23
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@Yaskawa-Global"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d (until 2026-06-05); if silent, nudge via a follow-up comment on RFC-0023"
+  notes: ""
+- slug: ur
+  rfc: 24
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@UniversalRobots"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0024 comment"
+  notes: ""
+- slug: kuka
+  rfc: 25
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@kroshu (kuka_drivers maintainers)"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0025 comment"
+  notes: ""
+- slug: staubli
+  rfc: 26
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@ros-industrial (staubli_val3 maintainers)"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0026 comment"
+  notes: ""
+- slug: mitsubishi
+  rfc: 27
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@Mitsubishi-Electric-Asia"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0027 comment"
+  notes: ""
+- slug: fanuc
+  rfc: 28
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@FANUC-CORPORATION"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0028 comment"
+  notes: ""
+- slug: kawasaki
+  rfc: 29
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@Kawasaki-Robotics"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0029 comment"
+  notes: ""
+- slug: denso
+  rfc: 30
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@DENSORobot"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0030 comment"
+  notes: ""
+- slug: schunk
+  rfc: 31
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@SCHUNK-SE-Co-KG"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0031 comment"
+  notes: "first parts-vendor RFC"
+- slug: ouster
+  rfc: 32
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@ouster-lidar"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0032 comment"
+  notes: ""
+- slug: sick
+  rfc: 33
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@SICKAG"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0033 comment"
+  notes: ""
+- slug: festo
+  rfc: 34
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@Festo-se"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0034 comment"
+  notes: ""
+- slug: zivid
+  rfc: 35
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@zivid"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0035 comment"
+  notes: ""
+- slug: hokuyo
+  rfc: 36
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@Hokuyo-aut"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait 14 d; if silent, nudge via RFC-0036 comment"
+  notes: "last parts-vendor RFC"
+- slug: osrf
+  rfc: 37
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@gazebosim (OSRF / Open Robotics)"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait for OSRF feedback on RFC-0037 (proposal-only; no shipping adapter)"
+  notes: "proposal RFC — no in-repo adapter yet"
+- slug: ros-industrial
+  rfc: 38
+  sent_at: 2026-05-22
+  channel: github
+  contact: "@ros-industrial"
+  last_touch: 2026-05-22
+  response: none
+  next_action: "wait for ROS-Industrial Consortium feedback on RFC-0038 (institutional umbrella)"
+  notes: "institutional RFC — engagement at consortium level, not single repo"

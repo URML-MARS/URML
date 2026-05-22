@@ -58,18 +58,56 @@ LIGHTHOUSES: dict[str, tuple[int, str, str | None, str, str]] = {
 }
 
 
+def _load_ledger_responses() -> dict[str, str]:
+    """Best-effort: return {slug: response} from outreach.yaml; {} on failure.
+
+    The ledger is the listening side of Move #1 (sent vs reply state). If
+    it's missing or unreadable, fall back to the no-ledger view rather than
+    breaking the demo.
+    """
+    try:
+        import pathlib
+
+        import yaml  # transitive dep via the runtime packages on PYTHONPATH
+    except Exception:
+        return {}
+    p = pathlib.Path(__file__).with_name("outreach.yaml")
+    if not p.is_file():
+        return {}
+    try:
+        rows = yaml.safe_load(p.read_text(encoding="utf-8")) or []
+    except Exception:
+        return {}
+    out: dict[str, str] = {}
+    if isinstance(rows, list):
+        for r in rows:
+            if isinstance(r, dict) and "slug" in r and "response" in r:
+                out[r["slug"]] = str(r["response"])
+    return out
+
+
 def _list() -> None:
-    """Print the 16 lighthouse vendors + their RFC + adapter status."""
+    """Print the 16 lighthouse vendors + their RFC + adapter status + reply state."""
+    responses = _load_ledger_responses()
+    has_ledger = bool(responses)
     print("Move #1 lighthouse - 16 Tier-1 vendors (RFCs 0023-0038):")
     print()
-    print(f"  {'Vendor':24} {'RFC':6} {'Kind':14} {'Shipping artifact?'}")
-    print(f"  {'-' * 70}")
+    header = f"  {'Vendor':24} {'RFC':6} {'Kind':14} {'Artifact':18}"
+    if has_ledger:
+        header += " Response"
+    print(header)
+    print(f"  {'-' * (78 if has_ledger else 60)}")
     for slug, (rfc, display, fixture, kind, _rfc_slug) in LIGHTHOUSES.items():
         artifact = "yes" if fixture else "no - proposal-only"
-        print(f"  {slug:24} 00{rfc:02}   {kind:14} {artifact}")
+        row = f"  {slug:24} 00{rfc:02}   {kind:14} {artifact:18}"
+        if has_ledger:
+            row += f" {responses.get(slug, '?')}"
+        print(row)
     print()
     print("Run `python examples/lighthouses/demo.py --vendor <slug>` to exercise")
     print("the conformance fixture for any vendor whose artifact is shipping.")
+    if has_ledger:
+        print("Response state is read from examples/lighthouses/outreach.yaml.")
 
 
 def _run(slug: str) -> int:

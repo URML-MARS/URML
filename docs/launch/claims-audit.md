@@ -28,13 +28,25 @@ nothing inexpressible). The figures below were re-measured from scratch via
 per-package `PYTHONPATH` + `--junit-xml` (pytest's terminal summary truncates in
 some shells; the xml is the reliable count).
 
+**Partial re-measurement 2026-05-22, on `main`** (commit `661c2e2`), reflecting
+RFC-0021 (on-device LLM bridge, +llm-bridge tests), RFC-0022 (warehouse, +8
+conformance fixtures), the 16 lighthouse RFCs 0023–0038 (per-vendor industrial
+fixtures, +4), and this PR's outreach-ledger test (+4 conformance). Rows
+marked `*` were re-run on a non-CI host via
+[`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
+(invoke with `make audit`); rows without `*` carry the 2026-05-20 number
+because the host did not have the package's optional extras / CI environment
+to remeasure honestly — `make audit` flags them as "not measurable in this
+env" and the script does not auto-edit. Re-run in CI / a fully-installed venv
+to refresh the rest.
+
 | Suite | Result |
 |---|---|
-| validator | **242 passed** |
-| llm-bridge | **77 passed** |
-| ros2-runtime | **115 passed, 4 skipped** |
-| px4-runtime | **54 passed, 4 skipped** |
-| conformance | **97 passed** |
+| validator | **244 passed** * |
+| llm-bridge | **108 passed** * |
+| ros2-runtime | **115 passed, 4 skipped** * |
+| px4-runtime | **54 passed, 4 skipped** * |
+| conformance | **123 passed** * |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **5 passed** |
@@ -47,7 +59,7 @@ some shells; the xml is the reliable count).
 | edu-runtime | **6 passed, 2 skipped** (3 platform adapters parameterized) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
-| **Total** | **706 passed + 28 gated-skipped** |
+| **Total** | **765 passed + 28 gated-skipped** |
 
 The 28 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -59,12 +71,26 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **97** YAML cases under `conformance/fixtures/` — drone
-14, home 18, industrial 40, biped 5, quadruped 4, mobile 2, warehouse 8,
-marine 1, educational 4, research 1. Auto-discovered; all pass hermetically
-against `MockROSAdapter`. Warehouse fixtures were added 2026-05-21 by
-[RFC-0022](../rfcs/0022-warehouse-domain-profile.md) (no new primitives;
-the profile is normative scope plus manifest interpretation).
+Conformance fixtures: **101** YAML cases under `conformance/fixtures/` (live
+count 2026-05-22) — biped 5, drone 14, educational 4, home 18, industrial 44,
+marine 1, mobile 2, quadruped 4, research 1, warehouse 8. Auto-discovered; all
+pass hermetically against `MockROSAdapter`. Warehouse fixtures were added
+2026-05-21 by [RFC-0022](../rfcs/0022-warehouse-domain-profile.md) (+8, no new
+primitives); the industrial bucket grew 40 → 44 with the lighthouse RFCs
+0023–0038's per-vendor positive fixtures (Yaskawa / UR / KUKA / Stäubli /
+etc.).
+
+**Spec vs Outreach RFCs (post-Move-#1).** The `docs/rfcs/` dir now mixes two
+kinds. RFCs 0001–0022 are **Spec RFCs** (Layer-N changes, primitives, policy
+mechanism, profiles) that change URML's normative surface. RFCs 0023–0038 are
+**Outreach RFCs** — per-vendor request-for-comment documents that explicitly
+propose zero spec change ("No spec change is proposed here"), and live in the
+RFC dir for ergonomic discoverability (one place to find "URML's pitch to
+vendor X"). The Kind column in [`docs/rfcs/README.md`](../rfcs/README.md)
+makes the distinction explicit. The shipped surface above is the Spec RFCs'
+result; Outreach RFCs added per-vendor manifest fixtures and the lighthouse
+demo runner, not new primitives or schema. The outreach state itself is
+tracked in [`examples/lighthouses/outreach.yaml`](../../examples/lighthouses/outreach.yaml).
 
 ## Per-row backing
 

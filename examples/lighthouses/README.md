@@ -72,6 +72,27 @@ audit trace. A passing run means:
   RFC is a request for comment; partnership is a separate, later
   conversation.
 
+## The outreach ledger (`outreach.yaml`)
+
+`outreach.yaml` is the project's per-vendor record of what was sent, to
+whom, when, and what came back. It is the listening side of the Move #1
+program — without it, "did anyone respond?" lives in the maintainer's
+head, not in the repo. One row per vendor; schema documented in the file
+header. The `slug` set is asserted equal to `demo.py::LIGHTHOUSES` by
+[`conformance/tests/test_outreach_ledger.py`](../../conformance/tests/test_outreach_ledger.py)
+so the two cannot drift.
+
+`response` enum: `none | acked | engaged | declined | wontfix`. Default
+state for every freshly-sent vendor is `none`, with `last_touch == sent_at`.
+**Do not massage these to look more engaged than reality.** When a
+maintainer takes any action on a vendor (a nudge, a follow-up, a reply
+arriving), bump `last_touch`, set `response` to the matching enum value,
+and write the next concrete step into `next_action`. Notes hold facts,
+not feelings.
+
+The list view (`python examples/lighthouses/demo.py --list`) will print
+the response status alongside the vendor when the ledger is present.
+
 ## See also
 
 - The per-vendor mapping RFCs: [`docs/rfcs/0023-yaskawa-motoros2-integration.md`](../../docs/rfcs/0023-yaskawa-motoros2-integration.md) through [`0038-ros-industrial-consortium.md`](../../docs/rfcs/0038-ros-industrial-consortium.md).
