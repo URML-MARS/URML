@@ -38,7 +38,7 @@ Single-arm manipulators and mobile bases operating in **controlled industrial ce
 - **Welding, painting, machining**, and other process-specialized tasks at v1.0. These are domain-specialized enough to merit their own profiles or to live outside the canonical maintenance scope.
 - **Multi-arm coordination** at v1.0. Compose with multiple single-arm cells instead; explicit dual-arm coordination is a v1.x stretch.
 - **Heavy-payload manipulation** beyond a declared cell ceiling.
-- **Outdoor or human-shared-floor mobile operation.** Industrial mobile bases in this profile operate within a declared cell perimeter, not mixed-traffic warehouse aisles. Mixed-traffic warehouse operation is plausibly its own profile.
+- **Outdoor or human-shared-floor mobile operation.** Industrial mobile bases in this profile operate within a declared cell perimeter, not mixed-traffic warehouse aisles. Mixed-traffic warehouse operation has its own profile: see [`../warehouse/README.md`](../warehouse/README.md) (RFC-0022). Compositions that pair a warehouse AMR with an industrial cell are supported via the program schema's multi-profile list (`profile: [warehouse, industrial]`).
 
 ## Profile-required Layer-1 manifest fields
 
