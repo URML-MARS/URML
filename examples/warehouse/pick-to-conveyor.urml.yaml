@@ -1,0 +1,43 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: warehouse/pick-to-conveyor
+# Source NL: "Pick a tote from shelf A3, take it to conveyor A, and place
+#             it on the conveyor. Report when done."
+#            (see pick-to-conveyor.en.txt)
+#
+# Minimum-viable warehouse-profile example. A mobile manipulator AMR picks
+# a tote from a shelf in aisle A3, transports it to an outbound conveyor
+# station, places it, and reports cycle completion to the fleet manager.
+# Uses only existing primitives; the warehouse profile (RFC-0022) adds no
+# new ones.
+#
+# Validate end-to-end via the companion manifest:
+#
+#   urml validate pick-to-conveyor.urml.yaml \
+#     -m pick-to-conveyor.manifest.yaml --profile warehouse
+#
+# The companion manifest declares a US-allied hardware provenance BOM
+# (Clearpath base, Universal Robots arm, Robotiq gripper, Intel RealSense,
+# Ouster lidar), so the bundled default policy (RFC-0004) accepts it.
+# Pass `--no-policy` to skip Pass 5.
+
+profile: warehouse
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - pick_from:
+        source: shelf_a3
+        object: tote
+        force: gentle
+        store_as: shelf_tote
+    - place_at:
+        target: conveyor_a
+        held: $shelf_tote
+        mode: place
+    - report:
+        to: fleet_manager
+        facts:
+          cycle: shelf_to_conveyor
+          result: ok
+        status: success

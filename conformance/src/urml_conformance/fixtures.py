@@ -126,6 +126,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "figure_biped": _VALIDATOR_FIXTURES / "manifests" / "figure_biped.yaml",
     "apollo_biped": _VALIDATOR_FIXTURES / "manifests" / "apollo_biped.yaml",
     "neo_biped": _VALIDATOR_FIXTURES / "manifests" / "neo_biped.yaml",
+    # RFC-0022: warehouse domain profile.
+    "warehouse_cell": _VALIDATOR_FIXTURES / "manifests" / "warehouse_cell.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -140,6 +142,9 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "link_loss_hover": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_hover.yaml",
     "link_loss_outage_relaxed": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_outage_relaxed.yaml",
     "link_loss_halt": _VALIDATOR_FIXTURES / "envelopes" / "link_loss_halt.yaml",
+    # RFC-0022: warehouse domain profile.
+    "warehouse_default": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_default.yaml",
+    "warehouse_with_occupancy_zone": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_with_occupancy_zone.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

@@ -1,0 +1,24 @@
+# Fixture: warehouse envelope with a declared people-occupancy zone covering
+# part of aisle 3. The warehouse_cell manifest's aisle_3_waypoint is at
+# (5.0, 0.0) in the `site` frame and intentionally falls inside this
+# polygon, so a move_to(aisle_3_waypoint) program triggers
+# envelope.occupancy_zone_intrusion in Pass 3.
+
+envelope_version: "0.1"
+deployment_id: warehouse_with_people_zone
+description: Warehouse envelope with a people-occupancy zone over part of aisle 3.
+
+max_velocity: 1.2
+
+people_occupancy_zones:
+  - name: aisle_3_people_zone
+    frame: site
+    vertices:
+      - [4.0, -1.0]
+      - [6.0, -1.0]
+      - [6.0, 1.0]
+      - [4.0, 1.0]
+    allow_override: false
+geofences: []
+
+link_loss_policy: []
