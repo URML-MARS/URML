@@ -45,6 +45,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0020](0020-autoware-av-substrate.md) | Autoware AV substrate — research-grade autonomous-vehicle profile | Draft | 2026-05-20 |
 | [0021](0021-on-device-llm-bridge.md) | On-device LLM bridge — schema-derived GBNF, GGUF model contract, per-model conformance | Draft | 2026-05-21 |
 | [0022](0022-warehouse-domain-profile.md) | Warehouse domain profile — mixed-traffic AMR aisles, zero new primitives | Draft | 2026-05-21 |
+| [0023](0023-yaskawa-motoros2-integration.md) | Yaskawa / MotoROS2 integration — request for comment from Yaskawa-Global maintainers | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
