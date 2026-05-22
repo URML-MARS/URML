@@ -1,0 +1,64 @@
+name: warehouse/handoff_coordination_positive
+description: >
+  Two-step handoff: navigate to the outbound handoff dock, wait for the
+  partner to assert partner_ready, place the tote on the dock. Both events
+  are declared; no new primitive. Exercises the partner-coordination
+  convention.
+
+manifest: warehouse_cell
+envelope: warehouse_default
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: shelf_a3
+          object: tote
+          force: gentle
+          store_as: handover_tote
+      - move_to:
+          location: handoff_out_1
+          carrying: $handover_tote
+      - wait_for:
+          condition: { event: partner_ready }
+      - place_at:
+          target: handoff_out_1
+          held: $handover_tote
+          mode: place
+      - report:
+          to: fleet_manager
+          facts: { cycle: handoff_out, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: tote
+      pose: { x: 6.0, y: -2.0, z: 0.50 }
+      frame: site
+      attributes: {}
+      confidence: 0.91
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 5
+  audit_methods:
+    - send_navigation_goal      # pick_from: navigate
+    - query_detection
+    - send_manipulation_goal    # pick_from: grasp
+    - send_navigation_goal      # move_to handoff_out_1
+    - wait_for_condition
+    - send_navigation_goal      # place_at: navigate to dock
+    - send_manipulation_goal    # place_at: release
+    - emit_report
+  bindings_contains:
+    handover_tote:
+      class: tote

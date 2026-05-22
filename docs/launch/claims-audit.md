@@ -59,10 +59,12 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **89** YAML cases under `conformance/fixtures/` — drone
-14, home 18, industrial 40, biped 5, quadruped 4, mobile 2, marine 1,
-educational 4, research 1. Auto-discovered; all pass hermetically against
-`MockROSAdapter`.
+Conformance fixtures: **97** YAML cases under `conformance/fixtures/` — drone
+14, home 18, industrial 40, biped 5, quadruped 4, mobile 2, warehouse 8,
+marine 1, educational 4, research 1. Auto-discovered; all pass hermetically
+against `MockROSAdapter`. Warehouse fixtures were added 2026-05-21 by
+[RFC-0022](../rfcs/0022-warehouse-domain-profile.md) (no new primitives;
+the profile is normative scope plus manifest interpretation).
 
 ## Per-row backing
 
@@ -100,13 +102,13 @@ suite.
 revision loop with `BridgePolicyViolation` short-circuit. Evidence: llm-bridge
 77 passed.
 
-**Conformance suite — 89 fixtures, `urml conformance run`, and a normative
-runtime contract.** `conformance/fixtures/**/*.yaml` = 89 cases.
-[RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively, what
-makes a runtime URML-compatible (manifest intake, the frozen substrate
+**Conformance suite — 97 fixtures, `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 97 cases (89 pre-RFC-0022 + 8
+warehouse). [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively,
+what makes a runtime URML-compatible (manifest intake, the frozen substrate
 Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
-spec-gap loop). Evidence: conformance 97 passed (parametrized over the 89
-fixtures + loader/registry/smoke).
+spec-gap loop). Evidence: `urml conformance run` reports 97/97 passed
+(parametrized over the fixtures + loader/registry/smoke).
 
 **CLI — seven subcommands.** `urml --help` →
 `validate execute schema translate emit-prompt init conformance`.
@@ -186,7 +188,7 @@ the latest Drafts. No primitive or schema changed without an accepted RFC.
 python -m pytest <pkg>/tests -q --tb=no --junit-xml=j.xml
 python -c "import xml.etree.ElementTree as E;print(E.parse('j.xml').getroot().find('testsuite').attrib)"
 python -m pytest conformance/tests -q --tb=no --junit-xml=c.xml
-find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (89)
+find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (97)
 ls docs/rfcs/ | grep -E '^00[0-2][0-9]'              # RFCs (exclude 0000-template)
 urml --help                                           # subcommands
 ```

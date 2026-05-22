@@ -1,0 +1,42 @@
+name: warehouse/amr_aisle_dynamic_obstacle_positive
+description: >
+  AMR navigates through an aisle, pauses on obstacle_detected, resumes on
+  path_clear, then reaches its destination. Exercises the dynamic-obstacle
+  event convention without new primitives. Both events are declared on the
+  warehouse_cell manifest, so the wait_for steps pass capability checks.
+
+manifest: warehouse_cell
+envelope: warehouse_default
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: aisle_3_waypoint
+      - wait_for:
+          condition: { event: obstacle_detected }
+      - wait_for:
+          condition: { event: path_clear }
+      - move_to:
+          location: shelf_b1
+      - report:
+          to: fleet_manager
+          facts: { cycle: aisle_traverse, result: ok }
+          status: success
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 5
+  audit_methods:
+    - send_navigation_goal
+    - wait_for_condition
+    - wait_for_condition
+    - send_navigation_goal
+    - emit_report

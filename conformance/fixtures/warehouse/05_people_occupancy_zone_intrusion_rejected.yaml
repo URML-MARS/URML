@@ -1,0 +1,25 @@
+name: warehouse/people_occupancy_zone_intrusion_rejected
+description: >
+  Negative: a move_to targets aisle_3_waypoint at (5.0, 0.0) in the `site`
+  frame. The envelope declares a people-occupancy zone covering (4..6,
+  -1..1), which contains that point. Pass 3 rejects with
+  envelope.occupancy_zone_intrusion.
+  Validator-only; no execution is expected.
+
+manifest: warehouse_cell
+envelope: warehouse_with_occupancy_zone
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: aisle_3_waypoint
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

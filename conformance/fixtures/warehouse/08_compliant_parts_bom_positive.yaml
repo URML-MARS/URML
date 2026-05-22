@@ -1,0 +1,35 @@
+name: warehouse/compliant_parts_bom_positive
+description: >
+  Full five-pass acceptance of the warehouse_cell manifest's BOM. The
+  manifest declares Clearpath base (CA), Universal Robots arm (DK), Robotiq
+  gripper (CA), Intel RealSense camera (US), Ouster lidar (US). None of
+  these vendors is on the bundled US-federal covered_vendor_denylist
+  (`dji`, `autel`, `hesai`, `unitree`); all countries are US-allied.
+  Pass 5 accepts. Validator-only smoke for the policy outcome.
+
+manifest: warehouse_cell
+envelope: warehouse_default
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: charge_dock_1
+      - report:
+          to: fleet_manager
+          facts: { cycle: bom_compliance_smoke, result: ok }
+          status: success
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - send_navigation_goal
+    - emit_report

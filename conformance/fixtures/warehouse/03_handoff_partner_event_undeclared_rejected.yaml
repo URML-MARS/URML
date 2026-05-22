@@ -1,0 +1,31 @@
+name: warehouse/handoff_partner_event_undeclared_rejected
+description: >
+  Negative: a program references an undeclared event in a handoff
+  coordination step. The warehouse_cell manifest declares partner_ready and
+  partner_unavailable but NOT partner_handover_done. Pass 2 rejects with
+  capability.missing_event before any actuator moves.
+  Validator-only; no execution is expected.
+
+manifest: warehouse_cell
+envelope: warehouse_default
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: handoff_out_1
+      - wait_for:
+          condition: { event: partner_handover_done }
+      - report:
+          to: fleet_manager
+          facts: { cycle: handoff_out, result: ok }
+          status: success
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_event
