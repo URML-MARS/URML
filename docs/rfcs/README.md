@@ -60,6 +60,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0035](0035-zivid-integration.md) | Zivid integration — request for comment from zivid/zivid-python maintainers | Draft | 2026-05-22 |
 | [0036](0036-hokuyo-integration.md) | Hokuyo integration — request for comment from Hokuyo-aut/urg_node2 maintainers | Draft | 2026-05-22 |
 | [0037](0037-osrf-gazebo-integration.md) | OSRF / Gazebo Sim integration — proposal-only RFC; request for comment from gazebosim maintainers | Draft | 2026-05-22 |
+| [0038](0038-ros-industrial-consortium.md) | ROS-Industrial Consortium alignment — institutional umbrella RFC; closes the Move #1 16-vendor lighthouse program | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
