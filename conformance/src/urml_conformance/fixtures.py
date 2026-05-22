@@ -134,6 +134,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ur_cell": _VALIDATOR_FIXTURES / "manifests" / "ur_cell.yaml",
     # RFC-0025: KUKA integration (Move #1 lighthouse).
     "kuka_cell": _VALIDATOR_FIXTURES / "manifests" / "kuka_cell.yaml",
+    # RFC-0028: FANUC integration (Move #1 lighthouse) — closes original-six gap.
+    "fanuc_cell": _VALIDATOR_FIXTURES / "manifests" / "fanuc_cell.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {

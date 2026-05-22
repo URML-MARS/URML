@@ -50,6 +50,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0025](0025-kuka-integration.md) | KUKA integration — request for comment from kroshu/kuka_drivers maintainers | Draft | 2026-05-22 |
 | [0026](0026-staubli-integration.md) | Stäubli integration — request for comment from ros-industrial/staubli_val3_driver maintainers | Draft | 2026-05-22 |
 | [0027](0027-mitsubishi-melfa-integration.md) | Mitsubishi MELFA integration — request for comment from Mitsubishi-Electric-Asia maintainers | Draft | 2026-05-22 |
+| [0028](0028-fanuc-integration.md) | FANUC integration — request for comment from FANUC-CORPORATION/fanuc_driver maintainers | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
