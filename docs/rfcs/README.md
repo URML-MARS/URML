@@ -48,6 +48,7 @@ The authoritative description of *how* RFCs work is [RFC-0001](0001-rfc-process.
 | [0023](0023-yaskawa-motoros2-integration.md) | Yaskawa / MotoROS2 integration — request for comment from Yaskawa-Global maintainers | Draft | 2026-05-22 |
 | [0024](0024-universal-robots-integration.md) | Universal Robots integration — same robot, two URML adapters; request for comment from UniversalRobots maintainers | Draft | 2026-05-22 |
 | [0025](0025-kuka-integration.md) | KUKA integration — request for comment from kroshu/kuka_drivers maintainers | Draft | 2026-05-22 |
+| [0026](0026-staubli-integration.md) | Stäubli integration — request for comment from ros-industrial/staubli_val3_driver maintainers | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
