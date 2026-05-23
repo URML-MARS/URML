@@ -124,7 +124,15 @@ class Camera(BaseModel):
 
 
 class Sensor(BaseModel):
-    """A non-camera sensor declared in the manifest's perception block."""
+    """A non-camera sensor declared in the manifest's perception block.
+
+    URML's Sensor block declares **what the sensor can do**, not what a
+    deployment configures it to do. Fields like `beam_count`, `channels`,
+    `time_sync_methods`, and `rate_hz_max` are capability declarations
+    (RFC-0039); runtime substrates (Ouster's `LidarMode` + `UDPLidarProfile`,
+    ROS 2 driver parameters, vendor-specific configuration files) pick the
+    active mode at deployment time.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -140,11 +148,43 @@ class Sensor(BaseModel):
         "current",
         "voltage",
         "speech",
+        "point_cloud",       # RFC-0039: 3D lidars and similar multi-channel sensors.
         "custom",
     ]
     range_min: float | None = None
     range_max: float | None = None
     units: str | None = None
+
+    # RFC-0039 additions (v0.2 Sensor schema iteration). All optional and
+    # additive; existing manifests validate unchanged.
+    beam_count: int | None = Field(
+        default=None,
+        ge=1,
+        description="Vertical beam count for lidar-class sensors. SKU-fixed.",
+    )
+    channels: list[str] | None = Field(
+        default=None,
+        description=(
+            "Data channels the sensor publishes (free-form list; conventional "
+            "lidar values: range, intensity, reflectivity, near_ir)."
+        ),
+    )
+    time_sync_methods: list[str] | None = Field(
+        default=None,
+        description=(
+            "Capability list of supported timestamping methods (free-form; "
+            "conventional values: ptp, nmea, ieee_1588, ntp). URML declares "
+            "the supported set; the substrate driver selects one."
+        ),
+    )
+    rate_hz_max: float | None = Field(
+        default=None,
+        gt=0,
+        description=(
+            "Declared sample-rate ceiling in Hz. Substrate drivers may "
+            "configure the sensor below this ceiling at deployment time."
+        ),
+    )
 
 
 class Perception(BaseModel):
