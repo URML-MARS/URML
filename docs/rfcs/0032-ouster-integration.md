@@ -127,6 +127,25 @@ URML public Discussions (per [RFC-0008](0008-community-discussions.md)):
 
 Or open an Issue on `ouster-lidar/ouster-sdk`. Private channel via `MAINTAINERS.md`.
 
+## Maintainer feedback (2026-05-22)
+
+[@Samahu](https://github.com/Samahu) replied substantively to all five questions on [`ouster-lidar/ouster-sdk#711`](https://github.com/ouster-lidar/ouster-sdk/issues/711#issuecomment-4520792253) within ~7 hours of the issue going up. Reply quoted verbatim by gap:
+
+1. **Point-cloud declaration / units.**
+   > Depends on how you choose to represent the data, in some interactions I had with the ROS community they prefer using standard unit [meters] to represent the data .. that will of course require you to use floating point representation ... however, if you want to preserve the original millimeter integer representation then I would think you have to include units as part of the schema.
+2. **Beam count.**
+   > I think it should capture the beam count.. each beam configuration is a different hardware. You can't change the beam count of a given sensor.
+3. **Multi-channel and frame rate.**
+   > These can be configured using the LidarMode and UDPLidarProfile include rate_hz.
+4. **Time synchronization.**
+   > Ouster sensor have support for 3 timestamps mode, it really depends whether the URML is setup as a configuration schema that the node would have to read and configure the sensor based on that.. if so then the answer is yes.
+5. **AV substrate alignment (RFC-0020 review).**
+   > Will try to take a look.
+
+The most architecturally consequential point is (4): Samahu's pushback forced URML to take a stance on the *capability schema vs configuration schema* line. URML's stance is the former. The manifest declares what the sensor can do; the substrate driver picks the active mode at deployment time.
+
+The five points (1)–(4) are resolved by [RFC-0039](0039-sensor-schema-v0-2-iteration.md), which adds `point_cloud` as a `measurement_type`, plus four additive optional Sensor capability fields (`beam_count`, `channels`, `time_sync_methods`, `rate_hz_max`), and formalizes the capability-vs-configuration stance in the Layer-1 HAL normative text. Point (5) remains open pending Samahu's RFC-0020 review.
+
 ## Self-review (Phase 0)
 
 - [x] Summary alone tells a reader what is being proposed.

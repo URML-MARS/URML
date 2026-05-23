@@ -61,10 +61,16 @@ perception:
       max_resolution: "1080p"
   sensors:
     - name: ouster_3d_lidar_cell_distance
-      measurement_type: distance
+      measurement_type: point_cloud   # RFC-0039: 3D lidar declares point-cloud, not scalar distance.
       range_min: 0.05
       range_max: 50.0
       units: m
+      beam_count: 64                  # OS-1-64 SKU; SKU-fixed per Ouster (RFC-0039).
+      channels: [range, intensity, reflectivity, near_ir]
+      time_sync_methods: [ptp, nmea, ieee_1588]
+      rate_hz_max: 20.0               # Capability ceiling; substrate driver
+                                      # selects active rate via LidarMode +
+                                      # UDPLidarProfile (RFC-0039).
     - name: tcp_force
       measurement_type: pressure
       range_min: 0.0

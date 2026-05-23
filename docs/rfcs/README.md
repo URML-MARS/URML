@@ -80,6 +80,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0036](0036-hokuyo-integration.md) | Outreach | Hokuyo integration — request for comment from Hokuyo-aut/urg_node2 maintainers | Draft | 2026-05-22 |
 | [0037](0037-osrf-gazebo-integration.md) | Outreach | OSRF / Gazebo Sim integration — proposal-only RFC; request for comment from gazebosim maintainers | Draft | 2026-05-22 |
 | [0038](0038-ros-industrial-consortium.md) | Outreach | ROS-Industrial Consortium alignment — institutional umbrella RFC; closes the Move #1 16-vendor lighthouse program | Draft | 2026-05-22 |
+| [0039](0039-sensor-schema-v0-2-iteration.md) | Spec | Sensor schema v0.2 iteration — point-cloud type, beam_count, channels, time_sync_methods, rate_hz_max (from Ouster maintainer feedback) | Draft | 2026-05-22 |
 
 ## Lifecycle states
 
