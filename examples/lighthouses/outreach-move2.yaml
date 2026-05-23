@@ -1,0 +1,53 @@
+# Move #2 outreach ledger — one row per AI/ML-layer target.
+#
+# Move #1 (outreach.yaml) targeted robot OEMs and component vendors:
+# 16 Tier-1 lighthouses, each with a manifest fixture, conformance
+# fixture, and adapter or proposal in-repo. The parity test in
+# conformance/tests/test_outreach_ledger.py locks that file's slug set
+# to demo.py::LIGHTHOUSES.
+#
+# Move #2 targets the AI/ML layer one stratum above the substrate
+# vendors: open-source robot-learning libraries, robotics-AI specialist
+# startups, frontier-lab robotics arms, and the open-data / open-model
+# infrastructure projects that sit between them. These targets do NOT
+# ship a per-target manifest fixture or adapter in this repo (most are
+# libraries or research projects, not deployable substrates), so the
+# Move #1 parity test does not apply here.
+#
+# Schema mirrors outreach.yaml so the listening discipline stays
+# uniform across moves. Fields:
+#   slug         — short identifier, kebab-case.
+#   rfc          — integer RFC number (0040+).
+#   sent_at      — ISO date the outreach was first sent.
+#   channel      — how it was sent (e.g. github_discussion, github_issue,
+#                  email, discord, x_dm). Free-form; document in notes if
+#                  the channel changed across touches.
+#   contact      — the public handle/address the message was sent to.
+#   last_touch   — most recent maintainer action on this target (date).
+#   response     — none | acked | engaged | declined | wontfix
+#                    none      — nothing back yet
+#                    acked     — they noticed but said nothing substantive
+#                    engaged   — substantive reply / discussion in progress
+#                    declined  — polite no
+#                    wontfix   — not interested / out of scope on their end
+#   next_action  — the maintainer's next planned move; date if relevant.
+#   notes        — free-form. Keep facts, not feelings.
+#
+# Phase 0 posture: the same as Move #1. Do not massage `response` /
+# `last_touch` to look more engaged than reality. `none` is the
+# truthful default until something concrete arrives.
+#
+# Per the wave-gating discipline in the Move #2 plan, the second Move #2
+# target is not drafted until this row has either acknowledgement,
+# refusal, or a measured non-reply over a chosen window. Add rows here
+# only as new RFCs ship (RFC-0041, 0042, ...).
+
+- slug: lerobot
+  rfc: 40
+  sent_at: ""
+  channel: github_issue
+  contact: "huggingface/lerobot (Remi Cadene @cadene, HF Robotics)"
+  last_touch: ""
+  response: none
+  next_action: "file an Issue on huggingface/lerobot labelled `enhancement` pointing to RFC-0040; cross-post a short pointer on the HF community Discord linked from lerobot CONTRIBUTING.md; record sent_at and last_touch when posted"
+  notes: "first Move #2 RFC; proposal-only (no shipping plugin); follows LeRobot's published Bring Your Own Policies convention (lerobot_policy_urml); see docs/rfcs/0040-hugging-face-lerobot.md. Discussions are NOT enabled on huggingface/lerobot — surface confirmed against the repo (2026-05-23); Issues + Discord is the documented contribution path per CONTRIBUTING.md."

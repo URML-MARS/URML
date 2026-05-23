@@ -28,14 +28,19 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   RFCs in the canonical sense ([RFC-0001](0001-rfc-process.md) governs
   them) and going through Draft → Open → Accepted → Implemented is the
   way *the specification* changes. Numbered 0001–0022 at time of writing.
-- **Outreach** — per-vendor request-for-comment documents. Each one
+- **Outreach** — per-target request-for-comment documents. Each one
   explicitly states *"No spec change is proposed here"* and proposes a
-  mapping from URML v0.1 to an existing vendor's adapter/manifest. They
-  live in this directory for ergonomic discoverability (one place to find
-  "URML's pitch to vendor X") and are tracked operationally in
-  [`examples/lighthouses/outreach.yaml`](../../examples/lighthouses/outreach.yaml).
-  Numbered 0023–0038 at time of writing; do not interpret them as a quiet
-  expansion of URML's spec surface.
+  mapping from URML v0.1 to an existing target's adapter / manifest / API.
+  They live in this directory for ergonomic discoverability (one place
+  to find "URML's pitch to target X") and are tracked operationally in
+  the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
+  Two outreach waves now exist: **Move #1** (RFCs 0023–0038, robot OEMs
+  and component vendors, ledger
+  [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)) and
+  **Move #2** (RFC 0040+, AI/ML-layer projects, ledger
+  [`outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml)).
+  Do not interpret outreach RFCs as a quiet expansion of URML's spec
+  surface.
 
 ## Index
 
@@ -81,6 +86,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0037](0037-osrf-gazebo-integration.md) | Outreach | OSRF / Gazebo Sim integration — proposal-only RFC; request for comment from gazebosim maintainers | Draft | 2026-05-22 |
 | [0038](0038-ros-industrial-consortium.md) | Outreach | ROS-Industrial Consortium alignment — institutional umbrella RFC; closes the Move #1 16-vendor lighthouse program | Draft | 2026-05-22 |
 | [0039](0039-sensor-schema-v0-2-iteration.md) | Spec | Sensor schema v0.2 iteration — point-cloud type, beam_count, channels, time_sync_methods, rate_hz_max (from Ouster maintainer feedback) | Draft | 2026-05-22 |
+| [0040](0040-hugging-face-lerobot.md) | Outreach | Hugging Face LeRobot integration — first Move #2 RFC; proposal-only bridge; request for comment from huggingface/lerobot maintainers | Draft | 2026-05-23 |
 
 ## Lifecycle states
 

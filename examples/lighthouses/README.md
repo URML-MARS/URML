@@ -107,6 +107,27 @@ not feelings.
 The list view (`python examples/lighthouses/demo.py --list`) will print
 the response status alongside the vendor when the ledger is present.
 
+## Move #2 outreach (`outreach-move2.yaml`)
+
+Move #1 targeted robot OEMs and component vendors. Move #2 turns the
+same outreach discipline one layer up, to the AI/ML projects whose
+models drive those substrates: open-source robot-learning libraries,
+robotics-AI specialist startups, frontier-lab robotics arms, and the
+open-data / open-model infrastructure projects in between.
+
+Move #2 targets do not ship a per-target manifest fixture or adapter
+in this repo (most are libraries or research projects, not deployable
+substrates), so the Move #1 demo runner and parity test do not extend
+to them. The Move #2 ledger lives in
+[`outreach-move2.yaml`](outreach-move2.yaml) with a mirroring schema
+and the same `response` enum, separated from `outreach.yaml` so the
+Move #1 lock stays intact.
+
+The first Move #2 RFC is [RFC-0040 (Hugging Face LeRobot)](../../docs/rfcs/0040-hugging-face-lerobot.md).
+Wave gating: the next Move #2 RFC is not drafted until RFC-0040 has
+either acknowledgement, refusal, or measured non-reply over a chosen
+window.
+
 ## See also
 
 - The per-vendor mapping RFCs: [`docs/rfcs/0023-yaskawa-motoros2-integration.md`](../../docs/rfcs/0023-yaskawa-motoros2-integration.md) through [`0038-ros-industrial-consortium.md`](../../docs/rfcs/0038-ros-industrial-consortium.md).
