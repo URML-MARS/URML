@@ -1,0 +1,93 @@
+# Move #3 outreach ledger — one row per affordable / desktop / educational
+# robotics target.
+#
+# Move #1 (outreach.yaml) targeted robot OEMs and component vendors: 16
+# Tier-1 lighthouses, each with a manifest fixture, conformance fixture,
+# and adapter or proposal in-repo. The parity test in
+# conformance/tests/test_outreach_ledger.py locks that file's slug set to
+# demo.py::LIGHTHOUSES.
+#
+# Move #2 (outreach-move2.yaml) targeted the AI/ML layer one stratum
+# above the substrate vendors: open-source robot-learning libraries,
+# robotics-AI specialist startups, frontier-lab robotics arms, and the
+# open-data / open-model infrastructure projects that sit between them.
+# Those targets do not ship a per-target manifest fixture or adapter in
+# this repo, so the Move #1 parity test does not apply there.
+#
+# Move #3 targets the affordable / desktop / educational tier between
+# Move #1 and Move #2. Programmable arms and quadrupeds in the $300 to
+# $8k range that already expose Python and ROS 2 surfaces. Audience:
+# educators, students, hobbyists, light-industrial deployments, and
+# academic researchers buying their own hardware. Each target ships with
+# its own GitHub org and SDK already; this file tracks the outreach
+# state, not the adapter state.
+#
+# Like Move #2, this file is NOT under the Move #1 parity test. Adapters
+# referenced in the corresponding RFCs are proposal-only until the
+# upstream maintainers weigh in.
+#
+# Schema mirrors outreach.yaml and outreach-move2.yaml so the listening
+# discipline stays uniform across moves. Fields:
+#   slug         — short identifier, kebab-case.
+#   rfc          — integer RFC number (0061+).
+#   sent_at      — ISO date the outreach was first sent.
+#   posted_url   — the URL where the outreach was published (set after
+#                  the founder posts).
+#   channel      — how it was sent (e.g. github_issue, github_discussion,
+#                  email). Free-form; document in notes if the channel
+#                  changed across touches.
+#   contact      — the public handle/address the message was sent to.
+#   last_touch   — most recent maintainer action on this target (date).
+#   response     — none | acked | engaged | declined | wontfix
+#                    none      — nothing back yet
+#                    acked     — they noticed but said nothing substantive
+#                    engaged   — substantive reply / discussion in progress
+#                    declined  — polite no
+#                    wontfix   — not interested / out of scope on their end
+#   next_action  — the maintainer's next planned move; date if relevant.
+#   notes        — free-form. Keep facts, not feelings.
+#
+# Phase 1 posture: the same as Move #1 and Move #2. Do not massage
+# `response` / `last_touch` to look more engaged than reality. `none` is
+# the truthful default until something concrete arrives.
+
+- slug: wlkata
+  rfc: 61
+  sent_at: "2026-05-24"
+  posted_url: ""
+  channel: github_issue
+  contact: "wlkata/ROS2_WLKATA (umbrella ROS 2 package set; courtesy cross-reference to wlkata/WLKATA-Python-SDK-wlkatapython Discussions)"
+  last_touch: 2026-05-24
+  response: none
+  next_action: "founder to open an Issue on wlkata/ROS2_WLKATA pointing to RFC-0061; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  notes: "First Move #3 RFC. WLKATA org has ~37 public repos including per-product ROS 2 packages (Wlkata_Mirobot_Ros2, Wlkata_MT4_ROS2, Wlkata_Haro380_Ros2), the umbrella ROS2_WLKATA, the wlkatapython Python SDK (MIT, Python 100%, v0.1.1 on 2025-10-22, Issues and Discussions both enabled, 2 stars), plus Arduino / C / microbit SDKs and a BRAVE RL suite covering Gazebo, MuJoCo, and Isaac Lab / Isaac Gym. Product line spans Mirobot (entry), MT4 (SCARA), Haro380 (industrial-grade ~$5.7k). Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004. Verified surface 2026-05-24."
+- slug: petoi-bittle
+  rfc: 62
+  sent_at: "2026-05-24"
+  posted_url: "https://github.com/PetoiCamp/OpenCat-Quadruped-Robot/issues/113"
+  channel: github_issue
+  contact: "PetoiCamp/OpenCat-Quadruped-Robot (4.8k stars, MIT, C++ primary; github.com/PetoiCamp/OpenCat redirects to this canonical repo name)"
+  last_touch: 2026-05-24
+  response: none
+  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on PetoiCamp/OpenCat-Quadruped-Robot#113; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  notes: "Second Move #3 RFC; the $299 hobby-quadruped lane. Bittle X uses BiBoard ESP32 (PetoiCamp/OpenCatEsp32-Quadruped-Robot, 220 stars MIT). Original Bittle and Nybble use ATmega328P / NyBoard. Python wrapper at PetoiCamp/Petoi_MindPlusLib (MIT, 7 stars). Existing ROS integration at PetoiCamp/ros_opencat (24 stars, CMake). Mobile apps on iOS and Android speak the same OpenCat serial protocol. Founder Dr. Rongzhong Li, since 2016. Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004. URML's planned hero demo for Move #3 targets a Bittle X on a desk; this RFC is the smallest-scale legged target in URML's outreach landscape. Posted 2026-05-24 to PetoiCamp/OpenCat-Quadruped-Robot#113 (canonical repo name; github.com/PetoiCamp/OpenCat redirects there)."
+- slug: hiwonder
+  rfc: 63
+  sent_at: "2026-05-24"
+  posted_url: ""
+  channel: github_issue
+  contact: "Hiwonder/MentorPi (the most-pinned platform repo, 13 stars; per-repo Issue / Discussion settings not fully visible from the org landing page)"
+  last_touch: 2026-05-24
+  response: none
+  next_action: "founder to open an Issue on Hiwonder/MentorPi labelled with the closest enhancement-equivalent, pointing to RFC-0063; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up or pivot to a different Hiwonder repo if the maintainers prefer one; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  notes: "Third Move #3 RFC; the multi-platform catalog lane. Hiwonder org has 36 public repos and 213 followers (verified 2026-05-24). Catalog spans arm (JetMax / DOFBOT), quadruped (PuppyPi, 8 stars), Mecanum / Ackermann / tank mobile base (MentorPi, 13 stars, ROS 2 + Python SDK, Raspberry Pi 5 + STM32, English docs at docs.hiwonder.com), Jetson rover (JetRover, 5 stars), hexapod (ROSPider, 2 stars). Also maintains a public LeRobot fork (Hiwonder/LeRobot, 1 star) which cross-links to RFC-0040. License visibility incomplete from the org landing page; the RFC asks maintainers to confirm. Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004."
+- slug: trossen-interbotix
+  rfc: 64
+  sent_at: "2026-05-24"
+  posted_url: ""
+  channel: github_issue
+  contact: "Interbotix/interbotix_ros_manipulators (BSD-3-Clause, 181 stars, 25 open issues; Discussions status not visible on the repo page)"
+  last_touch: 2026-05-24
+  response: none
+  next_action: "founder to open an Issue on Interbotix/interbotix_ros_manipulators labelled with the closest enhancement-equivalent, pointing to RFC-0064; record posted_url, sent_at, last_touch when posted. Optional cross-reference on Interbotix/interbotix_ros_core or Interbotix/interbotix_ros_toolboxes if maintainers prefer to thread there. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  notes: "Fourth Move #3 RFC; closes the Move #3 pilot batch. The US-domiciled anchor counter-balancing the three Asia-domiciled siblings (WLKATA, Petoi, Hiwonder). Trossen Robotics is HQ'd in Downers Grove IL; Interbotix is their product line. interbotix_ros_manipulators supports ROS 1 Noetic + ROS 2 Galactic / Humble / Rolling per the documented build matrix. Cross-links to two Move #2 RFCs: RFC-0040 LeRobot (SO-100 distribution + policy hosting) and RFC-0056 Stanford ALOHA (Mobile ALOHA's four-arm VX300S configuration). Provenance origin US; passes the default US-federal policy at RFC-0003 without organisational override. Verified surface 2026-05-24."
