@@ -34,7 +34,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   They live in this directory for ergonomic discoverability (one place
   to find "URML's pitch to target X") and are tracked operationally in
   the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
-  Four outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
+  Five outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
   OEMs and component vendors, ledger
   [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)),
   **Move #2** (RFCs 0040–0060, AI/ML-layer projects, ledger
@@ -42,15 +42,21 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #3** (RFCs 0061–0064, affordable / desktop / educational
   robotics vendors, ledger
   [`outreach-move3.yaml`](../../examples/lighthouses/outreach-move3.yaml)),
-  and **Move #4** (RFC 0065+, adjacent niches Moves #1–#3 did not touch:
-  Korean education / servo backbone, research-grade mobile bases,
-  agricultural robotics, commercial mobile manipulation, frontier open
-  humanoid hardware, modular research robotics, ledger
-  [`outreach-move4.yaml`](../../examples/lighthouses/outreach-move4.yaml)).
+  **Move #4** (RFCs 0065–0070, adjacent niches Moves #1–#3 did not touch,
+  ledger
+  [`outreach-move4.yaml`](../../examples/lighthouses/outreach-move4.yaml)),
+  and **Move #5** (RFCs 0071–0079, Tier 2 promoted candidates plus DEEP
+  Robotics' Lynx S10 wheeled-legged-hybrid debut, ledger
+  [`outreach-move5.yaml`](../../examples/lighthouses/outreach-move5.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
-  audiences URML's first three waves left untouched. Do not interpret
-  outreach RFCs as a quiet expansion of URML's spec surface.
+  audiences URML's first three waves left untouched. Move #5 promotes
+  the parked Tier 2 from the Move #4 research pass and splits into a
+  Tier A vendor-style cohort (Robotnik, Clearpath, Robotical Marty, DEEP
+  Robotics) and a Tier B research-collab cohort (Stanford Pupper, Open
+  Dynamic Robot Initiative Solo, MIT CHAMP, Orca4 + ros-maritime, Open
+  Bionics). Do not interpret outreach RFCs as a quiet expansion of URML's
+  spec surface.
 
 ## Index
 
@@ -127,6 +133,15 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0068](0068-pal-robotics-outreach.md) | Outreach | PAL Robotics integration; Move #4 RFC; proposal-only `PalAdapter` family across PMB2 / TIAGo / TIAGo Pro; the commercial mobile-manipulator niche between Move #1 stationary OEMs and Move #2's research humanoids; raises bimanual-coordination primitive question alongside RFC-0010 Draft, RFC-0047, RFC-0056; request for comment from pal-robotics maintainers | Draft | 2026-05-24 |
 | [0069](0069-berkeley-humanoid-lite-outreach.md) | Outreach | Berkeley Humanoid Lite integration; Move #4 RFC; proposal-only `BerkeleyHumanoidLiteAdapter` covering sim (Isaac Lab) and real-hardware paths for the sub-$5k open-hardware humanoid from UC Berkeley Hybrid Robotics Lab; cross-link to RFC-0050 NVIDIA Isaac Lab; request for comment from HybridRobotics maintainers | Draft | 2026-05-24 |
 | [0070](0070-hebi-robotics-outreach.md) | Outreach | HEBI Robotics integration; Move #4 RFC; proposal-only `HebiAdapter` for modular Series Elastic Actuator configurations; first URML deployment to fully populate the manifest's `kinematic_chain` field; CMU-rooted, US-domiciled, Apache-2.0 predominant; closes the Move #4 pilot batch; request for comment from HebiRobotics maintainers | Draft | 2026-05-24 |
+| [0071](0071-robotnik-outreach.md) | Outreach | Robotnik Automation integration; first Move #5 RFC, Tier A vendor-style; proposal-only `RobotnikAdapter` family across Summit XL + RB-1 + RB-VOGUI + AGVS + rbcar; Spanish commercial industrial mobile-robotics; BSD-3-Clause predominant; cross-link to RFC-0022 warehouse profile (AGVS) and RFC-0068 PAL (Spanish); request for comment from RobotnikAutomation maintainers | Draft | 2026-05-24 |
+| [0072](0072-clearpath-robotics-outreach.md) | Outreach | Clearpath Robotics integration; Move #5 RFC, Tier A vendor-style; proposal-only `ClearpathAdapter` family across TurtleBot 4 + Husky + Jackal + Dingo + Warthog; Canadian; explicit TurtleBot-4-vs-TurtleBot-3 disambiguation with RFC-0065 ROBOTIS; post-Rockwell-acquisition context noted; request for comment from clearpathrobotics maintainers | Draft | 2026-05-24 |
+| [0073](0073-robotical-marty-outreach.md) | Outreach | Robotical (Marty) integration; Move #5 RFC, Tier A vendor-style; proposal-only `RoboticalMartyAdapter` over `martypy` for Marty v1 / v2 bipedal educational walking robot; UK; the bipedal counterpart to RFC-0062 Petoi Bittle quadruped; request for comment from robotical maintainers | Draft | 2026-05-24 |
+| [0074](0074-deep-robotics-outreach.md) | Outreach | DEEP Robotics integration; Move #5 RFC, Tier A vendor-style; proposal-only `DeepRoboticsAdapter` family across Lite3 + M20 today and Lynx S10 (wheeled-legged hybrid, launched 2026-05-22, SDK pending) forward-declared; introduces wheeled-legged mobility class flagged for future Spec RFC; Chinese; request for comment from DeepRoboticsLab maintainers | Draft | 2026-05-24 |
+| [0075](0075-stanford-pupper-outreach.md) | Outreach | Stanford Pupper integration; Move #5 RFC, first Tier B research-collab; proposal-only `StanfordPupperAdapter` for v1 / v2 (StanfordQuadruped, 1.7k stars MIT) plus Pupper v3 (Raspberry Pi 5 + 400W brushless + Luxonis SR); Stanford Robotics Club student-led; research-collab framing; request for comment from stanfordroboticsclub maintainers | Draft | 2026-05-24 |
+| [0076](0076-open-dynamic-robot-initiative-outreach.md) | Outreach | Open Dynamic Robot Initiative (Solo 8 / Solo 12) integration; Move #5 RFC, Tier B research-collab; proposal-only `SoloAdapter` for torque-controlled open quadruped; first URML deployment to explicitly target `control_mode: torque`; multi-institution academic consortium (MPI Tübingen + NYU + ETH); research-collab framing; request for comment from open-dynamic-robot-initiative maintainers | Draft | 2026-05-24 |
+| [0077](0077-mit-champ-outreach.md) | Outreach | MIT CHAMP integration; Move #5 RFC, Tier B research-collab; proposal-only `ChampAdapter` as control-framework target (not hardware); consumes CHAMP's URDF-parameterised whole-body controller for MIT Mini Cheetah / ANYmal / Spot / LittleDog / SpotMicroAI / OpenQuadruped; mirrors RFC-0070 HEBI per-customer-geometry pattern; ROS 1 only; cross-link to RFC-0043 Spot and RFC-0049 ANYmal; request for comment from chvmp maintainers | Draft | 2026-05-24 |
+| [0078](0078-orca4-ros-maritime-outreach.md) | Outreach | Orca4 / ros-maritime integration; Move #5 RFC, Tier B research-collab; alignment + documentation (not new adapter) layering URML's existing `marine-runtime` BlueRovAdapter with the community Orca4 ROS 2 stack on top of BlueROV2; cross-link to RFC-0041 ArduPilot; request for comment from clydemcqueen and ros-maritime working group | Draft | 2026-05-24 |
+| [0079](0079-open-bionics-outreach.md) | Outreach | Open Bionics integration; Move #5 RFC, Tier B research-collab + commercial courtesy; URML's first accessibility-identity outreach; two-surface engagement (academic OpenBionics GitHub org, dormant, last commits 2018–2020 / commercial Open Bionics Ltd, no GitHub Issue surface); no spec or profile commitment; lightest engagement payload in Move #5; request for comment from OpenBionics maintainers (if reachable) + courtesy outreach to Open Bionics Ltd | Draft | 2026-05-24 |
 
 ## Lifecycle states
 
