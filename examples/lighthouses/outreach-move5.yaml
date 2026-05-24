@@ -45,90 +45,90 @@
 - slug: robotnik
   rfc: 71
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/RobotnikAutomation/agvs/issues/8"
   channel: github_issue
-  contact: "RobotnikAutomation/agvs or summit_xl_common (456-repo org, 161 followers, BSD-3-Clause / Apache-2.0 / MIT)"
+  contact: "RobotnikAutomation/agvs (195 stars, BSD-3-Clause). Issue template was Robotnik's Feature Request form (How do we plan to do it? + How can it be tested?); URML adapted the RFC body to fit the structured fields."
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on the most-active Robotnik platform repo (agvs / summit_xl_common / summit_xl_sim) pointing to RFC-0071; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on RobotnikAutomation/agvs#8; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "First Move #5 RFC, Tier A vendor-style. Spanish (Valencia) commercial industrial mobile robotics vendor, 456 public repos. Top: agvs 195 stars (BSD-3-Clause), summit_xl_sim 79 stars, summit_xl_common 79 stars, rbcar_sim 61 stars, robotnik_simulation 57 stars. Platform line: Summit XL / XL HL / X, RB-1, RB-VOGUI, AGVS, rbcar. Cross-link to RFC-0068 PAL (Spanish), RFC-0066 AgileX (research-mobile), RFC-0022 warehouse profile (AGVS). Origin ES; default policy passes. Verified surface 2026-05-24."
 - slug: clearpath
   rfc: 72
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/clearpathrobotics/cpr_gazebo/issues/26"
   channel: github_issue
-  contact: "clearpathrobotics/cpr_gazebo (233 stars) or clearpath_common; 314-repo org, Apache-2.0 / BSD-3-Clause / MIT"
+  contact: "clearpathrobotics/cpr_gazebo (233 stars, most-active general repo; 314-repo org, Apache-2.0 / BSD-3-Clause / MIT)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on clearpathrobotics/cpr_gazebo or clearpath_common pointing to RFC-0072; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on clearpathrobotics/cpr_gazebo#26; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Second Move #5 RFC, Tier A vendor-style. Canadian (Kitchener ON) mobile-robotics vendor acquired by Rockwell Automation 2024. 314 public repos. Top: cpr_gazebo 233 stars, robot_upstart 205 stars, roscon2024-workshop-demystifying-ros2-networking 142 stars, LMS1xx 58 stars, clearpath_common 54 stars. Platform line: TurtleBot 4 (Create-3-based, distinct from RFC-0065 ROBOTIS TurtleBot 3), Husky, Jackal, Dingo, Warthog. Origin CA; default policy passes. Verified surface 2026-05-24."
 - slug: robotical-marty
   rfc: 73
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/robotical/martypy/issues/52"
   channel: github_issue
-  contact: "robotical/martypy (Apache-2.0, Python 99.4%, 6 stars, 2 open issues, v3.6.6 release 2024-01-12)"
+  contact: "robotical/martypy (Apache-2.0, Python 99.4%, 6 stars, v3.6.6 release 2024-01-12)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on robotical/martypy pointing to RFC-0073; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on robotical/martypy#52; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Third Move #5 RFC, Tier A vendor-style. UK (Edinburgh) commercial educational bipedal-walking-robot vendor. Marty v1 + v2; Python SDK martypy + MartyBlocks (Scratch-based). Bipedal counterpart to RFC-0062 Petoi Bittle quadruped at similar price tier. Low star count (6) on GitHub but real classroom deployment scale per robotical.io documentation. Triple transport: serial / WebSocket / BLE. Origin GB; default policy passes. Note: stale release cadence (v3.6.6 last updated 2024-01-12) flagged as RFC question. Verified surface 2026-05-24."
 - slug: deep-robotics
   rfc: 74
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/DeepRoboticsLab/Lite3_MotionSDK/issues/21"
   channel: github_issue
-  contact: "DeepRoboticsLab/Lite3_MotionSDK (86 stars, Issues likely enabled) or sibling SDK repo; rl_training (203 stars, most-starred) has Issues DISABLED"
+  contact: "DeepRoboticsLab/Lite3_MotionSDK (86 stars, Issues enabled, confirmed at post-time); rl_training (203 stars, most-starred) has Issues DISABLED"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on DeepRoboticsLab/Lite3_MotionSDK (or sibling SDK repo with Issues enabled) pointing to RFC-0074; record posted_url, sent_at, last_touch when posted. Wait 14 d (until 2026-06-07); if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on DeepRoboticsLab/Lite3_MotionSDK#21 or pivot to Lite3_rl_deploy / sdk_deploy for SDK-specific questions; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Fourth Move #5 RFC, Tier A vendor-style. Chinese (Hangzhou, founded 2017) legged-robotics vendor. Lynx S10 launched 2026-05-22 — first URML target with wheeled-legged hybrid mobility class. DeepRoboticsLab GitHub org: 19 repos, 624 followers, BSD-3-Clause / MIT / GPL-2.0. Top: rl_training 203 stars (Issues DISABLED), Lite3_rl_deploy 123 stars, Lite3_MotionSDK 86 stars, robotserver_sdk 58 stars, deep_robotics_model 41 stars. ROS 2: Lite3_ROS, sdk_deploy. Wheeled-legged mobility class flagged for future Spec RFC (separate from RFC-0009 schema extension). Origin CN; manifest-load policy decision delegated to operator per RFC-0004. Lynx S10 SDK pending publication (RFC body forward-declares the manifest). Verified surface 2026-05-24."
 - slug: stanford-pupper
   rfc: 75
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/stanfordroboticsclub/StanfordQuadruped/issues/44"
   channel: github_issue
-  contact: "stanfordroboticsclub/StanfordQuadruped (1.7k stars, MIT, 21 open issues, Python 98.9%; v1/v2 in maintenance, v3 location pending)"
+  contact: "stanfordroboticsclub/StanfordQuadruped (1.7k stars, MIT, Python 98.9%; v1/v2 in maintenance, v3 location pending)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on stanfordroboticsclub/StanfordQuadruped pointing to RFC-0075; record posted_url, sent_at, last_touch when posted. Wait 14 d minimum (until 2026-06-07); student-club cadence may extend the response window beyond commercial-vendor norms. If silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d minimum (until 2026-06-07); student-club cadence may extend the response window beyond commercial-vendor norms. If silent, polite follow-up on stanfordroboticsclub/StanfordQuadruped#44; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Fifth Move #5 RFC, first Tier B research-collab. Stanford Robotics Club student-led open-source quadruped. Legacy StanfordQuadruped repo (v1/v2) in maintenance mode; Pupper v3 (Raspberry Pi 5, 400W brushless, Luxonis SR depth camera) is actively developed with repo location pending verification. Origin US; default policy passes. Research-collab framing because maintainer is student club, not vendor. Verified surface 2026-05-24."
 - slug: open-dynamic-robot-initiative
   rfc: 76
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/open-dynamic-robot-initiative/master-board/issues/185"
   channel: github_issue
-  contact: "open-dynamic-robot-initiative/master-board (133 stars, BSD, 18 open issues, last commit 2026-05-07 actively maintained)"
+  contact: "open-dynamic-robot-initiative/master-board (133 stars, BSD, last commit 2026-05-07 actively maintained)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on open-dynamic-robot-initiative/master-board pointing to RFC-0076; record posted_url, sent_at, last_touch when posted. Wait 14 d minimum (until 2026-06-07); multi-institution academic cadence may extend the response window. If silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d minimum (until 2026-06-07); multi-institution academic cadence may extend the response window. If silent, polite follow-up on open-dynamic-robot-initiative/master-board#185; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Sixth Move #5 RFC, second Tier B research-collab. ODRI multi-institution consortium (MPI Tübingen lead, NYU, ETH). Solo 8 / Solo 12 torque-controlled open quadruped. 41 public repos 677 followers. Top: open_robot_actuator_hardware 1.4k stars, master-board 133 stars (active, last commit 2026-05-07), open-motor-driver-initiative 111 stars. Distinctive: torque-controlled hardware (RFC-0009 control_mode field's first explicit deployment). URML's `move_to` semantics on torque-controlled hardware flagged as key open question. Origin DE (MPI lead); default policy passes. ERC-funded. Verified surface 2026-05-24."
 - slug: mit-champ
   rfc: 77
   sent_at: "2026-05-24"
-  posted_url: ""
-  channel: github_discussion
-  contact: "chvmp/champ (2.2k stars largest of Move #5, BSD-3-Clause, ROS 1 only, Issues + Discussions both enabled)"
+  posted_url: "https://github.com/chvmp/champ/issues/160"
+  channel: github_issue
+  contact: "chvmp/champ (2.2k stars largest of Move #5, BSD-3-Clause, ROS 1 only, Issues + Discussions both enabled; founder chose Issue surface)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open a Discussion on chvmp/champ (or labelled Issue if maintainer prefers), pointing to RFC-0077. Record posted_url, sent_at, last_touch when posted. Wait 14 d minimum; academic-lab cadence may extend; if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d minimum (until 2026-06-07); academic-lab cadence may extend. If silent, polite follow-up on chvmp/champ#160; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Seventh Move #5 RFC, third Tier B research-collab. MIT Cheetah Lab whole-body quadruped controller framework. NOT a hardware vendor — supports URDFs for MIT Mini Cheetah, ANYmal, Boston Dynamics Spot, LittleDog, SpotMicroAI, OpenQuadruped. ROS 1 only (Kinetic / Melodic / Noetic), no ROS 2. Sibling repos: champ_setup_assistant, champ_teleop, libchamp, firmware, robots, chicken_head. URML's first control-framework-target adapter (mirrors RFC-0070 HEBI per-customer-geometry pattern). Cross-link to RFC-0043 SpotAdapter and RFC-0049 AnymalAdapter — two paths to the same hardware. Origin US (MIT lineage). Verified surface 2026-05-24."
 - slug: orca4-ros-maritime
   rfc: 78
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/clydemcqueen/orca4/issues/53"
   channel: github_issue
-  contact: "clydemcqueen/orca4 (183 stars, MIT, 5 open issues, ROS 2 Humble); ros-maritime community-surface canonical contact pending verification"
+  contact: "clydemcqueen/orca4 (183 stars, MIT, ROS 2 Humble); ros-maritime community-surface canonical contact pending verification, pivot if maintainer redirects"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on clydemcqueen/orca4 pointing to RFC-0078. Record posted_url, sent_at, last_touch when posted. If maintainer redirects to a ros-maritime working-group thread, follow that surface. Wait 14 d minimum; if silent, polite follow-up; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14 d minimum (until 2026-06-07); if maintainer redirects to a ros-maritime working-group thread, follow that surface. If silent, polite follow-up on clydemcqueen/orca4#53; if reply, bump last_touch, set response per enum, write the concrete next step here. All nine Move #5 posts now sent."
   notes: "Eighth Move #5 RFC, fourth Tier B research-collab. Community-led ROS 2 AUV stack on top of BlueROV2 / ArduSub (which URML already covers via shipping BlueRovAdapter in marine-runtime). Alignment + documentation RFC, NOT a new-adapter RFC. URML's marine-runtime adds Orca4 as a supported dispatch path alongside direct-MAVLink. Cross-link to RFC-0041 ArduPilot (MAVLink-side institutional outreach). ros-maritime working-group canonical surface flagged as open question. Verified surface 2026-05-24."
 - slug: open-bionics
   rfc: 79
   sent_at: "2026-05-24"
-  posted_url: ""
+  posted_url: "https://github.com/OpenBionics/Prosthetic-Hands/issues/10"
   channel: github_issue_plus_courtesy
-  contact: "OpenBionics/Prosthetic-Hands (academic, 176 stars, TeX, last commit 2018-02; org DORMANT) + Open Bionics Ltd (commercial, no GitHub Issue surface, courtesy outreach via openbionics.com)"
+  contact: "OpenBionics/Prosthetic-Hands (academic, 176 stars, TeX, last commit 2018-02; org DORMANT) + Open Bionics Ltd (commercial, no GitHub Issue surface, courtesy outreach via openbionics.com pending)"
   last_touch: 2026-05-24
   response: none
-  next_action: "founder to open an Issue on OpenBionics/Prosthetic-Hands acknowledging dormancy + request for redirect, pointing to RFC-0079. Also founder to send courtesy email or LinkedIn outreach to Open Bionics Ltd (commercial) via openbionics.com — no specific ask, just institutional acknowledgement. Record posted_url and any commercial-side correspondence in `notes`. Wait 14 d minimum; low expectation of academic-side response given dormancy; commercial-side response is best-effort. If reply, bump last_touch, set response per enum."
+  next_action: "academic-side Issue posted 2026-05-24 to OpenBionics/Prosthetic-Hands#10; commercial-side courtesy outreach to Open Bionics Ltd sent 2026-05-24 (off-GitHub channel chosen by founder). Wait 14 d minimum; low expectation of academic-side response given dormancy; commercial-side response is best-effort. If reply, bump last_touch, set response per enum."
   notes: "Ninth and final Move #5 RFC, fifth Tier B research-collab. Anchors URML's accessibility identity without overclaiming. Two-surface engagement: (1) academic OpenBionics GitHub org (4 public repos, 161 followers, last commits 2018-2020 — DORMANT); top Prosthetic-Hands 176 stars (TeX 2018-02), Robot-Hands 132 stars (Eagle 2015), Anthropomorphic-Robot-Hands 61 stars (MATLAB 2020), Body-Powered-Exoskeleton-Glove 40 stars (2019). (2) Open Bionics Ltd commercial UK (Hero Arm) with no GitHub Issue surface — courtesy outreach only. Honest about dormancy. No spec/profile commitment (future Move #6 accessibility wave possible if signal received). Origin GB (academic + commercial); default policy passes. Verified surface 2026-05-24. Note: Avular was the original 8th candidate but was DROPPED after surface verification revealed github.com/avular is an unrelated personal account, not the Dutch drone vendor."
