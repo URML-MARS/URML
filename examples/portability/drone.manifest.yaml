@@ -1,0 +1,45 @@
+# Portability demo: a civilian multirotor.
+# Companion to examples/portability/inspect.urml.yaml.
+# `inspection_point` is the contract — every body in this demo declares it,
+# at a body-appropriate pose. Here it sits 18m up in the AGL frame.
+
+manifest_version: "0.1"
+robot_id: portability_drone
+description: Multirotor body for the portability demo (drone variant).
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: inspection_point
+    pose: { x: 4.0, y: 2.0, z: 18.0 }
+    frame: agl
+    description: Air station above the site, 18m AGL.
+
+declared_events:
+  - emergency_stop
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 12.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  object_vocabulary:
+    - person
+    - vehicle
+
+outputs:
+  named_endpoints:
+    - ops

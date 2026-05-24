@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1032 784" width="1032" height="784" role="img" aria-label="One URML program executed against three different body manifests (multirotor, quadruped, differential AMR) — same intent file, three substrates, no code change.">
+<style>text{font-family:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;white-space:pre}.ln{font-size:13px;fill:#e8e4da}.chrome{font-size:12px;fill:#8a857a}</style>
+<rect width="1032" height="784" rx="10" fill="#181715"/>
+<rect width="1032" height="34" rx="10" fill="#26241f"/>
+<rect y="24" width="1032" height="10" fill="#26241f"/>
+<circle cx="20" cy="17" r="6" fill="#e06c5a"/>
+<circle cx="40" cy="17" r="6" fill="#e0b04a"/>
+<circle cx="60" cy="17" r="6" fill="#7fae5f"/>
+<text x="84" y="22" class="chrome">urml · one intent · many bodies · same program file</text>
+<text x="20" y="62" class="chrome" style="fill:#8a857a">THE PROGRAM  (examples/portability/inspect.urml.yaml)</text>
+<text x="20" y="82" class="ln">profile: home</text>
+<text x="20" y="102" class="ln">behavior:</text>
+<text x="20" y="122" class="ln">  type: sequence</text>
+<text x="20" y="142" class="ln">  on_error: abort_and_report</text>
+<text x="20" y="162" class="ln">  steps:</text>
+<text x="20" y="182" class="ln">    - move_to:</text>
+<text x="20" y="202" class="ln">        location: inspection_point</text>
+<text x="20" y="222" class="ln">    - detect:</text>
+<text x="20" y="242" class="ln">        object: person</text>
+<text x="20" y="262" class="ln">        store_as: people_in_view</text>
+<text x="20" y="282" class="ln">    - report:</text>
+<text x="20" y="302" class="ln">        to: ops</text>
+<text x="20" y="322" class="ln">        facts:</text>
+<text x="20" y="342" class="ln">          inspected: site</text>
+<rect x="20" y="364" width="320" height="376" rx="6" fill="#1f1d1a"/>
+<text x="32" y="380" class="ln" style="fill:#cc6b1f;font-weight:bold">DRONE</text>
+<text x="32" y="400" class="ln" style="fill:#8a857a">multirotor   · 12.0 m/s</text>
+<text x="32" y="420" class="ln" style="fill:#8a857a">-m drone.manifest.yaml</text>
+<text x="32" y="460" class="ln" style="fill:#cc6b1f">$ urml execute inspect.urml.yaml \</text>
+<text x="32" y="480" class="ln" style="fill:#cc6b1f">      -m &lt;manifest&gt; --adapter mock --no-policy</text>
+<text x="32" y="520" class="ln" style="fill:#e8e4da">  trace (3 step(s) executed,</text>
+<text x="32" y="540" class="ln" style="fill:#e8e4da">         3 adapter call(s)):</text>
+<text x="32" y="560" class="ln" style="fill:#e8e4da">   1. send_navigation_goal</text>
+<text x="32" y="580" class="ln" style="fill:#e8e4da">        location=inspection_point</text>
+<text x="32" y="600" class="ln" style="fill:#e8e4da">   2. query_detection</text>
+<text x="32" y="620" class="ln" style="fill:#e8e4da">        object_class=person</text>
+<text x="32" y="640" class="ln" style="fill:#e8e4da">   3. emit_report</text>
+<text x="32" y="660" class="ln" style="fill:#e8e4da">        to=ops</text>
+<text x="32" y="680" class="ln" style="fill:#e8e4da">        facts={'inspected': 'site'}</text>
+<text x="32" y="720" class="ln" style="fill:#7fae5f">  RESULT: SUCCESS</text>
+<rect x="356" y="364" width="320" height="376" rx="6" fill="#1f1d1a"/>
+<text x="368" y="380" class="ln" style="fill:#cc6b1f;font-weight:bold">QUADRUPED</text>
+<text x="368" y="400" class="ln" style="fill:#8a857a">quadruped    ·  1.6 m/s</text>
+<text x="368" y="420" class="ln" style="fill:#8a857a">-m legged.manifest.yaml</text>
+<text x="368" y="460" class="ln" style="fill:#cc6b1f">$ urml execute inspect.urml.yaml \</text>
+<text x="368" y="480" class="ln" style="fill:#cc6b1f">      -m &lt;manifest&gt; --adapter mock --no-policy</text>
+<text x="368" y="520" class="ln" style="fill:#e8e4da">  trace (3 step(s) executed,</text>
+<text x="368" y="540" class="ln" style="fill:#e8e4da">         3 adapter call(s)):</text>
+<text x="368" y="560" class="ln" style="fill:#e8e4da">   1. send_navigation_goal</text>
+<text x="368" y="580" class="ln" style="fill:#e8e4da">        location=inspection_point</text>
+<text x="368" y="600" class="ln" style="fill:#e8e4da">   2. query_detection</text>
+<text x="368" y="620" class="ln" style="fill:#e8e4da">        object_class=person</text>
+<text x="368" y="640" class="ln" style="fill:#e8e4da">   3. emit_report</text>
+<text x="368" y="660" class="ln" style="fill:#e8e4da">        to=ops</text>
+<text x="368" y="680" class="ln" style="fill:#e8e4da">        facts={'inspected': 'site'}</text>
+<text x="368" y="720" class="ln" style="fill:#7fae5f">  RESULT: SUCCESS</text>
+<rect x="692" y="364" width="320" height="376" rx="6" fill="#1f1d1a"/>
+<text x="704" y="380" class="ln" style="fill:#cc6b1f;font-weight:bold">AMR</text>
+<text x="704" y="400" class="ln" style="fill:#8a857a">differential ·  1.0 m/s</text>
+<text x="704" y="420" class="ln" style="fill:#8a857a">-m mobile.manifest.yaml</text>
+<text x="704" y="460" class="ln" style="fill:#cc6b1f">$ urml execute inspect.urml.yaml \</text>
+<text x="704" y="480" class="ln" style="fill:#cc6b1f">      -m &lt;manifest&gt; --adapter mock --no-policy</text>
+<text x="704" y="520" class="ln" style="fill:#e8e4da">  trace (3 step(s) executed,</text>
+<text x="704" y="540" class="ln" style="fill:#e8e4da">         3 adapter call(s)):</text>
+<text x="704" y="560" class="ln" style="fill:#e8e4da">   1. send_navigation_goal</text>
+<text x="704" y="580" class="ln" style="fill:#e8e4da">        location=inspection_point</text>
+<text x="704" y="600" class="ln" style="fill:#e8e4da">   2. query_detection</text>
+<text x="704" y="620" class="ln" style="fill:#e8e4da">        object_class=person</text>
+<text x="704" y="640" class="ln" style="fill:#e8e4da">   3. emit_report</text>
+<text x="704" y="660" class="ln" style="fill:#e8e4da">        to=ops</text>
+<text x="704" y="680" class="ln" style="fill:#e8e4da">        facts={'inspected': 'site'}</text>
+<text x="704" y="720" class="ln" style="fill:#7fae5f">  RESULT: SUCCESS</text>
+<text x="20" y="772" class="chrome" style="fill:#8a857a">same .urml.yaml file, three substrates. the manifest is the bridge. no code change between bodies.</text>
+</svg>

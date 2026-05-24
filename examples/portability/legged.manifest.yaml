@@ -1,0 +1,42 @@
+# Portability demo: a quadruped (Boston Dynamics Spot-class).
+# Companion to examples/portability/inspect.urml.yaml.
+# `inspection_point` here is a ground waypoint walked to on four legs.
+
+manifest_version: "0.1"
+robot_id: portability_quadruped
+description: Quadruped body for the portability demo (legged variant).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: inspection_point
+    pose: { x: 4.0, y: 2.0, z: 0.0 }
+    frame: site
+    description: Ground station, walked to.
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 1.6
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: body_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - person
+    - obstacle
+
+outputs:
+  named_endpoints:
+    - ops
