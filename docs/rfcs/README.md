@@ -34,17 +34,22 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   They live in this directory for ergonomic discoverability (one place
   to find "URML's pitch to target X") and are tracked operationally in
   the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
-  Three outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
+  Four outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
   OEMs and component vendors, ledger
   [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)),
   **Move #2** (RFCs 0040–0060, AI/ML-layer projects, ledger
   [`outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml)),
-  and **Move #3** (RFC 0061+, affordable / desktop / educational
+  **Move #3** (RFCs 0061–0064, affordable / desktop / educational
   robotics vendors, ledger
-  [`outreach-move3.yaml`](../../examples/lighthouses/outreach-move3.yaml)).
+  [`outreach-move3.yaml`](../../examples/lighthouses/outreach-move3.yaml)),
+  and **Move #4** (RFC 0065+, adjacent niches Moves #1–#3 did not touch:
+  Korean education / servo backbone, research-grade mobile bases,
+  agricultural robotics, commercial mobile manipulation, frontier open
+  humanoid hardware, modular research robotics, ledger
+  [`outreach-move4.yaml`](../../examples/lighthouses/outreach-move4.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
-  of Move #2: programmable arms and quadrupeds in the $300 to $8k range
-  that already expose Python and ROS 2 surfaces. Do not interpret
+  of Move #2. Move #4 widens the substrate set into verticals and
+  audiences URML's first three waves left untouched. Do not interpret
   outreach RFCs as a quiet expansion of URML's spec surface.
 
 ## Index
@@ -116,6 +121,12 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0062](0062-petoi-bittle-outreach.md) | Outreach | Petoi (Bittle / Nybble) integration; Move #3 RFC; proposal-only `PetoiAdapter` over the OpenCat serial protocol; skill-library mapping from URML primitives to OpenCat gaits; the $299 hobby-quadruped hero-demo target for Move #3; request for comment from PetoiCamp maintainers | Draft | 2026-05-24 |
 | [0063](0063-hiwonder-outreach.md) | Outreach | Hiwonder integration; Move #3 RFC; proposal-only `HiwonderAdapter` family spanning MentorPi (Mecanum/Ackermann/tank), PuppyPi (quadruped), JetRover (Jetson rover), ROSPider (hexapod), JetMax (arm); catalog-breadth substrate-fungibility story; request for comment from Hiwonder maintainers | Draft | 2026-05-24 |
 | [0064](0064-trossen-interbotix-outreach.md) | Outreach | Trossen Robotics Interbotix integration; Move #3 RFC; proposal-only `InterbotixAdapter` over `interbotix_ros_manipulators` (BSD-3-Clause, ROS 2 Humble + Rolling + ROS 1 Noetic legacy); US-domiciled provenance anchor for Move #3; cross-links to RFC-0040 LeRobot and RFC-0056 Stanford ALOHA; request for comment from Interbotix maintainers | Draft | 2026-05-24 |
+| [0065](0065-robotis-outreach.md) | Outreach | ROBOTIS integration; first Move #4 RFC; proposal-only `RobotisAdapter` family across TurtleBot 3 + OP3 humanoid + OpenManipulator + `dynamixel_sdk`; closes the institutional loop with three existing URML outreach RFCs (RFC-0040 LeRobot, RFC-0056 Stanford ALOHA, RFC-0064 Trossen Interbotix) that transitively depend on Dynamixel; request for comment from ROBOTIS-GIT maintainers | Draft | 2026-05-24 |
+| [0066](0066-agilex-outreach.md) | Outreach | AgileX Robotics integration; Move #4 RFC; proposal-only `AgileXAdapter` family across Tracer / Limo / Scout / Hunter / Bunker / Ranger mobile bases; closes the Mobile-ALOHA chassis loop (cross-link to RFC-0056) and the AgileX-LeRobot ecosystem alignment (cross-link to RFC-0040); request for comment from agilexrobotics maintainers | Draft | 2026-05-24 |
+| [0067](0067-farmbot-outreach.md) | Outreach | FarmBot integration; Move #4 RFC; proposal-only `FarmBotAdapter` over the public REST + MQTT API; **URML's first outreach into the agricultural vertical**; raises a future `spec/profiles/agriculture/` profile as an open question (not proposed in this RFC); request for comment from FarmBot maintainers | Draft | 2026-05-24 |
+| [0068](0068-pal-robotics-outreach.md) | Outreach | PAL Robotics integration; Move #4 RFC; proposal-only `PalAdapter` family across PMB2 / TIAGo / TIAGo Pro; the commercial mobile-manipulator niche between Move #1 stationary OEMs and Move #2's research humanoids; raises bimanual-coordination primitive question alongside RFC-0010 Draft, RFC-0047, RFC-0056; request for comment from pal-robotics maintainers | Draft | 2026-05-24 |
+| [0069](0069-berkeley-humanoid-lite-outreach.md) | Outreach | Berkeley Humanoid Lite integration; Move #4 RFC; proposal-only `BerkeleyHumanoidLiteAdapter` covering sim (Isaac Lab) and real-hardware paths for the sub-$5k open-hardware humanoid from UC Berkeley Hybrid Robotics Lab; cross-link to RFC-0050 NVIDIA Isaac Lab; request for comment from HybridRobotics maintainers | Draft | 2026-05-24 |
+| [0070](0070-hebi-robotics-outreach.md) | Outreach | HEBI Robotics integration; Move #4 RFC; proposal-only `HebiAdapter` for modular Series Elastic Actuator configurations; first URML deployment to fully populate the manifest's `kinematic_chain` field; CMU-rooted, US-domiciled, Apache-2.0 predominant; closes the Move #4 pilot batch; request for comment from HebiRobotics maintainers | Draft | 2026-05-24 |
 
 ## Lifecycle states
 
