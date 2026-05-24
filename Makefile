@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run demo-record audit test clean
+.PHONY: help install install-dev demo demo-run demo-record architecture-record audit test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -24,6 +24,7 @@ help:
 	@echo "  make demo         Validate the canonical red-mug example end-to-end."
 	@echo "  make demo-run     Sentence -> URML -> validate -> execute (hermetic, no creds)."
 	@echo "  make demo-record  Regenerate the README hero SVG (deterministic, any OS)."
+	@echo "  make architecture-record  Regenerate the homepage architecture-stack SVG."
 	@echo "  make audit        Re-measure every suite + fixture count; print a paste-ready"
 	@echo "                    block for docs/launch/claims-audit.md (does not auto-edit)."
 	@echo "  make test         Run every package's test suite (each in its own process)."
@@ -67,6 +68,16 @@ demo-run:
 # line it shows is real `urml` output.
 demo-record:
 	$(PYBIN)/python tools/scripts/gen_demo_svg.py
+
+# Regenerate the homepage architecture diagram
+# (docs/assets/architecture-stack.svg): committed, deterministic SVG of
+# the five-layer stack with the validator gate on the left and the
+# domain-profiles pill on the right. Same discipline as demo-record:
+# pure stdlib, any-OS. CI (test_architecture_svg.py) asserts the
+# committed asset matches the generator and that every layer label
+# traces back to docs/architecture.md.
+architecture-record:
+	$(PYBIN)/python tools/scripts/gen_architecture_svg.py
 
 # Re-measure the claims-audit. Runs every package's pytest, counts the
 # conformance fixtures from disk, and prints a paste-ready markdown

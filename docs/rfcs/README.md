@@ -34,13 +34,18 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   They live in this directory for ergonomic discoverability (one place
   to find "URML's pitch to target X") and are tracked operationally in
   the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
-  Two outreach waves now exist: **Move #1** (RFCs 0023–0038, robot OEMs
-  and component vendors, ledger
-  [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)) and
-  **Move #2** (RFC 0040+, AI/ML-layer projects, ledger
-  [`outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml)).
-  Do not interpret outreach RFCs as a quiet expansion of URML's spec
-  surface.
+  Three outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
+  OEMs and component vendors, ledger
+  [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)),
+  **Move #2** (RFCs 0040–0060, AI/ML-layer projects, ledger
+  [`outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml)),
+  and **Move #3** (RFC 0061+, affordable / desktop / educational
+  robotics vendors, ledger
+  [`outreach-move3.yaml`](../../examples/lighthouses/outreach-move3.yaml)).
+  Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
+  of Move #2: programmable arms and quadrupeds in the $300 to $8k range
+  that already expose Python and ROS 2 surfaces. Do not interpret
+  outreach RFCs as a quiet expansion of URML's spec surface.
 
 ## Index
 
@@ -87,6 +92,30 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0038](0038-ros-industrial-consortium.md) | Outreach | ROS-Industrial Consortium alignment — institutional umbrella RFC; closes the Move #1 16-vendor lighthouse program | Draft | 2026-05-22 |
 | [0039](0039-sensor-schema-v0-2-iteration.md) | Spec | Sensor schema v0.2 iteration — point-cloud type, beam_count, channels, time_sync_methods, rate_hz_max (from Ouster maintainer feedback) | Draft | 2026-05-22 |
 | [0040](0040-hugging-face-lerobot.md) | Outreach | Hugging Face LeRobot integration — first Move #2 RFC; proposal-only bridge; request for comment from huggingface/lerobot maintainers | Draft | 2026-05-23 |
+| [0041](0041-ardupilot-integration.md) | Outreach | ArduPilot integration; Move #1 follow-on; proposal-only bridge; request for comment from ArduPilot/ardupilot maintainers | Draft | 2026-05-23 |
+| [0042](0042-waymo-open-dataset.md) | Outreach | Waymo Open Dataset conformance demonstration; proposal-only; request for comment from waymo-research maintainers | Draft | 2026-05-23 |
+| [0043](0043-boston-dynamics-spot-integration.md) | Outreach | Boston Dynamics Spot integration; Move #1 follow-on; shipping `SpotAdapter`; request for comment from boston-dynamics SDK maintainers | Draft | 2026-05-23 |
+| [0044](0044-aws-robotics-sim-worlds.md) | Outreach | AWS Robotics simulation worlds conformance lane; proposal-only; request for comment from aws-robotics maintainers | Draft | 2026-05-23 |
+| [0045](0045-physical-intelligence-openpi.md) | Outreach | Physical Intelligence (openpi) integration; Move #2 RFC; proposal-only bridge via the Inputs / Outputs extension pattern; request for comment from Physical-Intelligence/openpi maintainers | Draft | 2026-05-23 |
+| [0046](0046-open-x-embodiment.md) | Outreach | Open X-Embodiment integration; Move #2 RFC; proposal-only URML annotation schema for OXE trajectories; primary public touch with Google DeepMind; request for comment from OXE governance | Draft | 2026-05-23 |
+| [0047](0047-allen-institute-molmoact.md) | Outreach | Allen Institute MolmoAct integration; Move #2 RFC; proposal-only bridge with preview-and-correct loop; request for comment from Ai2 Embodied AI initiative | Draft | 2026-05-23 |
+| [0048](0048-anthropic-mcp-and-agent-skills.md) | Outreach | Anthropic integration via MCP and Agent Skills; Move #2 RFC; proposal-only (URML as MCP server + URML as Agent Skill); request for comment from Anthropic | Draft | 2026-05-23 |
+| [0049](0049-anybotics-anymal-integration.md) | Outreach | ANYbotics ANYmal integration; Move #1 follow-on; shipping `AnymalAdapter`; closes the legged-quadruped pair with RFC-0043; request for comment from ANYbotics maintainers | Draft | 2026-05-23 |
+| [0050](0050-nvidia-isaac-lab-integration.md) | Outreach | NVIDIA Isaac integration (Isaac Lab + Isaac-GR00T); proposal-only two-vector `urml-isaac-bridge`; URML as substrate-neutral vocabulary above NVIDIA's stack; request for comment from isaac-sim and NVIDIA Isaac-GR00T maintainers | Draft | 2026-05-23 |
+| [0051](0051-carla-simulator-integration.md) | Outreach | CARLA simulator integration; proposal-only `reference/carla-runtime/` and conformance lane; AV triangle with RFC-0020 (Autoware) and RFC-0042 (Waymo); request for comment from carla-simulator maintainers | Draft | 2026-05-23 |
+| [0052](0052-meta-fair-vjepa2.md) | Outreach | Meta FAIR V-JEPA 2 integration; Move #2 RFC; proposal-only `urml-vjepa2-bridge` with two vectors (URML primitives as V-JEPA 2-AC action conditioning + V-JEPA 2 predictions as URML predictive-safety lane); world-model angle is unique among Move #2 targets; request for comment from facebookresearch/vjepa2 maintainers | Draft | 2026-05-23 |
+| [0053](0053-open-rmf-multirobot-integration.md) | Outreach | Open-RMF multi-robot integration; proposal-only two-vector `urml-rmf-bridge` (task-source + fleet-adapter); closes the multi-robot coordination gap adjacent to RFC-0022 warehouse profile; request for comment from open-rmf maintainers | Draft | 2026-05-23 |
+| [0054](0054-tri-large-behavior-models.md) | Outreach | TRI Large Behavior Models integration; Move #2 RFC; proposal-only `urml-tri-lbm-bridge` plugging into vla_foundry's `@register_model_params` and `DataParams` extension pattern; LBM-on-Atlas path via the TRI + Boston Dynamics partnership; request for comment from TRI-ML/vla_foundry maintainers | Draft | 2026-05-23 |
+| [0055](0055-nvidia-cosmos-reason.md) | Outreach | NVIDIA Cosmos-Reason1 integration; Move #2 RFC; proposal-only `urml-cosmos-bridge` as a constrained-decoding wrapper over Cosmos-Reason1's reasoning VLM; reasoner emits URML primitive programs instead of free-form text; third Move #2 integration shape (reasoner, not policy or world model); request for comment from nvidia-cosmos/cosmos-reason1 maintainers | Draft | 2026-05-23 |
+| [0056](0056-stanford-aloha.md) | Outreach | Stanford ALOHA and Mobile ALOHA integration; Move #2 RFC; proposal-only `urml-aloha-bridge` at the data layer (record_episodes.py extension + post-hoc annotation); reinforces RFC-0046 (OXE) at the upstream recording layer; research-collaboration shape; request for comment from MarkFzp/mobile-aloha and tonyzhaozh/aloha maintainers | Draft | 2026-05-23 |
+| [0057](0057-nvidia-cosmos-predict.md) | Outreach | NVIDIA Cosmos-Predict2.5 integration; Move #2 RFC; proposal-only `urml-cosmos-predict-bridge` wiring the world model into URML's predictive-safety lane; NVIDIA-side parallel of RFC-0052 (V-JEPA 2 Vector B); composes with RFC-0055 (Cosmos-Reason1) into a closed loop; request for comment from nvidia-cosmos/cosmos-predict2.5 maintainers | Draft | 2026-05-23 |
+| [0058](0058-openai-robotics.md) | Outreach | OpenAI robotics integration; Move #2 RFC; deliberate cold knock (OpenAI has not published a public robotics surface as of 2026-05-23); files for symmetry across Move #2 AI-lab coverage and to put URML on OpenAI's radar when their robotics work goes public; request for comment from OpenAI | Draft | 2026-05-23 |
+| [0059](0059-drake-model-based-robotics.md) | Outreach | Drake model-based robotics integration; Move #2 RFC; proposal-only `urml-drake-bridge` with two vectors (`DrakeAdapter` substrate + analytical safety lane backed by Drake's solvers); fills the model-based-verification niche complementary to the learned-world-model lanes in RFC-0052 / RFC-0057; request for comment from RobotLocomotion/drake maintainers | Draft | 2026-05-23 |
+| [0060](0060-mujoco-integration.md) | Outreach | MuJoCo physics-engine integration; Move #2 RFC; formalizes URML's existing `reference/mujoco-runtime/` stub into a full `MuJoCoAdapter` plus optional `urml_envelope_plugin`; closes the "URML supports MuJoCo" overclaim; request for comment from google-deepmind/mujoco maintainers | Draft | 2026-05-23 |
+| [0061](0061-wlkata-outreach.md) | Outreach | WLKATA integration; first Move #3 RFC; proposal-only `WlkataAdapter` family targeting per-product ROS 2 packages (Mirobot / MT4 / Haro380) plus `wlkatapython` G-code-on-serial; cross-link to BRAVE simulation suite (Gazebo, MuJoCo, Isaac Lab); request for comment from wlkata maintainers | Draft | 2026-05-24 |
+| [0062](0062-petoi-bittle-outreach.md) | Outreach | Petoi (Bittle / Nybble) integration; Move #3 RFC; proposal-only `PetoiAdapter` over the OpenCat serial protocol; skill-library mapping from URML primitives to OpenCat gaits; the $299 hobby-quadruped hero-demo target for Move #3; request for comment from PetoiCamp maintainers | Draft | 2026-05-24 |
+| [0063](0063-hiwonder-outreach.md) | Outreach | Hiwonder integration; Move #3 RFC; proposal-only `HiwonderAdapter` family spanning MentorPi (Mecanum/Ackermann/tank), PuppyPi (quadruped), JetRover (Jetson rover), ROSPider (hexapod), JetMax (arm); catalog-breadth substrate-fungibility story; request for comment from Hiwonder maintainers | Draft | 2026-05-24 |
+| [0064](0064-trossen-interbotix-outreach.md) | Outreach | Trossen Robotics Interbotix integration; Move #3 RFC; proposal-only `InterbotixAdapter` over `interbotix_ros_manipulators` (BSD-3-Clause, ROS 2 Humble + Rolling + ROS 1 Noetic legacy); US-domiciled provenance anchor for Move #3; cross-links to RFC-0040 LeRobot and RFC-0056 Stanford ALOHA; request for comment from Interbotix maintainers | Draft | 2026-05-24 |
 
 ## Lifecycle states
 
