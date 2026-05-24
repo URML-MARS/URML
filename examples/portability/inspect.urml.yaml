@@ -1,0 +1,28 @@
+# URML v0.1 — one intent, many bodies
+#
+# Three core-vocabulary primitives — `move_to`, `detect`, `report` — composed
+# in the default `home` profile. The program is body-agnostic: the same file
+# validates and executes against a multirotor manifest, a quadruped manifest,
+# and a differential AMR manifest. The bridge is the manifest, not the program.
+#
+#   urml validate inspect.urml.yaml -m drone.manifest.yaml   --profile home --no-policy
+#   urml validate inspect.urml.yaml -m legged.manifest.yaml  --profile home --no-policy
+#   urml validate inspect.urml.yaml -m mobile.manifest.yaml  --profile home --no-policy
+#
+# Replace `validate` with `execute --adapter mock` to see each body's trace.
+# See docs/demos/one-intent-many-bodies.md for the side-by-side walkthrough.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: inspection_point
+    - detect:
+        object: person
+        store_as: people_in_view
+    - report:
+        to: ops
+        facts:
+          inspected: site

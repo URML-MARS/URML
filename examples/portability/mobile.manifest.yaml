@@ -1,0 +1,42 @@
+# Portability demo: a differential-drive AMR (Clearpath Husky-class).
+# Companion to examples/portability/inspect.urml.yaml.
+# `inspection_point` here is a ground waypoint reached on wheels.
+
+manifest_version: "0.1"
+robot_id: portability_amr
+description: Differential-drive AMR body for the portability demo (mobile variant).
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: inspection_point
+    pose: { x: 4.0, y: 2.0, z: 0.0 }
+    frame: site
+    description: Ground station, driven to.
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: false
+
+perception:
+  cameras:
+    - name: realsense_d435
+      movable: true
+      supports_photo: true
+      supports_video: true
+      max_resolution: "1080p"
+  object_vocabulary:
+    - person
+    - obstacle
+
+outputs:
+  named_endpoints:
+    - ops
