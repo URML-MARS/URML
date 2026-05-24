@@ -14,7 +14,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
   <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
-  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-765%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-779%20passing-brightgreen.svg" alt="Tests"></a>
   <a href="conformance/"><img src="https://img.shields.io/badge/conformance-101%20fixtures-brightgreen.svg" alt="Conformance"></a>
   <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-22%20Spec%20%2B%2016%20Outreach-blue.svg" alt="RFCs"></a>
 </p>
@@ -59,7 +59,7 @@ urml validate program.urml.yaml \
 ```bash
 git clone https://github.com/URML-MARS/URML.git && cd URML
 python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
-make test               # → 765 passed + 28 gated-skipped
+make test               # → 779 passed + 28 gated-skipped
 make demo-run           # → the animation above, reproduced live on the mock
 ```
 
@@ -69,7 +69,7 @@ make demo-run           # → the animation above, reproduced live on the mock
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-05-20, partial re-run 2026-05-22 via `make audit`: **765 passed + 28 gated-skipped** across 16 packages).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-05-20, partial re-runs 2026-05-22 and 2026-05-24 via `make audit`: **779 passed + 28 gated-skipped** across 16 packages).
 
 | Capability | State |
 |---|---|
@@ -144,6 +144,7 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 |---|---|
 | Get URML running in under an hour | [Tutorial 1: Getting started](docs/tutorials/01-getting-started.md) |
 | See one English sentence become an executed program | [Sentence-to-motion walkthrough](docs/demos/sentence-to-motion.md) |
+| See one URML intent run on three different bodies (drone, quadruped, AMR) | [One intent, many bodies](docs/demos/one-intent-many-bodies.md) |
 | See an LLM's unsafe program get refused before takeoff | [Safety-rejection walkthrough](docs/demos/safety-rejection.md) |
 | See compliance enforcement in action | [Compliance walkthrough](docs/demos/compliance-walkthrough.md) |
 | Understand the strategic case | [`MANIFESTO.md`](MANIFESTO.md) |

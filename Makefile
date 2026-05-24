@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run demo-record architecture-record audit test clean
+.PHONY: help install install-dev demo demo-run demo-record portability-record architecture-record audit test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -24,6 +24,7 @@ help:
 	@echo "  make demo         Validate the canonical red-mug example end-to-end."
 	@echo "  make demo-run     Sentence -> URML -> validate -> execute (hermetic, no creds)."
 	@echo "  make demo-record  Regenerate the README hero SVG (deterministic, any OS)."
+	@echo "  make portability-record  Regenerate the one-intent-many-bodies comparison SVG."
 	@echo "  make architecture-record  Regenerate the homepage architecture-stack SVG."
 	@echo "  make audit        Re-measure every suite + fixture count; print a paste-ready"
 	@echo "                    block for docs/launch/claims-audit.md (does not auto-edit)."
@@ -68,6 +69,15 @@ demo-run:
 # line it shows is real `urml` output.
 demo-record:
 	$(PYBIN)/python tools/scripts/gen_demo_svg.py
+
+# Regenerate the portability asset (docs/assets/one-intent-many-bodies.svg):
+# one URML program file executed against three body manifests (multirotor,
+# quadruped, differential AMR) — same intent, three substrates. Pure stdlib,
+# deterministic, any-OS. CI (test_portability_svg.py) asserts the committed
+# asset matches the generator and that every trace line it shows is real
+# `urml execute` output per body.
+portability-record:
+	$(PYBIN)/python tools/scripts/gen_portability_svg.py
 
 # Regenerate the homepage architecture diagram
 # (docs/assets/architecture-stack.svg): committed, deterministic SVG of

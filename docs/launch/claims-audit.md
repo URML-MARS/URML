@@ -40,9 +40,17 @@ to remeasure honestly — `make audit` flags them as "not measurable in this
 env" and the script does not auto-edit. Re-run in CI / a fully-installed venv
 to refresh the rest.
 
+**Partial re-measurement 2026-05-24, on `docs/move-4-posted-urls`** (commit
+`ad483c8`), reflecting two additions to the validator suite since 2026-05-22:
+the architecture-stack SVG guard from PR #129 (+8 tests) and the
+portability-demo SVG guard introduced with this change (+6 tests, parametrized
+over three body manifests). Net: validator 244 → 258, total 765 → 779. The 12
+unmeasurable runtime rows carry forward the 2026-05-20 numbers; the same
+environment caveat applies (no rclpy / pymavlink / vendor SDKs on this host).
+
 | Suite | Result |
 |---|---|
-| validator | **244 passed** * |
+| validator | **258 passed** * |
 | llm-bridge | **108 passed** * |
 | ros2-runtime | **115 passed, 4 skipped** * |
 | px4-runtime | **54 passed, 4 skipped** * |
@@ -59,7 +67,7 @@ to refresh the rest.
 | edu-runtime | **6 passed, 2 skipped** (3 platform adapters parameterized) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
-| **Total** | **765 passed + 28 gated-skipped** |
+| **Total** | **779 passed + 28 gated-skipped** |
 
 The 28 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -165,6 +173,23 @@ is the calibration run. No green run is claimed.
 
 **CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
 routing across a flight + companion backend. Evidence: px4-runtime suite.
+
+**Portability demo — one program, three bodies.** One URML program file
+([`examples/portability/inspect.urml.yaml`](../../examples/portability/inspect.urml.yaml)
+— `move_to` + `detect` + `report`, `home` profile) validated and executed
+against three distinct body manifests: `drone.manifest.yaml` (multirotor),
+`legged.manifest.yaml` (quadruped), `mobile.manifest.yaml` (differential
+AMR). Asset: [`docs/assets/one-intent-many-bodies.svg`](../assets/one-intent-many-bodies.svg)
+(generator: [`tools/scripts/gen_portability_svg.py`](../../tools/scripts/gen_portability_svg.py),
+pure stdlib, deterministic). Evidence:
+[`reference/validator/tests/test_portability_svg.py`](../../reference/validator/tests/test_portability_svg.py)
+asserts (a) the committed SVG byte-equals the generator output, (b) every
+asserted trace line is emitted verbatim by a live hermetic `urml execute
+--adapter mock` run against each of the three manifests (parametrized over
+all three bodies), and (c) every "out" fragment shown in the SVG's column
+layout is a substring of a real-output line — the asset never fabricates
+trace text. Re-measure with `make audit` to fold the +6 tests into the
+validator suite count above.
 
 **Twelve further reference runtimes — hermetic-tested, live CI gated (no
 hardware claim).** Beyond ROS 2 and PX4, `main` ships:
