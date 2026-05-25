@@ -34,7 +34,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   They live in this directory for ergonomic discoverability (one place
   to find "URML's pitch to target X") and are tracked operationally in
   the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
-  Five outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
+  Six outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
   OEMs and component vendors, ledger
   [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)),
   **Move #2** (RFCs 0040–0060, AI/ML-layer projects, ledger
@@ -45,18 +45,19 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #4** (RFCs 0065–0070, adjacent niches Moves #1–#3 did not touch,
   ledger
   [`outreach-move4.yaml`](../../examples/lighthouses/outreach-move4.yaml)),
-  and **Move #5** (RFCs 0071–0079, Tier 2 promoted candidates plus DEEP
+  **Move #5** (RFCs 0071–0079, Tier 2 promoted candidates plus DEEP
   Robotics' Lynx S10 wheeled-legged-hybrid debut, ledger
-  [`outreach-move5.yaml`](../../examples/lighthouses/outreach-move5.yaml)).
+  [`outreach-move5.yaml`](../../examples/lighthouses/outreach-move5.yaml)),
+  and **Move #6** (RFCs 0080–0091, US-friendly university robotics labs,
+  ledger
+  [`outreach-move6.yaml`](../../examples/lighthouses/outreach-move6.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
   audiences URML's first three waves left untouched. Move #5 promotes
-  the parked Tier 2 from the Move #4 research pass and splits into a
-  Tier A vendor-style cohort (Robotnik, Clearpath, Robotical Marty, DEEP
-  Robotics) and a Tier B research-collab cohort (Stanford Pupper, Open
-  Dynamic Robot Initiative Solo, MIT CHAMP, Orca4 + ros-maritime, Open
-  Bionics). Do not interpret outreach RFCs as a quiet expansion of URML's
-  spec surface.
+  the parked Tier 2 from the Move #4 research pass. Move #6 turns to
+  university robotics labs (6 US, 4 EU+UK, 2 Asia-Pacific), all Tier B
+  research-collab framing rather than vendor outreach. Do not interpret
+  outreach RFCs as a quiet expansion of URML's spec surface.
 
 ## Index
 
@@ -142,6 +143,18 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0077](0077-mit-champ-outreach.md) | Outreach | MIT CHAMP integration; Move #5 RFC, Tier B research-collab; proposal-only `ChampAdapter` as control-framework target (not hardware); consumes CHAMP's URDF-parameterised whole-body controller for MIT Mini Cheetah / ANYmal / Spot / LittleDog / SpotMicroAI / OpenQuadruped; mirrors RFC-0070 HEBI per-customer-geometry pattern; ROS 1 only; cross-link to RFC-0043 Spot and RFC-0049 ANYmal; request for comment from chvmp maintainers | Draft | 2026-05-24 |
 | [0078](0078-orca4-ros-maritime-outreach.md) | Outreach | Orca4 / ros-maritime integration; Move #5 RFC, Tier B research-collab; alignment + documentation (not new adapter) layering URML's existing `marine-runtime` BlueRovAdapter with the community Orca4 ROS 2 stack on top of BlueROV2; cross-link to RFC-0041 ArduPilot; request for comment from clydemcqueen and ros-maritime working group | Draft | 2026-05-24 |
 | [0079](0079-open-bionics-outreach.md) | Outreach | Open Bionics integration; Move #5 RFC, Tier B research-collab + commercial courtesy; URML's first accessibility-identity outreach; two-surface engagement (academic OpenBionics GitHub org, dormant, last commits 2018–2020 / commercial Open Bionics Ltd, no GitHub Issue surface); no spec or profile commitment; lightest engagement payload in Move #5; request for comment from OpenBionics maintainers (if reachable) + courtesy outreach to Open Bionics Ltd | Draft | 2026-05-24 |
+| [0080](0080-uc-berkeley-autolab-outreach.md) | Outreach | UC Berkeley AUTOLAB integration; first Move #6 RFC, Tier B research-collab; PI Ken Goldberg (distinct from RAIL/Abbeel and Hybrid Robotics Lab/RFC-0069); dex-net + gqcnn + autolab_core engagement; EECS 206A/B coursework integration; request for comment from BerkeleyAutomation maintainers | Draft | 2026-05-25 |
+| [0081](0081-caltech-amber-outreach.md) | Outreach | Caltech AMBER Lab integration; Move #6 RFC, Tier B research-collab; PI Aaron Ames; strongest formal-methods alignment with URML's static-verification story in any outreach wave; `obelisk` composition + prosthetics complement to RFC-0079; request for comment from Caltech-AMBER maintainers | Draft | 2026-05-25 |
+| [0082](0082-upenn-grasp-outreach.md) | Outreach | UPenn GRASP Lab integration; Move #6 RFC, Tier B research-collab; PI Vijay Kumar; KumarRobotics 93 repos with msckf_vio 1.9k + kr_autonomous_flight 771; multi-agent + aerial + ground-aerial heterogeneous fleet research; surfaces multi-agent coordination primitive question for future Spec RFC; request for comment from KumarRobotics maintainers | Draft | 2026-05-25 |
+| [0083](0083-uw-personal-robotics-outreach.md) | Outreach | UW Personal Robotics Lab integration; Move #6 RFC, Tier B research-collab; PI Siddhartha Srinivasa (distinct from Imperial PRL/Demiris per RFC-0088); ADA + HERB + aikido composition; CSE 490R coursework; request for comment from personalrobotics maintainers | Draft | 2026-05-25 |
+| [0084](0084-umich-robotics-outreach.md) | Outreach | UMich Robotics Department + CURLY lab integration; Move #6 RFC, Tier B research-collab; PIs Maani Ghaffari + Jessy Grizzle; ROB 101 / ROB 102 / ROB 401 robot-agnostic undergraduate curriculum (most teaching-pipeline-ready URML target in Move #6); request for comment from UMich-CURLY + department leadership | Draft | 2026-05-25 |
+| [0085](0085-northwestern-crb-outreach.md) | Outreach | Northwestern Center for Robotics and Biosystems (CRB) integration; Move #6 RFC, Tier B research-collab; PIs Todd Murphey + Ed Colgate + Kevin Lynch; ergodic-control + HAND ERC ($52M/10y) + speculative Lynch textbook ask; GPL-3.0 license-fit note for URML Apache-2.0 reference/; request for comment from MurpheyLab + CRB faculty | Draft | 2026-05-25 |
+| [0086](0086-eth-asl-outreach.md) | Outreach | ETH Zurich Autonomous Systems Lab (ASL) integration; Move #6 RFC, Tier B research-collab; PI Roland Siegwart; largest GitHub footprint in Move #6 (458 repos, 2.3k followers, maplab 2.8k stars); distinct from ETH RSL (Hutter, covered indirectly via RFC-0049 ANYmal); request for comment from ethz-asl maintainers | Draft | 2026-05-25 |
+| [0087](0087-tu-delft-cognitive-robotics-outreach.md) | Outreach | TU Delft Cognitive Robotics integration; Move #6 RFC, Tier B research-collab; PI Martijn Wisse; bio-inspired locomotion + Mobile Robotics course + CoppeliaSim Spec RFC question; request for comment from tud-cor maintainers | Draft | 2026-05-25 |
+| [0088](0088-imperial-personal-robotics-outreach.md) | Outreach | Imperial College London Personal Robotics Lab integration; Move #6 RFC, Tier B research-collab + off-GitHub courtesy; PI Yiannis Demiris (distinct from UW PRL/Srinivasa per RFC-0083); no verified standalone GitHub Issue surface — engagement via courtesy email to y.demiris@imperial.ac.uk; request for comment from Imperial PRL | Draft | 2026-05-25 |
+| [0089](0089-oxford-ori-outreach.md) | Outreach | Oxford Robotics Institute (ORI) integration; Move #6 RFC, Tier B research-collab; PI Paul Newman; thin GitHub presence (only 2 public repos in oxford-robotics-institute); cross-link to RFC-0042 (Waymo) for Radar RobotCar Dataset annotation + RFC-0020 (Autoware) for AV research; request for comment from ORI maintainers | Draft | 2026-05-25 |
+| [0090](0090-utokyo-jsk-outreach.md) | Outreach | University of Tokyo JSK Robotics Lab integration; Move #6 RFC, Tier B research-collab; PIs Masayuki Inaba + Kei Okada; most mature Asian academic ROS surface (20+ years); jsk_recognition + jsk_visualization composition + EusLisp / roseus + jsk_aerial_robot; request for comment from jsk-ros-pkg maintainers | Draft | 2026-05-25 |
+| [0091](0091-qut-centre-for-robotics-outreach.md) | Outreach | QUT Centre for Robotics (Peter Corke) integration; Move #6 RFC, Tier B research-collab; twelfth and final Move #6 RFC; PI Peter Corke; personal handle (`petercorke`) plus institutional QUT Centre; robotics-toolbox-python global teaching standard + RVC3 textbook (speculative URML-appendix ask) + AuSRoS 2025+ ROS 2 labs + ARC Centre of Excellence; request for comment from Peter Corke | Draft | 2026-05-25 |
 
 ## Lifecycle states
 
