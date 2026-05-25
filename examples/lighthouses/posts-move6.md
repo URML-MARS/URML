@@ -67,7 +67,7 @@ Hi AMBER Lab,
 
 Posting this as a research-collaboration proposal to Prof. Aaron Ames and the AMBER team. I'm Ido Yahalomi, maintainer of [URML](https://urml.dev), an Apache 2.0 specification for substrate-neutral robot intent.
 
-AMBER's nonlinear control + hybrid-systems + bipedal-locomotion + prosthetics research is the strongest formal-methods alignment URML has encountered across six outreach moves. URML's capability manifest schema can encode joint limits, contact constraints, hybrid-systems mode-switch boundaries — exactly the formal surfaces AMBER's papers reason over. URML's static-verification path ([RFC-0014 Draft](https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0014-substrate-conformance.md)) sits one layer above that.
+AMBER's nonlinear control + hybrid-systems + bipedal-locomotion + prosthetics research is the strongest formal-methods alignment URML has encountered across six outreach moves. URML's capability manifest schema can encode joint limits, contact constraints, hybrid-systems mode-switch boundaries. Exactly the formal surfaces AMBER's papers reason over. URML's static-verification path ([RFC-0014 Draft](https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0014-substrate-conformance.md)) sits one layer above that.
 
 `obelisk` is interesting: it's "a stable generic robot control interface" with explicit overlap to URML's substrate-Protocol abstraction. The two should compose, not compete. URML's RFC asks whether obelisk + URML composition is the right shape.
 
@@ -121,7 +121,7 @@ Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0082-upenn-grasp
 6. **Conformance lane?**
 7. **Anything else.**
 
-Thanks for kr_autonomous_flight, MOCHA, SLIDE_SLAM, HALO — the GRASP open-source surface is the most concrete swarm-coordination research surface URML can point at.
+Thanks for kr_autonomous_flight, MOCHA, SLIDE_SLAM, HALO. The GRASP open-source surface is the most concrete swarm-coordination research surface URML can point at.
 
 — Ido Yahalomi (URML maintainer, [urml.dev](https://urml.dev))
 ```
@@ -176,9 +176,9 @@ Hi UMich Robotics,
 
 Posting this as a research-collaboration proposal to Prof. Maani Ghaffari + Prof. Jessy Grizzle and the UMich Robotics Department leadership. I'm Ido Yahalomi, maintainer of [URML](https://urml.dev), an Apache 2.0 specification for substrate-neutral robot intent.
 
-UMich Robotics is the most teaching-pipeline-ready URML target in Move #6. ROB 101 (Computational Linear Algebra for Robotics) and ROB 102 (Intro to AI and Programming for Robotics), launched 2023 as part of the new undergraduate robotics major, are robot-agnostic by design — exactly the audience URML's substrate-neutral primitive vocabulary serves.
+UMich Robotics is the most teaching-pipeline-ready URML target in Move #6. ROB 101 (Computational Linear Algebra for Robotics) and ROB 102 (Intro to AI and Programming for Robotics), launched 2023 as part of the new undergraduate robotics major, are robot-agnostic by design. Exactly the audience URML's substrate-neutral primitive vocabulary serves.
 
-CURLY (Computational Autonomy and Robotics Laboratory, Ghaffari) is the lab-level surface URML's `measure` primitive can compose with: `drift` (state estimation), `unified_cvo` (GPU point-cloud registration), `3DMapping`, `deep-contact-estimator` — all sit below URML's intent layer. Cassie / Digit bipedal-locomotion work (Grizzle) is a candidate URML manifest reference geometry.
+CURLY (Computational Autonomy and Robotics Laboratory, Ghaffari) is the lab-level surface URML's `measure` primitive can compose with: `drift` (state estimation), `unified_cvo` (GPU point-cloud registration), `3DMapping`, `deep-contact-estimator`. All sit below URML's intent layer. Cassie / Digit bipedal-locomotion work (Grizzle) is a candidate URML manifest reference geometry.
 
 This is proposal-only, part of URML's **Move #6** outreach. No URML adapter against UMich Robotics code in this RFC.
 
@@ -187,7 +187,7 @@ Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0084-umich-robot
 ## Feedback we'd value
 
 1. **ROB 101 / ROB 102 coursework integration.** Candidates for URML primitive vocabulary as teaching artifact?
-2. **CURLY + URML composition.** Documented note that URML's `measure` consumes CURLY state-estimation outputs — useful?
+2. **CURLY + URML composition.** Documented note that URML's `measure` consumes CURLY state-estimation outputs. Useful?
 3. **Bipedal-locomotion cross-link.** Cassie / Digit URDFs as URML manifest reference geometries?
 4. **Isaac Lab coordination.** URML's open RFC-0050 (NVIDIA Isaac Lab) is adjacent; coordinate?
 5. **Other UMich Robotics labs.** Who else (ROAHM, Bezzo, ...) is worth a separate URML outreach in a future Move #7?
@@ -267,7 +267,7 @@ Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0086-eth-asl-out
 1. **maplab / wavemap / ethzasl_msf composition.** Useful direction?
 2. **Multi-sensor-fusion manifest alignment.** URML manifest declarations + ethzasl_msf sensor-state interface mapping?
 3. **Coursework integration.** ETH master's robotics courses as candidates?
-4. **ASL / RSL coordination.** Both ETH labs in URML's outreach landscape — any ETH-internal coordination URML should be aware of?
+4. **ASL / RSL coordination.** Both ETH labs in URML's outreach landscape. Any ETH-internal coordination URML should be aware of?
 5. **Conformance lane on maplab README or asl.ethz.ch?**
 6. **Anything else.**
 
@@ -315,14 +315,14 @@ Thanks for the TU Delft Cognitive Robotics group's open-source posture and the e
 ## RFC-0088: Imperial College London Personal Robotics Lab (off-GitHub)
 
 **Send to:** y.demiris@imperial.ac.uk (via imperial.ac.uk/personal-robotics)
-**Subject:** `URML (substrate-neutral robot intent) research-collaboration proposal — Move #6 university outreach`
+**Subject:** `URML (substrate-neutral robot intent) research-collaboration proposal. Move #6 university outreach`
 
 **Body:**
 
 ```text
 Hi Prof. Demiris,
 
-I'm Ido Yahalomi, the maintainer of URML (Universal Robot Language), an Apache 2.0 open specification for substrate-neutral robot intent at urml.dev. URML's outreach program just opened Move #6 — twelve university robotics labs across the US, UK, EU, and Asia-Pacific. Imperial's Personal Robotics Lab is one of those twelve, and your research focus (human-centred robotics, learning from demonstration, assistive systems, HRI) is a near-direct semantic match for URML's English-to-primitive translation path.
+I'm Ido Yahalomi, the maintainer of URML (Universal Robot Language), an Apache 2.0 open specification for substrate-neutral robot intent at urml.dev. URML's outreach program just opened Move #6. Twelve university robotics labs across the US, UK, EU, and Asia-Pacific. Imperial's Personal Robotics Lab is one of those twelve, and your research focus (human-centred robotics, learning from demonstration, assistive systems, HRI) is a near-direct semantic match for URML's English-to-primitive translation path.
 
 The engagement is off-GitHub by design: URML's verification did not find a standalone public GitHub Issue surface for Imperial PRL. If you maintain a different surface (a private GitHub org, a lab mailing list, the Imperial robotics workshop circuit), I'd welcome a pointer.
 
@@ -357,9 +357,9 @@ Hi Oxford ORI,
 
 Posting this as a research-collaboration proposal to Prof. Paul Newman and the Oxford Robotics Institute team. I'm Ido Yahalomi, maintainer of [URML](https://urml.dev), an Apache 2.0 specification for substrate-neutral robot intent.
 
-URML's Move #6 outreach includes Oxford ORI for two reasons: (a) the Radar RobotCar Dataset annotation cross-link — URML's existing RFC-0042 (Waymo Open Dataset) outreach proposed an annotation pattern for dataset trajectories; the same pattern likely applies to the Oxford Radar RobotCar Dataset. (b) Oxford ORI's autonomous-driving research is institutionally adjacent to URML's RFC-0020 (Autoware AV substrate) Draft.
+URML's Move #6 outreach includes Oxford ORI for two reasons: (a) the Radar RobotCar Dataset annotation cross-link. URML's existing RFC-0042 (Waymo Open Dataset) outreach proposed an annotation pattern for dataset trajectories; the same pattern likely applies to the Oxford Radar RobotCar Dataset. (b) Oxford ORI's autonomous-driving research is institutionally adjacent to URML's RFC-0020 (Autoware AV substrate) Draft.
 
-Honest note on surface: URML's verification found only 2 public repos in `oxford-robotics-institute` (radar-robotcar-dataset-sdk, oord-dataset). If you maintain a different engagement surface — `ori-drs`, `ori-systems`, an internal mailing list, the ORI website's contact form — I'd welcome a pointer; URML's outreach pivots accordingly.
+Honest note on surface: URML's verification found only 2 public repos in `oxford-robotics-institute` (radar-robotcar-dataset-sdk, oord-dataset). If you maintain a different engagement surface. `ori-drs`, `ori-systems`, an internal mailing list, the ORI website's contact form. I'd welcome a pointer; URML's outreach pivots accordingly.
 
 This is proposal-only, part of URML's **Move #6** outreach.
 
@@ -405,7 +405,7 @@ This is proposal-only, part of URML's **Move #6** outreach.
 
 Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0090-utokyo-jsk-outreach.md
 
-Note on language: URML's RFC body is English. Substantive technical discussion is welcome in Japanese or English — whichever the JSK team prefers.
+Note on language: URML's RFC body is English. Substantive technical discussion is welcome in Japanese or English. Whichever the JSK team prefers.
 
 ## Feedback we'd value
 
@@ -463,7 +463,7 @@ Thanks for the Robotics Toolbox lineage (MATLAB → Python → ROS 2), RVC3, and
 
 ## Workflow for posting
 
-For each target (in any order, but recommended to start with UMich Robotics — the most teaching-pipeline-ready of the wave per the plan — and then proceed through the rest):
+For each target (in any order, but recommended to start with UMich Robotics. The most teaching-pipeline-ready of the wave per the plan. And then proceed through the rest):
 
 1. Open the target's new-Issue URL or email surface (above each section).
 2. Paste the title.
