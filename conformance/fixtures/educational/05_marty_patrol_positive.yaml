@@ -1,0 +1,34 @@
+name: educational/marty_patrol_positive
+description: >
+  Track D educational fixture — Robotical Marty v2 (zero-ROS, native vendor
+  SDK via martypy). RFC-0011 educational profile; URML scales DOWN to a
+  classroom bipedal walking robot. Manifest ACCEPTED under the bundled
+  US-federal default policy (allied origin, GB). Navigation-only patrol
+  against MockROSAdapter; adapter-agnostic for the edu-runtime's
+  RoboticalMartyAdapter. This is URML's first conformance fixture authored
+  in response to an engaged outreach reply (robotical/martypy#52,
+  2026-05-25).
+
+manifest: robotical_marty_v2
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: start_mat }
+      - move_to: { location: waypoint_a }
+      - move_to: { location: rest_mat }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

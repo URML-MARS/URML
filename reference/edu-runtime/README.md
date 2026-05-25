@@ -14,9 +14,9 @@
 
 # urml-edu-runtime
 
-**Educational-platform reference runtime for URML** — `VexV5Adapter`, `LegoSpikeAdapter`, `ThymioAdapter`, **zero ROS**.
+**Educational-platform reference runtime for URML** — `VexV5Adapter`, `LegoSpikeAdapter`, `ThymioAdapter`, `RoboticalMartyAdapter`, **zero ROS**.
 
-The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `pyvex`), LEGO SPIKE Prime / Mindstorms hub (BLE via `pybricksdev`), Thymio (Aseba TDM via `tdmclient`). Each platform's native SDK is imported lazily by its adapter — this module loads on every host without any `[vex]`/`[lego]`/`[thymio]` extra. Built against the frozen substrate Protocol per [RFC-0014](../../docs/rfcs/0014-substrate-conformance.md). Mirrors `cobot-runtime`'s `_CobotBase` shape.
+The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `pyvex`), LEGO SPIKE Prime / Mindstorms hub (BLE via `pybricksdev`), Thymio (Aseba TDM via `tdmclient`), Robotical Marty v1/v2 (USB-serial / socket via `martypy`, per maintainer engagement on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52), 2026-05-25). Each platform's native SDK is imported lazily by its adapter. This module loads on every host without any `[vex]`/`[lego]`/`[thymio]`/`[marty]` extra. Built against the frozen substrate Protocol per [RFC-0014](../../docs/rfcs/0014-substrate-conformance.md). Mirrors `cobot-runtime`'s `_CobotBase` shape.
 
 ## Method coverage
 
@@ -45,6 +45,7 @@ See [`SPEC-GAPS.md`](SPEC-GAPS.md).
 pip install -e reference/edu-runtime[vex]      # VEX V5 (pyvex)
 pip install -e reference/edu-runtime[lego]     # LEGO Pybricks (pybricksdev BLE)
 pip install -e reference/edu-runtime[thymio]   # Thymio (tdmclient)
+pip install -e reference/edu-runtime[marty]    # Robotical Marty v1/v2 (martypy)
 ```
 
 ```python
@@ -58,9 +59,10 @@ with VexV5Adapter(cfg) as vex:
 ## Status
 
 **v0.1 (this release):**
-- 3 adapters + `EduConfig` + `BRAND_ADAPTERS` registry. Hermetic suite green via fake-SDK injection (`pytest reference/edu-runtime/tests -q`).
-- 3 manifest fixtures (VEX V5 clawbot, LEGO SPIKE driving base, Thymio classroom buggy) + 3 conformance fixtures under `conformance/fixtures/educational/`.
-- Gated `.github/workflows/edu-integration.yml`: `edu-smoke` (real SDKs), `edu-arm64-build` (Jetson-class QEMU with SDKs absent), `edu-board-e2e` placeholder that `exit 1`s until a real board is wired (the marine/cobot HONESTY-NOTE precedent).
+- 4 adapters + `EduConfig` + `BRAND_ADAPTERS` registry. Hermetic suite green via fake-SDK injection (`pytest reference/edu-runtime/tests -q`).
+- 4 manifest fixtures (VEX V5 clawbot, LEGO SPIKE driving base, Thymio classroom buggy, Robotical Marty v2) + 4 conformance fixtures under `conformance/fixtures/educational/`.
+- Gated `.github/workflows/edu-integration.yml`: `edu-smoke` (real SDKs including `martypy`), `edu-arm64-build` (Jetson-class QEMU with SDKs absent), `edu-board-e2e` placeholder that `exit 1`s until a real board is wired (the marine/cobot HONESTY-NOTE precedent).
+- The Marty adapter was added in direct response to the first engaged maintainer reply across URML's 31-thread Move #3–#6 outreach: NikTheGeek1 on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52) (2026-05-25) confirmed URML should host the adapter externally, set v2 default transport to USB-serial / v1 to socket, and scoped BLE out as not supported by `martypy`.
 
 ## Core Commitment
 

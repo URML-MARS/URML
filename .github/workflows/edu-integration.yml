@@ -56,7 +56,7 @@ jobs:
           pip install \
             -e reference/validator \
             -e reference/ros2-runtime \
-            -e "reference/edu-runtime[vex,lego,thymio]" \
+            -e "reference/edu-runtime[vex,lego,thymio,marty]" \
             -e conformance \
             "pytest>=8"
 

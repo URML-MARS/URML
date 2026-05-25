@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "urml-edu-runtime"
 version = "0.1.0"
-description = "Educational-platform reference runtime for URML — VEX V5, LEGO Mindstorms/SPIKE, Thymio, zero ROS."
+description = "Educational-platform reference runtime for URML — VEX V5, LEGO Mindstorms/SPIKE, Thymio, Robotical Marty, zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "urml", "runtime"]
+keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "urml", "runtime"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -45,6 +45,14 @@ lego = [
 ]
 thymio = [
   "tdmclient>=0.1.4",
+]
+# Robotical Marty (Edinburgh, UK) via the host-side martypy SDK. v3.6.6
+# is the last published release at time of writing per robotical/martypy
+# (Apache-2.0). Maintainer engagement on robotical/martypy#52 (2026-05-25)
+# confirmed v2 default transport is USB-serial, v1 is socket; BLE is not
+# supported by martypy and is out of scope for this adapter.
+marty = [
+  "martypy>=3.6",
 ]
 dev = [
   "pytest>=8",
