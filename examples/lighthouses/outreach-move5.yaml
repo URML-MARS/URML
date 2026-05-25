@@ -67,10 +67,10 @@
   sent_at: "2026-05-24"
   posted_url: "https://github.com/robotical/martypy/issues/52"
   channel: github_issue
-  contact: "robotical/martypy (Apache-2.0, Python 99.4%, 6 stars, v3.6.6 release 2024-01-12)"
-  last_touch: 2026-05-24
-  response: none
-  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on robotical/martypy#52; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  contact: "robotical/martypy (Apache-2.0, Python 99.4%, 6 stars, v3.6.6 release 2024-01-12). Engaged maintainer: NikTheGeek1 (Robotical contributor)"
+  last_touch: 2026-05-25
+  response: engaged
+  next_action: "ship the URML-side `RoboticalMartyAdapter` per maintainer guidance (adapter in URML repo, v2 USB-serial / v1 socket default, no BLE, URML positioned as external intent layer not MartyBlocks replacement). Initial scaffold shipped 2026-05-25 in feat/robotical-marty-adapter-scaffold. Hardware-in-the-loop validation + v1/v2 compatibility matrix pending; once green, request martypy README/docs link to URML adapter per item 5 of the maintainer reply. Post a thank-you reply on robotical/martypy#52 acknowledging the engagement, summarising URML's plan, and pointing at the scaffold PR."
   notes: "Third Move #5 RFC, Tier A vendor-style. UK (Edinburgh) commercial educational bipedal-walking-robot vendor. Marty v1 + v2; Python SDK martypy + MartyBlocks (Scratch-based). Bipedal counterpart to RFC-0062 Petoi Bittle quadruped at similar price tier. Low star count (6) on GitHub but real classroom deployment scale per robotical.io documentation. Triple transport: serial / WebSocket / BLE. Origin GB; default policy passes. Note: stale release cadence (v3.6.6 last updated 2024-01-12) flagged as RFC question. Verified surface 2026-05-24."
 - slug: deep-robotics
   rfc: 74

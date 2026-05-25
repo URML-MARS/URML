@@ -47,6 +47,7 @@ from urml_edu_runtime.config import EduConfig, load_edu_config
 __all__ = [
     "EduConfig",
     "LegoSpikeAdapter",
+    "RoboticalMartyAdapter",
     "ThymioAdapter",
     "VexV5Adapter",
     "__version__",
@@ -340,6 +341,107 @@ class LegoSpikeAdapter(_EduBase):
     def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
         hub = self._open()
         value = float(hub.read_sensor(sensor or "default"))
+        return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+
+class RoboticalMartyAdapter(_EduBase):
+    """Robotical Marty v1 / v2 via ``martypy`` skill-library dispatch — zero ROS.
+
+    Marty is the bipedal educational walking robot from Robotical Ltd
+    (Edinburgh, UK). The lab maintainer (NikTheGeek1) confirmed on
+    robotical/martypy#52 (2026-05-25) that URML should build the adapter
+    externally against the public ``martypy`` API and that the transport
+    priority is: v2 default ``usb`` serial, ``wifi``/``ws`` configurable;
+    v1 default ``socket``. BLE is **not** supported by ``martypy`` and
+    URML would have to provide it as a separate layer (out of scope for
+    this scaffold). Manipulation is not applicable on stock Marty (no
+    gripper); ``manipulation_commands`` may map ``grasp`` / ``release``
+    to skill-library tokens for add-on grippers.
+
+    The classroom audience is exactly the RFC-0011 educational profile.
+    United Kingdom — passes the default US-federal policy.
+    """
+
+    BRAND = "marty"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import martypy  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "martypy is not installed. RoboticalMartyAdapter requires the [marty] extra.\n"
+                "  Install with: pip install urml-edu-runtime[marty]"
+            ) from exc
+        # ``martypy.Marty`` accepts a connection string in v2 ('usb', 'ws://host', etc.)
+        # and a socket address in v1; the URML config's ``device`` field carries
+        # whatever the deployment chose. ``program_name`` is unused by martypy and
+        # ignored here (kept on EduConfig for parity with VEX/LEGO/Thymio).
+        self._conn = martypy.Marty(self._config.device)
+        return self._conn
+
+    def _send(self, command: str) -> None:
+        """Dispatch a skill-library token to the connected Marty.
+
+        ``martypy`` exposes skill methods (`.walk()`, `.kick()`, `.sit()`,
+        `.eyes()`, ...) rather than a generic command channel. URML's
+        EduConfig command-string convention is preserved by treating each
+        configured command as the name of a martypy attribute to call.
+        Unknown skill names are reported as a typed RuntimeError so the
+        validator step can surface them as ``manipulation_command_not_configured``
+        / ``location_not_configured`` rather than a crash inside martypy.
+        """
+        marty = self._open()
+        skill = getattr(marty, command, None)
+        if not callable(skill):
+            raise RuntimeError(
+                f"marty_skill_not_found: martypy.Marty has no callable named {command!r}. "
+                "Map the location/manipulation entry to a martypy skill method name "
+                "in edu_adapter.yaml (e.g. 'walk', 'kick', 'sit', 'arms')."
+            )
+        skill()
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        return _nav(self, location, lambda c: self._send(c), frame)
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        return _grasp(self, action, force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        marty = self._open()
+        # ``martypy`` exposes sensors via named getters (`.get_battery_voltage()`,
+        # `.get_accelerometer()`, `.get_distance_sensor()`, ...). Treat
+        # ``sensor`` as the getter name; fall back to a battery read.
+        getter_name = sensor or "get_battery_voltage"
+        getter = getattr(marty, getter_name, None)
+        if not callable(getter):
+            return MeasurementResult(
+                success=False,
+                reason=(
+                    f"marty_sensor_not_found: martypy.Marty has no callable named "
+                    f"{getter_name!r}. Use a published martypy getter "
+                    "(get_battery_voltage, get_accelerometer, ...)."
+                ),
+            )
+        value = float(getter())
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
 

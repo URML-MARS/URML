@@ -1,0 +1,66 @@
+# Fixture: Robotical Marty v2 via martypy; Robotical Ltd, Edinburgh, UK.
+# Substrate = urml-edu-runtime, zero ROS. RFC-0011 educational flywheel.
+# Bipedal walking education robot, ESP32 controller, USB-serial primary
+# transport per maintainer engagement on robotical/martypy#52 (2026-05-25).
+# United Kingdom — passes the default US-federal policy (allied origin).
+# Default policy ACCEPTS this manifest.
+
+manifest_version: "0.1"
+robot_id: robotical_marty_v2_1
+description: "Robotical Marty v2 via martypy; Robotical Ltd, Edinburgh, UK."
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: start_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+  - name: waypoint_a
+    pose: { x: 0.3, y: 0.0 }
+    frame: floor
+  - name: rest_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+
+declared_events:
+  - button_pressed
+
+mobility:
+  drive_type: biped
+  max_velocity: 0.1
+  station_keeping: false
+
+perception:
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 9.0
+      units: volts
+    - name: accelerometer
+      measurement_type: acceleration
+      range_min: -2.0
+      range_max: 2.0
+      units: g
+  object_vocabulary: []
+
+provenance:
+  manifest_attestation: third_party_audited
+  components:
+    - id: robotical_marty_v2_controller
+      role: critical
+      vendor: robotical
+      country_of_origin: GB
+      country_of_final_assembly: GB
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/robotical_marty_v2.cdx.json
+        sha256: "6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d"
+
+outputs:
+  named_endpoints:
+    - classroom_log

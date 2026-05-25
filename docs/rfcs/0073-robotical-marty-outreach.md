@@ -2,9 +2,9 @@
 rfc: 0073
 title: Robotical (Marty) integration, request for comment from robotical maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-24
-updated: 2026-05-24
+updated: 2026-05-25
 supersedes: —
 superseded-by: —
 ---
@@ -24,6 +24,20 @@ superseded-by: —
 ---
 
 # RFC-0073: Robotical (Marty) integration, request for comment from robotical maintainers
+
+## Engagement received (2026-05-25)
+
+NikTheGeek1 (Robotical contributor) replied on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52) with substantive technical guidance. The maintainer-side answers to the six RFC questions:
+
+1. **Adapter home.** URML repo, externally maintained against the public `martypy` API. README link to URML's adapter possible once it is stable and tested against real Marty hardware.
+2. **Active development cadence.** `martypy` is stable / maintenance-mode, not under active feature development.
+3. **Transport priority.** Marty v2: default **USB-serial**, WiFi / WebSocket configurable. Marty v1: **socket**. **BLE is not supported by `martypy`** and URML would need to provide its own BLE layer if it wants one (out of scope here).
+4. **MartyBlocks alignment.** No joint plans; URML should be positioned as an external intent/runtime layer, not as a MartyBlocks replacement.
+5. **Conformance lane.** Open to a README / docs link once URML ships a working adapter, a clear v1/v2 compatibility matrix, and basic tests or real-hardware validation.
+
+URML's response: shipped `RoboticalMartyAdapter` in `reference/edu-runtime/` alongside the existing VEX V5 / LEGO SPIKE / Thymio adapters (the maintainer's recommended "external adapter" home). Transport priority follows the maintainer's guidance verbatim. BLE deferred. Manifest fixture (`robotical_marty_v2.yaml`) and conformance fixture (`05_marty_patrol_positive.yaml`) shipped against `MockROSAdapter`; real-hardware validation is the documented next step before URML requests the upstream README link. State moves from Draft to Open.
+
+This is URML's first engaged outreach response across the 31-thread Move #3–#6 inbox.
 
 ## Summary
 
