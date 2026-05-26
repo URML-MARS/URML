@@ -149,6 +149,17 @@ For the `dolphin-robot` maintainer (sh00t2kill / community):
 7. **Conformance lane.** Open to a URML conformance line on the `dolphin-robot` README?
 8. **Anything else.**
 
+## Maintainer responses
+
+**2026-05-26, elad-bar (`sh00t2kill/dolphin-robot` COLLABORATOR) on [dolphin-robot issue #284](https://github.com/sh00t2kill/dolphin-robot/issues/284):**
+
+1. **Maytronics developer-relations channel (Q5).** elad-bar suggested URML contact Maytronics directly, and offered to relay the proposal to Maytronics R&D from his side ("I will share the idea with their r&d"). URML accepted the relay offer in lieu of cold-emailing Maytronics marketing and supplied a 2-paragraph R&D-readable distillation he can forward.
+2. **Feasibility caveat (new substance).** elad-bar noted that a URML mapping is "not that feasible with the data the robot produces today." URML's response acknowledged the constraint and proposed a lower-bound mapping that exposes only what `dolphin-robot` reliably surfaces today (region-based mobility, cycle status, scheduled-start trigger, `measure` / `report`); higher-fidelity primitives return `not_supported_on_consumer_pool_robot` per [RFC-0014](0014-substrate-conformance.md)'s honest-substrate-limit norm.
+3. **Newer-Maytronics-products hint (new substance).** elad-bar noted that newer Maytronics products may expose richer data envelopes out of the box ("For newer products of Maytronics it is coming out of the box as far as I know"). URML expressed interest in targeting next-gen Maytronics products in a revised mapping pending more specific signal on which products and which capability categories.
+4. **Direct email channel offered.** elad-bar offered a personal email at elad.bar@hotmail.com for additional questions. URML acknowledged the offer but will keep substantive discussion on the public thread for the public record; email is reserved for side topics that don't belong on the public surface.
+
+Unresolved questions Q1–Q4, Q6–Q7 (license posture, adapter home, authoritative manifest values per Dolphin model, region-based mobility encoding, home-profile co-design, conformance lane) remain open pending either further engagement from the `dolphin-robot` maintainer surface or a Maytronics-side response via elad-bar's R&D relay.
+
 ## Implementation note
 
 RFC-0103 ships as a single RFC document PR. No adapter code in this PR. Fourth Move #8 RFC. Ledger entry in [`examples/lighthouses/outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml).
