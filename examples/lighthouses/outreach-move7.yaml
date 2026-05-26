@@ -40,8 +40,8 @@
 
 - slug: twisted-fields-acorn
   rfc: 92
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/Twisted-Fields/acorn-precision-farming-rover/issues/32"
   channel: github_issue
   contact: "Twisted-Fields/acorn-precision-farming-rover (275 stars, Apache-2.0, 7 open issues, 38 forks; last commit 2024-07-06; uneven cadence). Twisted Fields is a US 501(c)(3) in the Bay Area."
   last_touch: 2026-05-26
@@ -51,8 +51,8 @@
 
 - slug: sentera
   rfc: 93
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/SenteraLLC/py-radiometric-corrections/issues/74"
   channel: github_issue
   contact: "SenteraLLC/py-radiometric-corrections (21 stars, Apache-2.0) is the closest match for URML's measure primitive cross-citation; SenteraLLC org has 63 public repos. Most-active repo ulabel last updated 2026-05-11."
   last_touch: 2026-05-26
@@ -62,19 +62,19 @@
 
 - slug: burro-robotics
   rfc: 94
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/burro-robotics/docs/issues/1"
   channel: github_issue
-  contact: "burro-robotics org (34 public repos, license mix BSD-3-Clause/Apache-2.0/MIT/ISC/GPL-2.0). Small star counts but real deployment scale (300+ units, 40+ customers, 6 countries, $24M Series B 2024). BOSS Cloud API documented for fleet telemetry + WMS."
+  contact: "burro-robotics/docs (most-recently-updated org repo with Issues enabled; burro-sdk has Issues disabled, so the docs repo was the pivot at posting time). burro-robotics org has 34 public repos, license mix BSD-3-Clause/Apache-2.0/MIT/ISC/GPL-2.0. 300+ units deployed, 40+ customers, 6 countries, $24M Series B 2024. BOSS Cloud API documented for fleet telemetry + WMS."
   last_touch: 2026-05-26
   response: none
-  next_action: "post Issue on burro-robotics/burro-sdk (the public SDK repo) labelled enhancement/question, pointing at RFC-0094. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch, set response per enum."
+  next_action: "wait 14-30 d (commercial cadence). If silent, polite follow-up on burro-robotics/docs#1. If maintainers redirect to a different surface (private repo, support channel), pivot accordingly. If reply, bump last_touch, set response per enum."
   notes: "Third Move #7 RFC, Tier A vendor-style. burro-robotics org: 34 public repos. Notable: burro-sdk, geojson-path-finder2, turf-extensions, aubo_robot, Mid360_simulation_plugin, dwarves. Star counts small (top repo 2 stars) but commercial deployment scale is real. URML's fleet-coordination layer sits one level above BOSS Cloud. Cross-link to RFC-0053 (Open-RMF, multi-robot framework). First commercial ag-cobot RFC. Origin US. Verified 2026-05-26."
 
 - slug: ucla-agricruiser
   rfc: 95
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/agri-cruiser/agri-cruiser/issues/3"
   channel: github_issue
   contact: "agri-cruiser/agri-cruiser (15 stars, GPL-3.0, C++ 100%, 168 commits, 2 open issues; PI/lab affiliation not surfaced from the repo. README mentions UCLA once in mechanical-design section)."
   last_touch: 2026-05-26
@@ -84,8 +84,8 @@
 
 - slug: inrae-romea
   rfc: 96
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/Romea/cropcraft/issues/17"
   channel: github_issue
   contact: "Romea/cropcraft (105 stars, Python, procedural agricultural-sim world generator) is the most-visible repo; Romea org has 79 public repos, 19 followers. License Apache-2.0 predominant, LGPL-3.0 on hunter."
   last_touch: 2026-05-26
@@ -95,33 +95,33 @@
 
 - slug: earthsense-terrasentia
   rfc: 97
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/TerraSentia/ES-ESC-FW/issues/4"
   channel: github_issue
-  contact: "TerraSentia/livox_ros_driver2 (most-recently-updated repo, last commit 2026-05-06); TerraSentia org has 7 public repos, 19 followers. Top: FAST-LIO-SAM 1 star (most other repos at 0). License GPL-2.0 on terra-lidar-imu-init; other repos do not surface a license."
+  contact: "TerraSentia/ES-ESC-FW (firmware repo, stale at 2024-07-19 but Issues enabled, unlike livox_ros_driver2/FAST-LIO-SAM/terra-lidar-imu-init which all have Issues disabled at org level). TerraSentia org has 7 public repos, 19 followers."
   last_touch: 2026-05-26
   response: none
-  next_action: "post Issue on TerraSentia/livox_ros_driver2 labelled enhancement/question, pointing at RFC-0097. Optional courtesy email to EarthSense Inc. via earthsense.co. Then wait 14-30 d (academic+commercial hybrid cadence). If silent, polite follow-up. If reply, bump last_touch, set response per enum."
+  next_action: "wait 14-30 d (academic+commercial hybrid cadence; firmware repo is stale so visibility is uncertain). If silent, polite follow-up on TerraSentia/ES-ESC-FW#4. Optional courtesy email to EarthSense Inc. via earthsense.co. If reply, bump last_touch, set response per enum."
   notes: "Sixth Move #7 RFC, Tier B research-collab. TerraSentia is UIUC Center for Digital Agriculture academic origin + EarthSense Inc. commercial spin-out. Under-canopy crop phenotyping (<15 lbs, 11\" width; fits between corn rows). 7 public repos including livox_ros_driver2, FAST-LIO-SAM, terra-lidar-imu-init GPL-2.0, ES-ESC-FW (VESC4-based, C), ES-ESC-HW. 2024 Corteva 142-field 200k+ maize-plot validation published Nature Communications 2025. License mix unclear (cross-citation only until clarified). Cross-link to RFC-0088 (Imperial PRL hybrid academic+commercial precedent) + RFC-0089 (Oxford ORI thin-GitHub precedent). Origin US. Verified 2026-05-26."
 
 - slug: cornell-agxrp
   rfc: 98
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "off-GitHub courtesy submission via experiential.bot/agxrp Contact form 2026-05-26"
   channel: courtesy_email
-  contact: "Jonathan Jaramillo via experiential.bot/agxrp Contact form. NO verified public GitHub repo or org for AgXRP. 3D-printable files on Printables.com; open-source software library mentioned without specific license."
+  contact: "Jonathan Jaramillo via experiential.bot/agxrp Contact form (submitted 2026-05-26). NO verified public GitHub repo or org for AgXRP. 3D-printable files on Printables.com; open-source software library mentioned without specific license."
   last_touch: 2026-05-26
   response: none
-  next_action: "send courtesy email via experiential.bot/agxrp Contact form pointing at RFC-0098. Then wait 14-30 d (academic+small-team cadence). If maintainer responds with a public GitHub URL, pivot to standard Issue-thread engagement. If silent, polite follow-up. If reply, bump last_touch, set response per enum."
+  next_action: "wait 14-30 d (academic+small-team cadence). If maintainer responds with a public GitHub URL, pivot to standard Issue-thread engagement. If silent, polite follow-up via the same Contact form. If reply, bump last_touch, set response per enum."
   notes: "Seventh Move #7 RFC, Tier B research-collab + off-GitHub courtesy framing. AgXRP at experiential.bot/agxrp: Cornell-affiliated (Jonathan Jaramillo), partnerships University of Idaho + 4-H + Agriculture in the Classroom + community colleges. Affordable open-source ag-robotics for STEM education in rural K-12. Curriculum + software marked 'Coming Soon'. No specific license surfaced. Off-GitHub courtesy precedent: RFC-0088 (Imperial PRL). Cross-link to RFC-0067 (FarmBot K-12 + 4-H audience) + RFC-0073 (Robotical Marty educational-runtime adapter shipment precedent). Origin US. Verified 2026-05-26 (absence of GitHub surface documented honestly)."
 
 - slug: wageningen-fre-2026
   rfc: 99
   sent_at: ""
   posted_url: ""
-  channel: discord
-  contact: "FRE 2026 Discord (linked from fieldrobotevent.eu, the canonical surface after fieldrobot.org redirect). NO verified GitHub org or Issue surface for FRE itself. Organising entity: 'an association of academic partners across Europe' (no named PI on the public landing page)."
+  channel: deferred
+  contact: "FRE 2026: NO verified GitHub org or Issue surface. The front-page community channel is Discord, which the founder declined at posting time 2026-05-26 (URML's outreach posture defaults to public, persistent surfaces; Discord is real-time and not durably indexed). Organising entity: 'an association of academic partners across Europe' (no named PI on the public landing page)."
   last_touch: 2026-05-26
   response: none
-  next_action: "join FRE 2026 Discord (linked from fieldrobotevent.eu), post introduction pointing at RFC-0099. Then wait 14-30 d. If FRE organising committee redirects to a different surface (email, separate forum, GitHub org), pivot accordingly. If reply, bump last_touch, set response per enum."
+  next_action: "deferred at posting time 2026-05-26 (Discord declined). Channel TBD. Candidates to investigate: an email surface at fieldrobotevent.eu, Wageningen University direct contact for the FRE organising committee, or a GitHub org if maintainers surface one later. Re-evaluate before FRE 2026 (June 16-18) if the engagement is still wanted."
   notes: "Eighth and final Move #7 RFC, Tier B research-collab + community-channel framing (closes the agriculture wave). FRE 2026: June 16-18 2026 at International DLG Crop Production Centre, Bernburg, Germany. Annual European ag-robotics competition originally from Wageningen University. Community channel is Discord (the front-page directs interested parties to 'Join our Discord'). Simulation stack / ROS / Gazebo requirements + ReFiBot open-source Arduino platform: NOT surfaced on the public front page (URML's RFC asks the organising committee). Cross-link to RFC-0067 (FarmBot) + RFC-0092 (Acorn) + RFC-0094 (Burro) + RFC-0095 (AgriCruiser) + RFC-0096 (INRAE Romea). Origin DE (Bernburg 2026 venue). Verified 2026-05-26."
