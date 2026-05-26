@@ -152,6 +152,7 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 | Author a capability manifest | [Tutorial 4: Writing your own manifest](docs/tutorials/04-writing-your-own-manifest.md) |
 | Connect URML to an LLM | [Tutorial 3: Natural language to URML](docs/tutorials/03-natural-language-to-urml.md) |
 | Understand governance and the open-source posture | [`GOVERNANCE.md`](GOVERNANCE.md), [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) |
+| Understand how URML is authored | [`VIBE.md`](VIBE.md) |
 | Contribute (Phase 1+) | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | List your runtime in the registry | [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md) |
 | Browse runtimes that report URML compatibility | [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) |
@@ -183,6 +184,12 @@ Critique of the primitive vocabulary, the layer boundaries, and the strategic po
 If you build a runtime that translates URML into a substrate (ROS 2, PX4, vendor SDK, anything else), you can self-report compatibility by running the public conformance suite and opening a PR. See [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md) for the five-step flow, [`docs/compatible-runtimes.md`](docs/compatible-runtimes.md) for the current entries, and [`TRADEMARK.md`](TRADEMARK.md) for what listing does and does not grant. The registry is free and opt-in. There is no URML-Certified mark in use yet; that is a Phase 4 program.
 
 If instead you **make robots or parts** rather than runtimes, see [`docs/manufacturers/README.md`](docs/manufacturers/README.md). It covers the integration path, an optional factual federal-validation self-report, and the self-reported [manufacturer directory](docs/manufacturers/directory.md). Same posture: free, opt-in, no mark, not a certification.
+
+---
+
+## Authoring
+
+URML is the invention of Ido Yahalomi. The spec text, the four reference runtimes, the validator, the conformance suite, and the outreach RFC log are AI-assisted (vibe-coded) under the maintainer's direction and review. See [`VIBE.md`](VIBE.md). The work-product discipline (tests, conformance fixtures, audit, DCO, Apache 2.0) is unchanged.
 
 ---
 
