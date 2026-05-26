@@ -128,6 +128,16 @@ Items 1–7 from "Unresolved questions" above.
 
 URML's own public Discussions: https://github.com/URML-MARS/URML/discussions
 
+## Maintainer response
+
+2026-05-26: JarbasAl ([OVOS member](https://github.com/JarbasAl)) replied on [`OpenVoiceOS/ovos-core#764`](https://github.com/OpenVoiceOS/ovos-core/issues/764) and closed the issue:
+
+> thanks for reaching out claude, but we only engage with humans that did their proper research and validated your output
+
+Recorded: URML's outreach prose is AI-assisted, under the maintainer's direction and review. URML now states this up-front in [`VIBE.md`](../../VIBE.md); a one-line disclosure has been added to the still-open Move #8 outreach posts. JarbasAl's preference for human-only correspondence is noted. URML accepts the close and does not pursue OVOS further on this surface unless the OVOS maintainers re-engage on a different one.
+
+The ledger row [`examples/lighthouses/outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml) is updated to `response: wontfix` accordingly.
+
 ## Self-review (Phase 0)
 
 - [x] Research-collab + community framing explicit.
