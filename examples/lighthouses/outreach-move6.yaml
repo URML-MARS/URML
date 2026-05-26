@@ -56,10 +56,10 @@
   sent_at: "2026-05-25"
   posted_url: "https://github.com/KumarRobotics/kr_autonomous_flight/issues/202"
   channel: github_issue
-  contact: "KumarRobotics/kr_autonomous_flight (771 stars); GRASP Lab led by Vijay Kumar"
+  contact: "KumarRobotics/kr_autonomous_flight (771 stars); GRASP Lab. Maintainer fcladera (KumarRobotics collaborator) closed the URML outreach issue 2026-05-25T21:00:32Z with the terse reply 'Not an issue.' and state-reason COMPLETED. No engagement, no redirect."
   last_touch: 2026-05-25
-  response: none
-  next_action: "wait 14-30 d. If silent, polite follow-up on KumarRobotics/kr_autonomous_flight#202. If reply, bump last_touch, set response per enum."
+  response: wontfix
+  next_action: "Issue closed by KumarRobotics collaborator fcladera 2026-05-25 with 'Not an issue.' and state-reason COMPLETED. Different shape from a venue-redirect: no engagement, no path forward, no other surface named. URML accepts the close. No functional impact on URML (RFC-0082 was research-collab framing only, no shipping adapter dependency). Thread is closed; URML does not pursue further unless GRASP maintainers re-engage on a different surface."
   notes: "Third Move #6 RFC, Tier B research-collab. UPenn GRASP Lab led by Prof. Vijay Kumar (Nemirovsky Dean of Engineering). KumarRobotics: 93 public repos, 729 followers (largest in Move #6). Top-starred: msckf_vio 1.9k, kr_autonomous_flight 771, SLIDE_SLAM 248, MOCHA 38, HALO 14. License mix BSD-3-Clause / MIT / Apache-2.0. Multi-agent + aerial / swarm coordination focus. Surfaces multi-agent coordination primitive question (also raised in RFC-0047 / RFC-0056 / RFC-0068). Cross-link to RFC-0053 Open-RMF. Origin US. Verified 2026-05-25."
 - slug: uw-personal-robotics
   rfc: 83
