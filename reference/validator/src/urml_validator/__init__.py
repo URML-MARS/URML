@@ -9,7 +9,7 @@ before execution.
 The schemas are the source of truth; JSON Schema is exported on demand for
 non-Python consumers (the LLM bridge prompt contract, etc.).
 
-Stability: 0.1.0. The schemas track the RFC-0002 vocabulary; the
+Stability: 0.1.1. The schemas track the RFC-0002 vocabulary; the
 five-pass validator and `urml` CLI are shipped, and the namespaced
 error codes in `errors.py` are a stable public API.
 """

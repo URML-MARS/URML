@@ -45,8 +45,8 @@
 
 - slug: irobot-roomba
   rfc: 100
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/koalazak/dorita980/issues/209"
   channel: github_issue
   contact: "koalazak/dorita980 (MIT, JavaScript, 1.1k stars, 12 open issues, Issues enabled, last commit 2026-05-25 active). iRobot itself has no public developer SDK; engagement surface is the community SDK."
   last_touch: 2026-05-26
@@ -56,8 +56,8 @@
 
 - slug: husqvarna-automower
   rfc: 101
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/Thomas55555/aioautomower/issues/1022"
   channel: github_issue
   contact: "Thomas55555/aioautomower (MIT, Python, 11 stars, 2 open issues, Issues enabled, last commit 2026-05-25 active). Plus Husqvarna's official Automower Connect API at developer.husqvarnagroup.cloud (OpenAPI 3.0, OAuth 2.0). Cleanest engagement surface in Move #8."
   last_touch: 2026-05-26
@@ -69,17 +69,17 @@
   rfc: 102
   sent_at: ""
   posted_url: ""
-  channel: courtesy_developer_portal
-  contact: "Bear Cloud API developer portal at cloud.api.bearrobotics.ai (gRPC + REST). NO customer-facing GitHub Issue surface (bearrobotics org has 25 repos, all infrastructure forks; no product repo with Issues enabled). RFC-0088 / RFC-0098 off-GitHub-courtesy precedents."
+  channel: deferred
+  contact: "Bear Robotics: NO customer-facing contact channel surfaced at posting time 2026-05-26. The Bear Cloud API developer portal at cloud.api.bearrobotics.ai documents gRPC + REST endpoints but did not surface a Contact Us / message form on inspection. The bearrobotics GitHub org has 25 repos but all are infrastructure forks (no customer-facing product repo with Issues enabled). bearrobotics.ai marketing site contact channel also not located."
   last_touch: 2026-05-26
   response: none
-  next_action: "courtesy outreach via Bear Cloud developer portal Contact form pointing at RFC-0102. Then wait 14-30 d. If maintainers redirect to a private GitHub org or specific dev-relations email, pivot accordingly. If reply, bump last_touch, set response per enum."
+  next_action: "deferred at posting time 2026-05-26 (no contact surface located on cloud.api.bearrobotics.ai developer portal or bearrobotics.ai marketing site, and no customer-facing GitHub Issue surface on the bearrobotics org). Channel TBD. Candidates to investigate later: LinkedIn message to a Bear Robotics employee (sales, dev-relations, eng leadership), conference encounter (RoboBusiness, NRA), or any future Bear-published developer Contact form. RFC body on disk; re-engage if a channel surfaces."
   notes: "Third Move #8 RFC, Tier A vendor-style but off-GitHub. Bear Robotics Servi is the US commercial leader in hospitality + senior-living delivery cobotics. Documented Bear Cloud API (gRPC + REST). 25-repo GitHub org is infrastructure-only, no customer-facing surface. Senior-living + care-home adjacency framing (home-assistance continuum). Cross-link to RFC-0094 (Burro Robotics agricultural cobot fleet precedent), RFC-0053 (Open-RMF), RFC-0088 / RFC-0098 (off-GitHub courtesy precedents), RFC-0073 (engagement-to-adapter pattern). Origin US. Verified 2026-05-26 (absence of customer-facing GitHub documented honestly)."
 
 - slug: maytronics-dolphin
   rfc: 103
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/sh00t2kill/dolphin-robot/issues/284"
   channel: github_issue
   contact: "sh00t2kill/dolphin-robot (Python, 75 stars, 6 open issues, Issues enabled, last commit 2026-05-25 active). License field not surfaced via GitHub API at verification time; URML's RFC asks the maintainer to clarify. Home Assistant integration; reverse-engineered Maytronics WiFi API."
   last_touch: 2026-05-26
@@ -89,8 +89,8 @@
 
 - slug: robotis-dynamixel
   rfc: 104
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/ROBOTIS-GIT/DynamixelSDK/issues/685"
   channel: github_issue
   contact: "ROBOTIS-GIT/DynamixelSDK (Apache-2.0, 587 stars, 14 open issues, Issues enabled, last commit 2026-05-20). ROBOTIS-GIT org has 80+ public repos, Apache-2.0 predominant, ROS 2 native."
   last_touch: 2026-05-26
@@ -100,8 +100,8 @@
 
 - slug: luxonis-oak-d
   rfc: 105
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/luxonis/depthai-python/discussions/1122"
   channel: github_discussion
   contact: "luxonis/depthai-python (MIT, 429 stars, 93 open issues, Issues + Discussions enabled, last commit 2026-05-23). Also luxonis/depthai-ros (MIT, 346 stars, ROS 2 wrapper). Discussions preferred for research-collab framing."
   last_touch: 2026-05-26
@@ -111,19 +111,19 @@
 
 - slug: home-assistant
   rfc: 106
-  sent_at: ""
-  posted_url: ""
-  channel: github_issue
-  contact: "home-assistant/core (Apache-2.0, 87.3k stars, ~4000 open issues, Issues enabled, last commit 2026-05-26 active). Very large maintainer community + Open Home Foundation sponsorship (2024+)."
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/orgs/home-assistant/discussions/3885"
+  channel: github_org_discussion
+  contact: "home-assistant org-level Discussion posted in the home-assistant-os-supervisor category (the available structured form at posting time). Note: category mismatch flagged in the post body — URML's proposal concerns HA Core's automation engine + entity model, not OS / Supervisor specifically. Body explicitly asks maintainers to redirect to a more appropriate Discussions category / repo if needed."
   last_touch: 2026-05-26
   response: none
-  next_action: "post Issue on home-assistant/core labelled question/feature_request, pointing at RFC-0106. Then wait 14-30 d (very large maintainer community; light engagement payload). If maintainers redirect to GitHub Discussions or community forum, pivot accordingly. If reply, bump last_touch, set response per enum."
+  next_action: "wait 14-30 d (very large maintainer community + Open Home Foundation; light engagement payload). If maintainers redirect to a different Discussions category, General / Ideas / Architecture, or to home-assistant/core Issues, mirror accordingly and bump last_touch. If reply, set response per enum."
   notes: "Seventh Move #8 RFC and strategic anchor for the home-assistance wave. Home Assistant is where every other Move #8 robot target already lives (roomba, husqvarna_automower, dolphin-robot integrations). Apache-2.0 license fit clean. URML compiles into HA automation YAML; URML composes with HA, not against it. Open Home Foundation governance (2024+). Cross-link to RFC-0100 / 0101 / 0103 (Move #8 vendor RFCs that depend on HA), RFC-0021 (NL layer), RFC-0014 (substrate conformance), RFC-0099 (community-channel precedent without Discord-only constraint). Origin: community / Open Home Foundation. Verified 2026-05-26."
 
 - slug: openvoiceos
   rfc: 107
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-26"
+  posted_url: "https://github.com/OpenVoiceOS/ovos-core/issues/764"
   channel: github_issue
   contact: "OpenVoiceOS/ovos-core (Apache-2.0, 275 stars, 24 open issues, Issues enabled, last commit 2026-05-14). NGI Zero Commons Fund grant October 2025. Post-Mycroft community trajectory, independent of HA/OHF umbrella."
   last_touch: 2026-05-26
