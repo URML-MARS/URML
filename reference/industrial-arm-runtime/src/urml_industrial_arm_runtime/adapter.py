@@ -400,7 +400,14 @@ class FrankaAdapter(IndustrialArmAdapter):
 
 
 class KawasakiAdapter(IndustrialArmAdapter):
-    """Kawasaki arm via the ``kawasaki_robot`` ROS-Industrial driver + MoveIt 2.
+    """Kawasaki arm via the ``khi_ros2`` ROS-Industrial driver + MoveIt 2.
+
+    Wraps the upstream ``Kawasaki-Robotics/khi_ros2`` driver as it ships;
+    the supported Kawasaki controller line is whatever the upstream driver
+    supports at the URML-target commit. Per Kawasaki-Robotics maintainer
+    clarification on khi_ros2 issue #9 (kurita-taisuke, 2026-05-26), the
+    driver does not currently support E-series controllers, and the legacy
+    D / C series are not on the roadmap.
 
     Japan-made — passes the default US-federal policy (JP allied origin).
     """
