@@ -57,11 +57,11 @@
   sent_at: "2026-05-23"
   posted_url: "https://github.com/ArduPilot/ardupilot/issues/33174"
   channel: github_issue
-  contact: "ArduPilot/ardupilot (ArduPilot dev maintainers, ardupilot.org)"
-  last_touch: 2026-05-23
-  response: none
-  next_action: "file an Issue on ArduPilot/ardupilot labelled `Enhancement` pointing to RFC-0041; record sent_at and last_touch when posted. Optional cross-post on discuss.ardupilot.org for community visibility."
-  notes: "Move #1 follow-on (substrate, not AI/ML); placed in this file because outreach.yaml is gated by a Move #1 parity test that ArduPilot would fail without a shipping ardupilot-runtime. Decision to draft + send before RFC-0040 LeRobot response window closes explicitly overrides this file's wave-gating discipline at founder direction (2026-05-23). URML already imports ArduPilot/pymavlink via px4-runtime and ships BlueRovAdapter against ArduSub via marine-runtime; verified surface on 2026-05-23: ArduPilot/ardupilot 15,138 stars, 2,996 open issues, Issues enabled, `Enhancement` label exists, last commit same day."
+  contact: "ArduPilot/ardupilot (declined on the Issues surface 2026-05-25 by IamPete1, ArduPilot member; redirected to discuss.ardupilot.org forum or ArduPilot Discord)"
+  last_touch: 2026-05-26
+  response: declined
+  next_action: "Closed out 2026-05-26 by founder. Maintainer IamPete1 declined the GitHub Issue surface ('Sorry, our issues list if not the correct place for this. Either the forum or the Discord would be better.'). Founder chose not to pivot to discuss.ardupilot.org or the ArduPilot Discord; URML accepts the venue rejection and does not pursue further. No functional impact: URML's marine-runtime ships BlueRovAdapter against ArduSub via MAVLink today without ArduPilot's blessing. Thread closed."
+  notes: "Move #1 follow-on (substrate, not AI/ML); placed in this file because outreach.yaml is gated by a Move #1 parity test that ArduPilot would fail without a shipping ardupilot-runtime. Decision to draft + send before RFC-0040 LeRobot response window closes explicitly overrides this file's wave-gating discipline at founder direction (2026-05-23). URML already imports ArduPilot/pymavlink via px4-runtime and ships BlueRovAdapter against ArduSub via marine-runtime; verified surface on 2026-05-23: ArduPilot/ardupilot 15,138 stars, 2,996 open issues, Issues enabled, `Enhancement` label exists, last commit same day. 2026-05-26: maintainer IamPete1 declined the Issues surface (venue, not substance) and pointed at the forum / Discord per the comment above. Second response across URML's 31-thread Move #2-#6 inbox; first negative (where 'first ever' was Robotical Marty, engaged)."
 - slug: waymo
   rfc: 42
   sent_at: "2026-05-23"
