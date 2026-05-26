@@ -57,10 +57,10 @@
   sent_at: "2026-05-24"
   posted_url: "https://github.com/clearpathrobotics/cpr_gazebo/issues/26"
   channel: github_issue
-  contact: "clearpathrobotics/cpr_gazebo (233 stars, most-active general repo; 314-repo org, Apache-2.0 / BSD-3-Clause / MIT)"
-  last_touch: 2026-05-24
-  response: none
-  next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on clearpathrobotics/cpr_gazebo#26; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  contact: "clearpathrobotics/cpr_gazebo (233 stars, most-active general repo; 314-repo org, Apache-2.0 / BSD-3-Clause / MIT). Engaged maintainer: nnarain-cpr (Clearpath contributor by handle suffix)"
+  last_touch: 2026-05-26
+  response: engaged
+  next_action: "maintainer reply 2026-05-26: 'Is URML something that is getting traction in the wider ROS community? Can you forward me an example or any other discussion on this?' Substance question, not a venue or scope rejection. URML's reply needs concrete + honest traction signal: (a) honest about scale — Phase 1, v0.1.0 just shipped, ~4 measured human repo uniques over 14 d; (b) concrete adoption example — Robotical Marty / RFC-0073 (the first substantive engaged response across URML's 31-thread outreach inbox; URML shipped RoboticalMartyAdapter in reference/edu-runtime/ 2026-05-25 in direct response to the maintainer's guidance); (c) shipped substrate adapter surfaces — marine-runtime (BlueRovAdapter via ArduSub/MAVLink), edu-runtime (4 adapters: VEX V5, LEGO SPIKE, Thymio, Marty), cobot-runtime, mock-ROS hermetic conformance lane; (d) honest about the rest — most of URML's 31 threads sit at `response: none` today, this is early. Founder posts the reply on clearpathrobotics/cpr_gazebo#26 once drafted."
   notes: "Second Move #5 RFC, Tier A vendor-style. Canadian (Kitchener ON) mobile-robotics vendor acquired by Rockwell Automation 2024. 314 public repos. Top: cpr_gazebo 233 stars, robot_upstart 205 stars, roscon2024-workshop-demystifying-ros2-networking 142 stars, LMS1xx 58 stars, clearpath_common 54 stars. Platform line: TurtleBot 4 (Create-3-based, distinct from RFC-0065 ROBOTIS TurtleBot 3), Husky, Jackal, Dingo, Warthog. Origin CA; default policy passes. Verified surface 2026-05-24."
 - slug: robotical-marty
   rfc: 73
