@@ -48,16 +48,24 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #5** (RFCs 0071–0079, Tier 2 promoted candidates plus DEEP
   Robotics' Lynx S10 wheeled-legged-hybrid debut, ledger
   [`outreach-move5.yaml`](../../examples/lighthouses/outreach-move5.yaml)),
-  and **Move #6** (RFCs 0080–0091, US-friendly university robotics labs,
+  **Move #6** (RFCs 0080–0091, US-friendly university robotics labs,
   ledger
-  [`outreach-move6.yaml`](../../examples/lighthouses/outreach-move6.yaml)).
+  [`outreach-move6.yaml`](../../examples/lighthouses/outreach-move6.yaml)),
+  and **Move #7** (RFCs 0092–0099, agriculture-robotics second wave,
+  ledger
+  [`outreach-move7.yaml`](../../examples/lighthouses/outreach-move7.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
   audiences URML's first three waves left untouched. Move #5 promotes
   the parked Tier 2 from the Move #4 research pass. Move #6 turns to
   university robotics labs (6 US, 4 EU+UK, 2 Asia-Pacific), all Tier B
-  research-collab framing rather than vendor outreach. Do not interpret
-  outreach RFCs as a quiet expansion of URML's spec surface.
+  research-collab framing rather than vendor outreach. Move #7 widens
+  the agriculture surface first opened by Move #4 RFC-0067 (FarmBot) to
+  eight new targets across solar-powered rovers, ag-drones, commercial
+  cobots, US + EU academic ag-robotics labs, off-GitHub educational
+  platforms, and the European Field Robot Event competition (3 Tier A
+  vendor-style + 5 Tier B research-collab). Do not interpret outreach
+  RFCs as a quiet expansion of URML's spec surface.
 
 ## Index
 
@@ -155,6 +163,14 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0089](0089-oxford-ori-outreach.md) | Outreach | Oxford Robotics Institute (ORI) integration; Move #6 RFC, Tier B research-collab; PI Paul Newman; thin GitHub presence (only 2 public repos in oxford-robotics-institute); cross-link to RFC-0042 (Waymo) for Radar RobotCar Dataset annotation + RFC-0020 (Autoware) for AV research; request for comment from ORI maintainers | Draft | 2026-05-25 |
 | [0090](0090-utokyo-jsk-outreach.md) | Outreach | University of Tokyo JSK Robotics Lab integration; Move #6 RFC, Tier B research-collab; PIs Masayuki Inaba + Kei Okada; most mature Asian academic ROS surface (20+ years); jsk_recognition + jsk_visualization composition + EusLisp / roseus + jsk_aerial_robot; request for comment from jsk-ros-pkg maintainers | Draft | 2026-05-25 |
 | [0091](0091-qut-centre-for-robotics-outreach.md) | Outreach | QUT Centre for Robotics (Peter Corke) integration; Move #6 RFC, Tier B research-collab; twelfth and final Move #6 RFC; PI Peter Corke; personal handle (`petercorke`) plus institutional QUT Centre; robotics-toolbox-python global teaching standard + RVC3 textbook (speculative URML-appendix ask) + AuSRoS 2025+ ROS 2 labs + ARC Centre of Excellence; request for comment from Peter Corke | Draft | 2026-05-25 |
+| [0092](0092-twisted-fields-acorn-outreach.md) | Outreach | Twisted Fields / Acorn integration; first Move #7 RFC, Tier A vendor-style; agriculture-vertical second wave (after RFC-0067 FarmBot); Apache-2.0 upstream (clean license fit); solar-powered modular precision-farming rover; `acorn-precision-farming-rover` 275 stars + KiCAD electronics + mechanical CAD; AcornAdapter proposed in `reference/agriculture-runtime/`; request for comment from Twisted-Fields maintainers | Draft | 2026-05-26 |
+| [0093](0093-sentera-outreach.md) | Outreach | Sentera integration; Move #7 RFC, Tier A vendor-style; first URML ag-drone RFC; SenteraLLC org 63 public repos with `py-radiometric-corrections` Apache-2.0 + MAVSDK forks; documented MAVLink integration for Double 4K / 6X multispectral payloads; SenteraAdapter proposed in `reference/px4-runtime/sentera/`; request for comment from SenteraLLC maintainers | Draft | 2026-05-26 |
+| [0094](0094-burro-robotics-outreach.md) | Outreach | Burro Robotics integration; Move #7 RFC, Tier A vendor-style; first commercial ag-cobot RFC; 300+ units deployed across 40+ customers in 6 countries with $24M Series B 2024; burro-robotics org 34 public repos + documented BOSS Cloud API for fleet telemetry + WMS; BurroAdapter proposed in `reference/agriculture-runtime/`; cross-link to RFC-0053 Open-RMF; request for comment from burro-robotics maintainers | Draft | 2026-05-26 |
+| [0095](0095-ucla-agricruiser-outreach.md) | Outreach | UCLA AgriCruiser integration; Move #7 RFC, Tier B research-collab; USDA NIFA-funded (grants 2024-67021-42528, 2022-67022-37021, 2021-67022-34200) over-the-row platform; `agri-cruiser/agri-cruiser` 15 stars C++ GPL-3.0; license-fit note for URML Apache-2.0 reference/ (cross-citation only, RFC-0085 precedent); request for comment from agri-cruiser maintainers | Draft | 2026-05-26 |
+| [0096](0096-inrae-romea-outreach.md) | Outreach | INRAE Romea integration; Move #7 RFC, Tier B research-collab; strongest EU-academic ag-robotics surface; Romea org 79 public repos ROS 2 native Apache-2.0 predominant; `cropcraft` 105 stars procedural ag-sim world generator + `romea-ros2-mobile-base` four-wheel-steering platforms; cross-link to RFC-0086 ETH ASL large-ROS-2-org template + RFC-0095 US counterpart; request for comment from Romea maintainers | Draft | 2026-05-26 |
+| [0097](0097-earthsense-terrasentia-outreach.md) | Outreach | EarthSense / TerraSentia integration; Move #7 RFC, Tier B research-collab; hybrid academic UIUC + commercial spin-out structure; TerraSentia org 7 public repos including `livox_ros_driver2` + `FAST-LIO-SAM` + `terra-lidar-imu-init` GPL-2.0; under-canopy crop phenotyping (<15 lbs, 11" width); Nature Communications 2025 142-field validation; license-clarity gate before adapter; cross-link to RFC-0088 hybrid + RFC-0089 thin-GitHub precedents; request for comment from TerraSentia + EarthSense | Draft | 2026-05-26 |
+| [0098](0098-cornell-agxrp-outreach.md) | Outreach | Cornell AgXRP integration; Move #7 RFC, Tier B research-collab + off-GitHub courtesy; PI Jonathan Jaramillo; partnerships Cornell + University of Idaho + 4-H + Agriculture in the Classroom + community colleges; affordable open-source ag-robotics for K-12 STEM; NO verified GitHub repo or org (off-GitHub courtesy email to experiential.bot/agxrp Contact form); precedent RFC-0088 Imperial PRL off-GitHub framing; request for comment from AgXRP team | Draft | 2026-05-26 |
+| [0099](0099-wageningen-field-robot-event-outreach.md) | Outreach | Wageningen Field Robot Event 2026 integration; eighth and final Move #7 RFC, Tier B research-collab + community-channel framing (closes the agriculture wave); FRE 2026 June 16-18 2026 at International DLG Crop Production Centre Bernburg Germany; annual European ag-robotics competition; community engagement via FRE Discord (linked from fieldrobotevent.eu); URML primitive vocabulary as candidate teaching artifact for entrants; request for comment from FRE 2026 organising committee | Draft | 2026-05-26 |
 
 ## Lifecycle states
 
