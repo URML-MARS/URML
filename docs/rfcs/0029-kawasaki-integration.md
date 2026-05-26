@@ -31,7 +31,7 @@ URML ships `KawasakiAdapter` compiling URML programs onto Kawasaki Heavy Industr
 
 ## Motivation
 
-Kawasaki is one of the long-established industrial-arm vendors in Asia with strong presence in automotive welding, semiconductor handling, and clean-room pharma applications. The `Kawasaki-Robotics/khi_ros2` repo is **vendor-direct** (not community-only) with Issues open. The E series controllers + K-Roset offline programming + AS programming language make Kawasaki a distinct lighthouse from the FANUC/Yaskawa/KUKA mainline.
+Kawasaki is one of the long-established industrial-arm vendors in Asia with strong presence in automotive welding, semiconductor handling, and clean-room pharma applications. The `Kawasaki-Robotics/khi_ros2` repo is **vendor-direct** (not community-only) with both Issues and Discussions open (Discussions enabled in response to RFC-0029 Q1; see Maintainer responses below). The K-Roset offline programming environment and AS programming language make Kawasaki a distinct lighthouse from the FANUC/Yaskawa/KUKA mainline.
 
 ## Detailed design
 
@@ -47,8 +47,8 @@ A Kawasaki cell (RS series / BX series with a 2-finger gripper + wrist RGB) with
 
 ### Compatibility notes
 
-- **Controller line.** `Kawasaki-Robotics/khi_ros2` targets the E-series controllers. Legacy D / C controllers may not be covered.
-- **AS-language invocation.** Kawasaki's on-controller programming language is AS (BASIC-derived). [RFC-0015](0015-control-program-invocation.md) (`call_program`) is the proposed binding.
+- **Controller line.** Per Kawasaki-Robotics maintainer clarification on [khi_ros2 issue #9](https://github.com/Kawasaki-Robotics/khi_ros2/issues/9) (kurita-taisuke, 2026-05-26), the driver does not currently support the E-series controllers, and the legacy D / C series are not on the roadmap. `KawasakiAdapter` wraps the upstream khi_ros2 driver as it ships and inherits its actual controller-line scope.
+- **AS-language invocation.** Kawasaki's on-controller programming language is AS (BASIC-derived). [RFC-0015](0015-control-program-invocation.md) (`call_program`) is the proposed binding; Kawasaki-Robotics endorsed this binding direction on [khi_ros2 issue #9](https://github.com/Kawasaki-Robotics/khi_ros2/issues/9) (kurita-taisuke, 2026-05-26).
 - **K-Roset.** Kawasaki's PC-side simulation/offline-programming environment; the `KawasakiAdapter` does not depend on K-Roset — only the runtime driver path is required.
 - **Origin.** Kawasaki Heavy Industries, Ltd., Tokyo, Japan; passes the US-federal default policy without flagging.
 
@@ -86,6 +86,15 @@ Provisional pending Kawasaki-Robotics/khi_ros2 maintainer feedback:
 2. **AS-language invocation.** Should [RFC-0015](0015-control-program-invocation.md) `call_program` bind to an AS program launch?
 3. **Legacy-controller support.** Is there interest in extending the driver to legacy D / C controllers?
 4. **Conformance listing.** Would Kawasaki Heavy Industries list `KawasakiAdapter` per [RFC-0014](0014-substrate-conformance.md)?
+
+## Maintainer responses
+
+**2026-05-26, kurita-taisuke (Kawasaki-Robotics MEMBER) on [khi_ros2 issue #9](https://github.com/Kawasaki-Robotics/khi_ros2/issues/9):**
+
+1. **Discussions enablement (Q1).** Done. Discussions enabled on `Kawasaki-Robotics/khi_ros2`.
+2. **AS-language invocation (Q2).** Endorsed. Binding RFC-0015's `call_program` to an AS program launch is acceptable to Kawasaki-Robotics.
+3. **Legacy-controller support (Q3).** Demand for the D / C series is low and not on the roadmap. Additional clarification: `khi_ros2` does not currently support the E-series controllers either. This correction is reflected in the Compatibility notes above.
+4. **Conformance listing (Q4).** Approved, conditional on two clarifications: (a) no implementation or maintenance obligation on `khi_ros2` from the listing, and (b) no requirement that `khi_ros2` continuously work correctly with URML. URML's response confirmed both are No per [RFC-0014](0014-substrate-conformance.md)'s self-reported-tier design: the conformance contract lives on URML's adapter (URML maintains, not Kawasaki), and the listing is a point-in-time factual claim about a specific URML commit against a specific khi_ros2 version, not a continuous contract. Listing advances on URML's side accordingly.
 
 ## Implementation note
 

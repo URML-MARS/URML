@@ -90,10 +90,10 @@
   sent_at: 2026-05-22
   channel: github
   contact: "@Kawasaki-Robotics"
-  last_touch: 2026-05-22
-  response: none
-  next_action: "wait 14 d; if silent, nudge via RFC-0029 comment"
-  notes: ""
+  last_touch: 2026-05-26
+  response: engaged
+  next_action: "Three follow-ups from the founder's 2026-05-26 reply on issue #9: (1) RFC-0029 + KawasakiAdapter docstring corrected 2026-05-26 (E-series targeting claim removed; AS-binding endorsement and Discussions enablement recorded in a new Maintainer responses subsection of RFC-0029; KawasakiAdapter docstring updated with driver-name correction kawasaki_robot -> khi_ros2 and controller-line scope note). DONE. (2) KawasakiAdapter listing in compatible-runtimes registry: QUEUED, gated by the Phase 0 reference-runtime exclusion documented in reference/ros2-runtime/CONFORMANCE.md (URML's reference runtimes are intentionally held out of docs/compatible-runtimes.md until a third-party submission lands first, to avoid the registry's only entry being URML's own runtime). Listing advances when that trigger fires; founder's 'move forward' commitment is satisfied by the vendor-blessed status now recorded in RFC-0029 + this ledger. (3) Cite this thread when RFC-0015 (call_program) advances Draft -> Open with AS-language as the Kawasaki binding: QUEUED on RFC-0015 state transition. No URML-side outreach action pending; thread remains warm."
+  notes: "kurita-taisuke (Kawasaki-Robotics MEMBER) gave substantive reply on issue #9 at 2026-05-26 answering all four RFC-0029 questions: Q1 Discussions enabled (concrete action, observable at github.com/Kawasaki-Robotics/khi_ros2); Q2 AS-language binding for RFC-0015 endorsed; Q3 D/C series not on roadmap + clarified khi_ros2 also doesn't currently support E-series (corrects RFC-0029's E-series targeting claim); Q4 conformance listing approved conditional on no obligation + no continuous-correctness requirement, both clean Nos per RFC-0014. Founder replied 2026-05-26 confirming Yes/Yes to Q4. First Tier-1 industrial OEM substantive engagement across URML's outreach (Ouster RFC-0032 was a component vendor; Robotical Marty RFC-0073 was small/educational)."
 - slug: denso
   rfc: 30
   sent_at: 2026-05-22
@@ -118,9 +118,9 @@
   channel: github
   contact: "@ouster-lidar"
   last_touch: 2026-05-22
-  response: none
-  next_action: "wait 14 d; if silent, nudge via RFC-0032 comment"
-  notes: ""
+  response: engaged
+  next_action: "v0.2 schema iteration threads in beam_count, units-on-point-cloud, time_sync_methods capability list (Samahu Qs 1/2/4); post back on issue #711 when it lands"
+  notes: "Samahu (Ussama Naal, Ouster Inc engineer) gave substantive reply on issue #711 at 2026-05-22 16:48Z on all 5 RFC questions; founder replied 18:01Z. Open Q5 (RFC-0020 lidar review) — Samahu said 'will try'; no nudge needed."
 - slug: sick
   rfc: 33
   sent_at: 2026-05-22
@@ -134,11 +134,11 @@
   rfc: 34
   sent_at: 2026-05-22
   channel: github
-  contact: "@Festo-se"
-  last_touch: 2026-05-22
-  response: none
-  next_action: "wait 14 d; if silent, nudge via RFC-0034 comment"
-  notes: ""
+  contact: "@Festo-se (declined on the festo-edcon Issues surface 2026-05-26 by elrosch, Elias Rosch, festo-edcon COLLABORATOR; redirected to per-repo targeted issues in festo-edcon / festo-cpx-io / Bionics4Education or to formal Festo email channels)"
+  last_touch: 2026-05-26
+  response: declined
+  next_action: "Closed out 2026-05-26 by founder. Collaborator elrosch declined the festo-edcon Issues surface as the wrong venue for a vendor-level cross-project RFC ('This GitHub repository is not the right place for a broad vendor-level discussion or cross-project coordination'), offering two redirects: targeted per-repo issues with concrete schema-mapping requests, or formal email to Festo maintainers. Founder chose not to pivot. Fragmenting RFC-0034 across festo-edcon + festo-cpx-io + Bionics4Education would either repeat the same vendor-level ask three times or chop a cross-project ask into incoherent pieces; moving off-GitHub into private email loses URML's public-record outreach discipline. Mirrors RFC-0041 (ArduPilot) close-out posture; URML accepts the venue rejection and does not pursue further. No functional impact: RFC-0034 was proposal-only (no shipping FestoAdapter). Thread closed."
+  notes: "elrosch (Elias Rosch, COLLABORATOR on festo-edcon) tagged @Festo-se/bionic, @LVNZ-B4E, @pm-b4E, @jhildenbrand-festo, @vs-festo on issue #37 at 2026-05-22 10:17Z (routing nudge, not substance). 2026-05-26: elrosch followed up on #37 with a substantive venue rejection redirecting to per-repo Issues or formal Festo email; no tagged Festo handle had responded prior. Second venue rejection in URML's outreach inbox (first was ArduPilot RFC-0041, same day 2026-05-26)."
 - slug: zivid
   rfc: 35
   sent_at: 2026-05-22
