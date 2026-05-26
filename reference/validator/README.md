@@ -14,7 +14,7 @@
 
 # Validator
 
-**Status:** Phase 1 in flight. **Schemas + four-pass validator + `urml` CLI + JSON Schema export landed** at `0.1.0a1` (pre-alpha). Variable-binding type checking and the LLM bridge are the next milestones.
+**Status:** Phase 1. **Schemas + four-pass validator + `urml` CLI + JSON Schema export shipping on PyPI** at `0.1.1`. The LLM bridge and on-device providers ship as `urml-llm-bridge`.
 
 ## What this is
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-autosar-runtime"
-version = "0.1.0"
+version = "0.1.1"
 description = "Industrial-automation reference runtime for URML — AUTOSAR Adaptive, zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }

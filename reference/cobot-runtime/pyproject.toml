@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-cobot-runtime"
-version = "0.1.0"
+version = "0.1.1"
 description = "Collaborative-arm reference runtime for URML — UR (RTDE) + Franka (FCI), zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }
