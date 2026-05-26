@@ -34,7 +34,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   They live in this directory for ergonomic discoverability (one place
   to find "URML's pitch to target X") and are tracked operationally in
   the outreach ledgers under [`examples/lighthouses/`](../../examples/lighthouses/).
-  Six outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
+  Eight outreach waves now exist: **Move #1** (RFCs 0023–0038, robot
   OEMs and component vendors, ledger
   [`outreach.yaml`](../../examples/lighthouses/outreach.yaml)),
   **Move #2** (RFCs 0040–0060, AI/ML-layer projects, ledger
@@ -51,9 +51,12 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #6** (RFCs 0080–0091, US-friendly university robotics labs,
   ledger
   [`outreach-move6.yaml`](../../examples/lighthouses/outreach-move6.yaml)),
-  and **Move #7** (RFCs 0092–0099, agriculture-robotics second wave,
+  **Move #7** (RFCs 0092–0099, agriculture-robotics second wave,
   ledger
-  [`outreach-move7.yaml`](../../examples/lighthouses/outreach-move7.yaml)).
+  [`outreach-move7.yaml`](../../examples/lighthouses/outreach-move7.yaml)),
+  and **Move #8** (RFCs 0100–0107, home-assistance robotics + parts,
+  ledger
+  [`outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
   audiences URML's first three waves left untouched. Move #5 promotes
@@ -64,8 +67,14 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   eight new targets across solar-powered rovers, ag-drones, commercial
   cobots, US + EU academic ag-robotics labs, off-GitHub educational
   platforms, and the European Field Robot Event competition (3 Tier A
-  vendor-style + 5 Tier B research-collab). Do not interpret outreach
-  RFCs as a quiet expansion of URML's spec surface.
+  vendor-style + 5 Tier B research-collab). Move #8 opens the home-
+  assistance vertical: eight new targets across consumer cleaning
+  robots (Roomba), outdoor home robots (Husqvarna Automower), hospitality
+  cobots (Bear Robotics), pool cleaning (Maytronics Dolphin), servo
+  (ROBOTIS Dynamixel) + perception (Luxonis OAK-D) component vendors,
+  the Home Assistant orchestration hub, and the OpenVoiceOS voice stack
+  (5 Tier A vendor-style + 3 Tier B research-collab + community). Do not
+  interpret outreach RFCs as a quiet expansion of URML's spec surface.
 
 ## Index
 
@@ -171,6 +180,14 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0097](0097-earthsense-terrasentia-outreach.md) | Outreach | EarthSense / TerraSentia integration; Move #7 RFC, Tier B research-collab; hybrid academic UIUC + commercial spin-out structure; TerraSentia org 7 public repos including `livox_ros_driver2` + `FAST-LIO-SAM` + `terra-lidar-imu-init` GPL-2.0; under-canopy crop phenotyping (<15 lbs, 11" width); Nature Communications 2025 142-field validation; license-clarity gate before adapter; cross-link to RFC-0088 hybrid + RFC-0089 thin-GitHub precedents; request for comment from TerraSentia + EarthSense | Draft | 2026-05-26 |
 | [0098](0098-cornell-agxrp-outreach.md) | Outreach | Cornell AgXRP integration; Move #7 RFC, Tier B research-collab + off-GitHub courtesy; PI Jonathan Jaramillo; partnerships Cornell + University of Idaho + 4-H + Agriculture in the Classroom + community colleges; affordable open-source ag-robotics for K-12 STEM; NO verified GitHub repo or org (off-GitHub courtesy email to experiential.bot/agxrp Contact form); precedent RFC-0088 Imperial PRL off-GitHub framing; request for comment from AgXRP team | Draft | 2026-05-26 |
 | [0099](0099-wageningen-field-robot-event-outreach.md) | Outreach | Wageningen Field Robot Event 2026 integration; eighth and final Move #7 RFC, Tier B research-collab + community-channel framing (closes the agriculture wave); FRE 2026 June 16-18 2026 at International DLG Crop Production Centre Bernburg Germany; annual European ag-robotics competition; community engagement via FRE Discord (linked from fieldrobotevent.eu); URML primitive vocabulary as candidate teaching artifact for entrants; request for comment from FRE 2026 organising committee | Draft | 2026-05-26 |
+| [0100](0100-irobot-roomba-outreach.md) | Outreach | iRobot Roomba integration; first Move #8 RFC, Tier A vendor-style; opens the home-assistance wave; community LAN-control SDK (`koalazak/dorita980` MIT 1.1k stars + `jeremywillans/ha-rest980-roomba` + Home Assistant `roomba`) — iRobot itself has no public developer SDK; proposes new `reference/home-runtime/` package with `RoombaAdapter` as first adapter; region-based mobility (mapped rooms / Spaces, not free coordinates); request for comment from dorita980 + ha-rest980-roomba maintainers | Draft | 2026-05-26 |
+| [0101](0101-husqvarna-automower-outreach.md) | Outreach | Husqvarna Automower integration; Move #8 RFC, Tier A vendor-style; cleanest first-class-vendor-API surface in Move #8; official Automower Connect API (OpenAPI 3.0 + OAuth 2.0) at `developer.husqvarnagroup.cloud` + `Thomas55555/aioautomower` MIT Python wrapper; `HusqvarnaAutomowerAdapter` proposed in `reference/home-runtime/`; zone-based mobility (geofence zones); cloud-only API; request for comment from aioautomower maintainer | Draft | 2026-05-26 |
+| [0102](0102-bear-robotics-servi-outreach.md) | Outreach | Bear Robotics / Servi integration; Move #8 RFC, Tier A vendor-style but **off-GitHub courtesy** (no customer-facing GitHub Issue surface on bearrobotics org — 25 repos, all infrastructure forks); documented Bear Cloud API (gRPC + REST) at `cloud.api.bearrobotics.ai`; senior-living + care-home adjacency framing for home-assistance continuum; cross-link to RFC-0094 (Burro Robotics commercial-cobot-fleet precedent); engagement via Bear Cloud developer portal Contact form; RFC-0088 / RFC-0098 off-GitHub precedents | Draft | 2026-05-26 |
+| [0103](0103-maytronics-dolphin-outreach.md) | Outreach | Maytronics Dolphin integration; Move #8 RFC, Tier A vendor-style; aquatic-subsystem niche broadens URML's substrate-neutral claim across indoor floor + outdoor lawn + pool home-assistance continuum; community surface `sh00t2kill/dolphin-robot` (Python, 75 stars, license-unset — clarification gate before adapter code); reverse-engineered Maytronics WiFi API; `MaytronicsDolphinAdapter` proposed in `reference/home-runtime/`; region-based mobility (floor / walls / waterline / steps); request for comment from dolphin-robot maintainer | Draft | 2026-05-26 |
+| [0104](0104-robotis-dynamixel-outreach.md) | Outreach | ROBOTIS Dynamixel integration; Move #8 RFC, Tier A vendor-style; first servo-vendor RFC in URML's outreach landscape; ROBOTIS-GIT org (80+ repos, Apache-2.0 predominant, ROS 2 native); `DynamixelSDK` 587 stars + `dynamixel_hardware_interface` 34 stars; documented cross-citation (NOT stand-alone adapter — Dynamixel is actuator-substrate, not platform-substrate); home-scale / educational / research counterpart to Move #1 industrial-component-vendor RFCs (RFC-0031-0034); request for comment from ROBOTIS-GIT maintainers | Draft | 2026-05-26 |
+| [0105](0105-luxonis-oak-d-outreach.md) | Outreach | Luxonis OAK-D / DepthAI integration; Move #8 RFC, Tier B research-collab; de facto affordable 3D-perception module for home / educational / research robotics; `luxonis/depthai-python` (MIT, 429 stars, Discussions enabled — preferred surface) + `luxonis/depthai-ros` (MIT, 346 stars); documented cross-citation (perception substrate, like Dynamixel for actuators); home-scale counterpart to Move #1 industrial-perception-vendor RFCs (RFC-0032 Ouster, RFC-0033 SICK); request for comment from luxonis maintainers | Draft | 2026-05-26 |
+| [0106](0106-home-assistant-outreach.md) | Outreach | Home Assistant integration; Move #8 RFC, Tier B research-collab + community; **strategic anchor for the home-assistance wave** (every Move #8 vendor target already lives as an HA integration); `home-assistant/core` Apache-2.0 87.3k stars under Open Home Foundation (2024+); URML primitives compile into HA automation YAML; candidate `urml` HACS integration prototype; cross-link to RFC-0100 / 0101 / 0103 (Move #8 vendor dependents), RFC-0021 (NL layer), RFC-0014 (conformance); request for comment from home-assistant/core maintainers | Draft | 2026-05-26 |
+| [0107](0107-openvoiceos-outreach.md) | Outreach | OpenVoiceOS integration; eighth and final Move #8 RFC, Tier B research-collab + community (closes the home-assistance wave); pivoted from `rhasspy/rhasspy3` (archived shortly before this RFC drafted) to `OpenVoiceOS/ovos-core` (Apache-2.0, 275 stars, NGI Zero Commons Fund grant Oct 2025); post-Mycroft independent voice-stack trajectory (distinct from HA / Open Home Foundation umbrella covered indirectly via RFC-0106); composition direction voice -> OVOS intent -> URML primitive -> substrate; request for comment from OpenVoiceOS maintainers | Draft | 2026-05-26 |
 
 ## Lifecycle states
 
