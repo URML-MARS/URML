@@ -2,9 +2,9 @@
 rfc: 0035
 title: Zivid integration — request for comment from zivid/zivid-python maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-22
-updated: 2026-05-22
+updated: 2026-05-27
 supersedes: —
 superseded-by: —
 ---
@@ -24,6 +24,22 @@ superseded-by: —
 ---
 
 # RFC-0035: Zivid integration — request for comment from zivid/zivid-python maintainers
+
+## Maintainer engagement received (2026-05-27)
+
+Espen Holmbakken (Principal Engineering Manager, Zivid) replied via email follow-up to [zivid-ros#163](https://github.com/zivid/zivid-ros/issues/163) on 2026-05-27 with substantive technical guidance, framed as "rather than recommend schema shapes for URML directly (those are decisions for the spec authors), it's probably more useful if we point at where the authoritative descriptions of Zivid's behavior live." Maintainer responses to URML's six unresolved questions:
+
+1. **Point-cloud declaration (Q1).** Zivid cameras output 3D color point clouds (XYZ, RGBA, SNR, normals) as the primary product, not 2D images. The data model is documented in Zivid's *General 3D Topics* and *API Reference*. Whether URML models this as a new `measurement_type` or a modifier is a URML design call. **URML action:** the v0.1 gap stands; RFC-0039 already introduced `measurement_type: point_cloud` for the Sensor block on the 3D-lidar side. A future schema extension to carry color + per-point attributes (SNR, normals) for 3D cameras is the URML design question that should be filed as a separate Spec RFC against Zivid's published documentation, not bundled into this Outreach RFC.
+
+2. **Accuracy declaration (Q2).** A single `accuracy_mm` field misrepresents Zivid cameras. Dimension trueness, point precision, and working distance interact and are documented per-model in Zivid's datasheets (linked from the *Camera index*) plus the *General 3D Topics* and *Calculators*. **URML action:** dropped. The unresolved-question Q2 framing in this RFC ("Should URML's `Camera` carry `accuracy_um` / `accuracy_mm`?") is resolved with a clear no. URML's manifest will not compress multi-dimensional accuracy into a scalar.
+
+3. **Acquisition modes (Q3).** HDR, multi-acquisition, projector settings, and exposure handling are documented in Zivid's *Camera Settings* and are substrate-internal at the v0.1 layer. **URML action:** URML's `take_measurement` returns what Zivid acquires; how Zivid acquires it stays the camera's business. Manifest does not surface acquisition modes for v0.1.
+
+4. **Vision-source metadata for `pick_from` (Q5 in the Unresolved-questions list above).** Surface normals, SNR, and related per-point data are part of Zivid's standard output (*API Reference*, *General 3D Topics*). "Pick-quality score" is an **application-layer construct** built on top of point-cloud data, not a Zivid-side concept. **URML action:** dropped as a manifest construct. RFC-0013 (`pick_from`) does not need vision-source-side enrichment; surface normals + SNR are standard Zivid output, not a separate manifest field.
+
+5. **Manufacturer-directory listing (Q6 in the Unresolved-questions list above).** "We'll pass for now. The project is early and we don't currently participate in third-party conformance registries at this stage." **URML action:** accepted. URML does not re-pitch the directory listing on this surface.
+
+The maintainer did not address Q4 (hand-eye calibration declaration). Calibration remains a v0.1 gap; URML notes it as a deployment-side concern rather than a manifest-level declaration unless a future RFC says otherwise.
 
 ## Summary
 

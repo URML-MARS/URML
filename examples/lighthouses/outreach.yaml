@@ -143,11 +143,11 @@
   rfc: 35
   sent_at: 2026-05-22
   channel: github
-  contact: "@zivid"
-  last_touch: 2026-05-22
-  response: none
-  next_action: "wait 14 d; if silent, nudge via RFC-0035 comment"
-  notes: ""
+  contact: "@zivid (engaged 2026-05-27 via email follow-up by Espen Holmbakken, Principal Engineering Manager at Zivid, on zivid-ros#163; holmbakk acked publicly on the issue thread first, then Espen sent substantive technical pointers via email to greenvh@gmail.com)"
+  last_touch: 2026-05-27
+  response: engaged
+  next_action: "Engaged 2026-05-27. Espen's email gave substantive pointers on Q1-Q4 (point-cloud declaration, accuracy, acquisition modes, vision-source metadata for pick_from) by referencing Zivid's published documentation (General 3D Topics, API Reference, Camera Settings, Camera index), and a polite pass on Q5 (manufacturer-directory listing: 'early stage; we don't currently participate in third-party conformance registries'). URML reflected each Q's outcome in RFC-0035's new 'Maintainer engagement received (2026-05-27)' section (state moved Draft -> Open), accepted the Q5 pass, and reset the zivid_two_cell.yaml fixture's manifest_attestation overclaim third_party_audited -> self_declared (orthogonal to Espen's email but caught while reviewing the fixture in light of his guidance). Founder posted a public summary reply on zivid-ros#163 with the same Q1-Q5 internalization, per the maintainer-waypoint-back-on-thread ask. Outstanding URML-side: Q4 hand-eye calibration declaration was not addressed by Espen; remains a v0.1 gap. Future Spec RFC question: 3D-camera color+SNR+normals schema extension (parallel to RFC-0039 lidar) — separate RFC, not bundled here."
+  notes: "First engaged response from a Move #1 component-vendor (peer to Ouster RFC-0032 which was engaged 2026-05-22 by Samahu/Ouster Inc engineer; Festo RFC-0034 declined on venue 2026-05-26). Second Move #1 engagement to pivot substance to email (Festo redirected to email channels too, but declined the substantive engagement; Zivid accepted it). holmbakk is the public-thread responder (GitHub association: none, no profile bio); Espen Holmbakken is the substantive email responder (Principal Engineering Manager). Public reply on the thread carries the post-OVOS authoring disclosure per AGENTS.md L67 + VIBE.md."
 - slug: hokuyo
   rfc: 36
   sent_at: 2026-05-22
