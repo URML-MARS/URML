@@ -322,7 +322,7 @@
   contact: "InvenSenseInc — 15 vendor-org public repos; flagship-ish: tdk_robokit, tdk_robotics_rbx_apps (Apache-2.0), tdk_robotics_rbx_drivers_code (NOASSERTION). Top stars 6 / pushed 2020-2021. Vendor org TDK / InvenSense (US/JP)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0132 (TDK / InvenSense ICM/IIM MEMS IMU integration); content is MCU-firmware-level, not robotics-stack level; URML's adapter pattern doesn't naturally compose at the embedded driver layer; cross-citation framing recommended."
+  next_action: "RFC-0132 drafted 2026-05-27 on URML main (docs/rfcs/0132-tdk-invensense-outreach.md). Cross-citation framing recommended (MCU-firmware-level content vs URML's robotics-stack adapter pattern). Shares IMU-type Spec RFC with RFC-0117 / RFC-0118 / RFC-0125 / RFC-0131. Awaiting founder review then post Issue on InvenSenseInc's most-active repo (tdk_robokit or tdk_robotics_rbx_apps)."
   notes: "Tier B. Origin US/JP (pass). Vendor org real and identified, but content is firmware-MCU not robotics-stack; URML lives above this layer. Low-leverage outreach; engage for awareness."
 
 - slug: ublox-gnss
@@ -333,7 +333,7 @@
   contact: "u-blox/ubxlib (Apache-2.0, 357 stars, Issues enabled + CONTRIBUTING yes, last commit 2024-11-11 stale ~6 mo from cutoff). Vendor-org u-blox (Thalwil CH). ROS driver path is community KumarRobotics/ublox (BSD-3-Clause, 529 stars, active 2025-09-26)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0133 (u-blox ubxlib integration); URML-fit via UBX-protocol mapping more than driver adoption; the community KumarRobotics/ublox path is the ROS-side de facto vendor surface; RFC should engage on ubxlib (vendor) AND cross-cite KumarRobotics."
+  next_action: "RFC-0133 drafted 2026-05-27 on URML main (docs/rfcs/0133-ublox-gnss-outreach.md). Dual-surface engagement (u-blox/ubxlib vendor + KumarRobotics/ublox community ROS driver). Shares GNSS-class Spec RFC with RFC-0119 / RFC-0120 / RFC-0134. Awaiting founder review then post two cross-referenced Issues on both repos."
   notes: "Tier B. Origin CH (pass). Apache-2.0 vendor library on the protocol layer; ROS driver is community-maintained. Dual-surface engagement shape."
 
 - slug: emlid-rtk
@@ -344,7 +344,7 @@
   contact: "emlid/* — 43 public repos; ntripbrowser (BSD-3-Clause, 32 stars, last 2025-07-21 stale), Navio2 (BSD-3-Clause). Reach RTK firmware is closed (ReachView3). Vendor account per info@emlid.com. Originally HK-registered; now operates as Emlid Tech Kft. (Hungary HU) with distributed RU-diaspora founders."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0134 (Emlid Reach RTK integration); flag the HK-registration history for any US-federal procurement consumer; current HU-domiciled entity passes default policy; URML-fit via NMEA/UBX standard interfaces; engage on emlid/ntripbrowser or similar active repo."
+  next_action: "RFC-0134 drafted 2026-05-27 on URML main (docs/rfcs/0134-emlid-rtk-outreach.md). HK-registration history flagged honestly (current HU-domiciled Emlid Tech Kft. passes default policy; HK history for operator decision). Closed ReachView3 firmware. Shares GNSS-class Spec RFC with RFC-0119 / RFC-0120 / RFC-0133. Awaiting founder review then post Issue on emlid/ntripbrowser."
   notes: "Tier B. Origin HU now (pass on current entity; flag HK history for US-federal-procurement deployments — operator decision). Low-cost multi-band RTK; closed Reach firmware limits adapter depth."
 
 - slug: cerulean-sonar
@@ -355,7 +355,7 @@
   contact: "CeruleanSonar/SonarView (no license — flag, 7 stars, 4 open issues, Issues enabled, last commit 2026-05-18 active). Vendor-org CeruleanSonar (US), 12 public repos. Companion ping-python (MIT) + s500_ros2 (MIT, stale 2023-06-28). Builds on Blue Robotics ping-protocol."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0135 (Cerulean Sonar Sounder S500 / Omniscan integration); license clarification needed on SonarView flagship before adapter code can reuse; URML-fit via ping-protocol adapter rather than SonarView directly; cross-link to URML's existing marine-runtime (BlueROV ArduSub)."
+  next_action: "RFC-0135 drafted 2026-05-27 on URML main (docs/rfcs/0135-cerulean-sonar-outreach.md). **First sonar / underwater-perception RFC** in URML. License-clarification ask on SonarView is front-and-centre. URML-fit via Blue Robotics ping-protocol (MIT companion repos) rather than SonarView directly; complements URML's existing marine-runtime. Awaiting founder review then post Issue on CeruleanSonar/SonarView."
   notes: "Tier B. Origin US (pass). First sonar / underwater perception RFC in URML's outreach. Complements existing marine-runtime BlueRovAdapter. License gap on flagship blocks Apache-2.0 reuse."
 
 - slug: contactile-tactile
@@ -366,7 +366,7 @@
   contact: "contactile/c3dfbs (GPL-3.0, 0 stars, 1 open issue, Issues enabled, last commit 2025-02-04 stale >15 mo). Vendor is a user-type account not org-type — single maintainer pattern. UNSW spin-off (Australia AU). Community ROS 2 wrapper at mgonzs13/contactile_ros (more recent)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0136 (Contactile PapillArray tactile integration); engage with light touch expecting slow response; community ROS 2 wrapper is the practical leverage point; cross-citation framing recommended."
+  next_action: "RFC-0136 drafted 2026-05-27 on URML main (docs/rfcs/0136-contactile-tactile-outreach.md). Second tactile RFC after RFC-0122 GelSight; PapillArray's per-pillar 3-axis force vector complements GelSight's vision-based output. Cross-citation framing recommended (GPL-3.0 + user-account / single-maintainer pattern). Shares tactile-array Spec RFC with RFC-0122. Awaiting founder review then post Issue on contactile/c3dfbs."
   notes: "Tier B. Origin AU (pass; allied). Second tactile-sensing RFC after GelSight; UNSW spin-off with thin commercial GitHub presence; copyleft license."
 
 - slug: ams-osram
@@ -377,5 +377,5 @@
   contact: "ams-OSRAM/tmf8829_driver_linux (GPL-3.0, 1 star, 2 open issues, Issues enabled, last commit 2026-05-19 active). Vendor-org ams-OSRAM AG (Premstätten AT), 49 public repos. Also tmf8829_driver_python (NOASSERTION) and mira220_v4l2_driver (GPL-2.0)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0137 (AMS-OSRAM TMF ToF + Mira image-sensor integration); GPL-2/3 copyleft limits Apache-2.0 bundling; cross-citation / manifest-component framing rather than adapter; engage on tmf8829_driver_linux."
+  next_action: "RFC-0137 drafted 2026-05-27 on URML main (docs/rfcs/0137-ams-osram-outreach.md). **Completes the 12 Tier B and the full 29 engageable Move-10 RFCs.** Cross-citation framing recommended (GPL-2/3 copyleft + chip-vs-camera engagement-level mismatch). Multi-zone ToF declaration is a new Spec-RFC sub-topic. Awaiting founder review then post Issue on ams-OSRAM/tmf8829_driver_linux."
   notes: "Tier B. Origin AT (pass; allied). Complements ifm Effector (Tier A) at the chip-class ToF layer; vendor-direct and active, but copyleft licensing limits adapter integration."
