@@ -194,7 +194,7 @@
   contact: "ROBOTOUS/ROS-2-Interface-for-RFT-Series-EtherCAT-Model (MIT, 0 stars, 0 open issues, Issues enabled, last commit 2026-03-04 active; vendor org created 2026-02 — new entrant). Vendor per support@robotous.com (Korea, South)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0121 (Robotous RFT-series F/T sensor integration); new vendor org on GitHub — engage with light touch as they are still building public presence; capacitance-based 6-axis F/T sensors; post Issue once RFC on main."
+  next_action: "RFC-0121 drafted 2026-05-27 on URML main (docs/rfcs/0121-robotous-ft-outreach.md). First force/torque vendor RFC in URML's outreach (ATI / Bota are URML fixtures but never engaged through an RFC). F/T measurement_type Spec RFC queued. UART + EtherCAT transport-protocol declaration question. Light-touch register expected given fresh vendor org. Awaiting founder review then post Issue on ROBOTOUS/ROS-2-Interface-for-RFT-Series-EtherCAT-Model pointing at RFC-0121."
   notes: "Tier A. Origin KR (pass; allied). First force/torque vendor in URML's outreach proper (ATI/Bota are fixtures, not engaged). Vendor org is fresh (Feb 2026); URML's engagement here may meaningfully shape their public posture."
 
 - slug: gelsight
@@ -205,7 +205,7 @@
   contact: "gelsightinc/gsrobotics (GPL-3.0, 187 stars, 20 open issues, Issues enabled, last commit 2025-06-25 marginally stale 11 mo; flagship). Vendor-org GelSight Inc. (Waltham MA; MIT spin-off). Also distributes the DIGIT successor product after Meta archived facebookresearch/digit-*."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0122 (GelSight tactile-sensor integration); GPL-3.0 copyleft on flagship is a license-fit consideration for URML's Apache-2.0 stance — cross-citation pattern recommended over bundled adapter; post Issue once RFC on main."
+  next_action: "RFC-0122 drafted 2026-05-27 on URML main (docs/rfcs/0122-gelsight-tactile-outreach.md). First tactile-sensing RFC in URML's outreach. Cross-citation framing (GPL-3.0 limits Apache-2.0 bundling). Tactile / pressure-array measurement_type Spec RFC queued. DIGIT-successor product status (Meta archived facebookresearch/digit-* in 2026) noted. Awaiting founder review then post Issue on gelsightinc/gsrobotics pointing at RFC-0122."
   notes: "Tier A. Origin US (pass). Only commercially-viable tactile vendor with active GitHub presence in the slice; GPL-3.0 limits direct bundling but cross-citation works cleanly. First tactile-sensing RFC in URML's outreach."
 
 - slug: cubert-hyperspectral
@@ -216,7 +216,7 @@
   contact: "cubert-hyperspectral/cuvis.sdk (Apache-2.0, 22 stars, 5 open issues, Issues enabled, last commit 2026-05-26 active TODAY). Vendor-org Cubert GmbH (Ulm DE), 35 public repos, Apache-2.0 across the board. Also publishes cuvis-ai + cuvis-ai-agentic-skills (LLM-tool surface already exists)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0123 (Cubert Ultris snapshot hyperspectral integration); URML's cuvis-ai-agentic-skills cross-reference is the highest-leverage angle — Cubert is the rare perception vendor that already ships an LLM-tool surface; post Issue once RFC on main."
+  next_action: "RFC-0123 drafted 2026-05-27 on URML main (docs/rfcs/0123-cubert-hyperspectral-outreach.md). First hyperspectral-imaging RFC in URML's outreach. **Highest semantic overlap with URML's NL-bridge layer (RFC-0021) of any Move-10 vendor** — Cubert is the only Move-10 candidate with a public LLM-tool agentic-skills surface (cuvis-ai-agentic-skills). Spectral-cube measurement_type Spec RFC queued. Awaiting founder review then post Issue on cubert-hyperspectral/cuvis.sdk pointing at RFC-0123."
   notes: "Tier A. Origin DE (pass). Best-in-slice vendor surface: 35 repos, Apache-2.0 uniformly, daily commits, agentic-AI posture already public. First hyperspectral RFC in URML's outreach. URML-fit: extremely high — they have done the LLM-tool work already."
 
 - slug: sensirion-env
@@ -227,7 +227,7 @@
   contact: "Sensirion/* — 252 vendor-org public repos, BSD-3-Clause uniformly, multi-week activity cadence; flagship pattern is per-sensor arduino-i2c-* + embedded-i2c-* pairs (e.g. arduino-i2c-scd30 = 13/1/2026-05-26 active). Vendor org Sensirion AG (Switzerland), 343 followers."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0124 (Sensirion environmental-sensor integration); exemplary vendor surface; URML-fit via env-monitor / safety-envelope primitives (CO2 limit, humidity check); post Issue on the most-engaged sensor-specific repo (likely the SHT4x / SCD30 pair) once RFC on main."
+  next_action: "RFC-0124 drafted 2026-05-27 on URML main (docs/rfcs/0124-sensirion-environmental-outreach.md). First environmental-sensor RFC in URML's outreach. Env-scalar-array measurement_type Spec RFC queued (co2, voc, particulate, formaldehyde, nox). Safety-envelope (RFC-0012) cross-link as environmental thresholds gate primitive execution. Awaiting founder review then post Issue on the most-engaged Sensirion per-sensor repo (likely Sensirion/arduino-i2c-scd30) pointing at RFC-0124."
   notes: "Tier A. Origin CH (pass; NATO-aligned). 252 public repos, OSI license uniform, exemplary maintenance posture. First environmental-sensor RFC in URML's outreach. URML-fit: high for CO2/humidity/particulate; manifest sensors-block extension needed for env types."
 
 - slug: bosch-sensortec
@@ -238,7 +238,7 @@
   contact: "boschsensortec/* — 33 vendor-org public repos, BSD-3-Clause on per-sensor APIs (some NOASSERTION on COINES_SDK — mixed posture flag). Active: BHI385_SensorAPI (2/3/2026-04-16), BME690 (19/4/2026-02-20), BMM350 (20/4/2026-02-03). Vendor org Bosch Sensortec GmbH (DE), 495 followers."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0125 (Bosch Sensortec MEMS sensors integration); BMI/BHI IMU + BMP pressure + BME680/690 gas + BMM350 magnetometer; dominant low-power IMU/env catalog; flag BSEC and BHy2 fusion firmware as closed binaries; post Issue on the relevant per-sensor repo once RFC on main."
+  next_action: "RFC-0125 drafted 2026-05-27 on URML main (docs/rfcs/0125-bosch-sensortec-outreach.md). **Completes all 17 Tier A RFCs for Move-10.** Shares IMU-type Spec RFC with RFC-0117 / RFC-0118 + env-scalar-array Spec RFC with RFC-0124. On-chip fusion firmware (BSEC / BHy2 / BSX) declaration question (closed binary firmware vs open per-sensor APIs). Awaiting founder review then post Issue on the relevant boschsensortec per-sensor repo (likely BHI385_SensorAPI or BME690_SensorAPI) pointing at RFC-0125."
   notes: "Tier A. Origin DE (pass). Dominant low-power IMU/env catalog; complements Sensirion at the MEMS layer. URML-fit: high for embedded / micro-class robots; pairs naturally with the existing microbit_edu manifest pattern."
 
 # ============================================================
