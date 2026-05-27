@@ -68,11 +68,11 @@
 
 - slug: nasa-jpl-rosa
   rfc: 108
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-27"
+  posted_url: "https://github.com/nasa-jpl/rosa/discussions/85"
   channel: github_discussion
-  contact: "nasa-jpl/rosa (Apache-2.0, 1527 stars, 3 open issues, Issues + Discussions both enabled, CONTRIBUTING + CODE_OF_CONDUCT + GOVERNANCE present, last commit 2026-03-17). Key contact: @RobRoyce (Rob Royce, JPL AI Group). Langchain-based ROS 1 / ROS 2 agent (`jpl-rosa` on PyPI)."
-  last_touch: ""
+  contact: "nasa-jpl/rosa (Apache-2.0, 1527 stars, 3 open issues, Issues + Discussions both enabled, CONTRIBUTING + CODE_OF_CONDUCT + GOVERNANCE present, last commit 2026-03-17). Key contact: @RobRoyce (Rob Royce, JPL AI Group). Langchain-based ROS 1 / ROS 2 agent (`jpl-rosa` on PyPI). Posted in the Ideas category per CONTRIBUTING.md (Discussions named as the preferred design-discussion surface)."
+  last_touch: 2026-05-27
   response: none
-  next_action: "open a Discussion on nasa-jpl/rosa (Discussions surface preferred over Issues per NASA's stated communication channels in CONTRIBUTING.md) pointing at RFC-0108. Then wait 14-30 d (government-program cadence). If silent, polite follow-up on the same Discussion. If reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "wait 14-30 d (government-program cadence; NASA outreach typically slower than commercial-vendor cadence). If silent, polite follow-up on the same Discussion. If reply, bump last_touch, set response per enum, write the concrete next step here. After ROSA lands (engaged or declined), draft F Prime + Astrobee RFCs to fill out the Move #9 Tier A wave."
   notes: "First Move #9 RFC, Tier A vendor-style. ROSA is the closest single repo to URML's reason for existing across the entire outreach set: its NL->ROS-tool-call loop sits directly under URML Layer 4 + the LLM-bridge prompt contract. Proposal-only: a URML Langchain tool that ROSA's agent can register, emitting validated URML primitive programs instead of raw rospy/rclpy calls, with URML's manifest-gated validator as a static safety check before any topic publishes. License fit clean (Apache-2.0 inbound = outbound; no NASA CLA). Communication channel discipline: NASA repos prefer Discussions for design questions; Issues reserved for concrete scoped asks. Origin: NASA / JPL Caltech, US. Verified 2026-05-27."
