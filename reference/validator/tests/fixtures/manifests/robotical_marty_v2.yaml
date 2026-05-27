@@ -49,7 +49,7 @@ perception:
   object_vocabulary: []
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: robotical_marty_v2_controller
       role: critical
