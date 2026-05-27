@@ -63,11 +63,13 @@ class _FakeThymio:
 
 class _FakeMarty:
     """Stand-in for ``martypy.Marty`` with the skill methods + sensor getters
-    the URML adapter dispatches against. Skill / getter names align with the
-    public ``martypy.Marty`` API per maintainer correction on
-    robotical/martypy#52 (2026-05-27): ``sit()`` and ``get_battery_voltage()``
-    are not in the public API and are not modeled; ``get_accelerometer()``
-    returns a tuple in the no-axis form and the fake mirrors that.
+    the URML adapter dispatches against. Skill / getter names + return shapes
+    align with the public ``martypy.Marty`` API per maintainer corrections on
+    robotical/martypy#52: ``sit()`` and ``get_battery_voltage()`` are not in
+    the v2 public API; ``get_accelerometer()`` no-axis form returns a
+    **list** (real-Marty round-3 trace 2026-05-27); ``get_battery_remaining``
+    returns an int percentage; ``get_distance_sensor`` returns an int;
+    ``get_robot_status`` / ``get_power_status`` return dicts.
     """
 
     def __init__(self, device: str) -> None:
@@ -92,11 +94,29 @@ class _FakeMarty:
     def close_claw(self) -> None:
         self.calls.append("close_claw")
 
-    def get_battery_remaining(self) -> float:
-        return 67.0  # percent
+    def get_battery_remaining(self) -> int:
+        return 81  # percent (real-Marty trace value)
 
-    def get_accelerometer(self) -> tuple[float, float, float]:
-        return (0.01, -0.02, 0.98)  # no-axis form returns a tuple of x/y/z
+    def get_accelerometer(self) -> list[float]:
+        # No-axis form returns a list (real-Marty round-3 trace 2026-05-27).
+        return [0.02, -0.04, 0.97]
+
+    def get_distance_sensor(self) -> int:
+        return 0  # real-Marty trace value (mm)
+
+    def get_robot_status(self) -> dict[str, object]:
+        return {"isMoving": False, "isPaused": False, "workQCount": 0}
+
+    def get_power_status(self) -> dict[str, object]:
+        return {
+            "battRemainCapacityPercent": 81,
+            "battRemainCapacityMAH": 2158,
+            "battFullCapacityMAH": 2661,
+            "battCurrentMA": -226,
+            "battTempDegC": 29,
+            "powerUSBIsConnected": False,
+            "power5VIsOn": True,
+        }
 
     def disconnect(self) -> None:
         pass
@@ -202,15 +222,24 @@ def test_marty_adapter_lifecycle(fake_edu_sdks: None) -> None:
         assert miss.reason.startswith("location_not_configured")
         assert marty.send_manipulation_goal(action="grasp").success
         assert marty.send_manipulation_goal(action="release").success
-        # Battery-remaining getter (per maintainer correction on robotical/martypy#52,
-        # round 2; get_battery_voltage is not in the public martypy API).
+        # Battery-remaining getter (real-Marty round-3 trace 2026-05-27:
+        # returns an int 81, not a float; get_battery_voltage is not in the
+        # public v2 martypy API per maintainer correction).
         meas = marty.take_measurement(what="battery", target=None, sensor="get_battery_remaining")
-        assert meas.success and meas.payload is not None and meas.payload["value"] == 67.0
-        # Accelerometer no-axis form returns a tuple; the adapter passes it
-        # through as a list payload rather than coercing to a single float.
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 81
+        # Accelerometer no-axis form returns a LIST on real Marty v2
+        # (round-3 trace value). The adapter passes list/tuple through as a
+        # list payload rather than coercing to a single float.
         accel = marty.take_measurement(what="accel", target=None, sensor="get_accelerometer")
         assert accel.success and accel.payload is not None
-        assert accel.payload["value"] == [0.01, -0.02, 0.98]
+        assert accel.payload["value"] == [0.02, -0.04, 0.97]
+        # Distance sensor returns a scalar int; pass-through.
+        dist = marty.take_measurement(what="distance", target=None, sensor="get_distance_sensor")
+        assert dist.success and dist.payload is not None and dist.payload["value"] == 0
+        # Robot-status returns a dict; the adapter passes the dict through.
+        status = marty.take_measurement(what="status", target=None, sensor="get_robot_status")
+        assert status.success and status.payload is not None
+        assert status.payload["value"] == {"isMoving": False, "isPaused": False, "workQCount": 0}
         # Unknown sensor returns a typed failure, not a crash.
         bad = marty.take_measurement(what="nope", target=None, sensor="get_no_such_thing")
         assert bad.success is False and bad.reason is not None
