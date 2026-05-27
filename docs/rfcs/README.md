@@ -57,8 +57,11 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #8** (RFCs 0100–0107, home-assistance robotics + parts,
   ledger
   [`outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml)),
-  and **Move #9** (RFC 0108 first, NASA robotics, ledger
-  [`outreach-move9.yaml`](../../examples/lighthouses/outreach-move9.yaml)).
+  **Move #9** (RFC 0108 first, NASA robotics, ledger
+  [`outreach-move9.yaml`](../../examples/lighthouses/outreach-move9.yaml)),
+  and **Move #10** (RFCs 0109–0137, perception vendors —
+  cameras and sensors, ledger
+  [`outreach-move10.yaml`](../../examples/lighthouses/outreach-move10.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
   audiences URML's first three waves left untouched. Move #5 promotes
@@ -83,8 +86,18 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   `nasa/astrobee` ISS free-flyer); sequencing leads with ROSA alone
   (RFC-0108, the closest single-repo semantic overlap with URML's reason
   for existing across nine outreach waves), with F Prime + Astrobee
-  follow-ons once ROSA lands. Do not interpret outreach RFCs as a quiet
-  expansion of URML's spec surface.
+  follow-ons once ROSA lands. Move #10 is URML's largest single Move
+  yet: a 50-candidate perception-vendor sweep verified 2026-05-27
+  across 15 sensor sub-categories (RGB-D, industrial 3D vision,
+  lidar, event cameras, ToF, thermal/IR, IMU/INS, GNSS/RTK,
+  force/torque, radar, underwater/sonar, tactile, hyperspectral,
+  environmental, encoder/position). Engageable subset is 29 (17
+  Tier A vendor-style + 12 Tier B research-collab); the audit trail
+  for the 21 Tier C exclusions lives in
+  [`perception-vendors-research-2026-05-27.md`](../../examples/lighthouses/perception-vendors-research-2026-05-27.md).
+  RFC numbers 0109–0137 reserved; each draft is a future session.
+  Do not interpret outreach RFCs as a quiet expansion of URML's
+  spec surface.
 
 ## Index
 

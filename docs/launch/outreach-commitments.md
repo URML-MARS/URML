@@ -134,6 +134,22 @@ Open commitments:
 
 ---
 
+## Move-10 backlog — perception vendors (queued, not yet engaged)
+
+URML's Move-10 wave (perception vendors — cameras and sensors) opened 2026-05-27 as research + ledger setup only. **29 engageable targets** (17 Tier A vendor-style + 12 Tier B research-collab with caveats) sit in [`examples/lighthouses/outreach-move10.yaml`](../../examples/lighthouses/outreach-move10.yaml) with `sent_at: ""` and RFC numbers 0109–0137 reserved. **No engagement has happened yet**, so no commitments to engaged maintainers exist on Move-10 — the queue is visible here so the next round of per-target RFC drafting + posting has a single index to draw from.
+
+Tier-C exclusions (21 vendors investigated and not pursued) are recorded in [`examples/lighthouses/perception-vendors-research-2026-05-27.md`](../../examples/lighthouses/perception-vendors-research-2026-05-27.md) for the audit trail.
+
+Schema-extension Spec RFCs that Move-10 surfaces (separate work, queued in parallel with the outreach RFCs):
+
+- Event-camera measurement_type (for Prophesee RFC-0114, iniVation RFC-0126).
+- Thermal-array per-pixel measurement_type (for Teledyne FLIR RFC-0116, Optris RFC-0128, Seek Thermal RFC-0129).
+- 3D point-cloud with color + per-point attributes (already flagged by RFC-0035 Zivid; reinforced by Intel RealSense RFC-0109).
+- Environmental scalar arrays (for Sensirion RFC-0124).
+- Tactile / pressure-array measurement (for GelSight RFC-0122, Contactile RFC-0136).
+
+---
+
 ## Closed / declined threads (no open commitments)
 
 For history, threads URML has closed or that the maintainer declined are recorded in the ledgers but generate no commitments:
