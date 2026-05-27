@@ -19,6 +19,14 @@ a passing test or recorded CI run. This document is the backing evidence. It
 exists so a reader can verify the front page is not overselling — and so the
 maintainer can re-check before each public update.
 
+The engagement-side companion to this dossier is
+[`outreach-commitments.md`](outreach-commitments.md), which lists every open
+public commitment URML has made to engaged outreach maintainers (Ouster,
+Kawasaki, Zivid, Marty, Spot, Maytronics, Clearpath). Claims audit measures
+what URML has shipped; outreach commitments tracks what URML has promised in
+public threads. Both are derivative views of `main`; both should be re-checked
+before any public update.
+
 **Measured 2026-05-20, on `main`** (commit `a19daee`). This is the post-Track-I
 refresh — three new PRs (#102 / #103 / #104) added eight compliant-part fixtures,
 five ROS-Industrial arm-brand adapters, and three zero-ROS cobot-brand adapters
