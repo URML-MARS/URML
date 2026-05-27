@@ -58,7 +58,7 @@ perception:
     - ball
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: vex_v5_clawbot_controller
       role: critical

@@ -252,7 +252,7 @@ def _write_manifest_with_provenance(
         f"""manifest_version: "0.1"
 robot_id: test_bot
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: drive_controller
       role: critical

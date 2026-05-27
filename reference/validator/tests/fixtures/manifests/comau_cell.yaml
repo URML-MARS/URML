@@ -70,7 +70,7 @@ outputs:
     - line_controller
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: comau_arm_controller
       role: critical

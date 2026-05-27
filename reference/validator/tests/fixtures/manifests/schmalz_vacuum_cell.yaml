@@ -78,7 +78,7 @@ docking_stations:
     services: [swap_tool, park]   # swap_tool: RFC-0013 end-of-arm tool change
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: schmalz_vacuum_eoat
       role: critical

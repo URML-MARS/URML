@@ -55,7 +55,7 @@ outputs:
 
 # US-compliant illustrative provenance so the bundled default policy passes.
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: flight_controller
       role: critical

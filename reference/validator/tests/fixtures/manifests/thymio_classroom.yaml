@@ -58,7 +58,7 @@ perception:
     - ball
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: thymio_classroom_controller
       role: critical
