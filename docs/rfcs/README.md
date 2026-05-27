@@ -54,9 +54,11 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   **Move #7** (RFCs 0092–0099, agriculture-robotics second wave,
   ledger
   [`outreach-move7.yaml`](../../examples/lighthouses/outreach-move7.yaml)),
-  and **Move #8** (RFCs 0100–0107, home-assistance robotics + parts,
+  **Move #8** (RFCs 0100–0107, home-assistance robotics + parts,
   ledger
-  [`outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml)).
+  [`outreach-move8.yaml`](../../examples/lighthouses/outreach-move8.yaml)),
+  and **Move #9** (RFC 0108 first, NASA robotics, ledger
+  [`outreach-move9.yaml`](../../examples/lighthouses/outreach-move9.yaml)).
   Move #3 sits between the Tier-1 OEMs of Move #1 and the AI/ML targets
   of Move #2. Move #4 widens the substrate set into verticals and
   audiences URML's first three waves left untouched. Move #5 promotes
@@ -73,8 +75,16 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
   cobots (Bear Robotics), pool cleaning (Maytronics Dolphin), servo
   (ROBOTIS Dynamixel) + perception (Luxonis OAK-D) component vendors,
   the Home Assistant orchestration hub, and the OpenVoiceOS voice stack
-  (5 Tier A vendor-style + 3 Tier B research-collab + community). Do not
-  interpret outreach RFCs as a quiet expansion of URML's spec surface.
+  (5 Tier A vendor-style + 3 Tier B research-collab + community). Move #9
+  opens URML's first dedicated NASA-robotics wave: three Tier A targets
+  identified via a verified 2026-05-27 shortlist of JPL / Ames
+  Apache-2.0 robotics projects (`nasa-jpl/rosa` NL-driven ROS agent,
+  `nasa/fprime` flight-software framework with ROS 2 bridge,
+  `nasa/astrobee` ISS free-flyer); sequencing leads with ROSA alone
+  (RFC-0108, the closest single-repo semantic overlap with URML's reason
+  for existing across nine outreach waves), with F Prime + Astrobee
+  follow-ons once ROSA lands. Do not interpret outreach RFCs as a quiet
+  expansion of URML's spec surface.
 
 ## Index
 
@@ -188,6 +198,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0105](0105-luxonis-oak-d-outreach.md) | Outreach | Luxonis OAK-D / DepthAI integration; Move #8 RFC, Tier B research-collab; de facto affordable 3D-perception module for home / educational / research robotics; `luxonis/depthai-python` (MIT, 429 stars, Discussions enabled — preferred surface) + `luxonis/depthai-ros` (MIT, 346 stars); documented cross-citation (perception substrate, like Dynamixel for actuators); home-scale counterpart to Move #1 industrial-perception-vendor RFCs (RFC-0032 Ouster, RFC-0033 SICK); request for comment from luxonis maintainers | Draft | 2026-05-26 |
 | [0106](0106-home-assistant-outreach.md) | Outreach | Home Assistant integration; Move #8 RFC, Tier B research-collab + community; **strategic anchor for the home-assistance wave** (every Move #8 vendor target already lives as an HA integration); `home-assistant/core` Apache-2.0 87.3k stars under Open Home Foundation (2024+); URML primitives compile into HA automation YAML; candidate `urml` HACS integration prototype; cross-link to RFC-0100 / 0101 / 0103 (Move #8 vendor dependents), RFC-0021 (NL layer), RFC-0014 (conformance); request for comment from home-assistant/core maintainers | Draft | 2026-05-26 |
 | [0107](0107-openvoiceos-outreach.md) | Outreach | OpenVoiceOS integration; eighth and final Move #8 RFC, Tier B research-collab + community (closes the home-assistance wave); pivoted from `rhasspy/rhasspy3` (archived shortly before this RFC drafted) to `OpenVoiceOS/ovos-core` (Apache-2.0, 275 stars, NGI Zero Commons Fund grant Oct 2025); post-Mycroft independent voice-stack trajectory (distinct from HA / Open Home Foundation umbrella covered indirectly via RFC-0106); composition direction voice -> OVOS intent -> URML primitive -> substrate; request for comment from OpenVoiceOS maintainers | Draft | 2026-05-26 |
+| [0108](0108-nasa-jpl-rosa-outreach.md) | Outreach | NASA-JPL ROSA integration; **first Move #9 RFC**, Tier A vendor-style; proposal-only URML Langchain tool that ROSA's agent registers, emitting validated URML programs in place of raw `rospy` / `rclpy` calls with URML's manifest-gated validator as a static safety check before any topic publishes; `nasa-jpl/rosa` Apache-2.0 1.5k stars Langchain-based ROS 1/2 agent (`jpl-rosa` on PyPI); closest single-repo semantic overlap with URML's reason for existing across nine outreach waves; cross-link to RFC-0040 (LeRobot bridge precedent), RFC-0073 (Robotical Marty engagement-driven adapter pattern), `reference/llm-bridge/` + `reference/ros2-runtime/` + `reference/isaac-runtime/`; request for comment from `nasa-jpl/rosa` maintainers (@RobRoyce, JPL AI Group) | Draft | 2026-05-27 |
 
 ## Lifecycle states
 
