@@ -82,8 +82,8 @@ Open commitments:
 - [x] **Round-1 scaffold shipment**: `RoboticalMartyAdapter` + manifest fixture + conformance fixture. DONE 2026-05-25 (PR #137).
 - [x] **Round-2 corrections**: BLE cleanup, `sit()` removal, `get_battery_voltage → get_battery_remaining`, tuple-handling, `third_party_audited → self_declared`. DONE 2026-05-27 (PR #152).
 - [x] **Round-3 corrections**: accelerometer list-return, `ws://` cleanup, BLE in Summary/Motivation, authoritative skill catalog recorded, adapter-design scaffold-gap acknowledged. DONE 2026-05-27 (PR #156).
-- [ ] **Production-graduation milestone**: richer arg-passing dispatch in `RoboticalMartyAdapter._send` + real-`martypy` CI workflow + claims-audit graduation update. **In flight** as PR C from the session retro (improvement #3).
-- [ ] **Hardware-in-the-loop validation** by URML itself on real Marty hardware. Depends on hardware access (loan or community unit); separate future ticket.
+- [x] **Production-graduation milestone**: richer arg-passing dispatch in `RoboticalMartyAdapter._send` + real-`martypy` CI workflow + claims-audit graduation update. DONE 2026-05-27 (PR C, session-retro improvement #3).
+- [ ] **Hardware-in-the-loop validation** by URML itself on real Marty hardware. Depends on hardware access (loan or community unit); the new `.github/workflows/marty-real-integration.yml::marty-hardware-e2e` job is a placeholder that fails loudly until wired.
 - [ ] **Re-engage NikTheGeek1 to request the upstream `martypy` README/docs link** once hardware validation closes (per round-1 item 5).
 
 ---

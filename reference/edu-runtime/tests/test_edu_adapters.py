@@ -70,29 +70,44 @@ class _FakeMarty:
     **list** (real-Marty round-3 trace 2026-05-27); ``get_battery_remaining``
     returns an int percentage; ``get_distance_sensor`` returns an int;
     ``get_robot_status`` / ``get_power_status`` return dicts.
+
+    Each skill method accepts arbitrary ``*args`` / ``**kwargs`` and records
+    the call signature in ``self.calls`` as ``(method_name, args, kwargs)``.
+    Production-graduation (round-3 follow-up, 2026-05-27) requires the
+    adapter to pass arguments through; the fake records them so tests can
+    assert on the dispatch shape.
     """
 
     def __init__(self, device: str) -> None:
         self.device = device
-        self.calls: list[str] = []
+        self.calls: list[tuple[str, tuple, dict]] = []
 
-    def walk(self) -> None:
-        self.calls.append("walk")
+    def walk(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("walk", args, kwargs))
 
-    def kick(self) -> None:
-        self.calls.append("kick")
+    def kick(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("kick", args, kwargs))
 
-    def eyes(self) -> None:
-        self.calls.append("eyes")
+    def eyes(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("eyes", args, kwargs))
 
-    def arms(self) -> None:
-        self.calls.append("arms")
+    def arms(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("arms", args, kwargs))
 
-    def open_claw(self) -> None:
-        self.calls.append("open_claw")
+    def lean(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("lean", args, kwargs))
 
-    def close_claw(self) -> None:
-        self.calls.append("close_claw")
+    def sidestep(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("sidestep", args, kwargs))
+
+    def wave(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("wave", args, kwargs))
+
+    def open_claw(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("open_claw", args, kwargs))
+
+    def close_claw(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("close_claw", args, kwargs))
 
     def get_battery_remaining(self) -> int:
         return 81  # percent (real-Marty trace value)
@@ -244,6 +259,99 @@ def test_marty_adapter_lifecycle(fake_edu_sdks: None) -> None:
         bad = marty.take_measurement(what="nope", target=None, sensor="get_no_such_thing")
         assert bad.success is False and bad.reason is not None
         assert bad.reason.startswith("marty_sensor_not_found")
+
+
+def test_marty_adapter_richer_dispatch(fake_edu_sdks: None) -> None:
+    """RoboticalMartyAdapter dispatches EduSkillCall entries with args + kwargs.
+
+    Production-graduation milestone (robotical/martypy#52 round-3 follow-up,
+    2026-05-27): real Marty methods such as ``arms(left_angle, right_angle,
+    move_time)``, ``eyes(pose_or_angle)``, ``lean(direction)``,
+    ``sidestep(side)``, ``wave(side)`` take positional / keyword arguments.
+    The adapter must support both the string form (no-arg, scaffold) and the
+    EduSkillCall form (rich dispatch) so deployments can configure real
+    parameterized skill calls without modifying URML.
+    """
+    from urml_edu_runtime import EduConfig, EduSkillCall, RoboticalMartyAdapter
+
+    cfg = EduConfig(
+        device="usb",
+        location_to_command={
+            "warm_up": "walk",  # string form, no args
+            "kick_left": EduSkillCall(method="kick", args=["left"]),
+            "arms_open": EduSkillCall(method="arms", args=[90, -90, 1500]),
+            "wave_right": EduSkillCall(method="wave", args=["right"]),
+            "lean_forward": EduSkillCall(method="lean", kwargs={"direction": "forward"}),
+        },
+        manipulation_commands={
+            # Mix: string form for grasp, richer call for release.
+            "grasp": "close_claw",
+            "release": EduSkillCall(method="open_claw", args=[], kwargs={}),
+        },
+    )
+    with RoboticalMartyAdapter(cfg) as marty:
+        # String form still works (no-arg dispatch).
+        assert marty.send_navigation_goal(location="warm_up").success
+        # Richer dispatch with positional args.
+        assert marty.send_navigation_goal(location="kick_left").success
+        assert marty.send_navigation_goal(location="arms_open").success
+        assert marty.send_navigation_goal(location="wave_right").success
+        # Richer dispatch with kwargs.
+        assert marty.send_navigation_goal(location="lean_forward").success
+        # Manipulation with mixed forms.
+        assert marty.send_manipulation_goal(action="grasp").success
+        assert marty.send_manipulation_goal(action="release").success
+
+        # Verify the underlying martypy.Marty fake received the right call signatures.
+        fake = marty._conn  # type: ignore[attr-defined]
+        assert ("walk", (), {}) in fake.calls
+        assert ("kick", ("left",), {}) in fake.calls
+        assert ("arms", (90, -90, 1500), {}) in fake.calls
+        assert ("wave", ("right",), {}) in fake.calls
+        assert ("lean", (), {"direction": "forward"}) in fake.calls
+        assert ("close_claw", (), {}) in fake.calls
+        assert ("open_claw", (), {}) in fake.calls
+
+
+def test_marty_adapter_unknown_skill_raises(fake_edu_sdks: None) -> None:
+    """RoboticalMartyAdapter raises a typed RuntimeError for unknown skill names.
+
+    Per the production-graduation contract: if a deployment configures a
+    command name that does not exist on ``martypy.Marty``, the adapter
+    surfaces a clear error rather than silently no-op'ing.
+    """
+    from urml_edu_runtime import EduConfig, EduSkillCall, RoboticalMartyAdapter
+
+    cfg = EduConfig(
+        device="usb",
+        location_to_command={
+            # 'sit' is NOT on the public API per round-2 maintainer correction.
+            "bad_location": EduSkillCall(method="sit"),
+        },
+    )
+    import pytest as _pt
+
+    with _pt.raises(RuntimeError, match=r"marty_skill_not_found"):
+        RoboticalMartyAdapter(cfg).send_navigation_goal(location="bad_location")
+
+
+def test_vex_adapter_rejects_richer_dispatch(fake_edu_sdks: None) -> None:
+    """Non-Marty edu adapters surface a typed error when given EduSkillCall.
+
+    VEX / LEGO / Thymio underlying APIs don't accept positional args via
+    the URML edu-runtime in v0.1. If a deployment configures an
+    EduSkillCall, the adapter rejects it cleanly rather than dropping the
+    args silently.
+    """
+    from urml_edu_runtime import EduConfig, EduSkillCall, VexV5Adapter
+
+    cfg = EduConfig(
+        location_to_command={"start_mat": EduSkillCall(method="GO START", args=["fast"])},
+    )
+    import pytest as _pt
+
+    with _pt.raises(RuntimeError, match=r"vex_skill_args_not_supported"):
+        VexV5Adapter(cfg).send_navigation_goal(location="start_mat")
 
 
 def test_unsupported_and_not_applicable_sentinels(fake_edu_sdks: None) -> None:

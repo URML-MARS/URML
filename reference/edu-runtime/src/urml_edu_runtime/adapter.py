@@ -42,10 +42,12 @@ from urml_ros2_runtime.substrate.base import (
 )
 
 from urml_edu_runtime._version import __version__
-from urml_edu_runtime.config import EduConfig, load_edu_config
+from urml_edu_runtime.config import EduCommand, EduConfig, EduSkillCall, load_edu_config
 
 __all__ = [
+    "EduCommand",
     "EduConfig",
+    "EduSkillCall",
     "LegoSpikeAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",
@@ -53,6 +55,17 @@ __all__ = [
     "__version__",
     "load_edu_config",
 ]
+
+
+def _resolve_call(command: EduCommand) -> tuple[str, list[Any], dict[str, Any]]:
+    """Normalize an EduCommand into (method, args, kwargs).
+
+    A bare string ``"walk"`` becomes ``("walk", [], {})``; an
+    :class:`EduSkillCall` carries its own ``args`` and ``kwargs``.
+    """
+    if isinstance(command, EduSkillCall):
+        return (command.method, command.args, command.kwargs)
+    return (command, [], {})
 
 _NOT_SUPPORTED = (
     "not_supported_on_edu_platform: a classroom platform has no {capability}. "
@@ -254,9 +267,16 @@ class VexV5Adapter(_EduBase):
         self._conn = pyvex.Brain(self._config.device)
         return self._conn
 
-    def _send(self, command: str) -> None:
+    def _send(self, command: EduCommand) -> None:
+        method, args, kwargs = _resolve_call(command)
+        if args or kwargs:
+            raise RuntimeError(
+                f"vex_skill_args_not_supported: VEX adapter only accepts no-arg commands "
+                f"(got method={method!r} args={args!r} kwargs={kwargs!r}). Wrap any arg "
+                "encoding into the firmware program name instead, or extend the adapter."
+            )
         brain = self._open()
-        brain.run_command(command)
+        brain.run_command(method)
 
     def send_navigation_goal(
         self,
@@ -311,9 +331,15 @@ class LegoSpikeAdapter(_EduBase):
         self._conn = pybricksdev.connect(self._config.device)
         return self._conn
 
-    def _send(self, command: str) -> None:
+    def _send(self, command: EduCommand) -> None:
+        method, args, kwargs = _resolve_call(command)
+        if args or kwargs:
+            raise RuntimeError(
+                f"lego_skill_args_not_supported: LEGO/Pybricks adapter only accepts "
+                f"no-arg commands (got method={method!r} args={args!r} kwargs={kwargs!r})."
+            )
         hub = self._open()
-        hub.send_command(command)
+        hub.send_command(method)
 
     def send_navigation_goal(
         self,
@@ -385,44 +411,48 @@ class RoboticalMartyAdapter(_EduBase):
         self._conn = martypy.Marty(self._config.device)
         return self._conn
 
-    def _send(self, command: str) -> None:
-        """Dispatch a skill-library token to the connected Marty (scaffold).
+    def _send(self, command: EduCommand) -> None:
+        """Dispatch a skill-library call to the connected Marty.
 
         ``martypy`` exposes skill methods (`.walk()`, `.kick()`, `.eyes()`,
         `.arms()`, ...) rather than a generic command channel. URML's
-        EduConfig command-string convention is preserved by treating each
-        configured command as the name of a martypy attribute to call.
+        EduConfig command convention supports two forms (production
+        graduation, robotical/martypy#52 round 3, 2026-05-27):
+
+        1. **String form** (bare method name) — for skills called
+           without arguments. Example: ``"walk"`` invokes ``marty.walk()``.
+        2. **:class:`EduSkillCall` form** (method + args + kwargs) — for
+           skills that take positional / keyword arguments. Example:
+           ``EduSkillCall(method="arms", args=[10, -10, 1000])``
+           invokes ``marty.arms(10, -10, 1000)``.
+
         Unknown skill names are reported as a typed RuntimeError so the
         validator step can surface them as ``manipulation_command_not_configured``
         / ``location_not_configured`` rather than a crash inside martypy.
 
-        **v0.1 scaffold limitation, acknowledged in round-3 engagement on
-        robotical/martypy#52 (2026-05-27):** this dispatch is generic
-        no-args. Many real Marty methods require positional / keyword
-        arguments (`arms(left_angle, right_angle, move_time)`,
-        `eyes(pose_or_angle)`, `lean(direction)`, `sidestep(side)`,
-        `wave(side)`). A production-quality URML adapter needs an
-        explicit URML-to-`martypy` mapping layer with arguments, not
-        just method-name strings. That richer dispatch is queued as a
-        future ticket against the published ``martypy.Marty`` reference
-        and is out of scope for the scaffold.
-
         Authoritative skill list (per round-3 maintainer correction):
-        v1 + v2: walk, kick, arms, lean, eyes, dance, celebrate,
-        get_ready, stand_straight, sidestep, move_joint, stop,
-        play_sound. v2-only: wiggle, circle_dance, lift_foot,
-        lower_foot, wave, resume, hold_position, speak.
-        ``sit()`` is NOT in the public API.
+
+        - v1 + v2 movement: walk, kick, arms, lean, eyes, dance,
+          celebrate, get_ready, stand_straight, sidestep, move_joint,
+          stop, play_sound.
+        - v2-only movement: wiggle, circle_dance, lift_foot, lower_foot,
+          wave, resume, hold_position, speak.
+
+        ``sit()`` is NOT in the public API and must not appear in the
+        configured-command map.
         """
+        method_name, args, kwargs = _resolve_call(command)
         marty = self._open()
-        skill = getattr(marty, command, None)
+        skill = getattr(marty, method_name, None)
         if not callable(skill):
             raise RuntimeError(
-                f"marty_skill_not_found: martypy.Marty has no callable named {command!r}. "
+                f"marty_skill_not_found: martypy.Marty has no callable named {method_name!r}. "
                 "Map the location/manipulation entry to a martypy skill method name "
-                "in edu_adapter.yaml (e.g. 'walk', 'kick', 'eyes', 'arms')."
+                "in edu_adapter.yaml (e.g. 'walk', 'kick', 'eyes', 'arms'); use an "
+                "EduSkillCall for methods that take arguments "
+                "(arms, eyes, lean, sidestep, wave)."
             )
-        skill()
+        skill(*args, **kwargs)
 
     def send_navigation_goal(
         self,
@@ -509,9 +539,15 @@ class ThymioAdapter(_EduBase):
         self._conn = tdmclient.Client(self._config.device)
         return self._conn
 
-    def _send(self, command: str) -> None:
+    def _send(self, command: EduCommand) -> None:
+        method, args, kwargs = _resolve_call(command)
+        if args or kwargs:
+            raise RuntimeError(
+                f"thymio_skill_args_not_supported: Thymio adapter only accepts no-arg "
+                f"commands (got method={method!r} args={args!r} kwargs={kwargs!r})."
+            )
         client = self._open()
-        client.send_event(command)
+        client.send_event(method)
 
     def send_navigation_goal(
         self,

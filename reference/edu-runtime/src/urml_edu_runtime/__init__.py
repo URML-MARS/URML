@@ -21,7 +21,9 @@ from __future__ import annotations
 
 from urml_edu_runtime._version import __version__
 from urml_edu_runtime.adapter import (
+    EduCommand,
     EduConfig,
+    EduSkillCall,
     LegoSpikeAdapter,
     RoboticalMartyAdapter,
     ThymioAdapter,
@@ -38,7 +40,9 @@ BRAND_ADAPTERS = {
 
 __all__ = [
     "BRAND_ADAPTERS",
+    "EduCommand",
     "EduConfig",
+    "EduSkillCall",
     "LegoSpikeAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",

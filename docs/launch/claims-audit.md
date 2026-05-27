@@ -186,8 +186,13 @@ Denso / Hyundai / Nachi / Epson / Omron / Hanwha), `legged-runtime`
 TMflow, Kinova Kortex, Mecademic mecademicpy, Neura neurapy, Kassow kassow-py;
 RFC-0017 spec-gap), `mujoco-runtime` (simulator — pure Protocol proof),
 `embedded-runtime` (micro:bit/Arduino over serial; RFC-0018 spec-gap),
-`edu-runtime` (VEX V5, LEGO SPIKE via Pybricks, Thymio via Aseba TDM —
-RFC-0011 educational flywheel), `isaac-runtime` (NVIDIA Isaac Sim/Lab — local
+`edu-runtime` (VEX V5, LEGO SPIKE via Pybricks, Thymio via Aseba TDM,
+**`RoboticalMartyAdapter` graduated 2026-05-27 to production**: real-`martypy`
+API-surface CI gate in `.github/workflows/marty-real-integration.yml` +
+richer arg-passing dispatch via `EduSkillCall`; hardware-in-the-loop still
+the documented next gate per `docs/launch/outreach-commitments.md` —
+RFC-0011 educational flywheel; RFC-0073 the engagement record),
+`isaac-runtime` (NVIDIA Isaac Sim/Lab — local
 RTX/Omniverse host, **not** cloud), `autosar-runtime` (AUTOSAR Adaptive
 scaffold, RFC-0019 Draft). **Honest scope:** each ships a hermetic unit suite
 that passes today (counts in the table above; vendor SDKs are lazy, so suites
