@@ -39,6 +39,20 @@ URML's response: shipped `RoboticalMartyAdapter` in `reference/edu-runtime/` alo
 
 This is URML's first engaged outreach response across the 31-thread Move #3–#6 inbox.
 
+## Engagement received (round 2, 2026-05-27)
+
+NikTheGeek1 returned on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52) with five concrete factual corrections after reviewing the shipped scaffold. All five are landed in the same commit that records this section:
+
+1. **BLE in the transport list (manifest snippet + RFC body).** `martypy` does not implement BLE; the example manifest snippet's `transport: [serial, websocket, ble]` and the RFC's "triple transport" framing overclaimed. URML's response: dropped BLE from the manifest example, from the drawbacks list, and from the "Detailed design" prose. The adapter docstring already scoped BLE as not-supported (originally from round-1 guidance); the RFC body now matches.
+
+2. **Fake-`martypy` injection is not real adapter validation.** The hermetic tests use `_FakeMarty` doubles, which is fine for a scaffold but does not validate against the real `martypy` package or hardware. URML's response: no overclaim; the RFC and the outreach ledger now both explicitly mark current tests as scaffold-only, with real-`martypy` + hardware validation gated behind the eventual upstream README/docs link (item 5 from round 1).
+
+3. **Skill name `sit()` may not exist in the current public `martypy.Marty` API.** Fake tests using `sit()` would pass while the real adapter fails. URML's response: removed `sit` from the adapter docstring examples and the test scaffold; replaced with confirmed-real skills (`walk`, `kick`, `eyes`, `arms`).
+
+4. **Battery + accelerometer API corrections.** `get_battery_voltage()` is not implemented in `martypy`; `get_battery_remaining()` is the safer v2 call. The accelerometer no-axis form can return a tuple, so a naive `float(getter())` would fail for it. URML's response: changed the adapter's default sensor getter from `get_battery_voltage` to `get_battery_remaining`, added tuple-handling to the measurement payload so accelerometer tuple returns pass through cleanly, updated the test scaffold to mirror the corrected API.
+
+5. **`third_party_audited` overclaim in the manifest fixture.** Without an actual third-party audit, the attestation level should be `self_declared`. URML's response: changed `manifest_attestation: third_party_audited` to `self_declared` in `robotical_marty_v2.yaml`.
+
 ## Summary
 
 URML does not yet ship a Robotical integration. This RFC proposes a `RoboticalMartyAdapter` under [`reference/edu-runtime/`](../../reference/edu-runtime/) (or as a sibling to the existing `reference/petoi-runtime/` family if the educational-runtime placement does not fit) targeting [`robotical/martypy`](https://github.com/robotical/martypy) (Apache-2.0, Python 99.4%, v3.6.6 release 2024-01-12). The adapter routes URML Layer-2 primitives (`move_to`, `measure`, `wait_for`, `report`, plus posture composition) onto MartyPy's serial / WebSocket / BLE command surface for Marty v1 and Marty v2. No spec change on URML's side. This RFC documents the proposed mapping and requests review and feedback from the robotical maintainers.
@@ -70,7 +84,7 @@ reference/edu-runtime/src/edu_runtime/robotical/
     └── robotical_marty_v2.yaml
 ```
 
-The adapter implements URML's substrate Protocol via `martypy.Marty` connection objects. Three transports per Marty v2: USB-serial, WebSocket (over Wi-Fi), BLE; the URML manifest declares which transport the deployment uses.
+The adapter implements URML's substrate Protocol via `martypy.Marty` connection objects. Two transports per Marty v2: USB-serial (default) and WebSocket (over Wi-Fi). BLE is **not supported by `martypy`** (confirmed by NikTheGeek1 on robotical/martypy#52 in both round-1 and round-2 engagement); URML would need to ship a separate BLE layer if it ever wants one, which is out of scope here. Marty v1 uses `socket`.
 
 ### Proposed URML v0.1 to Robotical mapping
 
@@ -94,7 +108,7 @@ mobility: legged_bipedal
 dof: 9
 mass_kg: 0.85
 height_m: 0.35
-transport: [serial, websocket, ble]
+transport: [serial, websocket]
 python_sdk: martypy
 sdk_version_min: 3.6.6
 skills:
@@ -134,7 +148,7 @@ Pre-v1.0. Purely additive when implemented.
 - **Skill-library motion forfeits joint-target authoring.** Same trade-off as Bittle ([RFC-0062](0062-petoi-bittle-outreach.md)).
 - **martypy star count is low (6 stars).** Low GitHub footprint doesn't reflect the actual classroom deployment scale, which is documented at `robotical.io` but not reflected in repo stars.
 - **martypy release cadence has slowed.** Latest release v3.6.6 on 2024-01-12 (about 18 months stale at time of writing); needs maintainer input on whether the platform is actively developed or in maintenance mode.
-- **Triple transport (serial / WebSocket / BLE).** Increases the test matrix.
+- **Dual transport (serial / WebSocket).** Increases the test matrix. BLE was originally listed but is not supported by `martypy` (confirmed in maintainer engagement; dropped from the manifest example and from this list).
 
 ## Alternatives considered
 

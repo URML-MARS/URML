@@ -63,7 +63,11 @@ class _FakeThymio:
 
 class _FakeMarty:
     """Stand-in for ``martypy.Marty`` with the skill methods + sensor getters
-    the URML adapter dispatches against.
+    the URML adapter dispatches against. Skill / getter names align with the
+    public ``martypy.Marty`` API per maintainer correction on
+    robotical/martypy#52 (2026-05-27): ``sit()`` and ``get_battery_voltage()``
+    are not in the public API and are not modeled; ``get_accelerometer()``
+    returns a tuple in the no-axis form and the fake mirrors that.
     """
 
     def __init__(self, device: str) -> None:
@@ -73,11 +77,14 @@ class _FakeMarty:
     def walk(self) -> None:
         self.calls.append("walk")
 
-    def sit(self) -> None:
-        self.calls.append("sit")
-
     def kick(self) -> None:
         self.calls.append("kick")
+
+    def eyes(self) -> None:
+        self.calls.append("eyes")
+
+    def arms(self) -> None:
+        self.calls.append("arms")
 
     def open_claw(self) -> None:
         self.calls.append("open_claw")
@@ -85,11 +92,11 @@ class _FakeMarty:
     def close_claw(self) -> None:
         self.calls.append("close_claw")
 
-    def get_battery_voltage(self) -> float:
-        return 7.2
+    def get_battery_remaining(self) -> float:
+        return 67.0  # percent
 
-    def get_accelerometer(self) -> float:
-        return 0.98
+    def get_accelerometer(self) -> tuple[float, float, float]:
+        return (0.01, -0.02, 0.98)  # no-axis form returns a tuple of x/y/z
 
     def disconnect(self) -> None:
         pass
@@ -183,7 +190,7 @@ def test_marty_adapter_lifecycle(fake_edu_sdks: None) -> None:
 
     cfg = EduConfig(
         device="usb",
-        location_to_command={"start_mat": "walk", "rest_mat": "sit"},
+        location_to_command={"start_mat": "walk", "rest_mat": "eyes"},
         manipulation_commands={"grasp": "close_claw", "release": "open_claw"},
     )
     with RoboticalMartyAdapter(cfg) as marty:
@@ -195,9 +202,15 @@ def test_marty_adapter_lifecycle(fake_edu_sdks: None) -> None:
         assert miss.reason.startswith("location_not_configured")
         assert marty.send_manipulation_goal(action="grasp").success
         assert marty.send_manipulation_goal(action="release").success
-        # Sensor getter must exist on the martypy.Marty instance.
-        meas = marty.take_measurement(what="battery", target=None, sensor="get_battery_voltage")
-        assert meas.success and meas.payload is not None and meas.payload["value"] == 7.2
+        # Battery-remaining getter (per maintainer correction on robotical/martypy#52,
+        # round 2; get_battery_voltage is not in the public martypy API).
+        meas = marty.take_measurement(what="battery", target=None, sensor="get_battery_remaining")
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 67.0
+        # Accelerometer no-axis form returns a tuple; the adapter passes it
+        # through as a list payload rather than coercing to a single float.
+        accel = marty.take_measurement(what="accel", target=None, sensor="get_accelerometer")
+        assert accel.success and accel.payload is not None
+        assert accel.payload["value"] == [0.01, -0.02, 0.98]
         # Unknown sensor returns a typed failure, not a crash.
         bad = marty.take_measurement(what="nope", target=None, sensor="get_no_such_thing")
         assert bad.success is False and bad.reason is not None

@@ -384,13 +384,17 @@ class RoboticalMartyAdapter(_EduBase):
     def _send(self, command: str) -> None:
         """Dispatch a skill-library token to the connected Marty.
 
-        ``martypy`` exposes skill methods (`.walk()`, `.kick()`, `.sit()`,
-        `.eyes()`, ...) rather than a generic command channel. URML's
+        ``martypy`` exposes skill methods (`.walk()`, `.kick()`, `.eyes()`,
+        `.arms()`, ...) rather than a generic command channel. URML's
         EduConfig command-string convention is preserved by treating each
         configured command as the name of a martypy attribute to call.
         Unknown skill names are reported as a typed RuntimeError so the
         validator step can surface them as ``manipulation_command_not_configured``
         / ``location_not_configured`` rather than a crash inside martypy.
+        Skill name list verified against the public ``martypy.Marty`` API
+        per maintainer correction on robotical/martypy#52 (2026-05-27);
+        ``sit()`` is not in the current public API and was removed from
+        the example list.
         """
         marty = self._open()
         skill = getattr(marty, command, None)
@@ -398,7 +402,7 @@ class RoboticalMartyAdapter(_EduBase):
             raise RuntimeError(
                 f"marty_skill_not_found: martypy.Marty has no callable named {command!r}. "
                 "Map the location/manipulation entry to a martypy skill method name "
-                "in edu_adapter.yaml (e.g. 'walk', 'kick', 'sit', 'arms')."
+                "in edu_adapter.yaml (e.g. 'walk', 'kick', 'eyes', 'arms')."
             )
         skill()
 
@@ -427,10 +431,16 @@ class RoboticalMartyAdapter(_EduBase):
 
     def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
         marty = self._open()
-        # ``martypy`` exposes sensors via named getters (`.get_battery_voltage()`,
+        # ``martypy`` exposes sensors via named getters (`.get_battery_remaining()`,
         # `.get_accelerometer()`, `.get_distance_sensor()`, ...). Treat
-        # ``sensor`` as the getter name; fall back to a battery read.
-        getter_name = sensor or "get_battery_voltage"
+        # ``sensor`` as the getter name; fall back to battery-remaining.
+        # ``get_battery_voltage()`` is not in the public martypy API per
+        # maintainer correction on robotical/martypy#52 (2026-05-27);
+        # ``get_battery_remaining()`` (percentage) is the safer v2 call.
+        # Some getters (e.g. ``get_accelerometer()`` no-axis form) return a
+        # tuple of axes; the adapter passes the raw value through into the
+        # payload so the URML program receives the structure martypy returns.
+        getter_name = sensor or "get_battery_remaining"
         getter = getattr(marty, getter_name, None)
         if not callable(getter):
             return MeasurementResult(
@@ -438,11 +448,12 @@ class RoboticalMartyAdapter(_EduBase):
                 reason=(
                     f"marty_sensor_not_found: martypy.Marty has no callable named "
                     f"{getter_name!r}. Use a published martypy getter "
-                    "(get_battery_voltage, get_accelerometer, ...)."
+                    "(get_battery_remaining, get_accelerometer, ...)."
                 ),
             )
-        value = float(getter())
-        return MeasurementResult(success=True, payload={"value": value, "what": what})
+        raw = getter()
+        payload_value: Any = list(raw) if isinstance(raw, tuple) else float(raw)
+        return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
 
 
 class ThymioAdapter(_EduBase):
