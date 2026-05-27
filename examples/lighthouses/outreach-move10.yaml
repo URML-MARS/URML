@@ -256,7 +256,7 @@
   contact: "iniVation AG (Zürich CH). Vendor-direct development lives on GitLab at gitlab.com/inivation/dv/ (dv-processing, dv-ros). GitHub presence is utility-only (forks of flatbuffers, vcpkg, etl). Community ROS 2 wrapper at github.com/Telios/dv-ros2 (11 stars)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0126 (iniVation DAVIS event-camera integration); GitLab-vs-GitHub pipeline-scope decision is the gating question — URML's outreach pipeline is GitHub-default; engagement requires either widening to GitLab or routing via the GitHub utility repos; cross-citation may be the right shape."
+  next_action: "RFC-0126 drafted 2026-05-27 on URML main (docs/rfcs/0126-inivation-event-outreach.md). GitLab-vs-GitHub pipeline-scope question is front-and-centre. Pairs with RFC-0114 (Prophesee) on event-stream Spec-RFC gap. Awaiting founder review then post GitLab Issue on dv-processing + parallel GitHub Issue on utility-fork for routing visibility."
   notes: "Tier B. Origin CH (pass). Second event-camera vendor after Prophesee; cleaner URML-fit on the spec side (DAVIS is the canonical event-camera lineage). Engagement-surface mismatch (GitLab) is the blocker — RFC should address it explicitly."
 
 - slug: pmdtechnologies-tof
@@ -267,7 +267,7 @@
   contact: "pmdtechnologies/pmd-royale-ros (BSD-3-Clause, 9 stars, Issues enabled, last commit 2023-12-13 STALE >2 years). Vendor-org pmdtechnologies (Siegen DE); maintainer Martin Plagens dormant. ROS 1 only; no ROS 2 driver surfaced; wraps closed Royale SDK download."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0127 (pmdtechnologies Royale ToF integration); engage with expectation of slow / no response; not adapter-grade today; post Issue with explicit acknowledgement of staleness — URML's RFC may be the nudge that reactivates the repo."
+  next_action: "RFC-0127 drafted 2026-05-27 on URML main (docs/rfcs/0127-pmdtechnologies-tof-outreach.md). Closed Royale SDK + open BSD-3-Clause wrapper, ROS 1 only, repo stale >2 years. Awaiting founder review then post Issue on pmd-royale-ros with explicit staleness acknowledgement — engagement may be the reactivating nudge."
   notes: "Tier B. Origin DE (pass). Vendor-direct but stale > 2 years; closed Royale SDK + ROS 1 only. Treat as cross-citation pending a vendor restart."
 
 - slug: optris-thermal
@@ -278,7 +278,7 @@
   contact: "Optris/otcsdk_downloads (no license, 15 stars, Issues enabled, last commit 2026-05-06 active for releases; vendor SDK binary distribution). ROS 2 driver Optris/optris_drivers2 (NOASSERTION license, 3 stars, last 2025-02-19 stale) + community evocortex/optris_drivers2. Maintainers: Denis T., Waldemar Haag (Optris employees, Berlin DE)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0128 (Optris thermal-imager integration); license clarification is the gating item for downstream reuse; engage on Optris/otcsdk_downloads (active) and reference the ROS 2 driver licensing question."
+  next_action: "RFC-0128 drafted 2026-05-27 on URML main (docs/rfcs/0128-optris-thermal-outreach.md). License-clarification ask is front-and-centre (NOASSERTION on optris_drivers2; SDK download repo license-undeclared). Shares thermal-array Spec-RFC gap with RFC-0116. Awaiting founder review then post Issue on Optris/otcsdk_downloads."
   notes: "Tier B. Origin DE (pass). Vendor-direct presence but binary-only SDK and unclear license on the ROS driver. Complements Teledyne FLIR (Tier A) in the thermal slice."
 
 - slug: seek-thermal
@@ -289,7 +289,7 @@
   contact: "seekthermal/seekcamera-python (Apache-2.0, 64 stars, 13 open issues, Issues enabled, last commit 2024-03-08 STALE >14 months). Vendor-org seekthermal (Santa Barbara CA); only 1 public repo. Python bindings over closed Seek SDK."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0129 (Seek Thermal compact USB integration); vendor-direct US-origin thermal compact-class complement to FLIR's industrial-class; engagement on seekthermal/seekcamera-python expects slow turn given staleness."
+  next_action: "RFC-0129 drafted 2026-05-27 on URML main (docs/rfcs/0129-seek-thermal-outreach.md). US-origin compact-USB thermal complement to industrial-class FLIR (RFC-0116) and Optris (RFC-0128). Single-repo fragility signal noted. Awaiting founder review then post Issue on seekthermal/seekcamera-python expecting slow turn given staleness."
   notes: "Tier B. Origin US (pass). Compact-class thermal complement to Tier-A FLIR; only-one-repo vendor presence is a fragility signal."
 
 - slug: velodyne-via-ros-drivers
@@ -300,7 +300,7 @@
   contact: "ros-drivers/velodyne (BSD-3-Clause, 715 stars, 102 open issues, Issues enabled + CONTRIBUTING yes, last commit 2025-08-28 active). Community-maintained under the ros-drivers org (jack-oquin, clalancette — Open Robotics / ROS community names). Velodyne brand now Ouster-owned post-2023 merger."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0130 (Velodyne VLP/HDL legacy-lidar integration); flag duplication with already-engaged Ouster thread (RFC-0032) — the Velodyne brand is Ouster-owned; engagement may best be a courtesy note on the existing Ouster thread rather than a fresh RFC-0130. RFC will discuss this routing."
+  next_action: "RFC-0130 drafted 2026-05-27 on URML main (docs/rfcs/0130-velodyne-via-ros-drivers-outreach.md). Brand-consolidation routing question (Velodyne brand = Ouster-owned post-2023; RFC-0032 already engaged Ouster) is the primary design point. Awaiting founder review then post Issue on ros-drivers/velodyne + courtesy cross-link on the Ouster thread."
   notes: "Tier B. Origin US (pass; via Ouster). Brand-consolidation overlap with Ouster thread is the design point; community-maintained driver is the canonical legacy-VLP surface."
 
 - slug: xsens-movella
@@ -311,7 +311,7 @@
   contact: "xsens/xsens_mti_ros_node (NOASSERTION, 89 stars, 25 open issues, Issues enabled, last commit 2019-02-27 STALE ~7 years on GitHub branch). Vendor-org xsens (Enschede NL); 8 public repos; vendor has migrated newer ROS 2 driver off-GitHub to movella.com tarball distribution."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0131 (Xsens MTi / Movella IMU/AHRS/INS integration); engage on xsens/xsens_mti_ros_node with explicit acknowledgement of the off-GitHub migration; ask whether Movella will revive GitHub presence or whether URML should target the tarball directly."
+  next_action: "RFC-0131 drafted 2026-05-27 on URML main (docs/rfcs/0131-xsens-movella-outreach.md). Off-GitHub active driver (tarball on movella.com) creates engagement-shape question. Shares IMU-type Spec RFC with RFC-0117 / RFC-0118 + GNSS-class Spec RFC with RFC-0119 / RFC-0120. Awaiting founder review then post Issue on xsens/xsens_mti_ros_node."
   notes: "Tier B. Origin NL (pass). Movella migration off-GitHub is the engagement-shape question; vendor org is real but dormant on GitHub specifically."
 
 - slug: tdk-invensense
