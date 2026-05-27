@@ -1,0 +1,78 @@
+# Move #9 outreach ledger. One row per target.
+#
+# Move #1 (outreach.yaml): 16 Tier-1 OEMs and component vendors, with
+# parity test in conformance/tests/test_outreach_ledger.py.
+#
+# Move #2 (outreach-move2.yaml): AI/ML-layer targets (21 RFCs).
+#
+# Move #3 (outreach-move3.yaml): affordable / desktop / educational
+# tier (4 RFCs).
+#
+# Move #4 (outreach-move4.yaml): adjacent niches Moves #1-#3 did not
+# touch (6 RFCs).
+#
+# Move #5 (outreach-move5.yaml): Tier 2 promotion plus DEEP Robotics
+# (9 RFCs).
+#
+# Move #6 (outreach-move6.yaml): US-friendly university robotics labs
+# (12 RFCs).
+#
+# Move #7 (outreach-move7.yaml): agriculture robotics second wave
+# (8 RFCs).
+#
+# Move #8 (outreach-move8.yaml): home assistance robotics + parts
+# (8 RFCs).
+#
+# Move #9 (this file): **NASA robotics**. URML's first dedicated NASA-
+# outreach wave. Three Tier A vendor-style targets drawn from a
+# verified 2026-05-27 shortlist of JPL / Ames Apache-2.0 robotics
+# projects with active maintainer surfaces:
+#
+#   - nasa-jpl/rosa: NL-driven ROS agent (Langchain). Highest URML-
+#     semantic-overlap target in the entire outreach set: ROSA's
+#     LLM->ROS-tool-call loop sits exactly under URML Layer 4 and
+#     the LLM-bridge prompt contract. Sequencing: lead with ROSA
+#     alone, let it land before opening the next two.
+#   - nasa/fprime (queued): flight-software framework with an
+#     official ROS 2 bridge. Layer-1 manifest + runtime-protocol
+#     target via a FprimeAdapter mapping.
+#   - nasa/astrobee (queued): ISS free-flyer. Layer-1 + Layer-2
+#     substrate-adapter target (AstrobeeAdapter).
+#
+# Tier B (cross-citation / research-collab; deferred until Tier A
+# engages): nasa/openmct, NASA-AMMOS/MMGIS, nasa-jpl/open-source-
+# rover, nasa/cFS.
+#
+# Excluded with cause:
+#   - nasa/nos3, nasa/ow_simulator: NOSA-1.3 licensed; documented
+#     downstream redistribution friction conflicts with URML's
+#     Apache-2.0-everywhere stance. Re-evaluate if the licensing
+#     posture changes.
+#
+# Like Moves #2-#8, this file is NOT under the Move #1 parity test.
+# Move #9 RFCs are NASA-robotics proposals; current shape is
+# proposal-only (no shipping adapter or bridge in the same PR);
+# adapter/bridge ships as the engagement-driven follow-up if and
+# when a maintainer signals readiness (the Robotical Marty RFC-0073
+# precedent).
+#
+# Schema mirrors outreach-move6.yaml..outreach-move8.yaml. Fields:
+# slug, rfc, sent_at, posted_url, channel, contact, last_touch,
+# response, next_action, notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none`
+# is the truthful default. NASA cadence is government-program slow;
+# expect weeks rather than days, and respect NASA's published
+# communication channels (Discussions preferred over Issues for
+# design discussion on these repos).
+
+- slug: nasa-jpl-rosa
+  rfc: 108
+  sent_at: ""
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa-jpl/rosa (Apache-2.0, 1527 stars, 3 open issues, Issues + Discussions both enabled, CONTRIBUTING + CODE_OF_CONDUCT + GOVERNANCE present, last commit 2026-03-17). Key contact: @RobRoyce (Rob Royce, JPL AI Group). Langchain-based ROS 1 / ROS 2 agent (`jpl-rosa` on PyPI)."
+  last_touch: ""
+  response: none
+  next_action: "open a Discussion on nasa-jpl/rosa (Discussions surface preferred over Issues per NASA's stated communication channels in CONTRIBUTING.md) pointing at RFC-0108. Then wait 14-30 d (government-program cadence). If silent, polite follow-up on the same Discussion. If reply, bump last_touch, set response per enum, write the concrete next step here."
+  notes: "First Move #9 RFC, Tier A vendor-style. ROSA is the closest single repo to URML's reason for existing across the entire outreach set: its NL->ROS-tool-call loop sits directly under URML Layer 4 + the LLM-bridge prompt contract. Proposal-only: a URML Langchain tool that ROSA's agent can register, emitting validated URML primitive programs instead of raw rospy/rclpy calls, with URML's manifest-gated validator as a static safety check before any topic publishes. License fit clean (Apache-2.0 inbound = outbound; no NASA CLA). Communication channel discipline: NASA repos prefer Discussions for design questions; Issues reserved for concrete scoped asks. Origin: NASA / JPL Caltech, US. Verified 2026-05-27."
