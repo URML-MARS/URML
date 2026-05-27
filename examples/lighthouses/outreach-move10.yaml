@@ -62,7 +62,7 @@
   contact: "realsenseai/librealsense (Apache-2.0, 8788 stars, 521 open issues, Issues + Discussions both enabled, CONTRIBUTING present, last commit 2026-05-27 active). Spun out from Intel to RealSenseAI (Santa Clara CA). Vendor-org maintainers: Nir Azkiel and team. Cross-platform C++ SDK + Python pyrealsense2 + separate realsense-ros Apache-2.0."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0109 (Intel RealSense / RealSenseAI integration); RGB-D depth-camera adapter candidate; verify Layer-1 manifest cameras-block fit for D400/L515/T265 line; post Issue on realsenseai/librealsense once RFC is on URML main."
+  next_action: "RFC-0109 drafted 2026-05-27 on URML main (docs/rfcs/0109-intel-realsense-outreach.md). Surfaces object-detection capability-declaration question + color-on-point-cloud schema-extension parallel to RFC-0035 Zivid. Awaiting founder review then post Issue on realsenseai/librealsense pointing at RFC-0109."
   notes: "First Move #10 RFC, Tier A vendor-style. Flagship reference depth-camera SDK. Origin US (pass). Most-active vendor surface in the optical-perception slice. URML-fit: very high; depth + IMU + tracking in one SDK; existing Layer-1 cameras schema is 2D-image-centric so RealSense's depth + point-cloud output may push the same schema-extension question as RFC-0035 Zivid round."
 
 - slug: stereolabs-zed
@@ -128,7 +128,7 @@
   contact: "ifm/ifm3d (Apache-2.0, 116 stars, 4 open issues, Issues + Discussions both enabled, last commit 2026-05-13 active). Vendor-org ifm electronic gmbh (Essen DE). Maintainers Suraj Patil, Rasheed Khan Pathan. Separate ifm/ifm3d-ros2 Apache-2.0 active 2026-04-10."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0115 (ifm Effector O3X/O3R 3D ToF integration); full open Apache-2.0 stack with vendor-direct ROS 2; cleanest URML-fit in the ToF slice; post Discussion on ifm/ifm3d once RFC on main."
+  next_action: "RFC-0115 drafted 2026-05-27 on URML main (docs/rfcs/0115-ifm-effector-outreach.md). Surfaces O3R on-camera native detection / segmentation declaration question + multi-port VPU topology + per-point attributes on point clouds. Awaiting founder review then post Discussion on ifm/ifm3d pointing at RFC-0115."
   notes: "Tier A. Origin DE (pass). Discussions enabled flags an explicit dialogue surface (uncommon among industrial vendors). URML-fit: high; clean OSI top-to-bottom."
 
 - slug: teledyne-flir
@@ -150,7 +150,7 @@
   contact: "LORD-MicroStrain/microstrain_inertial (NOASSERTION - verify SPDX in-repo; 133 stars, 33 open issues, Issues enabled, last commit 2026-05-21 active). Vendor-org MicroStrain by HBK (Williston VT; ex-Lord, now Hottinger Brüel & Kjær). Multi-repo: drivers, MIP SDK, NTRIP client, msgs."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0117 (MicroStrain inertial sensors integration); verify SPDX on the microstrain_inertial repo; comprehensive ROS 2 + MIP SDK stack; post Issue on LORD-MicroStrain/microstrain_inertial once RFC on main."
+  next_action: "RFC-0117 drafted 2026-05-27 on URML main (docs/rfcs/0117-microstrain-hbk-outreach.md). Surfaces IMU measurement_type Spec RFC + INS fusion declaration + NTRIP-correction declaration + license-classifier NOASSERTION clarification gate. Awaiting founder review then post Issue on LORD-MicroStrain/microstrain_inertial pointing at RFC-0117."
   notes: "Tier A. Origin US (pass). 28-public-repo vendor org with regular commits (days ago); strongest IMU-vendor URML-fit signal."
 
 - slug: sbg-systems
@@ -161,7 +161,7 @@
   contact: "SBG-Systems/sbg_ros2_driver (MIT, 52 stars, 15 open issues, Issues enabled, last commit 2026-03-04 active). Vendor-org SBG Systems (Carrières-sur-Seine FR). Separate sbg_ros_driver for ROS 1 (78 stars, MIT, last 2025-10-17)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0118 (SBG Systems Ellipse/Quanta IMU/INS integration); dual ROS 1/2 coverage under MIT; post Issue on SBG-Systems/sbg_ros2_driver once RFC on main."
+  next_action: "RFC-0118 drafted 2026-05-27 on URML main (docs/rfcs/0118-sbg-systems-outreach.md). Shares three Spec-RFC gaps with RFC-0117 MicroStrain (IMU measurement_types, INS fusion, NTRIP corrections). Cleanest license posture in the Move-10 IMU/GNSS Tier-A four. Awaiting founder review then post Issue on SBG-Systems/sbg_ros2_driver pointing at RFC-0118."
   notes: "Tier A. Origin FR (pass; NATO ally). Clean MIT-licensed dual-version ROS coverage; high URML-fit."
 
 - slug: septentrio-gnss
@@ -172,7 +172,7 @@
   contact: "septentrio-gnss/septentrio_gnss_driver (BSD-3-Clause, 125 stars, 43 open issues, Issues enabled, last commit 2025-12-20 active). Vendor-org Septentrio NV (Leuven BE), 21 public repos. Mosaic/AsteRx high-precision GNSS line."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0119 (Septentrio Mosaic/AsteRx GNSS integration); dual ROS 1/2 driver under BSD-3-Clause; post Issue on septentrio-gnss/septentrio_gnss_driver once RFC on main."
+  next_action: "RFC-0119 drafted 2026-05-27 on URML main (docs/rfcs/0119-septentrio-outreach.md). Surfaces five GNSS-class schema gaps (constellation, frequency-band, RTK / NTRIP, dual-antenna heading, multi-dimensional accuracy) queued as a parallel Spec RFC. Multi-dimensional accuracy framing inherited from RFC-0035 Zivid precedent. Awaiting founder review then post Issue on septentrio-gnss/septentrio_gnss_driver pointing at RFC-0119."
   notes: "Tier A. Origin BE (pass; NATO ally). First GNSS/RTK vendor in URML's perception coverage. URML-fit: high; manifest provenance-block can carry GNSS-class capability."
 
 - slug: novatel-hexagon
@@ -183,7 +183,7 @@
   contact: "novatel/novatel_oem7_driver (MIT, 120 stars, 6 open issues, Issues + Discussions both enabled, last commit 2026-03-18 active). Vendor-org Hexagon | NovAtel (Calgary CA; Hexagon parent SE). 6 public repos."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0120 (NovAtel OEM7 / SPAN GNSS+INS integration); Discussions enabled — open dialogue surface; post Discussion on novatel/novatel_oem7_driver once RFC on main."
+  next_action: "RFC-0120 drafted 2026-05-27 on URML main (docs/rfcs/0120-novatel-hexagon-outreach.md). Combines GNSS-class gaps from RFC-0119 with INS-class gaps from RFC-0117 / RFC-0118 + SPAN tight-coupling declaration. Discussions enabled is an explicit dialogue invitation. Awaiting founder review then post Discussion on novatel/novatel_oem7_driver pointing at RFC-0120."
   notes: "Tier A. Origin CA / SE (pass; allied). Discussions-on is a quality engagement signal; high-end GNSS+INS class complementary to Septentrio."
 
 - slug: robotous-ft
