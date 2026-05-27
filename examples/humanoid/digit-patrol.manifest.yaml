@@ -58,7 +58,7 @@ outputs:
     - wms_log
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: digit_compute
       role: critical

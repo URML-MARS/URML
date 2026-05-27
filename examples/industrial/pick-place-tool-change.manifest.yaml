@@ -96,7 +96,7 @@ outputs:
 # US-final-assembly and carries the third-party-audited attestation the
 # bundled default policy requires.
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   attestation_uri: https://example.com/attestations/cell_a2_demo.signed
   components:
     - id: arm_controller

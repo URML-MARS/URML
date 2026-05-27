@@ -71,7 +71,7 @@ outputs:
 # is declared as CN-origin. The bundled US-federal default policy trips on
 # this with rule `critical_country_denylist`.
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   attestation_uri: https://example.com/attestations/turtlebot4_red_mug_demo_cn.signed
   components:
     - id: drive_controller

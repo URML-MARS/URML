@@ -48,7 +48,7 @@ outputs:
   named_endpoints: []
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: locomotion_controller
       role: critical

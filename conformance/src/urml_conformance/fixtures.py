@@ -111,6 +111,7 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "vex_v5_clawbot": _VALIDATOR_FIXTURES / "manifests" / "vex_v5_clawbot.yaml",
     "lego_spike_driving_base": _VALIDATOR_FIXTURES / "manifests" / "lego_spike_driving_base.yaml",
     "thymio_classroom": _VALIDATOR_FIXTURES / "manifests" / "thymio_classroom.yaml",
+    "robotical_marty_v2": _VALIDATOR_FIXTURES / "manifests" / "robotical_marty_v2.yaml",
     # Track E — NVIDIA Isaac Sim/Lab simulator substrate (zero ROS, RTX host).
     "isaac_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "isaac_arm_sim.yaml",
     # Track F — AUTOSAR Adaptive ECU scaffold (RFC-0019 Draft).

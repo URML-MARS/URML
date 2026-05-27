@@ -68,7 +68,7 @@ outputs:
     - research_log
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: autoware_av_compute
       role: critical

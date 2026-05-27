@@ -78,7 +78,7 @@ outputs:
     - line_controller
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: cognex_insight_2800_vision
       role: critical

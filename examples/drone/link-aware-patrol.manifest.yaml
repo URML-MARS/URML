@@ -75,7 +75,7 @@ outputs:
 # carries the third-party-audited attestation level the default policy
 # requires.
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   attestation_uri: https://example.com/attestations/civilian_link_aware_patrol.signed
   components:
     - id: flight_controller

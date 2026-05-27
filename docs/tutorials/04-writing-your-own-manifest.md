@@ -211,7 +211,7 @@ Manifests **without** a `provenance:` block trigger no Pass 5 errors — policy 
 
 ```yaml
 provenance:
-  manifest_attestation: third_party_audited    # self_declared | third_party_audited | cryptographically_signed
+  manifest_attestation: self_declared          # self_declared | third_party_audited | cryptographically_signed
   components:
     - id: drive_controller
       role: critical                            # critical | non_critical | informational

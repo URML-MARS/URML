@@ -42,7 +42,7 @@ perception:
       range_max: 9.0
       units: volts
     - name: accelerometer
-      measurement_type: acceleration
+      measurement_type: custom    # v0.1 enum has no acceleration type; using custom escape-hatch
       range_min: -2.0
       range_max: 2.0
       units: g

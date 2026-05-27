@@ -75,7 +75,7 @@ outputs:
     - fleet_manager
 
 provenance:
-  manifest_attestation: third_party_audited
+  manifest_attestation: self_declared
   components:
     - id: clearpath_base
       role: critical
