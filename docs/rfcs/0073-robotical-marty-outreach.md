@@ -53,9 +53,39 @@ NikTheGeek1 returned on [robotical/martypy#52](https://github.com/robotical/mart
 
 5. **`third_party_audited` overclaim in the manifest fixture.** Without an actual third-party audit, the attestation level should be `self_declared`. URML's response: changed `manifest_attestation: third_party_audited` to `self_declared` in `robotical_marty_v2.yaml`.
 
+## Engagement received (round 3, 2026-05-27)
+
+NikTheGeek1 ran a non-moving smoke trace against a real Marty v2 over Wi-Fi and posted the JSON output on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52), plus a curated authoritative skill + getter list (v1 + v2 split), plus three more corrections. This round-3 engagement materially closes URML's round-2 ask for both a "sample sensor trace" and an "authoritative skill / getter list."
+
+Trace observed (real Marty v2, system version `RIC 1.3.21`, HwRev 5):
+
+- `get_battery_remaining` returned an `int`: `81` (percent).
+- `get_accelerometer` (no axis) returned a **`list`**, not a tuple: `[0.02, -0.04, 0.97]` (x, y, z).
+- `get_power_status` returned a structured dict (`battRemainCapacityPercent`, `battRemainCapacityMAH`, `battFullCapacityMAH`, `battCurrentMA`, `battTempDegC`, `powerUSBIsConnected`, `power5VIsOn`).
+- `get_robot_status` returned `isMoving / isPaused / workQCount`.
+- `get_distance_sensor` returned an `int` (`0` in the trace).
+- Axial accelerometer reads (`get_accelerometer_x`, `..._y`, `..._z`) returned plain `float`s.
+
+URML responses:
+
+1. **`tuple` vs `list` accelerometer return.** URML's round-2 tuple-handling guard only checked `isinstance(raw, tuple)`; the real trace returns `list`. **Action:** widened the guard to `isinstance(raw, (tuple, list))`; the test scaffold now mirrors the real-trace data with `_FakeMarty.get_accelerometer()` returning a `list`. URML's measurement payload passes the raw return through as a list either way.
+
+2. **Connection-string surface.** `martypy.Marty` accepts methods `usb`, `wifi`, `socket`; URL-style `wifi://host` works because `wifi` is a valid method name. **`ws://host` is not a valid `martypy` method** and was an URML overclaim in the adapter docstring. **Action:** removed `ws://` from the adapter docstring; documented `usb` / `wifi` / `socket` explicitly with a note that URL-style `wifi://host` parses because `wifi` is the underlying method.
+
+3. **BLE references still in Summary / Motivation.** URML's round-2 BLE cleanup caught the Detailed-design prose, the example manifest snippet, and the Drawbacks list, but not the Summary or Motivation sections. **Action:** Summary and Motivation prose in this RFC are now BLE-free; both call out URML's USB-serial / Wi-Fi surface and the `socket` method for v1.
+
+4. **Authoritative skill + getter list.** URML internalized:
+   - Movement / skill methods (v1 + v2): `walk`, `kick`, `arms`, `lean`, `eyes`, `dance`, `celebrate`, `get_ready`, `stand_straight`, `sidestep`, `move_joint`, `stop`, `play_sound`.
+   - Movement / skill methods (v2-only): `wiggle`, `circle_dance`, `lift_foot`, `lower_foot`, `wave`, `resume`, `hold_position`, `speak`.
+   - Sensor / status getters (v2): `get_battery_remaining`, `get_accelerometer`, `get_distance_sensor`, `get_robot_status`, `get_joints`, `get_power_status`, `get_add_ons_status`, `get_add_on_status`.
+   - Sensor / status getters (v1): `get_battery_voltage`, `get_distance_sensor`, `get_accelerometer(axis="x"|"y"|"z")`.
+   - **Adapter-design note (acknowledged gap, not fixed in this round).** URML's current `_send(command)` dispatch is generic no-args (`getattr(marty, command, None); skill()`). Many real Marty methods take arguments: `arms(left_angle, right_angle, move_time)`, `eyes(pose_or_angle)`, `lean(direction)`, `sidestep(side)`, `wave(side)`. A production-quality URML adapter needs an explicit URML-to-`martypy` mapping layer with positional / keyword arguments, not just method-name strings. URML records this as a v0.1 scaffold-limitation; the richer-dispatch design is a future ticket against the published `martypy.Marty` reference and is out of scope for this round-3 commit.
+
+This round-3 engagement is URML's most substantive single round across the entire outreach inbox to date: an authoritative API reference plus a real-hardware trace, both contributed by the maintainer, both materially upgrading URML's test scaffold and adapter correctness without requiring URML to guess.
+
 ## Summary
 
-URML does not yet ship a Robotical integration. This RFC proposes a `RoboticalMartyAdapter` under [`reference/edu-runtime/`](../../reference/edu-runtime/) (or as a sibling to the existing `reference/petoi-runtime/` family if the educational-runtime placement does not fit) targeting [`robotical/martypy`](https://github.com/robotical/martypy) (Apache-2.0, Python 99.4%, v3.6.6 release 2024-01-12). The adapter routes URML Layer-2 primitives (`move_to`, `measure`, `wait_for`, `report`, plus posture composition) onto MartyPy's serial / WebSocket / BLE command surface for Marty v1 and Marty v2. No spec change on URML's side. This RFC documents the proposed mapping and requests review and feedback from the robotical maintainers.
+URML does not yet ship a Robotical integration. This RFC proposes a `RoboticalMartyAdapter` under [`reference/edu-runtime/`](../../reference/edu-runtime/) (or as a sibling to the existing `reference/petoi-runtime/` family if the educational-runtime placement does not fit) targeting [`robotical/martypy`](https://github.com/robotical/martypy) (Apache-2.0, Python 99.4%, v3.6.6 release 2024-01-12). The adapter routes URML Layer-2 primitives (`move_to`, `measure`, `wait_for`, `report`, plus posture composition) onto MartyPy's USB-serial / Wi-Fi command surface for Marty v1 (`socket`) and Marty v2 (`usb` / `wifi`). No spec change on URML's side. This RFC documents the proposed mapping and requests review and feedback from the robotical maintainers.
 
 This is the third Move #5 RFC. Robotical fills the **bipedal educational walking robot** niche: the closest analogue in URML's existing outreach is [RFC-0062 (Petoi Bittle / Nybble)](0062-petoi-bittle-outreach.md), but Petoi is quadruped and Marty is bipedal. The bipedal-classroom audience has been uncovered.
 
@@ -63,7 +93,7 @@ This is the third Move #5 RFC. Robotical fills the **bipedal educational walking
 
 Marty is the bipedal counterpart to Petoi's Bittle in URML's outreach landscape: a commercial educational walking-robot vendor (UK-domiciled, Edinburgh) with a Python SDK, a Scratch-based block-coding surface (MartyBlocks), and a real classroom presence in UK and European STEM curricula. The audience overlap with Petoi is small (different mobility morphology, different curricular use cases), so a Marty integration broadens URML's educational footprint rather than duplicating it.
 
-Three things make this RFC concrete rather than aspirational. First, `robotical/martypy` is Apache-2.0, Python 99.4%, with Issues enabled (2 open at time of writing); latest release v3.6.6 on 2024-01-12. The Python SDK is the canonical engagement surface. Second, Marty v2 (the current generation, released 2020) is a 9-DOF bipedal humanoid with an ESP32 controller and a documented serial / WebSocket / BLE command protocol that the SDK wraps. Third, the MartyBlocks visual-coding interface is conceptually adjacent to URML's English-to-program path: both wrap the same robot-intent surface with a more accessible programming abstraction; URML can position as the natural-language layer above MartyBlocks's block-based layer.
+Three things make this RFC concrete rather than aspirational. First, `robotical/martypy` is Apache-2.0, Python 99.4%, with Issues enabled (2 open at time of writing); latest release v3.6.6 on 2024-01-12. The Python SDK is the canonical engagement surface. Second, Marty v2 (the current generation, released 2020) is a 9-DOF bipedal humanoid with an ESP32 controller and a documented USB-serial / Wi-Fi command surface that the SDK wraps (`usb` and `wifi` are the v2 connection methods; `socket` is the v1 method; BLE is not implemented in `martypy` per maintainer correction). Third, the MartyBlocks visual-coding interface is conceptually adjacent to URML's English-to-program path: both wrap the same robot-intent surface with a more accessible programming abstraction; URML can position as the natural-language layer above MartyBlocks's block-based layer.
 
 Robotical's posture is open SDK on closed hardware: MIT / Apache-2.0 across the public-facing Python SDK and example code, proprietary firmware on the Marty hardware. URML's adapter consumes the SDK and the documented command protocol without proposing firmware changes. Robotical is UK-domiciled; URML's US-federal default policy ([RFC-0003](0003-us-alignment.md)) passes at the manifest level for the UK origin without organisational override.
 

@@ -349,10 +349,14 @@ class RoboticalMartyAdapter(_EduBase):
 
     Marty is the bipedal educational walking robot from Robotical Ltd
     (Edinburgh, UK). The lab maintainer (NikTheGeek1) confirmed on
-    robotical/martypy#52 (2026-05-25) that URML should build the adapter
-    externally against the public ``martypy`` API and that the transport
-    priority is: v2 default ``usb`` serial, ``wifi``/``ws`` configurable;
-    v1 default ``socket``. BLE is **not** supported by ``martypy`` and
+    robotical/martypy#52 across three engagement rounds (2026-05-25,
+    2026-05-27, 2026-05-27 round 3) that URML should build the adapter
+    externally against the public ``martypy`` API. Connection methods
+    per the real ``martypy.Marty`` constructor: ``usb`` (v2 default),
+    ``wifi`` (v2 configurable; URL-style ``wifi://host`` parses because
+    ``wifi`` is a valid method name), ``socket`` (v1 default). ``ws://``
+    is NOT a valid ``martypy`` method — earlier URML docstring overclaim
+    corrected in round 3. BLE is **not** supported by ``martypy`` and
     URML would have to provide it as a separate layer (out of scope for
     this scaffold). Manipulation is not applicable on stock Marty (no
     gripper); ``manipulation_commands`` may map ``grasp`` / ``release``
@@ -382,7 +386,7 @@ class RoboticalMartyAdapter(_EduBase):
         return self._conn
 
     def _send(self, command: str) -> None:
-        """Dispatch a skill-library token to the connected Marty.
+        """Dispatch a skill-library token to the connected Marty (scaffold).
 
         ``martypy`` exposes skill methods (`.walk()`, `.kick()`, `.eyes()`,
         `.arms()`, ...) rather than a generic command channel. URML's
@@ -391,10 +395,24 @@ class RoboticalMartyAdapter(_EduBase):
         Unknown skill names are reported as a typed RuntimeError so the
         validator step can surface them as ``manipulation_command_not_configured``
         / ``location_not_configured`` rather than a crash inside martypy.
-        Skill name list verified against the public ``martypy.Marty`` API
-        per maintainer correction on robotical/martypy#52 (2026-05-27);
-        ``sit()`` is not in the current public API and was removed from
-        the example list.
+
+        **v0.1 scaffold limitation, acknowledged in round-3 engagement on
+        robotical/martypy#52 (2026-05-27):** this dispatch is generic
+        no-args. Many real Marty methods require positional / keyword
+        arguments (`arms(left_angle, right_angle, move_time)`,
+        `eyes(pose_or_angle)`, `lean(direction)`, `sidestep(side)`,
+        `wave(side)`). A production-quality URML adapter needs an
+        explicit URML-to-`martypy` mapping layer with arguments, not
+        just method-name strings. That richer dispatch is queued as a
+        future ticket against the published ``martypy.Marty`` reference
+        and is out of scope for the scaffold.
+
+        Authoritative skill list (per round-3 maintainer correction):
+        v1 + v2: walk, kick, arms, lean, eyes, dance, celebrate,
+        get_ready, stand_straight, sidestep, move_joint, stop,
+        play_sound. v2-only: wiggle, circle_dance, lift_foot,
+        lower_foot, wave, resume, hold_position, speak.
+        ``sit()`` is NOT in the public API.
         """
         marty = self._open()
         skill = getattr(marty, command, None)
@@ -448,11 +466,23 @@ class RoboticalMartyAdapter(_EduBase):
                 reason=(
                     f"marty_sensor_not_found: martypy.Marty has no callable named "
                     f"{getter_name!r}. Use a published martypy getter "
-                    "(get_battery_remaining, get_accelerometer, ...)."
+                    "(get_battery_remaining, get_accelerometer, get_distance_sensor, "
+                    "get_robot_status, get_power_status, ...)."
                 ),
             )
         raw = getter()
-        payload_value: Any = list(raw) if isinstance(raw, tuple) else float(raw)
+        # Per real-Marty trace on robotical/martypy#52 round 3 (2026-05-27),
+        # get_accelerometer (no-axis) returns a Python list, not a tuple.
+        # Some martypy getters may return scalars (battery percent, distance)
+        # while others return dicts (get_power_status, get_robot_status).
+        # The adapter passes the raw return through into the payload so the
+        # URML program receives the structure martypy returns.
+        if isinstance(raw, (tuple, list)):
+            payload_value: Any = list(raw)
+        elif isinstance(raw, dict):
+            payload_value = raw
+        else:
+            payload_value = raw if isinstance(raw, int) else float(raw)
         return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
 
 
