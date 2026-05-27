@@ -73,7 +73,7 @@
   contact: "stereolabs/zed-ros2-wrapper (Apache-2.0 on wrapper; ZED SDK core is proprietary closed binary, 313 stars, 21 open issues, Issues enabled, CONTRIBUTING present, last commit 2026-05-27 active). Vendor-org maintainer Walter Lucetti (Myzhar). Stereolabs HQ Paris FR + SF office."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0110 (StereoLabs ZED integration); ROS 2 wrapper is open + Apache-2.0; the closed-binary ZED SDK is the substrate detail URML's manifest will need to describe honestly; post Issue on stereolabs/zed-ros2-wrapper once RFC on main."
+  next_action: "RFC-0110 drafted 2026-05-27 on URML main (docs/rfcs/0110-stereolabs-zed-outreach.md). Closed-core / open-wrapper pattern parallel to RFC-0073 Marty. Surfaces native vision-AI declaration (bundled object detection / body tracking / spatial mapping) for URML's query_detection. Awaiting founder review then post Issue on stereolabs/zed-ros2-wrapper pointing at RFC-0110."
   notes: "Tier A. Origin FR/US (pass). Closed-source-core / open-wrapper pattern is the design point worth surfacing in the RFC (parallel to Marty's open-martypy / closed-firmware split). URML-fit: high for stereo + RGB-D primitives."
 
 - slug: carnegie-multisense
@@ -84,7 +84,7 @@
   contact: "carnegierobotics/multisense_ros2 (MIT, 6 stars, 5 open issues, Issues enabled, last commit 2026-05-08 active). Vendor-org Carnegie Robotics LLC (Pittsburgh PA). Historical maintainers include Heiko Hirschmueller and Daniel Scharstein (well-known stereo-vision names; the same Hirschmueller is also at Roboception)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0111 (Carnegie Robotics MultiSense integration); ROS 2 driver + separate LibMultiSense C++; defense/space-grade stereo head NDAA-friendly; post Issue once RFC on main."
+  next_action: "RFC-0111 drafted 2026-05-27 on URML main (docs/rfcs/0111-carnegie-multisense-outreach.md). Shares maintainer pedigree (Hirschmueller / Scharstein stereo-vision lineage) with RFC-0112 Roboception. Defense / space environmental-rating declaration gap surfaced. Awaiting founder review then post Issue on carnegierobotics/multisense_ros2 pointing at RFC-0111."
   notes: "Tier A. Origin US (pass). Low GitHub stars (6) but vendor-direct and NDAA-friendly origin compensate; defense/space heritage. URML-fit: medium-high for stereo + RGB-D."
 
 - slug: roboception
@@ -95,7 +95,7 @@
   contact: "roboception/cvkit (BSD-3-Clause, 279 stars, 0 open issues, Issues enabled, last commit 2026-05-14 active). Vendor-org Roboception GmbH (Munich DE; ex-DLR spin-off). Maintainers: Heiko Hirschmueller (also at Carnegie MultiSense - see above), Daniel Scharstein. Separate ROS driver rc_visard_ros is stale 2022."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0112 (Roboception rc_visard integration); cvkit C++ + GenICam API; note ROS driver is stale; post Issue on roboception/cvkit once RFC on main."
+  next_action: "RFC-0112 drafted 2026-05-27 on URML main (docs/rfcs/0112-roboception-outreach.md). Surfaces GenICam-protocol capability declaration + licensed grasp-detection module declaration + ROS-driver-maintenance-status question (rc_visard_ros stale 2022) + license clarification on rc_genicam_api. Awaiting founder review then post Issue on roboception/cvkit pointing at RFC-0112."
   notes: "Tier A. Origin DE (pass). Well-known maintainership pedigree (same names as Carnegie MultiSense); cvkit is the live surface; rc_visard_ros stale is a follow-up flag for the RFC."
 
 - slug: basler-pylon
@@ -106,7 +106,7 @@
   contact: "basler/pypylon (BSD-3-Clause, 696 stars, 210 open issues, Issues enabled, last commit 2026-05-27 active). Vendor-org Basler AG (Ahrensburg DE). Maintainer Angel Bakardzhiev. Separate pylon-ros-camera driver has NOASSERTION license (follow-up needed)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0113 (Basler pylon machine-vision integration); Python bindings open over closed pylon C++ SDK; first machine-vision-camera (USB3/GigE Vision) RFC in URML's outreach; post Issue once RFC on main."
+  next_action: "RFC-0113 drafted 2026-05-27 on URML main (docs/rfcs/0113-basler-pylon-outreach.md). First machine-vision-camera (USB3 Vision + GigE Vision) RFC in URML's outreach. Surfaces GenICam-protocol declaration shared with RFC-0112 + hardware-triggered acquisition declaration + license-classifier NOASSERTION clarification gate on sibling pylon-ros-camera. Awaiting founder review then post Issue on basler/pypylon pointing at RFC-0113."
   notes: "Tier A. Origin DE (pass). Large industrial machine-vision vendor; pypylon is the engagement surface; closed-core / open-binding pattern same as Stereolabs ZED."
 
 - slug: prophesee-event
@@ -117,7 +117,7 @@
   contact: "prophesee-ai/openeb (license file present but SPDX not surfaced cleanly — likely Apache-2.0 per project docs; 284 stars, 18 open issues, Issues enabled, last commit 2026-05-15 active). Vendor-org Prophesee SA (Paris FR). Maintainer Nicolas Martin (nmartin-psee). Metavision SDK in OSS form."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0114 (Prophesee Metavision event-camera integration); confirm SPDX license before posting; FIRST event-camera RFC in URML's outreach; Layer-1 schema gap (event-stream measurement_type not in v0.1) is a follow-up Spec RFC; post Issue once RFC on main."
+  next_action: "RFC-0114 drafted 2026-05-27 on URML main (docs/rfcs/0114-prophesee-event-outreach.md). First event-camera RFC in URML's outreach. Event-stream measurement_type Spec RFC is hard prerequisite for adapter-grade declaration. License SPDX confirmation gate (Apache-2.0 per docs but classifier ambiguous). Awaiting founder review then post Issue on prophesee-ai/openeb pointing at RFC-0114."
   notes: "Tier A. Origin FR (pass). First event-camera vendor in URML's perception coverage. URML-fit needs: event-stream measurement_type (Spec RFC; not in v0.1 enum). Frame as proposal-only until that schema gap closes."
 
 - slug: ifm-effector
@@ -139,7 +139,7 @@
   contact: "FLIR/BosonUSB (MIT, 70 stars, 4 open issues, Issues enabled, last commit 2026-03-31 active). Vendor-org Teledyne FLIR (Wilsonville OR). Caveat: vendor's flagship machine-vision Spinnaker SDK is closed binary distributed off-GitHub; BosonUSB is the open utility for thermal Boson cameras over UVC."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0116 (Teledyne FLIR Boson thermal-camera integration); first thermal-IR RFC in URML's outreach; Layer-1 thermal-measurement schema gap (URML's `temperature` measurement_type doesn't cleanly fit per-pixel thermal arrays) is a follow-up Spec RFC; post Issue once RFC on main."
+  next_action: "RFC-0116 drafted 2026-05-27 on URML main (docs/rfcs/0116-teledyne-flir-outreach.md). First thermal / IR-camera RFC in URML's outreach. Thermal-array measurement_type Spec RFC queued as parallel prerequisite (URML v0.1 has only scalar `temperature`). Scope limited to open Boson UVC surface (broader FLIR Spinnaker SDK closed binary off-GitHub). Awaiting founder review then post Issue on FLIR/BosonUSB pointing at RFC-0116."
   notes: "Tier A. Origin US (pass; Teledyne is US-domiciled). First thermal-IR vendor in URML's perception coverage. URML-fit needs: thermal-array measurement_type Spec RFC; Layer-1 cameras-block extension."
 
 - slug: microstrain-hbk
