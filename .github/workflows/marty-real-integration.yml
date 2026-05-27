@@ -1,0 +1,159 @@
+# Marty real-integration workflow — production-graduation CI gate.
+#
+# Origin: session retrospective improvement #3 + the round-3
+# engagement on robotical/martypy#52 (2026-05-27, NikTheGeek1's
+# authoritative skill+getter list + real-Marty smoke trace).
+# Earlier rounds shipped RoboticalMartyAdapter as a scaffold against
+# a `_FakeMarty` double; this workflow pip-installs the real
+# `martypy` from PyPI and verifies that every skill / getter URML
+# documents in the adapter still exists as a callable attribute on
+# the real `martypy.Marty` class.
+#
+# This is the API-surface gate, not the hardware-in-the-loop gate.
+# The hardware loop (a URML program executing on a real Marty over
+# USB / Wi-Fi) stays as a separate future ticket since URML doesn't
+# have hardware access today; that ticket is recorded in
+# `docs/launch/outreach-commitments.md` under the Marty section.
+#
+# Triggers:
+# - workflow_dispatch — manual run for one-off verification.
+# - schedule (weekly) — catches martypy upstream changes that would
+#   invalidate URML's skill / getter list. Tuesdays 09:00 UTC,
+#   staggered after edu-integration's Monday slot.
+# - push / PR — when the edu-runtime or this workflow changes.
+
+name: marty-real-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 2'  # Tuesdays 09:00 UTC
+  pull_request:
+    paths:
+      - 'reference/edu-runtime/**'
+      - '.github/workflows/marty-real-integration.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'reference/edu-runtime/**'
+      - '.github/workflows/marty-real-integration.yml'
+
+jobs:
+  marty-api-surface:
+    name: martypy.Marty API surface gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install URML edu-runtime + real martypy from PyPI
+        run: |
+          python -m pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e "reference/edu-runtime[marty]" \
+            "pytest>=8"
+
+      - name: Verify real martypy.Marty API surface matches URML's adapter
+        env:
+          URML_MARTY_INTEGRATION: "1"
+        run: |
+          python - <<'PY'
+          import martypy
+          version = getattr(martypy, "__version__", "unknown")
+          M = martypy.Marty
+
+          # Authoritative skill list per round-3 maintainer engagement
+          # on robotical/martypy#52 (2026-05-27, NikTheGeek1).
+          skills_v1_v2 = [
+              "walk", "kick", "arms", "lean", "eyes", "dance",
+              "celebrate", "get_ready", "stand_straight", "sidestep",
+              "move_joint", "stop", "play_sound",
+          ]
+          skills_v2_only = [
+              "wiggle", "circle_dance", "lift_foot", "lower_foot",
+              "wave", "resume", "hold_position", "speak",
+          ]
+          getters_v2 = [
+              "get_battery_remaining", "get_accelerometer",
+              "get_distance_sensor", "get_robot_status", "get_joints",
+              "get_power_status", "get_add_ons_status",
+              "get_add_on_status",
+          ]
+          getters_v1 = [
+              "get_battery_voltage", "get_distance_sensor",
+              "get_accelerometer",
+          ]
+
+          all_required = (
+              skills_v1_v2 + skills_v2_only + getters_v2 + getters_v1
+          )
+          missing = [n for n in all_required if not callable(getattr(M, n, None))]
+          if missing:
+              raise SystemExit(
+                  f"martypy v{version}: URML's adapter references the following "
+                  f"names which are NOT callable attributes on martypy.Marty: {missing!r}. "
+                  "Update reference/edu-runtime/src/urml_edu_runtime/adapter.py "
+                  "and re-engage NikTheGeek1 on robotical/martypy#52 if the API "
+                  "surface has shifted upstream."
+              )
+          print(
+              f"OK: all {len(all_required)} URML-documented martypy.Marty "
+              f"surface members are present in martypy v{version}."
+          )
+          PY
+
+      - name: Run the hermetic edu test suite against the real martypy package
+        env:
+          URML_MARTY_INTEGRATION: "1"
+        run: |
+          # The hermetic tests use sys.modules injection to swap a
+          # _FakeMarty doubles in for martypy.Marty. With the real
+          # martypy on the path, the swap still works (sys.modules
+          # injection takes precedence), so the suite stays green
+          # while proving the real library imports cleanly alongside.
+          cd reference/edu-runtime
+          python -m pytest tests/test_edu_adapters.py -v
+
+  marty-hardware-e2e:
+    name: Marty hardware-in-the-loop (placeholder)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder — real Marty hardware loop not yet wired
+        run: |
+          # Production-graduation milestone (this PR) closes the
+          # API-surface gate above. The hardware-in-the-loop gate
+          # remains open until URML has access to a real Marty v2
+          # (community loan or community-channel demo unit). At that
+          # point the wiring is:
+          #   - Connect Marty over USB (v2) or socket (v1).
+          #   - Pin the edu_adapter.yaml location_to_command and
+          #     manipulation_commands to real martypy skill calls.
+          #   - Run ConformanceRunner against
+          #     conformance/fixtures/educational/05_marty_patrol_positive.yaml
+          #     with adapter_factory=lambda: RoboticalMartyAdapter(load_edu_config("..."))
+          #
+          # This step fails loudly until wired, matching the
+          # edu-board-e2e / cobot-controller-e2e / marine-sitl-e2e
+          # honesty conventions across URML's integration workflows.
+          echo "Marty hardware-in-the-loop is the documented next gate;"
+          echo "see docs/launch/outreach-commitments.md (Marty section)."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marty-hardware-e2e-diagnostics
+          path: ~/.cache/urml-edu
+          retention-days: 14

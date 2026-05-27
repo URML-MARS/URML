@@ -83,6 +83,20 @@ URML responses:
 
 This round-3 engagement is URML's most substantive single round across the entire outreach inbox to date: an authoritative API reference plus a real-hardware trace, both contributed by the maintainer, both materially upgrading URML's test scaffold and adapter correctness without requiring URML to guess.
 
+## Production-graduation milestone (2026-05-27)
+
+Per the session retrospective's improvement #3, URML graduated `RoboticalMartyAdapter` from scaffold to production-grade in the same wave that PR-A (`third_party_audited` cleanup) and PR-B (`outreach-commitments.md`) landed. Two gates closed:
+
+1. **Richer arg-passing dispatch.** The round-3 acknowledged-gap (`_send(command)` was name-only no-args) is now closed. `EduConfig.location_to_command` and `manipulation_commands` accept either a bare method-name string (no-arg call, backwards-compatible with the scaffold) or an `EduSkillCall(method=..., args=[...], kwargs={...})` for parameterized skills (`arms(left_angle, right_angle, move_time)`, `eyes(pose_or_angle)`, `lean(direction)`, `sidestep(side)`, `wave(side)`). `RoboticalMartyAdapter._send` dispatches both forms.
+2. **Real-`martypy` CI workflow.** `.github/workflows/marty-real-integration.yml` pip-installs `martypy` from PyPI weekly (plus on every PR touching `reference/edu-runtime/**`) and asserts that every URML-documented skill + getter is a callable attribute on the real `martypy.Marty` class. Catches upstream-`martypy` API drift before users do.
+
+What stays open (not closed in this round, recorded honestly):
+
+- **Hardware-in-the-loop validation by URML itself.** The workflow's `marty-hardware-e2e` job is a placeholder that fails loudly until URML has access to a real Marty v2 (community loan or demo unit). Same convention as the existing `edu-board-e2e` / `cobot-controller-e2e` / `marine-sitl-e2e` placeholders.
+- **Re-engaging NikTheGeek1 to request the upstream `martypy` README/docs link.** That ask was gated in round 1 on real-hardware validation, which has not closed. URML will return to the thread once it can demonstrate end-to-end on real hardware.
+
+Net effect: `RoboticalMartyAdapter` is now URML's first scaffold-to-production graduation. Other engaged adapters (Kawasaki, Zivid, Maytronics, Spot rai-opensource-side) remain at scaffold or proposal-only; their graduations are future tickets.
+
 ## Summary
 
 URML does not yet ship a Robotical integration. This RFC proposes a `RoboticalMartyAdapter` under [`reference/edu-runtime/`](../../reference/edu-runtime/) (or as a sibling to the existing `reference/petoi-runtime/` family if the educational-runtime placement does not fit) targeting [`robotical/martypy`](https://github.com/robotical/martypy) (Apache-2.0, Python 99.4%, v3.6.6 release 2024-01-12). The adapter routes URML Layer-2 primitives (`move_to`, `measure`, `wait_for`, `report`, plus posture composition) onto MartyPy's USB-serial / Wi-Fi command surface for Marty v1 (`socket`) and Marty v2 (`usb` / `wifi`). No spec change on URML's side. This RFC documents the proposed mapping and requests review and feedback from the robotical maintainers.
