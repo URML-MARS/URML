@@ -27,7 +27,7 @@ Voice: founder posts under his GitHub identity. Each post opens with "Hi <team>"
 **Disclosure paragraph (reused verbatim at the bottom of every post body):**
 
 ```
-*Authoring disclosure: URML is the invention of Ido Yahalomi. The outreach prose is AI-assisted (Claude, under the maintainer's review). See [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md). The maintainer reads and approves every post before it ships. Reviewers who prefer human-only correspondence are welcome to say so.*
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
 ```
 
 **Schema-extension flags.** Move #11 surfaces multiple v0.1 schema gaps that should be opened as Spec RFCs in parallel (not bundled into the per-target outreach RFCs):

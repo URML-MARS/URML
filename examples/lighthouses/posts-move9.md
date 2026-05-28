@@ -70,5 +70,5 @@ Ido Yahalomi (URML maintainer, [urml.dev](https://urml.dev), greenvh@gmail.com)
 
 ---
 
-*Authoring disclosure: URML is the invention of Ido Yahalomi. The outreach prose is AI-assisted (Claude, under the maintainer's review). See [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md). The maintainer reads and approves every post before it ships. Reviewers who prefer human-only correspondence are welcome to say so.*
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
 ```
