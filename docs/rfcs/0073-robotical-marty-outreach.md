@@ -4,7 +4,7 @@ title: Robotical (Marty) integration, request for comment from robotical maintai
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Open
 created: 2026-05-24
-updated: 2026-05-28
+updated: 2026-05-28 (round 5)
 supersedes: —
 superseded-by: —
 ---
@@ -125,6 +125,36 @@ What this engagement does and does not close:
 - **Stays open: URML's own end-to-end run of the `RoboticalMartyAdapter` (not just the underlying `martypy` surface) on a real Marty.** That gate waits on URML having access to its own Marty unit (community loan or community-channel demo); the `marty-hardware-e2e` job in the CI workflow remains a placeholder that fails loudly until then.
 
 This is round four of four substantive engagement rounds across the Marty thread, and the third instance in which a Robotical maintainer's contribution has materially upgraded URML's adapter without URML having to guess. The thread's cumulative shape (scaffold guidance, five factual corrections, real-Marty trace + authoritative skill / getter list, hardware-validation offer) is recorded here verbatim so that the precedent is reusable by URML's other engaged outreach threads.
+
+## Engagement received (round 5, 2026-05-28)
+
+NikTheGeek1 ran [`reference/edu-runtime/scripts/marty_validate.py`](../../reference/edu-runtime/scripts/marty_validate.py) against a real Marty v2 over WiFi (no movement flags) and posted the JSON output on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52). Two corrections plus a behavioural finding came back.
+
+Trace observed (real Marty v2, `martypy` 3.7.1, `RIC 1.3.21`, HwRev 5, host `192.168.1.13`, no movement):
+
+- `get_system_info` returned a structured dict with `SystemName=RIC`, `SystemVersion=1.3.21`, `RicHwRevNo=5`, plus a `MAC` field.
+- `get_battery_remaining` returned `int 74` (percent).
+- `get_power_status` returned the same dict shape as the round-3 trace (`battRemainCapacityPercent=74`, `battRemainCapacityMAH=1980`, `battFullCapacityMAH=2657`, `battCurrentMA=-245`, `battTempDegC=29`, `power5VIsOn=true`, `powerUSBIsConnected=false`, plus a `battInfoValid=true` field not seen in round 3).
+- `get_accelerometer` (no axis) returned a list `[0.02, 0.0, 0.99]` (round-3 trace: `[0.02, -0.04, 0.97]`; trace-to-trace variation is expected and small).
+- `get_accelerometer("x")` / `("y")` / `("z")` returned plain floats `0.02 / 0.0 / 0.99`.
+- `get_robot_status` returned `isMoving=false / isPaused=false / workQCount=0`, plus an `isFwUpdating=false` field not seen in round 3.
+- `get_distance_sensor` returned `int 0`.
+- `close` succeeded.
+
+**Corrections:**
+
+1. **`martypy` does NOT expose `get_accelerometer_x() / _y() / _z()` methods.** URML's round-4 script probed `getattr(marty, "get_accelerometer_x", None)` etc. NikTheGeek1 had to patch the script locally before running it on real hardware; axis reads on real `martypy` use the no-axis getter with an axis argument: `get_accelerometer("x")`. **Action:** the script (round-5, this commit) now calls `marty.get_accelerometer(axis)` for each axis, not `getattr(marty, f"get_accelerometer_{axis}", None)`. `_FakeMarty` in [`reference/edu-runtime/tests/test_edu_adapters.py`](../../reference/edu-runtime/tests/test_edu_adapters.py) gains an optional `axis` parameter that returns the corresponding scalar, mirroring real-`martypy` behaviour.
+
+2. **Empty first-read of `get_power_status()` immediately after reconnect.** NikTheGeek1 observed that the very first `get_power_status()` after a fresh connection returned an empty / zero snapshot, and a rerun produced the valid data above. **Action:** the script now retries once if the first read is empty (no sleep loop; one retry; the retry result carries a `retried_once: true` field so the JSON records the behaviour). A new `_is_empty_power` helper inspects the returned dict for missing / zero `battRemainCapacityPercent` and `battRemainCapacityMAH` and treats either as "empty".
+
+**Finding (not a correction):** `martypy` 3.7.1 is in the wild and is the version NikTheGeek1's real Marty is running. URML's earlier writeup referenced `v3.6.6 (release 2024-01-12)` as "the canonical engagement surface"; the real-Marty side has moved on. Updating the manifest's `sdk_version_min` is a separate decision (URML's API-surface CI catches drift either way; raising the floor would only matter if the adapter starts using a 3.7-only attribute, which it does not).
+
+**What this engagement does and does not close:**
+
+- **Closes (in full): the round-1 item-5 "URML's documented API surface against real Marty v2" gate.** Round-4 covered the offer; round-5 has the receipted JSON in the thread. The full sensor-getter suite plus the corrected axis-form call returns valid data.
+- **Stays open: URML's own end-to-end run of the `RoboticalMartyAdapter` (not just the underlying `martypy` surface) on a real Marty.** Same caveat as round 4: this is URML's problem until URML has a Marty unit. `marty-hardware-e2e` job in the CI workflow remains a placeholder.
+
+This is round five of five substantive engagement rounds across the Marty thread, and the fourth instance in which a Robotical maintainer's contribution has materially upgraded URML's adapter or tooling without URML having to guess. The cumulative shape (scaffold guidance → five factual corrections → real-Marty trace + authoritative skill / getter list → hardware-validation offer → URML-provided script run on real hardware + two script-side corrections) is now recorded across rounds 1 to 5 on robotical/martypy#52 and in this RFC.
 
 ## Summary
 

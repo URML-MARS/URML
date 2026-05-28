@@ -112,9 +112,15 @@ class _FakeMarty:
     def get_battery_remaining(self) -> int:
         return 81  # percent (real-Marty trace value)
 
-    def get_accelerometer(self) -> list[float]:
+    def get_accelerometer(self, axis: str | None = None) -> list[float] | float:
         # No-axis form returns a list (real-Marty round-3 trace 2026-05-27).
-        return [0.02, -0.04, 0.97]
+        # Axis form uses get_accelerometer("x"|"y"|"z") (real-Marty round-4
+        # correction, 2026-05-28: martypy does NOT expose get_accelerometer_x
+        # / _y / _z methods).
+        triple = [0.02, -0.04, 0.97]
+        if axis is None:
+            return triple
+        return {"x": triple[0], "y": triple[1], "z": triple[2]}[axis]
 
     def get_distance_sensor(self) -> int:
         return 0  # real-Marty trace value (mm)
