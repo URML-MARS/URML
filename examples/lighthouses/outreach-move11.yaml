@@ -49,101 +49,101 @@
 
 - slug: openvla
   rfc: 138
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/openvla/openvla/issues/338"
+  channel: github_issue
   contact: "openvla/openvla (MIT, 6.3k stars, Issues enabled, Discussions disabled, last commit 2025-03-23, **not archived**). Stanford + TRI + Google DeepMind collaboration; 7B open generalist VLA; the foundational open-source VLA reference. Origin US (CA)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0138 drafted 2026-05-28 on URML main (docs/rfcs/0138-openvla-outreach.md). First net-new VLA RFC of Move-11. Surfaces action-head class Spec RFC (shared with RFC-0139 / RFC-0151). Awaiting founder review then post Issue on openvla/openvla with explicit staleness acknowledgement."
+  next_action: "Posted 2026-05-28 as Issue openvla/openvla#338. First net-new VLA Issue of Move-11. Surfaces action-head class Spec RFC (shared with RFC-0139 / RFC-0151). Awaiting first response. Light-touch follow-up at 2026-06-25 (4-week cadence; staleness acknowledged in body)."
   notes: "Tier A. Origin US (pass). Foundational open VLA; URML-fit: high. Stale-but-foundational framing: last commit >12 months but the architecture is still the de facto open-VLA reference. Move-10 lesson: verify isArchived: false (confirmed false 2026-05-28)."
 
 - slug: octo
   rfc: 139
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/octo-models/octo/issues/172"
+  channel: github_issue
   contact: "octo-models/octo (MIT, 1.7k stars, Issues enabled, Discussions disabled, last commit 2024-07-31, **not archived**). UC Berkeley (Sergey Levine lab); 800k-trajectory diffusion-transformer policy. Origin US (CA)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0139 drafted 2026-05-28 on URML main (docs/rfcs/0139-octo-outreach.md). Pairs with RFC-0138 OpenVLA on action-head-class Spec RFC; introduces action-chunk-horizon manifest gap. Awaiting founder review then post Issue on octo-models/octo expecting slow response given 22mo staleness."
+  next_action: "Posted 2026-05-28 as Issue octo-models/octo#172. Pairs with RFC-0138 on action-head class Spec RFC; introduces action-chunk-horizon manifest gap. 22mo staleness explicitly acknowledged in the post body. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B-borderline (kept Tier A for the research-lab-direct framing). Origin US (pass). Stale push date is the engagement-risk; the diffusion-transformer-policy architecture remains a reference."
 
 - slug: amazon-spherical-diffusion-policy
   rfc: 140
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/amazon-science/Spherical_Diffusion_Policy/issues/7"
+  channel: github_issue
   contact: "amazon-science/Spherical_Diffusion_Policy (MIT, 42 stars, Issues enabled, Discussions disabled, last commit 2025-07-08, **not archived**). Amazon Science ICML 2025; SE(3)-equivariant diffusion-policy variant with real-robot demonstrations. Origin US (Santa Clara)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0140 drafted 2026-05-28 on URML main (docs/rfcs/0140-amazon-spherical-diffusion-policy-outreach.md). SE(3)-equivariance Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0141 / RFC-0142). Awaiting founder review then post Issue on amazon-science/Spherical_Diffusion_Policy."
+  next_action: "Posted 2026-05-28 as Issue amazon-science/Spherical_Diffusion_Policy#7. SE(3)-equivariance Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0141 / RFC-0142). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). Small star count but Amazon Science vendor-direct lineage; SE(3)-equivariant angle is a distinct contribution worth a separate RFC."
 
 - slug: intuitive-robots-mode
   rfc: 141
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/intuitive-robots/MoDE_Diffusion_Policy/issues/16"
+  channel: github_issue
   contact: "intuitive-robots/MoDE_Diffusion_Policy (MIT, 122 stars, Issues enabled, Discussions disabled, last commit 2025-05-16, **not archived**). ICLR 2025; Karlsruhe Institute of Technology (DE) + MIT (US); mixture-of-experts diffusion transformers. Active."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0141 drafted 2026-05-28 on URML main (docs/rfcs/0141-intuitive-robots-mode-diffusion-policy-outreach.md). MoE routing Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0140 / RFC-0142). Awaiting founder review then post Issue on intuitive-robots/MoDE_Diffusion_Policy."
+  next_action: "Posted 2026-05-28 as Issue intuitive-robots/MoDE_Diffusion_Policy#16. MoE routing Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0140 / RFC-0142). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE/US (pass — NATO allied). Active vendor-direct surface; MoE-VLA architecture is a distinct contribution worth a separate RFC."
 
 - slug: stanford-diffusion-policy
   rfc: 142
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/real-stanford/diffusion_policy/issues/163"
+  channel: github_issue
   contact: "real-stanford/diffusion_policy (MIT, 4.2k stars, Issues enabled, Discussions disabled, last commit 2024-12-24, **not archived**). Stanford / Columbia / TRI Cheng Chi et al; the foundational diffusion-policy paper. Origin US."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0142 drafted 2026-05-28 on URML main (docs/rfcs/0142-stanford-diffusion-policy-outreach.md). Foundational DP architectural-reference engagement; first direct engagement (Move-2 RFC-0054 only cross-cited as prior art). Diffusion-policy class Spec RFC umbrella. Awaiting founder review then post Issue on real-stanford/diffusion_policy."
+  next_action: "Posted 2026-05-28 as Issue real-stanford/diffusion_policy#163. Foundational DP architectural-reference engagement; first direct engagement (Move-2 RFC-0054 only cross-cited as prior art). Diffusion-policy class Spec RFC umbrella. 17mo staleness acknowledged. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). Foundational; last commit stale but architecture is the reference."
 
 - slug: huggingface-smolagents
   rfc: 143
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/huggingface/smolagents/discussions/2316"
+  channel: github_discussion
   contact: "huggingface/smolagents (Apache-2.0, 27.5k stars, Issues + Discussions both enabled, last commit 2026-05-26 very active, **not archived**). HuggingFace agent framework; code-generation agent backbone. Origin FR / multi-national (HQ Paris)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0143 drafted 2026-05-28 on URML main (docs/rfcs/0143-huggingface-smolagents-outreach.md). NL-layer-substrate Spec RFC queued (shared with RFC-0108 ROSA + RFC-0145 Gemini Robotics SDK). Awaiting founder review then post Discussion (Ideas category preferred) on huggingface/smolagents."
+  next_action: "Posted 2026-05-28 as Discussion (Ideas) huggingface/smolagents#2316. NL-layer-substrate Spec RFC queued (shared with RFC-0108 ROSA + RFC-0145 Gemini Robotics SDK). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin FR / multi (pass). Highly active surface (27.5k stars); URML's NL-bridge composes naturally with smolagents."
 
 - slug: deepmind-mujoco-playground
   rfc: 144
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/google-deepmind/mujoco_playground/discussions/324"
+  channel: github_discussion
   contact: "google-deepmind/mujoco_playground (Apache-2.0, 2.0k stars, Issues + Discussions both enabled, last commit 2026-05-27 very active, **not archived**). DeepMind GPU-accelerated MuJoCo robot-learning environment. Distinct from Move-2 RFC-0060 `google-deepmind/mujoco` (simulator core); mujoco_playground is the env+policy harness. Origin US/UK."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0144 drafted 2026-05-28 on URML main (docs/rfcs/0144-deepmind-mujoco-playground-outreach.md). Sim-substrate Spec RFC queued (shared with Move-2 RFC-0050 Isaac-Lab / RFC-0051 CARLA / RFC-0060 MuJoCo-core). Explicit boundary noted vs Move-2 RFC-0060 mujoco-core. Awaiting founder review then post Discussion on google-deepmind/mujoco_playground."
+  next_action: "Posted 2026-05-28 as Discussion (Ideas) google-deepmind/mujoco_playground#324. Sim-substrate Spec RFC queued (shared with Move-2 RFC-0050 / RFC-0051 / RFC-0060). Boundary vs Move-2 mujoco-core surfaced in post body. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US/UK (pass). Highly active. Move-2 cross-link: distinct repo from the Move-2 mujoco core."
 
 - slug: deepmind-gemini-robotics-sdk
   rfc: 145
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/google-deepmind/gemini-robotics-sdk/issues/25"
+  channel: github_issue
   contact: "google-deepmind/gemini-robotics-sdk (Apache-2.0, 582 stars, Issues enabled, last commit 2026-05-23 very active, **not archived**). DeepMind Gemini Robotics SDK; the multimodal VLA developer surface. Origin US/UK."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0145 drafted 2026-05-28 on URML main (docs/rfcs/0145-deepmind-gemini-robotics-sdk-outreach.md). **Highest-value Move-11 target.** Multimodal-VLA tool-call surface declaration question front-and-centre. Shared NL-layer-substrate Spec RFC with RFC-0108 ROSA + RFC-0143 smolagents. Awaiting founder review then post Issue on google-deepmind/gemini-robotics-sdk; engagement-prioritization recommended."
+  next_action: "Posted 2026-05-28 as Issue google-deepmind/gemini-robotics-sdk#25. **Highest-leverage Move-11 target** — multimodal-VLA tool-call surface declaration question front-and-centre. Shared NL-layer-substrate Spec RFC with RFC-0108 + RFC-0143. Awaiting first response; engagement-prioritization recommended if reply lands. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US/UK (pass). The Move-11 priority target. Cross-link to RFC-0123 (Cubert agentic-skills) and RFC-0108 (NASA-JPL ROSA) as URML's two other NL-bridge engagement targets."
 
 - slug: openmind-om1
   rfc: 146
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/OpenMind/OM1/issues/2587"
+  channel: github_issue
   contact: "OpenMind/OM1 (MIT, 2.8k stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). OpenMind humanoid AI runtime flagship; openmind.com; 28 public repos in org; HQ United States. The OpenMind org has been quietly building a mobile-humanoid OS layer."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0146 drafted 2026-05-28 on URML main (docs/rfcs/0146-openmind-om1-outreach.md). Two Spec RFCs queued — OS-layer-substrate declaration + mobile-humanoid mobility class (extending RFC-0009 biped/quadruped). Awaiting founder review then post Issue on OpenMind/OM1."
+  next_action: "Posted 2026-05-28 as Issue OpenMind/OM1#2587. Two Spec RFCs queued — OS-layer-substrate declaration + mobile-humanoid mobility class (extends RFC-0009 biped/quadruped). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). Active surface; structurally URML-aligned (open mobile-humanoid OS)."
 
 # ============================================================
@@ -154,66 +154,66 @@
 
 - slug: allenai-ai2thor
   rfc: 147
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/allenai/ai2thor/discussions/1308"
+  channel: github_discussion
   contact: "allenai/ai2thor (Apache-2.0, 1.7k stars, Issues + Discussions both enabled, last commit 2025-11-04, **not archived**). Allen AI visual interactive simulation; household-manipulation focus. Distinct from Move-2 RFC-0047 (allenai/molmoact, the VLA). Origin US."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0147 drafted 2026-05-28 on URML main (docs/rfcs/0147-allenai-ai2thor-outreach.md). Cross-citation framing. Sim-substrate Spec RFC + discrete-action-mobility Spec RFC queued. Distinct from Move-2 RFC-0047 MolmoAct (VLA vs sim-env layer). Awaiting founder review then post Discussion on allenai/ai2thor."
+  next_action: "Posted 2026-05-28 as Discussion (Ideas) allenai/ai2thor#1308. Cross-citation framing. Sim-substrate Spec RFC + discrete-action-mobility Spec RFC queued. Distinct from Move-2 RFC-0047 MolmoAct (VLA vs sim-env layer). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin US (pass). Allen AI broader (distinct from MolmoAct VLA in Move-2)."
 
 - slug: rai-theia
   rfc: 148
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/rai-opensource/theia/issues/32"
+  channel: github_issue
   contact: "rai-opensource/Theia (license listed as Other — clarification ask, 276 stars, Issues enabled, last commit 2025-11-06, **not archived**). RAI Institute (Boston Dynamics AI Institute) vision foundation model. Cross-link to RFC-0043 Spot/rai-opensource (engaged via Tim Perkins, COLLABORATOR not BD-employed) — Theia is a *different* RAI repo, vendor-direct from the Institute."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0148 drafted 2026-05-28 on URML main (docs/rfcs/0148-rai-theia-outreach.md). License-clarification ask front-and-centre. Vision-foundation-model substrate Spec RFC queued. Distinct from RFC-0043 Spot engagement (different repo, different maintainer). Awaiting founder review then post Issue on rai-opensource/Theia."
+  next_action: "Posted 2026-05-28 as Issue rai-opensource/theia#32. License-clarification ask front-and-centre. Vision-foundation-model substrate Spec RFC queued. Distinct from RFC-0043 Spot engagement (different repo, different maintainer). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin US (pass). Cross-link to RFC-0043 Spot/rai-opensource engaged thread; different RAI repo. License-clarification gate."
 
 - slug: rai-vlfm
   rfc: 149
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/rai-opensource/vlfm/issues/97"
+  channel: github_issue
   contact: "rai-opensource/vlfm (MIT, 749 stars, Issues enabled, last commit 2025-11-12, **not archived**). RAI Institute VLM-based navigation (ICRA 2024). Companion to RAI Theia. Origin US."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0149 drafted 2026-05-28 on URML main (docs/rfcs/0149-rai-vlfm-outreach.md). Navigation-substrate + language-conditioned-navigation Spec RFCs queued. Companion to RFC-0148 Theia (same RAI Institute org, different repo). Awaiting founder review then post Issue on rai-opensource/vlfm."
+  next_action: "Posted 2026-05-28 as Issue rai-opensource/vlfm#97. Navigation-substrate + language-conditioned-navigation Spec RFCs queued. Companion to RFC-0148 Theia (same RAI Institute org, different repo). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin US (pass). RAI Institute vendor-direct; pairs with RFC-0148."
 
 - slug: microsoft-psi
   rfc: 150
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/microsoft/psi/discussions/347"
+  channel: github_discussion
   contact: "microsoft/psi (license listed as Other — clarification ask, 570 stars, Issues + Discussions both enabled, last commit 2026-05-15 active, **not archived**). Microsoft Platform for Situated Intelligence; temporal streams + offline replay framework for multi-modal sensor fusion. Origin US (Redmond)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0150 drafted 2026-05-28 on URML main (docs/rfcs/0150-microsoft-psi-outreach.md). License-clarification ask front-and-centre. Temporal-streams substrate Spec RFC queued. Awaiting founder review then post Discussion on microsoft/psi."
+  next_action: "Posted 2026-05-28 as Discussion (Ideas) microsoft/psi#347. License-clarification ask front-and-centre. Temporal-streams substrate Spec RFC queued. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin US (pass). Active surface; license-clarification gate."
 
 - slug: microsoft-cogact
   rfc: 151
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/microsoft/CogACT/issues/50"
+  channel: github_issue
   contact: "microsoft/CogACT (MIT, 427 stars, Issues enabled, last commit 2025-10-30, **not archived**). Microsoft CVPR 2025 VLA for dexterous control. Origin US (Redmond)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0151 drafted 2026-05-28 on URML main (docs/rfcs/0151-microsoft-cogact-outreach.md). Shares action-head class Spec RFC with RFC-0138 / RFC-0139. Dexterous-control action-space novelty noted. Awaiting founder review then post Issue on microsoft/CogACT."
+  next_action: "Posted 2026-05-28 as Issue microsoft/CogACT#50. Shares action-head class Spec RFC with RFC-0138 / RFC-0139. Dexterous-control action-space novelty noted. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin US (pass). Microsoft corporate research broader (distinct from microsoft/psi at the temporal-streams layer)."
 
 - slug: nus-octopi
   rfc: 152
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-28"
+  posted_url: "https://github.com/clear-nus/octopi/issues/5"
+  channel: github_issue
   contact: "clear-nus/octopi (license TBD — clarification ask, 76 stars, Issues enabled, last commit 2026-05-24 very active, **not archived**). National University of Singapore (NUS) Clear Lab; octopus-inspired soft-robotics. Origin Singapore (SG); passes US-federal default policy (NATO+ allied)."
-  last_touch: ""
+  last_touch: "2026-05-28"
   response: none
-  next_action: "RFC-0152 drafted 2026-05-28 on URML main (docs/rfcs/0152-nus-octopi-outreach.md). **First soft-robotics RFC.** License-clarification ask + soft-body mobility + pneumatic-network actuator + continuum-manipulator kinematics Spec RFCs queued. **Completes the 15 Move-11 engageable RFCs.** Awaiting founder review then post Issue on clear-nus/octopi."
+  next_action: "Posted 2026-05-28 as Issue clear-nus/octopi#5. **First soft-robotics engagement.** License-clarification ask + soft-body mobility + pneumatic-network actuator + continuum-manipulator kinematics Spec RFCs queued. **Completes the 15 Move-11 engageable posts.** Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin SG (pass). Active surface; license-clarification gate; soft-body schema-extension queued."
