@@ -57,7 +57,7 @@
   contact: "jhu-dvrk/sawIntuitiveResearchKit (license: CISST custom permissive — clarification ask, 157 stars, Issues enabled, last commit 2026-04-18 active, **not archived**). Johns Hopkins University Engineering Research Center for Computer-Integrated Surgical Systems and Technology (CISST). **URML's first surgical / medical RFC.** Da Vinci Research Kit — surgical-robotics flagship for open research."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0191 (JHU dVRK capability-manifest mapping + license-clarification ask); URML-fit framing: dVRK is the research-grade telesurgery platform URML's manifest declares for medical-research deployments. URML's first surgical RFC opens the medical class for URML's manifest. Surgical-class platform + telesurgery-control declarations are novel manifest territory. License is non-SPDX (CISST custom); permissive but explicit OSI declaration would unlock Apache-2.0 downstream bundling."
+  next_action: "RFC-0191 drafted 2026-05-28 on URML main (docs/rfcs/0191-jhu-dvrk-outreach.md). First Move-15 RFC + URML's first surgical/medical RFC. CISST license-clarification ask + surgical-class platform + telesurgery topology + regulatory-class Spec RFCs queued. Awaiting founder review then post Issue on jhu-dvrk/sawIntuitiveResearchKit."
   notes: "Tier A. Origin US Maryland (JHU). Research-lab-direct. URML-fit: high for medical-research class; foundational URML engagement opening a new vertical."
 
 - slug: robotology-icub-main
@@ -68,7 +68,7 @@
   contact: "robotology/icub-main (BSD-3-Clause, 118 stars, Issues enabled, last commit 2026-04-27 active, **not archived**). Italian Institute of Technology (IIT), Genoa IT. iCub humanoid platform with assistive / prosthetic / rehabilitation research angle. **The medical-relevant humanoid surface URML's prior humanoid coverage didn't reach** (apollo_biped / digit_biped / figure_biped / neo_biped / optimus_biped fixtures are commercial-humanoid)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0192 (IIT iCub capability-manifest mapping); URML-fit framing: iCub is the assistive / rehabilitation / prosthetic-research humanoid URML's manifest can declare for medical-research deployments. Sibling to Move-14 RFC-0187 1X Technologies but at the research-lab layer (not commercial OEM). Assistive-application-class declaration is the shared Spec-RFC gap with Move-14 RFC-0186 Kinova."
+  next_action: "RFC-0192 drafted 2026-05-28 on URML main (docs/rfcs/0192-iit-icub-main-outreach.md). Medical-research-humanoid engagement; sibling to Move-14 RFC-0187 1X (commercial humanoid). Assistive-application-class Spec RFC shared with Move-14 RFC-0186 Kinova + YARP middleware substrate Spec RFC shared with RFC-0194. Awaiting founder review then post Issue on robotology/icub-main."
   notes: "Tier A. Origin IT Genoa (IIT). Research-lab-direct, NATO+EU. URML-fit: high for medical-research humanoid class."
 
 # ---- Delivery (1) ----
@@ -81,7 +81,7 @@
   contact: "starship-technologies/bag_rdr (MIT, 29 stars, Issues enabled, last commit 2026-02-22, **not archived**). Starship Technologies, Estonian-UK sidewalk delivery. **URML's first delivery-robot RFC.** Engagement enters via the ROS-bag-reader infrastructure layer (the actual sidewalk-delivery robot stack is closed)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0193 (Starship Technologies capability-manifest mapping); URML-fit framing: Starship is the sidewalk-delivery-class robot URML's manifest can declare for urban-delivery deployments. ROS-bag-reader infrastructure is the engageable surface — full robot stack is closed. Manifest engagement at the perception-replay / logging-format layer. Sidewalk-delivery class declaration is novel manifest territory."
+  next_action: "RFC-0193 drafted 2026-05-28 on URML main (docs/rfcs/0193-starship-technologies-outreach.md). URML's first delivery-robot RFC. Engagement at ROS-bag infrastructure layer (full robot stack closed). Sidewalk-delivery platform-class + urban-public-space deployment-context + closed-stack engagement-layer Spec RFCs queued. Awaiting founder review then post Issue on starship-technologies/bag_rdr."
   notes: "Tier A. Origin EE Tallinn / UK (Estonian-UK Starship Technologies). MIT clean fit. URML-fit: medium-high — ROS-bag-infrastructure layer is the right engagement entry given closed-robot-stack posture."
 
 # ============================================================
@@ -97,7 +97,7 @@
   contact: "robotology/yarp (LGPL — Other-classified, 592 stars, Issues enabled, last commit 2026-05-18 active, **not archived**). Italian Institute of Technology (IIT) — Yet Another Robot Platform middleware. Used by iCub (RFC-0192) and medical-research projects."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0194 (IIT YARP middleware capability-manifest mapping); URML-fit framing: YARP is alternate-substrate middleware at the sibling layer to URML's existing ros2-runtime. Cross-citation framing because middleware is structurally different from per-target adapter pattern. Manifest engagement asks whether URML should declare YARP as alternate substrate to ROS 2 + how YARP-based deployments (iCub etc.) compose."
+  next_action: "RFC-0194 drafted 2026-05-28 on URML main (docs/rfcs/0194-iit-yarp-outreach.md). Alternate-substrate middleware sibling to URML's ros2-runtime. LGPL → cross-citation framing. Alternate-substrate middleware + LGPL substrate-license-class + YARP↔ROS-2 bridging Spec RFCs queued. Awaiting founder review then post Issue on robotology/yarp."
   notes: "Tier B. Origin IT Genoa (IIT). LGPL on middleware is the cross-citation gating reason. URML-fit: medium for medical / humanoid research substrate."
 
 - slug: serve-robotics-model-optimizer
@@ -108,5 +108,5 @@
   contact: "serve-robotics/Model-Optimizer (Apache-2.0, fork-heavy public surface, 24 public repos predominantly forks, last commit 2026-05-22). Serve Robotics — Uber sidewalk-delivery spinoff (US). Minimal vendor-original public surface; engagement is light-touch."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0195 (Serve Robotics Model-Optimizer capability-manifest mapping); URML-fit framing: Serve is sidewalk-delivery-class sibling to Starship (RFC-0193). Public surface is fork-heavy (24 repos predominantly community-fork copies); engagement asks whether vendor-original engagement surface exists elsewhere + whether URML's manifest declares Serve as a Starship-class sibling. **Completes the 5 Move-15 engageable RFCs.**"
+  next_action: "RFC-0195 drafted 2026-05-28 on URML main (docs/rfcs/0195-serve-robotics-outreach.md). **Completes the 5 Move-15 engageable RFCs.** Sidewalk-delivery sibling to RFC-0193 Starship. Light-touch given fork-heavy public surface. Engagement-surface-quality declaration novel. Awaiting founder review then post Issue on serve-robotics/Model-Optimizer."
   notes: "Tier B. Origin US (Uber spinoff). Apache-2.0 + active but fork-heavy public surface signal light-touch engagement appropriate. URML-fit: low-medium given minimal vendor-original visible engagement surface."
