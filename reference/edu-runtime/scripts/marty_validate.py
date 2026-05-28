@@ -15,6 +15,13 @@ Per Nik's round-4 instructions:
   and `stand_straight()`, which were the round-4 maintainer examples
 - closes the connection cleanly in a `finally` block
 
+Round-5 corrections (NikTheGeek1, robotical/martypy#52, 2026-05-28):
+- ``martypy`` does NOT expose ``get_accelerometer_x() / _y() / _z()``
+  methods; axis reads use ``get_accelerometer("x")``, ``("y")``, ``("z")``.
+- The first ``get_power_status()`` after reconnect can return an empty
+  / zero snapshot; a rerun returns valid data. The script now retries
+  once if the first read is empty.
+
 The script exercises the URML-documented `martypy.Marty` API surface
 (skill methods + sensor getters from the round-3 authoritative list) so
 the captured JSON answers: do the names URML's adapter dispatches
@@ -85,6 +92,25 @@ def _jsonable(v: Any) -> Any:
     return repr(v)
 
 
+def _is_empty_power(value: Any) -> bool:
+    """Detect an empty / zero post-reconnect power_status snapshot.
+
+    Per the robotical/martypy#52 round-4 trace (2026-05-28): the first call
+    to ``get_power_status()`` immediately after reconnect may return either
+    an empty dict or one whose battery percentage / capacity fields are
+    zero / missing. A rerun returns valid data. The retry is a one-shot
+    inside this script; no sleep loop.
+    """
+    if not value:
+        return True
+    if isinstance(value, dict):
+        pct = value.get("battRemainCapacityPercent")
+        cap = value.get("battRemainCapacityMAH")
+        if pct in (None, 0) and cap in (None, 0):
+            return True
+    return False
+
+
 def build_plan(args: argparse.Namespace) -> list[str]:
     """Return the human-readable plan that prints before any call runs."""
     if args.method == "usb":
@@ -95,9 +121,9 @@ def build_plan(args: argparse.Namespace) -> list[str]:
         f"Connect: {connect}",
         "Probe: getattr(marty, 'get_system_info' | 'get_version_info' | 'get_software_version')()",
         "Read:   marty.get_battery_remaining()",
-        "Read:   marty.get_power_status()",
+        "Read:   marty.get_power_status()           # retried once if first read is empty (round-4 trace finding)",
         "Read:   marty.get_accelerometer()           # no-axis form returns list per round-3 trace",
-        "Read:   marty.get_accelerometer_x() / _y() / _z()  # only if present on this Marty",
+        "Read:   marty.get_accelerometer('x'), ('y'), ('z')  # axis form per round-4 maintainer correction",
         "Read:   marty.get_robot_status()",
         "Read:   marty.get_distance_sensor()",
     ]
@@ -172,7 +198,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     result: dict[str, Any] = {
-        "script_version": "round-4",
+        "script_version": "round-5",
         "timestamp_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "martypy_version": getattr(martypy, "__version__", "unknown"),
         "connection": {"method": args.method, "host": args.host},
@@ -204,21 +230,30 @@ def main(argv: list[str] | None = None) -> int:
         result["get_battery_remaining"] = safe_call(
             "battery", "marty.get_battery_remaining()", marty.get_battery_remaining,
         )
-        result["get_power_status"] = safe_call(
-            "power", "marty.get_power_status()", marty.get_power_status,
-        )
+        # Retry once if the first power-status read is empty: NikTheGeek1
+        # observed on robotical/martypy#52 (2026-05-28) that the first
+        # get_power_status() right after reconnect can return an empty / zero
+        # snapshot, with a rerun producing valid data. Single retry, no sleep
+        # loop, so the script stays predictable.
+        power = safe_call("power", "marty.get_power_status()", marty.get_power_status)
+        if power.get("ok") and (not power.get("value") or _is_empty_power(power.get("value"))):
+            announce("power-retry", "marty.get_power_status()  # first read empty; retrying once")
+            power = safe_call("power", "marty.get_power_status()", marty.get_power_status)
+            power["retried_once"] = True
+        result["get_power_status"] = power
         result["get_accelerometer"] = safe_call(
             "accel-noaxis", "marty.get_accelerometer()", marty.get_accelerometer,
         )
+        # Per round-4 maintainer correction (robotical/martypy#52, 2026-05-28):
+        # martypy does NOT expose get_accelerometer_x/y/z() methods. Axis reads
+        # use the no-axis getter with an axis argument: get_accelerometer("x").
         for axis in ("x", "y", "z"):
-            axial_name = f"get_accelerometer_{axis}"
-            axial_fn = getattr(marty, axial_name, None)
-            if callable(axial_fn):
-                result[axial_name] = safe_call(
-                    f"accel-{axis}", f"marty.{axial_name}()", axial_fn,
-                )
-            else:
-                result[axial_name] = {"ok": False, "error": "method not present on this Marty"}
+            result[f"get_accelerometer_{axis}"] = safe_call(
+                f"accel-{axis}",
+                f"marty.get_accelerometer({axis!r})",
+                marty.get_accelerometer,
+                axis,
+            )
         result["get_robot_status"] = safe_call(
             "status", "marty.get_robot_status()", marty.get_robot_status,
         )
