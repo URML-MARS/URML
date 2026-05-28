@@ -57,6 +57,7 @@ jobs:
           pip install \
             -e reference/validator \
             -e reference/ros2-runtime \
+            -e conformance \
             -e "reference/edu-runtime[marty]" \
             "pytest>=8"
 
