@@ -200,7 +200,7 @@
   contact: "Picovoice/porcupine (Apache-2.0 SDK, 4.8k stars, Issues enabled, Discussions disabled, last commit 2026-05-28, **not archived**). Wake-word detection. Origin CA (Vancouver). Commercial-SDK model: free tier + paid commercial use."
   last_touch: ""
   response: none
-  next_action: "RFC-0165 draft pending. Wake-word front-end to the `listen` primitive on RTOS / real-time substrates. Engagement-friction: Picovoice sells the gated tiers, so commercial-engagement may be tepid; URML frames the ask as open-source-tier composition. Awaiting draft + founder review."
+  next_action: "RFC-0165 drafted 2026-05-28 on URML branch rfc/move12-batch4-tierb-speech (docs/rfcs/0165-porcupine-outreach.md). Wake-word front-end to the `listen` primitive on RTOS / real-time substrates; closes the always-on speech-input gap that full STT cannot fill (resource-footprint constraint). Engagement-friction: Picovoice sells the gated tiers; URML frames ask as open-source-tier composition. Introduces wake-word substrate declaration + license-tier declaration + wake-word-to-STT handoff manifest fields. Awaiting founder review then post Issue on Picovoice/porcupine."
   notes: "Tier B. Origin CA (pass — NATO allied). Friction = commercial-SDK posture. Engagement value is real (wake-word is genuinely the missing piece for always-listening robot Layer-4), but expect slow upstream engagement."
 
 - slug: piper1-gpl
@@ -211,7 +211,7 @@
   contact: "OHF-Voice/piper1-gpl (**GPL-3.0**, 4.2k stars, Issues + Discussions both enabled, last commit 2026-04-07, **not archived**). Successor to archived rhasspy/piper. Open Home Foundation. 75+ language neural TTS. Origin US."
   last_touch: ""
   response: none
-  next_action: "RFC-0166 draft pending. **GPL friction**: URML cannot statically link from Apache-2.0 reference runtimes. Engagement frames URML-as-neighbor calling Piper via subprocess / IPC. Confirm framing with founder before drafting. Awaiting draft + founder review."
+  next_action: "RFC-0166 drafted 2026-05-28 on URML branch rfc/move12-batch4-tierb-speech (docs/rfcs/0166-piper1-gpl-outreach.md). **Completes Move-12 (all 16 engageable RFCs drafted).** **GPL friction**: URML cannot statically link from Apache-2.0 reference runtimes. Engagement frames URML-as-neighbor calling Piper via subprocess / IPC. License-boundary declaration shares Spec RFC with RFC-0168 LibreTranslate (this RFC surfaces the `gpl_subprocess` variant; 0168 surfaced `agpl_network_boundary`; unified Spec RFC). Predecessor rhasspy/piper archival noted explicitly. Awaiting founder review then post Discussion on OHF-Voice/piper1-gpl."
   notes: "Tier B. Origin US (pass). Friction = GPL-3.0 copyleft. Only living open-source TTS after Coqui shutdown; the IPC-shape framing is the only clean integration. Note that the predecessor `rhasspy/piper` is archived as of 2025-08-26."
 
 - slug: fairseq
