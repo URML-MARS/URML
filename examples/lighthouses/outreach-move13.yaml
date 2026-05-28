@@ -65,11 +65,11 @@
   sent_at: "2026-05-28"
   posted_url: "https://github.com/mjbots/moteus/issues/116"
   channel: github_issue
-  contact: "mjbots/moteus (Apache-2.0, 1.2k stars, Issues enabled, last commit 2026-05-25 very active, **not archived**). mjbots Robotic Systems vendor-direct. US-origin brushless servo controller."
+  contact: "mjbots/moteus (Apache-2.0, 1.2k stars, Issues enabled, last commit 2026-05-25 very active, **not archived**). mjbots Robotic Systems vendor-direct. US-origin brushless servo controller. Closed wontfix 2026-05-28T15:07Z by Josh Pieper (mjbots founder, MEMBER): flagged URML's outreach prose as AI-generated, explicitly granted URML leeway to use Moteus independently."
   last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue mjbots/moteus#116 on 2026-05-28. Awaiting first response from mjbots Robotic Systems. Light-touch follow-up at 2026-06-25."
-  notes: "Tier A. Origin US (pass). Apache-2.0 clean fit. URML-fit: high; many quadruped research platforms use mjbots."
+  response: wontfix
+  next_action: "Josh Pieper (jpieper, mjbots founder, MEMBER) closed mjbots/moteus#116 2026-05-28T15:07Z, ~7 minutes after posting, flagging URML's outreach prose as AI-generated and stating mjbots does not engage with AI-generated proposals. Polite acknowledgement posted on the closed thread (https://github.com/mjbots/moteus/issues/116#issuecomment-4565563303). URML accepts the close. Future URML-side Moteus adapter work, if any, proceeds independently per Josh's explicit grant (\"You are welcome to use moteus in whatever manner you choose\"). Do not pursue mjbots further on this surface."
+  notes: "Tier A. Origin US (pass). Apache-2.0 clean fit. URML-fit: high; many quadruped research platforms use mjbots. 2026-05-28: closed wontfix 7 minutes after posting; same close-shape as OVOS RFC-0107 (AI-tells in outreach prose) but with a markedly warmer tone — explicit use-grant and \"Good luck!\" sign-off. First AI-skeptical close where URML did reply (politely, briefly); OVOS thread was left silent per [[project-ovos-declined]]. RFC body left as historical record; not retroactively edited."
 
 - slug: trinamic-tmc-api
   rfc: 171
@@ -113,20 +113,20 @@
   channel: github_issue
   contact: "adafruit/CircuitPython (Other, MIT-compatible per the project license, 4.5k stars, Issues + Discussions enabled, last commit 2026-05-27, **not archived**). Adafruit Industries, US NY."
   last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue adafruit/circuitpython#11035 on 2026-05-28 (Issue surface — Discussions actually disabled despite earlier assumption). Light-touch follow-up at 2026-06-25; Adafruit-active community surface."
-  notes: "Tier A. Origin US (pass). Daily activity; Discussions enabled. URML-fit: very high for Python-on-MCU class."
+  response: engaged
+  next_action: "Engaged 2026-05-28 by @dhalbert (COLLABORATOR, Adafruit) at adafruit/circuitpython#11035 (issuecomment-4565830872). Substantive: \"We would not mind being listed in the spec.\" Five concrete points: (1) drag-and-drop deployment does not work on all boards (some lack USB MSC drive); (2) Adafruit will not maintain the URML adapter — the [Community Bundle](https://github.com/adafruit/CircuitPython_Community_Bundle) is the right home; (3) a pointer can be added to [awesome-circuitpython](https://github.com/adafruit/awesome-circuitpython); (4) CircuitPython is a friendly fork of MicroPython sharing the base language but with different hardware modules — two mappings needed; (5) MicroPython is deemphasizing MSC and prefers host-side comms programs. **Explicit ask: \"prefer to discuss this with a human rather than an LLM.\"** Founder reply required; do NOT auto-reply. Action shape: (a) split into CircuitPython adapter + separate MicroPython adapter Spec RFCs; (b) place adapter in Community Bundle, not core; (c) add `awesome-circuitpython` listing PR; (d) relax USB-MSC assumption in the manifest framing."
+  notes: "Tier A. Origin US (pass). **First MCU-substrate engagement.** First explicit vibe-coding flag among engaged responses (prior flags — OVOS, Moteus, LibreTranslate — all closed wontfix). URML-fit: confirmed very high; Adafruit explicitly receptive to spec inclusion."
 
 - slug: raspberry-pi-pico-sdk
   rfc: 175
   sent_at: "2026-05-28"
   posted_url: "https://github.com/raspberrypi/pico-sdk/issues/2975"
   channel: github_issue
-  contact: "raspberrypi/pico-sdk (BSD-3-Clause, 4.8k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Raspberry Pi Foundation; UK Cambridge."
+  contact: "raspberrypi/pico-sdk (BSD-3-Clause, 4.8k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Owned by **Raspberry Pi Limited** (business org, UK Cambridge), NOT the Raspberry Pi Foundation (charity org); the two are separate entities (correction per @lurch CONTRIBUTOR, 2026-05-28)."
   last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue raspberrypi/pico-sdk#2975 on 2026-05-28. Companion to RFC-0172 micro:bit Foundation at higher-perf MCU class. Dual-core + PIO + heterogeneous-core (RP2350) declarations all novel. Light-touch follow-up at 2026-06-25."
-  notes: "Tier A. Origin UK (pass). Daily activity; foundation-direct. URML-fit: very high."
+  response: acked
+  next_action: "Acked 2026-05-28 by @lurch (CONTRIBUTOR) at raspberrypi/pico-sdk#2975 (issuecomment-4565768381) with an org-attribution correction: RP2040/RP2350/pico-sdk are produced by Raspberry Pi Limited (business), not the Raspberry Pi Foundation (charity). Useful correction; thread still OPEN. **Action shape:** (a) propagate Raspberry-Pi-Limited attribution into RFC-0175 prose + any registry copy; (b) follow-up at 2026-06-25 if no further substantive reply. No founder reply required (light correction, not a question)."
+  notes: "Tier A. Origin UK (pass). Daily activity. URML-fit: very high. Org-attribution gotcha noted for downstream Raspberry-Pi-Foundation-related references."
 
 - slug: platformio
   rfc: 176
