@@ -1,0 +1,219 @@
+# Move #11 outreach ledger. One row per target.
+#
+# Move #11 (this file): **net-new VLA / robot foundation-model targets**
+# (post Move #2). After Move #10 (perception wave, 28 posts live 2026-05-28),
+# the gap-analysis surfaced six themes; founder picked Theme F (VLA /
+# foundation models) for Move #11. Move #2 (2026-05-23) already posted to
+# 21 AI/ML-layer targets with response: none across the board (one engaged,
+# one declined); Move #11 is the **net-new** layer — VLAs / robot foundation
+# models that have emerged since Move-2 or that Move-2 didn't reach.
+#
+# Verified 2026-05-28 via two parallel research agents covering 11
+# category-groups (generalist VLAs, diffusion-policy lineage,
+# dexterous-manipulation VLAs, NVIDIA newer lines, HuggingFace robotics
+# broader, Allen AI broader, Boston Dynamics AI Institute / RAI,
+# Google DeepMind robotics, Toyota Research broader, Microsoft / Apple
+# corporate, Singapore / allied research + OpenMind OS + 2026-Q2 newer).
+#
+# Engageable set: 15 rows in this ledger (9 Tier A vendor-style /
+# research-lab-direct + 6 Tier B research-collab / cross-citation with
+# caveats). RFC numbers reserved 0138-0152 for these 15; each draft is a
+# future session.
+#
+# Excluded set: 7 candidates were Tier C (excluded with cause: PRC-
+# domiciled per NDAA Section 889 — Psi-Robot/DexGraspVLA, InternRobotics,
+# HorizonRobotics; HK-origin gray area — SageCao1125/Mamba-Policy;
+# already engaged in Move-2 RFC-0050 — NVIDIA/Isaac-GR00T,
+# isaac-sim/IsaacLab; superseded — OpenMind/OM1-OTA replaced by
+# OpenMind/OM1 flagship). Full audit trail in
+# `examples/lighthouses/vla-net-new-research-2026-05-28.md`.
+#
+# Like Moves #2-#10, this file is NOT under the Move #1 parity test.
+# Move #11 RFCs are VLA / foundation-model outreach proposals; the wave
+# is research+ledger-stage only in this PR. RFC drafting (15 RFCs ×
+# ~1 session each) and Issue/Discussion posting are future work.
+#
+# Schema mirrors outreach-move10.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, next_action,
+# notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`.
+# `none` is the truthful default. All 15 rows below carry
+# `sent_at: ""` and `channel: deferred` until per-target RFCs
+# are drafted and engagement is posted on the upstream surface.
+
+# ============================================================
+# Tier A (9) — vendor-direct / research-lab-direct, OSI license,
+# adapter-grade or strong-substrate-overlap candidates
+# ============================================================
+
+- slug: openvla
+  rfc: 138
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "openvla/openvla (MIT, 6.3k stars, Issues enabled, Discussions disabled, last commit 2025-03-23, **not archived**). Stanford + TRI + Google DeepMind collaboration; 7B open generalist VLA; the foundational open-source VLA reference. Origin US (CA)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0138 (OpenVLA capability-manifest mapping + URML-as-action-substrate framing); per-target unresolved questions include OpenVLA's `extra_inputs` action-head extension pattern, manifest declaration of supported action heads, and the URML / OpenVLA execution-path boundary (URML pre-flight check vs URML as the validator above OpenVLA action output)."
+  notes: "Tier A. Origin US (pass). Foundational open VLA; URML-fit: high. Stale-but-foundational framing: last commit >12 months but the architecture is still the de facto open-VLA reference. Move-10 lesson: verify isArchived: false (confirmed false 2026-05-28)."
+
+- slug: octo
+  rfc: 139
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "octo-models/octo (MIT, 1.7k stars, Issues enabled, Discussions disabled, last commit 2024-07-31, **not archived**). UC Berkeley (Sergey Levine lab); 800k-trajectory diffusion-transformer policy. Origin US (CA)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0139 (Octo capability-manifest mapping); URML-fit framing: Octo's generalist-policy output is the layer URML's primitives consume; manifest declares supported embodiments + Octo's action-head class. Stale push date — engage with explicit acknowledgement; URML's RFC may itself be the reactivating nudge or yield a vendor-redirect to a successor project."
+  notes: "Tier B-borderline (kept Tier A for the research-lab-direct framing). Origin US (pass). Stale push date is the engagement-risk; the diffusion-transformer-policy architecture remains a reference."
+
+- slug: amazon-spherical-diffusion-policy
+  rfc: 140
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "amazon-science/Spherical_Diffusion_Policy (MIT, 42 stars, Issues enabled, Discussions disabled, last commit 2025-07-08, **not archived**). Amazon Science ICML 2025; SE(3)-equivariant diffusion-policy variant with real-robot demonstrations. Origin US (Santa Clara)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0140 (Amazon Science Spherical Diffusion Policy capability-manifest mapping); SE(3)-equivariance declaration is the schema-extension question (URML's manifest is not group-equivariance-aware in v0.1); shared diffusion-policy-class Spec RFC with RFC-0141 + RFC-0142."
+  notes: "Tier A. Origin US (pass). Small star count but Amazon Science vendor-direct lineage; SE(3)-equivariant angle is a distinct contribution worth a separate RFC."
+
+- slug: intuitive-robots-mode
+  rfc: 141
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "intuitive-robots/MoDE_Diffusion_Policy (MIT, 122 stars, Issues enabled, Discussions disabled, last commit 2025-05-16, **not archived**). ICLR 2025; Karlsruhe Institute of Technology (DE) + MIT (US); mixture-of-experts diffusion transformers. Active."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0141 (MoDE Diffusion Policy capability-manifest mapping); MoE declaration is the schema-extension question (URML's manifest does not today declare which expert / routing scheme is active); shared diffusion-policy-class Spec RFC with RFC-0140 + RFC-0142."
+  notes: "Tier A. Origin DE/US (pass — NATO allied). Active vendor-direct surface; MoE-VLA architecture is a distinct contribution worth a separate RFC."
+
+- slug: stanford-diffusion-policy
+  rfc: 142
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "real-stanford/diffusion_policy (MIT, 4.2k stars, Issues enabled, Discussions disabled, last commit 2024-12-24, **not archived**). Stanford / Columbia / TRI Cheng Chi et al; the foundational diffusion-policy paper. Origin US."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0142 (Diffusion Policy Stanford capability-manifest mapping); referenced in Move-2 RFC-0054 TRI-LBM notes as prior art but never directly engaged; the foundational diffusion-policy class umbrella for RFC-0140 (Amazon Spherical) and RFC-0141 (MoDE). Stale-but-foundational framing."
+  notes: "Tier A. Origin US (pass). Foundational; last commit stale but architecture is the reference."
+
+- slug: huggingface-smolagents
+  rfc: 143
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "huggingface/smolagents (Apache-2.0, 27.5k stars, Issues + Discussions both enabled, last commit 2026-05-26 very active, **not archived**). HuggingFace agent framework; code-generation agent backbone. Origin FR / multi-national (HQ Paris)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0143 (HuggingFace smolagents capability-manifest mapping); URML-fit framing: smolagents emits Python code which can compose URML primitives — the natural integration shape is a `urml_tool` registration alongside its other tools. Distinct from Move-2 RFC-0040 LeRobot (LeRobot is HuggingFace's robotics-policy library; smolagents is the agent-framework layer)."
+  notes: "Tier A. Origin FR / multi (pass). Highly active surface (27.5k stars); URML's NL-bridge composes naturally with smolagents."
+
+- slug: deepmind-mujoco-playground
+  rfc: 144
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "google-deepmind/mujoco_playground (Apache-2.0, 2.0k stars, Issues + Discussions both enabled, last commit 2026-05-27 very active, **not archived**). DeepMind GPU-accelerated MuJoCo robot-learning environment. Distinct from Move-2 RFC-0060 `google-deepmind/mujoco` (simulator core); mujoco_playground is the env+policy harness. Origin US/UK."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0144 (DeepMind MuJoCo Playground capability-manifest mapping); URML-fit framing: MuJoCo Playground is the env URML adapters target for sim conformance; URML manifest declares which env / task / observation-space; complements Move-2 MuJoCo simulator-core engagement at the env / RL-harness layer."
+  notes: "Tier A. Origin US/UK (pass). Highly active. Move-2 cross-link: distinct repo from the Move-2 mujoco core."
+
+- slug: deepmind-gemini-robotics-sdk
+  rfc: 145
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "google-deepmind/gemini-robotics-sdk (Apache-2.0, 582 stars, Issues enabled, last commit 2026-05-23 very active, **not archived**). DeepMind Gemini Robotics SDK; the multimodal VLA developer surface. Origin US/UK."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0145 (Gemini Robotics SDK capability-manifest mapping + URML-as-multimodal-typed-bridge framing); **highest-value Move-11 target** — Gemini Robotics is Google DeepMind's headline VLA. URML's natural-language layer (RFC-0021) + query_detection primitive compose with Gemini's multimodal tool-call surface in a way structurally similar to Cubert's cuvis-ai-agentic-skills (RFC-0123)."
+  notes: "Tier A. Origin US/UK (pass). The Move-11 priority target. Cross-link to RFC-0123 (Cubert agentic-skills) and RFC-0108 (NASA-JPL ROSA) as URML's two other NL-bridge engagement targets."
+
+- slug: openmind-om1
+  rfc: 146
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OpenMind/OM1 (MIT, 2.8k stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). OpenMind humanoid AI runtime flagship; openmind.com; 28 public repos in org; HQ United States. The OpenMind org has been quietly building a mobile-humanoid OS layer."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0146 (OpenMind OM1 capability-manifest mapping); URML-fit framing: OM1 is positioned as the OS layer for mobile humanoids — URML sits one layer above, providing the substrate-neutral intent vocabulary that OM1 dispatches. Distinct from any humanoid-OEM RFC; this is the OS engagement."
+  notes: "Tier A. Origin US (pass). Active surface; structurally URML-aligned (open mobile-humanoid OS)."
+
+# ============================================================
+# Tier B (6) — research-collab / cross-citation framing
+# (license-clarification asks, older push dates, or content-level
+# mismatch that argues for cross-citation rather than bundled adapter)
+# ============================================================
+
+- slug: allenai-ai2thor
+  rfc: 147
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "allenai/ai2thor (Apache-2.0, 1.7k stars, Issues + Discussions both enabled, last commit 2025-11-04, **not archived**). Allen AI visual interactive simulation; household-manipulation focus. Distinct from Move-2 RFC-0047 (allenai/molmoact, the VLA). Origin US."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0147 (Allen AI AI2-THOR capability-manifest mapping); URML-fit framing: AI2-THOR is a household-task simulation env URML adapters can target for conformance; manifest declares supported objects + interactions; cross-citation framing recommended given the env-vs-policy boundary."
+  notes: "Tier B. Origin US (pass). Allen AI broader (distinct from MolmoAct VLA in Move-2)."
+
+- slug: rai-theia
+  rfc: 148
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "rai-opensource/Theia (license listed as Other — clarification ask, 276 stars, Issues enabled, last commit 2025-11-06, **not archived**). RAI Institute (Boston Dynamics AI Institute) vision foundation model. Cross-link to RFC-0043 Spot/rai-opensource (engaged via Tim Perkins, COLLABORATOR not BD-employed) — Theia is a *different* RAI repo, vendor-direct from the Institute."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0148 (RAI Theia capability-manifest mapping + license-clarification ask); URML-fit framing: Theia is a perception foundation model; manifest declares Theia as the vision-substrate the URML adapter consumes. License-clarification ask is gating before adapter-grade bundling."
+  notes: "Tier B. Origin US (pass). Cross-link to RFC-0043 Spot/rai-opensource engaged thread; different RAI repo. License-clarification gate."
+
+- slug: rai-vlfm
+  rfc: 149
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "rai-opensource/vlfm (MIT, 749 stars, Issues enabled, last commit 2025-11-12, **not archived**). RAI Institute VLM-based navigation (ICRA 2024). Companion to RAI Theia. Origin US."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0149 (RAI VLFM capability-manifest mapping); URML-fit framing: VLFM provides VLM-based navigation primitives; manifest declares supported VLM backbones; companion RFC to RFC-0148 Theia (same org)."
+  notes: "Tier B. Origin US (pass). RAI Institute vendor-direct; pairs with RFC-0148."
+
+- slug: microsoft-psi
+  rfc: 150
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "microsoft/psi (license listed as Other — clarification ask, 570 stars, Issues + Discussions both enabled, last commit 2026-05-15 active, **not archived**). Microsoft Platform for Situated Intelligence; temporal streams + offline replay framework for multi-modal sensor fusion. Origin US (Redmond)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0150 (Microsoft PSI capability-manifest mapping + license-clarification ask); URML-fit framing: PSI is the temporal-stream substrate URML's sensor-fusion primitives can target; manifest declares PSI-pipeline binding."
+  notes: "Tier B. Origin US (pass). Active surface; license-clarification gate."
+
+- slug: microsoft-cogact
+  rfc: 151
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "microsoft/CogACT (MIT, 427 stars, Issues enabled, last commit 2025-10-30, **not archived**). Microsoft CVPR 2025 VLA for dexterous control. Origin US (Redmond)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0151 (Microsoft CogACT capability-manifest mapping); URML-fit framing: CogACT is a VLA URML's `query_detection` + dexterous-manipulation primitives can compose with; manifest declares CogACT action-head class."
+  notes: "Tier B. Origin US (pass). Microsoft corporate research broader (distinct from microsoft/psi at the temporal-streams layer)."
+
+- slug: nus-octopi
+  rfc: 152
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "clear-nus/octopi (license TBD — clarification ask, 76 stars, Issues enabled, last commit 2026-05-24 very active, **not archived**). National University of Singapore (NUS) Clear Lab; octopus-inspired soft-robotics. Origin Singapore (SG); passes US-federal default policy (NATO+ allied)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0152 (NUS Octopi soft-robotics capability-manifest mapping + license-clarification ask); URML-fit framing: Octopi is soft-body manipulation research — URML's manifest does not today declare soft-body actuator class; cross-citation framing recommended pending license + soft-body schema-extension Spec RFC."
+  notes: "Tier B. Origin SG (pass). Active surface; license-clarification gate; soft-body schema-extension queued."
