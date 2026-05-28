@@ -64,7 +64,7 @@
   contact: "hello-robot/stretch_ros2 (license: none visible — clarification ask, 120 stars, Issues enabled, last commit 2026-05-26 very active, **not archived**). Hello Robot Inc., US MIT spinoff. Vendor-direct ROS 2 interface for the Stretch mobile manipulator (the most open-source-friendly mobile-manipulator OEM in URML's research surface)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0184 (Hello Robot Stretch capability-manifest mapping + license-clarification ask); URML-fit framing: Stretch is the mobile-manipulator class URML's manifest declares for indoor / home-assistance / research deployments. Mobile-base + arm + head-pan-tilt-camera composition exercises URML's manifest cross-block boundaries (mobility + actuators + cameras). License-clarification ask gates adapter-grade reuse."
+  next_action: "RFC-0184 drafted 2026-05-28 on URML main (docs/rfcs/0184-hello-robot-stretch-outreach.md). First Move-14 RFC. License-clarification ask + mobile-manipulator topology Spec RFC (shared with RFC-0188) queued. Awaiting founder review then post Issue on hello-robot/stretch_ros2."
   notes: "Tier A. Origin US (pass). MIT spinoff; strongest mobile-manipulator URML-fit. URML-fit: very high; structurally matches URML's home-runtime + cobot-runtime patterns."
 
 - slug: frankaemika-franka-ros2
@@ -75,7 +75,7 @@
   contact: "frankaemika/franka_ros2 (Apache-2.0, 337 stars, Issues enabled, last commit 2026-05-19 active, **not archived**). Franka Robotics GmbH (formerly Franka Emika), Munich DE. Vendor-direct ROS 2 driver for Panda / FR3 cobot arm. **Deferred from Move-13 Theme C** — wrong layer there (cobot OEM not actuator vendor); correct layer here."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0185 (Franka Robotics capability-manifest mapping); URML-fit framing: Franka FR3 is the high-precision cobot arm URML's existing cobot-runtime fixtures (kinova_cobot_cell, ur_cell, kassow_cobot_cell, etc.) imply support for. Manifest declares Franka FR3 as the actuator class; URML's existing pick_from / place_at / swap_tool primitives (RFC-0013 industrial profile) dispatch via franka_ros2."
+  next_action: "RFC-0185 drafted 2026-05-28 on URML main (docs/rfcs/0185-frankaemika-franka-ros2-outreach.md). Correct-layer engagement (deferred from Move-13 Theme C). Cobot-arm precision-class + per-joint torque-sensing + CE-certification declaration Spec RFCs queued. Awaiting founder review then post Issue on frankaemika/franka_ros2."
   notes: "Tier A. Origin DE Munich (pass, NATO+EU). Apache-2.0 clean fit. URML-fit: very high for industrial / research cobot deployments."
 
 - slug: kinovarobotics-kinova-ros
@@ -86,7 +86,7 @@
   contact: "Kinovarobotics/kinova-ros (BSD-3-Clause, 410 stars, Issues enabled, last commit 2024-08-12, **not archived but stale 654 days**). Kinova Robotics, Montreal CA. Vendor-direct ROS driver for Jaco / Movo cobot arms. Large star count (410) signals deployed-fleet adoption despite staleness."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0186 (Kinova Robotics capability-manifest mapping); URML-fit framing: Jaco is the assistive-class cobot arm URML's existing kinova_cobot_cell manifest fixture implies support for. Manifest declares Kinova class; engagement is partly reactivating-nudge (>1.5yr stale) + partly checking whether ROS 2 successor surface exists."
+  next_action: "RFC-0186 drafted 2026-05-28 on URML main (docs/rfcs/0186-kinovarobotics-kinova-ros-outreach.md). Reactivating-nudge engagement + ROS 2 successor question. Formalizes URML's existing kinova_cobot_cell fixture stub upstream. Awaiting founder review then post Issue on Kinovarobotics/kinova-ros."
   notes: "Tier A. Origin CA Montreal (pass, NATO ally). Stale repo but large adoption signal; assistive / accessibility-class cobot lineage."
 
 # ---- Commercial humanoid (1, the only engageable one found) ----
@@ -99,7 +99,7 @@
   contact: "1x-technologies/eve-ros2-examples (Apache-2.0, 6 stars, Issues enabled, last commit 2026-01-12, **not archived**). 1X Technologies, Oslo NO. Vendor-direct ROS 2 examples for the EVE humanoid. **The only commercial humanoid OEM with vendor-direct active public robot code found in Move-14 research.**"
   last_touch: ""
   response: none
-  next_action: "draft RFC-0187 (1X Technologies EVE capability-manifest mapping); URML-fit framing: EVE / NEO are 1X's commercial humanoid platforms; URML's existing neo_biped manifest fixture (per RFC-0009) implies support that 1X is the only humanoid OEM to make engageable. Manifest declares 1X humanoid class; engagement validates the fixture upstream."
+  next_action: "RFC-0187 drafted 2026-05-28 on URML main (docs/rfcs/0187-1x-technologies-eve-outreach.md). **The only commercial humanoid OEM with vendor-direct active public robot code in Move-14 research.** Refines URML's existing neo_biped fixture upstream. Humanoid platform refinement + wheeled-humanoid topology + NN-controller class + managed-program distribution Spec RFCs queued. Awaiting founder review then post Issue on 1x-technologies/eve-ros2-examples."
   notes: "Tier A. Origin NO Oslo (pass, NATO ally). Modest star count (6) reflects developer-program-only posture but vendor-direct is real. URML-fit: high for humanoid class."
 
 # ============================================================
@@ -116,7 +116,7 @@
   contact: "fetchrobotics/fetch_ros (license: none visible — clarification ask, 202 stars, Issues enabled, last commit 2024-08-20, **not archived but stale 646 days**). Fetch Robotics (acquired by Zebra Technologies 2023), US San Jose. Vendor-direct ROS driver for Fetch mobile manipulator + Freight base."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0188 (Fetch Robotics capability-manifest mapping + license-clarification ask + post-acquisition-governance question); URML-fit framing: Fetch is a mobile-manipulator lineage with substantial research-lab deployment; engagement asks whether Zebra-era governance maintains the GitHub surface or has migrated engagement elsewhere."
+  next_action: "RFC-0188 drafted 2026-05-28 on URML main (docs/rfcs/0188-fetchrobotics-fetch-ros-outreach.md). License-clarification + post-Zebra-acquisition-governance asks front-and-centre. Mobile-manipulator topology Spec RFC shared with RFC-0184. Acquisition-era governance declaration novel. Awaiting founder review then post Issue on fetchrobotics/fetch_ros."
   notes: "Tier B. Origin US (pass). Stale + post-acquisition + license-unclear posture argues for cross-citation depth; engagement is partly a status-check on whether the platform is still community-supported."
 
 - slug: pal-robotics-tiago-tutorials
@@ -127,7 +127,7 @@
   contact: "pal-robotics/tiago_tutorials (license: none visible — clarification ask, 87 stars, Issues enabled, last commit 2024-02-29, **not archived but stale 818 days**). PAL Robotics, Barcelona ES. Tutorials repo for the TIAGo mobile manipulator + extended TALOS / ARI humanoid surfaces."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0189 (PAL Robotics capability-manifest mapping + canonical-engagement-surface ask); URML-fit framing: TIAGo / TALOS / ARI are full-body European cobot + humanoid lineage; tutorials repo is one of many PAL repos. Engagement asks for the canonical engagement surface (vs the stale tutorials repo) + license clarification + manifest mapping."
+  next_action: "RFC-0189 drafted 2026-05-28 on URML main (docs/rfcs/0189-pal-robotics-tiago-outreach.md). Canonical-engagement-surface ask + license-clarification ask front-and-centre. Multi-platform (TIAGo + TALOS + ARI) topology Spec RFCs queued. Awaiting founder review then post Issue on pal-robotics/tiago_tutorials."
   notes: "Tier B. Origin ES Barcelona (pass, NATO+EU). Stale on tutorials repo; PAL has multiple repos with potentially fresher activity. Engagement-channel guidance is the primary ask."
 
 - slug: toyota-research-hsr
@@ -138,5 +138,5 @@
   contact: "ToyotaResearchInstitute/hsr_description (BSD-3-Clause-Clear, 37 stars, Issues enabled, last commit 2024-05-05, **not archived but stale 753 days**). Toyota Research Institute, US (Cambridge MA / Los Altos CA). URDF/mesh assets for the HSR (Human Support Robot). **Completes the 7 Move-14 engageable RFCs.**"
   last_touch: ""
   response: none
-  next_action: "draft RFC-0190 (Toyota HSR capability-manifest mapping + canonical-engagement-surface ask); URML-fit framing: HSR is Toyota's research / assistive-class mobile manipulator. TRI is research-direct (not Toyota Japan OEM); engagement asks for the canonical HSR engagement surface (Toyota Japan vs TRI) + checks if a successor / fresher surface exists. Cross-citation framing recommended given the URDF/mesh-asset-only scope of the public repo."
+  next_action: "RFC-0190 drafted 2026-05-28 on URML main (docs/rfcs/0190-toyota-research-hsr-outreach.md). **Completes the 7 Move-14 engageable RFCs.** Canonical-engagement-surface ask (TRI vs Toyota-Japan split). Mobile-manipulator topology (shared with RFC-0184 / RFC-0188) + research-consortium-class + end-effector-mounted-camera (grip-camera) Spec RFCs queued. Awaiting founder review then post Issue on ToyotaResearchInstitute/hsr_description."
   notes: "Tier B. Origin US (TRI; Toyota Japan parent). Stale; research-org engagement is structurally different from vendor-OEM engagement. URML-fit: medium for assistive-class mobile manipulator."
