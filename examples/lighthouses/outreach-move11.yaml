@@ -110,7 +110,7 @@
   contact: "huggingface/smolagents (Apache-2.0, 27.5k stars, Issues + Discussions both enabled, last commit 2026-05-26 very active, **not archived**). HuggingFace agent framework; code-generation agent backbone. Origin FR / multi-national (HQ Paris)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0143 (HuggingFace smolagents capability-manifest mapping); URML-fit framing: smolagents emits Python code which can compose URML primitives — the natural integration shape is a `urml_tool` registration alongside its other tools. Distinct from Move-2 RFC-0040 LeRobot (LeRobot is HuggingFace's robotics-policy library; smolagents is the agent-framework layer)."
+  next_action: "RFC-0143 drafted 2026-05-28 on URML main (docs/rfcs/0143-huggingface-smolagents-outreach.md). NL-layer-substrate Spec RFC queued (shared with RFC-0108 ROSA + RFC-0145 Gemini Robotics SDK). Awaiting founder review then post Discussion (Ideas category preferred) on huggingface/smolagents."
   notes: "Tier A. Origin FR / multi (pass). Highly active surface (27.5k stars); URML's NL-bridge composes naturally with smolagents."
 
 - slug: deepmind-mujoco-playground
@@ -121,7 +121,7 @@
   contact: "google-deepmind/mujoco_playground (Apache-2.0, 2.0k stars, Issues + Discussions both enabled, last commit 2026-05-27 very active, **not archived**). DeepMind GPU-accelerated MuJoCo robot-learning environment. Distinct from Move-2 RFC-0060 `google-deepmind/mujoco` (simulator core); mujoco_playground is the env+policy harness. Origin US/UK."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0144 (DeepMind MuJoCo Playground capability-manifest mapping); URML-fit framing: MuJoCo Playground is the env URML adapters target for sim conformance; URML manifest declares which env / task / observation-space; complements Move-2 MuJoCo simulator-core engagement at the env / RL-harness layer."
+  next_action: "RFC-0144 drafted 2026-05-28 on URML main (docs/rfcs/0144-deepmind-mujoco-playground-outreach.md). Sim-substrate Spec RFC queued (shared with Move-2 RFC-0050 Isaac-Lab / RFC-0051 CARLA / RFC-0060 MuJoCo-core). Explicit boundary noted vs Move-2 RFC-0060 mujoco-core. Awaiting founder review then post Discussion on google-deepmind/mujoco_playground."
   notes: "Tier A. Origin US/UK (pass). Highly active. Move-2 cross-link: distinct repo from the Move-2 mujoco core."
 
 - slug: deepmind-gemini-robotics-sdk
@@ -132,7 +132,7 @@
   contact: "google-deepmind/gemini-robotics-sdk (Apache-2.0, 582 stars, Issues enabled, last commit 2026-05-23 very active, **not archived**). DeepMind Gemini Robotics SDK; the multimodal VLA developer surface. Origin US/UK."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0145 (Gemini Robotics SDK capability-manifest mapping + URML-as-multimodal-typed-bridge framing); **highest-value Move-11 target** — Gemini Robotics is Google DeepMind's headline VLA. URML's natural-language layer (RFC-0021) + query_detection primitive compose with Gemini's multimodal tool-call surface in a way structurally similar to Cubert's cuvis-ai-agentic-skills (RFC-0123)."
+  next_action: "RFC-0145 drafted 2026-05-28 on URML main (docs/rfcs/0145-deepmind-gemini-robotics-sdk-outreach.md). **Highest-value Move-11 target.** Multimodal-VLA tool-call surface declaration question front-and-centre. Shared NL-layer-substrate Spec RFC with RFC-0108 ROSA + RFC-0143 smolagents. Awaiting founder review then post Issue on google-deepmind/gemini-robotics-sdk; engagement-prioritization recommended."
   notes: "Tier A. Origin US/UK (pass). The Move-11 priority target. Cross-link to RFC-0123 (Cubert agentic-skills) and RFC-0108 (NASA-JPL ROSA) as URML's two other NL-bridge engagement targets."
 
 - slug: openmind-om1
@@ -143,7 +143,7 @@
   contact: "OpenMind/OM1 (MIT, 2.8k stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). OpenMind humanoid AI runtime flagship; openmind.com; 28 public repos in org; HQ United States. The OpenMind org has been quietly building a mobile-humanoid OS layer."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0146 (OpenMind OM1 capability-manifest mapping); URML-fit framing: OM1 is positioned as the OS layer for mobile humanoids — URML sits one layer above, providing the substrate-neutral intent vocabulary that OM1 dispatches. Distinct from any humanoid-OEM RFC; this is the OS engagement."
+  next_action: "RFC-0146 drafted 2026-05-28 on URML main (docs/rfcs/0146-openmind-om1-outreach.md). Two Spec RFCs queued — OS-layer-substrate declaration + mobile-humanoid mobility class (extending RFC-0009 biped/quadruped). Awaiting founder review then post Issue on OpenMind/OM1."
   notes: "Tier A. Origin US (pass). Active surface; structurally URML-aligned (open mobile-humanoid OS)."
 
 # ============================================================
