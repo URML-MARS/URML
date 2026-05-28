@@ -55,7 +55,7 @@
   contact: "openvla/openvla (MIT, 6.3k stars, Issues enabled, Discussions disabled, last commit 2025-03-23, **not archived**). Stanford + TRI + Google DeepMind collaboration; 7B open generalist VLA; the foundational open-source VLA reference. Origin US (CA)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0138 (OpenVLA capability-manifest mapping + URML-as-action-substrate framing); per-target unresolved questions include OpenVLA's `extra_inputs` action-head extension pattern, manifest declaration of supported action heads, and the URML / OpenVLA execution-path boundary (URML pre-flight check vs URML as the validator above OpenVLA action output)."
+  next_action: "RFC-0138 drafted 2026-05-28 on URML main (docs/rfcs/0138-openvla-outreach.md). First net-new VLA RFC of Move-11. Surfaces action-head class Spec RFC (shared with RFC-0139 / RFC-0151). Awaiting founder review then post Issue on openvla/openvla with explicit staleness acknowledgement."
   notes: "Tier A. Origin US (pass). Foundational open VLA; URML-fit: high. Stale-but-foundational framing: last commit >12 months but the architecture is still the de facto open-VLA reference. Move-10 lesson: verify isArchived: false (confirmed false 2026-05-28)."
 
 - slug: octo
@@ -66,7 +66,7 @@
   contact: "octo-models/octo (MIT, 1.7k stars, Issues enabled, Discussions disabled, last commit 2024-07-31, **not archived**). UC Berkeley (Sergey Levine lab); 800k-trajectory diffusion-transformer policy. Origin US (CA)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0139 (Octo capability-manifest mapping); URML-fit framing: Octo's generalist-policy output is the layer URML's primitives consume; manifest declares supported embodiments + Octo's action-head class. Stale push date — engage with explicit acknowledgement; URML's RFC may itself be the reactivating nudge or yield a vendor-redirect to a successor project."
+  next_action: "RFC-0139 drafted 2026-05-28 on URML main (docs/rfcs/0139-octo-outreach.md). Pairs with RFC-0138 OpenVLA on action-head-class Spec RFC; introduces action-chunk-horizon manifest gap. Awaiting founder review then post Issue on octo-models/octo expecting slow response given 22mo staleness."
   notes: "Tier B-borderline (kept Tier A for the research-lab-direct framing). Origin US (pass). Stale push date is the engagement-risk; the diffusion-transformer-policy architecture remains a reference."
 
 - slug: amazon-spherical-diffusion-policy
@@ -77,7 +77,7 @@
   contact: "amazon-science/Spherical_Diffusion_Policy (MIT, 42 stars, Issues enabled, Discussions disabled, last commit 2025-07-08, **not archived**). Amazon Science ICML 2025; SE(3)-equivariant diffusion-policy variant with real-robot demonstrations. Origin US (Santa Clara)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0140 (Amazon Science Spherical Diffusion Policy capability-manifest mapping); SE(3)-equivariance declaration is the schema-extension question (URML's manifest is not group-equivariance-aware in v0.1); shared diffusion-policy-class Spec RFC with RFC-0141 + RFC-0142."
+  next_action: "RFC-0140 drafted 2026-05-28 on URML main (docs/rfcs/0140-amazon-spherical-diffusion-policy-outreach.md). SE(3)-equivariance Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0141 / RFC-0142). Awaiting founder review then post Issue on amazon-science/Spherical_Diffusion_Policy."
   notes: "Tier A. Origin US (pass). Small star count but Amazon Science vendor-direct lineage; SE(3)-equivariant angle is a distinct contribution worth a separate RFC."
 
 - slug: intuitive-robots-mode
@@ -88,7 +88,7 @@
   contact: "intuitive-robots/MoDE_Diffusion_Policy (MIT, 122 stars, Issues enabled, Discussions disabled, last commit 2025-05-16, **not archived**). ICLR 2025; Karlsruhe Institute of Technology (DE) + MIT (US); mixture-of-experts diffusion transformers. Active."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0141 (MoDE Diffusion Policy capability-manifest mapping); MoE declaration is the schema-extension question (URML's manifest does not today declare which expert / routing scheme is active); shared diffusion-policy-class Spec RFC with RFC-0140 + RFC-0142."
+  next_action: "RFC-0141 drafted 2026-05-28 on URML main (docs/rfcs/0141-intuitive-robots-mode-diffusion-policy-outreach.md). MoE routing Spec RFC + diffusion-policy class Spec RFC (shared with RFC-0140 / RFC-0142). Awaiting founder review then post Issue on intuitive-robots/MoDE_Diffusion_Policy."
   notes: "Tier A. Origin DE/US (pass — NATO allied). Active vendor-direct surface; MoE-VLA architecture is a distinct contribution worth a separate RFC."
 
 - slug: stanford-diffusion-policy
@@ -99,7 +99,7 @@
   contact: "real-stanford/diffusion_policy (MIT, 4.2k stars, Issues enabled, Discussions disabled, last commit 2024-12-24, **not archived**). Stanford / Columbia / TRI Cheng Chi et al; the foundational diffusion-policy paper. Origin US."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0142 (Diffusion Policy Stanford capability-manifest mapping); referenced in Move-2 RFC-0054 TRI-LBM notes as prior art but never directly engaged; the foundational diffusion-policy class umbrella for RFC-0140 (Amazon Spherical) and RFC-0141 (MoDE). Stale-but-foundational framing."
+  next_action: "RFC-0142 drafted 2026-05-28 on URML main (docs/rfcs/0142-stanford-diffusion-policy-outreach.md). Foundational DP architectural-reference engagement; first direct engagement (Move-2 RFC-0054 only cross-cited as prior art). Diffusion-policy class Spec RFC umbrella. Awaiting founder review then post Issue on real-stanford/diffusion_policy."
   notes: "Tier A. Origin US (pass). Foundational; last commit stale but architecture is the reference."
 
 - slug: huggingface-smolagents
