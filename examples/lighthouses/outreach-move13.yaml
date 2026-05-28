@@ -92,7 +92,7 @@
   contact: "microbit-foundation/micropython-microbit-v2 (MIT, 56 stars, Issues enabled, Discussions enabled, last commit 2024-09-18, **not archived**). BBC micro:bit Foundation; UK Cambridge."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0172 (BBC micro:bit Foundation capability-manifest mapping); URML-fit framing: **direct match to URML's existing `microbit_edu` manifest fixture (RFC-0018)** — the micro-class robot manifest pattern. micro:bit Foundation engagement validates URML's micro-class story upstream."
+  next_action: "RFC-0172 drafted 2026-05-28 on URML main (docs/rfcs/0172-microbit-foundation-outreach.md). Direct cross-link to URML's existing microbit_edu fixture (RFC-0018). Multi-MCU + firmware-language substrate Spec RFCs queued. Awaiting founder review then post Discussion on microbit-foundation/micropython-microbit-v2."
   notes: "Tier A. Origin UK (pass, Five Eyes ally). Foundation-direct; modest GitHub stars but durable institutional surface. URML-fit: very high (existing fixture)."
 
 - slug: arduino
@@ -103,7 +103,7 @@
   contact: "arduino/Arduino (license: Other — clarification ask, 14.6k stars, Issues enabled, last commit 2025-10-11, **not archived**). Arduino S.r.l., Italy."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0173 (Arduino capability-manifest mapping + license-clarification ask); URML-fit framing: world's largest hobbyist MCU platform; URML manifest declares Arduino-compatible board class. License clarification (LGPL vs GPL on which surface) gates adapter-grade reuse."
+  next_action: "RFC-0173 drafted 2026-05-28 on URML main (docs/rfcs/0173-arduino-outreach.md). License-clarification ask front-and-centre (LGPL libraries vs GPL IDE disambiguation). MCU + maker platform Spec RFC queued. FQBN declaration novel. Awaiting founder review then post Issue on arduino/Arduino."
   notes: "Tier A. Origin IT (pass, NATO+EU). License-clarification ask is the gating item. URML-fit: very high for educational + maker class."
 
 - slug: adafruit-circuitpython
@@ -114,7 +114,7 @@
   contact: "adafruit/CircuitPython (Other, MIT-compatible per the project license, 4.5k stars, Issues + Discussions enabled, last commit 2026-05-27, **not archived**). Adafruit Industries, US NY."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0174 (Adafruit CircuitPython capability-manifest mapping); URML-fit framing: Python on MCU is the natural language URML's `microbit_edu` manifest pattern composes with. Adapter shape: CircuitPython device → URML primitives via Mu / Thonny / IDE-side bridge."
+  next_action: "RFC-0174 drafted 2026-05-28 on URML main (docs/rfcs/0174-adafruit-circuitpython-outreach.md). Sibling Python-on-MCU RFC with RFC-0172 micro:bit MicroPython. 400+ board-variant scale + drag-drop deploy-model novel. Awaiting founder review then post Discussion on adafruit/CircuitPython."
   notes: "Tier A. Origin US (pass). Daily activity; Discussions enabled. URML-fit: very high for Python-on-MCU class."
 
 - slug: raspberry-pi-pico-sdk
@@ -125,7 +125,7 @@
   contact: "raspberrypi/pico-sdk (BSD-3-Clause, 4.8k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Raspberry Pi Foundation; UK Cambridge."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0175 (Raspberry Pi Pico SDK capability-manifest mapping); URML-fit framing: RP2040 / RP2350 SDK is the dual-core MCU substrate URML's manifest can declare for educational / maker deployments. Companion to RFC-0172 micro:bit (UK Foundation surface) at the higher-perf MCU class."
+  next_action: "RFC-0175 drafted 2026-05-28 on URML main (docs/rfcs/0175-raspberry-pi-pico-sdk-outreach.md). Companion UK-foundation MCU engagement to RFC-0172 micro:bit at higher-perf class. Dual-core + PIO + heterogeneous-core (RP2350) declarations all novel. Awaiting founder review then post Issue on raspberrypi/pico-sdk."
   notes: "Tier A. Origin UK (pass). Daily activity; foundation-direct. URML-fit: very high."
 
 - slug: platformio
@@ -136,7 +136,7 @@
   contact: "platformio/platformio-core (Apache-2.0, 9.3k stars, Issues enabled, last commit 2026-04-21, **not archived**). PlatformIO Labs; Ukraine HQ."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0176 (PlatformIO capability-manifest mapping); URML-fit framing: PlatformIO is the cross-board IDE/build layer spanning 900+ MCU boards. URML's manifest can declare PlatformIO as the build-substrate the firmware artifact targets; PlatformIO's board-config maps to URML's hardware identifier."
+  next_action: "RFC-0176 drafted 2026-05-28 on URML main (docs/rfcs/0176-platformio-outreach.md). Build-system substrate layer above per-board RFCs. 900+ board-catalog identifier-scheme question + build-time dependency-spec declaration novel. Awaiting founder review then post Issue on platformio/platformio-core."
   notes: "Tier A. Origin UA (pass — Ukraine is allied / strategic US partner). Apache-2.0 clean fit. URML-fit: high; PlatformIO already abstracts MCU diversity that URML's manifest reasons about."
 
 # ---- Foundation-direct RTOS / framework (2) ----
