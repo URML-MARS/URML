@@ -1,0 +1,237 @@
+# Move #12 outreach ledger. One row per target.
+#
+# Move #12 (this file): **speech / translation / robot-command-library**
+# targets. Fills the gap left by Moves #1-#11: the projects that produce
+# the inputs and substrates for URML's Layer-4 NL grammar (STT, TTS,
+# translation) and the libraries URML's Layer-3 behavior composition
+# would compile down to (behavior-tree / skill-catalog DSLs). Distinct
+# from Move #11 (VLAs / robot foundation-models) which is upstream of
+# language infrastructure.
+#
+# URML's Layer-4 NL grammar reserves multilingual slots for Hebrew,
+# Spanish, Japanese, and Mandarin; Layer-2 has `listen` and `speak`
+# primitives with `input: speech | text`. None of the prior eleven
+# outreach waves engaged the projects on the other side of those
+# interfaces. Move #12 is that engagement.
+#
+# Verified 2026-05-28 via two general-purpose research agents in
+# parallel covering 4 buckets (STT/wake-word, TTS, translation/
+# multilingual NL, robot command libraries / behavior-tree DSLs / skill
+# catalogs). Each row passed through `gh repo view --json
+# licenseInfo,stargazerCount,pushedAt,isArchived,hasIssuesEnabled,
+# hasDiscussionsEnabled` and an origin/domicile audit per URML's
+# US-federal default policy (NDAA Section 889 excludes PRC-domiciled).
+#
+# Engageable set: 16 rows in this ledger (12 Tier A vendor-style /
+# research-lab-direct + 4 Tier B with explicit friction notes — archived
+# repo, AGPL copyleft, GPL copyleft, or commercial-SDK posture). RFC
+# numbers reserved 0153-0168 for these 16; each draft is a future session.
+#
+# Excluded set: 6 candidates were Tier C (excluded with cause:
+# PRC-domiciled per NDAA Section 889 — k2-fsa/sherpa-onnx (Xiaomi),
+# SWivid/F5-TTS (SJTU); Russia-domiciled under URML's parallel-exclude
+# posture pending an explicit Russia rule — alphacep/vosk-api; dead
+# upstream with no canonical successor — coqui-ai/STT, coqui-ai/TTS,
+# festvox/festival). Full audit trail in
+# `examples/lighthouses/move12-research-2026-05-28.md`.
+#
+# Like Moves #2-#11, this file is NOT under the Move #1 parity test.
+# Move #12 RFCs are speech / translation / command-library outreach
+# proposals; the wave is research+ledger-stage only in this PR. RFC
+# drafting (16 RFCs × ~1 session each, batched ~5 per PR) and Issue/
+# Discussion posting are future work.
+#
+# Schema mirrors outreach-move11.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, next_action,
+# notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`.
+# `none` is the truthful default. All 16 rows below carry
+# `sent_at: ""` and `channel: deferred` until per-target RFCs
+# are drafted and engagement is posted on the upstream surface.
+
+# ============================================================
+# Tier A (12) — vendor-direct / research-lab-direct, OSI license,
+# adapter-grade or strong-substrate-overlap candidates
+# ============================================================
+
+- slug: whisper
+  rfc: 153
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "openai/whisper (MIT, 100.8k stars, **Issues disabled — Discussions only**, last commit 2026-04-15, **not archived**). OpenAI reference open-weights STT; the de facto baseline. Origin US (CA)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0153 draft pending. First Move-12 RFC. Pairs with Layer-2 `listen` primitive (`input: speech`). Engagement channel constrained: Issues are disabled on openai/whisper, so post must go to Discussions (Show-and-tell or Q&A category). Awaiting draft + founder review."
+  notes: "Tier A. Origin US (pass). Foundational STT reference; URML-fit: high. Engagement-channel friction: Discussions-only changes the post body framing vs an Issue."
+
+- slug: faster-whisper
+  rfc: 154
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "SYSTRAN/faster-whisper (MIT, 23.2k stars, Issues + Discussions both enabled, last commit 2025-11-19, **not archived**). CTranslate2-accelerated Whisper inference. Migrated from guillaumekln/faster-whisper to SYSTRAN/. Origin FR (SYSTRAN, Paris)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0154 draft pending. Realtime-inference angle for `listen` primitive on resource-constrained robots. Note the org migration (guillaumekln → SYSTRAN) in the RFC. Awaiting draft + founder review."
+  notes: "Tier A. Origin FR (pass — NATO/EU allied). Active surface; realtime-latency profile is the distinct contribution worth a separate RFC from upstream Whisper."
+
+- slug: whisper-cpp
+  rfc: 155
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ggml-org/whisper.cpp (MIT, 50.2k stars, Issues + Discussions both enabled, last commit 2026-05-28 very active, **not archived**). Embedded C++ Whisper inference. **Migrated from ggerganov/ to ggml-org/** — note the org rename when posting. Origin BG / individual (ggml-org)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0155 draft pending. Embedded / edge-substrate angle: Layer-1 robots without Python can host whisper.cpp directly. Note org migration in the RFC. Awaiting draft + founder review."
+  notes: "Tier A. Origin BG / individual (pass — NATO/EU allied). Ubiquitous on edge; URML composition angle is the no-Python deployment path."
+
+- slug: openvoice
+  rfc: 156
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "myshell-ai/OpenVoice (MIT, 36.6k stars, Issues + Discussions both enabled, last commit 2025-04-19, **not archived**). Zero-shot voice cloning. MyShell is US-domiciled (San Francisco, founded 2023; Crunchbase, CB Insights, PitchBook concur). MIT-the-institute co-authored. Founders CN-heritage but corporate domicile passes US-federal default."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0156 draft pending. Voice-consistency angle for `speak` primitive on robot fleets (one robot personality across deployments). Note the corporate-domicile audit in the RFC (defensive against PRC-conflation). Awaiting draft + founder review."
+  notes: "Tier A. Origin US (pass). Domicile-audit-passed; note that origin-research surfaced this explicitly so the per-RFC line should cite the Crunchbase/CB Insights check."
+
+- slug: opus-mt-train
+  rfc: 157
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Helsinki-NLP/OPUS-MT-train (MIT, 403 stars, Issues enabled, Discussions disabled, last commit 2026-01-17, **not archived**). University of Helsinki Language Technology group; 300+ language-pair translation models. Origin FI (University of Helsinki, EU)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0157 draft pending. Direct map onto Layer-4 multilingual slot reservation (Hebrew, Spanish, Japanese, Mandarin). First Move-12 translation RFC. Awaiting draft + founder review."
+  notes: "Tier A. Origin FI (pass — EU allied). Smaller star count but vendor-direct from a research lab with 300+ active language-pair models; foundational for URML's multilingual story."
+
+- slug: argos-translate
+  rfc: 158
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "argosopentech/argos-translate (MIT, 6.1k stars, Issues + Discussions both enabled, last commit 2026-04-25, **not archived**). Offline on-device translation library; federated-fleet friendly (no API dependency). Origin US (Ithaca NY)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0158 draft pending. Federated-fleet / offline angle: URML programs run fully offline once validated; Argos preserves that for the translation step. Awaiting draft + founder review."
+  notes: "Tier A. Origin US (pass). Active surface; offline-on-device posture aligns with URML's no-cloud-runtime invariant from CLAUDE.md."
+
+- slug: marian-dev
+  rfc: 159
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "marian-nmt/marian-dev (license listed as Other — MIT-style historically, clarification ask, 287 stars, Issues + Discussions both enabled, last commit 2025-07-09, **not archived**). Marian NMT toolkit; research backbone behind OPUS-MT. Maintainers split University of Edinburgh (UK) + Microsoft Translator (US / MSR)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0159 draft pending. Research-backbone-substrate angle. License-clarification ask (Other → MIT) front and centre. Awaiting draft + founder review."
+  notes: "Tier A. Origin UK/US (pass). Low star count but anchored by MSR + Edinburgh; the research path under OPUS-MT and many other translation projects. License-clarification gate."
+
+- slug: behaviortree-cpp
+  rfc: 160
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "BehaviorTree/BehaviorTree.CPP (MIT, 4.0k stars, Issues + Discussions both enabled, last commit 2026-05-22, **not archived**). Canonical C++ behavior-tree engine in robotics. Maintainer Davide Faconti. Origin IT (EU)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0160 draft pending. URML Layer-3 candidate compilation target. First Move-12 robot-command-library RFC. Pairs with RFC-0161 (py_trees, Python sibling) on the BT-target-class Spec RFC. Awaiting draft + founder review."
+  notes: "Tier A. Origin IT (pass — EU allied). The de facto C++ BT engine; URML Layer-3 angle is strong; substrate-neutral fit (BehaviorTree.CPP runs on ROS 2 and standalone)."
+
+- slug: py-trees
+  rfc: 161
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "splintered-reality/py_trees (license listed as Other — BSD-style historically, verify LICENSE, 604 stars, Issues + Discussions both enabled, last commit 2026-05-22, **not archived**). Python-side sibling to BehaviorTree.CPP. Maintainer Daniel Stonier (Yujin Robot lineage). Origin NZ/AU (Stonier)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0161 draft pending. URML Layer-3 → py_trees.Behaviour subclasses on ROS 2 Python runtimes. Pairs with RFC-0160 (BehaviorTree.CPP, C++ sibling) on the BT-target-class Spec RFC. License-clarification ask. Awaiting draft + founder review."
+  notes: "Tier A. Origin NZ/AU (pass — allied). The de facto Python BT for ROS 2; pairs with BehaviorTree.CPP for two-language coverage."
+
+- slug: moveit-task-constructor
+  rfc: 162
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "moveit/moveit_task_constructor (BSD-3-Clause, 271 stars, Issues + Discussions both enabled, last commit 2026-04-23, **not archived**). MoveIt 2 hierarchical task planning. Origin DE/US (MoveIt community, PickNik-led)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0162 draft pending. URML pick / place / swap_tool primitives (RFC-0013 industrial profile) map onto MoveIt Task Constructor subtasks. Cross-link to RFC-0013 industrial-profile picks. Awaiting draft + founder review."
+  notes: "Tier A. Origin DE/US (pass — NATO/EU allied). Industrial-manipulation lane; explicit URML primitive → MoveIt subtask mapping is the contribution."
+
+- slug: skiros2
+  rfc: 163
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "RobotLabLTH/SkiROS2 (license listed as Other — verify LICENSE, 224 stars, Issues enabled, Discussions disabled, last commit 2025-06-09, **not archived**). Knowledge + skills framework for ROS 2. Lund University Robotics Lab (LTH). Origin SE (Lund, EU). **Note**: prior URML internal notes had this at Aalborg/RVMI — the active repo is at Lund."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0163 draft pending. URML Layer-3 behavior + Layer-2 primitives map to SkiROS skill semantics; knowledge-graph integration for scene-aware planning. License-clarification ask. Awaiting draft + founder review."
+  notes: "Tier A. Origin SE (pass — EU allied). Smaller surface but academically-anchored skills-and-knowledge framing is the distinct angle. Internal-notes correction: Lund LTH, not Aalborg RVMI."
+
+- slug: langgraph
+  rfc: 164
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "langchain-ai/langgraph (MIT, 33.2k stars, Issues enabled, Discussions disabled, last commit 2026-05-28 very active, **not archived**). Agent-orchestration DSL; StateGraph for multi-step planning under uncertainty. Origin US (LangChain Inc)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0164 draft pending. URML programs spawn LangGraph sub-agents for delegated planning. Cross-link to RFC-0143 (huggingface/smolagents, Move-11) on agent-orchestration class. Awaiting draft + founder review."
+  notes: "Tier A. Origin US (pass). Highly active; sub-agent delegation is the URML angle, distinct from smolagents' code-generation focus."
+
+# ============================================================
+# Tier B (4) — engageable with explicit friction notes
+# (archived upstream, GPL/AGPL copyleft, or commercial-SDK posture)
+# ============================================================
+
+- slug: porcupine
+  rfc: 165
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Picovoice/porcupine (Apache-2.0 SDK, 4.8k stars, Issues enabled, Discussions disabled, last commit 2026-05-28, **not archived**). Wake-word detection. Origin CA (Vancouver). Commercial-SDK model: free tier + paid commercial use."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0165 draft pending. Wake-word front-end to the `listen` primitive on RTOS / real-time substrates. Engagement-friction: Picovoice sells the gated tiers, so commercial-engagement may be tepid; URML frames the ask as open-source-tier composition. Awaiting draft + founder review."
+  notes: "Tier B. Origin CA (pass — NATO allied). Friction = commercial-SDK posture. Engagement value is real (wake-word is genuinely the missing piece for always-listening robot Layer-4), but expect slow upstream engagement."
+
+- slug: piper1-gpl
+  rfc: 166
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OHF-Voice/piper1-gpl (**GPL-3.0**, 4.2k stars, Issues + Discussions both enabled, last commit 2026-04-07, **not archived**). Successor to archived rhasspy/piper. Open Home Foundation. 75+ language neural TTS. Origin US."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0166 draft pending. **GPL friction**: URML cannot statically link from Apache-2.0 reference runtimes. Engagement frames URML-as-neighbor calling Piper via subprocess / IPC. Confirm framing with founder before drafting. Awaiting draft + founder review."
+  notes: "Tier B. Origin US (pass). Friction = GPL-3.0 copyleft. Only living open-source TTS after Coqui shutdown; the IPC-shape framing is the only clean integration. Note that the predecessor `rhasspy/piper` is archived as of 2025-08-26."
+
+- slug: fairseq
+  rfc: 167
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "facebookresearch/fairseq (MIT, 32.2k stars, Issues enabled, Discussions disabled, **archived 2025-09-30**). Meta's seq2seq toolkit. NLLB-200 weights are hosted here. Origin US (Meta)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0167 draft pending. **Archived friction**: no PRs merge. NLLB-200 weights are **CC-BY-NC 4.0** (non-commercial only) which is independently disqualifying for URML's commercial-friendly stance unless URML ships under `--no-policy` non-commercial flag. Engagement-ask: what is the successor surface for NLLB engagement now that fairseq is archived? Awaiting draft + founder review."
+  notes: "Tier B. Origin US (pass). Friction = archived + non-commercial model weights. Engagement value is the NLLB-200-as-substrate question, not fairseq itself."
+
+- slug: libretranslate
+  rfc: 168
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "LibreTranslate/LibreTranslate (**AGPL-3.0**, 14.4k stars, Issues enabled, Discussions disabled, last commit 2026-05-26 very active, **not archived**). Self-hosted translation server. Origin community / US-led."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0168 draft pending. **AGPL friction**: network-copyleft contamination. URML integration must stay strictly at the REST-API boundary (URML-as-client, never URML-embeds-LibreTranslate). Awaiting draft + founder review."
+  notes: "Tier B. Origin community / US-led (pass). Friction = AGPL-3.0 network-copyleft. Engagement framing: URML as a client of a self-hosted LibreTranslate instance; never linked or embedded."
