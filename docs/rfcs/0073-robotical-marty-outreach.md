@@ -4,7 +4,7 @@ title: Robotical (Marty) integration, request for comment from robotical maintai
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Open
 created: 2026-05-24
-updated: 2026-05-25
+updated: 2026-05-28
 supersedes: —
 superseded-by: —
 ---
@@ -96,6 +96,35 @@ What stays open (not closed in this round, recorded honestly):
 - **Re-engaging NikTheGeek1 to request the upstream `martypy` README/docs link.** That ask was gated in round 1 on real-hardware validation, which has not closed. URML will return to the thread once it can demonstrate end-to-end on real hardware.
 
 Net effect: `RoboticalMartyAdapter` is now URML's first scaffold-to-production graduation. Other engaged adapters (Kawasaki, Zivid, Maytronics, Spot rai-opensource-side) remain at scaffold or proposal-only; their graduations are future tickets.
+
+## Engagement received (round 4, 2026-05-28)
+
+NikTheGeek1 returned on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52) with a concrete offer: he has a Marty v2 on hand and will run a URML-provided validation script against real hardware and paste the output back into the thread. Ownership stays clean: URML maintains the adapter and the script; Robotical runs the script and shares the JSON. His own framing: *"a URML-provided validation script run by Robotical on real Marty hardware, not a Robotical-maintained adapter."*
+
+His script constraints:
+
+- self-contained (single file, no URML install required, only `martypy` plus the Python standard library);
+- prints commands before running them, so the script is reviewable end-to-end before any call lands on hardware;
+- movement is small and explicit, opt-in via flags, with no walking or kicking in the first pass;
+- the optional visible commands he named are `eyes('normal')` and `stand_straight()`;
+- the connection must close cleanly.
+
+URML's response: shipped [`reference/edu-runtime/scripts/marty_validate.py`](../../reference/edu-runtime/scripts/marty_validate.py). The script:
+
+- Takes a `--method usb|wifi|socket` argument (matching the round-3 authoritative connection-string surface; `usb` and `wifi` for Marty v2, `socket` for Marty v1; `ws://` correctly absent).
+- Prints a human-readable plan on stderr before any call runs, and a `RUN [...]: marty.<method>(...)` line before each individual invocation, so the entire call sequence is visible to the operator without reading the file.
+- Has a `--plan-only` flag that prints the plan and exits without importing `martypy` or connecting, for an extra-cautious dry-run.
+- Defaults to **sensor-only**: no movement happens unless the operator explicitly passes `--with-eyes` and / or `--with-stand-straight`. The opt-in movement set is limited to the two commands NikTheGeek1 named in round 4 (no walking, no kicking, no `arms` / `lean` / `sidestep`, no `dance` / `celebrate`).
+- Exercises the URML-documented `martypy.Marty` API surface against real hardware: `get_battery_remaining`, `get_power_status`, `get_accelerometer` (no-axis list form per round-3 trace), `get_accelerometer_x` / `_y` / `_z` (only if present), `get_robot_status`, `get_distance_sensor`, plus a probe for `get_system_info` / `get_version_info` / `get_software_version`.
+- Captures everything in a single JSON object on stdout, structured like the round-3 trace so URML can record it verbatim. Exceptions are captured per-call (each call returns an `{"ok": false, "error": "..."}` envelope rather than crashing the run), so a single broken getter does not abort the script.
+- Disconnects in a `finally` block, preferring `marty.close()` and falling back to `marty.disconnect()`.
+
+What this engagement does and does not close:
+
+- **Closes (substantially): the round-1 item-5 "real-hardware validation" gate**, in the form of *URML's documented API surface verified against a real Marty v2 over WiFi*. The validation is URML-authored, Robotical-executed, JSON-receipted in this thread.
+- **Stays open: URML's own end-to-end run of the `RoboticalMartyAdapter` (not just the underlying `martypy` surface) on a real Marty.** That gate waits on URML having access to its own Marty unit (community loan or community-channel demo); the `marty-hardware-e2e` job in the CI workflow remains a placeholder that fails loudly until then.
+
+This is round four of four substantive engagement rounds across the Marty thread, and the third instance in which a Robotical maintainer's contribution has materially upgraded URML's adapter without URML having to guess. The thread's cumulative shape (scaffold guidance, five factual corrections, real-Marty trace + authoritative skill / getter list, hardware-validation offer) is recorded here verbatim so that the precedent is reusable by URML's other engaged outreach threads.
 
 ## Summary
 
