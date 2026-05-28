@@ -63,7 +63,7 @@
   contact: "openai/whisper (MIT, 100.8k stars, **Issues disabled — Discussions only**, last commit 2026-04-15, **not archived**). OpenAI reference open-weights STT; the de facto baseline. Origin US (CA)."
   last_touch: ""
   response: none
-  next_action: "RFC-0153 draft pending. First Move-12 RFC. Pairs with Layer-2 `listen` primitive (`input: speech`). Engagement channel constrained: Issues are disabled on openai/whisper, so post must go to Discussions (Show-and-tell or Q&A category). Awaiting draft + founder review."
+  next_action: "RFC-0153 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0153-whisper-outreach.md). First Move-12 RFC. Pairs with Layer-2 `listen` primitive (`input: speech`); shares STT-engine-class declaration Spec RFC with RFC-0154 / RFC-0155. Engagement channel constrained: Issues are disabled on openai/whisper, so post must go to Discussions (Show-and-tell or Q&A category). Awaiting founder review then post Discussion on openai/whisper."
   notes: "Tier A. Origin US (pass). Foundational STT reference; URML-fit: high. Engagement-channel friction: Discussions-only changes the post body framing vs an Issue."
 
 - slug: faster-whisper
@@ -74,7 +74,7 @@
   contact: "SYSTRAN/faster-whisper (MIT, 23.2k stars, Issues + Discussions both enabled, last commit 2025-11-19, **not archived**). CTranslate2-accelerated Whisper inference. Migrated from guillaumekln/faster-whisper to SYSTRAN/. Origin FR (SYSTRAN, Paris)."
   last_touch: ""
   response: none
-  next_action: "RFC-0154 draft pending. Realtime-inference angle for `listen` primitive on resource-constrained robots. Note the org migration (guillaumekln → SYSTRAN) in the RFC. Awaiting draft + founder review."
+  next_action: "RFC-0154 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0154-faster-whisper-outreach.md). Realtime-inference angle for `listen` primitive on resource-constrained robots. Shares STT-engine-class + STT-inference-runtime declaration Spec RFC with RFC-0153 / RFC-0155; introduces quantization-level + latency-class manifest gaps. Org migration (guillaumekln → SYSTRAN) noted in RFC body. Awaiting founder review then post Discussion on SYSTRAN/faster-whisper."
   notes: "Tier A. Origin FR (pass — NATO/EU allied). Active surface; realtime-latency profile is the distinct contribution worth a separate RFC from upstream Whisper."
 
 - slug: whisper-cpp
@@ -85,7 +85,7 @@
   contact: "ggml-org/whisper.cpp (MIT, 50.2k stars, Issues + Discussions both enabled, last commit 2026-05-28 very active, **not archived**). Embedded C++ Whisper inference. **Migrated from ggerganov/ to ggml-org/** — note the org rename when posting. Origin BG / individual (ggml-org)."
   last_touch: ""
   response: none
-  next_action: "RFC-0155 draft pending. Embedded / edge-substrate angle: Layer-1 robots without Python can host whisper.cpp directly. Note org migration in the RFC. Awaiting draft + founder review."
+  next_action: "RFC-0155 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0155-whisper-cpp-outreach.md). Embedded / edge-substrate angle: Layer-1 robots without Python can host whisper.cpp directly. Shares STT-engine-class + STT-inference-runtime declaration Spec RFC with RFC-0153 / RFC-0154; introduces novel runtime-dependency-profile manifest gap (no_python / libc_only / rtos). Org migration (ggerganov → ggml-org) noted in RFC body. Awaiting founder review then post Discussion on ggml-org/whisper.cpp."
   notes: "Tier A. Origin BG / individual (pass — NATO/EU allied). Ubiquitous on edge; URML composition angle is the no-Python deployment path."
 
 - slug: openvoice
@@ -96,7 +96,7 @@
   contact: "myshell-ai/OpenVoice (MIT, 36.6k stars, Issues + Discussions both enabled, last commit 2025-04-19, **not archived**). Zero-shot voice cloning. MyShell is US-domiciled (San Francisco, founded 2023; Crunchbase, CB Insights, PitchBook concur). MIT-the-institute co-authored. Founders CN-heritage but corporate domicile passes US-federal default."
   last_touch: ""
   response: none
-  next_action: "RFC-0156 draft pending. Voice-consistency angle for `speak` primitive on robot fleets (one robot personality across deployments). Note the corporate-domicile audit in the RFC (defensive against PRC-conflation). Awaiting draft + founder review."
+  next_action: "RFC-0156 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0156-openvoice-outreach.md). **First TTS RFC in URML.** Voice-consistency angle for `speak` primitive on robot fleets (one robot personality across deployments). TTS-engine-class declaration Spec RFC queued (parallel to STT-engine-class shared by RFC-0153 / RFC-0154 / RFC-0155). Domicile audit cited explicitly in RFC body to forestall conflation with PRC-domiciled exclusions in same Move-12 wave. Awaiting founder review then post Discussion on myshell-ai/OpenVoice."
   notes: "Tier A. Origin US (pass). Domicile-audit-passed; note that origin-research surfaced this explicitly so the per-RFC line should cite the Crunchbase/CB Insights check."
 
 - slug: opus-mt-train
