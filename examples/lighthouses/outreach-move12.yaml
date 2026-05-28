@@ -199,9 +199,9 @@
   channel: issue
   contact: "Picovoice/porcupine (Apache-2.0 SDK, 4.8k stars, Issues enabled, Discussions disabled, last commit 2026-05-28, **not archived**). Wake-word detection. Origin CA (Vancouver). Commercial-SDK model: free tier + paid commercial use."
   last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted 2026-05-28 to https://github.com/Picovoice/porcupine/issues/1578. RFC-0165 drafted 2026-05-28 on URML branch rfc/move12-batch4-tierb-speech (docs/rfcs/0165-porcupine-outreach.md). Wake-word front-end to the `listen` primitive on RTOS / real-time substrates; closes the always-on speech-input gap that full STT cannot fill (resource-footprint constraint). Engagement-friction: Picovoice sells the gated tiers; URML frames ask as open-source-tier composition. Introduces wake-word substrate declaration + license-tier declaration + wake-word-to-STT handoff manifest fields. Awaiting founder review then post Issue on Picovoice/porcupine."
-  notes: "Tier B. Origin CA (pass — NATO allied). Friction = commercial-SDK posture. Engagement value is real (wake-word is genuinely the missing piece for always-listening robot Layer-4), but expect slow upstream engagement."
+  response: declined
+  next_action: "Declined 2026-05-28 by @Gabe-Picovoice (CONTRIBUTOR): closed citing 'not submitted using one of the provided issue templates'. Template-violation close, not an AI-spam flag — different signal from OVOS/LibreTranslate/Moteus pattern. No reply, no resubmission via template (templates are customer-support shaped, not maintainer-design shape). Park; revisit only if Picovoice opens a non-customer design-discussion surface."
+  notes: "Tier B. Origin CA (pass — NATO allied). Friction = commercial-SDK posture confirmed at the surface: Picovoice/porcupine Issues route through customer-support templates, not a design-discussion surface. Engagement value (wake-word as the always-on speech-input substrate) remains real on the spec side; URML can still cite Porcupine externally without an upstream-blessed adapter."
 
 - slug: piper1-gpl
   rfc: 166

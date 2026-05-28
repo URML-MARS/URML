@@ -116,12 +116,15 @@
   rfc: 47
   sent_at: "2026-05-23"
   posted_url: "https://github.com/allenai/molmoact/issues/38"
+  posted_urls:
+    - "https://github.com/allenai/molmoact/issues/38"
+    - "https://github.com/allenai/molmoact/issues/39"
   channel: github_issue_and_email
   contact: "allenai/molmoact + haoquanf/jasonl/jiafeid@allenai.org; Dieter Fox (Ai2 Embodied AI initiative lead since 2026-03)"
-  last_touch: 2026-05-23
-  response: none
-  next_action: "wait 14 d (until 2026-06-06); if silent, polite follow-up on allenai/molmoact#38 or a courtesy email to the three published authors; if reply, bump last_touch, set response per enum, write the concrete next step here."
-  notes: "Move #2 RFC; proposal-only (urml-molmoact-bridge wrapping MolmoAct's action output; preview-and-correct loop carried by URML wait_for + report primitives). Verified surface 2026-05-23: allenai/molmoact Apache-2.0, Issues enabled, Discussions disabled, module path olmo/hf_model/molmoact/, author emails published in the repo. MolmoAct 2 released May 2026 along with the largest open-source two-armed tabletop manipulation dataset. Ai2 is a US 501(c)(3) nonprofit headquartered in Seattle, WA. Bimanual coordination flagged as an open question in the RFC, not a presumed solution. Courtesy email to haoquanf/jasonl/jiafeid@allenai.org sent 2026-05-23 by founder, parallel to the GitHub Issue."
+  last_touch: 2026-05-28
+  response: engaged
+  next_action: "Engaged 2026-05-28 by @jiafeid (CONTRIBUTOR — published Ai2 author) on BOTH threads (#38 and #39) with identical terse directive: 'Please start using MolmoAct2'. Issues closed. Reading: maintainer directs URML to re-target the bridge from MolmoAct to MolmoAct2 (the May-2026 successor with the bimanual tabletop dataset). Action: post brief polite acknowledgement on both threads + retarget RFC-0047 follow-up to MolmoAct2 (the RFC already references the May-2026 release, but the bridge framing should pivot fully). Bimanual coordination question (URML Layer-2 vs Layer-3) becomes more urgent given MolmoAct2's bimanual dataset focus."
+  notes: "Move #2 RFC; proposal-only (urml-molmoact-bridge wrapping MolmoAct's action output; preview-and-correct loop carried by URML wait_for + report primitives). Verified surface 2026-05-23: allenai/molmoact Apache-2.0, Issues enabled, Discussions disabled, module path olmo/hf_model/molmoact/, author emails published in the repo. MolmoAct 2 released May 2026 along with the largest open-source two-armed tabletop manipulation dataset. Ai2 is a US 501(c)(3) nonprofit headquartered in Seattle, WA. Bimanual coordination flagged as an open question in the RFC, not a presumed solution. Courtesy email to haoquanf/jasonl/jiafeid@allenai.org sent 2026-05-23 by founder, parallel to the GitHub Issue. Engaged response from @jiafeid 2026-05-28 (identical 'Please start using MolmoAct2' on both #38 and #39); a published Ai2 author replied on first-touch — terse but directive, which is itself a strong signal. URML's first engaged response from a Tier-1 US AI research institution."
 - slug: anthropic-mcp-and-skills
   rfc: 48
   sent_at: "2026-05-23"
