@@ -1,0 +1,225 @@
+# Move #13 outreach ledger. One row per target.
+#
+# Move #13 (this file): **open-source actuators + embedded / maker substrate**
+# (Theme C from the Move-11 backlog gap analysis). After Move #11 (net-new
+# VLA / foundation-model wave, posted via PR #178), founder picked Theme C
+# ahead of Theme B (mobile manipulators + humanoids, queued for Move #14).
+#
+# URML's substrate-neutral claim composes from the top of the stack (NL
+# layer, Move-11 Gemini Robotics SDK / smolagents) down to the embedded
+# edge — motor controllers, MCU substrates, maker platforms. Move-13
+# engages Layer-0 of URML's substrate story: the actuator and embedded
+# vocabularies URML's micro-class robot story (RFC-0018 `microbit_edu`
+# pattern) depends on.
+#
+# Verified 2026-05-28 via two parallel research agents covering actuator/
+# motor-controller and embedded/maker categories, cross-checked against
+# all prior ledgers (Moves 1-12).
+#
+# Engageable set: 15 rows in this ledger (10 Tier A vendor-direct /
+# foundation-direct + 5 Tier B research-collab / cross-citation with
+# caveats). RFC numbers reserved 0169-0183 for these 15; each draft is a
+# future session.
+#
+# Excluded set: 12 candidates were Tier C (excluded with cause: PRC-
+# domiciled / NDAA Section 889 — T-Motor; Shanghai-HQ operator-decision
+# flag — Espressif; stale > 6 mo — ODRI, Nordic, ARM Mbed, Tessel; no
+# GitHub presence — MyActuator, TI InstaSPIN, ADI motor refs; wrong
+# layer / theme — Franka, ROS 2 Controls, SparkFun). Full audit trail in
+# `examples/lighthouses/move13-research-2026-05-28.md`.
+#
+# Like Moves #2-#12, this file is NOT under the Move #1 parity test.
+# Move #13 RFCs are actuator/embedded outreach proposals; the wave
+# is research+ledger-stage only in this PR. RFC drafting (15 RFCs ×
+# ~1 session each) and Issue/Discussion posting are future work.
+#
+# Schema mirrors outreach-move11.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, next_action,
+# notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`.
+# `none` is the truthful default. All 15 rows below carry
+# `sent_at: ""` and `channel: deferred` until per-target RFCs
+# are drafted and engagement is posted on the upstream surface.
+
+# ============================================================
+# Tier A (10) — vendor-direct / foundation-direct, OSI license,
+# adapter-eligible or strong-substrate-overlap candidates
+# ============================================================
+
+# ---- Motor controllers / actuators (3) ----
+
+- slug: odrive-robotics
+  rfc: 169
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "odriverobotics/ODrive (MIT, 3.6k stars, Issues enabled, last commit 2026-01-20 — 4mo stale but flagship, **not archived**). ODrive Robotics commercial entity, US-origin. Brushless motor controller firmware + hardware."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0169 (ODrive Robotics capability-manifest mapping); URML-fit framing: ODrive is the Layer-0 actuator-controller substrate URML's manifest declares; per-axis actuator declarations map to ODrive's brushless-motor-control configuration. Adapter-eligible at the host-USB / CAN interface layer."
+  notes: "Tier A. Origin US (pass). Flagship US-origin open-hardware actuator controller. URML-fit: high for high-torque mobile-base / quadruped / cobot actuators."
+
+- slug: mjbots-moteus
+  rfc: 170
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "mjbots/moteus (Apache-2.0, 1.2k stars, Issues enabled, last commit 2026-05-25 very active, **not archived**). mjbots Robotic Systems vendor-direct. US-origin brushless servo controller."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0170 (mjbots Moteus capability-manifest mapping); URML-fit framing: Moteus is the Layer-0 brushless-servo substrate URML's manifest declares for legged / quadruped robot actuators (Stanford Pupper / Solo / similar lineage all use Moteus class drives)."
+  notes: "Tier A. Origin US (pass). Apache-2.0 clean fit. URML-fit: high; many quadruped research platforms use mjbots."
+
+- slug: trinamic-tmc-api
+  rfc: 171
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Trinamic/TMC-API (MIT, 260 stars, Issues enabled, last commit 2026-04-07, **not archived**). Trinamic Motion Control (Analog Devices subsidiary). Origin Hamburg DE."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0171 (Trinamic TMC-API capability-manifest mapping); URML-fit framing: stepper-driver substrate at the chip-class layer; URML manifest declares which TMC driver class is active. Cross-citation framing appropriate given chip-vs-camera engagement-level pattern from RFC-0137 (AMS-OSRAM)."
+  notes: "Tier A. Origin DE (pass, NATO allied). Vendor-direct via ADI acquisition. URML-fit: medium for stepper-class actuators (3D printers, lab gantries, educational hardware)."
+
+# ---- MCU + maker platforms (5) ----
+
+- slug: microbit-foundation
+  rfc: 172
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "microbit-foundation/micropython-microbit-v2 (MIT, 56 stars, Issues enabled, Discussions enabled, last commit 2024-09-18, **not archived**). BBC micro:bit Foundation; UK Cambridge."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0172 (BBC micro:bit Foundation capability-manifest mapping); URML-fit framing: **direct match to URML's existing `microbit_edu` manifest fixture (RFC-0018)** — the micro-class robot manifest pattern. micro:bit Foundation engagement validates URML's micro-class story upstream."
+  notes: "Tier A. Origin UK (pass, Five Eyes ally). Foundation-direct; modest GitHub stars but durable institutional surface. URML-fit: very high (existing fixture)."
+
+- slug: arduino
+  rfc: 173
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "arduino/Arduino (license: Other — clarification ask, 14.6k stars, Issues enabled, last commit 2025-10-11, **not archived**). Arduino S.r.l., Italy."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0173 (Arduino capability-manifest mapping + license-clarification ask); URML-fit framing: world's largest hobbyist MCU platform; URML manifest declares Arduino-compatible board class. License clarification (LGPL vs GPL on which surface) gates adapter-grade reuse."
+  notes: "Tier A. Origin IT (pass, NATO+EU). License-clarification ask is the gating item. URML-fit: very high for educational + maker class."
+
+- slug: adafruit-circuitpython
+  rfc: 174
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "adafruit/CircuitPython (Other, MIT-compatible per the project license, 4.5k stars, Issues + Discussions enabled, last commit 2026-05-27, **not archived**). Adafruit Industries, US NY."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0174 (Adafruit CircuitPython capability-manifest mapping); URML-fit framing: Python on MCU is the natural language URML's `microbit_edu` manifest pattern composes with. Adapter shape: CircuitPython device → URML primitives via Mu / Thonny / IDE-side bridge."
+  notes: "Tier A. Origin US (pass). Daily activity; Discussions enabled. URML-fit: very high for Python-on-MCU class."
+
+- slug: raspberry-pi-pico-sdk
+  rfc: 175
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "raspberrypi/pico-sdk (BSD-3-Clause, 4.8k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Raspberry Pi Foundation; UK Cambridge."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0175 (Raspberry Pi Pico SDK capability-manifest mapping); URML-fit framing: RP2040 / RP2350 SDK is the dual-core MCU substrate URML's manifest can declare for educational / maker deployments. Companion to RFC-0172 micro:bit (UK Foundation surface) at the higher-perf MCU class."
+  notes: "Tier A. Origin UK (pass). Daily activity; foundation-direct. URML-fit: very high."
+
+- slug: platformio
+  rfc: 176
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "platformio/platformio-core (Apache-2.0, 9.3k stars, Issues enabled, last commit 2026-04-21, **not archived**). PlatformIO Labs; Ukraine HQ."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0176 (PlatformIO capability-manifest mapping); URML-fit framing: PlatformIO is the cross-board IDE/build layer spanning 900+ MCU boards. URML's manifest can declare PlatformIO as the build-substrate the firmware artifact targets; PlatformIO's board-config maps to URML's hardware identifier."
+  notes: "Tier A. Origin UA (pass — Ukraine is allied / strategic US partner). Apache-2.0 clean fit. URML-fit: high; PlatformIO already abstracts MCU diversity that URML's manifest reasons about."
+
+# ---- Foundation-direct RTOS / framework (2) ----
+
+- slug: micro-ros
+  rfc: 177
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "micro-ROS/micro_ros_setup (Apache-2.0, 493 stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). Multi-vendor consortium under Linux Foundation / ROS 2 ecosystem."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0177 (micro-ROS capability-manifest mapping); URML-fit framing: micro-ROS is the natural language-substrate bridge between URML primitives and MCU-class embedded targets. URML's existing ros2-runtime composes with micro-ROS at the MCU edge; manifest declares micro-ROS as the substrate."
+  notes: "Tier A. Origin multi-national (Linux Foundation). Foundation-direct. URML-fit: very high — micro-ROS is the structural bridge URML's substrate story needs at the MCU edge."
+
+- slug: zephyr
+  rfc: 178
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "zephyrproject-rtos/zephyr (Apache-2.0, 15.4k stars, Issues + Discussions enabled, last commit 2026-05-28 daily activity, **not archived**). Zephyr Project under Linux Foundation; multi-vendor (Intel, NXP, Nordic, Silicon Labs, etc.)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0178 (Zephyr Project capability-manifest mapping); URML-fit framing: Zephyr is the industrial-grade RTOS substrate URML's manifest declares for MCU-class robots requiring real-time guarantees. Foundation-direct engagement; complements micro-ROS (RFC-0177) at the RTOS layer."
+  notes: "Tier A. Origin multi-national (Linux Foundation). Foundation-direct. URML-fit: high."
+
+# ============================================================
+# Tier B (5) — research-collab / cross-citation framing
+# (license-clarification asks, copyleft posture, or community-vs-vendor
+# distinctions that argue for cross-citation rather than bundled adapter)
+# ============================================================
+
+- slug: simplefoc
+  rfc: 179
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "simplefoc/Arduino-FOC (MIT, 2.8k stars, Issues + Discussions enabled, last commit 2026-05-22 active, **not archived**). Community-maintained FOC motor-control library; vendor-neutral."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0179 (SimpleFOC capability-manifest mapping); URML-fit framing: SimpleFOC is the community FOC reference library URML's manifest can declare as the motor-control substrate for educational / maker FOC deployments. Companion to RFC-0169 ODrive (commercial vendor-direct) at the community-library layer."
+  notes: "Tier B. Community-maintained (vendor-neutral). MIT clean fit. URML-fit: medium for educational FOC class."
+
+- slug: vesc-bldc
+  rfc: 180
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "vedderb/bldc (license TBD — clarification ask, 3.2k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Maintainer Benjamin Vedder; Sweden."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0180 (VESC Project capability-manifest mapping + license-clarification ask); URML-fit framing: VESC is the open-source brushless ESC widely used in e-bike / e-scooter / robotics applications. License clarification gates adapter-grade reuse."
+  notes: "Tier B. Origin SE (pass). License-clarification ask. URML-fit: medium-high; large existing deployment base."
+
+- slug: bitcraze-crazyflie
+  rfc: 181
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "bitcraze/crazyflie-firmware (GPL-3.0, 1.5k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). Bitcraze AB, Sweden."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0181 (Bitcraze Crazyflie capability-manifest mapping); URML-fit framing: Crazyflie is the open-source research nano-quadcopter platform; URML's drone profile (RFC-0008) + multirotor mobility class compose with Crazyflie's lib. GPL-3.0 limits Apache-2.0 bundling — cross-citation framing recommended."
+  notes: "Tier B. Origin SE (pass). GPL-3.0 copyleft. URML-fit: high for research-drone class; cross-citation appropriate."
+
+- slug: stm-stm32cube
+  rfc: 182
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "STMicroelectronics/STM32CubeF4 (Other — mixed license, 1.2k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). STMicroelectronics; HQ Geneva CH (Franco-Italian)."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0182 (STMicroelectronics STM32Cube capability-manifest mapping + license-clarification ask); URML-fit framing: STM32 is one of the most-deployed MCU families; URML's manifest declares STM32 board class. Mixed-license posture gates adapter-grade reuse — cross-citation appropriate."
+  notes: "Tier B. Origin CH/FR/IT (pass, NATO+EU). Mixed license. URML-fit: high for industrial / professional MCU class."
+
+- slug: tinygo
+  rfc: 183
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "tinygo-org/tinygo (Apache-2.0, 17.5k stars, Issues + Discussions enabled, last commit 2026-05-28 daily activity, **not archived**). Community-maintained Go-language compiler for MCU."
+  last_touch: ""
+  response: none
+  next_action: "draft RFC-0183 (TinyGo capability-manifest mapping); URML-fit framing: TinyGo enables Go-language firmware on MCU; URML's manifest declares the language-substrate class for firmware artifacts. Foundation-style community surface; cross-citation framing appropriate. **Completes the 15 Move-13 engageable RFCs.**"
+  notes: "Tier B. Community-maintained (vendor-neutral; Linux-Foundation-adjacent posture). Apache-2.0 clean fit. URML-fit: medium for Go-on-MCU class."
