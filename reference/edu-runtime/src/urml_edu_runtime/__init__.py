@@ -4,6 +4,7 @@
   LegoSpikeAdapter     — LEGO SPIKE Prime / Mindstorms hub over Pybricks BLE.
   ThymioAdapter        — Thymio over the Aseba TDM (Thymio Device Manager).
   RoboticalMartyAdapter — Robotical Marty v1/v2 via the martypy skill library.
+  PetoiAdapter         — Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library.
   (+ EduConfig, BRAND_ADAPTERS, load_edu_config)
 
 The classroom/maker adoption flywheel (RFC-0011). Each platform's
@@ -25,6 +26,7 @@ from urml_edu_runtime.adapter import (
     EduConfig,
     EduSkillCall,
     LegoSpikeAdapter,
+    PetoiAdapter,
     RoboticalMartyAdapter,
     ThymioAdapter,
     VexV5Adapter,
@@ -36,6 +38,7 @@ BRAND_ADAPTERS = {
     "lego_spike": LegoSpikeAdapter,
     "thymio": ThymioAdapter,
     "marty": RoboticalMartyAdapter,
+    "petoi": PetoiAdapter,
 }
 
 __all__ = [
@@ -44,6 +47,7 @@ __all__ = [
     "EduConfig",
     "EduSkillCall",
     "LegoSpikeAdapter",
+    "PetoiAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",
     "VexV5Adapter",

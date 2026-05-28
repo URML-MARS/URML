@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "urml-edu-runtime"
 version = "0.1.1"
-description = "Educational-platform reference runtime for URML — VEX V5, LEGO Mindstorms/SPIKE, Thymio, Robotical Marty, zero ROS."
+description = "Educational-platform reference runtime for URML — VEX V5, LEGO Mindstorms/SPIKE, Thymio, Robotical Marty, Petoi Bittle / Nybble, zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "urml", "runtime"]
+keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "petoi", "bittle", "nybble", "opencat", "urml", "runtime"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -53,6 +53,16 @@ thymio = [
 # supported by martypy and is out of scope for this adapter.
 marty = [
   "martypy>=3.6",
+]
+# Petoi Bittle X / Bittle / Nybble Q (Shenzhen, CN) via the OpenCat
+# skill-library command surface. The canonical Python-wrapper package
+# name is a round-2 ask of the PetoiCamp maintainer on
+# PetoiCamp/OpenCat-Quadruped-Robot#113 (round-1 engagement 2026-05-28).
+# 'petoi_mindpluslib' is a placeholder; the adapter only requires *some*
+# Python object that exposes the OpenCat skill-library command surface
+# (named methods or send_command(token, *args)).
+petoi = [
+  "petoi_mindpluslib",
 ]
 dev = [
   "pytest>=8",

@@ -2,9 +2,9 @@
 rfc: 0062
 title: Petoi (Bittle / Nybble) integration, request for comment from PetoiCamp maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-24
-updated: 2026-05-24
+updated: 2026-05-28
 supersedes: —
 superseded-by: —
 ---
@@ -24,6 +24,25 @@ superseded-by: —
 ---
 
 # RFC-0062: Petoi (Bittle / Nybble) integration, request for comment from PetoiCamp maintainers
+
+## Engagement received (2026-05-28)
+
+Dr. Rongzhong Li (Petoi founder, GitHub `borntoleave`, collaborator on `PetoiCamp/OpenCat-Quadruped-Robot`) replied on [PetoiCamp/OpenCat-Quadruped-Robot#113](https://github.com/PetoiCamp/OpenCat-Quadruped-Robot/issues/113) with substantive technical guidance. The maintainer-side answers to the seven RFC questions:
+
+1. **Skill-library mapping.** OpenCat already speaks a documented parametric command vocabulary that is the right shape for URML. Examples given verbatim by the maintainer: `kwkF 5` (walk forward 5 cycles), `ktrF 2000` (trot forward 2000 ms), `kcrL 30` (crawl left 30 degrees; reads IMU to decide when to stop). Implicit answer to the implicit-`move_to` vs explicit-`gait()` question: the OpenCat command surface is parametric, so URML should support parametric dispatch, not no-arg gait-name tokens. The authoritative skill table is [`src/InstinctBittleESP.h`](https://github.com/PetoiCamp/OpenCatEsp32-Quadruped-Robot/blob/main/src/InstinctBittleESP.h) in the ESP32 repo.
+2. **Adapter home.** "Yes, that structure is fine." URML-repo home under `reference/edu-runtime/` is accepted. Scope of contribution from the Petoi side stays open pending workload clarity.
+3. **Manifest granularity.** Single parametric manifest, not per-product. *"The OpenCat/OpenCatEsp32 works for all models, with a one-line modification to the macros line. So you can keep the project simple."* URML's response: ship one `petoi` manifest (with a variant field for Bittle X / Bittle / Nybble Q where deployment-specific detail matters), not three.
+4. **`ros_opencat` alignment.** Not directly answered. URML defaults to OpenCat serial direct per the prior Alternative 2 in this RFC; can pivot if the maintainer follows up.
+5. **Add-ons.** *"They can be deferred for now."* URML's response: scaffold manifest declares `gripper: none`; add-on per-component manifests are a future ticket.
+6. **Conformance lane.** *"Yes, we'd be happy to include it with a working demo link."* OpenCat-side README / docs link gated on URML shipping a working demo link (the planned hero demo: Bittle X on a desk acting an English sentence).
+7. **ESP32 retarget (volunteered).** *"We have switched to ESP32 lines for its resources and connectivity."* The canonical repo is [`PetoiCamp/OpenCatEsp32-Quadruped-Robot`](https://github.com/PetoiCamp/OpenCatEsp32-Quadruped-Robot), not the older `OpenCat`. Transports: serial, Bluetooth, WebSocket.
+
+URML's response: shipped `PetoiAdapter` in [`reference/edu-runtime/`](../../reference/edu-runtime/) alongside the existing VEX V5 / LEGO SPIKE / Thymio / Robotical Marty adapters. The adapter mirrors the `RoboticalMartyAdapter` parametric-dispatch shape (string form for no-arg tokens like `ksit` / `krest`; `EduSkillCall(method, args, kwargs)` for parametric calls like `EduSkillCall("send_command", ["kwkF", 5])` for raw OpenCat tokens, or `EduSkillCall("walk", ["forward", 5])` for named methods if the wrapper exposes them). Manifest fixture (`petoi_bittle_x.yaml`) and conformance fixture (`06_petoi_patrol_positive.yaml`) shipped against `MockROSAdapter`; the conformance fixture sets `policy: none` because Petoi origin is CN and the bundled US-federal default policy would reject under Pass 5 (the default-policy rejection path is already covered by `home/07_policy_country_denied` and `home/08_policy_none_accepts_otherwise_denied`). State moves from Draft to Open.
+
+This is URML's second engagement-driven adapter shipment (after `RoboticalMartyAdapter` on RFC-0073) and the first CN-origin engaged target across URML's outreach inbox. Two round-2 asks of the maintainer remain open:
+
+- **Canonical Python-wrapper package name.** RFC-0062 originally named `PetoiCamp/Petoi_MindPlusLib` as the Python wrapper; that repo is a Mind+ block-coding integration, not necessarily a general Python SDK. The adapter currently imports `petoi_mindpluslib` as a placeholder; the authoritative name (or an alternative pip-installable package URML should target) is a round-2 ask.
+- **Authoritative sensor-getter list.** The OpenCat command vocabulary is clear from the maintainer's reply; the corresponding sensor-getter names on the Python wrapper are not pinned down. The adapter defaults to `read_imu` / `read_battery` / `read_distance` as placeholders; the round-2 ask is the real getter names matching the OpenCat IMU / battery / ultrasonic surface.
 
 ## Summary
 

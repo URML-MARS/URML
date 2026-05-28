@@ -49,6 +49,7 @@ __all__ = [
     "EduConfig",
     "EduSkillCall",
     "LegoSpikeAdapter",
+    "PetoiAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",
     "VexV5Adapter",
@@ -507,6 +508,187 @@ class RoboticalMartyAdapter(_EduBase):
         # while others return dicts (get_power_status, get_robot_status).
         # The adapter passes the raw return through into the payload so the
         # URML program receives the structure martypy returns.
+        if isinstance(raw, (tuple, list)):
+            payload_value: Any = list(raw)
+        elif isinstance(raw, dict):
+            payload_value = raw
+        else:
+            payload_value = raw if isinstance(raw, int) else float(raw)
+        return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
+
+
+class PetoiAdapter(_EduBase):
+    """Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library — zero ROS.
+
+    Petoi is the open-hardware bipedal-quadruped vendor from Shenzhen, CN
+    (founder Dr. Rongzhong Li, since 2016). Bittle X ($299, BiBoard ESP32)
+    is the canonical hero target; Bittle (original, ATmega NyBoard) and
+    Nybble Q (cat-form quadruped) share the OpenCat firmware command
+    surface. The maintainer (borntoleave / Dr. Rongzhong Li) confirmed on
+    PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-05-28) that:
+
+    - The ESP32 line is now canonical
+      ([PetoiCamp/OpenCatEsp32-Quadruped-Robot](
+      https://github.com/PetoiCamp/OpenCatEsp32-Quadruped-Robot)).
+    - The skill table lives at ``src/InstinctBittleESP.h`` in that repo.
+    - Commands are parametric and use OpenCat's single-letter tokens:
+      ``kwkF 5`` (walk forward, 5 cycles), ``ktrF 2000`` (trot forward,
+      2000 ms), ``kcrL 30`` (crawl left, 30 degrees), plus posture tokens
+      (``ksit``, ``krest``, ``kstr``, ``klap``) and the gait family
+      (``kwk`` walk, ``ktr`` trot, ``kbd`` bound, ``kbk`` backward) with
+      direction suffix ``F`` / ``B`` / ``L`` / ``R``.
+    - Commands can be sent via serial, Bluetooth, or WebSocket.
+    - One parametric ``petoi`` manifest works for all models (Bittle X /
+      Bittle / Nybble Q) with a one-line macro modification on the
+      firmware side.
+    - Add-ons (gripper, claw, sensors) can be deferred.
+    - URML-side conformance lane on OpenCat README is open once URML
+      ships a working demo link.
+
+    Connection: lazy ``import petoi_mindpluslib`` (placeholder — the
+    actual canonical Python wrapper name is a round-2 ask of the
+    maintainer; ``PetoiCamp/Petoi_MindPlusLib`` is Mind+ block-coding
+    integration, not necessarily a general Python SDK). The adapter only
+    requires *some* Python object that either exposes named skill
+    methods (``walk``, ``trot``, ...) OR a generic
+    ``send_command(token, *args)`` channel; URML's
+    :class:`EduSkillCall` dispatch supports both. For raw OpenCat tokens
+    configure ``EduSkillCall(method='send_command', args=['kwkF', 5])``;
+    for named methods configure
+    ``EduSkillCall(method='walk', args=['forward', 5])``.
+
+    Manipulation is not applicable on stock Bittle / Nybble (no
+    gripper); ``manipulation_commands`` may map ``grasp`` / ``release``
+    to OpenCat tokens for after-market gripper add-ons (deferred per
+    round-1 maintainer guidance 2026-05-28).
+
+    United States operator using a Petoi: provenance ``origin: CN`` in
+    the manifest; the operator's policy file
+    ([RFC-0004](../../../docs/rfcs/0004-compliance-policy.md)) decides
+    whether the manifest is acceptable in a given deployment context.
+    """
+
+    BRAND = "petoi"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import petoi_mindpluslib  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "petoi_mindpluslib is not installed. PetoiAdapter requires the [petoi] extra.\n"
+                "  Install with: pip install urml-edu-runtime[petoi]\n"
+                "  (Canonical Python-wrapper package name is a round-2 ask of "
+                "the PetoiCamp maintainer on OpenCat-Quadruped-Robot#113; the "
+                "adapter only requires *some* Python object that exposes the "
+                "OpenCat skill-library command surface.)"
+            ) from exc
+        self._conn = petoi_mindpluslib.Petoi(self._config.device)
+        return self._conn
+
+    def _send(self, command: EduCommand) -> None:
+        """Dispatch an OpenCat skill-library call to the connected Petoi board.
+
+        Two configured-command shapes are supported (same as Marty per
+        the production-graduation contract on robotical/martypy#52):
+
+        1. **String form** (bare method name) — for skills called
+           without arguments. Example: ``"ksit"`` invokes
+           ``petoi.ksit()`` (or whatever named no-arg method the
+           wrapper exposes for that posture token).
+
+        2. **:class:`EduSkillCall` form** (method + args + kwargs) —
+           required for OpenCat's parametric commands:
+
+           - ``EduSkillCall(method='send_command', args=['kwkF', 5])``
+             sends the raw OpenCat token ``kwkF 5`` (walk forward, 5
+             cycles).
+           - ``EduSkillCall(method='walk', args=['forward', 5])`` calls
+             ``petoi.walk('forward', 5)`` if the wrapper exposes a
+             named ``walk`` method.
+
+        Unknown skill names are reported as a typed RuntimeError so the
+        validator step can surface them as
+        ``manipulation_command_not_configured`` /
+        ``location_not_configured`` rather than a crash inside the
+        wrapper.
+
+        OpenCat command vocabulary per round-1 maintainer engagement
+        (PetoiCamp/OpenCat-Quadruped-Robot#113, 2026-05-28):
+
+        - Gait tokens: ``kwk`` (walk), ``ktr`` (trot), ``kbd`` (bound),
+          ``kbk`` (backward), ``kcr`` (crawl), with direction suffix
+          ``F`` (forward), ``B`` (backward), ``L`` (left), ``R``
+          (right). Example: ``kwkF 5`` walks forward 5 cycles;
+          ``kcrL 30`` crawls left 30 degrees.
+        - Posture tokens: ``ksit``, ``krest``, ``kstr`` (stretch),
+          ``klap`` (lap-sit), no arguments.
+        - Authoritative skill table: ``src/InstinctBittleESP.h`` in
+          PetoiCamp/OpenCatEsp32-Quadruped-Robot (maintainer pointer).
+        """
+        method_name, args, kwargs = _resolve_call(command)
+        petoi = self._open()
+        skill = getattr(petoi, method_name, None)
+        if not callable(skill):
+            raise RuntimeError(
+                f"petoi_skill_not_found: connected Petoi wrapper has no callable "
+                f"named {method_name!r}. Map the location/manipulation entry to an "
+                "OpenCat token (e.g. EduSkillCall(method='send_command', "
+                "args=['kwkF', 5])) or a wrapper-exposed named method "
+                "(e.g. EduSkillCall(method='walk', args=['forward', 5])); see "
+                "src/InstinctBittleESP.h in PetoiCamp/OpenCatEsp32-Quadruped-Robot "
+                "for the authoritative skill table."
+            )
+        skill(*args, **kwargs)
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        return _nav(self, location, lambda c: self._send(c), frame)
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        return _grasp(self, action, force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        petoi = self._open()
+        # OpenCat sensor surface: IMU (gyro + accel), battery, optional
+        # ultrasonic. The exact Python-wrapper getter names are a
+        # round-2 ask of the PetoiCamp maintainer; the adapter uses
+        # whatever getter name the manifest declares (default
+        # 'read_imu' as a placeholder). Pass the raw return through
+        # into the payload so the URML program receives the structure
+        # the wrapper returns (list / dict / scalar all supported per
+        # the Marty round-3 trace handling precedent).
+        getter_name = sensor or "read_imu"
+        getter = getattr(petoi, getter_name, None)
+        if not callable(getter):
+            return MeasurementResult(
+                success=False,
+                reason=(
+                    f"petoi_sensor_not_found: connected Petoi wrapper has no "
+                    f"callable named {getter_name!r}. Use a wrapper-exposed "
+                    "getter; the authoritative sensor getter list is a "
+                    "round-2 ask of the PetoiCamp maintainer on "
+                    "PetoiCamp/OpenCat-Quadruped-Robot#113."
+                ),
+            )
+        raw = getter()
         if isinstance(raw, (tuple, list)):
             payload_value: Any = list(raw)
         elif isinstance(raw, dict):
