@@ -354,9 +354,9 @@
   channel: github_issue
   contact: "CeruleanSonar/SonarView (no license — flag, 7 stars, 4 open issues, Issues enabled, last commit 2026-05-18 active). Vendor-org CeruleanSonar (US), 12 public repos. Companion ping-python (MIT) + s500_ros2 (MIT, stale 2023-06-28). Builds on Blue Robotics ping-protocol."
   last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue CeruleanSonar/SonarView#38 on 2026-05-28. URML's first sonar / underwater-perception RFC. License-clarification ask on SonarView front-and-centre. Light-touch follow-up at 2026-06-25."
-  notes: "Tier B. Origin US (pass). First sonar / underwater perception RFC in URML's outreach. Complements existing marine-runtime BlueRovAdapter. License gap on flagship blocks Apache-2.0 reuse."
+  response: engaged
+  next_action: "Engaged 2026-05-28 by @NickNothom (CONTRIBUTOR) with substantive corrections: (1) Omniscan is NOT multibeam — RFC factual error to fix; (2) SonarView license published at https://ceruleansonar.com/software-license-sonarview/ (answers Q1); (3) ping-protocol docs at https://docs.ceruleansonar.com/c/cerulean-ping-protocol (answers Q3); (4) Q4 (acoustic safety-envelope) and Q5 (adapter home) flagged incomprehensible — do not press. Issue closed by maintainer. Action: fix RFC-0135 factual errors + link the two URLs; post a brief polite acknowledgement on the closed thread. Adapter pursuit on the MIT-licensed ping-protocol / s500_ros2 surface remains clean."
+  notes: "Tier B. Origin US (pass). First sonar / underwater perception RFC in URML's outreach. Engaged response with factual corrections on first post — clean signal that the maintainer reads carefully. SonarView license clarified via vendor website (terms exist; not OSI-declared in-repo). Adapter pursuit on ping-python / s500_ros2 (MIT) surface remains the clean path."
 
 - slug: contactile-tactile
   rfc: 136

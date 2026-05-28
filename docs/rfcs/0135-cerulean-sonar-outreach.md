@@ -4,7 +4,7 @@ title: Cerulean Sonar (underwater sonar / echo sounders) integration, request fo
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Draft
 created: 2026-05-27
-updated: 2026-05-27
+updated: 2026-05-28
 supersedes: —
 superseded-by: —
 ---
@@ -27,13 +27,15 @@ superseded-by: —
 
 ## Summary
 
-URML does not yet ship a Cerulean Sonar manifest fixture or adapter. This RFC documents the proposed URML v0.1 capability-manifest mapping for Cerulean's S500 sounder, Omniscan multibeam, and ping-protocol family over the [`CeruleanSonar`](https://github.com/CeruleanSonar) GitHub organization (12 public vendor repos), and **requests review and feedback from the CeruleanSonar maintainers**. No spec change.
+URML does not yet ship a Cerulean Sonar manifest fixture or adapter. This RFC documents the proposed URML v0.1 capability-manifest mapping for Cerulean's S500 sounder, Omniscan side-scan sonar, and ping-protocol family over the [`CeruleanSonar`](https://github.com/CeruleanSonar) GitHub organization (12 public vendor repos), and **requests review and feedback from the CeruleanSonar maintainers**. No spec change.
+
+> **Maintainer-correction note (2026-05-28):** @NickNothom (CONTRIBUTOR on `CeruleanSonar/SonarView`) flagged on [#38](https://github.com/CeruleanSonar/SonarView/issues/38) that the Omniscan is **not** a multibeam (the original RFC draft said it was). Corrected throughout. The SonarView license is published at [ceruleansonar.com/software-license-sonarview/](https://ceruleansonar.com/software-license-sonarview/) (answers Q1). The ping-protocol device-communication docs are at [docs.ceruleansonar.com/c/cerulean-ping-protocol](https://docs.ceruleansonar.com/c/cerulean-ping-protocol) (answers Q3). Q4 (acoustic safety-envelope) and Q5 (adapter home) were flagged incomprehensible and are not pursued further on this thread.
 
 **This is URML's first sonar / underwater-perception RFC.** It complements URML's existing marine-runtime (BlueROV ArduSub via the existing marine demos). Underwater perception sits below the lidar / camera / radar perception layers and is the dominant sensing modality for AUV / ROV / surface-vessel deployments where light does not penetrate.
 
 ## Motivation
 
-Cerulean Sonar (US) makes the S500 single-beam sounder and the Omniscan multibeam — both built on the Blue Robotics ping-protocol, which is the de facto open-source underwater-sonar protocol in the BlueROV ecosystem. Cerulean's vendor org has 12 public repos: `SonarView` (flagship visualizer, no license declared), `ping-python` (MIT), `s500_ros2` (MIT, stale 2023-06-28). Last commit on `SonarView` is 2026-05-18 (active).
+Cerulean Sonar (US) makes the S500 single-beam sounder and the Omniscan side-scan sonar — both built on the Blue Robotics ping-protocol, which is the de facto open-source underwater-sonar protocol in the BlueROV ecosystem. Cerulean's vendor org has 12 public repos: `SonarView` (flagship visualizer, no license declared), `ping-python` (MIT), `s500_ros2` (MIT, stale 2023-06-28). Last commit on `SonarView` is 2026-05-18 (active).
 
 URML's existing marine-runtime (BlueROV ArduSub) covers the surface-vehicle / ROV mobility primitives but does not today declare underwater-acoustic perception. Cerulean's family complements the existing marine-runtime by adding the sonar-perception layer on the same Blue Robotics open-protocol substrate.
 
@@ -47,9 +49,9 @@ URML's existing marine-runtime (BlueROV ArduSub) covers the surface-vehicle / RO
 
 | URML field | Maps to Cerulean Sonar product attribute |
 |---|---|
-| `name: sonar` (Sensor) | Cerulean S500 single-beam / Omniscan multibeam echo sounder |
+| `name: sonar` (Sensor) | Cerulean S500 single-beam echo sounder / Omniscan side-scan sonar |
 | `measurement_type: distance` | Distance-to-bottom (m) — native v0.1 type (clean fit for scalar) |
-| `measurement_type: custom` (sonar_returns) | Per-bin sonar return intensity for sounder profile / multibeam swath |
+| `measurement_type: custom` (sonar_returns) | Per-bin sonar return intensity for sounder profile / side-scan swath |
 | `measurement_type: custom` (water_column_profile) | Multi-bin water-column return for in-water object detection |
 
 ### What URML v0.1 does not yet express for Cerulean Sonar
@@ -99,11 +101,11 @@ Pre-v1.0; purely additive (RFC document only).
 
 For the CeruleanSonar maintainers:
 
-1. **License clarification on SonarView.** Can SonarView get an explicit OSI license declaration (MIT / Apache-2.0 / BSD-3-Clause)?
+1. **License clarification on SonarView.** ~~Can SonarView get an explicit OSI license declaration (MIT / Apache-2.0 / BSD-3-Clause)?~~ **Answered 2026-05-28** by @NickNothom: SonarView license terms are published at [ceruleansonar.com/software-license-sonarview/](https://ceruleansonar.com/software-license-sonarview/). Not OSI-declared in-repo, but explicit terms exist; URML respects the vendor's chosen distribution model.
 2. **Sonar return-array measurement_type shape.** URML's v0.1 has no per-bin / per-swath return-array type. Spec RFC queued. Manifest-field expectations (bin count, range resolution, frequency, beam-pattern)?
-3. **Ping-protocol declaration.** Should URML's manifest declare ping-protocol version + extension set, and how should that interoperate with Blue Robotics-side protocol evolution?
-4. **Underwater-acoustic safety-envelope cross-link.** Should URML's manifest declare emission-class / frequency-band for marine-mammal regulatory envelope-gating, or is that always envelope-side?
-5. **Adapter home.** URML repo (`reference/sensor-runtime/`), Cerulean-maintained, or cross-citation only?
+3. **Ping-protocol declaration.** ~~Should URML's manifest declare ping-protocol version + extension set, and how should that interoperate with Blue Robotics-side protocol evolution?~~ **Pointer received 2026-05-28** by @NickNothom: device communication API docs at [docs.ceruleansonar.com/c/cerulean-ping-protocol](https://docs.ceruleansonar.com/c/cerulean-ping-protocol). URML manifest field shape is downstream work, but the protocol surface is now documented.
+4. **Underwater-acoustic safety-envelope cross-link.** Should URML's manifest declare emission-class / frequency-band for marine-mammal regulatory envelope-gating, or is that always envelope-side? *(Flagged incomprehensible by maintainer 2026-05-28; not pursued further on this thread.)*
+5. **Adapter home.** URML repo (`reference/sensor-runtime/`), Cerulean-maintained, or cross-citation only? *(Flagged incomprehensible by maintainer 2026-05-28; URML proceeds with the cross-citation default on the MIT-licensed `ping-python` / `s500_ros2` surface.)*
 6. **Conformance listing.** Would Cerulean consider a README link to URML's compatible-runtimes registry once a working adapter ships? (Per [RFC-0014](0014-substrate-conformance.md), self-reported tier, no continuous obligation.)
 7. **Anything else.**
 
