@@ -160,7 +160,7 @@
   contact: "allenai/ai2thor (Apache-2.0, 1.7k stars, Issues + Discussions both enabled, last commit 2025-11-04, **not archived**). Allen AI visual interactive simulation; household-manipulation focus. Distinct from Move-2 RFC-0047 (allenai/molmoact, the VLA). Origin US."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0147 (Allen AI AI2-THOR capability-manifest mapping); URML-fit framing: AI2-THOR is a household-task simulation env URML adapters can target for conformance; manifest declares supported objects + interactions; cross-citation framing recommended given the env-vs-policy boundary."
+  next_action: "RFC-0147 drafted 2026-05-28 on URML main (docs/rfcs/0147-allenai-ai2thor-outreach.md). Cross-citation framing. Sim-substrate Spec RFC + discrete-action-mobility Spec RFC queued. Distinct from Move-2 RFC-0047 MolmoAct (VLA vs sim-env layer). Awaiting founder review then post Discussion on allenai/ai2thor."
   notes: "Tier B. Origin US (pass). Allen AI broader (distinct from MolmoAct VLA in Move-2)."
 
 - slug: rai-theia
@@ -171,7 +171,7 @@
   contact: "rai-opensource/Theia (license listed as Other — clarification ask, 276 stars, Issues enabled, last commit 2025-11-06, **not archived**). RAI Institute (Boston Dynamics AI Institute) vision foundation model. Cross-link to RFC-0043 Spot/rai-opensource (engaged via Tim Perkins, COLLABORATOR not BD-employed) — Theia is a *different* RAI repo, vendor-direct from the Institute."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0148 (RAI Theia capability-manifest mapping + license-clarification ask); URML-fit framing: Theia is a perception foundation model; manifest declares Theia as the vision-substrate the URML adapter consumes. License-clarification ask is gating before adapter-grade bundling."
+  next_action: "RFC-0148 drafted 2026-05-28 on URML main (docs/rfcs/0148-rai-theia-outreach.md). License-clarification ask front-and-centre. Vision-foundation-model substrate Spec RFC queued. Distinct from RFC-0043 Spot engagement (different repo, different maintainer). Awaiting founder review then post Issue on rai-opensource/Theia."
   notes: "Tier B. Origin US (pass). Cross-link to RFC-0043 Spot/rai-opensource engaged thread; different RAI repo. License-clarification gate."
 
 - slug: rai-vlfm
@@ -182,7 +182,7 @@
   contact: "rai-opensource/vlfm (MIT, 749 stars, Issues enabled, last commit 2025-11-12, **not archived**). RAI Institute VLM-based navigation (ICRA 2024). Companion to RAI Theia. Origin US."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0149 (RAI VLFM capability-manifest mapping); URML-fit framing: VLFM provides VLM-based navigation primitives; manifest declares supported VLM backbones; companion RFC to RFC-0148 Theia (same org)."
+  next_action: "RFC-0149 drafted 2026-05-28 on URML main (docs/rfcs/0149-rai-vlfm-outreach.md). Navigation-substrate + language-conditioned-navigation Spec RFCs queued. Companion to RFC-0148 Theia (same RAI Institute org, different repo). Awaiting founder review then post Issue on rai-opensource/vlfm."
   notes: "Tier B. Origin US (pass). RAI Institute vendor-direct; pairs with RFC-0148."
 
 - slug: microsoft-psi
@@ -193,7 +193,7 @@
   contact: "microsoft/psi (license listed as Other — clarification ask, 570 stars, Issues + Discussions both enabled, last commit 2026-05-15 active, **not archived**). Microsoft Platform for Situated Intelligence; temporal streams + offline replay framework for multi-modal sensor fusion. Origin US (Redmond)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0150 (Microsoft PSI capability-manifest mapping + license-clarification ask); URML-fit framing: PSI is the temporal-stream substrate URML's sensor-fusion primitives can target; manifest declares PSI-pipeline binding."
+  next_action: "RFC-0150 drafted 2026-05-28 on URML main (docs/rfcs/0150-microsoft-psi-outreach.md). License-clarification ask front-and-centre. Temporal-streams substrate Spec RFC queued. Awaiting founder review then post Discussion on microsoft/psi."
   notes: "Tier B. Origin US (pass). Active surface; license-clarification gate."
 
 - slug: microsoft-cogact
@@ -204,7 +204,7 @@
   contact: "microsoft/CogACT (MIT, 427 stars, Issues enabled, last commit 2025-10-30, **not archived**). Microsoft CVPR 2025 VLA for dexterous control. Origin US (Redmond)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0151 (Microsoft CogACT capability-manifest mapping); URML-fit framing: CogACT is a VLA URML's `query_detection` + dexterous-manipulation primitives can compose with; manifest declares CogACT action-head class."
+  next_action: "RFC-0151 drafted 2026-05-28 on URML main (docs/rfcs/0151-microsoft-cogact-outreach.md). Shares action-head class Spec RFC with RFC-0138 / RFC-0139. Dexterous-control action-space novelty noted. Awaiting founder review then post Issue on microsoft/CogACT."
   notes: "Tier B. Origin US (pass). Microsoft corporate research broader (distinct from microsoft/psi at the temporal-streams layer)."
 
 - slug: nus-octopi
@@ -215,5 +215,5 @@
   contact: "clear-nus/octopi (license TBD — clarification ask, 76 stars, Issues enabled, last commit 2026-05-24 very active, **not archived**). National University of Singapore (NUS) Clear Lab; octopus-inspired soft-robotics. Origin Singapore (SG); passes US-federal default policy (NATO+ allied)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0152 (NUS Octopi soft-robotics capability-manifest mapping + license-clarification ask); URML-fit framing: Octopi is soft-body manipulation research — URML's manifest does not today declare soft-body actuator class; cross-citation framing recommended pending license + soft-body schema-extension Spec RFC."
+  next_action: "RFC-0152 drafted 2026-05-28 on URML main (docs/rfcs/0152-nus-octopi-outreach.md). **First soft-robotics RFC.** License-clarification ask + soft-body mobility + pneumatic-network actuator + continuum-manipulator kinematics Spec RFCs queued. **Completes the 15 Move-11 engageable RFCs.** Awaiting founder review then post Issue on clear-nus/octopi."
   notes: "Tier B. Origin SG (pass). Active surface; license-clarification gate; soft-body schema-extension queued."
