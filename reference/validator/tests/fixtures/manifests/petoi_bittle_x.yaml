@@ -1,0 +1,71 @@
+# Fixture: Petoi Bittle X via OpenCat (BiBoard ESP32); PetoiCamp, Shenzhen, CN.
+# Substrate = urml-edu-runtime, zero ROS. RFC-0011 educational flywheel.
+# Quadruped walking robot, ESP32 controller, OpenCat skill-library command
+# surface per round-1 maintainer engagement on
+# PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-05-28, Dr. Rongzhong Li).
+# Single parametric manifest covers Bittle X / Bittle / Nybble Q with a
+# variant field; maintainer confirmed "OpenCat/OpenCatEsp32 works for all
+# models, with a one-line modification to the macros line."
+# China origin — manifest-load policy decision delegated to operator per
+# RFC-0004 (US-federal default policy may reject for CN origin depending
+# on deployment context; the educational classroom is the common path).
+
+manifest_version: "0.1"
+robot_id: petoi_bittle_x_1
+description: "Petoi Bittle X via OpenCat (BiBoard ESP32); PetoiCamp, Shenzhen, CN."
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: start_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+  - name: waypoint_a
+    pose: { x: 0.3, y: 0.0 }
+    frame: floor
+  - name: rest_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+
+declared_events:
+  - button_pressed
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 0.15
+  station_keeping: false
+
+perception:
+  sensors:
+    - name: imu
+      measurement_type: custom    # v0.1 enum: gyro+accel composite uses custom escape-hatch
+      range_min: -2.0
+      range_max: 2.0
+      units: g
+    - name: battery
+      measurement_type: voltage
+      range_min: 6.0
+      range_max: 8.4
+      units: volts
+  object_vocabulary: []
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: petoi_bittle_x_biboard
+      role: critical
+      vendor: petoi
+      country_of_origin: CN
+      country_of_final_assembly: CN
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/petoi_bittle_x.cdx.json
+        sha256: "7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e"
+
+outputs:
+  named_endpoints:
+    - classroom_log

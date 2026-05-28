@@ -1,0 +1,44 @@
+name: educational/petoi_patrol_positive
+description: >
+  Track D educational fixture — Petoi Bittle X via OpenCat (zero-ROS, native
+  vendor command surface, BiBoard ESP32). RFC-0011 educational profile; URML
+  scales DOWN to a desktop quadruped walking robot. Manifest CONDITIONAL under
+  the bundled US-federal default policy (origin CN; operator's policy file
+  decides per RFC-0004). Navigation-only patrol against MockROSAdapter;
+  adapter-agnostic for the edu-runtime's PetoiAdapter. This is URML's second
+  conformance fixture authored in response to an engaged outreach reply
+  (PetoiCamp/OpenCat-Quadruped-Robot#113, 2026-05-28). Maintainer (Dr.
+  Rongzhong Li, borntoleave) confirmed parametric command surface
+  (kwkF cycles, ktrF ms, kcrL degrees) reachable over serial / Bluetooth /
+  WebSocket; ESP32 line is canonical (OpenCatEsp32-Quadruped-Robot).
+  Petoi origin is CN (Shenzhen), so the bundled US-federal default
+  policy would reject the manifest under Pass 5; this fixture sets
+  `policy: none` to demonstrate the hero-demo path (per the founder's
+  universal-language re-anchor: demos use --no-policy and the language
+  is on stage with compliance one flag away). The default-policy
+  rejection is already covered by home/07_policy_country_denied and
+  home/08_policy_none_accepts_otherwise_denied; no duplicate needed.
+
+manifest: petoi_bittle_x
+policy: none
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: start_mat }
+      - move_to: { location: waypoint_a }
+      - move_to: { location: rest_mat }
+
+expected_validation:
+  accepted: true
+
+# No `expected_execution`: this fixture proves the validation path for
+# the hero-demo / classroom use case under --no-policy. Runtime
+# end-to-end execution against a CN-origin manifest is out of scope for
+# the bundled default policy (the runtime re-validates with default
+# policy in defense-in-depth) and is the operator's deployment-time
+# call, not a conformance-suite assertion.

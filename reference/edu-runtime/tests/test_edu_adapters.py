@@ -137,6 +137,60 @@ class _FakeMarty:
         pass
 
 
+class _FakePetoiBoard:
+    """Stand-in for the Petoi OpenCat-skill-library Python wrapper.
+
+    Mirrors the parametric command surface from the round-1 maintainer
+    engagement on PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-05-28):
+
+    - send_command(token, *args) for raw OpenCat tokens
+      (e.g. send_command('kwkF', 5) for walk forward 5 cycles).
+    - Named methods (walk, trot, ksit, krest, ...) for adapters that
+      prefer the higher-level shape.
+
+    Sensor getters use placeholder names (read_imu, read_battery,
+    read_distance) until the round-2 maintainer ask confirms the
+    authoritative getter list. Each call records (method, args, kwargs)
+    in self.calls so tests can assert on dispatch shape.
+    """
+
+    def __init__(self, device: str) -> None:
+        self.device = device
+        self.calls: list[tuple[str, tuple, dict]] = []
+
+    def send_command(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("send_command", args, kwargs))
+
+    def walk(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("walk", args, kwargs))
+
+    def trot(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("trot", args, kwargs))
+
+    def ksit(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("ksit", args, kwargs))
+
+    def krest(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("krest", args, kwargs))
+
+    def kstr(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("kstr", args, kwargs))
+
+    def read_imu(self) -> list[float]:
+        # OpenCat IMU surface returns 6 axes (gyro x/y/z + accel x/y/z);
+        # exact wrapper shape is a round-2 ask of the maintainer.
+        return [0.01, -0.02, 0.97, 0.0, 0.0, 0.0]
+
+    def read_battery(self) -> float:
+        return 7.4  # nominal LiPo voltage; real value TBD round 2
+
+    def read_distance(self) -> int:
+        return 120  # placeholder ultrasonic / distance reading (mm)
+
+    def close(self) -> None:
+        pass
+
+
 @pytest.fixture
 def fake_edu_sdks() -> Iterator[None]:
     vex = ModuleType("pyvex")
@@ -147,12 +201,15 @@ def fake_edu_sdks() -> Iterator[None]:
     thy.Client = _FakeThymio  # type: ignore[attr-defined]
     mar = ModuleType("martypy")
     mar.Marty = _FakeMarty  # type: ignore[attr-defined]
-    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy")
+    pet = ModuleType("petoi_mindpluslib")
+    pet.Petoi = _FakePetoiBoard  # type: ignore[attr-defined]
+    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib")
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["pyvex"] = vex
     sys.modules["pybricksdev"] = lego
     sys.modules["tdmclient"] = thy
     sys.modules["martypy"] = mar
+    sys.modules["petoi_mindpluslib"] = pet
     try:
         yield
     finally:
@@ -369,6 +426,84 @@ def test_unsupported_and_not_applicable_sentinels(fake_edu_sdks: None) -> None:
         assert r.reason is not None and r.reason.startswith("not_applicable_edu")
 
 
+def test_petoi_adapter_lifecycle(fake_edu_sdks: None) -> None:
+    """PetoiAdapter dispatches OpenCat skill-library calls.
+
+    Per the round-1 maintainer engagement on
+    PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-05-28), OpenCat commands
+    are parametric (``kwkF 5``, ``ktrF 2000``, ``kcrL 30``) and reachable
+    via serial / Bluetooth / WebSocket. The adapter mirrors the Marty
+    string-or-EduSkillCall dispatch shape.
+    """
+    from urml_edu_runtime import EduConfig, EduSkillCall, PetoiAdapter
+
+    cfg = EduConfig(
+        device="serial:///dev/ttyUSB0",
+        location_to_command={
+            # No-arg posture token: dispatches to petoi.ksit().
+            "rest_mat": "ksit",
+            # Parametric OpenCat token via raw send_command:
+            #   petoi.send_command('kwkF', 5)  →  serial frame: "kwkF 5"
+            "walk_forward_5": EduSkillCall(method="send_command", args=["kwkF", 5]),
+            # Parametric trot via raw send_command, ms-scaled duration.
+            "trot_forward_2s": EduSkillCall(method="send_command", args=["ktrF", 2000]),
+            # Named-method form (if the wrapper exposes one).
+            "named_walk": EduSkillCall(method="walk", args=["forward", 5]),
+        },
+        manipulation_commands={
+            # No gripper on stock Bittle / Nybble; the manifest declares
+            # gripper=none and the validator rejects grasp / release
+            # programs at static-verification time. Add-ons deferred per
+            # round-1 maintainer guidance.
+        },
+    )
+    with PetoiAdapter(cfg) as petoi:
+        assert isinstance(petoi, ROSAdapter)
+        # No-arg posture token.
+        assert petoi.send_navigation_goal(location="rest_mat").success
+        # Parametric OpenCat tokens via raw send_command.
+        assert petoi.send_navigation_goal(location="walk_forward_5").success
+        assert petoi.send_navigation_goal(location="trot_forward_2s").success
+        # Named-method form.
+        assert petoi.send_navigation_goal(location="named_walk").success
+        # Unmapped location surfaces a typed failure.
+        miss = petoi.send_navigation_goal(location="nowhere")
+        assert miss.success is False and miss.reason is not None
+        assert miss.reason.startswith("location_not_configured")
+        # Sensor read: IMU (placeholder shape until round-2 maintainer ask).
+        imu = petoi.take_measurement(what="imu", target=None, sensor="read_imu")
+        assert imu.success and imu.payload is not None
+        assert imu.payload["value"] == [0.01, -0.02, 0.97, 0.0, 0.0, 0.0]
+        # Battery (scalar float).
+        bat = petoi.take_measurement(what="battery", target=None, sensor="read_battery")
+        assert bat.success and bat.payload is not None and bat.payload["value"] == 7.4
+        # Unknown sensor returns a typed failure.
+        bad = petoi.take_measurement(what="nope", target=None, sensor="read_no_such_thing")
+        assert bad.success is False and bad.reason is not None
+        assert bad.reason.startswith("petoi_sensor_not_found")
+
+        # Verify the fake board received the expected call signatures.
+        fake = petoi._conn  # type: ignore[attr-defined]
+        assert ("ksit", (), {}) in fake.calls
+        assert ("send_command", ("kwkF", 5), {}) in fake.calls
+        assert ("send_command", ("ktrF", 2000), {}) in fake.calls
+        assert ("walk", ("forward", 5), {}) in fake.calls
+
+
+def test_petoi_adapter_unknown_skill_raises(fake_edu_sdks: None) -> None:
+    """PetoiAdapter raises a typed RuntimeError for unknown skill names."""
+    from urml_edu_runtime import EduConfig, EduSkillCall, PetoiAdapter
+
+    cfg = EduConfig(
+        device="serial:///dev/ttyUSB0",
+        location_to_command={
+            "bad_location": EduSkillCall(method="not_a_real_method"),
+        },
+    )
+    with pytest.raises(RuntimeError, match=r"petoi_skill_not_found"):
+        PetoiAdapter(cfg).send_navigation_goal(location="bad_location")
+
+
 def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     """Each adapter raises an actionable error naming its [extra] when SDK missing.
 
@@ -379,13 +514,14 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     from urml_edu_runtime import (
         EduConfig,
         LegoSpikeAdapter,
+        PetoiAdapter,
         RoboticalMartyAdapter,
         ThymioAdapter,
         VexV5Adapter,
     )
 
     cfg = EduConfig(location_to_command={"x": "GO X"})
-    for mod in ("pyvex", "pybricksdev", "tdmclient", "martypy"):
+    for mod in ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib"):
         monkeypatch.setitem(sys.modules, mod, None)
     with pytest.raises(RuntimeError, match=r"\[vex\] extra"):
         VexV5Adapter(cfg).send_navigation_goal(location="x")
@@ -395,14 +531,23 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
         ThymioAdapter(cfg).send_navigation_goal(location="x")
     with pytest.raises(RuntimeError, match=r"\[marty\] extra"):
         RoboticalMartyAdapter(cfg).send_navigation_goal(location="x")
+    with pytest.raises(RuntimeError, match=r"\[petoi\] extra"):
+        PetoiAdapter(cfg).send_navigation_goal(location="x")
 
 
 def test_conformance_runner_accepts_factories(fake_edu_sdks: None) -> None:
     from urml_conformance import ConformanceRunner
 
-    from urml_edu_runtime import LegoSpikeAdapter, RoboticalMartyAdapter, ThymioAdapter, VexV5Adapter
+    from urml_edu_runtime import (
+        LegoSpikeAdapter,
+        PetoiAdapter,
+        RoboticalMartyAdapter,
+        ThymioAdapter,
+        VexV5Adapter,
+    )
 
     assert ConformanceRunner(adapter_factory=lambda: VexV5Adapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: LegoSpikeAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: ThymioAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: RoboticalMartyAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: PetoiAdapter()) is not None
