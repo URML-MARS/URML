@@ -149,7 +149,7 @@
   contact: "micro-ROS/micro_ros_setup (Apache-2.0, 493 stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). Multi-vendor consortium under Linux Foundation / ROS 2 ecosystem."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0177 (micro-ROS capability-manifest mapping); URML-fit framing: micro-ROS is the natural language-substrate bridge between URML primitives and MCU-class embedded targets. URML's existing ros2-runtime composes with micro-ROS at the MCU edge; manifest declares micro-ROS as the substrate."
+  next_action: "RFC-0177 drafted 2026-05-28 on URML main (docs/rfcs/0177-micro-ros-outreach.md). Structural bridge extending URML's ros2-runtime to MCU edge. MCU-side ROS 2 substrate + multi-RTOS + DDS-XRCE QoS Spec RFCs queued. Awaiting founder review then post Issue on micro-ROS/micro_ros_setup."
   notes: "Tier A. Origin multi-national (Linux Foundation). Foundation-direct. URML-fit: very high — micro-ROS is the structural bridge URML's substrate story needs at the MCU edge."
 
 - slug: zephyr
@@ -160,7 +160,7 @@
   contact: "zephyrproject-rtos/zephyr (Apache-2.0, 15.4k stars, Issues + Discussions enabled, last commit 2026-05-28 daily activity, **not archived**). Zephyr Project under Linux Foundation; multi-vendor (Intel, NXP, Nordic, Silicon Labs, etc.)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0178 (Zephyr Project capability-manifest mapping); URML-fit framing: Zephyr is the industrial-grade RTOS substrate URML's manifest declares for MCU-class robots requiring real-time guarantees. Foundation-direct engagement; complements micro-ROS (RFC-0177) at the RTOS layer."
+  next_action: "RFC-0178 drafted 2026-05-28 on URML main (docs/rfcs/0178-zephyr-outreach.md). Foundation-direct multi-vendor RTOS. RTOS substrate + scheduling-class + TF-M secure-boot Spec RFCs queued. 700+ board catalog identifier-scheme question. Awaiting founder review then post Discussion on zephyrproject-rtos/zephyr."
   notes: "Tier A. Origin multi-national (Linux Foundation). Foundation-direct. URML-fit: high."
 
 # ============================================================
@@ -199,7 +199,7 @@
   contact: "bitcraze/crazyflie-firmware (GPL-3.0, 1.5k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). Bitcraze AB, Sweden."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0181 (Bitcraze Crazyflie capability-manifest mapping); URML-fit framing: Crazyflie is the open-source research nano-quadcopter platform; URML's drone profile (RFC-0008) + multirotor mobility class compose with Crazyflie's lib. GPL-3.0 limits Apache-2.0 bundling — cross-citation framing recommended."
+  next_action: "RFC-0181 drafted 2026-05-28 on URML main (docs/rfcs/0181-bitcraze-crazyflie-outreach.md). GPL-3.0 firmware = cross-citation framing; Apache-2.0 client (crazyflie-lib-python) is URML's integration boundary. Payload-class + CRTP-substrate + firmware-license-boundary Spec RFCs queued. Awaiting founder review then post Issue on bitcraze/crazyflie-firmware."
   notes: "Tier B. Origin SE (pass). GPL-3.0 copyleft. URML-fit: high for research-drone class; cross-citation appropriate."
 
 - slug: stm-stm32cube
@@ -210,7 +210,7 @@
   contact: "STMicroelectronics/STM32CubeF4 (Other — mixed license, 1.2k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). STMicroelectronics; HQ Geneva CH (Franco-Italian)."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0182 (STMicroelectronics STM32Cube capability-manifest mapping + license-clarification ask); URML-fit framing: STM32 is one of the most-deployed MCU families; URML's manifest declares STM32 board class. Mixed-license posture gates adapter-grade reuse — cross-citation appropriate."
+  next_action: "RFC-0182 drafted 2026-05-28 on URML main (docs/rfcs/0182-stmicroelectronics-stm32cube-outreach.md). Mixed-license per-surface clarification ask + multi-series scope question. MCU substrate + mixed-license-surface + Cube-version-pin Spec RFCs queued. Awaiting founder review then post Issue on STMicroelectronics/STM32CubeF4."
   notes: "Tier B. Origin CH/FR/IT (pass, NATO+EU). Mixed license. URML-fit: high for industrial / professional MCU class."
 
 - slug: tinygo
@@ -221,5 +221,5 @@
   contact: "tinygo-org/tinygo (Apache-2.0, 17.5k stars, Issues + Discussions enabled, last commit 2026-05-28 daily activity, **not archived**). Community-maintained Go-language compiler for MCU."
   last_touch: ""
   response: none
-  next_action: "draft RFC-0183 (TinyGo capability-manifest mapping); URML-fit framing: TinyGo enables Go-language firmware on MCU; URML's manifest declares the language-substrate class for firmware artifacts. Foundation-style community surface; cross-citation framing appropriate. **Completes the 15 Move-13 engageable RFCs.**"
+  next_action: "RFC-0183 drafted 2026-05-28 on URML main (docs/rfcs/0183-tinygo-outreach.md). **Completes the 15 Move-13 engageable RFCs.** Go-on-MCU language substrate (sibling to Python-on-MCU declarations from RFC-0172 / RFC-0174). Firmware-language substrate + TinyGo-target-catalog Spec RFCs queued. WebAssembly target out-of-scope. Awaiting founder review then post Discussion on tinygo-org/tinygo."
   notes: "Tier B. Community-maintained (vendor-neutral; Linux-Foundation-adjacent posture). Apache-2.0 clean fit. URML-fit: medium for Go-on-MCU class."
