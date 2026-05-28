@@ -107,7 +107,7 @@
   contact: "Helsinki-NLP/OPUS-MT-train (MIT, 403 stars, Issues enabled, Discussions disabled, last commit 2026-01-17, **not archived**). University of Helsinki Language Technology group; 300+ language-pair translation models. Origin FI (University of Helsinki, EU)."
   last_touch: ""
   response: none
-  next_action: "RFC-0157 draft pending. Direct map onto Layer-4 multilingual slot reservation (Hebrew, Spanish, Japanese, Mandarin). First Move-12 translation RFC. Awaiting draft + founder review."
+  next_action: "RFC-0157 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0157-opus-mt-train-outreach.md). **First Move-12 translation RFC.** Direct map onto Layer-4 multilingual slot reservation (Hebrew, Spanish, Japanese, Mandarin). Translation-engine-class declaration Spec RFC queued (shared with RFC-0158 / RFC-0159). Introduces novel HuggingFace-URI manifest scheme. Awaiting founder review then post Issue on Helsinki-NLP/OPUS-MT-train."
   notes: "Tier A. Origin FI (pass — EU allied). Smaller star count but vendor-direct from a research lab with 300+ active language-pair models; foundational for URML's multilingual story."
 
 - slug: argos-translate
@@ -118,7 +118,7 @@
   contact: "argosopentech/argos-translate (MIT, 6.1k stars, Issues + Discussions both enabled, last commit 2026-04-25, **not archived**). Offline on-device translation library; federated-fleet friendly (no API dependency). Origin US (Ithaca NY)."
   last_touch: ""
   response: none
-  next_action: "RFC-0158 draft pending. Federated-fleet / offline angle: URML programs run fully offline once validated; Argos preserves that for the translation step. Awaiting draft + founder review."
+  next_action: "RFC-0158 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0158-argos-translate-outreach.md). Federated-fleet / offline angle: URML programs run fully offline once validated; Argos preserves that for the translation step. Cites CLAUDE.md no-cloud invariant as architectural anchor. Translation-engine-class Spec RFC shared with RFC-0157 / RFC-0159; introduces offline/no-cloud + pair-install-class manifest gaps. Awaiting founder review then post Discussion on argosopentech/argos-translate."
   notes: "Tier A. Origin US (pass). Active surface; offline-on-device posture aligns with URML's no-cloud-runtime invariant from CLAUDE.md."
 
 - slug: marian-dev
@@ -129,7 +129,7 @@
   contact: "marian-nmt/marian-dev (license listed as Other — MIT-style historically, clarification ask, 287 stars, Issues + Discussions both enabled, last commit 2025-07-09, **not archived**). Marian NMT toolkit; research backbone behind OPUS-MT. Maintainers split University of Edinburgh (UK) + Microsoft Translator (US / MSR)."
   last_touch: ""
   response: none
-  next_action: "RFC-0159 draft pending. Research-backbone-substrate angle. License-clarification ask (Other → MIT) front and centre. Awaiting draft + founder review."
+  next_action: "RFC-0159 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0159-marian-dev-outreach.md). Research-backbone-substrate angle. License-clarification ask (Other → MIT-style) front and centre. C++ runtime parallels RFC-0155 whisper.cpp (same runtime-dependency-profile manifest gap, this time on the translation side). Translation-runtime declaration Spec RFC queued (shared with RFC-0157 / RFC-0158). Awaiting founder review then post Discussion on marian-nmt/marian-dev."
   notes: "Tier A. Origin UK/US (pass). Low star count but anchored by MSR + Edinburgh; the research path under OPUS-MT and many other translation projects. License-clarification gate."
 
 - slug: behaviortree-cpp
@@ -222,7 +222,7 @@
   contact: "facebookresearch/fairseq (MIT, 32.2k stars, Issues enabled, Discussions disabled, **archived 2025-09-30**). Meta's seq2seq toolkit. NLLB-200 weights are hosted here. Origin US (Meta)."
   last_touch: ""
   response: none
-  next_action: "RFC-0167 draft pending. **Archived friction**: no PRs merge. NLLB-200 weights are **CC-BY-NC 4.0** (non-commercial only) which is independently disqualifying for URML's commercial-friendly stance unless URML ships under `--no-policy` non-commercial flag. Engagement-ask: what is the successor surface for NLLB engagement now that fairseq is archived? Awaiting draft + founder review."
+  next_action: "RFC-0167 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0167-fairseq-outreach.md). **Archived friction**: no PRs merge. NLLB-200 weights are **CC-BY-NC 4.0** (non-commercial only). Engagement-ask: what is the successor surface for NLLB engagement now that fairseq is archived? Introduces novel model-license + commercial-use-gate manifest fields (first concrete case where model-license declaration is load-bearing). Awaiting founder review then post Issue on facebookresearch/fairseq."
   notes: "Tier B. Origin US (pass). Friction = archived + non-commercial model weights. Engagement value is the NLLB-200-as-substrate question, not fairseq itself."
 
 - slug: libretranslate
@@ -233,5 +233,5 @@
   contact: "LibreTranslate/LibreTranslate (**AGPL-3.0**, 14.4k stars, Issues enabled, Discussions disabled, last commit 2026-05-26 very active, **not archived**). Self-hosted translation server. Origin community / US-led."
   last_touch: ""
   response: none
-  next_action: "RFC-0168 draft pending. **AGPL friction**: network-copyleft contamination. URML integration must stay strictly at the REST-API boundary (URML-as-client, never URML-embeds-LibreTranslate). Awaiting draft + founder review."
+  next_action: "RFC-0168 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0168-libretranslate-outreach.md). **Completes the Move-12 translation bucket.** **AGPL friction**: network-copyleft contamination. URML integration must stay strictly at the REST-API boundary (URML-as-client, never URML-embeds-LibreTranslate). Introduces 3 novel manifest fields (network-endpoint runtime, license-boundary, secret-reference) — each is a follow-up Spec RFC. Awaiting founder review then post Issue on LibreTranslate/LibreTranslate."
   notes: "Tier B. Origin community / US-led (pass). Friction = AGPL-3.0 network-copyleft. Engagement framing: URML as a client of a self-hosted LibreTranslate instance; never linked or embedded."
