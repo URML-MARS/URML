@@ -51,140 +51,140 @@
 
 - slug: px4-autopilot
   rfc: 196
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/PX4/PX4-Autopilot/issues/27511"
+  channel: github_issue
   contact: "PX4/PX4-Autopilot (BSD-3-Clause, 11.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Linux Foundation Dronecode Foundation governance. The dominant open drone-autopilot stack."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0196 (PX4 capability-manifest mapping); URML-fit framing: PX4 is the substrate URML's drone-runtime composes onto via MAVLink. URML's manifest declares PX4 as autopilot substrate; URML's drone profile (RFC-0008) + multirotor / fixed_wing / vtol mobility classes dispatch via PX4-MAVLink. Foundation-direct engagement at the Dronecode layer covers upstream + downstream (Auterion commercial)."
+  next_action: "posted 2026-05-29 to https://github.com/PX4/PX4-Autopilot/issues/27511 (PX4-Autopilot Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Linux Foundation Dronecode (multi-vendor, governance-neutral). URML-fit: very high. **Identity-load-bearing engagement** for URML's substrate-neutral drone-runtime claim."
 
 - slug: mavlink
   rfc: 197
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/mavlink/mavlink/issues/2508"
+  channel: github_issue
   contact: "mavlink/mavlink (LGPL-3.0 with MIT generated-code exception, 2.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Drone protocol substrate; the interoperability layer between autopilot and ground station."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0197 (MAVLink protocol capability-manifest mapping); URML-fit framing: URML manifest declares MAVLink as the autopilot-control protocol class for drone deployments. LGPL-3.0 with MIT generated-code exception makes the protocol-grammar layer URML-compatible while preserving copyleft on protocol modifications. Sibling RFC to PX4 (RFC-0196) and MAVSDK (RFC-0198) at the protocol-spec layer."
+  next_action: "posted 2026-05-29 to https://github.com/mavlink/mavlink/issues/2508 (MAVLink Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Dronecode Foundation. URML-fit: very high. LGPL-3.0+MIT-exception is well-suited to URML's adapter pattern."
 
 - slug: mavsdk
   rfc: 198
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/mavlink/MAVSDK/issues/2889"
+  channel: github_issue
   contact: "mavlink/MAVSDK (BSD-3-Clause, 881 stars, Issues enabled, last commit 2026-05-26, **not archived**). Dronecode Foundation. High-level MAVLink SDK enabling cross-vendor vehicle control abstraction."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0198 (MAVSDK capability-manifest mapping); URML-fit framing: MAVSDK is the high-level SDK URML's drone adapter targets for cross-vendor control. Sibling to MAVLink protocol RFC (0197); URML adapter composes at MAVSDK API boundary. BSD-3-Clause clean fit."
+  next_action: "posted 2026-05-29 to https://github.com/mavlink/MAVSDK/issues/2889 (MAVSDK Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Dronecode Foundation. BSD-3-Clause clean fit. URML-fit: very high; SDK boundary is the natural adapter entry."
 
 - slug: dronecan-libcanard
   rfc: 199
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/dronecan/libcanard/issues/91"
+  channel: github_issue
   contact: "dronecan/libcanard (MIT, 98 stars, Issues enabled, last commit 2026-04-30, **not archived**). DroneCAN community (open standard founded 2017). Alternative CAN-protocol substrate for drone embedded networks."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0199 (DroneCAN protocol capability-manifest mapping); URML-fit framing: DroneCAN is the alternate-protocol substrate URML's manifest declares for CAN-bus drone deployments (vs MAVLink for serial/UDP). Complementary to MAVLink for embedded networks. URML manifest declares which protocol class is active per deployment."
+  next_action: "posted 2026-05-29 to https://github.com/dronecan/libcanard/issues/91 (DroneCAN libcanard Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin DroneCAN community open-standard. URML-fit: medium-high; alternate-protocol declaration is novel manifest territory."
 
 # ---- ROS 2 substrate (3) ----
 
 - slug: ros2-core
   rfc: 200
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/ros2/ros2/issues/1845"
+  channel: github_issue
   contact: "ros2/ros2 (Multi-license per module, 5.5k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Open Robotics Foundation / Linux Foundation. **URML's primary substrate.** Foundation-direct engagement with ROS 2 maintainers."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0200 (ROS 2 core capability-manifest mapping); URML-fit framing: ROS 2 is URML's primary substrate; the engagement is foundation-direct at the Open Robotics layer. URML's existing `reference/ros2-runtime/` is the adapter; this RFC formalizes the engagement-channel upstream. **Round 200 milestone RFC.**"
+  next_action: "posted 2026-05-29 to https://github.com/ros2/ros2/issues/1845 (ROS 2 core Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Open Robotics Foundation US. **The most identity-load-bearing engagement in Move-16** — URML's primary substrate maintainers."
 
 - slug: ros-navigation-nav2
   rfc: 201
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/ros-navigation/navigation2/issues/6184"
+  channel: github_issue
   contact: "ros-navigation/navigation2 (Other — Apache-2.0/BSD-3 mixed, 4.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). ROS 2 Navigation Working Group (OSRF-adjacent)."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0201 (Nav2 capability-manifest mapping); URML-fit framing: URML's mobility primitives (`move_to`, `dock`, `scan`) dispatch via Nav2 for ROS-2 mobile-base deployments. Manifest declares Nav2-compatible navigation stack; Nav2's behavior-tree-driven planning composes with URML's manifest-validated dispatch."
+  next_action: "posted 2026-05-29 to https://github.com/ros-navigation/navigation2/issues/6184 (Nav2 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin OSRF-adjacent US. URML-fit: very high; Nav2 is the canonical ROS 2 navigation stack."
 
 - slug: moveit-moveit2
   rfc: 202
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/moveit/moveit2/issues/3742"
+  channel: github_issue
   contact: "moveit/moveit2 (BSD-3-Clause, 1.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Community / OSRF-adjacent. ROS 2 manipulation framework."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0202 (MoveIt 2 capability-manifest mapping); URML-fit framing: URML's manipulation primitives (`pick_from`, `place_at`, `grasp`, `swap_tool`) dispatch via MoveIt 2 for ROS-2 manipulator deployments. Manifest declares MoveIt 2-compatible motion-planning stack."
+  next_action: "posted 2026-05-29 to https://github.com/moveit/moveit2/issues/3742 (MoveIt 2 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Community / OSRF-adjacent US. BSD-3-Clause clean fit. URML-fit: very high; MoveIt 2 is the canonical ROS 2 manipulation framework."
 
 # ---- DDS / middleware (2) ----
 
 - slug: eprosima-fast-dds
   rfc: 203
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/eProsima/Fast-DDS/issues/6412"
+  channel: github_issue
   contact: "eProsima/Fast-DDS (Apache-2.0, 2.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). eProsima, Tres Cantos ES. **ROS 2's default DDS implementation.** Vendor-direct commercial entity."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0203 (Fast DDS capability-manifest mapping); URML-fit framing: Fast DDS is the default DDS layer ROS 2 ships with. URML's manifest declares DDS QoS profile + Fast-DDS-specific features. Vendor-direct commercial engagement; sibling to Cyclone DDS (RFC-0204) at the DDS-implementation layer."
+  next_action: "posted 2026-05-29 to https://github.com/eProsima/Fast-DDS/issues/6412 (Fast DDS Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin eProsima ES Madrid. Apache-2.0 clean fit. URML-fit: very high; vendor-direct + ROS 2 default substrate."
 
 - slug: eclipse-cyclonedds
   rfc: 204
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/eclipse-cyclonedds/cyclonedds/issues/2403"
+  channel: github_issue
   contact: "eclipse-cyclonedds/cyclonedds (Other — EPL-2.0, 1.3k stars, Issues enabled, last commit 2026-05-26, **not archived**). Eclipse Foundation; alternative DDS implementation."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0204 (Cyclone DDS capability-manifest mapping); URML-fit framing: Cyclone DDS is the alternative DDS implementation URML's manifest declares for deployments preferring Eclipse Foundation governance over commercial eProsima. EPL-2.0 → cross-citation framing on adapter-grade reuse. Sibling to Fast DDS (RFC-0203)."
+  next_action: "posted 2026-05-29 to https://github.com/eclipse-cyclonedds/cyclonedds/issues/2403 (Cyclone DDS Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Eclipse Foundation NL. EPL-2.0 license-class needs cross-citation framing. URML-fit: high; alternative-DDS option."
 
 # ---- SLAM upstreams (3) ----
 
 - slug: google-cartographer
   rfc: 205
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/cartographer-project/cartographer/issues/1979"
+  channel: github_issue
   contact: "cartographer-project/cartographer (Apache-2.0, 7.9k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Google. 2D/3D SLAM."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0205 (Google Cartographer capability-manifest mapping); URML-fit framing: Cartographer is the lidar-SLAM substrate URML's perception manifests declare for mobile-base + drone deployments. URML's manifest declares Cartographer-compatible perception-output topics; Apache-2.0 clean fit."
+  next_action: "posted 2026-05-29 to https://github.com/cartographer-project/cartographer/issues/1979 (Cartographer Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Google US. Apache-2.0 clean fit. URML-fit: very high; foundational SLAM upstream."
 
 - slug: orb-slam3
   rfc: 206
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/1002"
+  channel: github_issue
   contact: "UZ-SLAMLab/ORB_SLAM3 (GPL-3.0, 8.7k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). University of Zaragoza ES. Visual-SLAM canonical reference."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0206 (ORB-SLAM3 capability-manifest mapping); URML-fit framing: ORB-SLAM3 is the visual-SLAM canonical reference URML's manifest declares for visual-perception deployments. GPL-3.0 → cross-citation framing; URML adapter cannot embed ORB-SLAM3 source, composes at the API/topic boundary instead."
+  next_action: "posted 2026-05-29 to https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/1002 (ORB-SLAM3 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin University of Zaragoza ES. GPL-3.0 cross-citation framing. URML-fit: very high in research; cross-citation appropriate."
 
 - slug: rtabmap
   rfc: 207
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/introlab/rtabmap/issues/1711"
+  channel: github_issue
   contact: "introlab/rtabmap (Other — LGPL/BSD mixed, 3.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Université de Sherbrooke (Quebec, CA). Visual-inertial SLAM; ROS 2-integrated."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0207 (RTAB-Map capability-manifest mapping); URML-fit framing: RTAB-Map is the visual-inertial SLAM ROS-2-integrated substrate URML's manifest declares for mobile-base + RGB-D deployments. Mixed LGPL/BSD license needs per-surface clarity for adapter-grade bundling."
+  next_action: "posted 2026-05-29 to https://github.com/introlab/rtabmap/issues/1711 (RTAB-Map Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Université de Sherbrooke CA Quebec. Mixed license license-clarification ask. URML-fit: very high; ROS 2-integrated + Move-10 RealSense (RFC-0109) sibling."
 
 # ============================================================
@@ -193,44 +193,44 @@
 
 - slug: qgroundcontrol
   rfc: 208
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/mavlink/qgroundcontrol/issues/14442"
+  channel: github_issue
   contact: "mavlink/qgroundcontrol (Apache-2.0, 4.6k stars, Issues + Discussions enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Ground-station / mission-planning UI."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0208 (QGroundControl capability-manifest mapping); URML-fit framing: QGroundControl is the ground-station / mission-planning surface (not autopilot proper). Tier B cross-citation because it's an operator-UI layer, structurally different from the autopilot substrate (PX4 RFC-0196) and protocol (MAVLink RFC-0197) layers. URML manifest can declare QGC-compatible mission-plan format for human-supervised drone deployments."
+  next_action: "posted 2026-05-29 to https://github.com/mavlink/qgroundcontrol/issues/14442 (QGroundControl Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin Dronecode Foundation. Apache-2.0 clean fit. URML-fit: medium; operator-UI layer is cross-citation-appropriate."
 
 - slug: eclipse-zenoh
   rfc: 209
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/eclipse-zenoh/zenoh/issues/2626"
+  channel: github_issue
   contact: "eclipse-zenoh/zenoh (Other — EPL-2.0 / Apache-2.0, 2.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Next-gen pub-sub overlay; substrate-emerging."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0209 (Eclipse Zenoh capability-manifest mapping); URML-fit framing: Zenoh is the emerging next-gen pub-sub substrate for ROS 2 edge/fog. Tier B because it's substrate-emerging (not yet ROS 2 default). URML's manifest declares Zenoh as alternate-or-supplemental substrate to DDS. Sibling to Fast DDS (RFC-0203) and Cyclone DDS (RFC-0204) at the middleware layer."
+  next_action: "posted 2026-05-29 to https://github.com/eclipse-zenoh/zenoh/issues/2626 (Zenoh Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin Eclipse Foundation. Emerging substrate; cross-citation appropriate until Zenoh adoption matures."
 
 - slug: eclipse-iceoryx
   rfc: 210
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/eclipse-iceoryx/iceoryx/issues/2530"
+  channel: github_issue
   contact: "eclipse-iceoryx/iceoryx (Apache-2.0, 2.1k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Zero-copy IPC for ROS 2 intra-process."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0210 (Eclipse iceoryx capability-manifest mapping); URML-fit framing: iceoryx is the zero-copy IPC layer for ROS 2 intra-process; URML's manifest declares iceoryx-enabled deployments for latency-critical use cases. Tier B because IPC is below URML's primary engagement layer; cross-citation framing recommended."
+  next_action: "posted 2026-05-29 to https://github.com/eclipse-iceoryx/iceoryx/issues/2530 (iceoryx Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer."
 
 - slug: stella-vslam
   rfc: 211
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/stella-cv/stella_vslam/issues/660"
+  channel: github_issue
   contact: "stella-cv/stella_vslam (Other — license unclear, 1.2k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community fork of archived OpenVSLAM (originally JP-origin)."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0211 (Stella VSLAM capability-manifest mapping); URML-fit framing: Stella VSLAM is the community-maintained successor to archived OpenVSLAM. URML's manifest declares Stella-VSLAM-compatible visual-SLAM deployments. License unclear → cross-citation framing pending OSI declaration. Tier B because community-fork (vs vendor-direct or research-lab-direct upstreams). **Completes the 16 Move-16 engageable RFCs.**"
+  next_action: "posted 2026-05-29 to https://github.com/stella-cv/stella_vslam/issues/660 (Stella VSLAM Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin community fork (originally JP). License unclear. URML-fit: medium; community-fork posture."
