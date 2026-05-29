@@ -25,10 +25,12 @@
 # isArchived, last push) per target. All four: not archived, Issues
 # enabled. License-friction shapes recorded per row.
 #
-# **Batch 1 of N.** More frame-break targets follow (motion-control:
-# Marlin / OctoPrint / LinuxCNC; education: PyBricks / VEX; sim: Webots;
-# social/education humanoids: NAO / Pepper / Poppy / Reachy; conceptual
-# peers: Open Interpreter / Viam). RFC numbers 0227-0230 used here.
+# **Batches 1-2 of N.** Batch 1 (0227-0230): Klipper, WPILib, Crazyflie,
+# OpenBCI. Batch 2 (0231-0234): LinuxCNC, Pybricks, Webots, Open
+# Interpreter. More frame-break targets remain (motion-control: Marlin /
+# OctoPrint; education: VEX; social/education humanoids: NAO / Pepper /
+# Poppy / Reachy; conceptual peers: Viam). RFC numbers 0227-0234 used so
+# far.
 #
 # Like Moves #2-#17, this file is NOT under the Move #1 parity test
 # (conformance/tests/test_outreach_ledger.py guards Move #1 only).
@@ -38,7 +40,7 @@
 # notes.
 #
 # Phase 1 posture: do not massage `response` / `last_touch`. `none` is
-# the truthful default. All four rows carry `sent_at: ""`,
+# the truthful default. All rows carry `sent_at: ""`,
 # `posted_url: ""`, and `channel: deferred` until per-target RFCs are
 # approved and engagement is posted on the upstream surface. Posting is
 # a separate, founder-authorized step.
@@ -98,3 +100,59 @@
   response: none
   next_action: "RFC-0230 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: single GitHub Issue on brainflow-dev/brainflow (question), OpenBCI cross-referenced; respect any human-only-correspondence preference."
   notes: "Tier A (BrainFlow MIT composes cleanly). Origin BrainFlow community OSS + OpenBCI US-domiciled; passes US-federal default policy. URML-fit: input-bridge, NOT a runtime adapter (weakest adapter story of the batch, by design). BCI intent label -> URML behavior trigger -> validate -> execute; non-verbal analog of Move-12 STT (RFC-0153). Extends accessibility line (RFC-0079). Surfaces queued Spec RFCs: non-language intent-input source at Layer 4, bci/neural sensor measurement_type, confidence-gated intent."
+
+# ============================================================
+# Move #18 batch 2 (4) — frame-break wave
+# ============================================================
+
+# ---- Things that are robots but nobody files under "robot" (1) ----
+
+- slug: linuxcnc
+  rfc: 231
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "LinuxCNC/linuxcnc (GPL-2.0, 2.3k stars, Issues enabled, last commit 2026-05-29, **not archived**). Long-running community OSS (post-EMC2). Real-time CNC machine-tool controller; reads G-code (RS-274) and drives steppers/servos via its own HAL."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0231 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: LinuxCNC forum / dev mailing list preferred; route there with a GitHub Issue only if maintainers prefer it."
+  notes: "Tier B (GPL-2.0 -> IPC/G-code-boundary integration, no code vendoring). Origin community OSS (international); passes US-federal default policy. URML-fit: high for motion (CNC = positioning robot), partial overall (no spindle/coolant/tool-change process). Second motion-control target after RFC-0227 Klipper; shares queued Spec RFCs (machine-tool/fabrication kinematics drive_type classes, G-code substrate declaration, work-envelope). HAL-name collision noted (LinuxCNC HAL = real-time signals, below URML's capability HAL)."
+
+# ---- Where the next roboticists are, not where vendors are (1) ----
+
+- slug: pybricks
+  rfc: 232
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "pybricks/pybricks-micropython (MIT, 324 stars, last commit 2026-05-28, **not archived**; code-repo Issues disabled by design). MicroPython firmware for LEGO programmable hubs (SPIKE Prime / MINDSTORMS / Technic). Engagement surface: pybricks/support (MIT, Issues enabled)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0232 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: single Issue on pybricks/support (question) — code repo Issues are off by design; respect any human-only-correspondence preference."
+  notes: "Tier A (MIT composes cleanly). Origin community OSS; passes US-federal default policy. URML-fit: high (DriveBase = differential, already in enum). Second education-pipeline target after RFC-0228 WPILib; one tier younger (K-12 LEGO). Surfaces queued Spec RFCs: LEGO-hub MCU substrate declaration, port-topology declaration. Engage via pybricks/support, not the code repo."
+
+# ---- The open simulator URML had skipped (1) ----
+
+- slug: webots
+  rfc: 233
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "cyberbotics/webots (Apache-2.0, 4.4k stars, Issues enabled, last commit 2026-05-28, **not archived**). Cyberbotics Ltd (Switzerland, EPFL lineage). Mature cross-platform open robot simulator; large model library; controllers in C/C++/Python/Java/MATLAB."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0233 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: single GitHub Issue (question) or Cyberbotics Discord."
+  notes: "Tier A (Apache-2.0, cleanest sim-substrate license fit). Origin Switzerland (allied, passes default policy). URML-fit: high; closes the open-simulator gap (Gazebo RFC-0037 / Isaac RFC-0050 / CARLA RFC-0051 / MuJoCo RFC-0060/0144 engaged, Webots was not). Surfaces shared sim-substrate-declaration Spec RFC + sim-vs-real deployment context + PROTO cross-reference. Robot-agnostic = thin Webots-specific surface."
+
+# ---- Conceptual peer: NL-to-action sibling (1) ----
+
+- slug: open-interpreter
+  rfc: 234
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OpenInterpreter/open-interpreter (AGPL-3.0, 63.7k stars, Issues enabled, last commit 2026-05-17, **not archived**). US-domiciled. General-purpose NL agent that runs code to accomplish requests; URML's closest sibling outside robotics."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0234 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: single GitHub Issue (question/enhancement); respect any human-only-correspondence preference."
+  notes: "Tier B (AGPL-3.0 network-copyleft -> client/IPC boundary only, no code vendoring; same discipline as RFC-0168 LibreTranslate). Origin US-domiciled OSS; passes US-federal default policy. URML-fit: conceptual-peer / positioning, NOT a runtime adapter — URML as the verified, capability-gated robot-action TOOL an agent calls (generalizes RFC-0108 ROSA / RFC-0143 smolagents / RFC-0164 LangGraph). Surfaces queued Spec RFCs: agent-tool registration declaration, plan-vs-execute boundary, confirmation gating. Highest-reach target in the batch (63.7k stars)."
