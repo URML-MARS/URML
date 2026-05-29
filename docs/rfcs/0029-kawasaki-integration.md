@@ -64,7 +64,7 @@ Pre-v1.0; purely additive (RFC document only).
 ## Drawbacks
 
 - **No Discussions venue.** `Kawasaki-Robotics/khi_ros2` has Issues but not Discussions; same fallback as FANUC (Issue-based outreach).
-- **AS-language niche.** Same general property as VAL 3 / KRL / INFORM / MELFA-BASIC V — vendor-specific on-controller language not portable; `call_program` (Draft RFC-0015) is the binding-layer answer.
+- **AS-language niche.** Same general property as VAL 3 / KRL / INFORM / MELFA-BASIC V — vendor-specific on-controller language not portable; `call_program` ([RFC-0015](0015-control-program-invocation.md), Open) is the binding-layer answer.
 
 ## Alternatives considered
 
@@ -95,6 +95,10 @@ Provisional pending Kawasaki-Robotics/khi_ros2 maintainer feedback:
 2. **AS-language invocation (Q2).** Endorsed. Binding RFC-0015's `call_program` to an AS program launch is acceptable to Kawasaki-Robotics.
 3. **Legacy-controller support (Q3).** Demand for the D / C series is low and not on the roadmap. Additional clarification: `khi_ros2` does not currently support the E-series controllers either. This correction is reflected in the Compatibility notes above.
 4. **Conformance listing (Q4).** Approved, conditional on two clarifications: (a) no implementation or maintenance obligation on `khi_ros2` from the listing, and (b) no requirement that `khi_ros2` continuously work correctly with URML. URML's response confirmed both are No per [RFC-0014](0014-substrate-conformance.md)'s self-reported-tier design: the conformance contract lives on URML's adapter (URML maintains, not Kawasaki), and the listing is a point-in-time factual claim about a specific URML commit against a specific khi_ros2 version, not a continuous contract. Listing advances on URML's side accordingly.
+
+**Thread closed resolved 2026-05-28** by kurita-taisuke ("Closing as resolved") after URML pushed the on-its-side corrections.
+
+**Follow-through on the endorsed AS-language binding (Q2), 2026-05-29.** [RFC-0015](0015-control-program-invocation.md) (`call_program`) advanced Draft → Open and landed across all layers, with the Kawasaki AS-language binding as the headline instance: a `call_program` step maps to launching a named Kawasaki AS program, the `KawasakiAdapter` carries that note, and the runnable [`examples/industrial/kawasaki-as-program`](../../examples/industrial/) demo plus conformance fixture `industrial/45_kawasaki_call_program_positive` exercise it hermetically. The URML-facing program name maps to the real AS program in adapter config, exactly as a declared location maps to a pose.
 
 ## Implementation note
 
