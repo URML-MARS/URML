@@ -101,10 +101,10 @@
   posted_url: "https://github.com/arduino/Arduino/issues/12114"
   channel: github_issue
   contact: "arduino/Arduino (license: Other — clarification ask, 14.6k stars, Issues enabled, last commit 2025-10-11, **not archived**). Arduino S.r.l., Italy."
-  last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue arduino/Arduino#12114 on 2026-05-28. License-clarification ask front-and-centre (LGPL vs GPL surface disambiguation). Light-touch follow-up at 2026-06-25."
-  notes: "Tier A. Origin IT (pass, NATO+EU). License-clarification ask is the gating item. URML-fit: very high for educational + maker class."
+  last_touch: "2026-05-29"
+  response: wontfix
+  next_action: "Closed wontfix 2026-05-29 by per1234 (COLLABORATOR) — CONSTRUCTIVE close, not a brush-off. arduino/Arduino is IDE 1.x and EOL; live codebase is arduino/arduino-ide (cleaner license). Won't host a bridge in an Arduino-owned repo (keep it under our own control) and won't add a registry README link. Doors left open: Forum Showcase + Project Hub + scoped issues/PRs to arduino-ide, and 'come back once there's real adoption'. Posted a gracious ack 2026-05-29. Re-engage via Forum Showcase with a working URML-on-Arduino demo; target arduino-ide for any scoped PR."
+  notes: "Tier A. Origin IT (pass, NATO+EU). Constructive wontfix (distinct from OVOS/moteus/LibreTranslate hostile dismissals); the AI jab was narrow (license ask on a dead repo), not a rejection of AI authoring. URML-fit: very high for educational + maker class."
 
 - slug: adafruit-circuitpython
   rfc: 174
