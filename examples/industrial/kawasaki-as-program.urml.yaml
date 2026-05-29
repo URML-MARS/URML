@@ -1,0 +1,32 @@
+# Kawasaki AS-language demo — the `call_program` primitive (RFC-0015).
+#
+# "After the safety door closes, run the cell's pick-and-place job, then home
+# all axes." Two of the steps are `call_program`: they invoke commissioned
+# on-controller Kawasaki AS-language programs by name. The names
+# (`pick_place_cycle`, `home_all`) are URML-facing identifiers the adapter maps
+# to the real AS programs on the controller, exactly as a declared location maps
+# to a pose. This is the binding kurita-taisuke (Kawasaki-Robotics) endorsed on
+# khi_ros2 issue #9.
+#
+# Hermetic run (no robot, no API key):
+#   urml validate kawasaki-as-program.urml.yaml \
+#     -m kawasaki-as-program.manifest.yaml --profile industrial
+#   urml execute kawasaki-as-program.urml.yaml \
+#     -m kawasaki-as-program.manifest.yaml --profile industrial --adapter mock
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait_for:
+        condition:
+          event: safety_door_closed
+    - call_program:
+        name: pick_place_cycle
+    - call_program:
+        name: home_all
+    - report:
+        to: line_controller
+        facts: { cycle: run_commissioned_job, result: ok }
+        status: success

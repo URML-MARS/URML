@@ -1,0 +1,13 @@
+{
+  "profile": "industrial",
+  "behavior": {
+    "type": "sequence",
+    "on_error": "abort_and_report",
+    "steps": [
+      { "wait_for": { "condition": { "event": "safety_door_closed" } } },
+      { "call_program": { "name": "pick_place_cycle" } },
+      { "call_program": { "name": "home_all" } },
+      { "report": { "to": "line_controller", "facts": { "cycle": "run_commissioned_job", "result": "ok" }, "status": "success" } }
+    ]
+  }
+}
