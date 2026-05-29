@@ -74,46 +74,46 @@
 
 - slug: eclipse-sdv-blueprints
   rfc: 212
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/8"
   channel: github_issue
   contact: "eclipse-sdv-blueprints/blueprints-website (EPL-2.0, issues enabled, last push 2026-05-05). Eclipse Foundation Software-Defined Vehicle Working Group; automotive + commercial-vehicle + aerospace blueprints. 2026 hackfests Esslingen + Friedrichshafen."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0212 (Eclipse SDV blueprints cross-WG cross-citation); URML-fit framing: URML's drone-runtime + industrial-arm-runtime cross-reference Eclipse SDV blueprint patterns for safe-vehicle-software composition. Sub-wave A — postable on standard Move-10-through-16 pipeline."
+  next_action: "Posted 2026-05-29 to https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/8. Body uses the post-Nav2 tight format (one concrete question on aerospace-blueprint related-art scope). Weakest-fit of the wave per the assistant's fit assessment (cross-citation ask); founder chose to post all five for funnel reach. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin Eclipse Foundation Brussels AISBL. EPL-2.0 adapter-boundary friendly. Foundation-home score: high (cross-WG, not direct host)."
 
 - slug: elisa-tech-wg-automotive
   rfc: 213
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/elisa-tech/wg-automotive/issues/60"
   channel: github_issue
   contact: "elisa-tech/wg-automotive (Multi-OSI, issues enabled, last push 2026-05-27 active). Linux Foundation ELISA Project; safety-Linux for medical / automotive / robotics. Founding members include KUKA / Toyota / BMW / Arm."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0213 (ELISA wg-automotive safety-Linux cross-citation); URML-fit framing: URML's safety-envelope manifest fields align with ELISA's safe-construction-from-Linux thesis; cross-citation strengthens URML's safe-by-construction narrative. Sub-wave A."
+  next_action: "Posted 2026-05-29 to https://github.com/elisa-tech/wg-automotive/issues/60. Tight post-Nav2 format; single question (are WG calls open to non-member attendees). Assistant flagged as marginal-fit cross-citation; founder chose to post all five. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin Linux Foundation US. Foundation-home score: high (sister-org cross-citation, not direct host). Safety-Linux is URML-adjacent."
 
 - slug: opc-foundation-ua-nodeset
   rfc: 214
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/OPCFoundation/UA-Nodeset/issues/119"
   channel: github_issue
   contact: "OPCFoundation/UA-Nodeset (license TBD verify, issues enabled, last push 2026-05-09, 268 stars). OPC Foundation UA Robotics Companion Specification."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0214 (OPC UA Robotics Companion Spec cross-citation); URML-fit framing: URML's manifest declares OPC-UA-Robotics-compatible deployments; sub-wave A cross-citation. Verify UA-Nodeset license before adapter-grade framing."
+  next_action: "Posted 2026-05-29 to https://github.com/OPCFoundation/UA-Nodeset/issues/119. Tight post-Nav2 format; two concrete questions (repo OSI license clarification + manifest-to-NodeSet mapping convention). Strongest-fit of the wave per the assistant's fit assessment (genuine answerable technical question). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OPC Foundation (US + DE multi-national). Foundation-home score: medium (standards-body cross-citation). License-verification gating."
 
 - slug: openssf-slsa
   rfc: 215
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/slsa-framework/slsa/issues/1613"
   channel: github_issue
   contact: "slsa-framework/slsa (Other / OSI-aligned, issues enabled, last push 2026-05-18, 1.8k stars). OpenSSF / Linux Foundation. Supply-chain provenance levels; cited by EO 14028."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0215 (SLSA supply-chain provenance alignment with URML default policy); URML-fit framing: URML's NDAA-889 / EO 14307 / FCC Covered List default policy file (RFC-0003) complements SLSA L3 provenance for federal procurement story. Sub-wave A."
+  next_action: "Posted 2026-05-29 to https://github.com/slsa-framework/slsa/issues/1613. Tight post-Nav2 format; single concrete question (how to record a composite multi-package substrate's SLSA level in a manifest, and which verifier path). Second-strongest fit per the assistant's assessment (real design question). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OpenSSF / Linux Foundation US. Foundation-home score: high (supply-chain alignment, not direct host). EO 14028 anchor strengthens URML's federal frame."
 
 - slug: openssf-scorecard
