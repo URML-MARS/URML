@@ -54,6 +54,9 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_HOME_LOCATION = "capability.missing_home_location"
     # RFC-0006: a required abstract link role is absent from manifest.connectivity.
     CAPABILITY_MISSING_LINK_ROLE = "capability.missing_link_role"
+    # RFC-0015: call_program references a program / args not declared in manifest.programs.
+    CAPABILITY_MISSING_PROGRAM = "capability.missing_program"
+    CAPABILITY_PROGRAM_ARG_MISMATCH = "capability.program_arg_mismatch"
 
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"

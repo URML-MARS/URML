@@ -302,6 +302,42 @@ class Provenance(BaseModel):
     )
 
 
+class ProgramArg(BaseModel):
+    """A single declared argument of a substrate program.
+
+    The `type` is one of the three URML scalar kinds. The validator uses the
+    declared name and type to capability-check a `call_program`'s `args` before
+    execution (RFC-0015 Pass-2 check). Depth stops at scalar typing by design.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    type: Literal["string", "number", "boolean"]
+
+
+class Program(BaseModel):
+    """A substrate-defined program/method the robot exposes by name.
+
+    Added by RFC-0015. A `call_program` step is rejected by the validator
+    unless its `name` is declared here, preserving validate-before-actuate even
+    though the program body is opaque to URML. `call_program` is the
+    substrate-specific last resort, not a substitute for modelling a behavior
+    with real primitives; a manifest only declares `programs:` when the
+    substrate genuinely exposes named routines (e.g. a Kawasaki AS-language
+    program, an OPC UA method node, a commissioned PLC job).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    description: str | None = None
+    args: list[ProgramArg] = Field(
+        default_factory=list,
+        description="Declared argument signature. Empty means the program takes no arguments.",
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -322,6 +358,9 @@ class CapabilityManifest(BaseModel):
     mobility: Mobility | None = None
     manipulation: Manipulation | None = None
     perception: Perception | None = None
+
+    # RFC-0015: optional substrate-program declarations for `call_program`.
+    programs: list[Program] = Field(default_factory=list)
 
     docking_stations: list[DockingStation] = Field(default_factory=list)
     outputs: Outputs = Field(default_factory=Outputs)

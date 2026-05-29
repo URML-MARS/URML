@@ -33,6 +33,8 @@ from contextlib import suppress
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
+    ProgramCallResult,
+    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
@@ -281,6 +283,15 @@ class UrRtdeAdapter(_CobotBase):
         value = float(force[0]) if force else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
+
 
 class FrankaFciAdapter(_CobotBase):
     """Franka via FCI (panda-py, Apache-2.0) — zero ROS."""
@@ -344,6 +355,15 @@ class FrankaFciAdapter(_CobotBase):
         state = panda.get_state()
         value = float(state.O_F_ext_hat_K[0]) if getattr(state, "O_F_ext_hat_K", None) else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
 
 
 class DoosanDrflAdapter(_CobotBase):
@@ -415,6 +435,15 @@ class DoosanDrflAdapter(_CobotBase):
         value = float(force[0]) if force else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
+
 
 class TechmanTmflowAdapter(_CobotBase):
     """Techman via TMflow (techmanpy / Listen Node) — zero ROS.
@@ -484,6 +513,15 @@ class TechmanTmflowAdapter(_CobotBase):
         force = client.get_tcp_force()
         value = float(force[0]) if force else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
 
 
 class KinovaKortexAdapter(_CobotBase):
@@ -559,6 +597,15 @@ class KinovaKortexAdapter(_CobotBase):
         value = float(force[0]) if force else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
+
 
 class MecademicMeca500Adapter(_CobotBase):
     """Mecademic Meca500 via mecademicpy (Apache-2.0) — zero ROS.
@@ -630,6 +677,15 @@ class MecademicMeca500Adapter(_CobotBase):
         value = float(joints[0]) if joints else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
+
 
 class NeuraMairaAdapter(_CobotBase):
     """Neura Robotics MAiRA via neurapy — zero ROS.
@@ -698,6 +754,15 @@ class NeuraMairaAdapter(_CobotBase):
         wrench = robot.get_tcp_wrench()
         value = float(wrench[0]) if wrench else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')
 
 
 class KassowKrAdapter(_CobotBase):
@@ -777,3 +842,12 @@ class KassowKrAdapter(_CobotBase):
         wrench = client.get_tcp_wrench()
         value = float(wrench[0]) if wrench else None
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('cobot')

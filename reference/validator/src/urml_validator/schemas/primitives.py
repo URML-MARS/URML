@@ -478,6 +478,40 @@ class SwapToolArgs(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# 21. call_program
+# ---------------------------------------------------------------------------
+
+
+class CallProgramArgs(BaseModel):
+    """Invoke a substrate-declared program/method by name (RFC-0015).
+
+    The escape hatch for substrates whose capability is exposed as named
+    programs — Kawasaki AS-language jobs, OPC UA method nodes, commissioned PLC
+    routines. `name` MUST be declared in the manifest's `programs:` block so the
+    validator can reject an undeclared or mis-typed call before execution.
+
+    `call_program` is opaque by design: URML does not model what the program
+    does, so the body is unvalidatable beyond its signature. It is the
+    substrate-specific last resort, not a substitute for modelling a behavior
+    with real primitives. A returned value (`expect: value`, bound via
+    `store_as`) is an opaque `program_result` no other primitive consumes.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    args: dict[str, str | float | bool] | None = None
+    expect: Literal["success", "value"] = "success"
+    store_as: Identifier | None = None
+
+    @model_validator(mode="after")
+    def _store_as_implies_value(self) -> CallProgramArgs:
+        if self.store_as is not None and self.expect != "value":
+            raise ValueError("call_program.store_as requires expect == 'value'")
+        return self
+
+
+# ---------------------------------------------------------------------------
 # Registry of primitive names -> arg-model classes.
 # ---------------------------------------------------------------------------
 
@@ -502,6 +536,7 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "pick_from",
     "place_at",
     "swap_tool",
+    "call_program",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -525,4 +560,5 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "pick_from": PickFromArgs,
     "place_at": PlaceAtArgs,
     "swap_tool": SwapToolArgs,
+    "call_program": CallProgramArgs,
 }

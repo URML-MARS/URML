@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run demo-record architecture-record audit test clean
+.PHONY: help install install-dev demo demo-run demo-record kawasaki-demo-record architecture-record audit test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -68,6 +68,14 @@ demo-run:
 # line it shows is real `urml` output.
 demo-record:
 	$(PYBIN)/python tools/scripts/gen_demo_svg.py
+
+# Regenerate the Kawasaki `call_program` hero SVG
+# (docs/assets/kawasaki-as-program-to-motion.svg): the RFC-0015 demo,
+# same discipline as demo-record. CI (test_kawasaki_demo_svg.py) asserts
+# the committed asset matches the generator and that every line is real
+# `urml` output.
+kawasaki-demo-record:
+	$(PYBIN)/python tools/scripts/gen_kawasaki_demo_svg.py
 
 # Regenerate the homepage architecture diagram
 # (docs/assets/architecture-stack.svg): committed, deterministic SVG of

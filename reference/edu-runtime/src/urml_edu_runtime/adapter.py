@@ -30,6 +30,8 @@ from contextlib import suppress
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
+    ProgramCallResult,
+    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
@@ -307,6 +309,15 @@ class VexV5Adapter(_EduBase):
         value = float(brain.read_sensor(sensor or "default"))
         return MeasurementResult(success=True, payload={"value": value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
+
 
 class LegoSpikeAdapter(_EduBase):
     """LEGO SPIKE Prime / Mindstorms hub via Pybricks BLE — zero ROS.
@@ -369,6 +380,15 @@ class LegoSpikeAdapter(_EduBase):
         hub = self._open()
         value = float(hub.read_sensor(sensor or "default"))
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
 
 
 class RoboticalMartyAdapter(_EduBase):
@@ -515,6 +535,15 @@ class RoboticalMartyAdapter(_EduBase):
         else:
             payload_value = raw if isinstance(raw, int) else float(raw)
         return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
 
 
 class PetoiAdapter(_EduBase):
@@ -697,6 +726,15 @@ class PetoiAdapter(_EduBase):
             payload_value = raw if isinstance(raw, int) else float(raw)
         return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
+
 
 class ThymioAdapter(_EduBase):
     """Thymio via Aseba TDM (Thymio Device Manager) — zero ROS.
@@ -758,3 +796,12 @@ class ThymioAdapter(_EduBase):
         client = self._open()
         value = float(client.read_variable(sensor or "default"))
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')

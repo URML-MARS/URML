@@ -17,6 +17,7 @@ import pytest
 from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     NavigationResult,
+    ProgramCallResult,
     ROSAdapter,
     SubstrateResult,
 )
@@ -93,6 +94,10 @@ class _RecordingInner:
         self.calls.append(("emit_report", kw))
         return SubstrateResult(success=True)
 
+    def call_named_program(self, **kw: Any) -> ProgramCallResult:
+        self.calls.append(("call_named_program", kw))
+        return ProgramCallResult(success=True)
+
     def close(self) -> None:
         self.closed = True
 
@@ -128,6 +133,7 @@ def test_supported_primitives_delegate(cls: type[IndustrialArmAdapter]) -> None:
     assert adapter.emit_report(
         to="cell_log", facts={"ok": True}, attachments=None, status="success", severity="info"
     ).success
+    assert adapter.call_named_program(name="pick_place_cycle").success
 
     delegated = [name for name, _ in inner.calls]
     assert delegated == [
@@ -136,6 +142,7 @@ def test_supported_primitives_delegate(cls: type[IndustrialArmAdapter]) -> None:
         "wait_passively",
         "take_measurement",
         "emit_report",
+        "call_named_program",
     ]
 
 

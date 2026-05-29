@@ -53,6 +53,7 @@ from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.primitives import (
+    CallProgramArgs,
     CaptureArgs,
     DetectArgs,
     DockArgs,
@@ -396,6 +397,8 @@ def _check_capabilities(
         return _check_place_at_caps(args, manifest, path)
     if name == "swap_tool":
         return _check_swap_tool_caps(args, manifest, path)
+    if name == "call_program":
+        return _check_call_program_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -843,6 +846,67 @@ def _check_swap_tool_caps(
                 f"(declared services: {target.services!r}).",
             )
         )
+    return out
+
+
+# Python value-type -> declared ProgramArg.type token, for arg-signature checks.
+_PROGRAM_ARG_TYPE = {bool: "boolean", int: "number", float: "number", str: "string"}
+
+
+def _check_call_program_caps(
+    args: CallProgramArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """call_program is gated by the manifest's `programs:` declaration (RFC-0015).
+
+    The named program must be declared. If the call passes `args`, each one must
+    match a declared argument by name and scalar type. The program body itself is
+    opaque to URML; the signature is all the validator can check before execution.
+    """
+    out: list[ValidationError] = []
+    program = next((p for p in manifest.programs if p.name == args.name), None)
+    if program is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_PROGRAM,
+                "call_program",
+                path,
+                f"call_program references undeclared program {args.name!r}.",
+                field="name",
+                suggestion=f"Declare a program named {args.name!r} in manifest.programs, "
+                "or model the behavior with real primitives instead of call_program.",
+            )
+        )
+        return out
+    declared = {a.name: a.type for a in program.args}
+    for key, value in (args.args or {}).items():
+        # bool is a subclass of int — check it first.
+        actual = next(
+            (token for py_type, token in _PROGRAM_ARG_TYPE.items() if isinstance(value, py_type)),
+            "string",
+        )
+        if key not in declared:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_PROGRAM_ARG_MISMATCH,
+                    "call_program",
+                    path,
+                    f"call_program passes argument {key!r}, which program {args.name!r} "
+                    "does not declare.",
+                    field="args",
+                    suggestion=f"Declared arguments: {sorted(declared)!r}.",
+                )
+            )
+        elif declared[key] != actual:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_PROGRAM_ARG_MISMATCH,
+                    "call_program",
+                    path,
+                    f"call_program argument {key!r} is {actual!r}, but program "
+                    f"{args.name!r} declares it as {declared[key]!r}.",
+                    field="args",
+                )
+            )
     return out
 
 
@@ -1966,6 +2030,11 @@ _PRODUCER_TYPES: dict[str, str] = {
     # condition.kind but the consumer surface that uses it (report.facts)
     # is permissive, so a single tag is enough for v0.1.
     "wait_for": "wait_result",
+    # call_program (expect: value) stores an opaque program_result. No
+    # consumer primitive accepts this type, so a returned value cannot be
+    # fed to grasp/move_to/etc. — only the permissive report.attachments /
+    # report.facts surface may reference it (RFC-0015).
+    "call_program": "program_result",
 }
 
 

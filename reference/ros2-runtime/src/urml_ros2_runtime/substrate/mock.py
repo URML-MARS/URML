@@ -24,6 +24,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
@@ -57,6 +58,7 @@ class MockROSAdapter:
         self._report_override: SubstrateResult | None = None
         self._speech_override: SubstrateResult | None = None
         self._listen_override: ListenResult | None = None
+        self._call_program_override: ProgramCallResult | None = None
 
     # ----- Overrides -----
 
@@ -107,6 +109,10 @@ class MockROSAdapter:
     def set_listen_result(self, result: ListenResult) -> None:
         """Make the next `acquire_speech` return this result."""
         self._listen_override = result
+
+    def set_call_program_result(self, result: ProgramCallResult) -> None:
+        """Make the next `call_named_program` return this result."""
+        self._call_program_override = result
 
     # ----- Substrate methods -----
 
@@ -409,6 +415,23 @@ class MockROSAdapter:
                 "choice_index": None,
             }
         return ListenResult(success=True, timed_out=False, payload=payload)
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        self.call_log.append(
+            {
+                "method": "call_named_program",
+                "name": name,
+                "args": args,
+            }
+        )
+        if self._call_program_override is not None:
+            return self._call_program_override
+        return ProgramCallResult(success=True)
 
     # ----- Drone-profile dispatch -----
 

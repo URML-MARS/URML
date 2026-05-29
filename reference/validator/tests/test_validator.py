@@ -318,6 +318,79 @@ def test_swap_tool_station_without_service_rejected(
     assert result.has(ErrorCode.CAPABILITY_MISSING_DOCKING_SERVICE)
 
 
+def test_call_program_declared_accepted(
+    industrial_cell_manifest: dict,
+) -> None:
+    """call_program against a declared program validates (RFC-0015)."""
+    program = _industrial_seq(
+        {"call_program": {"name": "pick_place_cycle"}},
+        {"call_program": {"name": "home_all"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_call_program_undeclared_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    """An undeclared program name is rejected at Pass 2 (the actuate gate)."""
+    program = _industrial_seq(
+        {"call_program": {"name": "nonexistent_program"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_PROGRAM)
+
+
+def test_call_program_arg_signature_mismatch_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    """A passed arg whose type does not match the declared signature is rejected."""
+    industrial_cell_manifest["programs"] = [
+        {"name": "run_with_speed", "args": [{"name": "speed", "type": "number"}]},
+    ]
+    program = _industrial_seq(
+        {"call_program": {"name": "run_with_speed",
+                          "args": {"speed": "fast"}}},  # string, declared number
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_PROGRAM_ARG_MISMATCH)
+
+
+def test_call_program_undeclared_arg_rejected(
+    industrial_cell_manifest: dict,
+) -> None:
+    """A passed arg the program does not declare is rejected."""
+    industrial_cell_manifest["programs"] = [{"name": "no_arg_job"}]
+    program = _industrial_seq(
+        {"call_program": {"name": "no_arg_job", "args": {"extra": 1}}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_PROGRAM_ARG_MISMATCH)
+
+
+def test_call_program_value_binding_is_unconsumable(
+    industrial_cell_manifest: dict,
+) -> None:
+    """A stored program_result cannot be fed to a typed consumer like grasp."""
+    industrial_cell_manifest["programs"] = [{"name": "probe_job"}]
+    program = _industrial_seq(
+        {"call_program": {"name": "probe_job", "expect": "value",
+                          "store_as": "probe"}},
+        {"grasp": {"target": "$probe", "force": "firm"}},
+    )
+    result = validate(program, industrial_cell_manifest, None,
+                      profiles=("industrial",), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.BINDING_TYPE_MISMATCH)
+
+
 def test_unknown_object_class(
     turtlebot_manifest: dict, home_envelope: dict
 ) -> None:

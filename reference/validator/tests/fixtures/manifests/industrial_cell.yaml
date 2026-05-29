@@ -72,6 +72,12 @@ perception:
     - widget_blue
     - small_part
 
+programs:                          # RFC-0015: commissioned controller programs (e.g. Kawasaki AS-language)
+  - name: pick_place_cycle
+    description: Commissioned on-controller pick-and-place job.
+  - name: home_all
+    description: Send all axes to the home pose.
+
 docking_stations:
   - name: tool_change_station
     pose: { x: 0.2, y: 0.5, z: 0.20 }

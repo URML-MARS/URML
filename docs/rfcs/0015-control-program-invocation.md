@@ -1,10 +1,10 @@
 ---
 rfc: 0015
 title: Control-program invocation — calling a named substrate program
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Open
 created: 2026-05-19
-updated: 2026-05-19
+updated: 2026-05-29
 supersedes: —
 superseded-by: —
 ---
@@ -154,23 +154,60 @@ shows why this case is different) and RFC-0002 (primitive economy).
 
 ## Unresolved questions
 
-- The exact manifest declaration shape for `programs:` (arg signature
-  typing depth).
-- Whether `call_program` is core or profile-gated (industrial/research
-  only).
-- Whether a returned `value` needs a typed schema or stays opaque.
+Resolved on advance to **Open** (2026-05-29), informed by the Kawasaki-Robotics
+maintainer endorsement (kurita-taisuke, khi_ros2 issue #9, Q2):
 
-Each is small enough to settle before this RFC moves Open → Accepted.
+- **Manifest declaration shape for `programs:`** — minimal. Each entry is
+  `name` (Identifier), optional `description`, and an optional `args` list of
+  `{name, type}` where `type ∈ {string, number, boolean}`. Enough for Pass-2
+  arity/type checking; deeper typing is deferred.
+- **Core vs profile-gated** — neither, in the profile sense: `call_program` is
+  a **manifest-gated** primitive available to any profile, but usable only
+  against a manifest that declares the named program. The repo has no
+  profile-gate mechanism (profiles are informational in the validator), and
+  the manifest-declaration requirement is the real safety gate. A `home`
+  manifest that declares no `programs:` cannot use it, which satisfies the
+  Drawbacks concern without a new mechanism.
+- **Returned value typing** — stays **opaque**. `expect: value` with
+  `store_as` binds an opaque `program_result` that no other primitive consumes
+  (it cannot be fed to `grasp`/`move_to`/etc.), preserving validate-before-
+  actuate. A typed return is the noted future refinement (the `call_skill`
+  alternative).
+
+A constrained, typed `call_skill` catalog (alternative #4) remains a possible
+future RFC if opaque `call_program` proves too blunt in practice.
 
 ## Implementation note
 
-Draft only — no code lands from this RFC until the maintainer decides
-it. The `urml-opcua-runtime` ships against the frozen Protocol with
-program invocation **absent** (the adapter exposes nav/dock/grasp/
-measure/report; a program call is not offered). If accepted, landing is
-one coordinated change (Layer 1 + Layer 2 + Layer 4 + validator +
-conformance + the OPC UA and ROS 2 adapter mappings) — a multi-layer
-change, hence correctly an RFC.
+**Landed 2026-05-29** as one coordinated change on advance to Open:
+
+- **Layer 1**: optional `programs:` manifest block (`Program` / `ProgramArg`
+  models) — [`spec/layer-1-hal/v0.1.0.md`](../../spec/layer-1-hal/v0.1.0.md)
+  §2.8a.
+- **Layer 2**: the `call_program` primitive + `CallProgramArgs` —
+  [`spec/layer-2-primitives/v0.1.0.md`](../../spec/layer-2-primitives/v0.1.0.md)
+  §3.9. Lands additively in the `0.1.x` line, like the RFC-0013 industrial
+  primitives (no version-file bump; fully backward compatible).
+- **Layer 4**: the verb is auto-derived from the exported schema; a `call_program`
+  industrial few-shot was added to the bridge.
+- **Validator**: Pass-2 `capability.missing_program` /
+  `capability.program_arg_mismatch`; Pass-4 binds an opaque `program_result`.
+- **Substrate**: `call_named_program` added to the `ROSAdapter` Protocol and to
+  **every** reference adapter. The hermetic `MockROSAdapter`, the
+  `IndustrialArmAdapter` family (Kawasaki et al., delegating to the inner
+  adapter), and the `OpcUaAdapter` (`objects.call_method`, the motivating case)
+  implement it for real; substrates with no named-program mechanism return a
+  uniform `not_supported_on_<substrate>` result.
+- **Conformance + demo**: `industrial/45_kawasaki_call_program_positive` and
+  `industrial/46_call_program_undeclared_rejected`, plus the runnable
+  [`examples/industrial/kawasaki-as-program`](../../examples/industrial/) demo
+  (hermetic translate→validate→execute with a committed hero SVG).
+
+The substrate-neutrality acid test holds: the OPC UA path
+(`objects.call_method`) needs no ROS, and the ROS-2 path is a deployment
+subclass binding its driver's program service (e.g. khi_ros2's AS-program
+launch). The Kawasaki AS-language binding (RFC-0029 Q2, maintainer-endorsed) is
+the headline instance.
 
 ## Self-review (Phase 0)
 

@@ -1,0 +1,42 @@
+name: industrial/kawasaki_call_program_positive
+description: >
+  RFC-0015 `call_program` happy path on a Kawasaki cell. After the safety
+  door closes, two commissioned on-controller AS-language programs are
+  invoked by name (pick_place_cycle, home_all), then a report is sent. Both
+  program names are declared in the manifest's `programs:` block, so Pass 2
+  accepts them; execution dispatches each through `call_named_program` on
+  MockROSAdapter. This is the maintainer-endorsed Kawasaki binding
+  (khi_ros2 issue #9). Manifest ACCEPTED under the bundled US-federal policy
+  (JP allied origin).
+
+manifest: kawasaki_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait_for:
+          condition: { event: safety_door_closed }
+      - call_program:
+          name: pick_place_cycle
+      - call_program:
+          name: home_all
+      - report:
+          to: line_controller
+          facts: { cycle: run_commissioned_job, result: ok }
+          status: success
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4
+  audit_methods:
+    - wait_for_condition
+    - call_named_program
+    - call_named_program
+    - emit_report

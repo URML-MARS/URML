@@ -1,0 +1,1 @@
+After the safety door closes, run the cell's pick-and-place job, then home all axes.

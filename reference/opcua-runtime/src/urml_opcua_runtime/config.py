@@ -52,12 +52,19 @@ class OpcUaConfig(BaseModel):
     manipulation_methods: dict[str, MethodTarget] = Field(default_factory=dict)
     #: a variable NodeId read by `measure` / polled by `wait_for`.
     measurement_node: str | None = None
+    #: manifest-declared program name -> its OPC UA method node (RFC-0015
+    #: call_program). This is the motivating case: an OPC UA Robotics
+    #: ControlProgram / method node invoked by name.
+    program_to_method: dict[str, MethodTarget] = Field(default_factory=dict)
 
     def resolve_location(self, name: str) -> MethodTarget | None:
         return self.location_to_method.get(name)
 
     def resolve_service(self, name: str) -> MethodTarget | None:
         return self.service_to_method.get(name)
+
+    def resolve_program(self, name: str) -> MethodTarget | None:
+        return self.program_to_method.get(name)
 
 
 def load_opcua_config(path: str | Path) -> OpcUaConfig:

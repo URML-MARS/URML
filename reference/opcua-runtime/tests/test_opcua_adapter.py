@@ -73,6 +73,7 @@ def test_nav_dock_grasp_measure_lifecycle(fake_asyncua: type[_FakeClient]) -> No
         service_to_method={"swap_tool": MethodTarget(method="ns=2;s=SwapTool", args=["wide"])},
         manipulation_methods={"grasp": MethodTarget(method="ns=2;s=Grip")},
         measurement_node="ns=2;s=Force",
+        program_to_method={"pick_place_cycle": MethodTarget(method="ns=2;s=PickPlaceCycle")},
     )
     with OpcUaAdapter(cfg) as cell:
         assert isinstance(cell, ROSAdapter)
@@ -83,6 +84,9 @@ def test_nav_dock_grasp_measure_lifecycle(fake_asyncua: type[_FakeClient]) -> No
         # RFC-0013 swap_tool rides send_docking_goal — preserved.
         assert cell.send_docking_goal(station="tool_change_station", service="swap_tool", until="wide").success
         assert cell.send_manipulation_goal(action="grasp").success
+        # RFC-0015 call_program -> OPC UA method node (the motivating case).
+        prog = cell.call_named_program(name="pick_place_cycle")
+        assert prog.success and prog.payload == {"value": "ok"}
         meas = cell.take_measurement(what="force", target=None, sensor="tcp_force")
         assert meas.success and meas.payload is not None and meas.payload["value"] == 7.0
         assert cell.wait_passively(duration_seconds=0.1).success
@@ -101,6 +105,9 @@ def test_unconfigured_and_unsupported_sentinels(fake_asyncua: type[_FakeClient])
     det: DetectionResult = cell.query_detection(object_class="widget")
     assert det.success is False and det.reason is not None
     assert det.reason.startswith("not_supported_on_opcua_cell")
+    prog = cell.call_named_program(name="unmapped_program")
+    assert prog.success is False and prog.reason is not None
+    assert prog.reason.startswith("program_not_configured")
     for r in (cell.send_takeoff_goal(altitude=1.0), cell.send_land_goal(), cell.send_return_to_home_goal()):
         assert r.success is False
         assert r.reason is not None and r.reason.startswith("not_applicable_opcua")

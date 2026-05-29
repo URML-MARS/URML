@@ -48,6 +48,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ROSAdapter,
     ScanResult,
     SubstrateResult,
@@ -258,6 +259,22 @@ class IndustrialArmAdapter:
             to=to, facts=facts, attachments=attachments, status=status, severity=severity
         )
 
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: invoke a controller-resident program by name.
+
+        For an industrial arm this is the on-controller job mechanism — a
+        Kawasaki AS-language program, a FANUC TP program, a KUKA KRL routine.
+        Delegated to the composed adapter; a real cell overrides
+        :pymeth:`RclpyAdapter.call_named_program` with its driver's
+        program-launch service (RFC-0015).
+        """
+        return self._inner.call_named_program(name=name, args=args)
+
     # ------------------------------------------------------------------
     # Not supported on a bare fixed-base arm
     # ------------------------------------------------------------------
@@ -408,6 +425,11 @@ class KawasakiAdapter(IndustrialArmAdapter):
     clarification on khi_ros2 issue #9 (kurita-taisuke, 2026-05-26), the
     driver does not currently support E-series controllers, and the legacy
     D / C series are not on the roadmap.
+
+    AS-language program invocation is the maintainer-endorsed binding for
+    URML's ``call_program`` primitive (RFC-0015, confirmed by kurita-taisuke
+    on khi_ros2 issue #9, Q2): a `call_program` step maps to launching a
+    named Kawasaki AS program on the controller.
 
     Japan-made — passes the default US-federal policy (JP allied origin).
     """

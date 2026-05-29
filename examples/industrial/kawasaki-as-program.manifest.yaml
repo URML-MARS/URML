@@ -1,0 +1,93 @@
+# Companion manifest for examples/industrial/kawasaki-as-program.urml.yaml —
+# a Kawasaki cell that declares two commissioned AS-language programs for the
+# `call_program` primitive (RFC-0015), with a US-federal-compliant provenance
+# block (Kawasaki is Japan-made; JP is an allied origin that passes the bundled
+# default policy).
+#
+# This manifest is illustrative. Vendor identifiers (`example_*`) are fictional;
+# country codes are real ISO 3166-1 alpha-2 values; integrity hashes are zeroed
+# placeholders. Do not deploy from this file.
+#
+# Validate with the bundled default policy active:
+#   urml validate kawasaki-as-program.urml.yaml \
+#     -m kawasaki-as-program.manifest.yaml --profile industrial
+# Demonstrate the override path (skip Pass 5):
+#   urml validate kawasaki-as-program.urml.yaml \
+#     -m kawasaki-as-program.manifest.yaml --profile industrial --no-policy
+
+manifest_version: "0.1"
+robot_id: kawasaki_cell_demo
+description: Single-arm Kawasaki cell exposing commissioned AS-language programs.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget, widget_red, widget_blue]
+      movable: true
+  reachable_workspace_m: 0.90
+
+# RFC-0015: commissioned on-controller programs the cell exposes by name.
+# The URML-facing name maps to the real Kawasaki AS program in adapter config.
+programs:
+  - name: pick_place_cycle
+    description: Commissioned AS-language pick-and-place cycle.
+  - name: home_all
+    description: AS-language routine that sends all axes to the home pose.
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+# Hardware provenance (RFC-0004). Kawasaki is Japan-made; JP is an allied
+# origin not on the default denylist, so this manifest passes the bundled
+# US-federal compliance policy.
+provenance:
+  manifest_attestation: self_declared
+  attestation_uri: https://example.com/attestations/kawasaki_cell_demo.signed
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: example_kawasaki_controller
+      country_of_origin: JP
+      country_of_final_assembly: JP
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: pneumatic_gripper
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: JP
+      country_of_final_assembly: JP
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/pneumatic_gripper.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

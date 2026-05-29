@@ -109,6 +109,7 @@ representative fixture; most primitives have several (positive and negative).
 | 18 | `pick_from` | v0.1.0 §3.6 | `PickFromArgs` | `exec_pick_from` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
 | 19 | `place_at` | v0.1.0 §3.7 | `PlaceAtArgs` | `exec_place_at` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
 | 20 | `swap_tool` | v0.1.0 §3.8 | `SwapToolArgs` | `exec_swap_tool` | `industrial/05_swap_tool_positive` | `industrial/pick-place-tool-change` |
+| 21 | `call_program` | v0.1.0 §3.9 | `CallProgramArgs` | `exec_call_program` | `industrial/10_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
 
 ## Notes (honest deferrals, not gaps)
 

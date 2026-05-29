@@ -53,6 +53,8 @@ from contextlib import suppress
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
+    ProgramCallResult,
+    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
@@ -351,3 +353,12 @@ class CompositeAdapter:
         return self._backend("send_return_to_home_goal").send_return_to_home_goal(
             speed=speed, altitude=altitude
         )
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('bare_autopilot')
