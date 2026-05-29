@@ -19,6 +19,7 @@ from typing import Any, Literal, Protocol
 from pydantic import BaseModel, ConfigDict
 from urml_validator.schemas.composition import Step
 from urml_validator.schemas.primitives import (
+    CallProgramArgs,
     CaptureArgs,
     DetectArgs,
     DockArgs,
@@ -49,6 +50,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ROSAdapter,
     ScanResult,
     SubstrateResult,
@@ -71,6 +73,7 @@ RawSubstrateResult = (
     | CaptureResult
     | WaitResult
     | ListenResult
+    | ProgramCallResult
 )
 
 
@@ -607,6 +610,25 @@ def exec_swap_tool(
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
+def exec_call_program(
+    args: CallProgramArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """Invoke a substrate-declared program by name (RFC-0015 `call_program`).
+
+    The validator has already confirmed the program and its arg signature
+    against the manifest. Args are literal scalars (no `$ref` resolution).
+    When `expect: value` was used, the opaque return payload is bound to
+    `store_as` as a `program_result`.
+    """
+    result = adapter.call_named_program(name=args.name, args=args.args)
+    new_bindings: dict[str, Any] = {}
+    if args.store_as is not None and result.payload is not None:
+        new_bindings[args.store_as] = result.payload
+    return PrimitiveOutcome(
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
+    )
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -635,6 +657,7 @@ PRIMITIVE_EXECUTORS: dict[
     "pick_from": exec_pick_from,
     "place_at": exec_place_at,
     "swap_tool": exec_swap_tool,
+    "call_program": exec_call_program,
 }
 
 

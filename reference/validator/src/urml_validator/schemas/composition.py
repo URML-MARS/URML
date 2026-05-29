@@ -18,6 +18,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Discriminator, Field, Tag, model_validator
 
 from urml_validator.schemas.primitives import (
+    CallProgramArgs,
     CaptureArgs,
     DetectArgs,
     DockArgs,
@@ -66,6 +67,7 @@ _PRIMITIVE_FIELDS = (
     "pick_from",
     "place_at",
     "swap_tool",
+    "call_program",
 )
 
 
@@ -102,6 +104,7 @@ class Step(BaseModel):
     pick_from: PickFromArgs | None = None
     place_at: PlaceAtArgs | None = None
     swap_tool: SwapToolArgs | None = None
+    call_program: CallProgramArgs | None = None
 
     @model_validator(mode="after")
     def _exactly_one_primitive(self) -> Step:

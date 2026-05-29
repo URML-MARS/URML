@@ -229,6 +229,27 @@ _INDUSTRIAL_RECONFIGURE_BLUE: dict[str, Any] = {
 }
 
 
+_INDUSTRIAL_RUN_CELL_PROGRAM: dict[str, Any] = {
+    "profile": "industrial",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"wait_for": {"condition": {"event": "safety_door_closed"}}},
+            {"call_program": {"name": "pick_place_cycle"}},
+            {"call_program": {"name": "home_all"}},
+            {
+                "report": {
+                    "to": "line_controller",
+                    "facts": {"cycle": "run_commissioned_job", "result": "ok"},
+                    "status": "success",
+                }
+            },
+        ],
+    },
+}
+
+
 def industrial_few_shots() -> list[FewShot]:
     """Return the industrial-profile few-shot example set."""
     return [
@@ -242,6 +263,14 @@ def industrial_few_shots() -> list[FewShot]:
             program=_INDUSTRIAL_RECONFIGURE_BLUE,
             note="Event-gated cycle. The Manifesto's change-color/change-tray "
             "reconfiguration is a parameter swap on this template.",
+        ),
+        FewShot(
+            user="After the safety door closes, run the cell's pick-and-place job and then home all axes.",
+            program=_INDUSTRIAL_RUN_CELL_PROGRAM,
+            note="`call_program` invokes a substrate-declared routine by name "
+            "(a Kawasaki AS-language program, an OPC UA method node). Reach for it "
+            "only when the cell exposes a commissioned program; model with real "
+            "primitives otherwise. Each name must be declared in manifest.programs.",
         ),
     ]
 

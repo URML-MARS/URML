@@ -63,6 +63,12 @@ perception:
     - widget_blue
     - small_part
 
+programs:                          # RFC-0015: commissioned AS-language programs (maintainer-endorsed binding)
+  - name: pick_place_cycle
+    description: Commissioned AS-language pick-and-place cycle.
+  - name: home_all
+    description: AS-language routine that sends all axes to the home pose.
+
 docking_stations: []
 
 outputs:

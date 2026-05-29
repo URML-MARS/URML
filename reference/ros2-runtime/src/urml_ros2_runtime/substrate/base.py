@@ -129,6 +129,37 @@ class ListenResult(SubstrateResult):
     )
 
 
+class ProgramCallResult(SubstrateResult):
+    """Result of a `call_named_program` call (RFC-0015 `call_program`).
+
+    The program body is opaque to URML, so the payload is an uninterpreted
+    dict the substrate returns when the call requested a value. The runtime
+    binds it to `store_as` as an opaque `program_result`; no other primitive
+    consumes that type.
+    """
+
+    payload: dict[str, Any] | None = Field(
+        None,
+        description="Opaque return value when call_program used `expect: value`; "
+        "None for `expect: success`.",
+    )
+
+
+def unsupported_program_call(substrate: str) -> ProgramCallResult:
+    """A uniform `call_named_program` failure for substrates that expose no
+    named programs (RFC-0015). Most adapters have no program mechanism; rather
+    than raise, they return this so the runtime's on-error policy decides. The
+    validator's manifest-`programs` gate normally prevents the call from ever
+    reaching such an adapter, since these substrates declare no programs.
+    """
+    return ProgramCallResult(
+        success=False,
+        reason=f"not_supported_on_{substrate}: this substrate exposes no named "
+        "programs for call_program. Declare programs only on a manifest whose "
+        "adapter implements call_named_program (RFC-0015).",
+    )
+
+
 # ---------------------------------------------------------------------------
 # The Protocol itself
 # ---------------------------------------------------------------------------
@@ -291,6 +322,23 @@ class ROSAdapter(Protocol):
         For `expected: confirmation`, the adapter maps to a yes/no judgement;
         URML does not standardize how that decision is represented in
         `transcription` (the substrate decides).
+        """
+        ...
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """Invoke a substrate-declared program/method by name. Used by `call_program`.
+
+        The validator has already confirmed `name` is declared in the
+        manifest's `programs:` block and that `args` match the declared
+        signature, so the adapter maps the call to its native mechanism
+        (a ROS 2 action/service of that name, an OPC UA method node, a PLC
+        job). URML does not model what the program does; the adapter returns
+        success and, for `expect: value`, an opaque payload.
         """
         ...
 

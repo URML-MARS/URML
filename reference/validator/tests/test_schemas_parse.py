@@ -103,7 +103,16 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     home_extensions = {"speak", "listen"}
     drone_extensions = {"take_off", "land", "return_to_home"}
     industrial_extensions = {"pick_from", "place_at", "swap_tool"}  # RFC-0013
-    expected = core | home_extensions | drone_extensions | industrial_extensions
+    # call_program: substrate-program invocation (RFC-0015), gated by the
+    # manifest `programs:` declaration rather than by profile.
+    cross_profile_extensions = {"call_program"}
+    expected = (
+        core
+        | home_extensions
+        | drone_extensions
+        | industrial_extensions
+        | cross_profile_extensions
+    )
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected
     # The RFC-0002 core set must remain a subset of the registry — the
@@ -152,6 +161,10 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         (
             "swap_tool",
             {"at": "tool_change_station", "to": "gripper_wide"},
+        ),
+        (
+            "call_program",
+            {"name": "pick_place_cycle"},
         ),
     ],
 )

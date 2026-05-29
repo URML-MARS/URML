@@ -36,6 +36,8 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 from urml_ros2_runtime.substrate.base import (
+    ProgramCallResult,
+    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
@@ -308,3 +310,12 @@ class BlueRovAdapter:
         altitude: float | None = None,
     ) -> NavigationResult:
         return NavigationResult(success=False, reason=_NOT_UNDERWATER.format(capability="return_to_home"))
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('marine')

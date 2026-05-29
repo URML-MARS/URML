@@ -46,6 +46,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
@@ -281,6 +282,34 @@ class OpcUaAdapter:
         choices: list[str] | None,
     ) -> ListenResult:
         return ListenResult(success=False, reason=_NOT_SUPPORTED.format(capability="microphone"))
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: invoke an OPC UA method node by name (RFC-0015).
+
+        This is the primitive's motivating case: an OPC UA Robotics cell
+        exposes its ControlProgram / commissioned routines as method nodes.
+        The manifest-declared program name resolves to a method NodeId in
+        ``opcua_adapter.yaml``; the adapter calls it on the ObjectsNode with
+        the configured literal args followed by any ``call_program`` args, and
+        surfaces the method's return as an opaque payload.
+        """
+        mt = self._config.resolve_program(name)
+        if mt is None:
+            return ProgramCallResult(
+                success=False,
+                reason=f"program_not_configured: program {name!r} is not mapped to a "
+                "method node in opcua_adapter.yaml (program_to_method).",
+            )
+        self._connect()
+        call_args = [*mt.args, *(args.values() if args else [])]
+        result = self._objects.call_method(mt.method, *call_args)
+        payload = None if result is None else {"value": result}
+        return ProgramCallResult(success=True, payload=payload)
 
     def send_takeoff_goal(self, *, altitude: float, climb_rate: float | None = None) -> NavigationResult:
         return NavigationResult(success=False, reason=_NOT_APPLICABLE.format(capability="take_off"))

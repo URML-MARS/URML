@@ -58,6 +58,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
@@ -731,6 +732,35 @@ class RclpyAdapter:
             "choice_index": choice_index,
         }
         return ListenResult(success=True, timed_out=False, payload=payload)
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """Invoke a substrate program by name (RFC-0015 `call_program`).
+
+        The concrete ROS-Industrial binding is deployment-specific: a driver
+        like ``khi_ros2`` exposes its on-controller programs (Kawasaki
+        AS-language jobs) as cell-defined actions/services whose message types
+        are not standardized across drivers, so there is no single generic
+        call this base adapter can make. v0.1 returns a documented
+        not-supported failure (mirroring the drone stubs below); a deployment
+        subclasses RclpyAdapter and overrides this method to call its driver's
+        program service/action. The substrate-neutral semantics ("invoke the
+        named routine and await its result") are exercised end-to-end against
+        the hermetic MockROSAdapter, and the non-ROS path is implemented
+        concretely in the OPC UA adapter's ``call_method`` (the RFC-0015
+        motivating case).
+        """
+        return ProgramCallResult(
+            success=False,
+            reason=f"not_supported_in_v0.1: RclpyAdapter has no generic program-call "
+            f"message for {name!r}. Override call_named_program in a deployment subclass "
+            "to bind your driver's program service/action (e.g. khi_ros2's AS-program "
+            "launch). The program is already manifest-declared and validator-checked.",
+        )
 
     # ------------------------------------------------------------------
     # Drone-profile dispatch
