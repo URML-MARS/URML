@@ -44,20 +44,154 @@ Voice: founder posts under his GitHub identity. Each post opens with "Hi <team>"
 
 ## Sub-wave A targets (5)
 
-### RFC-0212: Eclipse SDV Blueprints
-**Post to:** https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/new (Issues enabled). Body TBD when RFC drafts. Eclipse Foundation Software-Defined Vehicle Working Group; cross-WG extension framing (automotive blueprint patterns referenced by URML drone-runtime + industrial-arm-runtime).
+Bodies follow the [AGENTS.md](../../AGENTS.md) outreach-post-structure rules added after the
+Nav2 close (2026-05-29, SteveMacenski closed [navigation2#6184](https://github.com/ros-navigation/navigation2/issues/6184)
+as too dense to read): concrete hook first, one or two real questions, light ask stated up
+front, full RFC linked as optional depth, under a two-minute read, zero em-dashes.
 
-### RFC-0213: ELISA wg-automotive
-**Post to:** https://github.com/elisa-tech/wg-automotive/issues/new (Issues enabled). Body TBD. Linux Foundation ELISA Project; safety-Linux cross-citation; URML's safety-envelope manifest aligns with safe-construction-from-Linux thesis.
+**Posting priority and honest fit.** These targets are not equal. Two have a genuine,
+answerable technical question and are worth posting. Three are cross-citation / README-link
+asks, which is the low-value shape a maintainer reads as link-building. Recommendation:
 
-### RFC-0214: OPC Foundation UA-Nodeset
-**Post to:** https://github.com/OPCFoundation/UA-Nodeset/issues/new (Issues enabled). Body TBD. OPC UA Robotics Companion Specification; URML's manifest declares OPC-UA-Robotics-compatible deployments. License verification pending.
+- **Post:** RFC-0214 (OPC UA, real license + mapping question) and RFC-0215 (SLSA, real
+  composite-substrate design question). Lead the wave with 0214.
+- **Hold pending founder call:** RFC-0213 (ELISA), RFC-0216 (Scorecard), RFC-0212 (SDV).
+  Each carries a real risk of a Nav2-shape "this is noise" close. RFC-0216 is better served
+  by just adopting the Scorecard Action on our repos (no maintainer ask needed); RFC-0212 is
+  the weakest and is the one I would not post cold. Drafts are below if the founder wants
+  them anyway.
+
+### RFC-0214: OPC Foundation UA-Nodeset (lead with this one)
+**Post to:** https://github.com/OPCFoundation/UA-Nodeset/issues/new (Issues enabled).
+**Title:** URML (open robot-intent language): declaring OPC UA Robotics capabilities, plus a license question
+
+```
+Hi OPC Foundation maintainers,
+
+URML (urml.dev) is a small open language for describing robot intent. On an industrial arm a
+user writes `pick_from(bin_a)`; URML checks it against the robot's declared capabilities, then
+dispatches through the target's command interface. On an OPC-UA-Robotics deployment, that
+target is the OPC UA Robotics NodeSet. Apache-2.0, no change to your spec proposed, nothing
+for you to maintain.
+
+Two small things:
+
+1. The UA-Nodeset repo doesn't seem to declare an OSI license on its surface. Is that
+   intentional, or is there a license you'd point to? It decides whether a downstream project
+   can ship an adapter that references the NodeSet.
+2. If we wanted to write "this robot's capabilities map to these OPC UA Robotics nodes" into
+   our manifest, is there a convention you'd want us to follow, or is that new ground?
+
+Full write-up if useful: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0214-opc-foundation-ua-nodeset-outreach.md
+
+Thanks for keeping the UA Robotics companion spec a real, usable standard.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
+```
 
 ### RFC-0215: OpenSSF SLSA
-**Post to:** https://github.com/slsa-framework/slsa/issues/new (Issues enabled). Body TBD. Supply-chain provenance; cited by EO 14028; complements URML's NDAA-889 / EO 14307 / FCC Covered List default-policy file (RFC-0003) for federal procurement story.
+**Post to:** https://github.com/slsa-framework/slsa/issues/new (Issues enabled).
+**Title:** URML: how should a manifest record a composite substrate's SLSA level?
 
-### RFC-0216: OpenSSF Scorecard
-**Post to:** https://github.com/ossf/scorecard/issues/new (Issues enabled). Body TBD. Security health scoring for URML reference runtimes; sibling to SLSA RFC-0215; Apache-2.0 clean fit.
+```
+Hi SLSA maintainers,
+
+URML (urml.dev) is a small open language for describing robot intent. It validates a program
+against the target robot's declared capabilities before anything runs. We want that manifest
+to record provenance for the software substrate underneath (ROS 2, PX4, and so on), and SLSA
+is the framework we'd point at. Apache-2.0, no change to SLSA proposed.
+
+One real question. A robotics substrate is usually many packages at once (ROS 2 alone is
+rclcpp + rclpy + rmw + plugins). If a manifest wants to say "this substrate is SLSA L3," what
+shape would you recommend for a composite like that: a single level, a per-component map, or
+an attestation URL we resolve at validate time? And for verification, would you point us at
+slsa-verifier, the in-toto verifier, or something else?
+
+Full write-up if useful: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0215-openssf-slsa-outreach.md
+
+Thanks for SLSA.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
+```
+
+### RFC-0213: ELISA wg-automotive (hold; draft if founder wants)
+**Post to:** https://github.com/elisa-tech/wg-automotive/issues/new (Issues enabled).
+**Title:** URML: are the wg-automotive / Safety_Architecture_WG calls open to non-member attendees?
+
+```
+Hi ELISA wg-automotive maintainers,
+
+URML (urml.dev) is a small open language for describing robot intent. It only lets a program
+run after a static check against the robot's declared safety envelope. That "execute only
+after verification" boundary is the part of our design that overlaps with ELISA's
+safe-construction-from-Linux work, which is why I'm asking rather than reinventing it.
+Apache-2.0, nothing requested beyond a pointer.
+
+One question: are the wg-automotive (or Safety_Architecture_WG) calls open to non-member
+attendees? I'd like to follow the safety-Linux work that touches our reference runtimes,
+without ever implying URML is certified, which it isn't.
+
+Full write-up if useful: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0213-elisa-wg-automotive-outreach.md
+
+Thanks for the safety-Linux work.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
+```
+
+### RFC-0216: OpenSSF Scorecard (hold; prefer just adopting the Action)
+**Post to:** https://github.com/ossf/scorecard/issues/new (Issues enabled).
+**Title:** URML: single Scorecard run vs per-repo for a multi-runtime project?
+
+```
+Hi Scorecard maintainers,
+
+URML (urml.dev) is a small open language for describing robot intent. We're adopting the
+Scorecard GitHub Action on our repos to publish security posture in a format downstream users
+can check. No change requested from you.
+
+One question, only if it's quick: for a project that will eventually span several runtime
+repos (one per robot substrate), do you recommend a single Scorecard run at the top level or
+one per repo? Anything else we'll take from the docs.
+
+Full write-up if useful: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0216-openssf-scorecard-outreach.md
+
+Thanks for Scorecard.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
+```
+
+### RFC-0212: Eclipse SDV Blueprints (weakest; recommend not posting cold)
+**Post to:** https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/new (Issues enabled).
+**Title:** URML: is a substrate-neutral robot-intent layer in scope as related art for the aerospace blueprint extension?
+
+```
+Hi Eclipse SDV maintainers,
+
+URML (urml.dev) is a small open language for describing robot intent, Apache-2.0. Our drone
+and industrial-arm runtime tracks hit the same safe-composition problems your blueprints
+formalize for vehicles, and we'd rather reference your patterns than reinvent them. Nothing
+requested beyond whether that's welcome.
+
+One question: is there a working-group surface where a substrate-neutral robotics-intent layer
+(our drone profile) is in scope as related art for the aerospace blueprint extension, or is
+that outside SDV's automotive core?
+
+Full write-up if useful: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0212-eclipse-sdv-blueprints-outreach.md
+
+Thanks for the SDV blueprints.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
+```
 
 ---
 
