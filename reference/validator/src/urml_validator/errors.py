@@ -57,6 +57,9 @@ class ErrorCode(StrEnum):
     # RFC-0015: call_program references a program / args not declared in manifest.programs.
     CAPABILITY_MISSING_PROGRAM = "capability.missing_program"
     CAPABILITY_PROGRAM_ARG_MISMATCH = "capability.program_arg_mismatch"
+    # RFC-0250: substrate.autopilot_class required when drive_type is a drone class.
+    CAPABILITY_MISSING_AUTOPILOT_CLASS = "capability.missing_autopilot_class"
+    CAPABILITY_AUTOPILOT_CLASS_NOTE_REQUIRED = "capability.autopilot_class_note_required"
 
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"

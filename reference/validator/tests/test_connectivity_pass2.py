@@ -34,6 +34,8 @@ def _drone_manifest(*, connectivity: dict | None = None) -> dict[str, Any]:
             "station_keeping": True,
             "service_ceiling": 120.0,
         },
+        # RFC-0250: drone-class drive_type requires substrate.autopilot_class.
+        "substrate": {"autopilot_class": "px4"},
     }
     if connectivity is not None:
         m["connectivity"] = connectivity

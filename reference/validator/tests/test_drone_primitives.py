@@ -35,6 +35,10 @@ def _drone_manifest(**overrides: Any) -> dict[str, Any]:
             "station_keeping": True,
             "service_ceiling": 120.0,
         },
+        # RFC-0250: drone-class drive_type requires substrate.autopilot_class.
+        "substrate": {
+            "autopilot_class": "px4",
+        },
         "perception": {
             "cameras": [{"name": "downward", "supports_photo": True, "supports_video": True}],
             "sensors": [],

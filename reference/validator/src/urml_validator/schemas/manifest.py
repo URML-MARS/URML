@@ -338,6 +338,36 @@ class Program(BaseModel):
     )
 
 
+class Substrate(BaseModel):
+    """Substrate-class declarations beneath URML's runtime.
+
+    Added by RFC-0250. The first sub-field is `autopilot_class`, which declares
+    which drone-autopilot stack a multirotor / fixed_wing / vtol deployment
+    actually runs (PX4, Ardupilot, or a custom autopilot). The validator
+    requires `autopilot_class` when the manifest declares one of the
+    drone-class `mobility.drive_type` values; existing non-drone manifests are
+    unaffected.
+
+    Future sub-fields will land here as additional RFCs in the 0251-0285
+    range are implemented (rmw_implementation, ipc_substrate, maturity_tier,
+    etc.).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    autopilot_class: Literal["px4", "ardupilot", "pixhawk_classic", "custom"] | None = Field(
+        default=None,
+        description=(
+            "Drone-autopilot substrate class. Required when "
+            "mobility.drive_type is multirotor / fixed_wing / vtol."
+        ),
+    )
+    autopilot_class_note: str | None = Field(
+        default=None,
+        description="Required when autopilot_class is 'custom'. Free-text description of the autopilot stack.",
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -370,3 +400,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0006: optional abstract connectivity capability.
     connectivity: Connectivity | None = None
+
+    # RFC-0250: optional substrate-class declarations (autopilot, RMW, IPC, etc.).
+    substrate: Substrate | None = None

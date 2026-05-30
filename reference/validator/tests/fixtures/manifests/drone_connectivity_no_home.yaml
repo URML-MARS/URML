@@ -24,6 +24,10 @@ mobility:
   station_keeping: true
   service_ceiling: 100.0
 
+# RFC-0250: drone deployments declare the autopilot substrate.
+substrate:
+  autopilot_class: px4
+
 connectivity:
   links:
     - role: command_link
