@@ -51,6 +51,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0250: substrate.autopilot_class negative-fixture manifests.
     "drone_no_autopilot_class": _VALIDATOR_FIXTURES / "manifests" / "drone_no_autopilot_class.yaml",
     "drone_autopilot_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "drone_autopilot_custom_no_note.yaml",
+    # RFC-0251: substrate.rmw_implementation + qos_profile negative-fixture manifests.
+    "substrate_rmw_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "substrate_rmw_custom_no_note.yaml",
+    "substrate_qos_keep_last_no_depth": _VALIDATOR_FIXTURES / "manifests" / "substrate_qos_keep_last_no_depth.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

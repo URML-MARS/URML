@@ -184,6 +184,8 @@ def validate(
     errors.extend(_check_connectivity_caps(manifest_model, envelope_model))
     # RFC-0250: substrate.autopilot_class is required for drone manifests.
     errors.extend(_check_substrate_required_for_drone(manifest_model))
+    # RFC-0251: substrate.rmw_implementation + qos_profile rules.
+    errors.extend(_check_substrate_rmw_options(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -1758,6 +1760,74 @@ def _link_loss_envelope_error(
 
 
 _DRONE_DRIVE_TYPES = {"multirotor", "fixed_wing", "vtol"}
+
+
+def _check_substrate_rmw_options(
+    manifest: CapabilityManifest,
+) -> list[ValidationError]:
+    """Pass 2 (RFC-0251): substrate.rmw_implementation + qos_profile rules.
+
+    - When `rmw_implementation` is `'custom'`, `rmw_implementation_note`
+      must be non-empty.
+    - When `rmw_options.qos_profile.history` is `'keep_last'`,
+      `history_depth` must be declared. (QosProfile's own constraint also
+      gates `history_depth >= 1` at parse time; this pass adds the
+      cross-field check.)
+
+    Optional throughout: deployments without a `substrate.rmw_implementation`
+    or `rmw_options` block are unaffected.
+    """
+    out: list[ValidationError] = []
+    sub = manifest.substrate
+    if sub is None:
+        return out
+
+    if sub.rmw_implementation == "custom" and not (
+        sub.rmw_implementation_note and sub.rmw_implementation_note.strip()
+    ):
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_RMW_IMPLEMENTATION_NOTE_REQUIRED,
+                primitive=None,
+                path=["<manifest>", "substrate", "rmw_implementation_note"],
+                field="rmw_implementation_note",
+                message=(
+                    "substrate.rmw_implementation is 'custom', but "
+                    "substrate.rmw_implementation_note is missing or empty."
+                ),
+                suggestion=(
+                    "Provide a non-empty `rmw_implementation_note` describing "
+                    "the custom RMW stack. Per RFC-0251."
+                ),
+            )
+        )
+
+    if sub.rmw_options is not None and sub.rmw_options.qos_profile is not None:
+        qp = sub.rmw_options.qos_profile
+        if qp.history == "keep_last" and qp.history_depth is None:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_QOS_KEEP_LAST_REQUIRES_DEPTH,
+                    primitive=None,
+                    path=[
+                        "<manifest>",
+                        "substrate",
+                        "rmw_options",
+                        "qos_profile",
+                        "history_depth",
+                    ],
+                    field="history_depth",
+                    message=(
+                        "substrate.rmw_options.qos_profile.history is "
+                        "'keep_last', but history_depth is not declared."
+                    ),
+                    suggestion=(
+                        "Declare `history_depth` (>= 1) alongside "
+                        "`history: keep_last`. Per RFC-0251."
+                    ),
+                )
+            )
+    return out
 
 
 def _check_substrate_required_for_drone(
