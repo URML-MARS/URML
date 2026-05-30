@@ -10,7 +10,7 @@
 # Numbering note: Move #17 (the government foundation-home wave) reserves
 # RFCs 0212-0226. This frame-break wave therefore starts at 0227.
 #
-# Four reframes, one target each in batch 1:
+# Batch 1 (0227-0230) — four reframes, one target each:
 #   - things that are robots but nobody files under "robot"
 #       (Klipper: a 3D printer / CNC gantry is a motion platform; G-code
 #       is a motion substrate)
@@ -21,14 +21,27 @@
 #   - alternative intent inputs beside Layer-4 natural language
 #       (OpenBCI / BrainFlow: a BCI intent signal as an input-bridge)
 #
-# Verified 2026-05-29 via GitHub API (license, stars, has_issues,
-# isArchived, last push) per target. All four: not archived, Issues
-# enabled. License-friction shapes recorded per row.
+# Batch 2 (0231-0234) — motion-control + sim cluster: Marlin (3D-printer /
+# CNC firmware, GPL-3.0); OctoPrint (3D-printer host, AGPL-3.0);
+# LinuxCNC (CNC controller, GPL-2.0); Webots (open-source sim
+# substrate, Apache-2.0).
 #
-# **Batch 1 of N.** More frame-break targets follow (motion-control:
-# Marlin / OctoPrint / LinuxCNC; education: PyBricks / VEX; sim: Webots;
-# social/education humanoids: NAO / Pepper / Poppy / Reachy; conceptual
-# peers: Open Interpreter / Viam). RFC numbers 0227-0230 used here.
+# Batch 3 (0235-0240) — education + humanoid platforms: PyBricks
+# (LEGO MicroPython, Other license, Issues-off on main repo);
+# PROS-VEX (Purdue VEX V5 toolchain, Other license); naoqi_driver
+# (NAO / SoftBank, Apache-2.0, stale ~1.5 yr); pepper_dcm_robot
+# (Pepper / SoftBank, license=none, stale ~3 yr — TIER C noted);
+# Poppy Humanoid (open-hardware research, license=none, stale ~4.5 yr);
+# Reachy 2 SDK (Pollen Robotics, Apache-2.0).
+#
+# Batch 4 (0241-0242) — conceptual peers: Open Interpreter (NL-to-
+# computer-control, AGPL-3.0, 63.7k stars); Viam RDK (modular
+# robotics framework, AGPL-3.0, Issues-off — Discord-first).
+#
+# Verified 2026-05-29 via GitHub API (license, stars, has_issues,
+# isArchived, last push) per target. License-friction shapes recorded
+# per row. Stale-substrate friction noted where last push exceeds 12
+# months.
 #
 # Like Moves #2-#17, this file is NOT under the Move #1 parity test
 # (conformance/tests/test_outreach_ledger.py guards Move #1 only).
@@ -38,7 +51,7 @@
 # notes.
 #
 # Phase 1 posture: do not massage `response` / `last_touch`. `none` is
-# the truthful default. All four rows carry `sent_at: ""`,
+# the truthful default. All rows below carry `sent_at: ""`,
 # `posted_url: ""`, and `channel: deferred` until per-target RFCs are
 # approved and engagement is posted on the upstream surface. Posting is
 # a separate, founder-authorized step.
@@ -98,3 +111,157 @@
   response: none
   next_action: "RFC-0230 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: single GitHub Issue on brainflow-dev/brainflow (question), OpenBCI cross-referenced; respect any human-only-correspondence preference."
   notes: "Tier A (BrainFlow MIT composes cleanly). Origin BrainFlow community OSS + OpenBCI US-domiciled; passes US-federal default policy. URML-fit: input-bridge, NOT a runtime adapter (weakest adapter story of the batch, by design). BCI intent label -> URML behavior trigger -> validate -> execute; non-verbal analog of Move-12 STT (RFC-0153). Extends accessibility line (RFC-0079). Surfaces queued Spec RFCs: non-language intent-input source at Layer 4, bci/neural sensor measurement_type, confidence-gated intent."
+
+# ============================================================
+# Move #18 batch 2 (4) — motion-control + sim
+# ============================================================
+
+# ---- Motion-control firmware / hosts (3) ----
+
+- slug: marlin
+  rfc: 231
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "MarlinFirmware/Marlin (GPL-3.0, 17.4k stars, Issues enabled, last commit 2026-05-27, **not archived**). De-facto open 3D-printer firmware on Cartesian / CoreXY / Delta motion platforms. Most desktop 3D printers ship Marlin-derived firmware."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0231 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: GitHub Issue on MarlinFirmware/Marlin with the cross-citation / G-code-boundary framing."
+  notes: "Tier B (GPL-3.0 -> G-code-stream boundary, no firmware vendoring). Origin community OSS (US lead, global contributors); passes US-federal default policy. URML-fit: high for cartesian/corexy/delta motion intent. Sibling to RFC-0227 Klipper at the firmware-vs-host split. Surfaces same fabrication-motion drive_type Spec RFCs as RFC-0227 (cartesian/corexy/delta declaration)."
+
+- slug: octoprint
+  rfc: 232
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OctoPrint/OctoPrint (AGPL-3.0, 9.0k stars, Issues enabled, last commit 2026-05-27, **not archived**). 3D-printer host / web UI; speaks to Marlin / Klipper / RepRap firmware over G-code; plugin ecosystem."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0232 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: OctoPrint community forum / Discourse preferred; GitHub Discussion as fallback. AGPL-3.0 boundary discussed up front."
+  notes: "Tier B (AGPL-3.0 -> REST/plugin-boundary integration, never URML-embeds). Origin community OSS (DE founder Gina Hausge); passes US-federal default policy. URML-fit: host-side print-job intent layer. Cross-link to RFC-0231 Marlin (firmware target) and RFC-0227 Klipper (host-plus-firmware target). Surfaces Spec RFCs: print-job-class intent declaration; AGPL-network-boundary manifest field (shared with RFC-0168 LibreTranslate)."
+
+- slug: linuxcnc
+  rfc: 233
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "LinuxCNC/linuxcnc (GPL-2.0, 2.3k stars, Issues enabled, last commit 2026-05-29 today, **not archived**). General-purpose CNC controller; runs mills, lathes, 3D printers, plasma cutters, robot arms, hexapods. RT-Linux + HAL component model."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0233 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: LinuxCNC forum is the primary maintainer hub; GitHub Issue as a secondary touch."
+  notes: "Tier B (GPL-2.0 -> G-code / HAL-boundary integration, no code vendoring). Origin community OSS (US/EU contributor base); passes US-federal default policy. URML-fit: broader than Marlin / Klipper (covers mill + lathe + robot-arm motion). Surfaces Spec RFCs: HAL-component substrate declaration; CNC-machine-class enum (mill / lathe / plasma / robot-arm)."
+
+# ---- Sim substrate (1) ----
+
+- slug: webots
+  rfc: 234
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "cyberbotics/webots (Apache-2.0, 4.4k stars, Issues enabled, last commit 2026-05-28, **not archived**). Open robot simulator (Cyberbotics, founded EPFL spin-off). Ships dozens of model archetypes (NAO, Pioneer, Khepera, drones)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0234 drafted (Move-18 batch 2). Awaiting founder approval + posting. Venue: GitHub Discussion on cyberbotics/webots (Discussions enabled)."
+  notes: "Tier A (Apache-2.0 composes cleanly). Origin Cyberbotics, CH/EPFL lineage; passes US-federal default policy. URML-fit: first sim-substrate RFC outside Gazebo (Gazebo is implicit in URML ros2-runtime testing). URML-as-pre-flight validator on Webots scenes. Surfaces Spec RFC: sim-substrate-class declaration (gazebo / webots / mujoco-playground / drake-sim)."
+
+# ============================================================
+# Move #18 batch 3 (6) — education + humanoid platforms
+# ============================================================
+
+# ---- Education on-ramps (2) ----
+
+- slug: pybricks
+  rfc: 235
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "pybricks/pybricks-micropython (Other license — clarification ask, 324 stars, **Issues DISABLED on main repo**, last commit 2026-05-28, **not archived**). MicroPython firmware for LEGO SPIKE / EV3 / BOOST / WeDo. Sibling repo pybricks/support has Issues enabled (community Q&A)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0235 drafted (Move-18 batch 3). Awaiting founder approval + posting. Venue: pybricks/support repo (Issues enabled) is the maintainer-recommended Q&A channel; do NOT post on pybricks-micropython directly."
+  notes: "Tier A pending license clarification ('Other' may resolve to MIT-style on inspection). Origin Pybricks community OSS (BE / community); passes US-federal default policy. URML-fit: education-bridge, complements existing URML SPIKE adapter (in edu-runtime). Surfaces Spec RFCs: license-clarification field; Pybricks-runtime-class declaration."
+
+- slug: pros-vex
+  rfc: 236
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "purduesigbots/pros (Other license — clarification ask, 311 stars, Issues enabled, last commit 2026-03-31 (~2-mo stale), **not archived**). VEX V5 microcontroller C/C++ toolchain maintained by Purdue Sigma Bots."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0236 drafted (Move-18 batch 3). Awaiting founder approval + posting. Venue: single GitHub Issue on purduesigbots/pros (question label); cross-reference URML's existing VEX V5 edu-runtime adapter."
+  notes: "Tier A pending license clarification. Origin Purdue / US student org; passes US-federal default policy. URML-fit: second VEX-V5 engagement (URML edu-runtime already has a VEX adapter; this RFC asks about the PROS toolchain side specifically). Surfaces Spec RFCs: education-toolchain-class declaration; VRC competition-context metadata."
+
+# ---- Humanoid platforms (4) ----
+
+- slug: naoqi-driver
+  rfc: 237
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ros-naoqi/naoqi_driver (Apache-2.0, 62 stars, Issues enabled, last commit 2024-09-17 — ~1.5-yr stale, **not archived**). C++ ROS-libqi bridge for NAO and Pepper (NAOqi-based SoftBank robots). Maintained by community ros-naoqi org."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0237 drafted (Move-18 batch 3). Awaiting founder approval + posting. Venue: GitHub Issue on ros-naoqi/naoqi_driver with the stale-substrate framing acknowledged up front."
+  notes: "Tier B (stale-substrate friction; Apache-2.0 itself is clean). Origin community OSS (Apache); passes US-federal default policy. URML-fit: covers NAO + Pepper at the NAOqi-bridge layer (single engagement instead of two). Surfaces Spec RFCs: stale-substrate declaration field; NAOqi-runtime-class declaration."
+
+- slug: pepper-dcm-robot
+  rfc: 238
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ros-naoqi/pepper_dcm_robot (license=none, 4 stars, Issues enabled, last commit 2023-06-06 — ~3-yr stale, **not archived**). DCM stack for SoftBank Pepper. Companion to RFC-0237 naoqi_driver but Pepper-specific."
+  last_touch: ""
+  response: none
+  next_action: "Tier C: no engagement planned. RFC-0238 is a stub recording the exclusion-with-cause; the row exists so future audits don't re-research the same target. Cross-engage Pepper through RFC-0237 naoqi_driver instead."
+  notes: "Tier C exclusion with cause: license=none + ~3-yr stale + 4 stars. Not engageable on its own; the NAOqi-bridge layer (RFC-0237) is the correct engagement for Pepper. Row kept for audit-trail completeness; no RFC draft ships."
+
+- slug: poppy-humanoid
+  rfc: 239
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "poppy-project/poppy-humanoid (license=none — clarification ask, 970 stars, Issues enabled, last commit 2021-12-06 — ~4.5-yr stale, **not archived**). Open-hardware 3D-printed humanoid; INRIA-origin research / education platform. Sibling repos in poppy-project org include poppy-software (Python control library)."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0239 drafted (Move-18 batch 3). Awaiting founder approval + posting. Venue: GitHub Issue on poppy-project/poppy-humanoid with stale-substrate framing acknowledged; honest about engagement risk. Founder-call whether to post or hold per the post-Nav2 fit-honest rule."
+  notes: "Tier B (stale-substrate friction + license clarification ask). Origin INRIA / community OSS (FR); passes US-federal default policy. URML-fit: humanoid-platform-class declaration; complements Reachy (RFC-0240). Surfaces Spec RFCs: open-hardware platform declaration; license-clarification field. Post-Nav2 caution: 4.5-yr stale = high abandonment-signal risk."
+
+- slug: reachy
+  rfc: 240
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "pollen-robotics/reachy2-sdk (Apache-2.0, 52 stars, Issues enabled, last commit 2025-11-26, **not archived**). Pollen Robotics SDK for Reachy 2 (commercial-OSS humanoid platform, FR). Sibling repos include reachy-sdk (Reachy 1 legacy) and reachy_v2.urdf."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0240 drafted (Move-18 batch 3). Awaiting founder approval + posting. Venue: GitHub Issue on pollen-robotics/reachy2-sdk; commercial-OSS hybrid noted up front."
+  notes: "Tier A (Apache-2.0 composes cleanly; commercial-OSS but vendor-direct engagement). Origin Pollen Robotics, FR (Bordeaux); passes US-federal default policy. URML-fit: humanoid + manipulation hybrid; bimanual + mobile-base variants. Cross-link to RFC-0202 MoveIt 2 + RFC-0239 Poppy. Surfaces Spec RFCs: commercial-OSS vendor declaration; humanoid-platform-class enum."
+
+# ============================================================
+# Move #18 batch 4 (2) — conceptual peers
+# ============================================================
+
+# ---- Conceptual peers in the natural-language-to-action space (2) ----
+
+- slug: open-interpreter
+  rfc: 241
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OpenInterpreter/open-interpreter (AGPL-3.0, 63.7k stars, Issues enabled, last commit 2026-05-17, **not archived**). Natural-language interface for general computer control (run-code-locally agent). Highest stars of the Move-18 wave."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0241 drafted (Move-18 batch 4). Awaiting founder approval + posting. Venue: GitHub Issue on OpenInterpreter/open-interpreter with the conceptual-peer framing (URML maps to robots; Open Interpreter maps to general computer control)."
+  notes: "Tier A (AGPL-3.0 -> REST/IPC-boundary integration, no embedding). Origin community OSS (US-led); passes US-federal default policy. URML-fit: conceptual peer, NOT a substrate URML composes onto. Engagement is mutual-citation / interoperability conversation. Surfaces Spec RFCs: AGPL-network-boundary manifest declaration (shared with RFC-0168 LibreTranslate / RFC-0232 OctoPrint / RFC-0242 Viam)."
+
+- slug: viam-rdk
+  rfc: 242
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "viamrobotics/rdk (AGPL-3.0, 164 stars, **Issues DISABLED**, last commit 2026-05-28, **not archived**). Viam modular robotics framework / cloud-coupled RDK. Vendor-direct (Viam Inc, US). Issues-off culture; Discord is the maintainer hub."
+  last_touch: ""
+  response: none
+  next_action: "RFC-0242 drafted (Move-18 batch 4). Awaiting founder approval + posting. Venue: Viam Discord is the maintainer-confirmed channel (Issues are disabled on rdk); fall back to community/discussions if a Discord post is not the right shape. Completes Move-18 batch 4."
+  notes: "Tier A (AGPL-3.0 -> REST/cloud-boundary integration, no embedding). Origin Viam Inc, US (NY); passes US-federal default policy. URML-fit: conceptual peer / partial-substrate. Viam composes adapters over hardware; URML composes intent over substrates. Engagement is mutual-interoperability conversation. Surfaces Spec RFCs: cloud-coupled-substrate declaration; AGPL-network-boundary manifest declaration (shared with RFC-0168 / RFC-0232 / RFC-0241)."
