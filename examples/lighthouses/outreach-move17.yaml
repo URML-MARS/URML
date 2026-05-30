@@ -208,19 +208,19 @@
 
 - slug: nist-el-isd-feedback
   rfc: 220
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-30"
+  posted_url: "rtm-ticket://17414"
   channel: founder_action
-  contact: "NIST Engineering Lab Intelligent Systems Division (Robotics Community Feedback) — nist.gov/el/intelligent-systems-division-73500/robotics-community-feedback. Program manager Craig Schlenoff. Owns US measurement-science work for robotics; chairs ASTM F45."
-  last_touch: ""
-  response: none
+  contact: "NIST Engineering Lab Intelligent Systems Division (Robotics Community Feedback) — nist.gov/el/intelligent-systems-division-73500/robotics-community-feedback. Program manager Craig Schlenoff. Owns US measurement-science work for robotics; chairs ASTM F45. Mail-routing 2026-05-30: craig.schlenoff@nist.gov direct + RobotTestMethods@nist.gov CC (CC routes through Robot Test Methods team mailing-list)."
+  last_touch: "2026-05-30"
+  response: acked
   tier: A
   country: INTL
   sector: governance-body
   comments: []
   claude_directives: []
-  next_action: "draft RFC-0220 (URML — NIST EL ISD measurement-science feedback memo); URML-fit framing: 1-2 page memo describing URML primitive set + capability-manifest model mapped onto NIST EL ISD's existing performance categories (agility, manipulation, mobility, perception). Sub-wave B — founder emails Craig Schlenoff under maintainer identity."
-  notes: "Class 2 / Sub-wave B. Origin US federal (NIST EL). Foundation-home score: high (US institutional home for measurement standards; warms relationship with downstream 501(c)(6)). Most engageable US federal target."
+  next_action: "Sent 2026-05-30 to craig.schlenoff@nist.gov with RobotTestMethods@nist.gov CC. Cover email + attached 1.5-page measurement-science memo. RTM autoreply received 2026-05-30 17:07 (ticket [RTM #17414]) confirming delivery via the Robot Test Methods team mailing-list. Ticket-bot receipt only; no human routing yet. Awaiting Schlenoff direct response or RTM-team triage. 4-week first-touch cadence; escalate via robottestmethods.nist.gov mailing-list signup if no human reply by 2026-06-27."
+  notes: "Class 2 / Sub-wave B. Origin US federal (NIST EL). Foundation-home score: high (US institutional home for measurement standards; warms relationship with downstream 501(c)(6)). Most engageable US federal target. First Sub-wave B touch landed 2026-05-30."
 
 - slug: astm-f45-04-position-paper
   rfc: 221
