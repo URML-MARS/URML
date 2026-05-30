@@ -59,6 +59,11 @@
   contact: "wlkata/ROS2_WLKATA (umbrella ROS 2 package set; courtesy cross-reference to wlkata/WLKATA-Python-SDK-wlkatapython Discussions)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on wlkata/ROS2_WLKATA#2; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "First Move #3 RFC. WLKATA org has ~37 public repos including per-product ROS 2 packages (Wlkata_Mirobot_Ros2, Wlkata_MT4_ROS2, Wlkata_Haro380_Ros2), the umbrella ROS2_WLKATA, the wlkatapython Python SDK (MIT, Python 100%, v0.1.1 on 2025-10-22, Issues and Discussions both enabled, 2 stars), plus Arduino / C / microbit SDKs and a BRAVE RL suite covering Gazebo, MuJoCo, and Isaac Lab / Isaac Gym. Product line spans Mirobot (entry), MT4 (SCARA), Haro380 (industrial-grade ~$5.7k). Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004. Posted 2026-05-24 to wlkata/ROS2_WLKATA#2."
 - slug: petoi-bittle
@@ -69,6 +74,11 @@
   contact: "PetoiCamp/OpenCat-Quadruped-Robot (4.8k stars, MIT, C++ primary). Engaged maintainer: borntoleave (Dr. Rongzhong Li, Petoi founder, collaborator). Round-1 engagement 2026-05-28: substantive answers to all 7 RFC questions, parametric command examples (kwkF 5, ktrF 2000, kcrL 30), ESP32 retarget volunteered (canonical repo is PetoiCamp/OpenCatEsp32-Quadruped-Robot, not the older OpenCat)."
   last_touch: 2026-05-28
   response: engaged
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Round-1 scaffold shipped 2026-05-28: PetoiAdapter in reference/edu-runtime/ (mirrors RoboticalMartyAdapter parametric-dispatch shape; supports EduSkillCall(method='send_command', args=['kwkF', 5]) for raw OpenCat tokens AND named-method calls if the wrapper exposes them); manifest fixture petoi_bittle_x.yaml; conformance fixture 06_petoi_patrol_positive.yaml with policy: none (CN origin, default US-federal policy would reject under Pass 5 — already covered by home/07 + home/08 fixtures). 12/12 edu-runtime tests + 111/111 conformance fixtures green. RFC-0062 state Draft → Open with engagement section recording each of the 7 maintainer answers + the volunteered ESP32 retarget. Founder copy-pastes the round-1 reply (drafted this session) into PetoiCamp/OpenCat-Quadruped-Robot#113 acknowledging each answer + asking the two round-2 questions: (a) authoritative Python-wrapper package name (Petoi_MindPlusLib is Mind+ block coding lib, may not be a general SDK; adapter uses 'petoi_mindpluslib' placeholder), (b) authoritative sensor-getter list (read_imu / read_battery / read_distance are placeholders). If round-2 reply lands, capture verbatim in RFC-0062 + update _FakePetoiBoard. Once URML has a working demo link, re-engage to request the upstream OpenCat README/docs link per Q6. URML-side hardware-in-the-loop (URML's adapter on a real Bittle X) gated on hardware acquisition (~$299) — recorded as a future improvement but not blocking the scaffold. Second engagement-driven adapter shipment after RoboticalMartyAdapter (RFC-0073). First CN-origin engaged target."
   notes: "Second Move #3 RFC; the $299 hobby-quadruped lane. Bittle X uses BiBoard ESP32 (PetoiCamp/OpenCatEsp32-Quadruped-Robot, 220 stars MIT) — the maintainer confirmed 2026-05-28 that the ESP32 line is now canonical. Original Bittle and Nybble use ATmega328P / NyBoard. Python wrapper at PetoiCamp/Petoi_MindPlusLib (MIT, 7 stars) is Mind+ block-coding lib; the general-Python-SDK package name is a round-2 ask. Existing ROS integration at PetoiCamp/ros_opencat (24 stars, CMake); maintainer did not address ros_opencat alignment so URML defaults to OpenCat serial direct. Mobile apps on iOS and Android speak the same OpenCat serial protocol. Founder Dr. Rongzhong Li, since 2016. Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004; the hero-demo path uses --no-policy per the founder's universal-language re-anchor. URML's planned hero demo for Move #3 targets a Bittle X on a desk; this RFC is the smallest-scale legged target in URML's outreach landscape. Posted 2026-05-24 to PetoiCamp/OpenCat-Quadruped-Robot#113; first engagement 2026-05-28 from borntoleave (Dr. Li)."
 - slug: hiwonder
@@ -79,6 +89,11 @@
   contact: "Hiwonder/MentorPi (the most-pinned platform repo, 13 stars; per-repo Issue / Discussion settings not fully visible from the org landing page)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on Hiwonder/MentorPi#1 or pivot to a different Hiwonder repo if the maintainers prefer one; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Third Move #3 RFC; the multi-platform catalog lane. Hiwonder org has 36 public repos and 213 followers (verified 2026-05-24). Catalog spans arm (JetMax / DOFBOT), quadruped (PuppyPi, 8 stars), Mecanum / Ackermann / tank mobile base (MentorPi, 13 stars, ROS 2 + Python SDK, Raspberry Pi 5 + STM32, English docs at docs.hiwonder.com), Jetson rover (JetRover, 5 stars), hexapod (ROSPider, 2 stars). Also maintains a public LeRobot fork (Hiwonder/LeRobot, 1 star) which cross-links to RFC-0040. License visibility incomplete from the org landing page; the RFC asks maintainers to confirm. Provenance origin CN; manifest-load policy decision delegated to operator per RFC-0004. Posted 2026-05-24 to Hiwonder/MentorPi#1 (first issue on that repo). All four Move #3 outreach posts now sent."
 - slug: trossen-interbotix
@@ -89,5 +104,10 @@
   contact: "Interbotix/interbotix_ros_manipulators (BSD-3-Clause, 181 stars, 25 open issues; Discussions status not visible on the repo page)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on Interbotix/interbotix_ros_manipulators#261; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Fourth Move #3 RFC; closes the Move #3 pilot batch. The US-domiciled anchor counter-balancing the three Asia-domiciled siblings (WLKATA, Petoi, Hiwonder). Trossen Robotics is HQ'd in Downers Grove IL; Interbotix is their product line. interbotix_ros_manipulators supports ROS 1 Noetic + ROS 2 Galactic / Humble / Rolling per the documented build matrix. Cross-links to two Move #2 RFCs: RFC-0040 LeRobot (SO-100 distribution + policy hosting) and RFC-0056 Stanford ALOHA (Mobile ALOHA's four-arm VX300S configuration). Provenance origin US; passes the default US-federal policy at RFC-0003 without organisational override. Posted 2026-05-24 to Interbotix/interbotix_ros_manipulators#261."

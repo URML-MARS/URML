@@ -62,6 +62,11 @@
   contact: "realsenseai/librealsense (Apache-2.0, 8788 stars, 521 open issues, Issues + Discussions both enabled, CONTRIBUTING present, last commit 2026-05-27 active). Spun out from Intel to RealSenseAI on 2025-07-11 (independent company, no longer part of Intel — flagged in round-1 engagement). Vendor-org maintainers: Nir Azkiel and team. Engaged maintainer: MartyG-RealSense (RealSense community maintainer, NONE org-association). Cross-platform C++ SDK + Python pyrealsense2 + separate realsense-ros Apache-2.0."
   last_touch: "2026-05-28"
   response: engaged
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Round-2 follow-up received 2026-05-28 (same day): MartyG-RealSense confirmed (a) PR submission is completely OPTIONAL — URML can maintain the adapter in its own repository as a compatible-but-separate extension to librealsense, with no requirement to land it inside librealsense's third-party/, (b) once a PR IS submitted (if URML ever chooses to), a member of the RealSense development team is assigned as reviewer and provides advice before a merge decision. Operational implication: URML's default adapter home is the URML repo (matches the Marty / Petoi pattern); an upstream librealsense PR remains optional once the adapter has end-to-end-on-real-hardware evidence. No URML reply on round 2 (maintainer's note is a friendly confirmation, not a new question). Round-1 engagement received 2026-05-28: MartyG-RealSense replied within ~1 hour of post-time with substantive answers. Key takeaways: (1) RealSense is independent of Intel since 2025-07-11 (URML drafted as 'Intel-RealSense'; needs correction across RFC + manifest naming), (2) L515 model RETIRED and unsupported in librealsense since 2.52.1 — drop L515 from URML's targeted-models scope, keep D400 + D500 only, (3) RealSense does NOT ship in-built face/object/gesture detection; those modes require third-party software or a separate RealSense ID product (face only), (4) pointclouds need only depth + color, (5) adapter home suggestion: librealsense's third-party/ folder (https://github.com/realsenseai/librealsense/tree/master/third-party) — but maintainer caveat 'I am not involved in RealSense development or README documentation decisions' — so adapter PR placement is open, (6) invitation to submit URML adapter as a PR for RealSense team review. URML response posted 2026-05-28 thanking MartyG and committing to: drop L515, drop face/object/gesture inbuilt-detection claims, correct the Intel-RealSense → RealSenseAI naming. RFC-0109 corrections + scope-narrowing PR is a follow-up ticket. Adapter scaffold not yet shipped (this is round 1 of a Marty-style multi-round cycle if it develops). Light-touch follow-up at 2026-06-25 if no further reply."
   notes: "First Move #10 RFC, Tier A vendor-style. Flagship reference depth-camera SDK. Origin US (pass — independent RealSenseAI Inc., Santa Clara CA since 2025-07-11). Most-active vendor surface in the optical-perception slice. URML-fit: very high; depth + IMU + tracking in one SDK; existing Layer-1 cameras schema is 2D-image-centric so RealSense's depth + point-cloud output may push the same schema-extension question as RFC-0035 Zivid round. Round-1 maintainer correction 2026-05-28: drop L515 (retired pre-2.52.1) + drop inbuilt face/object/gesture claims (third-party / RealSense ID territory). Round-2 maintainer confirmation 2026-05-28: librealsense PR is optional; URML repo as default adapter home is fine."
 
@@ -73,6 +78,11 @@
   contact: "stereolabs/zed-ros2-wrapper (Apache-2.0 on wrapper; ZED SDK core is proprietary closed binary, 313 stars, 21 open issues, Issues enabled, CONTRIBUTING present, last commit 2026-05-27 active). Vendor-org maintainer Walter Lucetti (Myzhar). Stereolabs HQ Paris FR + SF office."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: FR
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue stereolabs/zed-ros2-wrapper#442 on 2026-05-28. Awaiting first response from Stereolabs (Walter Lucetti / Myzhar). Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin FR/US (pass). Closed-source-core / open-wrapper pattern is the design point worth surfacing in the RFC (parallel to Marty's open-martypy / closed-firmware split). URML-fit: high for stereo + RGB-D primitives."
 
@@ -84,6 +94,11 @@
   contact: "carnegierobotics/multisense_ros2 (MIT, 6 stars, 5 open issues, Issues enabled, last commit 2026-05-08 active). Vendor-org Carnegie Robotics LLC (Pittsburgh PA). Historical maintainers include Heiko Hirschmueller and Daniel Scharstein (well-known stereo-vision names; the same Hirschmueller is also at Roboception)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue carnegierobotics/multisense_ros2#81 on 2026-05-28. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). Low GitHub stars (6) but vendor-direct and NDAA-friendly origin compensate; defense/space heritage. URML-fit: medium-high for stereo + RGB-D."
 
@@ -95,6 +110,11 @@
   contact: "roboception/cvkit (BSD-3-Clause, 279 stars, 0 open issues, Issues enabled, last commit 2026-05-14 active). Vendor-org Roboception GmbH (Munich DE; ex-DLR spin-off). Maintainers: Heiko Hirschmueller (also at Carnegie MultiSense - see above), Daniel Scharstein. Separate ROS driver rc_visard_ros is stale 2022."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue roboception/cvkit#23 on 2026-05-28. Awaiting first response from Roboception maintainers. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE (pass). Well-known maintainership pedigree (same names as Carnegie MultiSense); cvkit is the live surface; rc_visard_ros stale is a follow-up flag for the RFC."
 
@@ -106,6 +126,11 @@
   contact: "basler/pypylon (BSD-3-Clause, 696 stars, 210 open issues, Issues enabled, last commit 2026-05-27 active). Vendor-org Basler AG (Ahrensburg DE). Maintainer Angel Bakardzhiev. Separate pylon-ros-camera driver has NOASSERTION license (follow-up needed)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue basler/pypylon#870 on 2026-05-28. Awaiting first response from Basler. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE (pass). Large industrial machine-vision vendor; pypylon is the engagement surface; closed-core / open-binding pattern same as Stereolabs ZED."
 
@@ -117,6 +142,11 @@
   contact: "prophesee-ai/openeb (license file present but SPDX not surfaced cleanly — likely Apache-2.0 per project docs; 284 stars, 18 open issues, Issues enabled, last commit 2026-05-15 active). Vendor-org Prophesee SA (Paris FR). Maintainer Nicolas Martin (nmartin-psee). Metavision SDK in OSS form."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: FR
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue prophesee-ai/openeb#172 on 2026-05-28. Event-stream measurement_type Spec RFC queued; Prophesee feedback informs it. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin FR (pass). First event-camera vendor in URML's perception coverage. URML-fit needs: event-stream measurement_type (Spec RFC; not in v0.1 enum). Frame as proposal-only until that schema gap closes."
 
@@ -128,6 +158,11 @@
   contact: "ifm/ifm3d (Apache-2.0, 116 stars, 4 open issues, Issues + Discussions both enabled, last commit 2026-05-13 active). Vendor-org ifm electronic gmbh (Essen DE). Maintainers Suraj Patil, Rasheed Khan Pathan. Separate ifm/ifm3d-ros2 Apache-2.0 active 2026-04-10."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue ifm/ifm3d#480 on 2026-05-28 (Issues used; Discussions also enabled — maintainers can migrate if preferred). Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE (pass). Discussions enabled flags an explicit dialogue surface (uncommon among industrial vendors). URML-fit: high; clean OSI top-to-bottom."
 
@@ -139,6 +174,11 @@
   contact: "FLIR/BosonUSB (MIT, 70 stars, 4 open issues, Issues enabled, last commit 2026-03-31 active). Vendor-org Teledyne FLIR (Wilsonville OR). Caveat: vendor's flagship machine-vision Spinnaker SDK is closed binary distributed off-GitHub; BosonUSB is the open utility for thermal Boson cameras over UVC."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue FLIR/BosonUSB#21 on 2026-05-28. Thermal-array Spec RFC queued (shared with RFC-0128 Optris, RFC-0129 Seek). Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass; Teledyne is US-domiciled). First thermal-IR vendor in URML's perception coverage. URML-fit needs: thermal-array measurement_type Spec RFC; Layer-1 cameras-block extension."
 
@@ -150,6 +190,11 @@
   contact: "LORD-MicroStrain/microstrain_inertial (NOASSERTION - verify SPDX in-repo; 133 stars, 33 open issues, Issues enabled, last commit 2026-05-21 active). Vendor-org MicroStrain by HBK (Williston VT; ex-Lord, now Hottinger Brüel & Kjær). Multi-repo: drivers, MIP SDK, NTRIP client, msgs."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue LORD-MicroStrain/microstrain_inertial#404 on 2026-05-28. IMU-type Spec RFC queued (shared with RFC-0118 / 0125 / 0131 / 0132); MicroStrain's HBK-acquired position informs it. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). 28-public-repo vendor org with regular commits (days ago); strongest IMU-vendor URML-fit signal."
 
@@ -161,6 +206,11 @@
   contact: "SBG-Systems/sbg_ros2_driver (MIT, 52 stars, 15 open issues, Issues enabled, last commit 2026-03-04 active). Vendor-org SBG Systems (Carrières-sur-Seine FR). Separate sbg_ros_driver for ROS 1 (78 stars, MIT, last 2025-10-17)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue SBG-Systems/sbg_ros2_driver#73 on 2026-05-28. Shares IMU-type Spec RFC with RFC-0117 + GNSS-class Spec RFC with RFC-0119/0120/0133/0134. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin FR (pass; NATO ally). Clean MIT-licensed dual-version ROS coverage; high URML-fit."
 
@@ -172,6 +222,11 @@
   contact: "septentrio-gnss/septentrio_gnss_driver (BSD-3-Clause, 125 stars, 43 open issues, Issues enabled, last commit 2025-12-20 active). Vendor-org Septentrio NV (Leuven BE), 21 public repos. Mosaic/AsteRx high-precision GNSS line."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: BE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue septentrio-gnss/septentrio_gnss_driver#177 on 2026-05-28. First Move-10 post landed. Awaiting first response. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin BE (pass; NATO ally). First GNSS/RTK vendor in URML's perception coverage. URML-fit: high; manifest provenance-block can carry GNSS-class capability."
 
@@ -183,6 +238,11 @@
   contact: "novatel/novatel_oem7_driver (MIT, 120 stars, 6 open issues, Issues + Discussions both enabled, last commit 2026-03-18 active). Vendor-org Hexagon | NovAtel (Calgary CA; Hexagon parent SE). 6 public repos."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: CA
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Discussion novatel/novatel_oem7_driver#109 (Ideas category) on 2026-05-28. Awaiting first response from NovAtel / Hexagon team. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin CA / SE (pass; allied). Discussions-on is a quality engagement signal; high-end GNSS+INS class complementary to Septentrio."
 
@@ -194,6 +254,11 @@
   contact: "ROBOTOUS/ROS-2-Interface-for-RFT-Series-EtherCAT-Model (MIT, 0 stars, 0 open issues, Issues enabled, last commit 2026-03-04 active; vendor org created 2026-02 — new entrant). Vendor per support@robotous.com (Korea, South)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: KR
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue ROBOTOUS/ROS-2-Interface-for-RFT-Series-EtherCAT-Model#1 on 2026-05-28 — URML is the FIRST issue on this fresh vendor org. Light touch; F/T 6-axis Spec RFC queued (URML's first F/T RFC). Light-touch follow-up at 2026-07-09 (6-week cadence given fresh org)."
   notes: "Tier A. Origin KR (pass; allied). First force/torque vendor in URML's outreach proper (ATI/Bota are fixtures, not engaged). Vendor org is fresh (Feb 2026); URML's engagement here may meaningfully shape their public posture."
 
@@ -205,6 +270,11 @@
   contact: "gelsightinc/gsrobotics (GPL-3.0, 187 stars, 20 open issues, Issues enabled, last commit 2025-06-25 marginally stale 11 mo; flagship). Vendor-org GelSight Inc. (Waltham MA; MIT spin-off). Also distributes the DIGIT successor product after Meta archived facebookresearch/digit-*."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue gelsightinc/gsrobotics#37 on 2026-05-28. URML's first tactile-sensing RFC; cross-citation framing (GPL-3.0 limits Apache-2.0 bundling). Tactile-array Spec RFC queued (shared with RFC-0136). Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin US (pass). Only commercially-viable tactile vendor with active GitHub presence in the slice; GPL-3.0 limits direct bundling but cross-citation works cleanly. First tactile-sensing RFC in URML's outreach."
 
@@ -216,6 +286,11 @@
   contact: "cubert-hyperspectral/cuvis.sdk (Apache-2.0, 22 stars, 5 open issues, Issues enabled, last commit 2026-05-26 active TODAY). Vendor-org Cubert GmbH (Ulm DE), 35 public repos, Apache-2.0 across the board. Also publishes cuvis-ai + cuvis-ai-agentic-skills (LLM-tool surface already exists)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue cubert-hyperspectral/cuvis.sdk#89 on 2026-05-28. URML's first hyperspectral RFC; cubert is the strongest vendor surface in Move-10 (35 repos uniformly Apache-2.0, daily commits). cuvis-ai-agentic-skills bridge is the high-leverage URML-NL surface. Light-touch follow-up at 2026-06-18 (3-week cadence given active vendor)."
   notes: "Tier A. Origin DE (pass). Best-in-slice vendor surface: 35 repos, Apache-2.0 uniformly, daily commits, agentic-AI posture already public. First hyperspectral RFC in URML's outreach. URML-fit: extremely high — they have done the LLM-tool work already."
 
@@ -227,6 +302,11 @@
   contact: "Sensirion/* — 252 vendor-org public repos, BSD-3-Clause uniformly, multi-week activity cadence; flagship pattern is per-sensor arduino-i2c-* + embedded-i2c-* pairs (e.g. arduino-i2c-scd30 = 13/1/2026-05-26 active). Vendor org Sensirion AG (Switzerland), 343 followers."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: CH
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue Sensirion/arduino-i2c-scd30#12 on 2026-05-28. URML's first environmental-sensor RFC. Env-scalar-array Spec RFC queued. Light-touch follow-up at 2026-06-25; Sensirion's 252-repo uniform BSD-3-Clause posture is exemplary."
   notes: "Tier A. Origin CH (pass; NATO-aligned). 252 public repos, OSI license uniform, exemplary maintenance posture. First environmental-sensor RFC in URML's outreach. URML-fit: high for CO2/humidity/particulate; manifest sensors-block extension needed for env types."
 
@@ -238,6 +318,11 @@
   contact: "boschsensortec/* — 33 vendor-org public repos, BSD-3-Clause on per-sensor APIs (some NOASSERTION on COINES_SDK — mixed posture flag). Active: BHI385_SensorAPI (2/3/2026-04-16), BME690 (19/4/2026-02-20), BMM350 (20/4/2026-02-03). Vendor org Bosch Sensortec GmbH (DE), 495 followers."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue boschsensortec/BHI385_SensorAPI#11 on 2026-05-28. On-chip fusion-firmware (BSEC / BHy2 / BSX) declaration question is the high-leverage URML-side ask. Shares IMU + env-scalar-array Spec RFCs with RFC-0117/0124. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE (pass). Dominant low-power IMU/env catalog; complements Sensirion at the MEMS layer. URML-fit: high for embedded / micro-class robots; pairs naturally with the existing microbit_edu manifest pattern."
 
@@ -256,6 +341,11 @@
   contact: "iniVation AG (Zürich CH). Vendor-direct development lives on GitLab at gitlab.com/inivation/dv/ (dv-processing, dv-ros). GitHub presence is utility-only (forks of flatbuffers, vcpkg, etl). Community ROS 2 wrapper at github.com/Telios/dv-ros2 (11 stars)."
   last_touch: ""
   response: none
+  tier: B
+  country: CH
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "DEFERRED 2026-05-28 — engagement is GitLab-native (gitlab.com/inivation/dv/dv-processing); URML's outreach pipeline is GitHub-default. RFC-0126 documents the engagement-surface question. Founder decision: open GitLab Issue out-of-band, or skip pending pipeline-extension RFC."
   notes: "Tier B. Origin CH (pass). Second event-camera vendor after Prophesee; cleaner URML-fit on the spec side (DAVIS is the canonical event-camera lineage). Engagement-surface mismatch (GitLab) is the blocker — RFC should address it explicitly."
 
@@ -267,6 +357,11 @@
   contact: "pmdtechnologies/pmd-royale-ros (BSD-3-Clause, 9 stars, Issues enabled, last commit 2023-12-13 STALE >2 years). Vendor-org pmdtechnologies (Siegen DE); maintainer Martin Plagens dormant. ROS 1 only; no ROS 2 driver surfaced; wraps closed Royale SDK download."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue pmdtechnologies/pmd-royale-ros#4 on 2026-05-28 despite >2-year staleness. Engagement may itself be the reactivating nudge — or yield a vendor-redirect. Light-touch follow-up at 2026-07-09 (6-week cadence given staleness)."
   notes: "Tier B. Origin DE (pass). Vendor-direct but stale > 2 years; closed Royale SDK + ROS 1 only. Treat as cross-citation pending a vendor restart."
 
@@ -278,6 +373,11 @@
   contact: "Optris/otcsdk_downloads (no license, 15 stars, Issues enabled, last commit 2026-05-06 active for releases; vendor SDK binary distribution). ROS 2 driver Optris/optris_drivers2 (NOASSERTION license, 3 stars, last 2025-02-19 stale) + community evocortex/optris_drivers2. Maintainers: Denis T., Waldemar Haag (Optris employees, Berlin DE)."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: DE
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue Optris/otcsdk_downloads#6 on 2026-05-28. License-clarification ask front-and-centre (NOASSERTION on optris_drivers2; SDK download repo license-undeclared). Shares thermal-array Spec RFC with RFC-0116/0129. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin DE (pass). Vendor-direct presence but binary-only SDK and unclear license on the ROS driver. Complements Teledyne FLIR (Tier A) in the thermal slice."
 
@@ -289,6 +389,11 @@
   contact: "seekthermal/seekcamera-python (Apache-2.0, 64 stars, 13 open issues, Issues enabled, last commit 2024-03-08 STALE >14 months). Vendor-org seekthermal (Santa Barbara CA); only 1 public repo. Python bindings over closed Seek SDK."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue seekthermal/seekcamera-python#37 on 2026-05-28 despite >14-month staleness. US-origin compact-class complement to FLIR/Optris. Light-touch follow-up at 2026-07-09 (6-week cadence given staleness)."
   notes: "Tier B. Origin US (pass). Compact-class thermal complement to Tier-A FLIR; only-one-repo vendor presence is a fragility signal."
 
@@ -300,6 +405,11 @@
   contact: "ros-drivers/velodyne (BSD-3-Clause, 715 stars, 102 open issues, Issues enabled + CONTRIBUTING yes, last commit 2025-08-28 active). Community-maintained under the ros-drivers org (jack-oquin, clalancette — Open Robotics / ROS community names). Velodyne brand now Ouster-owned post-2023 merger."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue ros-drivers/velodyne#573 on 2026-05-28. Brand-consolidation routing question (Velodyne = Ouster-owned post-2023; RFC-0032 already engaged Ouster) is front-and-centre. Light-touch follow-up at 2026-06-25; courtesy cross-link on the Ouster thread can wait until ros-drivers responds."
   notes: "Tier B. Origin US (pass; via Ouster). Brand-consolidation overlap with Ouster thread is the design point; community-maintained driver is the canonical legacy-VLP surface."
 
@@ -311,6 +421,11 @@
   contact: "xsens/xsens_mti_ros_node (NOASSERTION, 89 stars, 25 open issues, Issues enabled, last commit 2019-02-27 STALE ~7 years on GitHub branch). Vendor-org xsens (Enschede NL); 8 public repos; vendor has migrated newer ROS 2 driver off-GitHub to movella.com tarball distribution. Live driver: https://github.com/xsenssupport/Xsens_MTi_ROS_Driver_and_Ntrip_Client/. Support channel: support@xsens.com."
   last_touch: "2026-05-28"
   response: acked
+  tier: B
+  country: NL
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Acked 2026-05-28 by @ineelb (authorAssociation NONE) at xsens/xsens_mti_ros_node#79 (issuecomment-4565843416). Predicted outcome confirmed: the active Xsens ROS1/2 driver lives at xsenssupport/Xsens_MTi_ROS_Driver_and_Ntrip_Client. @ineelb committed to having a moderator cross-link the new home on the stale repo. For technical questions: support@xsens.com. **Action shape:** (a) RFC-0131 retarget the manifest mapping at the new xsenssupport repo; (b) verify license/maintenance posture of the new repo before any registry listing; (c) follow-up at 2026-07-09 if no moderator cross-link appears. No founder reply required."
   notes: "Tier B. Origin NL (pass). Predicted off-GitHub redirect partially confirmed — active driver IS on GitHub, just on a different org (xsenssupport, not xsens). Engagement-channel question answered."
 
@@ -322,6 +437,11 @@
   contact: "InvenSenseInc — 15 vendor-org public repos; flagship-ish: tdk_robokit, tdk_robotics_rbx_apps (Apache-2.0), tdk_robotics_rbx_drivers_code (NOASSERTION). Top stars 6 / pushed 2020-2021. Vendor org TDK / InvenSense (US/JP)."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue InvenSenseInc/tdk_robokit#2 on 2026-05-28. Cross-citation framing (MCU-firmware-level content vs URML's robotics-stack adapter pattern). Light-touch follow-up at 2026-07-09 given low GitHub activity."
   notes: "Tier B. Origin US/JP (pass). Vendor org real and identified, but content is firmware-MCU not robotics-stack; URML lives above this layer. Low-leverage outreach; engage for awareness."
 
@@ -333,6 +453,11 @@
   contact: "u-blox/ubxlib (Apache-2.0, 357 stars, Issues enabled + CONTRIBUTING yes, last commit 2024-11-11 stale ~6 mo from cutoff). Vendor-org u-blox (Thalwil CH). ROS driver path is community KumarRobotics/ublox (BSD-3-Clause, 529 stars, active 2025-09-26)."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: CH
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue KumarRobotics/ublox#278 (community ROS driver) on 2026-05-28. **Vendor-side post u-blox/ubxlib FAILED — repo archived read-only.** RFC-0133 has half-coverage (community ROS path); founder decision needed on alternate u-blox vendor surface (XPLR-HPG-software is the closest non-archived org repo) or off-GitHub email contact. Light-touch follow-up at 2026-06-25 on KumarRobotics side."
   notes: "Tier B. Origin CH (pass). Apache-2.0 vendor library on the protocol layer; ROS driver is community-maintained. Dual-surface engagement shape."
 
@@ -344,6 +469,11 @@
   contact: "emlid/* — 43 public repos; ntripbrowser (BSD-3-Clause, 32 stars, last 2025-07-21 stale), Navio2 (BSD-3-Clause). Reach RTK firmware is closed (ReachView3). Vendor account per info@emlid.com. Originally HK-registered; now operates as Emlid Tech Kft. (Hungary HU) with distributed RU-diaspora founders."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: HU
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue emlid/ntripbrowser#24 on 2026-05-28. HK-registration history flagged honestly in the RFC body. Light-touch follow-up at 2026-06-25."
   notes: "Tier B. Origin HU now (pass on current entity; flag HK history for US-federal-procurement deployments — operator decision). Low-cost multi-band RTK; closed Reach firmware limits adapter depth."
 
@@ -355,6 +485,11 @@
   contact: "CeruleanSonar/SonarView (no license — flag, 7 stars, 4 open issues, Issues enabled, last commit 2026-05-18 active). Vendor-org CeruleanSonar (US), 12 public repos. Companion ping-python (MIT) + s500_ros2 (MIT, stale 2023-06-28). Builds on Blue Robotics ping-protocol."
   last_touch: "2026-05-28"
   response: engaged
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Engaged 2026-05-28 by @NickNothom (CONTRIBUTOR) with substantive corrections: (1) Omniscan is NOT multibeam — RFC factual error to fix; (2) SonarView license published at https://ceruleansonar.com/software-license-sonarview/ (answers Q1); (3) ping-protocol docs at https://docs.ceruleansonar.com/c/cerulean-ping-protocol (answers Q3); (4) Q4 (acoustic safety-envelope) and Q5 (adapter home) flagged incomprehensible — do not press. Issue closed by maintainer. Action: fix RFC-0135 factual errors + link the two URLs; post a brief polite acknowledgement on the closed thread. Adapter pursuit on the MIT-licensed ping-protocol / s500_ros2 surface remains clean."
   notes: "Tier B. Origin US (pass). First sonar / underwater perception RFC in URML's outreach. Engaged response with factual corrections on first post — clean signal that the maintainer reads carefully. SonarView license clarified via vendor website (terms exist; not OSI-declared in-repo). Adapter pursuit on ping-python / s500_ros2 (MIT) surface remains the clean path."
 
@@ -366,6 +501,11 @@
   contact: "contactile/c3dfbs (GPL-3.0, 0 stars, 1 open issue, Issues enabled, last commit 2025-02-04 stale >15 mo). Vendor is a user-type account not org-type — single maintainer pattern. UNSW spin-off (Australia AU). Community ROS 2 wrapper at mgonzs13/contactile_ros (more recent)."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: AU
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue contactile/c3dfbs#4 on 2026-05-28. Cross-citation framing (GPL-3.0 + single-maintainer user account). Shares tactile-array Spec RFC with RFC-0122 GelSight. Light-touch follow-up at 2026-07-09 (6-week cadence given thin commercial GitHub presence)."
   notes: "Tier B. Origin AU (pass; allied). Second tactile-sensing RFC after GelSight; UNSW spin-off with thin commercial GitHub presence; copyleft license."
 
@@ -377,5 +517,10 @@
   contact: "ams-OSRAM/tmf8829_driver_linux (GPL-3.0, 1 star, 2 open issues, Issues enabled, last commit 2026-05-19 active). Vendor-org ams-OSRAM AG (Premstätten AT), 49 public repos. Engaged maintainer: ptr814 (CONTRIBUTOR org-association). Also tmf8829_driver_python (MIT — round-1 maintainer confirmation; URML originally tagged as NOASSERTION), tmf8829_driver_linux_userspace (dual-licensed MIT + GPL — pointer added by maintainer), tmf8829_driver_arduino (MIT), tmf8829_evm_sensor_fusion (MIT, Mira220 + TMF8829 integration), and mira220_v4l2_driver (GPL-2.0)."
   last_touch: "2026-05-28"
   response: engaged
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "Round-1 engagement received 2026-05-28: ptr814 (CONTRIBUTOR) replied with substantive answers within ~1.5 hours of post-time, then CLOSED the issue. Key takeaways: (1) tmf8829_driver_python is MIT-licensed (URML had tagged NOASSERTION; ledger now corrected), (2) URML adapter home should be a NEW URML-owned repo cross-citing this Linux driver (this driver is GPL'd; URML cannot vendor GPL code into Apache-2.0 core), (3) for MIT-clean cross-citation, maintainer pointed at three alternatives: tmf8829_driver_linux_userspace (dual MIT + GPL), tmf8829_driver_arduino (MIT), tmf8829_evm_sensor_fusion (MIT Mira220 + TMF8829 integration), (4) histogram-of-photons + multi-zone-ToF manifest fields source: datasheet at https://ams-osram.com/tmf8829. Issue CLOSED by maintainer post-reply — substantive engagement, not wontfix. URML response posted 2026-05-28 thanking ptr814, confirming the MIT cross-citation path (use tmf8829_driver_python + tmf8829_evm_sensor_fusion as the Apache-2.0-safe upstreams), and accepting the closed-issue state. URML follow-up ticket: pull histogram + multi-zone fields from the datasheet into the Multi-zone-ToF Spec RFC. No further reply expected on this thread; future engagement happens on a new URML repo cross-citation."
   notes: "Tier B. Origin AT (pass; allied). Complements ifm Effector (Tier A) at the chip-class ToF layer; vendor-direct and active. Maintainer engaged + closed in same wave; substantive cross-citation guidance received. Copyleft licensing on this specific repo limits direct adapter integration but maintainer surfaced three MIT-licensed alternatives (driver_python, driver_arduino, evm_sensor_fusion) for Apache-2.0-safe cross-citation."
