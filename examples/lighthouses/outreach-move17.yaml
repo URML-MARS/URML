@@ -118,13 +118,13 @@
 
 - slug: openssf-scorecard
   rfc: 216
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-29"
+  posted_url: "https://github.com/ossf/scorecard/issues/5079"
   channel: github_issue
   contact: "ossf/scorecard (Apache-2.0, issues enabled, last push 2026-05-25, 5.5k stars). OpenSSF / Linux Foundation. Security health scoring; SBOM / provenance signals."
-  last_touch: ""
+  last_touch: "2026-05-29"
   response: none
-  next_action: "draft RFC-0216 (OpenSSF Scorecard adoption for URML reference runtimes); URML-fit framing: URML reference runtimes adopt Scorecard signals to publish security posture; complements SLSA RFC-0215. Sub-wave A. Apache-2.0 clean fit."
+  next_action: "Posted 2026-05-29 to https://github.com/ossf/scorecard/issues/5079. Tight post-Nav2 format; single low-burden question (single Scorecard run vs per-repo for a multi-runtime project). Assistant flagged this as better served by just adopting the Scorecard Action than by a cold Issue; founder chose to post all five. Follow-up: adopt the Scorecard GitHub Action on the URML repo regardless of reply. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OpenSSF / Linux Foundation US. Foundation-home score: high (security-tooling alignment). Apache-2.0 clean fit."
 
 # ============================================================
