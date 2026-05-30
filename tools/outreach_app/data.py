@@ -97,20 +97,32 @@ def top_line_numbers(db_path: Path | None = None) -> dict[str, int]:
 
 
 def sector_distribution(filters: Filters | None = None, db_path: Path | None = None) -> list[dict]:
-    """One row per sector with response breakdown. Empty sectors omitted."""
+    """One row per sector with response breakdown.
+
+    NULL / empty sectors are skipped: a value of `None` in the column
+    means the migration has not run yet for that row, not "unclassified",
+    so we suppress the bogus group rather than render a "null" bar.
+    """
     filters = filters or Filters()
     where, params = filters.where_clause("targets")
+    base_filter = "sector IS NOT NULL AND sector != ''"
+    where_combined = (
+        f"{where} AND {base_filter}" if where
+        else f" WHERE {base_filter}"
+    )
     with _connect(db_path) as conn:
         cur = conn.execute(
             f"""SELECT
                 sector,
                 COUNT(*) AS total,
+                SUM(CASE WHEN sent_at != '' THEN 1 ELSE 0 END) AS posted,
                 SUM(CASE WHEN response = 'engaged' THEN 1 ELSE 0 END) AS engaged,
+                SUM(CASE WHEN response = 'wontfix' THEN 1 ELSE 0 END) AS wontfix,
+                SUM(CASE WHEN response = 'declined' THEN 1 ELSE 0 END) AS declined,
                 SUM(CASE WHEN response IN ('wontfix','declined') THEN 1 ELSE 0 END) AS blockers,
                 SUM(CASE WHEN is_stale = 1 THEN 1 ELSE 0 END) AS stale
-                FROM targets{where}
+                FROM targets{where_combined}
                 GROUP BY sector
-                HAVING COUNT(*) > 0
                 ORDER BY total DESC""",
             params,
         )

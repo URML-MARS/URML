@@ -82,25 +82,38 @@ def render() -> None:
 
         # Two charts side by side
         with ui.row().classes("w-full gap-4 items-stretch flex-wrap"):
-            with ui.card().classes("flex-grow min-w-[420px]"):
-                ui.label("Funnel by sector").classes("text-h6 mb-2")
-                ui.label("Total rows in each sector. Click a bar to filter.") \
+            with ui.card().classes("flex-grow min-w-[360px] max-w-[460px]"):
+                ui.label("Sectors").classes("text-h6 mb-1")
+                ui.label("Total rows per sector with engagement rate.") \
                     .classes("text-grey-7 text-sm mb-2")
+                if not sectors:
+                    ui.label("No sectors yet (run the schema-v2 migration).") \
+                        .classes("text-grey-7 italic")
+                else:
+                    _render_sector_list(sectors)
+
+            with ui.card().classes("flex-grow min-w-[420px]"):
+                ui.label("Funnel by sector").classes("text-h6 mb-1")
+                ui.label(
+                    "Each row stacks queued/posted (blue) + engaged (green) + "
+                    "wontfix/declined (red)."
+                ).classes("text-grey-7 text-sm mb-2")
                 if not sectors:
                     ui.label("No sectors yet.").classes("text-grey-7 italic")
                 else:
                     _render_sector_bar(sectors)
 
-            with ui.card().classes("flex-grow min-w-[420px]"):
-                ui.label("Response state by wave").classes("text-h6 mb-2")
-                ui.label(
-                    "Each row is a Move (1-18). Stacks: queued / posted-no-reply / "
-                    "engaged / wontfix / declined."
-                ).classes("text-grey-7 text-sm mb-2")
-                if not waves:
-                    ui.label("No waves yet.").classes("text-grey-7 italic")
-                else:
-                    _render_wave_stack(waves)
+        # Response state by wave on its own row (full width)
+        with ui.card().classes("w-full"):
+            ui.label("Response state by wave").classes("text-h6 mb-1")
+            ui.label(
+                "Each row is a Move (1-18). Stacks: queued / posted-no-reply / "
+                "engaged / wontfix / declined."
+            ).classes("text-grey-7 text-sm mb-2")
+            if not waves:
+                ui.label("No waves yet.").classes("text-grey-7 italic")
+            else:
+                _render_wave_stack(waves)
 
         ui.separator()
 
@@ -233,6 +246,42 @@ def _response_color(response: str) -> str:
 # -----------------------------------------------------------------------------
 # Charts
 # -----------------------------------------------------------------------------
+
+
+def _render_sector_list(sectors: list[dict]) -> None:
+    """Compact list of sectors with totals + engagement rate. Click to filter."""
+    sectors_sorted = sorted(sectors, key=lambda s: s["total"], reverse=True)
+    with ui.column().classes("w-full gap-1"):
+        for s in sectors_sorted:
+            sector = s["sector"]
+            label, icon, color = SECTOR_META.get(sector, (sector, "circle", "grey-6"))
+            total = s.get("total", 0)
+            engaged = s.get("engaged", 0)
+            blockers = s.get("blockers", 0)
+            posted = s.get("posted", 0) or 0
+            rate = (engaged / posted * 100.0) if posted else 0.0
+            with ui.row().classes(
+                "items-center gap-2 w-full no-wrap cursor-pointer hover:bg-grey-2 q-pa-xs rounded"
+            ).on("click", lambda v=sector: _filter_by_sector(v)):
+                ui.icon(icon).classes(f"text-{color}")
+                ui.label(label).classes("text-sm font-medium flex-grow truncate")
+                ui.label(str(total)).classes("text-sm font-medium w-10 text-right")
+                if engaged:
+                    ui.chip(f"{engaged} engaged").props("dense color=positive text-color=white")
+                if blockers:
+                    ui.chip(f"{blockers} blocker{'s' if blockers != 1 else ''}") \
+                        .props("dense color=red text-color=white")
+                ui.label(f"{rate:.0f}%" if posted else "—") \
+                    .classes("text-xs text-grey-6 w-10 text-right") \
+                    .tooltip("Engagement rate among posted rows.")
+
+
+def _filter_by_sector(sector: str) -> None:
+    """Set the sector filter then navigate to /targets."""
+    from ..state import set_filters
+    from ..data import Filters
+    set_filters(Filters(sectors=[sector]))
+    ui.navigate.to("/targets")
 
 
 def _render_sector_bar(sectors: list[dict]) -> None:
