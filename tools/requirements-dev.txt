@@ -7,7 +7,9 @@
 # Stack:
 #   datasette       Read-only browser UI over the SQLite mirror.
 #   ruamel.yaml     Round-trip YAML preservation for the migration script
-#                   and the future write plugin (RFC-0275 PR 5).
+#                   and the NiceGUI app's write path (Add comment / directive).
+#   nicegui         The read + write outreach dashboard (`make outreach-app`).
 
 datasette>=0.64
 ruamel.yaml>=0.18
+nicegui>=2.0

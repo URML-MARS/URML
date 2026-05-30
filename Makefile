@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run demo-record kawasaki-demo-record architecture-record audit outreach-refresh outreach-browse outreach-schema-migrate test clean
+.PHONY: help install install-dev demo demo-run demo-record kawasaki-demo-record architecture-record audit outreach-refresh outreach-browse outreach-app outreach-schema-migrate test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -31,6 +31,8 @@ help:
 	@echo "                          examples/lighthouses/outreach*.yaml. See RFC-0275."
 	@echo "  make outreach-browse    Launch Datasette on http://localhost:8001 with the"
 	@echo "                          read-only outreach mirror + canned queries."
+	@echo "  make outreach-app       Launch the NiceGUI outreach dashboard (read + write)"
+	@echo "                          on http://localhost:8001. See RFC-0275."
 	@echo "  make outreach-schema-migrate"
 	@echo "                          One-shot: add the schema-v2 fields (tier, country,"
 	@echo "                          sector, comments, claude_directives) to every row."
@@ -113,6 +115,12 @@ outreach-browse: outreach-refresh
 	$(PYBIN)/datasette serve tools/outreach.db \
 	    --metadata tools/outreach-datasette-metadata.yaml \
 	    --port 8001
+
+# NiceGUI dashboard: read + write (Add comment / directive, Mark done).
+# Refreshes the mirror on startup and after every write. Needs nicegui
+# (in tools/requirements-dev.txt).
+outreach-app:
+	$(PYBIN)/python -m tools.outreach_app
 
 outreach-schema-migrate:
 	$(PYBIN)/python tools/scripts/migrate_outreach_schema_v2.py
