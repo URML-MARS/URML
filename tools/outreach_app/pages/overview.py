@@ -1,12 +1,35 @@
-"""Overview page: KPI cards + funnel charts + spotlight lists."""
+"""Overview page: KPI cards + funnel charts + spotlight feeds."""
 
 from __future__ import annotations
+
+import re
 
 from nicegui import ui
 
 from .. import data
 from ..components.row_drawer import render as render_drawer, open_drawer
 from ..state import get_filters
+
+
+# Sector → (label, icon, accent color). Used in the engagement feed and
+# in the needs-attention list so each sector reads at a glance.
+SECTOR_META = {
+    "robot-platform": ("Robot platform", "smart_toy", "indigo-6"),
+    "component-vendor": ("Component vendor", "memory", "deep-purple-6"),
+    "substrate-runtime": ("Substrate runtime", "settings_input_component", "blue-6"),
+    "protocol-substrate": ("Protocol", "router", "light-blue-7"),
+    "middleware": ("Middleware", "hub", "cyan-7"),
+    "simulator": ("Simulator", "view_in_ar", "teal-6"),
+    "perception": ("Perception", "visibility", "green-7"),
+    "ai-language": ("AI / language", "psychology", "orange-7"),
+    "framework-skill": ("Framework / skill", "extension", "amber-7"),
+    "governance-body": ("Governance", "account_balance", "brown-6"),
+    "conceptual-peer": ("Conceptual peer", "compare_arrows", "blue-grey-6"),
+    "education-toolchain": ("Education", "school", "lime-7"),
+    "medical": ("Medical", "medical_services", "red-6"),
+    "agriculture": ("Agriculture", "yard", "light-green-7"),
+    "delivery": ("Delivery", "local_shipping", "pink-6"),
+}
 
 
 def _kpi(label: str, value: int, icon: str, color: str, sub: str = "") -> None:
@@ -20,6 +43,19 @@ def _kpi(label: str, value: int, icon: str, color: str, sub: str = "") -> None:
                 ui.label(sub).classes("text-grey-7 text-xs")
 
 
+def _first_sentence(text: str, max_chars: int = 180) -> str:
+    """Pick the first sentence or first ~180 chars from a notes blob."""
+    text = (text or "").strip()
+    if not text:
+        return ""
+    # Split on '. ' but keep the first chunk meaningful.
+    parts = re.split(r"(?<=[.!?])\s+", text, maxsplit=1)
+    head = parts[0]
+    if len(head) > max_chars:
+        head = head[: max_chars - 1].rsplit(" ", 1)[0] + "…"
+    return head
+
+
 def render() -> None:
     render_drawer()
     kpi = data.top_line_numbers()
@@ -30,7 +66,7 @@ def render() -> None:
         ui.label("URML outreach dashboard").classes("text-h4 font-medium")
         ui.label(
             "Source of truth: examples/lighthouses/outreach*.yaml. "
-            "Refresh on every app launch; manual via `make outreach-refresh`."
+            "SQLite mirror regenerated on launch."
         ).classes("text-grey-7")
 
         # KPI row
@@ -45,16 +81,22 @@ def render() -> None:
         ui.separator()
 
         # Two charts side by side
-        with ui.row().classes("w-full gap-4 items-stretch"):
-            with ui.card().classes("flex-grow"):
+        with ui.row().classes("w-full gap-4 items-stretch flex-wrap"):
+            with ui.card().classes("flex-grow min-w-[420px]"):
                 ui.label("Funnel by sector").classes("text-h6 mb-2")
+                ui.label("Total rows in each sector. Click a bar to filter.") \
+                    .classes("text-grey-7 text-sm mb-2")
                 if not sectors:
                     ui.label("No sectors yet.").classes("text-grey-7 italic")
                 else:
-                    _render_sector_donut(sectors)
+                    _render_sector_bar(sectors)
 
-            with ui.card().classes("flex-grow"):
+            with ui.card().classes("flex-grow min-w-[420px]"):
                 ui.label("Response state by wave").classes("text-h6 mb-2")
+                ui.label(
+                    "Each row is a Move (1-18). Stacks: queued / posted-no-reply / "
+                    "engaged / wontfix / declined."
+                ).classes("text-grey-7 text-sm mb-2")
                 if not waves:
                     ui.label("No waves yet.").classes("text-grey-7 italic")
                 else:
@@ -62,101 +104,263 @@ def render() -> None:
 
         ui.separator()
 
-        # Spotlight lists
-        with ui.row().classes("w-full gap-4 items-start"):
-            with ui.card().classes("flex-grow"):
+        # Spotlight feeds
+        with ui.row().classes("w-full gap-4 items-start flex-wrap"):
+            with ui.card().classes("flex-grow min-w-[420px]"):
                 ui.label("Most recent engagement").classes("text-h6 mb-2")
+                ui.label("Maintainer wrote back. Newest first.") \
+                    .classes("text-grey-7 text-sm mb-2")
                 f = get_filters()
                 f.responses = ["engaged"]
                 rows = data.list_targets(filters=f, limit=5)
                 if not rows:
                     ui.label("No engaged threads yet.").classes("text-grey-7 italic")
                 else:
-                    _render_spotlight_rows(rows)
+                    _render_engagement_feed(rows)
 
-            with ui.card().classes("flex-grow"):
+            with ui.card().classes("flex-grow min-w-[420px]"):
                 ui.label("Needs attention").classes("text-h6 mb-2")
                 ui.label(
-                    "Stale threads (≥ 28 d, no response) + pending Claude directives."
-                ).classes("text-grey-7 text-sm mb-1")
+                    "Stale threads (≥ 28 days, no response) + pending Claude directives."
+                ).classes("text-grey-7 text-sm mb-2")
                 stale_rows = [
-                    r for r in data.list_targets(limit=200)
+                    r for r in data.list_targets(limit=2000)
                     if r.get("is_stale")
                 ][:5]
-                pending = data.pending_directives_all()[:5]
+                pending = data.pending_directives_all()
                 if not stale_rows and not pending:
-                    ui.label("Nothing needs attention right now.").classes("text-grey-7 italic")
+                    ui.label("Nothing needs attention right now.") \
+                        .classes("text-grey-7 italic")
                 else:
                     if pending:
-                        ui.label(f"Pending directives ({len(data.pending_directives_all())})").classes("text-subtitle2")
-                        for d in pending:
-                            with ui.row().classes("items-center gap-2 cursor-pointer w-full") \
-                                    .on("click", lambda w=d["wave"], s=d["slug"]: open_drawer(w, s)):
-                                ui.icon("task_alt").classes("text-purple")
-                                ui.label(d["slug"]).classes("font-medium")
-                                ui.label(d["text"]).classes("text-grey-8 text-sm truncate flex-grow")
-                                ui.label(d["date"]).classes("text-grey-6 text-xs")
+                        ui.label(f"Pending directives ({len(pending)})") \
+                            .classes("text-subtitle2 mt-1")
+                        for d in pending[:5]:
+                            _directive_row(d)
                     if stale_rows:
-                        ui.label(f"Stale threads ({len([r for r in data.list_targets(limit=2000) if r['is_stale']])})") \
-                            .classes("text-subtitle2 mt-3")
-                        _render_spotlight_rows(stale_rows)
+                        ui.label(
+                            f"Stale threads "
+                            f"({sum(1 for r in data.list_targets(limit=2000) if r['is_stale'])})"
+                        ).classes("text-subtitle2 mt-3")
+                        _render_engagement_feed(stale_rows)
 
 
-def _render_spotlight_rows(rows: list[dict]) -> None:
-    for r in rows:
-        with ui.row().classes("items-center gap-2 cursor-pointer w-full") \
-                .on("click", lambda w=r["wave"], s=r["slug"]: open_drawer(w, s)):
-            ui.chip(r["sector"] or "-").props("dense outline")
-            ui.label(r["slug"]).classes("font-medium")
-            ui.label(r.get("contact") or "").classes("text-grey-8 text-sm truncate flex-grow")
-            ui.label(r.get("last_touch") or r.get("sent_at") or "").classes("text-grey-6 text-xs")
+# -----------------------------------------------------------------------------
+# Spotlight feed (story-style)
+# -----------------------------------------------------------------------------
 
 
-def _render_sector_donut(sectors: list[dict]) -> None:
-    data_pairs = [{"value": s["total"], "name": s["sector"]} for s in sectors]
+def _render_engagement_feed(rows: list[dict]) -> None:
+    """Feed of story-style cards for the Overview spotlights."""
+    with ui.column().classes("w-full gap-3"):
+        for r in rows:
+            _engagement_card(r)
+
+
+def _engagement_card(r: dict) -> None:
+    sector = r.get("sector") or ""
+    label, icon, color = SECTOR_META.get(sector, (sector or "—", "circle", "grey-6"))
+    snippet = _first_sentence(r.get("next_action") or r.get("notes") or "")
+    rfc_str = f"RFC-{int(r['rfc']):04d}" if r.get("rfc") else ""
+    date_str = r.get("last_touch") or r.get("sent_at") or ""
+
+    with ui.card().classes("w-full cursor-pointer hover:bg-blue-1") \
+            .on("click", lambda w=r["wave"], s=r["slug"]: open_drawer(w, s)):
+        with ui.row().classes("items-start gap-3 w-full no-wrap q-pa-md"):
+            # Sector avatar
+            with ui.element("div").classes(
+                f"flex items-center justify-center rounded-full bg-{color} text-white "
+                f"shrink-0"
+            ).style("width: 40px; height: 40px"):
+                ui.icon(icon).classes("text-lg")
+
+            # Body
+            with ui.column().classes("gap-1 flex-grow min-w-0"):
+                # Title row
+                with ui.row().classes("items-center gap-2 w-full no-wrap"):
+                    ui.label(r["slug"]).classes("text-subtitle1 font-medium")
+                    if rfc_str:
+                        ui.label(rfc_str).classes("text-xs text-grey-7")
+                    ui.space()
+                    ui.label(date_str).classes("text-xs text-grey-6 whitespace-nowrap")
+
+                # Meta row
+                with ui.row().classes("items-center gap-2 flex-wrap"):
+                    ui.chip(label).props(f"dense outline text-color={color}")
+                    if r.get("country"):
+                        ui.chip(r["country"]).props(
+                            f"dense color={'orange' if r['country'] == 'INTL' else 'blue-grey'} "
+                            f"text-color=white"
+                        )
+                    if r.get("tier"):
+                        ui.chip(f"Tier {r['tier']}").props("dense outline")
+                    resp = r.get("response") or "none"
+                    if resp != "none":
+                        ui.chip(resp).props(
+                            f"dense color={_response_color(resp)} text-color=white"
+                        )
+
+                # Story snippet
+                if snippet:
+                    ui.label(snippet).classes("text-sm text-grey-8")
+
+                # Optional outbound link
+                if r.get("posted_url"):
+                    ui.link("Open thread ↗", r["posted_url"], new_tab=True) \
+                        .classes("text-xs text-blue-7")
+
+
+def _directive_row(d: dict) -> None:
+    with ui.row().classes("items-center gap-2 cursor-pointer w-full hover:bg-amber-1 q-pa-xs") \
+            .on("click", lambda w=d["wave"], s=d["slug"]: open_drawer(w, s)):
+        ui.icon("task_alt").classes("text-purple")
+        ui.label(d["slug"]).classes("font-medium")
+        ui.label(d["text"]).classes("text-grey-8 text-sm flex-grow") \
+            .style("white-space: nowrap; overflow: hidden; text-overflow: ellipsis")
+        ui.label(d["date"]).classes("text-grey-6 text-xs whitespace-nowrap")
+
+
+def _response_color(response: str) -> str:
+    return {
+        "none": "grey",
+        "acked": "blue-grey",
+        "engaged": "positive",
+        "wontfix": "red",
+        "declined": "deep-orange",
+    }.get(response, "grey")
+
+
+# -----------------------------------------------------------------------------
+# Charts
+# -----------------------------------------------------------------------------
+
+
+def _render_sector_bar(sectors: list[dict]) -> None:
+    """Horizontal bar (one per sector). Sorted desc by total."""
+    sectors_sorted = sorted(sectors, key=lambda s: s["total"], reverse=True)
+    names = [s["sector"] for s in sectors_sorted]
+    totals = [s["total"] for s in sectors_sorted]
+    engaged = [s.get("engaged", 0) for s in sectors_sorted]
+    blockers = [s.get("blockers", 0) for s in sectors_sorted]
+    rest = [t - e - b for t, e, b in zip(totals, engaged, blockers)]
+    rest = [max(0, r) for r in rest]
+
+    height_px = max(280, 28 * len(sectors_sorted) + 80)
+
     ui.echart(
         {
-            "tooltip": {"trigger": "item"},
-            "legend": {"orient": "vertical", "left": "left", "type": "scroll"},
+            "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {"type": "shadow"},
+            },
+            "legend": {"data": ["posted / queued", "engaged", "wontfix + declined"], "top": 0},
+            "grid": {"left": 160, "right": 50, "top": 40, "bottom": 20, "containLabel": False},
+            "xAxis": {"type": "value", "splitLine": {"show": True, "lineStyle": {"color": "#eee"}}},
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "inverse": True,
+                "axisLabel": {"fontSize": 12},
+            },
             "series": [
                 {
-                    "name": "Sector",
-                    "type": "pie",
-                    "radius": ["45%", "70%"],
-                    "avoidLabelOverlap": True,
-                    "itemStyle": {"borderRadius": 6, "borderColor": "#fff", "borderWidth": 2},
-                    "label": {"show": False, "position": "center"},
-                    "emphasis": {"label": {"show": True, "fontSize": 16, "fontWeight": "bold"}},
-                    "labelLine": {"show": False},
-                    "data": data_pairs,
-                }
+                    "name": "posted / queued",
+                    "type": "bar",
+                    "stack": "sector",
+                    "data": rest,
+                    "itemStyle": {"color": "#90caf9"},
+                },
+                {
+                    "name": "engaged",
+                    "type": "bar",
+                    "stack": "sector",
+                    "data": engaged,
+                    "itemStyle": {"color": "#66bb6a"},
+                },
+                {
+                    "name": "wontfix + declined",
+                    "type": "bar",
+                    "stack": "sector",
+                    "data": blockers,
+                    "itemStyle": {"color": "#ef5350"},
+                },
             ],
         }
-    ).classes("h-64")
+    ).style(f"height: {height_px}px")
 
 
 def _render_wave_stack(waves: list[dict]) -> None:
     labels = [f"Move {w['move_num']}" for w in waves]
-    posted = [(w["posted"] or 0) - (w["engaged"] or 0) - (w["wontfix"] or 0) - (w["declined"] or 0) for w in waves]
-    posted = [max(0, p) for p in posted]
+    queued = [max(0, (w["total"] or 0) - (w["posted"] or 0)) for w in waves]
+    posted = [
+        max(0, (w["posted"] or 0) - (w["engaged"] or 0) - (w["wontfix"] or 0) - (w["declined"] or 0))
+        for w in waves
+    ]
     engaged = [w["engaged"] or 0 for w in waves]
     wontfix = [w["wontfix"] or 0 for w in waves]
     declined = [w["declined"] or 0 for w in waves]
-    queued = [(w["total"] or 0) - (w["posted"] or 0) for w in waves]
-    queued = [max(0, q) for q in queued]
+    totals = [w["total"] or 0 for w in waves]
+
+    height_px = max(360, 26 * len(waves) + 80)
+
     ui.echart(
         {
-            "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
-            "legend": {"data": ["queued", "posted (no reply)", "engaged", "wontfix", "declined"]},
-            "grid": {"left": 70, "right": 20, "top": 30, "bottom": 30},
-            "xAxis": {"type": "value"},
-            "yAxis": {"type": "category", "data": labels, "inverse": True},
+            "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {"type": "shadow"},
+                "formatter": None,
+            },
+            "legend": {
+                "data": ["queued", "posted (no reply)", "engaged", "wontfix", "declined"],
+                "top": 0,
+            },
+            "grid": {"left": 80, "right": 60, "top": 40, "bottom": 20, "containLabel": False},
+            "xAxis": {
+                "type": "value",
+                "splitLine": {"show": True, "lineStyle": {"color": "#eee"}},
+            },
+            "yAxis": {
+                "type": "category",
+                "data": labels,
+                "inverse": True,
+                "axisLabel": {"fontSize": 12},
+            },
             "series": [
-                {"name": "queued", "type": "bar", "stack": "wave", "data": queued, "itemStyle": {"color": "#9e9e9e"}},
-                {"name": "posted (no reply)", "type": "bar", "stack": "wave", "data": posted, "itemStyle": {"color": "#42a5f5"}},
-                {"name": "engaged", "type": "bar", "stack": "wave", "data": engaged, "itemStyle": {"color": "#66bb6a"}},
-                {"name": "wontfix", "type": "bar", "stack": "wave", "data": wontfix, "itemStyle": {"color": "#ef5350"}},
-                {"name": "declined", "type": "bar", "stack": "wave", "data": declined, "itemStyle": {"color": "#ffa726"}},
+                {
+                    "name": "queued",
+                    "type": "bar",
+                    "stack": "wave",
+                    "data": queued,
+                    "itemStyle": {"color": "#bdbdbd"},
+                },
+                {
+                    "name": "posted (no reply)",
+                    "type": "bar",
+                    "stack": "wave",
+                    "data": posted,
+                    "itemStyle": {"color": "#42a5f5"},
+                },
+                {
+                    "name": "engaged",
+                    "type": "bar",
+                    "stack": "wave",
+                    "data": engaged,
+                    "itemStyle": {"color": "#66bb6a"},
+                },
+                {
+                    "name": "wontfix",
+                    "type": "bar",
+                    "stack": "wave",
+                    "data": wontfix,
+                    "itemStyle": {"color": "#ef5350"},
+                },
+                {
+                    "name": "declined",
+                    "type": "bar",
+                    "stack": "wave",
+                    "data": declined,
+                    "itemStyle": {"color": "#ffa726"},
+                },
             ],
         }
-    ).classes("h-96")
+    ).style(f"height: {height_px}px")
