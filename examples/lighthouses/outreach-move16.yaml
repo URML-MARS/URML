@@ -198,9 +198,9 @@
   channel: github_issue
   contact: "mavlink/qgroundcontrol (Apache-2.0, 4.6k stars, Issues + Discussions enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Ground-station / mission-planning UI."
   last_touch: "2026-05-29"
-  response: none
-  next_action: "posted 2026-05-29 to https://github.com/mavlink/qgroundcontrol/issues/14442 (QGroundControl Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
-  notes: "Tier B. Origin Dronecode Foundation. Apache-2.0 clean fit. URML-fit: medium; operator-UI layer is cross-citation-appropriate."
+  response: wontfix
+  next_action: "Closed wontfix 2026-05-29T16:53Z by DonLakeFlyer (QGC maintainer) at qgroundcontrol#14442: 'And this is interesting why? And how does it make QGC better? This is all AI gobbledegook which says nothing useful.' Tone is hostile (parallels OVOS / LibreTranslate closes, not the constructive Nav2 close). Per established discipline (vibe-coding precedent): do NOT reply, do NOT re-engage on this thread, do NOT retroactively edit the post body. Future QGC concerns ride the parent MAVLink RFC-0197 thread (still open at mavlink/mavlink#2508), not a re-post here."
+  notes: "Tier B. Origin Dronecode Foundation. Apache-2.0 clean fit. URML-fit: medium; operator-UI layer is cross-citation-appropriate. **Second AI-content wontfix close in Move-16** (alongside Nav2 RFC-0201 closed same day 2026-05-29). 4-of-N pattern continues — OVOS / LibreTranslate / Moteus / Nav2 / QGC across Moves 10 / 12 / 16 — but Nav2's constructive tone is the exception; QGC reverts to the hostile OVOS / LibreTranslate shape."
 
 - slug: eclipse-zenoh
   rfc: 209
