@@ -38,6 +38,21 @@ These rules apply to every artifact a human will see: READMEs, docs, RFC bodies,
 
 Outreach copy especially: write one paragraph at a time, read it aloud, rewrite if it sounds like a marketing email. The recipient is an engineer who clocks LLM copy in two seconds and adjusts trust accordingly.
 
+## Outreach post structure
+
+The Writing-style rules above cover word choice. These cover the shape of a cold outreach post (the Issue or Discussion body a maintainer reads first). They exist because of the Nav2 close: 2026-05-29, Steve Macenski (Nav2 lead maintainer) closed [`navigation2#6184`](https://github.com/ros-navigation/navigation2/issues/6184) saying he tried to answer but the wording was too obtuse to be worth his time. He bounced off the structure, not the topic. A maintainer who has to decode invented vocabulary and pick through seven questions stops reading.
+
+- **Lead with one concrete example, not a description of one.** Show an English sentence, the URML primitive it becomes, and the target's actual call: `move_to(kitchen)` becomes a Nav2 `NavigateToPose` goal. The payload comes first, before any framing about what URML is.
+- **One real question. Two at most, never a numbered dump.** If the RFC raises more, they stay in the RFC. The post asks the single highest-value question the maintainer is uniquely able to answer.
+- **No invented compound-noun jargon in the post.** If a phrase only parses to someone who already knows URML (`dispatcher-class-only`, `the plugin-set degree of freedom`, `behavior-tree-composition novelty`), it does not belong in a cold post. Say it in plain words or cut it.
+- **State up front that the ask is light.** "Apache-2.0, no spec change proposed, nothing for you to maintain." Maintainers triage by how much work you are about to create for them.
+- **Link the full RFC as optional depth, never as required reading.** "Full write-up if useful: <link>." Assume the maintainer reads only the post body.
+- **A maintainer should be able to read it and answer in under two minutes.** If reading it aloud takes longer than that, it is too long.
+
+The mandatory VIBE disclosure line still goes last (see Outreach identity below), as one line, not a paragraph. The skeleton lives in the `posts-move*` files; the current canonical shape is in [`examples/lighthouses/posts-move17.md`](examples/lighthouses/posts-move17.md).
+
+These rules apply to outreach RFC bodies too, not just the post. Steve called the RFC itself too long and machine-written. An outreach RFC gets the same read-aloud pass: concrete example early, plain language, real drawbacks, no jargon stacks.
+
 ## Chat style
 
 The founder writes in very short prompts: `?`, `yes`, `So?`, `No, you do that`. They read outcomes, not narration. Match that energy.

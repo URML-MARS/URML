@@ -113,9 +113,9 @@
   channel: github_issue
   contact: "ros-navigation/navigation2 (Other — Apache-2.0/BSD-3 mixed, 4.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). ROS 2 Navigation Working Group (OSRF-adjacent)."
   last_touch: "2026-05-29"
-  response: none
-  next_action: "posted 2026-05-29 to https://github.com/ros-navigation/navigation2/issues/6184 (Nav2 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
-  notes: "Tier A. Origin OSRF-adjacent US. URML-fit: very high; Nav2 is the canonical ROS 2 navigation stack."
+  response: wontfix
+  next_action: "Closed wontfix 2026-05-29 by SteveMacenski (MEMBER, Nav2 lead maintainer) at navigation2#6184 (issuecomment-4574229727): 'AI generated content that is too difficult to read'; he attempted to answer first but found the wording too obtuse. Constructive-shape close (readability, not anti-AI), distinct from the hostile OVOS/LibreTranslate closes. Short human reply pending founder action; do NOT re-post the dense format. Any future Nav2 re-engagement leads with a working demo, not prose."
+  notes: "Tier A. Origin OSRF-adjacent US. URML-fit: very high; Nav2 is the canonical ROS 2 navigation stack. The stated blocker was readability of the post and RFC, not AI authorship per se: the maintainer tried to engage and gave up on the obtuse wording. First close driven purely by readability from a maintainer who attempted to respond; the signal drove the cold-outreach format rewrite (concrete-example-first, one question, see AGENTS.md outreach-post-structure)."
 
 - slug: moveit-moveit2
   rfc: 202
