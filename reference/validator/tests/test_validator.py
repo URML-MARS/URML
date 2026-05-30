@@ -502,6 +502,8 @@ def test_altitude_exceeded() -> None:
             "station_keeping": True,
             "service_ceiling": 120.0,
         },
+        # RFC-0250: drone-class drive_type requires substrate.autopilot_class.
+        "substrate": {"autopilot_class": "px4"},
         "perception": {"cameras": [], "sensors": [], "object_vocabulary": []},
     }
     envelope = {"envelope_version": "0.1", "max_altitude": 50.0}

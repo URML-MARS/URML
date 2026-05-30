@@ -48,6 +48,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
     "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
     "drone_civilian": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml",
+    # RFC-0250: substrate.autopilot_class negative-fixture manifests.
+    "drone_no_autopilot_class": _VALIDATOR_FIXTURES / "manifests" / "drone_no_autopilot_class.yaml",
+    "drone_autopilot_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "drone_autopilot_custom_no_note.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

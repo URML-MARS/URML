@@ -1,0 +1,36 @@
+# Fixture: drone (multirotor) manifest WITH substrate.autopilot_class: custom
+# but no autopilot_class_note. RFC-0250 requires the note when class is custom.
+# Negative fixture for the autopilot_class_note_required validator rule.
+
+manifest_version: "0.1"
+robot_id: drone_custom_no_note
+description: Drone manifest with autopilot_class=custom and no note (RFC-0250 negative fixture).
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+
+substrate:
+  autopilot_class: custom
+  # Intentionally omitting autopilot_class_note — RFC-0250 requires it.
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
