@@ -117,11 +117,11 @@
 
 - slug: wageningen-fre-2026
   rfc: 99
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
-  contact: "FRE 2026: NO verified GitHub org or Issue surface. The front-page community channel is Discord, which the founder declined at posting time 2026-05-26 (URML's outreach posture defaults to public, persistent surfaces; Discord is real-time and not durably indexed). Organising entity: 'an association of academic partners across Europe' (no named PI on the public landing page)."
-  last_touch: 2026-05-26
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/FieldRobotEvent/competition_environment/issues/25"
+  channel: github
+  contact: "github.com/FieldRobotEvent org (Issues enabled on competition_environment, virtual_maize_field, example_ws) — surface recovered 2026-05-30; the 2026-05-26 check found only the Discord and missed this org. Posted to competition_environment, Discord acknowledged. Organising entity: 'an association of academic partners across Europe' (no named PI on the public landing page)."
+  last_touch: 2026-05-30
   response: none
-  next_action: "deferred at posting time 2026-05-26 (Discord declined). Channel TBD. Candidates to investigate: an email surface at fieldrobotevent.eu, Wageningen University direct contact for the FRE organising committee, or a GitHub org if maintainers surface one later. Re-evaluate before FRE 2026 (June 16-18) if the engagement is still wanted."
+  next_action: "Posted 2026-05-30 as a GitHub Issue (idoco2003 identity) after the FieldRobotEvent org surfaced. Asks the organising committee for a maintainer of record, the simulation stack, ReFiBot status, and primitive-vocabulary interest, with venue left to them (Issue vs Discord vs email). Follow up at +30d (academic / annual-event cadence); FRE 2026 is June 16-18 Bernburg DE."
   notes: "Eighth and final Move #7 RFC, Tier B research-collab + community-channel framing (closes the agriculture wave). FRE 2026: June 16-18 2026 at International DLG Crop Production Centre, Bernburg, Germany. Annual European ag-robotics competition originally from Wageningen University. Community channel is Discord (the front-page directs interested parties to 'Join our Discord'). Simulation stack / ROS / Gazebo requirements + ReFiBot open-source Arduino platform: NOT surfaced on the public front page (URML's RFC asks the organising committee). Cross-link to RFC-0067 (FarmBot) + RFC-0092 (Acorn) + RFC-0094 (Burro) + RFC-0095 (AgriCruiser) + RFC-0096 (INRAE Romea). Origin DE (Bernburg 2026 venue). Verified 2026-05-26."

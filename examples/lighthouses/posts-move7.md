@@ -365,3 +365,38 @@ Thanks for the FRE community's annual European ag-robotics competition. URML's r
 - **Cadence.** Agriculture-vendor cadence varies. Small DIY orgs are slower than commercial outfits; academic ag labs run on the US / EU semester calendar (summer break May-August affects EU + US lab cadence). Polite follow-up at +30d is reasonable for academic targets; +14d for commercial.
 - **Channel pivot.** RFC-0098 (AgXRP) opens off-GitHub by courtesy email. If the maintainer responds with a public GitHub URL, URML pivots to standard Issue-thread engagement. RFC-0099 (FRE) opens on Discord. If the organising committee prefers a different surface (email, separate forum, GitHub org), URML's outreach pivots accordingly.
 - **Confidentiality.** Per the outreach-confidentiality rule, no other engaged URML maintainer or org is named in any post body above. URML's own shipped reference runtimes and aggregate outreach counts are fine to cite; specific responder identities are not.
+
+---
+
+## RFC-0099 addendum (2026-05-30): surface recovered, posted to GitHub
+
+RFC-0099 was deferred at posting time 2026-05-26 because the only documented FRE community channel was Discord (declined). A 2026-05-30 re-check found `github.com/FieldRobotEvent` **does** exist, with Issues enabled on `competition_environment`, `virtual_maize_field`, and `example_ws`. The May surface check missed it. Posted to [competition_environment#25](https://github.com/FieldRobotEvent/competition_environment/issues/25), with the Discord acknowledged. Body below uses the current authoring-disclosure convention (the body above predates it).
+
+**Posted to:** https://github.com/FieldRobotEvent/competition_environment/issues/25
+
+**Title:** URML (substrate-neutral robot intent language) — research-collab RFC for FRE 2026 entrants
+
+**Body:**
+
+Hi Field Robot Event organisers and maintainers,
+
+URML (urml.dev) is a small, opinionated, human-readable language for describing robot intent — Apache-2.0, substrate-neutral by design. It lets someone write what a robot should do as a sentence and compiles it into a validated, runnable program above whatever runtime runs below (ROS 2, a microcontroller, a vendor SDK). I am reaching out because the Field Robot Event gathers exactly the audience URML is built for: students authoring robot programs against heterogeneous ag-robotics platforms, where one program retargeting to another team's robot by a manifest swap is the whole point.
+
+This is **proposal-only**, research-collab framing — no spec change, nothing to merge. The offer is to support FRE entrants who want to try URML's primitive vocabulary as a teaching layer above their ROS / control code. Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0099-wageningen-field-robot-event-outreach.md
+
+I originally found only the Discord as a community channel and held off, since URML's outreach prefers durable, public surfaces. Finding this GitHub org is why I am posting here instead. If an Issue is the wrong venue and you would rather take this on Discord or by email, just say so.
+
+A few questions for the organising committee:
+
+1. **Maintainer of record.** Who is the lead PI / committee chair for FRE 2026, so the conversation has a contact?
+2. **Simulation stack.** What ROS / Gazebo / other simulation environment does FRE 2026 expect entrants to use? (`virtual_maize_field` looks like the answer — confirming.)
+3. **ReFiBot platform.** Is the Arduino-based open-source FRE platform still part of the 2026 edition?
+4. **URML primitive-vocabulary integration.** Is there interest in URML's primitive vocabulary as a candidate teaching artifact for entrants?
+5. **Conformance lane.** Open to a URML conformance line in FRE 2026's published technical materials once a mapping stabilizes? (Self-reported, no continuous obligation.)
+6. **Anything else.**
+
+Happy to scope down or shelve as fits. Thanks for running the annual proving ground for European ag-robotics — see you near Bernburg in June, if only in spirit.
+
+Ido Yahalomi (URML maintainer, urml.dev, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*

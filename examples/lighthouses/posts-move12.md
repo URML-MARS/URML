@@ -751,3 +751,37 @@ Order of posts (operator can batch by channel type for efficiency):
 16. RFC-0168 (LibreTranslate/LibreTranslate)
 
 After posting each: update the corresponding ledger row in [`outreach-move12.yaml`](outreach-move12.yaml) with the posted URL, set `sent_at` to the post date, set `channel` from `deferred` to `issue` or `discussion`, set `last_touch` to match `sent_at`. Per [`AGENTS.md`](../../AGENTS.md), do not modify `response` until the maintainer actually responds.
+
+---
+
+## RFC-0167 addendum (2026-05-30): retargeted to the successor surface, posted
+
+RFC-0167 was deferred at posting time 2026-05-28 because `facebookresearch/fairseq` is archived (read-only since 2025-09-30) and `gh issue create` is refused there. The RFC's own engagement question was "what is the successor surface for NLLB engagement now?" — and `facebookresearch/seamless_communication` (named in the RFC as the candidate successor) is live, with Issues and Discussions enabled. Posted to [seamless_communication#578](https://github.com/facebookresearch/seamless_communication/issues/578), framed as the successor-surface question. The non-commercial-weights caveat (NLLB / Seamless model weights are CC-BY-NC 4.0) is stated plainly; the ask is framed around the multilingual NL layer, not the weights.
+
+**Posted to:** https://github.com/facebookresearch/seamless_communication/issues/578
+
+**Title:** URML (robot intent language) — NLLB successor-surface question + a manifest-level model-license note
+
+**Body:**
+
+Hi Seamless / NLLB team,
+
+URML (urml.dev) is a small, opinionated, human-readable language for describing robot intent — Apache-2.0. Its natural-language layer is multilingual by design, and NLLB-200's 200-language breadth is unmatched in open translation, so URML wants to document NLLB as a declarable translation substrate in its capability manifest. Two honest frictions prompted this RFC, and the second is really a question for you.
+
+This is **proposal-only** — no spec change, nothing to merge. Full RFC: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0167-fairseq-outreach.md
+
+First friction: the original NLLB home, `facebookresearch/fairseq`, is archived, so an Issue cannot be opened there. This repo is the closest active Meta surface I could find for multilingual-communication work, which is why the question lands here. Second friction, and the load-bearing one: the NLLB / Seamless model **weights are CC-BY-NC 4.0** (non-commercial), while the code is permissive. URML's manifest would declare that constraint explicitly (a `translation_model_license: cc_by_nc_4_0` field, validator-enforced so a commercial deployment that pairs with NLLB weights fails at static-check time). I am not asking you to relicense anything — I am asking whether URML is modelling the boundary the way you would want it modelled.
+
+Questions for the maintainers (full list in the RFC):
+
+1. **Successor surface.** With `fairseq` archived, where should a downstream project engage on NLLB-200 going forward — here, the HuggingFace model community, or somewhere else?
+2. **Model-license declaration.** URML would record `translation_model_license: cc_by_nc_4_0` at the manifest level. Is that the right granularity, or do you have a finer-grained convention?
+3. **Commercial-use boundary.** Is non-commercial the canonical and only path for the weights, or is there an enterprise-license route a manifest should be able to point at?
+4. **Engagement channel.** Is a public Issue the right shape here, or would you prefer this elsewhere?
+5. **Anything else.**
+
+Happy to scope down or shelve. Thanks for keeping 200 languages in scope when most of the field keeps 10.
+
+Ido Yahalomi (URML maintainer, urml.dev, greenvh@gmail.com)
+
+*AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*

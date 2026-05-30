@@ -51,26 +51,26 @@
 
 - slug: klipper
   rfc: 227
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/Klipper3d/klipper/issues/7276"
+  channel: github
   contact: "Klipper3d/klipper (GPL-3.0, 11.6k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community OSS led by Kevin O'Connor. Host-plus-MCU 3D-printer / CNC motion firmware; G-code is the command interface."
-  last_touch: ""
+  last_touch: "2026-05-30"
   response: none
-  next_action: "RFC-0227 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: Klipper Discourse / Discord preferred over GitHub Issues; route to forum unless a maintainer welcomes an Issue."
+  next_action: "Posted 2026-05-30 as a GitHub Issue (idoco2003 identity) with an explicit venue question — Klipper prefers Discourse/Discord and reserves Issues for bug reports, so a forum redirect is an acceptable outcome; record it truthfully if it comes. Follow up at +4-6 weeks if silent."
   notes: "Tier B (GPL-3.0 -> IPC/G-code-boundary integration, no code vendoring). Origin community OSS (US-based lead); passes US-federal default policy. URML-fit: high for motion, partial overall (URML maps motion intent, not extruder/thermal/material process). First fabrication-motion target. Surfaces queued Spec RFCs: fabrication-motion drive_type classes (cartesian/corexy/delta), G-code substrate declaration, work-envelope fields."
 
 # ---- Where the next roboticists are, not where vendors are (1) ----
 
 - slug: wpilib
   rfc: 228
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/wpilibsuite/allwpilib/issues/8940"
+  channel: github
   contact: "wpilibsuite/allwpilib (BSD-3-Clause, 1.3k stars, Issues enabled, last commit 2026-05-29, **not archived**). The open library (Java/C++/Python) FRC teams program a roboRIO with. Maintained by FIRST and WPILib contributors."
-  last_touch: ""
+  last_touch: "2026-05-30"
   response: none
-  next_action: "RFC-0228 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: Chief Delphi forum is the FRC cultural home; route there with a GitHub Issue only if maintainers prefer it."
+  next_action: "Posted 2026-05-30 as a GitHub Issue (idoco2003 identity) with a venue question — Chief Delphi is the FRC cultural home, so a redirect there is an acceptable outcome. Seasonal (FRC-calendar) attention; follow up at +4-6 weeks if silent. Headline gap surfaced: swerve drive_type class."
   notes: "Tier A (BSD-3-Clause composes cleanly). Origin US-domiciled (FIRST/WPI); passes US-federal default policy cleanly. URML-fit: high. First education-pipeline target; inevitability/adoption-at-scale play. Surfaces queued Spec RFCs: swerve drive_type class, CAN motor-controller declaration, competition-context metadata."
 
 # ---- Research micro-platforms with clean demos (1) ----
@@ -83,18 +83,18 @@
   contact: "bitcraze/crazyflie-lib-python (GPL-2.0, 334 stars, Issues enabled, last commit 2026-05-12, **not archived**); firmware bitcraze/crazyflie-firmware (GPL-3.0, daily-active). Bitcraze AB, Malmo, Sweden. Open ~27g research nano-quadcopter; cflib over CRTP."
   last_touch: ""
   response: none
-  next_action: "RFC-0229 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: Bitcraze forum / Discord is the hub; route there with a GitHub Issue only if maintainers prefer it."
+  next_action: "HELD 2026-05-30 (not posted) to avoid a same-vendor double-post: Move #13 RFC-0181 already opened an unanswered Issue on the sister repo bitcraze/crazyflie-firmware. Post RFC-0229 to crazyflie-lib-python only once RFC-0181 gets a response, with an explicit RFC-0181 cross-reference. Draft body in posts-move18.md."
   notes: "Tier B (cflib GPL-2.0 + firmware GPL-3.0 -> CRTP/IPC-boundary integration, no code vendoring). Origin Sweden (allied, not on any covered list); passes US-federal default policy. URML-fit: high (multirotor already fits; clean flight demo). First CRTP-protocol target (distinct from MAVLink, RFC-0197). Surfaces queued Spec RFCs: protocol-class declaration (CRTP), nano-scale platform envelope. Swarm use out of v0.1 scope."
 
 # ---- Alternative intent inputs beside Layer-4 NL (1) ----
 
 - slug: openbci-brainflow
   rfc: 230
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/brainflow-dev/brainflow/issues/839"
+  channel: github
   contact: "brainflow-dev/brainflow (MIT, 1.7k stars, Issues enabled, last commit 2026-05-22, **not archived**). Vendor-neutral biosignal SDK that OpenBCI hardware uses. OpenBCI org (US open-hardware); OpenBCI_GUI MIT + active. pyOpenBCI confirmed archived (openbci-archive) and dropped."
-  last_touch: ""
+  last_touch: "2026-05-30"
   response: none
-  next_action: "RFC-0230 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: single GitHub Issue on brainflow-dev/brainflow (question), OpenBCI cross-referenced; respect any human-only-correspondence preference."
+  next_action: "Posted 2026-05-30 as a single GitHub Issue on brainflow-dev/brainflow (idoco2003 identity), OpenBCI cross-referenced; respects any human-only / Slack preference. Input-bridge framing (not a runtime adapter), stated up front. Follow up at +4-6 weeks if silent."
   notes: "Tier A (BrainFlow MIT composes cleanly). Origin BrainFlow community OSS + OpenBCI US-domiciled; passes US-federal default policy. URML-fit: input-bridge, NOT a runtime adapter (weakest adapter story of the batch, by design). BCI intent label -> URML behavior trigger -> validate -> execute; non-verbal analog of Move-12 STT (RFC-0153). Extends accessibility line (RFC-0079). Surfaces queued Spec RFCs: non-language intent-input source at Layer 4, bci/neural sensor measurement_type, confidence-gated intent."

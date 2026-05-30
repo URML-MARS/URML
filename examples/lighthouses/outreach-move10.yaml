@@ -256,7 +256,7 @@
   contact: "iniVation AG (Zürich CH). Vendor-direct development lives on GitLab at gitlab.com/inivation/dv/ (dv-processing, dv-ros). GitHub presence is utility-only (forks of flatbuffers, vcpkg, etl). Community ROS 2 wrapper at github.com/Telios/dv-ros2 (11 stars)."
   last_touch: ""
   response: none
-  next_action: "DEFERRED 2026-05-28 — engagement is GitLab-native (gitlab.com/inivation/dv/dv-processing); URML's outreach pipeline is GitHub-default. RFC-0126 documents the engagement-surface question. Founder decision: open GitLab Issue out-of-band, or skip pending pipeline-extension RFC."
+  next_action: "DEFERRED 2026-05-28 — engagement is GitLab-native (gitlab.com/inivation/dv/dv-processing); URML's outreach pipeline is GitHub-default. RFC-0126 documents the engagement-surface question. Founder decision: open GitLab Issue out-of-band, or skip pending pipeline-extension RFC. Re-verified 2026-05-30 (the-rest sweep): github.com/inivation still 5 utility-fork repos with Issues disabled; development remains GitLab-native; stays deferred."
   notes: "Tier B. Origin CH (pass). Second event-camera vendor after Prophesee; cleaner URML-fit on the spec side (DAVIS is the canonical event-camera lineage). Engagement-surface mismatch (GitLab) is the blocker — RFC should address it explicitly."
 
 - slug: pmdtechnologies-tof

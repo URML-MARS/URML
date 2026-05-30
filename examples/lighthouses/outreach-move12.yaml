@@ -216,13 +216,13 @@
 
 - slug: fairseq
   rfc: 167
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
-  contact: "facebookresearch/fairseq (MIT, 32.2k stars, Issues enabled, Discussions disabled, **archived 2025-09-30**). Meta's seq2seq toolkit. NLLB-200 weights are hosted here. Origin US (Meta)."
-  last_touch: ""
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/facebookresearch/seamless_communication/issues/578"
+  channel: github
+  contact: "Retargeted 2026-05-30 from the archived facebookresearch/fairseq to its candidate successor facebookresearch/seamless_communication (Issues + Discussions enabled, not archived). The RFC's primary ask WAS the successor-surface question, so posting to the candidate successor and asking Meta to confirm is the engagement itself. NLLB-200 weights remain CC-BY-NC 4.0 (non-commercial) in the successor repo too. Origin US (Meta)."
+  last_touch: "2026-05-30"
   response: none
-  next_action: "Posting deferred 2026-05-28: facebookresearch/fairseq is archived (read-only), createIssue refused by GitHub. The RFC's primary engagement-ask was the successor-surface question; the archive-blocker is itself the answer that needs Meta input. Candidate successor target identified during posting attempt: facebookresearch/seamless_communication (Issues enabled, not archived). Requires post body re-framing and founder review before posting there. RFC-0167 body in examples/lighthouses/posts-move12.md unchanged in this update. Originally drafted: RFC-0167 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0167-fairseq-outreach.md). **Archived friction**: no PRs merge. NLLB-200 weights are **CC-BY-NC 4.0** (non-commercial only). Engagement-ask: what is the successor surface for NLLB engagement now that fairseq is archived? Introduces novel model-license + commercial-use-gate manifest fields (first concrete case where model-license declaration is load-bearing). Awaiting founder review then post Issue on facebookresearch/fairseq."
+  next_action: "Posted 2026-05-30 as a GitHub Issue on facebookresearch/seamless_communication (idoco2003 identity), framed as the successor-surface question + manifest-level model-license note (translation_model_license: cc_by_nc_4_0). Higher dismissal risk: weak commercial-fit and this niche (LibreTranslate/OVOS) has AI-flagged URML before; ask is framed around the multilingual NL layer, not the weights. Follow up at +4 weeks if silent."
   notes: "Tier B. Origin US (pass). Friction = archived + non-commercial model weights. Engagement value is the NLLB-200-as-substrate question, not fairseq itself."
 
 - slug: libretranslate
