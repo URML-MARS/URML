@@ -1,0 +1,23 @@
+name: home/substrate_qos_keep_last_no_depth_rejected
+description: >
+  A manifest declaring qos_profile.history: keep_last must also declare
+  history_depth (>= 1). Without it, downstream consumers can't size topic
+  buffers correctly. Per RFC-0251.
+
+manifest: substrate_qos_keep_last_no_depth
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.qos_keep_last_requires_depth
+
+# expected_execution intentionally omitted: this is a validator-only case.

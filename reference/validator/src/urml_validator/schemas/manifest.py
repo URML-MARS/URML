@@ -338,19 +338,72 @@ class Program(BaseModel):
     )
 
 
+class QosProfile(BaseModel):
+    """DDS QoS profile declaration (RFC-0251).
+
+    Used inside `Substrate.rmw_options.qos_profile` to declare the
+    deployment-wide QoS that the ROS 2 RMW layer applies. The fields mirror
+    OMG DDS QoS policies: reliability, durability, history (with depth when
+    keep_last), deadline, lifespan. All fields are optional individually;
+    when `history: keep_last` is declared, `history_depth` is required.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    reliability: Literal["reliable", "best_effort"] | None = None
+    durability: Literal["volatile", "transient_local", "transient", "persistent"] | None = None
+    history: Literal["keep_last", "keep_all"] | None = None
+    history_depth: int | None = Field(default=None, ge=1)
+    deadline_ms: int | None = Field(default=None, ge=0)
+    lifespan_ms: int | None = Field(default=None, ge=0)
+
+
+class RmwOptions(BaseModel):
+    """ROS 2 RMW options declaration (RFC-0251).
+
+    Used inside `Substrate.rmw_options` to declare deployment-wide DDS / RMW
+    configuration: the default QoS profile, the discovery topology, and an
+    optional substrate-specific config-file reference. The fields are
+    informational at validate time (URML's no-cloud invariant honors the
+    config_reference as opaque documentation), but the runtime adapter
+    consumes them at dispatch time.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    qos_profile: QosProfile | None = None
+    discovery_topology: Literal[
+        "simple",
+        "discovery_server",
+        "xml_configured",
+        "peer",
+        "client",
+        "router",
+    ] | None = None
+    config_reference: str | None = Field(
+        default=None,
+        description=(
+            "RMW-specific config file path (e.g. CycloneDDS XML, Fast DDS "
+            "profiles XML). Opaque to the validator; documentation for "
+            "downstream tooling."
+        ),
+    )
+
+
 class Substrate(BaseModel):
     """Substrate-class declarations beneath URML's runtime.
 
-    Added by RFC-0250. The first sub-field is `autopilot_class`, which declares
-    which drone-autopilot stack a multirotor / fixed_wing / vtol deployment
-    actually runs (PX4, Ardupilot, or a custom autopilot). The validator
-    requires `autopilot_class` when the manifest declares one of the
-    drone-class `mobility.drive_type` values; existing non-drone manifests are
-    unaffected.
-
-    Future sub-fields will land here as additional RFCs in the 0251-0285
-    range are implemented (rmw_implementation, ipc_substrate, maturity_tier,
+    Added by RFC-0250 (autopilot_class). Extended by RFC-0251 with
+    rmw_implementation + rmw_options. Future RFCs in the 0252-0285 range
+    will add additional fields (ipc_substrate, maturity_tier, bridges,
     etc.).
+
+    Validator rules currently enforced:
+    - RFC-0250: drone-class drive_type requires autopilot_class; custom
+      requires autopilot_class_note.
+    - RFC-0251: rmw_implementation == 'custom' requires
+      rmw_implementation_note; qos_profile.history == 'keep_last' requires
+      history_depth (also enforced by QosProfile's own constraints).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -366,6 +419,29 @@ class Substrate(BaseModel):
         default=None,
         description="Required when autopilot_class is 'custom'. Free-text description of the autopilot stack.",
     )
+
+    # RFC-0251 additions: ROS 2 RMW implementation and QoS / discovery
+    # options. Both are optional in the v0.1 schema; the
+    # "required-when-class==ros2" rule from the RFC is deferred until a
+    # `substrate.class` field exists (no such field in v0.1).
+    rmw_implementation: Literal[
+        "rmw_fastrtps_cpp",
+        "rmw_cyclonedds_cpp",
+        "rmw_zenoh_cpp",
+        "rmw_connextdds",
+        "custom",
+    ] | None = Field(
+        default=None,
+        description=(
+            "ROS 2 RMW implementation. Closed enum; `custom` requires "
+            "`rmw_implementation_note`. Per RFC-0251."
+        ),
+    )
+    rmw_implementation_note: str | None = Field(
+        default=None,
+        description="Required when rmw_implementation is 'custom'. Free-text description of the RMW stack.",
+    )
+    rmw_options: RmwOptions | None = None
 
 
 class CapabilityManifest(BaseModel):

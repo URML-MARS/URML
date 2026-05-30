@@ -1,0 +1,24 @@
+name: home/substrate_rmw_custom_no_note_rejected
+description: >
+  A ground-robot manifest declaring substrate.rmw_implementation: custom
+  must also provide rmw_implementation_note. The escape-hatch enum value
+  requires a free-text description so downstream tooling can audit which
+  custom RMW the deployment composes against. Per RFC-0251.
+
+manifest: substrate_rmw_custom_no_note
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.rmw_implementation_note_required
+
+# expected_execution intentionally omitted: this is a validator-only case.
