@@ -55,10 +55,10 @@
   posted_url: "https://github.com/odriverobotics/ODrive/issues/767"
   channel: github_issue
   contact: "odriverobotics/ODrive (MIT, 3.6k stars, Issues enabled, last commit 2026-01-20 — 4mo stale but flagship, **not archived**). ODrive Robotics commercial entity, US-origin. Brushless motor controller firmware + hardware."
-  last_touch: "2026-05-28"
-  response: none
-  next_action: "Posted as Issue odriverobotics/ODrive#767 on 2026-05-28. First Move-13 post live. Awaiting first response from ODrive Robotics maintainers. Light-touch follow-up at 2026-06-25 (4-week cadence)."
-  notes: "Tier A. Origin US (pass). Flagship US-origin open-hardware actuator controller. URML-fit: high for high-torque mobile-base / quadruped / cobot actuators."
+  last_touch: "2026-05-29"
+  response: declined
+  next_action: "Closed declined 2026-05-29T17:09Z by samuelsadok (ODrive Robotics) at ODrive#767: 'Since we have very limited resources, we are unfortunately not able to participate in this project at this point. For that there would have to be significant interest by current or prospect ODrive customers.' Constructive shape — also routed URML to the current-gen products (URML targeted legacy v3.x repo). Founder replied 2026-05-29T17:44 with grateful acknowledgement + commitment to re-point at the current-gen surface and to come back if user-side demand surfaces. **Distinct from AI-content wontfix closes**: maintainer engaged technically (correct-repo routing). No further action this thread; queue ODrive current-gen as future target."
+  notes: "Tier A. Origin US (pass). Flagship US-origin open-hardware actuator controller. URML-fit: high for high-torque mobile-base / quadruped / cobot actuators. **Constructive decline** — maintainer responded straight (not hostile, not AI-flagged) and pointed at the right repo. First Move-13 maintainer to give a substantive routing-style response since CircuitPython engaged (RFC-0174); contrast with hostile closes (QGC, OVOS, LibreTranslate) at the AI-content end of the spectrum."
 
 - slug: mjbots-moteus
   rfc: 170
