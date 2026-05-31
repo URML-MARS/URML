@@ -39,6 +39,11 @@
   contact: "BerkeleyAutomation/autolab_core (84 stars, cross-cutting utility repo; lab led by Ken Goldberg, not Pieter Abbeel as initially planned)"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (academic cadence may extend, especially May-August US summer). If silent at +30d, polite follow-up on BerkeleyAutomation/autolab_core#46. If reply, bump last_touch, set response per enum."
   notes: "First Move #6 RFC, Tier B research-collab. UC Berkeley AUTOLAB led by Prof. Ken Goldberg (NOT Pieter Abbeel; correction from plan: Abbeel runs RAIL / BAIR which is a separate Berkeley lab, held back for possible Move #7). 183 public repos, 241 followers. Top-starred: dex-net 363, gqcnn 342, python-fcl 269, sd-maskrcnn 215, autolab_core 84. License mix MIT / Apache-2.0 / BSD-3-Clause. EECS 206A/B is the lab-affiliated course. Origin US. Verified surface 2026-05-25."
 - slug: caltech-amber
@@ -49,6 +54,11 @@
   contact: "Caltech-AMBER/obelisk (10 stars, MIT, Issues enabled with 53 open at outreach time, last commit 2026-05-20 active)"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (academic cadence may extend). If silent, polite follow-up on Caltech-AMBER/obelisk#162. If reply, bump last_touch, set response per enum."
   notes: "Second Move #6 RFC, Tier B research-collab. Caltech AMBER Lab led by Prof. Aaron Ames (Bren Professor, CAST Director). Strongest formal-methods alignment in Move #6. 19 public repos, 39 followers. Top-starred: drop 25, traj_opt 12, obelisk 10, jaxosqp 9, ambersim 7. License mix MIT predominant. Lab website bipedalrobotics.com, X @AMBER_lab. Cross-link to RFC-0079 (prosthetics research complement). Origin US. Verified 2026-05-25."
 - slug: upenn-grasp
@@ -59,6 +69,11 @@
   contact: "KumarRobotics/kr_autonomous_flight (771 stars); GRASP Lab. Maintainer fcladera (KumarRobotics collaborator) closed the URML outreach issue 2026-05-25T21:00:32Z with the terse reply 'Not an issue.' and state-reason COMPLETED. No engagement, no redirect."
   last_touch: 2026-05-25
   response: wontfix
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Issue closed by KumarRobotics collaborator fcladera 2026-05-25 with 'Not an issue.' and state-reason COMPLETED. Different shape from a venue-redirect: no engagement, no path forward, no other surface named. URML accepts the close. No functional impact on URML (RFC-0082 was research-collab framing only, no shipping adapter dependency). Thread is closed; URML does not pursue further unless GRASP maintainers re-engage on a different surface."
   notes: "Third Move #6 RFC, Tier B research-collab. UPenn GRASP Lab led by Prof. Vijay Kumar (Nemirovsky Dean of Engineering). KumarRobotics: 93 public repos, 729 followers (largest in Move #6). Top-starred: msckf_vio 1.9k, kr_autonomous_flight 771, SLIDE_SLAM 248, MOCHA 38, HALO 14. License mix BSD-3-Clause / MIT / Apache-2.0. Multi-agent + aerial / swarm coordination focus. Surfaces multi-agent coordination primitive question (also raised in RFC-0047 / RFC-0056 / RFC-0068). Cross-link to RFC-0053 Open-RMF. Origin US. Verified 2026-05-25."
 - slug: uw-personal-robotics
@@ -69,6 +84,11 @@
   contact: "personalrobotics/aikido (231 stars, BSD-3-Clause); UW PRL led by Sidd Srinivasa, distinct from Imperial PRL (Demiris) per RFC-0088"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d. If silent, polite follow-up on personalrobotics/aikido#634. If reply, bump last_touch, set response per enum."
   notes: "Fourth Move #6 RFC, Tier B research-collab. UW Personal Robotics Lab led by Prof. Siddhartha Srinivasa. 242 public repos, 85 followers. Top-starred: aikido 231, prpy 65, herbpy 7. License BSD-3-Clause / MIT. ADA + HERB platforms. CSE 490R course. Same-name-different-lab disambiguation with RFC-0088 (Imperial PRL / Demiris). Cross-link to RFC-0079 (assistive-robotics complement). Origin US. Verified 2026-05-25."
 - slug: umich-robotics
@@ -79,6 +99,11 @@
   contact: "UMich-CURLY/drift (176 stars; Maani Ghaffari's CURLY lab); ROB 101/102 department-level coursework conversation goes to instructor team separately"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (academic cadence, summer break). If silent, polite follow-up on UMich-CURLY/drift#22; optional separate courtesy email to UMich Robotics Department coursework instructor team for ROB 101 / 102 discussion. If reply, bump last_touch, set response per enum."
   notes: "Fifth Move #6 RFC, Tier B research-collab. UMich Robotics Department + CURLY lab. PIs Prof. Maani Ghaffari (CURLY) + Prof. Jessy Grizzle (department leadership, bipedal locomotion / Cassie / Digit). 78 public repos, 197 followers. Top-starred: drift 176, Debias_IMU 122, deep-contact-estimator 113, 3DMapping 92, unified_cvo 81. License BSD-3-Clause / MIT. ROB 101 / ROB 102 / ROB 401 — the most teaching-pipeline-ready URML target in Move #6 (new robot-agnostic undergraduate robotics curriculum since 2023). Cross-link to RFC-0050 Isaac Lab. Origin US. Verified 2026-05-25."
 - slug: northwestern-crb
@@ -89,6 +114,11 @@
   contact: "MurpheyLab/MaxDiffRL (84 stars). Northwestern CRB led by Murphey + Colgate + Lynch. GPL-3.0 predominant — license-fit nuance for URML's Apache-2.0 reference"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d. If silent, polite follow-up on MurpheyLab/MaxDiffRL#3. If reply, bump last_touch, set response per enum. Optional speculative follow-up to Lynch's textbook publisher about URML appendix in future Modern Robotics edition."
   notes: "Sixth Move #6 RFC, Tier B research-collab. Northwestern Center for Robotics and Biosystems. PIs Prof. Todd Murphey, Prof. Ed Colgate, Prof. Kevin Lynch. MurpheyLab GitHub: 44 public repos, 62 followers. Top-starred: MaxDiffRL 84, ergodic-control-sandbox 53 (T-RO + ICRA 2024), lqr-flow-matching 53 (RSS 2025), brne 38 (IJRR), DPGO 34. License GPL-3.0 predominant — note: cross-citation only; URML reference/ is Apache-2.0, no direct code reuse. HAND ERC $52M / 10y institutional context. Kevin Lynch's Modern Robotics textbook is the global standard (speculative URML-appendix ask documented). ME 495 course. Origin US. Verified 2026-05-25."
 - slug: eth-asl
@@ -99,6 +129,11 @@
   contact: "ethz-asl/maplab (2.8k stars); ETH ASL led by Roland Siegwart, distinct from ETH RSL (Marco Hutter / ANYmal upstream covered via RFC-0049)"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (academic cadence). If silent, polite follow-up on ethz-asl/maplab#425. If reply, bump last_touch, set response per enum."
   notes: "Seventh Move #6 RFC, Tier B research-collab. ETH Zurich Autonomous Systems Lab (ASL) led by Prof. Roland Siegwart. Largest GitHub footprint in Move #6: 458 public repos, 2.3k followers. Top-starred: maplab 2.8k, ethzasl_msf 1091, wavemap 559, grid_map_geo 166, data-driven-dynamics 130. License BSD-3-Clause / MIT / Apache-2.0. ASL is distinct from ETH RSL (Marco Hutter, ANYmal upstream, touched indirectly via RFC-0049). SLAM + perception + path planning across ground / aerial / aquatic. Origin CH. Verified 2026-05-25."
 - slug: tu-delft-cognitive-robotics
@@ -109,6 +144,11 @@
   contact: "tud-cor/FS19_modROS (51 stars, Apache-2.0); CoR led by Martijn Wisse"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: NL
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (EU academic cadence, summer break May-August). If silent, polite follow-up on tud-cor/FS19_modROS#60. If reply, bump last_touch, set response per enum."
   notes: "Eighth Move #6 RFC, Tier B research-collab. TU Delft Cognitive Robotics led by Prof. Martijn Wisse. 40 public repos. Top-starred: FS19_modROS 51, ur5_coppeliasim_roscontrol 8, coppeliasim_ros_control 6. License Apache-2.0 predominant. Repo cadence uneven (FS19_modROS last commit 2024-01-28). Mobile Robotics + Robotics fundamentals courses. CoppeliaSim Spec RFC question raised (would CoppeliaSim be a future URML substrate?). Origin NL. Verified 2026-05-25."
 - slug: imperial-personal-robotics
@@ -119,6 +159,11 @@
   contact: "Prof. Yiannis Demiris via y.demiris@imperial.ac.uk per imperial.ac.uk/personal-robotics. NO verified standalone GitHub Issue surface for Imperial PRL"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: UK
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "courtesy email sent 2026-05-25 (channel chosen by founder). Wait 14-30 d. If silent, polite follow-up. If maintainer redirects to a private GitHub org or different surface, follow that. If reply, bump last_touch, set response per enum."
   notes: "Ninth Move #6 RFC, Tier B research-collab + off-GitHub framing. Imperial College London Personal Robotics Lab led by Prof. Yiannis Demiris. **NO verified standalone GitHub Issue surface** — ImperialCollegeLondon umbrella org has 746 repos but no PRL-specific public surface verified. Engagement via courtesy email to Demiris's listed address. Same-name-different-lab disambiguation with RFC-0083 (UW PRL / Srinivasa). Human-Centred Robotics course (4th yr / master). HRI + assistive + learning-from-demonstration focus. Origin UK. Verified surface 2026-05-25; absence of public PRL repos documented honestly."
 - slug: oxford-ori
@@ -129,6 +174,11 @@
   contact: "oxford-robotics-institute/radar-robotcar-dataset-sdk (90 stars, Python; only 2 public repos in the entire org); thin GitHub footprint, off-GitHub fallback to Prof. Paul Newman via paul.newman@eng.ox.ac.uk"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: UK
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d. If silent, polite follow-up on oxford-robotics-institute/radar-robotcar-dataset-sdk#18 or pivot to email/private-org if maintainers redirect (ori-drs, ori-systems unverified). If reply, bump last_touch, set response per enum."
   notes: "Tenth Move #6 RFC, Tier B research-collab with light off-GitHub fallback. Oxford Robotics Institute (ORI) led by Prof. Paul Newman. **Thin GitHub presence**: only 2 public repos in oxford-robotics-institute (radar-robotcar-dataset-sdk 90 stars, oord-dataset 1 star), 76 followers. ori-drs and ori-systems orgs not verified during surface check. Heavy publication record + Radar RobotCar Dataset + autonomous-driving research. Cross-link to RFC-0042 Waymo + RFC-0020 Autoware. Origin UK. Verified 2026-05-25; thin GitHub presence flagged."
 - slug: utokyo-jsk
@@ -139,6 +189,11 @@
   contact: "jsk-ros-pkg/jsk_recognition (289 stars, BSD); UTokyo JSK led by Prof. Masayuki Inaba + Prof. Kei Okada"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: JP
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (Japanese academic year runs April-March). If silent, polite follow-up on jsk-ros-pkg/jsk_recognition#2901. Japanese-language follow-up acceptable if maintainers prefer. If reply, bump last_touch, set response per enum."
   notes: "Eleventh Move #6 RFC, Tier B research-collab. UTokyo JSK Robotics Laboratory led by Prof. Masayuki Inaba + Prof. Kei Okada. The most mature Asian academic ROS surface: 34 public repos, 20+ years of ROS development. Top-starred: jsk_visualization 357, jsk_recognition 289 (Issues enabled, 70 open, last commit 2026-02-20 active), jsk_robot 80 (Common Lisp), coral_usb_ros 57, jsk_aerial_robot 54. EusLisp / roseus composition with URML primitives is paper-worthy. Cross-link to RFC-0041 ArduPilot (aerial). Amazon Picking Challenge industrial-collab history. Origin JP. Verified 2026-05-25."
 - slug: qut-peter-corke
@@ -149,5 +204,10 @@
   contact: "petercorke/robotics-toolbox-python (3.1k stars; personal handle, not separate QUT lab org); Peter Corke at QUT Centre for Robotics"
   last_touch: 2026-05-25
   response: none
+  tier: B
+  country: AU
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (Australian academic year runs Feb-Nov; engagement timing may need attention to Dec-Feb summer break). If silent, polite follow-up on petercorke/robotics-toolbox-python#513. If reply, bump last_touch, set response per enum."
   notes: "Twelfth and final Move #6 RFC, Tier B research-collab. Prof. Peter Corke at QUT Centre for Robotics. **Personal handle**, not standalone QUT lab org: petercorke 48 public repos, 2.1k followers. Top-starred: robotics-toolbox-python 3.1k (global teaching standard), RVC3-python 634, spatialmath-python 627 (under rai-opensource org), bdsim 253, machinevision-toolbox-python 201. Closes the Move #6 wave. Robotics Toolbox lineage (MATLAB → Python → ROS 2) plus RVC3 textbook plus AuSRoS 2025 ROS 2 labs plus ARC Centre of Excellence in Robotic Vision. Speculative RVC3-appendix URML ask documented. Origin AU. Verified 2026-05-25."

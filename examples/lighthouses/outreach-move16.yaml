@@ -57,6 +57,11 @@
   contact: "PX4/PX4-Autopilot (BSD-3-Clause, 11.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Linux Foundation Dronecode Foundation governance. The dominant open drone-autopilot stack."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/PX4/PX4-Autopilot/issues/27511 (PX4-Autopilot Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Linux Foundation Dronecode (multi-vendor, governance-neutral). URML-fit: very high. **Identity-load-bearing engagement** for URML's substrate-neutral drone-runtime claim."
 
@@ -68,6 +73,11 @@
   contact: "mavlink/mavlink (LGPL-3.0 with MIT generated-code exception, 2.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Drone protocol substrate; the interoperability layer between autopilot and ground station."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/mavlink/mavlink/issues/2508 (MAVLink Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Dronecode Foundation. URML-fit: very high. LGPL-3.0+MIT-exception is well-suited to URML's adapter pattern."
 
@@ -79,6 +89,11 @@
   contact: "mavlink/MAVSDK (BSD-3-Clause, 881 stars, Issues enabled, last commit 2026-05-26, **not archived**). Dronecode Foundation. High-level MAVLink SDK enabling cross-vendor vehicle control abstraction."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/mavlink/MAVSDK/issues/2889 (MAVSDK Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Dronecode Foundation. BSD-3-Clause clean fit. URML-fit: very high; SDK boundary is the natural adapter entry."
 
@@ -90,6 +105,11 @@
   contact: "dronecan/libcanard (MIT, 98 stars, Issues enabled, last commit 2026-04-30, **not archived**). DroneCAN community (open standard founded 2017). Alternative CAN-protocol substrate for drone embedded networks."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/dronecan/libcanard/issues/91 (DroneCAN libcanard Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin DroneCAN community open-standard. URML-fit: medium-high; alternate-protocol declaration is novel manifest territory."
 
@@ -103,6 +123,11 @@
   contact: "ros2/ros2 (Multi-license per module, 5.5k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Open Robotics Foundation / Linux Foundation. **URML's primary substrate.** Foundation-direct engagement with ROS 2 maintainers."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/ros2/ros2/issues/1845 (ROS 2 core Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Open Robotics Foundation US. **The most identity-load-bearing engagement in Move-16** — URML's primary substrate maintainers."
 
@@ -114,6 +139,11 @@
   contact: "ros-navigation/navigation2 (Other — Apache-2.0/BSD-3 mixed, 4.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). ROS 2 Navigation Working Group (OSRF-adjacent)."
   last_touch: "2026-05-29"
   response: wontfix
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "Closed wontfix 2026-05-29 by SteveMacenski (MEMBER, Nav2 lead maintainer) at navigation2#6184 (issuecomment-4574229727): 'AI generated content that is too difficult to read'; he attempted to answer first but found the wording too obtuse. Constructive-shape close (readability, not anti-AI), distinct from the hostile OVOS/LibreTranslate closes. Short human reply pending founder action; do NOT re-post the dense format. Any future Nav2 re-engagement leads with a working demo, not prose."
   notes: "Tier A. Origin OSRF-adjacent US. URML-fit: very high; Nav2 is the canonical ROS 2 navigation stack. The stated blocker was readability of the post and RFC, not AI authorship per se: the maintainer tried to engage and gave up on the obtuse wording. First close driven purely by readability from a maintainer who attempted to respond; the signal drove the cold-outreach format rewrite (concrete-example-first, one question, see AGENTS.md outreach-post-structure)."
 
@@ -125,6 +155,11 @@
   contact: "moveit/moveit2 (BSD-3-Clause, 1.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Community / OSRF-adjacent. ROS 2 manipulation framework."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/moveit/moveit2/issues/3742 (MoveIt 2 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Community / OSRF-adjacent US. BSD-3-Clause clean fit. URML-fit: very high; MoveIt 2 is the canonical ROS 2 manipulation framework."
 
@@ -138,6 +173,11 @@
   contact: "eProsima/Fast-DDS (Apache-2.0, 2.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). eProsima, Tres Cantos ES. **ROS 2's default DDS implementation.** Vendor-direct commercial entity."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: ES
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/eProsima/Fast-DDS/issues/6412 (Fast DDS Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin eProsima ES Madrid. Apache-2.0 clean fit. URML-fit: very high; vendor-direct + ROS 2 default substrate."
 
@@ -149,6 +189,11 @@
   contact: "eclipse-cyclonedds/cyclonedds (Other — EPL-2.0, 1.3k stars, Issues enabled, last commit 2026-05-26, **not archived**). Eclipse Foundation; alternative DDS implementation."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: middleware
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/eclipse-cyclonedds/cyclonedds/issues/2403 (Cyclone DDS Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Eclipse Foundation NL. EPL-2.0 license-class needs cross-citation framing. URML-fit: high; alternative-DDS option."
 
@@ -162,6 +207,11 @@
   contact: "cartographer-project/cartographer (Apache-2.0, 7.9k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Google. 2D/3D SLAM."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/cartographer-project/cartographer/issues/1979 (Cartographer Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Google US. Apache-2.0 clean fit. URML-fit: very high; foundational SLAM upstream."
 
@@ -173,6 +223,11 @@
   contact: "UZ-SLAMLab/ORB_SLAM3 (GPL-3.0, 8.7k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). University of Zaragoza ES. Visual-SLAM canonical reference."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/1002 (ORB-SLAM3 Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin University of Zaragoza ES. GPL-3.0 cross-citation framing. URML-fit: very high in research; cross-citation appropriate."
 
@@ -184,6 +239,11 @@
   contact: "introlab/rtabmap (Other — LGPL/BSD mixed, 3.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Université de Sherbrooke (Quebec, CA). Visual-inertial SLAM; ROS 2-integrated."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/introlab/rtabmap/issues/1711 (RTAB-Map Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier A. Origin Université de Sherbrooke CA Quebec. Mixed license license-clarification ask. URML-fit: very high; ROS 2-integrated + Move-10 RealSense (RFC-0109) sibling."
 
@@ -199,6 +259,11 @@
   contact: "mavlink/qgroundcontrol (Apache-2.0, 4.6k stars, Issues + Discussions enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Ground-station / mission-planning UI."
   last_touch: "2026-05-29"
   response: wontfix
+  tier: B
+  country: INTL
+  sector: ai-language
+  comments: []
+  claude_directives: []
   next_action: "Closed wontfix 2026-05-29T16:53Z by DonLakeFlyer (QGC maintainer) at qgroundcontrol#14442: 'And this is interesting why? And how does it make QGC better? This is all AI gobbledegook which says nothing useful.' Tone is hostile (parallels OVOS / LibreTranslate closes, not the constructive Nav2 close). Per established discipline (vibe-coding precedent): do NOT reply, do NOT re-engage on this thread, do NOT retroactively edit the post body. Future QGC concerns ride the parent MAVLink RFC-0197 thread (still open at mavlink/mavlink#2508), not a re-post here."
   notes: "Tier B. Origin Dronecode Foundation. Apache-2.0 clean fit. URML-fit: medium; operator-UI layer is cross-citation-appropriate. **Second AI-content wontfix close in Move-16** (alongside Nav2 RFC-0201 closed same day 2026-05-29). 4-of-N pattern continues — OVOS / LibreTranslate / Moteus / Nav2 / QGC across Moves 10 / 12 / 16 — but Nav2's constructive tone is the exception; QGC reverts to the hostile OVOS / LibreTranslate shape."
 
@@ -210,6 +275,11 @@
   contact: "eclipse-zenoh/zenoh (Other — EPL-2.0 / Apache-2.0, 2.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Next-gen pub-sub overlay; substrate-emerging."
   last_touch: "2026-05-29"
   response: none
+  tier: B
+  country: INTL
+  sector: middleware
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/eclipse-zenoh/zenoh/issues/2626 (Zenoh Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin Eclipse Foundation. Emerging substrate; cross-citation appropriate until Zenoh adoption matures."
 
@@ -221,6 +291,11 @@
   contact: "eclipse-iceoryx/iceoryx (Apache-2.0, 2.1k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Zero-copy IPC for ROS 2 intra-process."
   last_touch: "2026-05-29"
   response: none
+  tier: B
+  country: INTL
+  sector: middleware
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/eclipse-iceoryx/iceoryx/issues/2530 (iceoryx Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer."
 
@@ -232,5 +307,10 @@
   contact: "stella-cv/stella_vslam (Other — license unclear, 1.2k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community fork of archived OpenVSLAM (originally JP-origin)."
   last_touch: "2026-05-29"
   response: none
+  tier: B
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "posted 2026-05-29 to https://github.com/stella-cv/stella_vslam/issues/660 (Stella VSLAM Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Tier B. Origin community fork (originally JP). License unclear. URML-fit: medium; community-fork posture."
