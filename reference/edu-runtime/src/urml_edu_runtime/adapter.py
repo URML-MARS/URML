@@ -47,6 +47,7 @@ from urml_edu_runtime._version import __version__
 from urml_edu_runtime.config import EduCommand, EduConfig, EduSkillCall, load_edu_config
 
 __all__ = [
+    "CircuitPythonAdapter",
     "EduCommand",
     "EduConfig",
     "EduSkillCall",
@@ -715,6 +716,163 @@ class PetoiAdapter(_EduBase):
                     "getter; the authoritative sensor getter list is a "
                     "round-2 ask of the PetoiCamp maintainer on "
                     "PetoiCamp/OpenCat-Quadruped-Robot#113."
+                ),
+            )
+        raw = getter()
+        if isinstance(raw, (tuple, list)):
+            payload_value: Any = list(raw)
+        elif isinstance(raw, dict):
+            payload_value = raw
+        else:
+            payload_value = raw if isinstance(raw, int) else float(raw)
+        return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
+
+
+class CircuitPythonAdapter(_EduBase):
+    """Adafruit CircuitPython (Python on MCU) via a host-side comms bridge — zero ROS.
+
+    Adafruit Industries (US, New York) ships CircuitPython across 400+
+    board variants (Feather / Trinket / QT Py plus third-party boards on
+    RP2040 / SAMD21/51 / nRF52 / STM32 / ESP32). Adafruit's @dhalbert
+    (COLLABORATOR) engaged on adafruit/circuitpython#11035 (2026-05-28)
+    and gave five points that shape this adapter:
+
+    - **Drag-drop ``code.py`` deploy (USB mass storage) is not universal**
+      — some boards lack an MSC drive. URML does not assume it. The
+      integration is a **host-side comms program** talking to the board
+      over a serial / REPL channel, which is exactly the direction
+      @dhalbert said CircuitPython/MicroPython favour over MSC.
+    - **Adafruit will not maintain the adapter**; the device-side helper
+      library's home is the [Adafruit CircuitPython Community Bundle](
+      https://github.com/adafruit/CircuitPython_Community_Bundle), not
+      core. This host-side adapter pairs with that (future, hardware-
+      validated) device-side receiver.
+    - CircuitPython is a **friendly fork of MicroPython** sharing the base
+      language but with different hardware modules — the two are distinct
+      mappings (URML's substrate landing is RFC-0270, which gives
+      ``circuitpython`` and ``micropython`` separate ``substrate.class``
+      enum values).
+    - A pointer to URML can be added to
+      [awesome-circuitpython](https://github.com/adafruit/awesome-circuitpython)
+      once the adapter is hardware-validated (founder action).
+
+    Connection: lazy ``import circuitpython_host`` (placeholder — the
+    host-side wrapper package is pending hardware validation and pairs
+    with the Community-Bundle device-side receiver; the canonical name is
+    a follow-up with the Adafruit maintainers). Like the Petoi adapter,
+    the adapter only requires *some* Python object that either exposes
+    named skill methods (``blink``, ``move``, ``set_neopixel``, ...) OR a
+    generic ``send_command(token, *args)`` channel; URML's
+    :class:`EduSkillCall` dispatch supports both shapes.
+
+    United States operator using an Adafruit board: provenance
+    ``origin: US`` in the manifest; the default US-federal policy accepts
+    it (US origin, no covered-list vendor).
+    """
+
+    BRAND = "circuitpython"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import circuitpython_host  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "circuitpython_host is not installed. CircuitPythonAdapter requires "
+                "the [circuitpython] extra.\n"
+                "  Install with: pip install urml-edu-runtime[circuitpython]\n"
+                "  (The host-side wrapper pairs with a device-side receiver whose home "
+                "is the Adafruit CircuitPython Community Bundle per @dhalbert on "
+                "adafruit/circuitpython#11035; pending hardware validation. The adapter "
+                "only requires *some* Python object exposing CircuitPython skill methods "
+                "or a generic send_command(token, *args) channel.)"
+            ) from exc
+        # ``self._config.device`` carries the board identifier or serial
+        # connection string (e.g. 'adafruit_feather_rp2040',
+        # 'serial:///dev/ttyACM0', 'COM3').
+        self._conn = circuitpython_host.Board(self._config.device)
+        return self._conn
+
+    def _send(self, command: EduCommand) -> None:
+        """Dispatch a CircuitPython skill call to the connected board.
+
+        Two configured-command shapes are supported (same as Marty / Petoi):
+
+        1. **String form** (bare method name) — for skills called without
+           arguments. Example: ``"blink"`` invokes ``board.blink()``.
+        2. **:class:`EduSkillCall` form** (method + args + kwargs) — for
+           skills that take arguments, e.g.
+           ``EduSkillCall(method='set_neopixel', args=[255, 0, 0])`` or a
+           raw host-bridge token via
+           ``EduSkillCall(method='send_command', args=['move', 10])``.
+
+        Unknown skill names are reported as a typed RuntimeError so the
+        validator step surfaces them cleanly rather than crashing inside
+        the wrapper.
+        """
+        method_name, args, kwargs = _resolve_call(command)
+        board = self._open()
+        skill = getattr(board, method_name, None)
+        if not callable(skill):
+            raise RuntimeError(
+                f"circuitpython_skill_not_found: connected CircuitPython host bridge has "
+                f"no callable named {method_name!r}. Map the location/manipulation entry "
+                "to a CircuitPython skill method (e.g. 'blink', 'move', 'set_neopixel') or "
+                "a generic EduSkillCall(method='send_command', args=[...]); use an "
+                "EduSkillCall for methods that take arguments."
+            )
+        skill(*args, **kwargs)
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        return _nav(self, location, lambda c: self._send(c), frame)
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+    ) -> ManipulationResult:
+        return _grasp(self, action, force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        board = self._open()
+        # CircuitPython sensor surface depends on the loaded
+        # Adafruit_CircuitPython_* libraries (analog in, distance, temp,
+        # IMU, ...). Treat ``sensor`` as the host-bridge getter name with
+        # an analog-read default; pass the raw return through so the URML
+        # program receives whatever structure the wrapper returns (list /
+        # dict / scalar all supported per the Marty / Petoi precedent).
+        getter_name = sensor or "read_analog"
+        getter = getattr(board, getter_name, None)
+        if not callable(getter):
+            return MeasurementResult(
+                success=False,
+                reason=(
+                    f"circuitpython_sensor_not_found: connected CircuitPython host bridge "
+                    f"has no callable named {getter_name!r}. Use a getter exposed by a "
+                    "loaded Adafruit_CircuitPython_* library."
                 ),
             )
         raw = getter()

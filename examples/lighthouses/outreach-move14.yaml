@@ -64,6 +64,11 @@
   contact: "hello-robot/stretch_ros2 (license: none visible — clarification ask, 120 stars, Issues enabled, last commit 2026-05-26 very active, **not archived**). Hello Robot Inc., US MIT spinoff. Vendor-direct ROS 2 interface for the Stretch mobile manipulator (the most open-source-friendly mobile-manipulator OEM in URML's research surface)."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue hello-robot/stretch_ros2#233 on 2026-05-28. First Move-14 post live. License-clarification ask front-and-centre. Awaiting first response from Hello Robot. Light-touch follow-up at 2026-06-25 (4-week cadence)."
   notes: "Tier A. Origin US (pass). MIT spinoff; strongest mobile-manipulator URML-fit. URML-fit: very high; structurally matches URML's home-runtime + cobot-runtime patterns."
 
@@ -75,6 +80,11 @@
   contact: "frankaemika/franka_ros2 (Apache-2.0, 337 stars, Issues enabled, last commit 2026-05-19 active, **not archived**). Franka Robotics GmbH (formerly Franka Emika), Munich DE. Vendor-direct ROS 2 driver for Panda / FR3 cobot arm. **Deferred from Move-13 Theme C** — wrong layer there (cobot OEM not actuator vendor); correct layer here."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: DE
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue frankarobotics/franka_ros2#225 on 2026-05-28 (note: GitHub auto-redirected frankaemika/franka_ros2 → frankarobotics/franka_ros2 post-org-rename). Correct-layer engagement (deferred from Move-13 Theme C). Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin DE Munich (pass, NATO+EU). Apache-2.0 clean fit. URML-fit: very high for industrial / research cobot deployments."
 
@@ -86,6 +96,11 @@
   contact: "Kinovarobotics/kinova-ros (BSD-3-Clause, 410 stars, Issues enabled, last commit 2024-08-12, **not archived but stale 654 days**). Kinova Robotics, Montreal CA. Vendor-direct ROS driver for Jaco / Movo cobot arms. Large star count (410) signals deployed-fleet adoption despite staleness."
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: CA
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue Kinovarobotics/kinova-ros#448 on 2026-05-28 despite 1.5+ year staleness. Reactivating-nudge + ROS 2 successor-surface ask. Light-touch follow-up at 2026-07-09 (6-week cadence given staleness)."
   notes: "Tier A. Origin CA Montreal (pass, NATO ally). Stale repo but large adoption signal; assistive / accessibility-class cobot lineage."
 
@@ -99,6 +114,11 @@
   contact: "1x-technologies/eve-ros2-examples (Apache-2.0, 6 stars, Issues enabled, last commit 2026-01-12, **not archived**). 1X Technologies, Oslo NO. Vendor-direct ROS 2 examples for the EVE humanoid. **The only commercial humanoid OEM with vendor-direct active public robot code found in Move-14 research.**"
   last_touch: "2026-05-28"
   response: none
+  tier: A
+  country: "NO"
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue 1x-technologies/eve-ros2-examples#13 on 2026-05-28. **The only commercial humanoid OEM with vendor-direct active public robot code engaged in Move-14.** Refines URML's existing neo_biped fixture upstream. Light-touch follow-up at 2026-06-25."
   notes: "Tier A. Origin NO Oslo (pass, NATO ally). Modest star count (6) reflects developer-program-only posture but vendor-direct is real. URML-fit: high for humanoid class."
 
@@ -116,6 +136,11 @@
   contact: "fetchrobotics/fetch_ros (license: none visible — clarification ask, 202 stars, Issues enabled, last commit 2024-08-20, **not archived but stale 646 days**). Fetch Robotics (acquired by Zebra Technologies 2023), US San Jose. Vendor-direct ROS driver for Fetch mobile manipulator + Freight base."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue fetchrobotics/fetch_ros#171 on 2026-05-28 despite 1.5+ year staleness + post-Zebra-acquisition status. License + post-acquisition-governance asks front-and-centre. Light-touch follow-up at 2026-07-09 (6-week cadence given staleness + acquisition uncertainty)."
   notes: "Tier B. Origin US (pass). Stale + post-acquisition + license-unclear posture argues for cross-citation depth; engagement is partly a status-check on whether the platform is still community-supported."
 
@@ -127,6 +152,11 @@
   contact: "pal-robotics/tiago_tutorials (license: none visible — clarification ask, 87 stars, Issues enabled, last commit 2024-02-29, **not archived but stale 818 days**). PAL Robotics, Barcelona ES. Tutorials repo for the TIAGo mobile manipulator + extended TALOS / ARI humanoid surfaces."
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: ES
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue pal-robotics/tiago_tutorials#49 on 2026-05-28 despite 2+ year staleness. Canonical-engagement-surface + license-clarification asks front-and-centre. Light-touch follow-up at 2026-07-09 (6-week cadence given staleness)."
   notes: "Tier B. Origin ES Barcelona (pass, NATO+EU). Stale on tutorials repo; PAL has multiple repos with potentially fresher activity. Engagement-channel guidance is the primary ask."
 
@@ -138,5 +168,10 @@
   contact: "ToyotaResearchInstitute/hsr_description (BSD-3-Clause-Clear, 37 stars, Issues enabled, last commit 2024-05-05, **not archived but stale 753 days**). Toyota Research Institute, US (Cambridge MA / Los Altos CA). URDF/mesh assets for the HSR (Human Support Robot). **Completes the 7 Move-14 engageable RFCs.**"
   last_touch: "2026-05-28"
   response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Posted as Issue ToyotaResearchInstitute/hsr_description#14 on 2026-05-28. **Completes the 7 Move-14 posts.** Canonical-engagement-surface ask (TRI vs Toyota-Japan split). Light-touch follow-up at 2026-07-09 (6-week cadence given staleness)."
   notes: "Tier B. Origin US (TRI; Toyota Japan parent). Stale; research-org engagement is structurally different from vendor-OEM engagement. URML-fit: medium for assistive-class mobile manipulator."

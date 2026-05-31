@@ -2,9 +2,9 @@
 rfc: 0227
 title: Klipper (3D-printer / CNC motion substrate) integration, request for comment from Klipper maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-30
 supersedes: —
 superseded-by: —
 ---

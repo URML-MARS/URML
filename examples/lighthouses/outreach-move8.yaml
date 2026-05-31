@@ -51,6 +51,11 @@
   contact: "koalazak/dorita980 (MIT, JavaScript, 1.1k stars, 12 open issues, Issues enabled, last commit 2026-05-25 active). iRobot itself has no public developer SDK; engagement surface is the community SDK."
   last_touch: 2026-05-26
   response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "post Issue on koalazak/dorita980 labelled enhancement/question, pointing at RFC-0100. Then wait 14-30 d (community-maintainer cadence). If silent, polite follow-up. If reply, bump last_touch, set response per enum."
   notes: "First Move #8 RFC, Tier A vendor-style. iRobot Roomba is the highest-share consumer home-robot brand. Community surface: dorita980 (MIT, 1.1k stars), jeremywillans/ha-rest980-roomba, Home Assistant roomba integration. No iRobot-operated public API. URML's RoombaAdapter proposed in a new reference/home-runtime/ package. Mobility: region_based (Roomba navigates to mapped rooms/Spaces, not free coordinates). Cross-link to RFC-0101 (outdoor sibling Husqvarna), RFC-0106 (HA orchestration hub), RFC-0067 (consumer-vendor template). Origin US. Verified 2026-05-26."
 
@@ -62,6 +67,11 @@
   contact: "Thomas55555/aioautomower (MIT, Python, 11 stars, 2 open issues, Issues enabled, last commit 2026-05-25 active). Plus Husqvarna's official Automower Connect API at developer.husqvarnagroup.cloud (OpenAPI 3.0, OAuth 2.0). Cleanest engagement surface in Move #8."
   last_touch: 2026-05-26
   response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "post Issue on Thomas55555/aioautomower labelled enhancement/question, pointing at RFC-0101. Then wait 14-30 d. Optional courtesy email to Husqvarna developer relations. If silent, polite follow-up. If reply, bump last_touch, set response per enum."
   notes: "Second Move #8 RFC, Tier A vendor-style. Husqvarna Automower is the largest installed base of consumer outdoor home robotics globally. Official Automower Connect API + open Python wrapper (aioautomower MIT). URML's HusqvarnaAutomowerAdapter proposed in reference/home-runtime/. Mobility: zone_based (named geofence zones). Cloud-only API. Cross-link to RFC-0100 (indoor sibling Roomba), RFC-0103 (aquatic sibling Maytronics), RFC-0106 (HA hub). Origin SE. Verified 2026-05-26."
 
@@ -73,6 +83,11 @@
   contact: "Bear Robotics: NO customer-facing contact channel surfaced at posting time 2026-05-26. The Bear Cloud API developer portal at cloud.api.bearrobotics.ai documents gRPC + REST endpoints but did not surface a Contact Us / message form on inspection. The bearrobotics GitHub org has 25 repos but all are infrastructure forks (no customer-facing product repo with Issues enabled). bearrobotics.ai marketing site contact channel also not located."
   last_touch: 2026-05-26
   response: none
+  tier: A
+  country: US
+  sector: agriculture
+  comments: []
+  claude_directives: []
   next_action: "deferred at posting time 2026-05-26 (no contact surface located on cloud.api.bearrobotics.ai developer portal or bearrobotics.ai marketing site, and no customer-facing GitHub Issue surface on the bearrobotics org). Channel TBD. Candidates to investigate later: LinkedIn message to a Bear Robotics employee (sales, dev-relations, eng leadership), conference encounter (RoboBusiness, NRA), or any future Bear-published developer Contact form. RFC body on disk; re-engage if a channel surfaces."
   notes: "Third Move #8 RFC, Tier A vendor-style but off-GitHub. Bear Robotics Servi is the US commercial leader in hospitality + senior-living delivery cobotics. Documented Bear Cloud API (gRPC + REST). 25-repo GitHub org is infrastructure-only, no customer-facing surface. Senior-living + care-home adjacency framing (home-assistance continuum). Cross-link to RFC-0094 (Burro Robotics agricultural cobot fleet precedent), RFC-0053 (Open-RMF), RFC-0088 / RFC-0098 (off-GitHub courtesy precedents), RFC-0073 (engagement-to-adapter pattern). Origin US. Verified 2026-05-26 (absence of customer-facing GitHub documented honestly)."
 
@@ -84,6 +99,11 @@
   contact: "sh00t2kill/dolphin-robot (Python, 75 stars, 6 open issues, Issues enabled, last commit 2026-05-25 active). Engaged via elad-bar (COLLABORATOR) 2026-05-26: substantive reply offering R&D relay to Maytronics + feasibility caveat + newer-products hint + direct-email channel (elad.bar@hotmail.com)."
   last_touch: 2026-05-26
   response: engaged
+  tier: A
+  country: IL
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "Founder replied 2026-05-26 on issue #284 (a) accepting the R&D-relay offer with a 2-paragraph R&D-readable distillation elad-bar can forward to Maytronics; (b) engaging the feasibility caveat by proposing a lower-bound mapping that exposes only what dolphin-robot reliably surfaces today (region-based mobility + cycle status + scheduled-start trigger + measure/report; higher-fidelity primitives return not_supported_on_consumer_pool_robot per RFC-0014's honest-substrate-limit norm); (c) requesting more specific signal on which newer Maytronics products expose richer data envelopes; (d) acknowledging the elad.bar@hotmail.com offer but keeping substantive discussion on the public thread for the public record. RFC-0103 updated with a Maintainer responses subsection capturing this exchange. Awaiting further engagement from elad-bar OR Maytronics-side response via the R&D relay. Unresolved questions Q1-Q4, Q6-Q7 (license, adapter home, manifest values, mobility encoding, home-profile, conformance lane) remain open."
   notes: "Fourth Move #8 RFC, Tier A vendor-style. Maytronics Dolphin is the global consumer pool-robotics leader. Engagement via community dolphin-robot HA integration. Mobility: region_based (floor/walls/waterline/steps). Cloud-routed WiFi API (Maytronics MyDolphin Plus). License-clarity gate before adapter code (license field unset on the community repo). Aquatic-subsystem niche broadens URML's substrate-neutral claim across floor + lawn + pool home-assistance continuum. Cross-link to RFC-0100 (indoor) + RFC-0101 (outdoor) + RFC-0106 (HA). Origin IL. Verified 2026-05-26. 2026-05-26: elad-bar (sh00t2kill/dolphin-robot COLLABORATOR) gave the first Move #8 substantive engaged response with R&D-relay offer + feasibility caveat + newer-products hint + direct-email; second engaged community-maintainer response across URML's outreach (first was Robotical Marty RFC-0073, 2026-05-25). Distinct from the Kawasaki Tier-1 OEM engagement (RFC-0029, kurita-taisuke Kawasaki-Robotics MEMBER, 2026-05-26): elad-bar is community-driver maintainer, not vendor org."
 
@@ -95,6 +115,11 @@
   contact: "ROBOTIS-GIT/DynamixelSDK (Apache-2.0, 587 stars, 14 open issues, Issues enabled, last commit 2026-05-20). ROBOTIS-GIT org has 80+ public repos, Apache-2.0 predominant, ROS 2 native."
   last_touch: 2026-05-26
   response: none
+  tier: A
+  country: KR
+  sector: component-vendor
+  comments: []
+  claude_directives: []
   next_action: "post Issue on ROBOTIS-GIT/DynamixelSDK labelled enhancement/question, pointing at RFC-0104. Then wait 14-30 d. Optional cross-thread on ROBOTIS-GIT/dynamixel_hardware_interface if ROBOTIS prefers a ROS 2-specific surface. If silent, polite follow-up. If reply, bump last_touch, set response per enum."
   notes: "Fifth Move #8 RFC, Tier A vendor-style. ROBOTIS Dynamixel is the de facto servo backbone for affordable home / educational / quadruped / arm robotics globally. First servo-vendor RFC in URML's outreach landscape. Apache-2.0 license fit clean. Composition is documented cross-citation (no stand-alone DynamixelAdapter; Dynamixel is actuator-substrate, not platform-substrate). Cross-link to RFC-0009 (mobility schema), RFC-0011 / RFC-0012 (profiles), RFC-0031-0034 (Move #1 industrial-component-vendor precedents). Origin KR. Verified 2026-05-26."
 
@@ -106,6 +131,11 @@
   contact: "luxonis/depthai-python (MIT, 429 stars, 93 open issues, Issues + Discussions enabled, last commit 2026-05-23). Also luxonis/depthai-ros (MIT, 346 stars, ROS 2 wrapper). Discussions preferred for research-collab framing."
   last_touch: 2026-05-26
   response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives: []
   next_action: "open Discussion on luxonis/depthai-python (Discussions surface preferred over Issues for research-collab framing) pointing at RFC-0105. Then wait 14-30 d. Optional cross-thread on luxonis/depthai-ros if Luxonis prefers a ROS 2-specific surface. If silent, polite follow-up. If reply, bump last_touch, set response per enum."
   notes: "Sixth Move #8 RFC, Tier B research-collab. Luxonis OAK-D is the de facto affordable 3D-perception module for home / educational / research robotics. MIT license fit; documented cross-citation (perception substrate, like Dynamixel for actuators). Cross-link to RFC-0032 / RFC-0033 (Move #1 industrial-perception-vendor precedents. Ouster, SICK) + RFC-0104 (actuator-substrate sibling in Move #8). Composition with URML's edu-runtime + future home-runtime adapters. Origin US. Verified 2026-05-26."
 
@@ -117,6 +147,11 @@
   contact: "home-assistant org-level Discussion posted in the home-assistant-os-supervisor category (the available structured form at posting time). Note: category mismatch flagged in the post body — URML's proposal concerns HA Core's automation engine + entity model, not OS / Supervisor specifically. Body explicitly asks maintainers to redirect to a more appropriate Discussions category / repo if needed."
   last_touch: 2026-05-26
   response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14-30 d (very large maintainer community + Open Home Foundation; light engagement payload). If maintainers redirect to a different Discussions category, General / Ideas / Architecture, or to home-assistant/core Issues, mirror accordingly and bump last_touch. If reply, set response per enum."
   notes: "Seventh Move #8 RFC and strategic anchor for the home-assistance wave. Home Assistant is where every other Move #8 robot target already lives (roomba, husqvarna_automower, dolphin-robot integrations). Apache-2.0 license fit clean. URML compiles into HA automation YAML; URML composes with HA, not against it. Open Home Foundation governance (2024+). Cross-link to RFC-0100 / 0101 / 0103 (Move #8 vendor RFCs that depend on HA), RFC-0021 (NL layer), RFC-0014 (substrate conformance), RFC-0099 (community-channel precedent without Discord-only constraint). Origin: community / Open Home Foundation. Verified 2026-05-26."
 
@@ -128,5 +163,10 @@
   contact: "OpenVoiceOS/ovos-core (Apache-2.0, 275 stars, 24 open issues, Issues enabled, last commit 2026-05-14). NGI Zero Commons Fund grant October 2025. Post-Mycroft community trajectory, independent of HA/OHF umbrella. Closed wontfix 2026-05-26T12:33Z by JarbasAl (MEMBER): flagged URML's outreach prose as AI-generated, stated OVOS engages only with human-validated submissions."
   last_touch: 2026-05-26
   response: wontfix
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "JarbasAl (MEMBER) closed ovos-core#764 2026-05-26T12:33Z, ~1h after posting, flagging URML's outreach prose as AI-generated and stating OVOS engages only with human-validated submissions. URML accepts the close. URML's authoring posture is now disclosed up-front via VIBE.md and a one-paragraph disclosure on the still-open Move #8 outreach posts. Thread is closed; URML does not pursue OVOS further unless maintainers re-engage on a different surface."
   notes: "Eighth and final Move #8 RFC, Tier B research-collab + community. Closes the home-assistance wave. Originally scoped to rhasspy/rhasspy3 but pivoted at verification time: rhasspy3 archived. OVOS is the active independent voice-stack trajectory (distinct from the OHF-Voice umbrella covered indirectly via RFC-0106). Apache-2.0 license fit clean. Composition: voice -> OVOS intent -> URML primitive -> substrate. URML's RFC-0021 on-device LLM bridge composes above OVOS's intent layer. Cross-link to RFC-0021 (NL layer), RFC-0106 (HA voice-stack sibling), RFC-0014 (conformance), RFC-0099 (community-channel precedent). Origin: community / Apache-2.0. Verified 2026-05-26 (with rhasspy3-archived pivot documented). 2026-05-26: closed wontfix by JarbasAl one hour after posting; LLM-tells in outreach prose called out by name. Triggered URML's authoring-disclosure announcement (VIBE.md) and the disclosure-line edits on the 5 still-open Move #8 outreach posts. OVOS post body left as historical record; not retroactively edited; no public reply posted on the closed thread."

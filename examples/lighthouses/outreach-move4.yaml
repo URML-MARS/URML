@@ -49,6 +49,11 @@
   contact: "ROBOTIS-GIT/turtlebot3 (Apache-2.0, 2k stars, Issues enabled with 11 open, CONTRIBUTING.md present; courtesy cross-reference to ROBOTIS-GIT/dynamixel_sdk for the institutional servo-backbone surface)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on ROBOTIS-GIT/turtlebot3#1144 or optional cross-reference on ROBOTIS-GIT/dynamixel_sdk for the institutional surface; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "First Move #4 RFC. ROBOTIS-GIT org publishes the TurtleBot 3 / OP3 / OpenManipulator / Dynamixel SDK / OpenCR ecosystem. Cross-link: URML's existing Trossen RFC-0064, ALOHA RFC-0056, LeRobot RFC-0040 all transitively depend on Dynamixel servos without direct ROBOTIS engagement; this RFC closes that loop. Korean (KR origin, US-federal default policy passes at manifest level). OP3 humanoid had a ROS 2 reboot in 2025. Verified surface 2026-05-24: turtlebot3 2k stars Apache-2.0, 11 open issues, branches humble + jazzy + main(rolling), release 2.3.6 on 2025-12-15. Posted 2026-05-24 to ROBOTIS-GIT/turtlebot3#1144."
 - slug: agilex
@@ -59,6 +64,11 @@
   contact: "agilexrobotics/scout_ros (163 stars, the most-starred platform repo); per-repo license visibility incomplete from the org landing page"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: CN
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on agilexrobotics/scout_ros#25 or pivot to tracer_ros2 (Mobile-ALOHA-adjacent thread) / ugv_sdk for SDK-specific questions; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Second Move #4 RFC. AgileX org has 90 public repos and 1.3k followers (verified 2026-05-24). Catalog spans Tracer (differential, Mobile ALOHA chassis cross-link to RFC-0056), Limo ($1.5k tier, four-chassis-mode configurable), Scout (4WD differential, 163 stars on scout_ros), Hunter (Ackermann), Bunker (tracked), Ranger (omnidirectional). Shared C++ ugv_sdk at 108 stars. Per-platform ROS 1 + ROS 2 drivers. License visibility incomplete; RFC asks maintainers to confirm. Origin CN; manifest-load policy decision delegated to operator per RFC-0004. AgileX-LeRobot ecosystem cross-link is also documented in the field. Posted 2026-05-24 to agilexrobotics/scout_ros#25."
 - slug: farmbot
@@ -69,6 +79,11 @@
   contact: "FarmBot/Farmbot-Web-App (967 stars, MIT, 38 open issues, CONTRIBUTING.md present, TypeScript primary)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: agriculture
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on FarmBot/Farmbot-Web-App#2515 or cross-post to forum.farmbot.org; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Third Move #4 RFC. URML's FIRST outreach into the agricultural vertical. FarmBot is the open-source flagship for small-plot autonomous farming. Web App at 967 stars MIT, REST API documented at developer.farm.bot, MQTT pub/sub for telemetry, Raspberry Pi + Farmduino-based, US-domiciled (Berkeley CA). Sequence / regimen / peripheral vocabulary maps cleanly onto URML primitives. RFC raises the future agriculture-profile (`plant` / `water` / `weed` Layer-3) as an open question for a separate Spec RFC; this outreach is Layer-2 only. MQTT broker dependency requires local-broker mode for URML's offline-execution rule. Verified surface 2026-05-24. Origin US, default policy passes. Posted 2026-05-24 to FarmBot/Farmbot-Web-App#2515."
 - slug: pal-robotics
@@ -79,6 +94,11 @@
   contact: "pal-robotics/tiago_simulation (97 stars, Apache-2.0 predominant across the org; per-repo Issue / Discussion settings not fully visible from org landing page)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: ES
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on pal-robotics/tiago_simulation#52 or pivot to a TIAGo Pro repo if maintainers prefer; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Fourth Move #4 RFC. PAL Robotics fills the commercial mobile-manipulator niche between Move #1 stationary industrial OEMs and Move #2's research-grade humanoid efforts. Spain-domiciled (Barcelona, ES). pal-robotics GitHub org has 195 public repos, 332 followers, Apache-2.0 predominant. Top general-purpose repos: aruco_ros 596 stars, backward_ros 241 stars, realsense_gazebo_plugin 226 stars. Platform repos: tiago_simulation 97 stars, tiago_pro_robot, tiago_pro_head_robot, pal_mjlab, pal_sea_arm. ROS 2 native (Humble, Jazzy). TIAGo Pro dual-arm cross-links to RFC-0010 whole-body bimanual draft and to RFC-0047 MolmoAct / RFC-0056 ALOHA / RFC-0064 Trossen via the unresolved bimanual primitive question. Safety-field schema (`brake_rated`, `iso_collaborative`) raised as open question for a future spec RFC. Verified surface 2026-05-24. Origin ES, default policy passes. Posted 2026-05-24 to pal-robotics/tiago_simulation#52."
 - slug: berkeley-humanoid-lite
@@ -89,6 +109,11 @@
   contact: "HybridRobotics/Berkeley-Humanoid-Lite (1.3k stars, MIT code + CC-BY-SA 4.0 assets, Python 99.1%, Issues enabled with 8 open, 'We wholeheartedly welcome contributions' stated)"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on HybridRobotics/Berkeley-Humanoid-Lite#56; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Fifth Move #4 RFC. Berkeley Humanoid Lite is the frontier open hardware humanoid target: sub-$5k BOM, fresh 2025 release from UC Berkeley Hybrid Robotics Lab (Koushil Sreenath's group, arXiv 2504.17249), modular 3D-printed gearboxes, fully open hardware + firmware + Isaac Lab task definitions. Cross-link: composes with URML's existing RFC-0050 (NVIDIA Isaac Lab + Isaac-GR00T) outreach at the task-vocabulary level. Approximate manifest values (DOF, mass, height) flagged as open question for maintainer confirmation. Verified surface 2026-05-24. Origin US (UC Berkeley CA), default policy passes. Posted 2026-05-24 to HybridRobotics/Berkeley-Humanoid-Lite#56."
 - slug: hebi-robotics
@@ -99,5 +124,10 @@
   contact: "HebiRobotics/hebi_ros2_examples (Apache-2.0 predominant across the org); per-repo Issue / Discussion settings not visible from org landing page"
   last_touch: 2026-05-24
   response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
   next_action: "wait 14 d (until 2026-06-07); if silent, polite follow-up on HebiRobotics/hebi_ros2_examples#24 or cross-reference on HebiRobotics/hebi-python-examples; if reply, bump last_touch, set response per enum, write the concrete next step here."
   notes: "Sixth Move #4 RFC; closes the Move #4 pilot batch. HEBI Robotics anchors modular research robotics (CMU-rooted, Pittsburgh PA). HebiRobotics org has 46 public repos with Apache-2.0 predominant. Top: hebi-matlab-examples 22 stars, hebi-python-examples 14 stars, hebi-cpp-examples 9 stars, hebi-cad 9 stars. ROS 2: hebi_ros2_examples, hebi_description, hebi_msgs, hebi_cpp_api_ros. Distinctive value: per-deployment kinematic modularity (customers assemble actuators into custom geometries). URML's manifest's `kinematic_chain` field is the natural declarative surface; HEBI is the first URML deployment that fully populates it. Robotarium @ Georgia Tech cross-link documented. Verified surface 2026-05-24. Origin US, default policy passes. Posted 2026-05-24 to HebiRobotics/hebi_ros2_examples#24. All six Move #4 outreach posts now sent."

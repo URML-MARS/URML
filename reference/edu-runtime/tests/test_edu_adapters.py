@@ -197,6 +197,46 @@ class _FakePetoiBoard:
         pass
 
 
+class _FakeCircuitPythonBoard:
+    """Stand-in for the CircuitPython host-side bridge wrapper.
+
+    Mirrors the dispatch surface the CircuitPythonAdapter expects per the
+    round-1 maintainer engagement on adafruit/circuitpython#11035
+    (@dhalbert, 2026-05-28): a host-side comms program (serial / REPL,
+    not USB-MSC) exposing either named skill methods (blink, move,
+    set_neopixel) or a generic send_command(token, *args) channel.
+
+    Sensor getters use placeholder names (read_analog, get_distance)
+    until the device-side Community-Bundle receiver is hardware-validated.
+    Each call records (method, args, kwargs) in self.calls.
+    """
+
+    def __init__(self, device: str) -> None:
+        self.device = device
+        self.calls: list[tuple[str, tuple, dict]] = []
+
+    def send_command(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("send_command", args, kwargs))
+
+    def blink(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("blink", args, kwargs))
+
+    def move(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("move", args, kwargs))
+
+    def set_neopixel(self, *args: object, **kwargs: object) -> None:
+        self.calls.append(("set_neopixel", args, kwargs))
+
+    def read_analog(self) -> float:
+        return 512.5  # placeholder ADC reading (0-1023 range, mid-scale)
+
+    def get_distance(self) -> int:
+        return 25  # placeholder distance reading (cm)
+
+    def close(self) -> None:
+        pass
+
+
 @pytest.fixture
 def fake_edu_sdks() -> Iterator[None]:
     vex = ModuleType("pyvex")
@@ -209,13 +249,16 @@ def fake_edu_sdks() -> Iterator[None]:
     mar.Marty = _FakeMarty  # type: ignore[attr-defined]
     pet = ModuleType("petoi_mindpluslib")
     pet.Petoi = _FakePetoiBoard  # type: ignore[attr-defined]
-    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib")
+    cpy = ModuleType("circuitpython_host")
+    cpy.Board = _FakeCircuitPythonBoard  # type: ignore[attr-defined]
+    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib", "circuitpython_host")
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["pyvex"] = vex
     sys.modules["pybricksdev"] = lego
     sys.modules["tdmclient"] = thy
     sys.modules["martypy"] = mar
     sys.modules["petoi_mindpluslib"] = pet
+    sys.modules["circuitpython_host"] = cpy
     try:
         yield
     finally:
@@ -510,6 +553,76 @@ def test_petoi_adapter_unknown_skill_raises(fake_edu_sdks: None) -> None:
         PetoiAdapter(cfg).send_navigation_goal(location="bad_location")
 
 
+def test_circuitpython_adapter_lifecycle(fake_edu_sdks: None) -> None:
+    """CircuitPythonAdapter dispatches host-side comms skill calls.
+
+    Per the round-1 maintainer engagement on adafruit/circuitpython#11035
+    (@dhalbert, 2026-05-28): the integration is a host-side comms program
+    (serial / REPL, not USB-MSC drag-drop, which is not universal). The
+    adapter mirrors the Marty / Petoi string-or-EduSkillCall dispatch.
+    """
+    from urml_edu_runtime import CircuitPythonAdapter, EduConfig, EduSkillCall
+
+    cfg = EduConfig(
+        device="serial:///dev/ttyACM0",
+        location_to_command={
+            # No-arg skill: dispatches to board.blink().
+            "idle_location": "blink",
+            # Parametric skill via raw send_command: board.send_command('move', 10).
+            "move_location": EduSkillCall(method="send_command", args=["move", 10]),
+            # Named-method form: board.set_neopixel(255, 0, 0).
+            "lamp_on": EduSkillCall(method="set_neopixel", args=[255, 0, 0]),
+        },
+        manipulation_commands={
+            "grasp": "set_neopixel",
+            "release": "blink",
+        },
+    )
+    with CircuitPythonAdapter(cfg) as board:
+        assert isinstance(board, ROSAdapter)
+        # No-arg skill.
+        assert board.send_navigation_goal(location="idle_location").success
+        # Parametric skill via raw send_command.
+        assert board.send_navigation_goal(location="move_location").success
+        # Named-method form.
+        assert board.send_navigation_goal(location="lamp_on").success
+        assert board.send_manipulation_goal(action="grasp").success
+        # Unmapped location surfaces a typed failure.
+        miss = board.send_navigation_goal(location="nowhere")
+        assert miss.success is False and miss.reason is not None
+        assert miss.reason.startswith("location_not_configured")
+        # Sensor read: analog (scalar float).
+        adc = board.take_measurement(what="analog", target=None, sensor="read_analog")
+        assert adc.success and adc.payload is not None and adc.payload["value"] == 512.5
+        # Sensor read: distance (scalar int preserved as int).
+        dist = board.take_measurement(what="distance", target=None, sensor="get_distance")
+        assert dist.success and dist.payload is not None and dist.payload["value"] == 25
+        # Unknown sensor returns a typed failure.
+        bad = board.take_measurement(what="nope", target=None, sensor="read_no_such_thing")
+        assert bad.success is False and bad.reason is not None
+        assert bad.reason.startswith("circuitpython_sensor_not_found")
+
+        # Verify the host bridge received the expected call signatures.
+        fake = board._conn  # type: ignore[attr-defined]
+        assert ("blink", (), {}) in fake.calls
+        assert ("send_command", ("move", 10), {}) in fake.calls
+        assert ("set_neopixel", (255, 0, 0), {}) in fake.calls
+
+
+def test_circuitpython_adapter_unknown_skill_raises(fake_edu_sdks: None) -> None:
+    """CircuitPythonAdapter raises a typed RuntimeError for unknown skill names."""
+    from urml_edu_runtime import CircuitPythonAdapter, EduConfig, EduSkillCall
+
+    cfg = EduConfig(
+        device="serial:///dev/ttyACM0",
+        location_to_command={
+            "bad_location": EduSkillCall(method="not_a_real_method"),
+        },
+    )
+    with pytest.raises(RuntimeError, match=r"circuitpython_skill_not_found"):
+        CircuitPythonAdapter(cfg).send_navigation_goal(location="bad_location")
+
+
 def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     """Each adapter raises an actionable error naming its [extra] when SDK missing.
 
@@ -518,6 +631,7 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     attempt. So the test config maps the location so ``_send`` runs.
     """
     from urml_edu_runtime import (
+        CircuitPythonAdapter,
         EduConfig,
         LegoSpikeAdapter,
         PetoiAdapter,
@@ -527,7 +641,7 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
     cfg = EduConfig(location_to_command={"x": "GO X"})
-    for mod in ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib"):
+    for mod in ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib", "circuitpython_host"):
         monkeypatch.setitem(sys.modules, mod, None)
     with pytest.raises(RuntimeError, match=r"\[vex\] extra"):
         VexV5Adapter(cfg).send_navigation_goal(location="x")
@@ -539,12 +653,15 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
         RoboticalMartyAdapter(cfg).send_navigation_goal(location="x")
     with pytest.raises(RuntimeError, match=r"\[petoi\] extra"):
         PetoiAdapter(cfg).send_navigation_goal(location="x")
+    with pytest.raises(RuntimeError, match=r"\[circuitpython\] extra"):
+        CircuitPythonAdapter(cfg).send_navigation_goal(location="x")
 
 
 def test_conformance_runner_accepts_factories(fake_edu_sdks: None) -> None:
     from urml_conformance import ConformanceRunner
 
     from urml_edu_runtime import (
+        CircuitPythonAdapter,
         LegoSpikeAdapter,
         PetoiAdapter,
         RoboticalMartyAdapter,
@@ -557,3 +674,4 @@ def test_conformance_runner_accepts_factories(fake_edu_sdks: None) -> None:
     assert ConformanceRunner(adapter_factory=lambda: ThymioAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: RoboticalMartyAdapter()) is not None
     assert ConformanceRunner(adapter_factory=lambda: PetoiAdapter()) is not None
+    assert ConformanceRunner(adapter_factory=lambda: CircuitPythonAdapter()) is not None

@@ -80,6 +80,11 @@
   contact: "eclipse-sdv-blueprints/blueprints-website (EPL-2.0, issues enabled, last push 2026-05-05). Eclipse Foundation Software-Defined Vehicle Working Group; automotive + commercial-vehicle + aerospace blueprints. 2026 hackfests Esslingen + Friedrichshafen."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Posted 2026-05-29 to https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/8. Body uses the post-Nav2 tight format (one concrete question on aerospace-blueprint related-art scope). Weakest-fit of the wave per the assistant's fit assessment (cross-citation ask); founder chose to post all five for funnel reach. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin Eclipse Foundation Brussels AISBL. EPL-2.0 adapter-boundary friendly. Foundation-home score: high (cross-WG, not direct host)."
 
@@ -91,6 +96,11 @@
   contact: "elisa-tech/wg-automotive (Multi-OSI, issues enabled, last push 2026-05-27 active). Linux Foundation ELISA Project; safety-Linux for medical / automotive / robotics. Founding members include KUKA / Toyota / BMW / Arm."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Posted 2026-05-29 to https://github.com/elisa-tech/wg-automotive/issues/60. Tight post-Nav2 format; single question (are WG calls open to non-member attendees). Assistant flagged as marginal-fit cross-citation; founder chose to post all five. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin Linux Foundation US. Foundation-home score: high (sister-org cross-citation, not direct host). Safety-Linux is URML-adjacent."
 
@@ -102,6 +112,11 @@
   contact: "OPCFoundation/UA-Nodeset (license TBD verify, issues enabled, last push 2026-05-09, 268 stars). OPC Foundation UA Robotics Companion Specification."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Posted 2026-05-29 to https://github.com/OPCFoundation/UA-Nodeset/issues/119. Tight post-Nav2 format; two concrete questions (repo OSI license clarification + manifest-to-NodeSet mapping convention). Strongest-fit of the wave per the assistant's fit assessment (genuine answerable technical question). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OPC Foundation (US + DE multi-national). Foundation-home score: medium (standards-body cross-citation). License-verification gating."
 
@@ -113,6 +128,11 @@
   contact: "slsa-framework/slsa (Other / OSI-aligned, issues enabled, last push 2026-05-18, 1.8k stars). OpenSSF / Linux Foundation. Supply-chain provenance levels; cited by EO 14028."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Posted 2026-05-29 to https://github.com/slsa-framework/slsa/issues/1613. Tight post-Nav2 format; single concrete question (how to record a composite multi-package substrate's SLSA level in a manifest, and which verifier path). Second-strongest fit per the assistant's assessment (real design question). Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OpenSSF / Linux Foundation US. Foundation-home score: high (supply-chain alignment, not direct host). EO 14028 anchor strengthens URML's federal frame."
 
@@ -124,6 +144,11 @@
   contact: "ossf/scorecard (Apache-2.0, issues enabled, last push 2026-05-25, 5.5k stars). OpenSSF / Linux Foundation. Security health scoring; SBOM / provenance signals."
   last_touch: "2026-05-29"
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Posted 2026-05-29 to https://github.com/ossf/scorecard/issues/5079. Tight post-Nav2 format; single low-burden question (single Scorecard run vs per-repo for a multi-runtime project). Assistant flagged this as better served by just adopting the Scorecard Action than by a cold Issue; founder chose to post all five. Follow-up: adopt the Scorecard GitHub Action on the URML repo regardless of reply. Awaiting maintainer response; 4-week first-touch cadence."
   notes: "Class 1 / Sub-wave A. Origin OpenSSF / Linux Foundation US. Foundation-home score: high (security-tooling alignment). Apache-2.0 clean fit."
 
@@ -141,6 +166,11 @@
   contact: "Open Source Robotics Alliance (OSRA) — osralliance.org. Governance body over ROS / Gazebo / Open-RMF; meritocratic + mixed-membership model. 2026 inaugural Platinum members NVIDIA / Intrinsic / Qualcomm. OSRF-domiciled (US, Mountain View CA)."
   last_touch: ""
   response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0217 (URML — OSRA foundation-home inquiry); URML-fit framing: closest robotics-native foundation-home candidate, with risk that ROS-alignment dilutes URML's substrate-neutral identity (Move-16 substrate-spine engaged). Sub-wave B — founder sends membership-inquiry note via alliance contact channel under maintainer identity."
   notes: "Class 1 / Sub-wave B. Origin OSRF US-domiciled. Foundation-home score: critical (direct host candidate). Headline Sub-wave B target."
 
@@ -152,6 +182,11 @@
   contact: "Joint Development Foundation (JDF) — jointdevelopment.org. Linux Foundation Projects affiliate; ISO/IEC JTC 1 PAS submitter. 500+ member orgs; OpenUSD AOUSDF Core Spec 1.0 ratified 2026; OpenChain on JDF."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0218 (URML — JDF formation inquiry); URML-fit framing: cleanest neutral path to ISO/IEC JTC 1 PAS submission; URML as a JDF project under LF is the structural fit. Sub-wave B — founder sends formation-inquiry note via JDF contact channel."
   notes: "Class 1 / Sub-wave B. Origin Linux Foundation Delaware US. Foundation-home score: critical (neutral standards path). Headline Sub-wave B target."
 
@@ -163,6 +198,11 @@
   contact: "IEEE P1872.2 Autonomous Robotics Ontology Working Group — sagroups.ieee.org/1872-2. 80+ active members across NA/SA/EU/Asia/Africa; sister WG P1872.3 multi-robot reasoning also active. IEEE-RAS standing committee for standards."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0219 (URML — IEEE P1872.2 AuR ontology cross-citation); URML-fit framing: URML's Layer-2 primitives + Layer-3 behaviors map onto IEEE 1872 / P1872.2 / P1872.3 ontology vocabulary. Sub-wave B — founder signs up via sagroups.ieee.org WG channel + contacts IEEE-RAS standing committee."
   notes: "Class 1 / Sub-wave B. Origin IEEE-SA US. Foundation-home score: medium (cross-citation, not host). Closest IEEE-side ontology fit."
 
@@ -174,6 +214,11 @@
   contact: "NIST Engineering Lab Intelligent Systems Division (Robotics Community Feedback) — nist.gov/el/intelligent-systems-division-73500/robotics-community-feedback. Program manager Craig Schlenoff. Owns US measurement-science work for robotics; chairs ASTM F45."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0220 (URML — NIST EL ISD measurement-science feedback memo); URML-fit framing: 1-2 page memo describing URML primitive set + capability-manifest model mapped onto NIST EL ISD's existing performance categories (agility, manipulation, mobility, perception). Sub-wave B — founder emails Craig Schlenoff under maintainer identity."
   notes: "Class 2 / Sub-wave B. Origin US federal (NIST EL). Foundation-home score: high (US institutional home for measurement standards; warms relationship with downstream 501(c)(6)). Most engageable US federal target."
 
@@ -185,6 +230,11 @@
   contact: "ASTM Committee F45 on Robotics, Automation, and Autonomous Systems — astm.org/membership-participation/technical-committees/committee-f45. F45.04 System Communication and Interoperability is the URML-aligned subcommittee. Co-chaired by NIST staff (Roger Bostelman). Meets twice yearly. ASTM membership has a paid fee."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0221 (URML — ASTM F45.04 interoperability position paper); URML-fit framing: position paper proposing URML primitives as a candidate interoperability layer between Layer-1 HAL and Layer-2 intent. Sub-wave B — founder takes ASTM individual membership + contributes F45.04 working document under maintainer identity. Highest-leverage US SDO move."
   notes: "Class 2 / Sub-wave B. Origin ASTM (US-domiciled SDO; international membership). Foundation-home score: critical (precise SDO URML would feed spec into). Paid membership."
 
@@ -196,6 +246,11 @@
   contact: "CEN-CENELEC JTC 21 on AI — jtc21.eu. 300+ experts, 20+ countries. National-mirror committees feed JTC 21. For Israel: SII (Standards Institution of Israel, CEN affiliate). Public-enquiry windows are ad-hoc; prEN 18286 ran Oct-Dec 2025."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0222 (URML — CEN-CENELEC JTC 21 public-enquiry submission); URML-fit framing: URML's intent layer + validator-gated execution as related-art reference for AI-on-systems EU AI Act work. Sub-wave B — founder submits public-enquiry comment when next prEN robotics-AI window opens; routes via SII national mirror for active TC seat (Phase 2)."
   notes: "Class 3 / Sub-wave B. Origin EU CEN-CENELEC. Foundation-home score: high (international standards cross-citation). IL routes via SII."
 
@@ -207,6 +262,11 @@
   contact: "DIN / DKE German AI Standardization Roadmap (2nd ed. in English) — din.de/en/innovation-and-research/artificial-intelligence/ai-roadmap. Explicit civil-society invitation; routes into CEN-CENELEC JTC 21 + ISO/IEC JTC 1/SC 42."
   last_touch: ""
   response: none
+  tier: A
+  country: DE
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0224 wait — verify: draft RFC-0223 (URML — DIN/DKE AI roadmap contribution); URML-fit framing: URML's robotics-intent language as concrete instance of structured-AI-intent referenced by the German roadmap. Sub-wave B — founder participates in roadmap contribution channel."
   notes: "Class 3 / Sub-wave B. Origin Germany. Foundation-home score: medium-high (DE national position into JTC 21)."
 
@@ -218,6 +278,11 @@
   contact: "AFNOR Grand Défi AI consultation platform — afnor.org/en/news/shaping-european-ai-leadership/. Explicit join-the-work-on-AI-standards invite; carries French national position into CEN-CENELEC JTC 21."
   last_touch: ""
   response: none
+  tier: A
+  country: FR
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0224 (URML — AFNOR Grand Défi AI consultation submission); URML-fit framing: URML's intent + capability-manifest model as related-art reference for FR national position. Sub-wave B — founder submits via consultation platform."
   notes: "Class 3 / Sub-wave B. Origin France. Foundation-home score: medium-high (FR national position into JTC 21; cross-fertilizes with DIN/DKE RFC-0223)."
 
@@ -229,6 +294,11 @@
   contact: "BSI AI Standards Hub — aistandardshub.org. Joint BSI / Alan Turing Institute / National Physical Laboratory; DSIT-supported. Explicit international remit. BSI mirrors ISO/TC 299 (Robotics) and CEN/TC 310."
   last_touch: ""
   response: none
+  tier: A
+  country: UK
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0225 (URML — BSI AI Standards Hub engagement); URML-fit framing: URML's intent-language framing for UK AI Standards Hub international community. Sub-wave B — founder engages via Hub surface (international remit removes domicile gate at Hub level; TC seat at BSI ISO TC 299 mirror is Phase 2)."
   notes: "Class 3 / Sub-wave B. Origin UK (BSI + ATI + NPL). Foundation-home score: high (cleanest UK-side surface for international engagement)."
 
@@ -240,6 +310,11 @@
   contact: "OECD AI Policy Observatory — oecd.ai. 850+ policies cataloged across 80+ jurisdictions; AI Wonk community open; ONE.AI seat requires national nomination via Ministry of Innovation. Israel is OECD member."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "draft RFC-0226 (URML — OECD AI Policy Observatory submission); URML-fit framing: submit URML as an open-source robotics-intent-language policy initiative for the international OECD AI Principles + Hiroshima Process catalogue. Sub-wave B — founder submits via OECD policy-submission channel; ONE.AI seat requires IL national nomination (Phase 2)."
   notes: "Class 3 / Sub-wave B. Origin OECD (Paris HQ, multilateral). Foundation-home score: high (international-norms surface; foundation-friendly cross-citation)."
 
@@ -258,6 +333,11 @@
   contact: "Israel Innovation Authority (IIA) — innovationisrael.org.il. Open public programs; International R&D & Pilot Collaborations 2025-26 call open. info@innovationisrael.org.il, +972-2-666-2222. AI/robotics in deep-tech basket. IIA-NEDO bilateral track is reachable via this entry."
   last_touch: ""
   response: none
+  tier: A
+  country: IL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "no RFC; founder submits IIA application directly (Hebrew acceptable for IL-side; English for bilateral file). Sub-wave B membership-only. Lowest-friction IL-domestic move."
   notes: "Class 3 / Sub-wave B membership-only. Origin Israel (founder-domiciled). Foundation-home score: medium (national-grants surface; opens IL government file). Hebrew correspondence acceptable."
 
@@ -269,6 +349,11 @@
   contact: "euRobotics aisbl — eu-robotics.net/membership. Brussels AISBL; ~250 member orgs incl. Associate Member tier for clusters / stakeholders supporting robotics-related activities. European Robotics Forum annual surface."
   last_touch: ""
   response: none
+  tier: A
+  country: BE
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "no RFC; founder submits Associate Membership application form. Sub-wave B membership-only. IL is Horizon Europe associated country — open access."
   notes: "Class 3 / Sub-wave B membership-only. Origin EU (Brussels). Foundation-home score: high (EU-robotics association entry). Associate Member is realistic tier."
 
@@ -280,6 +365,11 @@
   contact: "ADRA Association (AI, Data and Robotics — Horizon Europe PPP successor to SPARC) — adr-association.eu. 180+ member orgs; signed MoU with European Commission June 2021. Future Ready 2026 + Info Day annual surfaces."
   last_touch: ""
   response: none
+  tier: A
+  country: BE
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "no RFC; founder submits membership application. Sub-wave B membership-only. Open to Horizon Europe participants incl. associated countries (IL qualifies)."
   notes: "Class 3 / Sub-wave B membership-only. Origin EU (Brussels). Foundation-home score: high (AI-Data-Robotics PPP surface; the standards body of the EU AI-robotics seam)."
 
@@ -298,6 +388,11 @@
   contact: "NIST CAISI (Center for AI Standards and Innovation) — csrc.nist.gov/publications/drafts-open-for-comment. Recent: RFI on Security Considerations for AI Agents (NIST-2025-0035, Federal Register 2026-00206); window closed 9 Mar 2026."
   last_touch: ""
   response: none
+  tier: A
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Sub-wave C — track CAISI agent-system + AI-standards dockets. Draft comment template ready (URML's validator-as-gate posture differentiates from agent-tool-calling threat model). Submit when next docket opens."
   notes: "Class 2 / Sub-wave C. Origin US federal (NIST). Foundation-home score: high (CAISI is becoming US AI-standards center). No open window today; tracking."
 
@@ -309,6 +404,11 @@
   contact: "FAA Drone BVLOS NPRM + UTM rule track — federalregister.gov filter 'FAA UAS'. Anchor docket: Normalizing UAS Beyond Visual Line of Sight Operations (Aug 2025); reopened after critical responses. FAA UAS Traffic Management: faa.gov/uas/advanced_operations/traffic_management."
   last_touch: ""
   response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Sub-wave C — track BVLOS / UTM dockets. Draft comment anchored on URML's PX4 reference runtime + manifest/validator gate posture. Submit when next docket reopens. DAC seat (Drone Advisory Committee) is Tier B (US-domiciled industry sponsor needed)."
   notes: "Class 2 / Sub-wave C. Origin US federal (FAA). Foundation-home score: medium (sectoral-regulatory; URML drone profile inherits these rules). No currently-open URML-shaped docket."
 
@@ -320,6 +420,11 @@
   contact: "NHTSA AV STEP + Automated Driving Systems policy — transportation.gov/av/publicnotices, nhtsa.gov/vehicle-manufacturers/automated-driving-systems. Recent: Mar 2026 Public Meeting (comments closed 10 Apr 2026); Incident Reporting for ADS / Level 2 ADAS (Federal Register 2026-10363, narrow data-collection scope)."
   last_touch: ""
   response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Sub-wave C — track AV STEP / ADS-guidance follow-on dockets. Skip narrow incident-reporting docket unless URML has something specific. Submit short comment positioning URML's intent + capability-manifest separation as structured-reporting candidate when broader AV-policy docket opens."
   notes: "Class 2 / Sub-wave C. Origin US federal (NHTSA). Foundation-home score: medium (regulatory, not standards-shaping). No URML-shaped open docket."
 
@@ -331,6 +436,11 @@
   contact: "ENISA Cyber Resilience Act standards-mapping + standardisation conference — enisa.europa.eu/publications/cyber-resilience-act-requirements-standards-mapping, enisa.europa.eu/cybersecurity_standardisation_2026. Recent: CRA draft-guidelines consultation closed 31 Mar 2026."
   last_touch: ""
   response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Sub-wave C — track ENISA CRA + cyber-resilience consultations. Cross-cite URML's NDAA-889 + EO 14307 default-policy posture as parallel federal-frame for transatlantic alignment when next consultation opens."
   notes: "Class 3 / Sub-wave C. Origin EU (ENISA). Foundation-home score: medium (cyber-on-robotics seam; less so for the language seam). No open window today."
 
@@ -350,6 +460,11 @@
   contact: "ros-industrial/industrial_ci (Apache-2.0, issues enabled, last push 2026-05-02). SwRI-stewarded ROS-for-industry community + ROSIN (EU)."
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — already covered by Move-16 RFC-0200 (ROS 2 core). Reconsider in a later move if a ROS-Industrial-specific URML angle emerges (industrial-arm profile cross-citation)."
   notes: "Class 1 / Tier B. Origin SwRI Texas-domiciled. Foundation-home score: medium."
 
@@ -361,6 +476,11 @@
   contact: "ros-industrial-consortium/scan_n_plan_workshop (Multi-OSI, issues enabled, last push 2026-03-27). SwRI consortium-member-driven projects."
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — same as ros-industrial-industrial-ci. Subsumed under future ROS-Industrial-specific engagement."
   notes: "Class 1 / Tier B. Origin SwRI. Foundation-home score: medium."
 
@@ -372,6 +492,11 @@
   contact: "lf-edge/eve (Apache-2.0, issues enabled, last push 2026-05-28). Linux Foundation Edge; Physical AI framing 2026."
   last_touch: ""
   response: none
+  tier: B
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — cross-citation candidate but not foundation-home material; defer until URML has an edge-virtualization angle (drone-edge or industrial-edge deployment)."
   notes: "Class 1 / Tier B. Origin Linux Foundation US. Foundation-home score: medium."
 
@@ -383,6 +508,11 @@
   contact: "cncf/toc (governance repo, issues enabled, last push 2026-05-27, 1.8k stars). CNCF Technical Oversight Committee. **No robotics SIG exists.**"
   last_touch: ""
   response: none
+  tier: B
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Phase 2 — would require new-SIG proposal, not outreach engagement. Re-evaluate when URML has clearer hosting ask + community signal supporting CNCF Robotics SIG."
   notes: "Class 1 / Tier B. Origin Linux Foundation / CNCF US. Foundation-home score: low-medium (no robotics SIG today)."
 
@@ -394,6 +524,11 @@
   contact: "ISO/TC 299 Robotics — iso.org/committee/5915511.html. 33 P-members, 10 O-members. Engagement via national member bodies: SII (Israel), ANSI (US), BSI (UK), DIN (DE)."
   last_touch: ""
   response: none
+  tier: B
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Phase 2 — gated on JDF (RFC-0218) being viable PAS route. ISO TC 299 is the canonical international robotics SDO; engagement is structural play via JDF, not direct outreach."
   notes: "Class 1 / Tier B. Origin ISO (multi-national). Foundation-home score: critical (long-term). Gated on RFC-0218."
 
@@ -407,6 +542,11 @@
   contact: "ARM Institute (Advanced Robotics for Manufacturing) — arminstitute.org/membership. DoD Manufacturing Innovation Institute; 450+ members. membership@arminstitute.org."
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B / US-partner-gated. Engagement requires US-domiciled co-member (US university lab adopting URML, or US industrial sponsor). Mark as deferred-to-US-partner-exists milestone."
   notes: "Class 2 / Tier B. Origin US DoD ManTech. Foundation-home score: high (plausible long-term ally). Needs US partner."
 
@@ -418,6 +558,11 @@
   contact: "NSF Pathways to Enable Secure Open-Source Ecosystems (PESOSE) 26-506 — nsf.gov/funding/opportunities/pesose-pathways-enable-secure-open-source-ecosystems/nsf26-506/solicitation. Three proposal types: scope-and-plan; establish-and-expand; safety-security-privacy. **NSF PI must be at US-domiciled institution.**"
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B / US-partner-gated. Joint PESOSE Phase-I proposal possible only with US academic-PI partner. Mark as deferred."
   notes: "Class 2 / Tier B. Origin US federal (NSF). Foundation-home score: high (PESOSE designed to convert OSS projects into sustainable ecosystems = structurally what URML's planned foundation does). Hard PI gate."
 
@@ -429,6 +574,11 @@
   contact: "NSF Foundational Research in Robotics (FRR) — nsf.gov/funding/opportunities/frr-foundational-research-robotics. Rolling; deadline 31 Dec 2026. Same US-PI gate."
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B / US-partner-gated. Right Phase-1 motion is outreach to FRR-funded labs using ROS 2 + LLM control (URML offers structured-intent layer) — separate from this Federal-Move outreach. Mark as deferred."
   notes: "Class 2 / Tier B. Origin US federal (NSF). Foundation-home score: medium-high (FRR-funded labs are URML's natural adopter population). PI-gated."
 
@@ -440,6 +590,11 @@
   contact: "DARPA TTO Office-Wide BAA + RFI track — darpa.mil/research/opportunities/baa. Non-US persons can participate subject to ITAR / EAR / security regulations; funded work requires US-domiciled prime."
   last_touch: ""
   response: none
+  tier: B
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B / US-partner-gated. RFI-only responses (no funding, no IP) are technically open. Monitor for next robotics-relevant RFI (Apr 2026 Physical Intelligence in Robotics RFI window closed 27 May 2026). Submit 2-3 page response as URML maintainer with explicit non-US disclosure when next window opens; substantive engagement requires US prime."
   notes: "Class 2 / Tier B. Origin US federal (DARPA). Foundation-home score: medium (DARPA outputs feed defense primes, not OSS standards; indirect path)."
 
@@ -453,6 +608,11 @@
   contact: "JISC (Japanese Industrial Standards Committee) — jisc.go.jp/eng. Major TC 299 contributor (proposed ISO 13482); no public-comment surface. Engagement through committee work, not direct."
   last_touch: ""
   response: none
+  tier: B
+  country: JP
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — no IL-direct channel. Engagement routes through Japanese partner or via DIN/AFNOR cross-listing (Sub-wave B RFCs 0223/0224). Deferred until JP partner or cross-listing surfaces."
   notes: "Class 3 / Tier B. Origin Japan. Foundation-home score: medium-high (TC 299 contributor)."
 
@@ -464,6 +624,11 @@
   contact: "NEDO (New Energy and Industrial Technology Development Organization) — nedo.go.jp/english. Eureka Globalstars Japan call closed 21 Jan 2026. IIA-NEDO bilateral exists (entered via IIA Sub-wave B membership-only)."
   last_touch: ""
   response: none
+  tier: B
+  country: JP
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — track Eureka Globalstars next window. Bilateral access via IIA RFC-relationship; do not initiate NEDO direct in this wave."
   notes: "Class 3 / Tier B. Origin Japan. Foundation-home score: medium. Reachable via IIA bilateral."
 
@@ -475,6 +640,11 @@
   contact: "METI Japan (Ministry of Economy, Trade and Industry) — meti.go.jp/english/policy/mono_info_service/robot_industry. Co-issues AI Guidelines for Businesses with MIC."
   last_touch: ""
   response: none
+  tier: B
+  country: INTL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — ministry, not a contribution surface. Route input via OECD AI Policy Observatory (Sub-wave B RFC-0226) which METI participates in. Do not initiate direct."
   notes: "Class 3 / Tier B. Origin Japan. Foundation-home score: medium. Subsumed under OECD RFC-0226."
 
@@ -486,6 +656,11 @@
   contact: "KIST (Korea Institute of Science and Technology) — kist.re.kr/eng; KEIT (Korea Evaluation Institute of Industrial Technology) — keit.re.kr. AI Humanoid Core Tech Project 2026-2030 industry-academia-medical consortium (LG / Robostar / KAIST)."
   last_touch: ""
   response: none
+  tier: B
+  country: KR
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — no IL-direct channel verified. Consortium-shaped engagement; defer until KR-domiciled academic partner."
   notes: "Class 3 / Tier B. Origin Korea. Foundation-home score: medium-high. Needs KR partner."
 
@@ -497,6 +672,11 @@
   contact: "UK Robotics Growth Partnership (Innovate UK + DSIT) — Smart Machines 2035 Strategy. Robotics Adoption Hubs up to £38M, UK-registered orgs only."
   last_touch: ""
   response: none
+  tier: B
+  country: UK
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — Strategy consultation events joinable but funding UK-domicile-gated. IL not in Five Eyes scope. Public comments only; defer to future UK-partner state."
   notes: "Class 3 / Tier B. Origin UK. Foundation-home score: medium-high. UK-domicile gate on funding."
 
@@ -508,5 +688,10 @@
   contact: "SII / Standards Institution of Israel — sii.org.il. Israeli national mirror to ISO/IEC and CEN/CENELEC. Underlying mechanic for Sub-wave B JTC 21 (RFC-0222) and future ISO TC 299."
   last_touch: ""
   response: none
+  tier: B
+  country: IL
+  sector: governance-body
+  comments: []
+  claude_directives: []
   next_action: "Tier B — currently treated as the underlying mechanic for Sub-wave B JTC 21 / DIN / AFNOR work; promote to Tier A IL-domestic in a follow-up wave if Hebrew correspondence is preferred over routing through Ministry of Innovation."
   notes: "Class 3 / Tier B. Origin Israel (founder-domiciled). Foundation-home score: medium (national-mirror channel). Hebrew correspondence acceptable."
