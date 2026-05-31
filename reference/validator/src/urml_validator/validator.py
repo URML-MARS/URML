@@ -38,7 +38,7 @@ Scope of this milestone:
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from importlib import resources
 from typing import Any, Literal
 
@@ -577,9 +577,9 @@ def _fleet_barrier_peer_link_error(
 
 def validate_fleet(
     roster: dict[str, Any] | FleetRoster,
-    member_manifests: dict[str, dict[str, Any] | CapabilityManifest],
+    member_manifests: Mapping[str, dict[str, Any] | CapabilityManifest],
     program: dict[str, Any] | URMLProgram,
-    member_envelopes: dict[str, dict[str, Any] | SafetyEnvelope] | None = None,
+    member_envelopes: Mapping[str, dict[str, Any] | SafetyEnvelope] | None = None,
     profiles: tuple[str, ...] = (),
     policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
 ) -> ValidationResult:
