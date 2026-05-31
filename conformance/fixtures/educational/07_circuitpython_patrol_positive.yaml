@@ -1,0 +1,35 @@
+name: educational/circuitpython_patrol_positive
+description: >
+  Track D educational fixture — Adafruit Feather RP2040 via CircuitPython
+  (zero-ROS, Python on MCU over a host-side comms bridge — serial / REPL,
+  not USB-MSC drag-drop). RFC-0011 educational profile; URML scales DOWN to
+  a microcontroller-class robot. Manifest ACCEPTED under the bundled
+  US-federal default policy (US origin, Adafruit Industries, New York).
+  Navigation-only patrol against MockROSAdapter; adapter-agnostic for the
+  edu-runtime's CircuitPythonAdapter. This is URML's third conformance
+  fixture authored in response to an engaged outreach reply
+  (adafruit/circuitpython#11035, @dhalbert, 2026-05-28).
+
+manifest: adafruit_feather_rp2040_cell
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: start_pad }
+      - move_to: { location: waypoint_a }
+      - move_to: { location: rest_pad }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

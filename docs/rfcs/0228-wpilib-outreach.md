@@ -2,9 +2,9 @@
 rfc: 0228
 title: WPILib (FIRST Robotics education substrate) integration, request for comment from WPILib maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-30
 supersedes: —
 superseded-by: —
 ---

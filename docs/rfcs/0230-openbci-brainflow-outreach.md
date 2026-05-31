@@ -2,9 +2,9 @@
 rfc: 0230
 title: OpenBCI / BrainFlow (brain-computer-interface intent input) integration, request for comment from BrainFlow and OpenBCI maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-30
 supersedes: —
 superseded-by: —
 ---

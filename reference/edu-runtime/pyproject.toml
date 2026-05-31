@@ -64,6 +64,18 @@ marty = [
 petoi = [
   "petoi_mindpluslib",
 ]
+# Adafruit CircuitPython (New York, US) via a host-side comms bridge. Per
+# @dhalbert on adafruit/circuitpython#11035 (engaged 2026-05-28): the
+# device-side helper library's home is the Adafruit CircuitPython
+# Community Bundle (not core), and the integration is a host-side comms
+# program over serial / REPL (not USB-MSC drag-drop, which is not
+# universal). 'circuitpython_host' is a placeholder for that host-side
+# wrapper, pending hardware validation; pyserial is the realistic serial
+# transport. The adapter only requires *some* Python object exposing
+# CircuitPython skill methods or a generic send_command(token, *args).
+circuitpython = [
+  "pyserial>=3.5",
+]
 dev = [
   "pytest>=8",
   "pytest-cov>=5",

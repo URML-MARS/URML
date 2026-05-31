@@ -2,9 +2,9 @@
 rfc: 0099
 title: Wageningen Field Robot Event 2026 integration, research-collab proposal
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-26
-updated: 2026-05-26
+updated: 2026-05-30
 supersedes: —
 superseded-by: —
 ---
@@ -24,6 +24,8 @@ superseded-by: —
 ---
 
 # RFC-0099: Wageningen Field Robot Event 2026 integration, research-collab proposal
+
+> **Update 2026-05-30 (surface recovered).** This RFC was deferred at posting time 2026-05-26 because the only documented FRE community channel was Discord (declined, per URML's preference for durable public surfaces). A 2026-05-30 re-check found a GitHub org, [`github.com/FieldRobotEvent`](https://github.com/FieldRobotEvent), with Issues enabled on `competition_environment`, `virtual_maize_field`, and `example_ws` — missed by the May surface check. The engagement was posted there ([competition_environment#25](https://github.com/FieldRobotEvent/competition_environment/issues/25)), not Discord, with the Discord acknowledged. State moves Draft → Open.
 
 ## Summary
 
