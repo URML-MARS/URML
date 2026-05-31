@@ -1,0 +1,23 @@
+# RFC-0286 fleet conformance — negative: a primitive is scoped to a member whose
+# manifest cannot satisfy it. The courier has no manipulation/perception, so
+# pick_from on the courier is rejected. Validator-only.
+name: fleet/03_capability_missing_on_member_rejected
+description: pick_from scoped to the courier, which has no gripper or perception.
+
+roster:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs }
+policy: none
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: "on"
+    member: courier
+    body:
+      pick_from: { source: handoff_dock, object: widget }
+
+expected_validation:
+  accepted: false
+  error_codes: [fleet.capability_unsupported_on_member]

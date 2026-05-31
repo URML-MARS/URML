@@ -1,0 +1,60 @@
+# RFC-0286 fleet conformance — positive: the courier-to-arm handoff validates
+# and executes. Mirrors examples/fleet/courier_handoff.fleet.yaml.
+name: fleet/01_courier_to_arm_handoff_positive
+description: >
+  Two heterogeneous members (mobile courier + stationary arm) perform a
+  synchronized handoff. The program validates across both manifests and executes
+  hermetically, with each member's audit trail asserted.
+
+roster:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs }
+policy: none
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    steps:
+      - type: "on"
+        member: courier
+        body:
+          move_to: { location: handoff_dock }
+      - type: barrier
+        members: [courier, arm]
+      - type: parallel
+        complete_when: all
+        branches:
+          - type: "on"
+            member: arm
+            body:
+              type: sequence
+              steps:
+                - pick_from: { source: handoff_dock, object: widget, store_as: part }
+                - place_at: { target: conveyor_a, held: $part }
+          - type: "on"
+            member: courier
+            body:
+              wait: { duration: "2s" }
+      - type: barrier
+        members: [courier, arm]
+      - type: "on"
+        member: courier
+        body:
+          move_to: { location: staging }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 5
+  per_member_audit:
+    courier: [send_navigation_goal, wait_passively, send_navigation_goal]
+    arm:
+      - send_navigation_goal
+      - query_detection
+      - send_manipulation_goal
+      - send_navigation_goal
+      - send_manipulation_goal

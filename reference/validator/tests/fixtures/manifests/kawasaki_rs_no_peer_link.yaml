@@ -1,0 +1,44 @@
+# RFC-0286 negative-fixture variant: the fleet arm with NO peer_link.
+#
+# Identical to examples/fleet/kawasaki_rs.manifest.yaml except it declares no
+# `connectivity` block, so a `barrier` naming this member must be rejected with
+# fleet.barrier_missing_peer_link.
+
+manifest_version: "0.1"
+robot_id: kawasaki_rs
+description: Stationary industrial arm without a peer_link (barrier negative fixture).
+
+frames:
+  - name: cell
+    parent: null
+
+declared_locations:
+  - name: handoff_dock
+    pose: { x: 0.6, y: 0.0, z: 0.4 }
+    frame: cell
+  - name: conveyor_a
+    pose: { x: 0.4, y: 0.5, z: 0.4 }
+    frame: cell
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.0
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: rs_gripper
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 50.0
+      accepted_classes: [widget]
+      movable: true
+  reachable_workspace_m: 0.9
+
+perception:
+  cameras:
+    - name: wrist_cam
+      movable: true
+      supports_photo: true
+  object_vocabulary:
+    - widget
