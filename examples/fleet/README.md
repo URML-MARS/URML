@@ -50,6 +50,12 @@ The point is not the syntax — it is the cross-robot safety the validator enfor
 - **Synchronization is real.** Each `barrier` member must declare the `peer_link`
   connectivity role (`fleet.barrier_missing_peer_link`).
 
+## Get your robot into a fleet
+
+The lightest rung on the engagement ladder is to **claim your robot's fleet name** — publish
+a small, self-declared manifest and your `robot_id` becomes a name any fleet program can
+address. No code, opt-in, de-listable. See [`CLAIMING.md`](CLAIMING.md).
+
 ## A note on YAML
 
 The `on:` node is spelled `type: "on"` — **quoted**. YAML 1.1 reads a bare `on`
