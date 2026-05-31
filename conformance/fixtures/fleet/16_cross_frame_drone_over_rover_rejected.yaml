@@ -1,0 +1,23 @@
+# RFC-0288 — CROSS-FRAME: a drone (targets in `agl`) and a rover (targets in
+# `site`) are anchored into one `world`. The drone's low target and the rover's
+# target land at the same world point -> conflict. This is the case RFC-0287's
+# name/same-frame check could never see (different frame names) AND that the old
+# medium gate wrongly exempted (air vs ground); RFC-0288 catches it.
+name: fleet/16_cross_frame_drone_over_rover_rejected
+description: A low drone and a ground rover resolve to the same world point.
+world_frame: world
+roster:
+  - { name: drone, manifest: utm_drone, anchor: { frame: agl,  transform: {} } }
+  - { name: rover, manifest: utm_ground, anchor: { frame: site, transform: {} } }
+policy: none
+profiles: [drone]
+program:
+  profile: drone
+  behavior:
+    type: parallel
+    branches:
+      - { type: "on", member: drone, body: { move_to: { location: alt_low } } }
+      - { type: "on", member: rover, body: { move_to: { location: spot_a } } }
+expected_validation:
+  accepted: false
+  error_codes: [fleet.concurrent_shared_workspace]

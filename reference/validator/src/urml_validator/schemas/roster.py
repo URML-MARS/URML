@@ -32,7 +32,23 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from urml_validator.schemas.common import Identifier
+from urml_validator.schemas.common import Identifier, Transform
+
+
+class FrameAnchor(BaseModel):
+    """A member's extrinsic placement in the fleet's shared world (RFC-0288).
+
+    ``frame`` is one of the member's own frames (normally its root); ``transform``
+    places that frame in the roster's ``world_frame``. With an anchor, a member's
+    targets resolve into world coordinates, so they can be geometrically compared
+    with another member's targets even when their frame names differ (a drone's
+    ``agl`` vs a rover's ``site``). This is the deployment's site survey.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    frame: Identifier = Field(..., description="The member frame anchored to the world frame.")
+    transform: Transform = Field(..., description="That frame's pose in the world frame.")
 
 
 class RosterMember(BaseModel):
@@ -54,6 +70,10 @@ class RosterMember(BaseModel):
         min_length=1,
         description="Reference to this member's per-robot manifest (registry name or path).",
     )
+    anchor: FrameAnchor | None = Field(
+        None,
+        description="RFC-0288: extrinsic placement of one of this member's frames in the world frame.",
+    )
 
 
 class FleetRoster(BaseModel):
@@ -69,6 +89,15 @@ class FleetRoster(BaseModel):
     roster_version: str = Field("0.1", description="Roster schema version this fleet targets.")
     members: list[RosterMember] = Field(..., min_length=1)
     description: str | None = None
+    world_frame: Identifier | None = Field(
+        None,
+        description=(
+            "RFC-0288: the name of the fleet's shared world frame. When members declare "
+            "`anchor`s into it, their targets resolve to common world coordinates and are "
+            "compared geometrically across differing frames. `shared_frames` remains the "
+            "simpler same-name path (a frame listed there is treated as the world directly)."
+        ),
+    )
     shared_frames: list[Identifier] = Field(
         default_factory=list,
         description=(

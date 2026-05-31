@@ -250,6 +250,9 @@ class RosterMemberRef(BaseModel):
 
     name: str
     manifest: str = Field(..., description="Name of a registered manifest.")
+    anchor: dict[str, Any] | None = Field(
+        None, description="Fleet (RFC-0288): world-anchor {frame, transform} for this member."
+    )
 
 
 class FixtureCase(BaseModel):
@@ -271,6 +274,9 @@ class FixtureCase(BaseModel):
     shared_frames: list[str] = Field(
         default_factory=list,
         description="Fleet only (RFC-0287): frames shared as a common physical reference.",
+    )
+    world_frame: str | None = Field(
+        None, description="Fleet only (RFC-0288): the shared world frame for member anchors."
     )
     member_envelopes: dict[str, str] | None = Field(
         None, description="Fleet only: per-member envelope names (member handle → registered envelope)."

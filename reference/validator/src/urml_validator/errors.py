@@ -110,6 +110,9 @@ class ErrorCode(StrEnum):
     # RFC-0287: warning — a roster `shared_frame` is declared by no member, so the
     # geometric collision check silently has nothing to compare in it.
     FLEET_SHARED_FRAME_UNDECLARED = "fleet.shared_frame_undeclared"
+    # RFC-0288: warning — a member's world `anchor` names a frame it doesn't declare,
+    # so its targets won't resolve to the world.
+    FLEET_ANCHOR_FRAME_UNDECLARED = "fleet.anchor_frame_undeclared"
 
     # Internal / programmer-error categories.
     INTERNAL = "internal.error"

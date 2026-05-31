@@ -18,6 +18,7 @@ from collections.abc import Mapping
 
 from urml_validator.schemas.common import Transform
 from urml_validator.schemas.manifest import Frame
+from urml_validator.schemas.roster import FrameAnchor
 
 Mat = tuple[
     tuple[float, float, float],
@@ -133,3 +134,31 @@ def transform_point_between(
         return None  # different trees — no common reference
     # src -> dst  =  invert(dst -> root) ∘ (src -> root)
     return apply(compose(invert(t_dst_root), t_src_root), point)
+
+
+def resolve_to_world(
+    point: Vec,
+    frame: str,
+    frames: Mapping[str, Frame],
+    anchor: FrameAnchor | None,
+    world_frame: str | None,
+    shared_frames: set[str],
+) -> tuple[Vec, str] | None:
+    """Resolve ``point`` (in ``frame``) into the fleet's world, returning the world
+    point and a world identifier. Two targets are comparable iff both resolve and
+    share that identifier.
+
+    - **Anchor path** (RFC-0288): if the member has an `anchor` and `frame`
+      resolves (via the frame tree) to the anchored frame, apply the anchor's
+      transform. World id is `world_frame`.
+    - **Shared-frame path** (RFC-0287): if `frame` is in `shared_frames`, the
+      frame IS the world (identity). World id is the frame name.
+    - Otherwise `None` — not resolvable; the caller abstains.
+    """
+    if anchor is not None and world_frame is not None:
+        in_anchor_frame = transform_point_between(point, frame, anchor.frame, frames)
+        if in_anchor_frame is not None:
+            return apply(rigid_of(anchor.transform), in_anchor_frame), world_frame
+    if frame in shared_frames:
+        return point, frame
+    return None

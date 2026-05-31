@@ -460,3 +460,76 @@ def test_shared_frame_undeclared_warns():
     result = _geo_fleet(a, b, _parallel2("spot_a", "spot_b"), ["nonexistent"])
     assert result.accepted, result.codes()
     assert result.has(ErrorCode.FLEET_SHARED_FRAME_UNDECLARED)
+
+
+# ===========================================================================
+# RFC-0288 — cross-frame deconfliction via world-anchors (a drone's agl vs a
+# rover's site, resolved into one world)
+# ===========================================================================
+
+
+def _anchored_roster(*anchors):
+    # anchors: (name, manifest_key, anchor_frame, transform_dict)
+    members = [
+        {"name": n, "manifest": mk, "anchor": {"frame": af, "transform": tf}}
+        for (n, mk, af, tf) in anchors
+    ]
+    return {"roster_version": "0.1", "world_frame": "world", "members": members}
+
+
+def test_cross_frame_drone_over_rover_rejected():
+    # Drone target in `agl` and rover target in `site` resolve to the SAME world
+    # point (both anchored at world x=10); the drone is 1 m above the rover.
+    drone = _geo_manifest("a", "multirotor", "agl", [_loc("p", 0.0, 0.0, 1.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    rover = _geo_manifest("b", "differential", "site", [_loc("q", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    roster = _anchored_roster(
+        ("a", "a", "agl", {"translation": {"x": 10.0}}),
+        ("b", "b", "site", {"translation": {"x": 10.0}}),
+    )
+    result = validate_fleet(roster, {"a": drone, "b": rover}, _parallel2("p", "q"), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE)
+
+
+def test_cross_frame_drone_high_above_rover_accepted():
+    drone = _geo_manifest("a", "multirotor", "agl", [_loc("p", 0.0, 0.0, 30.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    rover = _geo_manifest("b", "differential", "site", [_loc("q", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    roster = _anchored_roster(
+        ("a", "a", "agl", {"translation": {"x": 10.0}}),
+        ("b", "b", "site", {"translation": {"x": 10.0}}),
+    )
+    result = validate_fleet(roster, {"a": drone, "b": rover}, _parallel2("p", "q"), policy=None)
+    assert result.accepted, result.codes()  # 30 m of altitude separation in world
+
+
+def test_cross_frame_air_water_still_exempt():
+    drone = _geo_manifest("a", "multirotor", "agl", [_loc("p", 0.0, 0.0, 0.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    rov = _geo_manifest("b", "underwater_thrusters", "water", [_loc("q", 0.0, 0.0, 0.0, "water")], 0.5, 5.0)
+    roster = _anchored_roster(
+        ("a", "a", "agl", {"translation": {"x": 10.0}}),
+        ("b", "b", "water", {"translation": {"x": 10.0}}),
+    )
+    # Same world point, but air vs water never collide.
+    result = validate_fleet(roster, {"a": drone, "b": rov}, _parallel2("p", "q"), policy=None)
+    assert result.accepted, result.codes()
+
+
+def test_cross_frame_without_anchors_abstains():
+    # No anchors and no shared_frames: agl and site never resolve to a common
+    # world -> not compared -> accepted (backward-compatible abstention).
+    drone = _geo_manifest("a", "multirotor", "agl", [_loc("p", 0.0, 0.0, 0.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    rover = _geo_manifest("b", "differential", "site", [_loc("q", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    roster = {"roster_version": "0.1", "members": [{"name": "a", "manifest": "a"}, {"name": "b", "manifest": "b"}]}
+    result = validate_fleet(roster, {"a": drone, "b": rover}, _parallel2("p", "q"), policy=None)
+    assert result.accepted, result.codes()
+
+
+def test_anchor_frame_undeclared_warns():
+    a = _geo_manifest("a", "differential", "site", [_loc("p", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    b = _geo_manifest("b", "differential", "site", [_loc("q", 5.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    roster = _anchored_roster(
+        ("a", "a", "ghost_frame", {"translation": {}}),  # not a frame member a declares
+        ("b", "b", "site", {"translation": {}}),
+    )
+    result = validate_fleet(roster, {"a": a, "b": b}, _parallel2("p", "q"), policy=None)
+    assert result.has(ErrorCode.FLEET_ANCHOR_FRAME_UNDECLARED)
