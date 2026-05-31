@@ -45,48 +45,48 @@
 
 - slug: open-roberta
   rfc: 287
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-31"
+  posted_url: "https://github.com/OpenRoberta/openroberta-lab/issues/1747"
+  channel: github
   contact: "OpenRoberta/openroberta-lab (Apache-2.0, ~143 stars, Issues enabled, Discussions disabled, last push 2026-04-22, **not archived**). Fraunhofer IAIS, Germany. NEPO block environment for LEGO / micro:bit / Thymio / Calliope — the platforms URML's edu-runtime already targets."
-  last_touch: ""
+  last_touch: "2026-05-31"
   response: none
   tier: B
   country: DE
   sector: education-toolchain
   comments: []
   claude_directives: []
-  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on OpenRoberta/openroberta-lab pointing to RFC-0287, framed as a request for comment, leading with the platform overlap (LEGO/micro:bit/Thymio). Record posted_url + flip last_touch on send."
+  next_action: "Posted as Issue OpenRoberta/openroberta-lab#1747 on 2026-05-31 (first Move-19 post live). Led with the platform overlap (LEGO/micro:bit/Thymio). Awaiting first response. Light-touch follow-up at 2026-06-28 (4-week cadence)."
   notes: "Tier B (environment/curriculum layer, not a device SDK). Strongest Move-19 fit: exact platform overlap with edu-runtime, both Apache-2.0, both beginner-first. URML-fit: high for the front-door / capability-descriptor-alignment framing. Distinct from declined RFC-0235 (Pybricks) / RFC-0236 (PROS-VEX) device threads. Surfaces a queued block-environment-substrate-declaration Spec RFC."
 
 - slug: makecode
   rfc: 288
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-31"
+  posted_url: "https://github.com/microsoft/pxt/issues/11340"
+  channel: github
   contact: "microsoft/pxt (MIT, ~2.3k stars, Issues enabled, Discussions disabled, active, **not archived**) with microsoft/pxt-microbit (~800 stars). Microsoft, US. Blocks/TypeScript compiler for micro:bit / Arcade; very high classroom reach."
-  last_touch: ""
+  last_touch: "2026-05-31"
   response: none
   tier: B
   country: US
   sector: education-toolchain
   comments: []
   claude_directives: []
-  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on microsoft/pxt pointing to RFC-0288, stating the RFC-0172 (micro:bit Foundation) boundary up front so it does not read as duplicate outreach. Record posted_url + flip last_touch on send."
+  next_action: "Posted as Issue microsoft/pxt#11340 on 2026-05-31. RFC-0172 (micro:bit Foundation) boundary stated up front so it does not read as duplicate outreach. Awaiting first response; light-touch response likely given project size. Light-touch follow-up at 2026-06-28."
   notes: "Tier B. Complements RFC-0172 at the authoring-environment layer (Foundation = platform; MakeCode = IDE). Light-touch response likely given project size. URML-fit: front-door / board-definition alignment. Shares the firmware-language-substrate Spec RFC question with RFC-0172."
 
 - slug: snap-bjc
   rfc: 289
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-31"
+  posted_url: "https://github.com/jmoenig/Snap/issues/3543"
+  channel: github
   contact: "jmoenig/Snap (AGPL-3.0, ~1.6k stars, Issues enabled, Discussions disabled, active, **not archived**). UC Berkeley; the block language behind the Beauty and Joy of Computing (BJC) high-school CS curriculum."
-  last_touch: ""
+  last_touch: "2026-05-31"
   response: none
   tier: B
   country: US
   sector: education-toolchain
   comments: []
   claude_directives: []
-  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on jmoenig/Snap pointing to RFC-0289, stating the AGPL boundary up front (cross-citation + lesson bridge, no shared code). Ask whether the repo or the BJC curriculum team is the right channel. Record posted_url + flip last_touch on send."
+  next_action: "Posted as Issue jmoenig/Snap#3543 on 2026-05-31 (completes the Move-19 Tier-A wave). AGPL boundary stated up front (cross-citation + lesson bridge, no shared code); asked whether the repo or the BJC curriculum team is the right channel. Awaiting first response. Light-touch follow-up at 2026-06-28."
   notes: "Tier B. High-school CS curriculum reach (BJC). AGPL-3.0 limits integration to mapping / cross-citation / lesson material — stated honestly. URML-fit: pedagogical, harder to measure than an adapter. Distinct niche from MakeCode / Open Roberta."
