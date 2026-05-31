@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from urml_validator.schemas.common import Identifier, Pose
+from urml_validator.schemas.common import Identifier, Pose, Transform
 from urml_validator.schemas.connectivity import Connectivity
 
 
@@ -22,13 +22,18 @@ class Frame(BaseModel):
     """A declared coordinate frame.
 
     `parent` is the frame this frame is expressed relative to; the root frame
-    has no parent.
+    has no parent. `transform` (RFC-0288) is this frame's pose *in its parent*:
+    a point `p` here maps to the parent as `R·p + t`. With transforms declared
+    up the parent chain, the validator can express any pose in any connected
+    frame (cross-frame geometry). A frame with a `parent` but no `transform` is
+    not numerically related to it — checks that would need the relation abstain.
     """
 
     model_config = ConfigDict(extra="forbid")
 
     name: Identifier
     parent: Identifier | None = None
+    transform: Transform | None = None
 
 
 class DeclaredLocation(BaseModel):

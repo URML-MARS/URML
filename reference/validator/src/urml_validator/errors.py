@@ -39,6 +39,9 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_CAMERA = "capability.missing_camera"
     CAPABILITY_MISSING_SENSOR = "capability.missing_sensor"
     CAPABILITY_MISSING_FRAME = "capability.missing_frame"
+    # RFC-0288: the manifest's frame graph is malformed.
+    CAPABILITY_FRAME_PARENT_UNDECLARED = "capability.frame_parent_undeclared"
+    CAPABILITY_FRAME_CYCLE = "capability.frame_cycle"
     CAPABILITY_MISSING_LOCATION = "capability.missing_location"
     CAPABILITY_MISSING_OBJECT_CLASS = "capability.missing_object_class"
     CAPABILITY_MISSING_DOCKING_STATION = "capability.missing_docking_station"

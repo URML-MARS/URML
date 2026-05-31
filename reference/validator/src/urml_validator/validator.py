@@ -60,7 +60,7 @@ from urml_validator.schemas.composition import (
 )
 from urml_validator.schemas.connectivity import LinkLossAction, LinkRole
 from urml_validator.schemas.envelope import SafetyEnvelope
-from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
+from urml_validator.schemas.manifest import Camera, CapabilityManifest, Frame, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.roster import FleetRoster
 from urml_validator.schemas.primitives import (
@@ -197,6 +197,8 @@ def validate(
     errors.extend(_check_substrate_required_for_drone(manifest_model))
     # RFC-0251: substrate.rmw_implementation + qos_profile rules.
     errors.extend(_check_substrate_rmw_options(manifest_model))
+    # RFC-0288: the frame graph must be acyclic with declared parents.
+    errors.extend(_check_frame_graph(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -784,6 +786,11 @@ def validate_fleet(
                     detail={"member": member_name},
                 )
             )
+    # RFC-0288: each member's frame graph must be well-formed.
+    for member_name in sorted(members):
+        for err in _check_frame_graph(members[member_name]):
+            err.detail = {**(err.detail or {}), "member": member_name}
+            errors.append(err)
     if errors:
         return ValidationResult(accepted=False, errors=errors, warnings=warnings)
 
@@ -1025,6 +1032,54 @@ def _location_declared(manifest: CapabilityManifest, name: str) -> bool:
 
 def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(f.name == name for f in manifest.frames)
+
+
+def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0288: the frame graph must be a forest — every `parent` declared, no cycle."""
+    out: list[ValidationError] = []
+    by_name = {f.name: f for f in manifest.frames}
+    for frame in manifest.frames:
+        if frame.parent is not None and frame.parent not in by_name:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_FRAME_PARENT_UNDECLARED,
+                    primitive=None,
+                    path=["<manifest>", "frames"],
+                    field="parent",
+                    message=(
+                        f"frame {frame.name!r} declares parent {frame.parent!r}, which is "
+                        f"not a declared frame."
+                    ),
+                    suggestion=f"Declare a frame named {frame.parent!r}, or fix the parent.",
+                    detail={"frame": frame.name, "parent": frame.parent},
+                )
+            )
+    # Cycle detection: walk each frame to its root; report the first cycle once.
+    cycle: list[str] = []
+    for frame in manifest.frames:
+        seen: list[str] = []
+        current: Frame | None = frame
+        while current is not None and current.parent is not None:
+            if current.name in seen:
+                cycle = [*seen[seen.index(current.name):], current.name]
+                break
+            seen.append(current.name)
+            current = by_name.get(current.parent)
+        if cycle:
+            break
+    if cycle:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_FRAME_CYCLE,
+                primitive=None,
+                path=["<manifest>", "frames"],
+                field="parent",
+                message=f"frame graph has a cycle: {' -> '.join(cycle)}. Frames must form a tree.",
+                suggestion="Break the parent cycle so the frame graph is acyclic.",
+                detail={"cycle": cycle},
+            )
+        )
+    return out
 
 
 def _check_move_to_caps(
