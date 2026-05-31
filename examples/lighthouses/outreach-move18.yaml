@@ -55,10 +55,10 @@
   posted_url: "https://github.com/Klipper3d/klipper/issues/7276"
   channel: github
   contact: "Klipper3d/klipper (GPL-3.0, 11.6k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community OSS led by Kevin O'Connor. Host-plus-MCU 3D-printer / CNC motion firmware; G-code is the command interface."
-  last_touch: "2026-05-30"
-  response: none
-  next_action: "Posted 2026-05-30 as a GitHub Issue (idoco2003 identity) with an explicit venue question — Klipper prefers Discourse/Discord and reserves Issues for bug reports, so a forum redirect is an acceptable outcome; record it truthfully if it comes. Follow up at +4-6 weeks if silent."
-  notes: "Tier B (GPL-3.0 -> IPC/G-code-boundary integration, no code vendoring). Origin community OSS (US-based lead); passes US-federal default policy. URML-fit: high for motion, partial overall (URML maps motion intent, not extruder/thermal/material process). First fabrication-motion target. Surfaces queued Spec RFCs: fabrication-motion drive_type classes (cartesian/corexy/delta), G-code substrate declaration, work-envelope fields."
+  last_touch: "2026-05-31"
+  response: acked
+  next_action: "Kevin O'Connor (collaborator, lead maintainer) replied 2026-05-31 with a constructive venue redirect: open a new topic on Klipper Discourse (Issues tracker no longer used), 'I'll try to take a look' if moved. GitIssueBot also labeled it 'not on github' with auto-close pending. Acked on the issue (idoco2003) confirming the move; Discourse topic drafted in posts-move18.md, founder to post under founder identity. Once the forum topic is live, record the Discourse URL here and refresh last_touch; then follow the maintainer's substantive feedback there."
+  notes: "Tier B (GPL-3.0 -> IPC/G-code-boundary integration, no code vendoring). Origin community OSS (US-based lead); passes US-federal default policy. URML-fit: high for motion, partial overall (URML maps motion intent, not extruder/thermal/material process). First fabrication-motion target. Surfaces queued Spec RFCs: fabrication-motion drive_type classes (cartesian/corexy/delta), G-code substrate declaration, work-envelope fields. Outcome 2026-05-31: the anticipated forum redirect landed (RFC-0227 question #5) and the maintainer left the door open conditional on moving venue — first Move-18 frame-break target off `none`."
 
 # ---- Where the next roboticists are, not where vendors are (1) ----
 
