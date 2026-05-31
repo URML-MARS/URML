@@ -138,6 +138,37 @@ What works today is what the table above lists as `✅`. What's planned is in [`
 
 ---
 
+## Vision: multi-robot fleets
+
+The headline is "one English sentence moves a robot." The next step is *one program moves a heterogeneous fleet, in sync* — something no single vendor SDK does across vendors. [RFC-0286](docs/rfcs/0286-multi-robot-fleet-addressing.md) adds the smallest surface that gets there: a Layer-1 **roster** binding several robots under names, and two Layer-3 nodes — `on:` (address one member) and `barrier:` (synchronize members). No new primitive; a single-robot program is unchanged.
+
+The worked example is a **courier-to-arm handoff**: a mobile base brings a tray to a shared dock; a stationary arm picks a widget and places it on a conveyor; the courier leaves only after the arm has cleared.
+
+```yaml
+# roster: two heterogeneous robots, real shipped adapters
+members:
+  - { name: courier, manifest: husky_amr }     # mobile base
+  - { name: arm,     manifest: kawasaki_rs }    # stationary arm
+---
+behavior:
+  type: sequence
+  steps:
+    - { type: "on", member: courier, body: { move_to: { location: handoff_dock } } }
+    - { type: barrier, members: [courier, arm] }          # neither proceeds until both arrive
+    - type: parallel
+      branches:
+        - { type: "on", member: arm, body: { pick_from: { source: handoff_dock, object: widget, store_as: part } } }
+        - { type: "on", member: courier, body: { wait: { duration: "2s" } } }   # hold while the arm works
+    - { type: barrier, members: [courier, arm] }
+    - { type: "on", member: courier, body: { move_to: { location: staging } } }
+```
+
+The point is not the syntax — it is what the validator rejects **before anything moves**: a command sent to a member whose manifest can't do it; two robots driven into the same declared location at the same instant with no `barrier` (`fleet.concurrent_shared_workspace`); a barrier whose members don't declare the `peer_link` role. That cross-robot collision class is the one no single SDK can catch, because no single SDK sees both robots.
+
+**Status (honest):** the cross-robot validator (`validate_fleet`), the reference `FleetRuntime`, and the conformance lane are shipped and tested; run the hermetic demo with `python examples/fleet/run_demo.py`. Workspace-collision checking is by declared-location *name* in v0.1; geometric volume overlap is named as future work in the RFC. Fleet-traffic management at building scale composes with Open-RMF ([RFC-0053](docs/rfcs/0053-open-rmf-multirobot-integration.md)), not URML. Walkthrough: [`docs/demos/fleet-coordination.md`](docs/demos/fleet-coordination.md).
+
+---
+
 ## Start here
 
 | You want to... | Read this |
