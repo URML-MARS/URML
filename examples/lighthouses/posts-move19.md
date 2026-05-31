@@ -20,15 +20,15 @@ Bodies follow the [AGENTS.md](../../AGENTS.md) outreach-post-structure rules: co
 
 All three repos have Issues enabled and Discussions disabled (verified 2026-05-31), so each post is a single Issue. Each post states the boundary against the device-SDK threads that already declined (PROS/VEX, Pybricks): this is the environment layer, not a device toolchain.
 
-**Posting status:** all three are DRAFT. Founder posts under his own account; record the live URL and flip `response`/`last_touch` in `outreach-move19.yaml` on send.
+**Posting status:** all three posted live under `idoco2003` on 2026-05-31. Ledger `outreach-move19.yaml` carries the live URLs; `response` stays `none` until a maintainer replies.
 
 **Routing summary**
 
 | RFC | Target | Channel | Status | Live URL |
 |---|---|---|---|---|
-| 0287 | Open Roberta Lab | Issue on `OpenRoberta/openroberta-lab` | Draft | — |
-| 0288 | Microsoft MakeCode | Issue on `microsoft/pxt` | Draft | — |
-| 0289 | Snap! (BJC) | Issue on `jmoenig/Snap` | Draft | — |
+| 0287 | Open Roberta Lab | Issue on `OpenRoberta/openroberta-lab` | **Posted 2026-05-31** | https://github.com/OpenRoberta/openroberta-lab/issues/1747 |
+| 0288 | Microsoft MakeCode | Issue on `microsoft/pxt` | **Posted 2026-05-31** | https://github.com/microsoft/pxt/issues/11340 |
+| 0289 | Snap! (BJC) | Issue on `jmoenig/Snap` | **Posted 2026-05-31** | https://github.com/jmoenig/Snap/issues/3543 |
 
 ---
 
