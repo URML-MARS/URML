@@ -31,6 +31,7 @@ from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import CapabilityManifest
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.program import URMLProgram
+from urml_validator.schemas.roster import FleetRoster
 
 #: The named schemas this module knows how to export.
 SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
@@ -38,6 +39,8 @@ SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
     "manifest": CapabilityManifest,
     "envelope": SafetyEnvelope,
     "policy": Policy,
+    # RFC-0286: the fleet roster, the multi-robot analogue of the manifest.
+    "roster": FleetRoster,
 }
 
 
