@@ -108,3 +108,7 @@ outreach/
 # Regenerated on demand by `make outreach-refresh`.
 tools/outreach.db
 tools/.outreach.db
+
+# Local Claude Code settings (per-machine; permission rules, etc.). Not committed.
+.claude/settings.json
+.claude/settings.local.json
