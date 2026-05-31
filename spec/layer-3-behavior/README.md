@@ -52,6 +52,17 @@ Layer 3 must **not** include:
 
 [RFC-0006](../../docs/rfcs/0006-connectivity-and-link-loss.md) deliberately adds **no** Layer-3 composition operator for connectivity. What the robot does on link loss is a deployment-time declaration in the safety envelope's `link_loss_policy`, statically validated against the Layer-1 `connectivity:` block. The *reactive* handling a program author writes composes from machinery this layer already owns: `on_error: abort_and_report` for the failure path, and the sketched `on_error: substitute(other_behavior)` for a contingency behavior. A connectivity-aware program is therefore an ordinary composed program; it needs no new vocabulary. This is the same composition-over-expansion discipline the Boundaries section states for primitives.
 
+## Fleet addressing and synchronization (RFC-0286)
+
+[RFC-0286](../../docs/rfcs/0286-multi-robot-fleet-addressing.md) adds exactly **two** Layer-3 nodes so one program can command a heterogeneous fleet, and nothing else. It does **not** add a `target_robot` field to any Layer-2 primitive — addressing is by scope, not by per-primitive annotation, so a single-robot program is unchanged (it is a fleet of one with an implicit member).
+
+- **`on:`** — `{type: "on", member: <handle>, body: <behavior-or-step>}` scopes its single child to one fleet member declared in the [roster](../layer-1-hal/README.md). Every primitive beneath it dispatches to that member's robot. One child, so the single-root-tree invariant holds.
+- **`barrier:`** — `{type: "barrier", members: [<handle>, ...]}` is a leaf rendezvous: execution does not proceed until every named member reaches it. This is the synchronization that makes a cross-robot handoff safe (the receiver does not act until the deliverer has arrived and stopped).
+
+Combining and synchronizing fleet behavior therefore reuses the operators this layer already owns: `sequence` / `parallel` of `on:`-scoped subtrees, with `barrier:` between the steps that must not overlap. The teeth live in the validator's fleet pass, which rejects an `on:`/`barrier:` naming an undeclared member, a primitive a member's manifest cannot satisfy, two members driven into the same declared location concurrently in one `parallel`, and a `barrier` member lacking the `peer_link` connectivity role. Large-scale, multi-site fleet *traffic* management is out of scope and composes with Open-RMF ([RFC-0053](../../docs/rfcs/0053-open-rmf-multirobot-integration.md)) rather than living in URML.
+
+One YAML note: the `on:` tag is written `type: "on"` — **quoted** — because YAML 1.1 reads a bare `on` as the boolean `true`.
+
 ## Conformance points
 
 The conformance suite (`/conformance/fixtures/`) tests:
@@ -59,6 +70,7 @@ The conformance suite (`/conformance/fixtures/`) tests:
 - That conformant runtimes execute every operator's documented semantics, including edge cases (empty sequence, single-branch parallel, retry with zero bound).
 - That the validator rejects every documented invalid construction (untyped variable reference, infinite retry, unreachable branch, type-mismatched primitive arguments).
 - That the YAML and JSON-LD encodings round-trip cleanly.
+- That a fleet program (RFC-0286) validates across its roster and that each cross-robot check (`fleet/*` fixtures) rejects its target construction.
 
 ## Open design questions
 
