@@ -63,7 +63,7 @@ from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Frame, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.roster import FleetRoster, FrameAnchor
-from urml_validator.transforms import resolve_to_world
+from urml_validator.transforms import resolve_to_world, transform_point_between
 from urml_validator.schemas.primitives import (
     CallProgramArgs,
     CaptureArgs,
@@ -2196,58 +2196,67 @@ def _check_point_in_any_geofence(
     point: tuple[float, float],
     frame: str,
     envelope: SafetyEnvelope | None,
+    frames: Mapping[str, Frame],
     z: float | None = None,
 ) -> tuple[bool, list[str], str | None]:
     """Check ``point`` (in ``frame``) against every declared geofence.
 
-    Returns ``(ok, applicable_geofence_names, failure_reason)``. ``ok`` is
-    True if either no geofences apply (frame mismatch) or the point lies
-    inside at least one frame-matching geofence AND (when ``z`` is
-    provided) within that geofence's altitude band. The list of
-    applicable names is used in diagnostics to tell the author *which*
-    geofences were considered. ``failure_reason`` is ``"footprint"`` if
-    the (x, y) was outside every footprint, or ``"altitude"`` if at least
-    one footprint matched but no matching geofence's altitude band
-    accepted ``z``; it is None on success.
+    A geofence applies when it is in the same frame OR the point can be resolved
+    into the geofence's frame through the manifest's frame graph (RFC-0288). When
+    no geofence applies (frame mismatch with no connecting transform) the check
+    abstains. ``failure_reason`` is ``"footprint"`` or ``"altitude"`` as before.
     """
     if envelope is None or not envelope.geofences:
         return True, [], None
-    applicable = [g for g in envelope.geofences if g.frame == frame]
+    # (geofence, point-in-its-frame, z-in-its-frame).
+    applicable: list[tuple[Any, tuple[float, float], float | None]] = []
+    for g in envelope.geofences:
+        if g.frame == frame:
+            applicable.append((g, point, z))
+            continue
+        resolved = transform_point_between(
+            (point[0], point[1], z if z is not None else 0.0), frame, g.frame, frames
+        )
+        if resolved is not None:
+            applicable.append((g, (resolved[0], resolved[1]), resolved[2]))
     if not applicable:
-        # No geofence declared in this frame — author is responsible for
-        # frame discipline; the envelope check abstains here.
+        # No geofence in this frame and none reachable — the check abstains.
         return True, [], None
     footprint_match = False
-    for g in applicable:
-        if _point_in_polygon(point, g.vertices):
+    for g, gpoint, gz in applicable:
+        if _point_in_polygon(gpoint, g.vertices):
             footprint_match = True
-            if _altitude_in_band(z, g):
+            if _altitude_in_band(gz, g):
                 return True, [g.name], None
     reason = "altitude" if footprint_match else "footprint"
-    return False, [g.name for g in applicable], reason
+    return False, [g.name for g, _, _ in applicable], reason
 
 
 def _check_point_in_any_occupancy_zone(
     point: tuple[float, float],
     frame: str,
     envelope: SafetyEnvelope | None,
+    frames: Mapping[str, Frame],
 ) -> tuple[bool, str | None]:
     """Check ``point`` against people-occupancy zones.
 
-    Returns ``(ok, intruded_zone_name)``. **Denylist** semantics: ``ok``
-    is False iff the point lies inside at least one frame-matching
-    occupancy zone whose ``allow_override`` is False. Zones with
-    ``allow_override: true`` are deployer-acknowledged risks and do not
-    reject the program (the deployment has accepted the trade-off).
+    A zone applies when it is in the same frame OR the point resolves into the
+    zone's frame (RFC-0288). **Denylist** semantics: ``ok`` is False iff the point
+    lies inside at least one applicable zone whose ``allow_override`` is False.
     """
     if envelope is None or not envelope.people_occupancy_zones:
         return True, None
     for zone in envelope.people_occupancy_zones:
-        if zone.frame != frame:
-            continue
         if zone.allow_override:
             continue
-        if _point_in_polygon(point, zone.vertices):
+        if zone.frame == frame:
+            zpoint: tuple[float, float] = point
+        else:
+            resolved = transform_point_between((point[0], point[1], 0.0), frame, zone.frame, frames)
+            if resolved is None:
+                continue
+            zpoint = (resolved[0], resolved[1])
+        if _point_in_polygon(zpoint, zone.vertices):
             return False, zone.name
     return True, None
 
@@ -2339,8 +2348,9 @@ def _check_envelope_geofence(
     name = step.primitive_name
     out: list[ValidationError] = []
 
+    frames_by_name = {f.name: f for f in manifest.frames}
     for point, z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
-        ok, applicable, reason = _check_point_in_any_geofence(point, frame, envelope, z=z)
+        ok, applicable, reason = _check_point_in_any_geofence(point, frame, envelope, frames_by_name, z=z)
         if not ok:
             if reason == "altitude":
                 # Footprint matched, altitude band did not.
@@ -2398,8 +2408,9 @@ def _check_envelope_occupancy_zones(
     name = step.primitive_name
     out: list[ValidationError] = []
 
+    frames_by_name = {f.name: f for f in manifest.frames}
     for point, _z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
-        ok, zone_name = _check_point_in_any_occupancy_zone(point, frame, envelope)
+        ok, zone_name = _check_point_in_any_occupancy_zone(point, frame, envelope, frames_by_name)
         if not ok:
             out.append(
                 _err(

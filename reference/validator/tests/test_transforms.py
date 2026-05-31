@@ -149,3 +149,54 @@ def test_frame_cycle_rejected():
     ])
     result = validate(_MINIMAL_PROGRAM, manifest, policy=None)
     assert result.has(ErrorCode.CAPABILITY_FRAME_CYCLE)
+
+
+# ---------------------------------------------------------------------------
+# Single-robot geofence cross-frame resolution (RFC-0288)
+# ---------------------------------------------------------------------------
+
+# base_link sits at site (10, 0, 0); a 0..20 box geofence is declared in `site`.
+_CROSS_FRAME_MANIFEST = {
+    "robot_id": "rover",
+    "frames": [
+        {"name": "site"},
+        {"name": "base_link", "parent": "site", "transform": {"translation": {"x": 10.0}}},
+    ],
+    "mobility": {"drive_type": "differential", "max_velocity": 1.0},
+}
+_BOX_ENVELOPE = {
+    "geofences": [
+        {"name": "box", "frame": "site", "vertices": [[0.0, -5.0], [20.0, -5.0], [20.0, 5.0], [0.0, 5.0]]}
+    ]
+}
+
+
+def _move_to_pose(x):
+    return {
+        "profile": "home",
+        "behavior": {"move_to": {"pose": {"x": x, "y": 0.0}, "frame": "base_link"}},
+    }
+
+
+def test_geofence_cross_frame_inside_accepted():
+    # base_link (1,0) -> site (11,0), inside the box.
+    result = validate(_move_to_pose(1.0), _CROSS_FRAME_MANIFEST, _BOX_ENVELOPE, policy=None)
+    assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+def test_geofence_cross_frame_outside_rejected():
+    # base_link (15,0) -> site (25,0), outside the box.
+    result = validate(_move_to_pose(15.0), _CROSS_FRAME_MANIFEST, _BOX_ENVELOPE, policy=None)
+    assert result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
+
+
+def test_geofence_no_transform_abstains():
+    # Same setup but base_link has no transform -> not resolvable -> geofence
+    # abstains -> no violation (backward-compatible with pre-RFC-0288).
+    manifest = {
+        "robot_id": "rover",
+        "frames": [{"name": "site"}, {"name": "base_link", "parent": "site"}],
+        "mobility": {"drive_type": "differential", "max_velocity": 1.0},
+    }
+    result = validate(_move_to_pose(15.0), manifest, _BOX_ENVELOPE, policy=None)
+    assert not result.has(ErrorCode.ENVELOPE_GEOFENCE_VIOLATION)
