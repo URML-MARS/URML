@@ -295,7 +295,8 @@ class ConformanceRunner:
 
         adapters: dict[str, ROSAdapter] = {name: self._adapter_factory() for name in members}
         try:
-            fleet_result = FleetRuntime(adapters).execute(
+            # Sequential for byte-stable per-member audits in conformance.
+            fleet_result = FleetRuntime(adapters, sequential=True).execute(
                 roster,
                 members,
                 case.program,
