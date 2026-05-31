@@ -129,15 +129,17 @@
   posted_url: "https://github.com/brainflow-dev/brainflow/issues/839"
   channel: github
   contact: "brainflow-dev/brainflow (MIT, 1.7k stars, Issues enabled, last commit 2026-05-22, **not archived**). Vendor-neutral biosignal SDK that OpenBCI hardware uses. OpenBCI org (US open-hardware); OpenBCI_GUI MIT + active. pyOpenBCI confirmed archived (openbci-archive) and dropped."
-  last_touch: "2026-05-29"
-  response: acked
+  last_touch: "2026-05-31"
+  response: engaged
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-05-31"
+      text: "Andrey1994 (MEMBER) answered all four substantive questions and then closed #839 amicably: (1) boundary confirmed - train a classifier on BrainFlow data/analysis and it works; BrainFlow itself emits no labels; (2) no conventional intent-event contract exists, invent our own and let users add classes; (3) confidence gating depends on desired result and classifier accuracy, i.e. URML-side; (4) up to URML whether to engage BrainFlow vs OpenBCI separately, offered to help from the BrainFlow side. Also suggested a P300-speller-style discrete trigger as an alternative to a continuous classifier. URML replied folding in all corrections; maintainer closed the issue, offering Slack for further questions."
   claude_directives: []
-  next_action: "Posted 2026-05-29 (idoco2003); automated welcome-bot reply only, no human yet. NOTE: double-posted — a second framing exists at brainflow-dev/brainflow#838 ('a manifest field for BrainFlow biosignals'); close one to consolidate. Follow up at +4-6 weeks if a human stays silent."
-  notes: "Tier A (BrainFlow MIT composes cleanly). Origin BrainFlow community OSS + OpenBCI US-domiciled; passes US-federal default policy. URML-fit: input-bridge, NOT a runtime adapter (weakest adapter story of the batch, by design). BCI intent label -> URML behavior trigger -> validate -> execute; non-verbal analog of Move-12 STT (RFC-0153). Extends accessibility line (RFC-0079). Surfaces queued Spec RFCs: non-language intent-input source at Layer 4, bci/neural sensor measurement_type, confidence-gated intent."
+  next_action: "DONE / engaged-closed. Maintainer Andrey1994 (member) answered all questions and CLOSED #839 amicably on 2026-05-31 (offered Slack for follow-up); URML's reply is posted. No further outreach action. #838 was already consolidated into #839. The three queued Spec RFCs (non-language intent source at L4, bci/neural measurement_type, confidence-gated intent) remain a SEPARATE later decision; pursue only if/when those advance or a concrete bridge example is built."
+  notes: "Tier A (BrainFlow MIT composes cleanly). Origin BrainFlow community OSS + OpenBCI US-domiciled; passes US-federal default policy. URML-fit: input-bridge, NOT a runtime adapter (weakest adapter story of the batch, by design). BCI intent label -> URML behavior trigger -> validate -> execute; non-verbal analog of Move-12 STT (RFC-0153). Extends accessibility line (RFC-0079). Surfaces queued Spec RFCs: non-language intent-input source at Layer 4, bci/neural sensor measurement_type, confidence-gated intent. Andrey1994 clarified: BrainFlow emits NO intent labels (provides API/ML tooling; user trains the classifier), no conventional intent-event shape (invent our own), confidence gating is URML-side, and suggested a P300-speller-style discrete trigger as an alternative to a continuous classifier."
 
 # ============================================================
 # Move #18 batch 2 (4) — motion-control + sim
