@@ -1,4 +1,4 @@
-# RFC-0287 — WATER: two ROVs at the same (x,y) but 6 m apart in DEPTH (z<0). Their
+# RFC-0291 — WATER: two ROVs at the same (x,y) but 6 m apart in DEPTH (z<0). Their
 # depth bands (±2 m) are disjoint -> deconflicted -> ACCEPT.
 name: fleet/10_water_depth_separation_accepted
 description: Two ROVs separated by depth; no conflict.

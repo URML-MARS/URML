@@ -13,7 +13,7 @@ description: Stationary industrial arm for the fleet handoff demo.
 frames:
   - name: cell
     parent: null
-  - name: site         # RFC-0287: the shared site frame both members reference at the dock
+  - name: site         # RFC-0291: the shared site frame both members reference at the dock
     parent: null
 
 declared_locations:

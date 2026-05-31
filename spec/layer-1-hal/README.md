@@ -119,14 +119,20 @@ members:
 
 The roster does not nest or alter a manifest — it binds N already-valid manifests by name. The handle declared here (`courier`, `arm`) is what a Layer-3 `on:` scope and a `barrier:` node address. The roster is optional infrastructure: a single-robot program needs none. A fleet mission file is two YAML documents — the roster, then the program — and the multi-robot validator (`validate_fleet`) checks each member's program subtree against that member's manifest, plus the cross-robot rules (collision-free concurrency, `peer_link` for barriers). The roster activates the `peer_link` role this layer reserved under Connectivity above.
 
-### Geometric deconfliction (RFC-0287)
+### Geometric deconfliction (RFC-0291)
 
-[RFC-0287](../../docs/rfcs/0287-utm-strategic-deconfliction.md) makes the cross-robot collision check geometric, modeled on UTM (FAA/NASA Unmanned Traffic Management; ASTM F3548). Two things make a target a UTM-style *operational volume*:
+[RFC-0291](../../docs/rfcs/0291-utm-strategic-deconfliction.md) makes the cross-robot collision check geometric, modeled on UTM (FAA/NASA Unmanned Traffic Management; ASTM F3548). Two things make a target a UTM-style *operational volume*:
 
 - The roster declares **`shared_frames`** — the frame names that mean one common physical reference across members. The deconfliction check only compares targets whose frame is in this list, so each robot's own local frame (e.g. a private `floor`) is never compared against another's. This is what lets three robots each move to their own `waypoint_a` without a false collision.
 - A manifest's `mobility` may declare **`clearance`** (`radius_m` lateral + `vertical_m` vertical): the robot's operational-volume buffer. The vertical band is an **altitude** band for aerial robots (z>0) and a **depth** band for underwater robots (z<0), via the signed-z convention; ground robots sit near z≈0. The operating **medium** is derived from `drive_type` — air and water never share space.
 
 Both are optional and additive. A member with no `clearance` falls back to declared-location-name comparison, still gated by a shared frame.
+
+### Frame-transform graph (RFC-0290)
+
+[RFC-0290](../../docs/rfcs/0290-frame-transform-graph.md) lets spatial checks compare poses **across** frames, not only by string-equal name. It activates the previously dormant `Frame.parent`: a `Frame` may declare a **`transform`** (a full SE(3) rigid transform — translation + roll/pitch/yaw) giving its pose in its parent, so a manifest's frames form a tree and any pose resolves into any connected frame. For fleets, a roster declares a **`world_frame`** and per-member **`anchor`s** (each member's frame placed in that world — the deployment's site survey), connecting the per-robot trees into one graph. With that, a drone's `agl` target and a rover's `site` target resolve into one world and are compared; single-robot geofences and occupancy zones in one frame govern targets named in another.
+
+It is strictly additive: a `Frame` with a `parent` but no `transform` is not numerically related to it, so any check that would need the relation abstains — exactly the pre-RFC-0290 behavior. The frame graph must be acyclic with declared parents.
 
 ## Conformance points
 

@@ -1,4 +1,4 @@
-# RFC-0287 — GROUND: two robots whose footprints overlap laterally (distinct
+# RFC-0291 — GROUND: two robots whose footprints overlap laterally (distinct
 # location names, 0.4 m apart, radii sum 1.0 m) in one parallel. Geometric reject.
 name: fleet/07_ground_footprint_overlap_rejected
 description: Two ground robots 0.4 m apart in a shared frame; clearance volumes overlap.

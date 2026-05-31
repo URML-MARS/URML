@@ -1,5 +1,5 @@
 ---
-rfc: 0287
+rfc: 0291
 title: Geometric cross-robot deconfliction — UTM-style operational volumes for fleets
 author: Ido Yahalomi (ido@jacob-ai.com)
 state: Accepted
@@ -23,7 +23,7 @@ superseded-by: —
 
 ---
 
-# RFC-0287: Geometric cross-robot deconfliction — UTM-style operational volumes
+# RFC-0291: Geometric cross-robot deconfliction — UTM-style operational volumes
 
 ## Summary
 

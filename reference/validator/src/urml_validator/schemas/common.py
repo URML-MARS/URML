@@ -88,6 +88,46 @@ class Location(BaseModel):
 LocationOrPose = str | Pose
 
 
+class Rotation(BaseModel):
+    """A 3D rotation as roll/pitch/yaw Euler angles, in radians (RFC-0290).
+
+    Applied in the ZYX convention (yaw, then pitch, then roll), matching the
+    common ROS/aerospace order: R = Rz(yaw) · Ry(pitch) · Rx(roll). The same
+    angle vocabulary `Pose` already uses. A future field may accept a quaternion.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    roll: float = 0.0
+    pitch: float = 0.0
+    yaw: float = 0.0
+
+
+class Translation(BaseModel):
+    """A 3D translation in metres (RFC-0290)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+
+
+class Transform(BaseModel):
+    """A rigid-body (SE(3)) transform: a translation plus a rotation (RFC-0290).
+
+    On a `Frame`, it expresses that frame's pose **in its parent frame**: a point
+    `p` in the frame maps to the parent as `R · p + t`. As a roster world-anchor,
+    it places a member's frame in the shared world frame. Identity (all zeros) is
+    the default and means "coincident with the parent / world".
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    translation: Translation = Field(default_factory=Translation)
+    rotation: Rotation = Field(default_factory=Rotation)
+
+
 class Speed(BaseModel):
     """Speed override: either an absolute value or a fraction of the manifest default.
 

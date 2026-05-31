@@ -1,4 +1,4 @@
-# RFC-0287 — AIR: two drones at the same (x,y) AND the same altitude -> conflict.
+# RFC-0291 — AIR: two drones at the same (x,y) AND the same altitude -> conflict.
 name: fleet/09_air_same_altitude_rejected
 description: Two drones at the same point and altitude; vertical bands overlap.
 roster:

@@ -266,11 +266,20 @@ class ConformanceRunner:
         assert case.roster is not None
         try:
             members = {m.name: resolve_manifest(m.manifest) for m in case.roster}
-            roster = {
+            roster: dict[str, Any] = {
                 "roster_version": "0.1",
-                "members": [{"name": m.name, "manifest": m.manifest} for m in case.roster],
+                "members": [
+                    {
+                        "name": m.name,
+                        "manifest": m.manifest,
+                        **({"anchor": m.anchor} if m.anchor is not None else {}),
+                    }
+                    for m in case.roster
+                ],
                 "shared_frames": case.shared_frames,
             }
+            if case.world_frame is not None:
+                roster["world_frame"] = case.world_frame
             member_envelopes = (
                 {k: resolve_envelope(v) for k, v in case.member_envelopes.items()}
                 if case.member_envelopes

@@ -13,10 +13,10 @@
 #
 # Note on the moves: the three mobile robots converge on `waypoint_a`. Each robot
 # declares that name in its OWN local `floor` frame, and this roster declares no
-# `shared_frames`, so the RFC-0287 deconfliction check correctly treats the three
+# `shared_frames`, so the RFC-0291 deconfliction check correctly treats the three
 # `waypoint_a`s as distinct places and does not flag a collision. (Earlier this
 # demo had to send each robot to a distinct name to dodge the old name-based
-# check; RFC-0287 removed that wart.)
+# check; RFC-0291 removed that wart.)
 
 roster_version: "0.1"
 description: A synchronized roll-call of four engaged-partner robots.
@@ -33,7 +33,7 @@ behavior:
   steps:
     # 1. Take your marks — the three mobile robots CONVERGE on waypoint_a, all at
     #    once, while the arm moves to its home pose. Each robot's `waypoint_a` is a
-    #    point in its OWN local `floor` frame, so the RFC-0287 deconfliction check
+    #    point in its OWN local `floor` frame, so the RFC-0291 deconfliction check
     #    (frame-gated, no shared_frames declared) correctly does not flag them.
     - type: parallel
       complete_when: all

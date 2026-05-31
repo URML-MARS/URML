@@ -32,7 +32,23 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from urml_validator.schemas.common import Identifier
+from urml_validator.schemas.common import Identifier, Transform
+
+
+class FrameAnchor(BaseModel):
+    """A member's extrinsic placement in the fleet's shared world (RFC-0290).
+
+    ``frame`` is one of the member's own frames (normally its root); ``transform``
+    places that frame in the roster's ``world_frame``. With an anchor, a member's
+    targets resolve into world coordinates, so they can be geometrically compared
+    with another member's targets even when their frame names differ (a drone's
+    ``agl`` vs a rover's ``site``). This is the deployment's site survey.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    frame: Identifier = Field(..., description="The member frame anchored to the world frame.")
+    transform: Transform = Field(..., description="That frame's pose in the world frame.")
 
 
 class RosterMember(BaseModel):
@@ -54,6 +70,10 @@ class RosterMember(BaseModel):
         min_length=1,
         description="Reference to this member's per-robot manifest (registry name or path).",
     )
+    anchor: FrameAnchor | None = Field(
+        None,
+        description="RFC-0290: extrinsic placement of one of this member's frames in the world frame.",
+    )
 
 
 class FleetRoster(BaseModel):
@@ -69,12 +89,21 @@ class FleetRoster(BaseModel):
     roster_version: str = Field("0.1", description="Roster schema version this fleet targets.")
     members: list[RosterMember] = Field(..., min_length=1)
     description: str | None = None
+    world_frame: Identifier | None = Field(
+        None,
+        description=(
+            "RFC-0290: the name of the fleet's shared world frame. When members declare "
+            "`anchor`s into it, their targets resolve to common world coordinates and are "
+            "compared geometrically across differing frames. `shared_frames` remains the "
+            "simpler same-name path (a frame listed there is treated as the world directly)."
+        ),
+    )
     shared_frames: list[Identifier] = Field(
         default_factory=list,
         description=(
             "Frame names that denote ONE common physical coordinate reference across "
             "all members (e.g. 'site', 'water', 'agl') — the fleet's shared geodetic "
-            "reference, in UTM terms (RFC-0287). The geometric cross-robot collision "
+            "reference, in UTM terms (RFC-0291). The geometric cross-robot collision "
             "check only compares targets whose frame is in this list; a member's own "
             "local frame (e.g. each robot's private 'floor') is never compared against "
             "another's. Empty (default) means the check abstains across members."
@@ -99,5 +128,5 @@ class FleetRoster(BaseModel):
 
     @property
     def shared_frame_set(self) -> set[str]:
-        """The set of frames declared as a common physical reference (RFC-0287)."""
+        """The set of frames declared as a common physical reference (RFC-0291)."""
         return set(self.shared_frames)

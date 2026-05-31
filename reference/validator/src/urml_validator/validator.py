@@ -60,9 +60,10 @@ from urml_validator.schemas.composition import (
 )
 from urml_validator.schemas.connectivity import LinkLossAction, LinkRole
 from urml_validator.schemas.envelope import SafetyEnvelope
-from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
+from urml_validator.schemas.manifest import Camera, CapabilityManifest, Frame, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
-from urml_validator.schemas.roster import FleetRoster
+from urml_validator.schemas.roster import FleetRoster, FrameAnchor
+from urml_validator.transforms import resolve_to_world, transform_point_between
 from urml_validator.schemas.primitives import (
     CallProgramArgs,
     CaptureArgs,
@@ -197,6 +198,8 @@ def validate(
     errors.extend(_check_substrate_required_for_drone(manifest_model))
     # RFC-0251: substrate.rmw_implementation + qos_profile rules.
     errors.extend(_check_substrate_rmw_options(manifest_model))
+    # RFC-0290: the frame graph must be acyclic with declared parents.
+    errors.extend(_check_frame_graph(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -418,7 +421,7 @@ def _step_location_names(step: Step) -> set[str]:
     return locs
 
 
-# RFC-0287: medium is derived from drive_type, not declared. Air and water
+# RFC-0291: medium is derived from drive_type, not declared. Air and water
 # operations never share physical space.
 _WATER_DRIVE_TYPES = {"underwater_thrusters"}
 
@@ -437,118 +440,142 @@ def _medium_of(manifest: CapabilityManifest) -> str | None:
 
 @dataclass(frozen=True)
 class _MemberTarget:
-    """One member's spatial target, as a UTM-style operational volume (RFC-0287)."""
+    """One member's spatial target, resolved into the fleet's world (RFC-0291/0288).
+
+    ``wx/wy/wz`` are world coordinates and ``world_id`` is the comparison frame id
+    (the world frame for an anchored member, or the shared-frame name); two targets
+    are compared only when both resolved to the same ``world_id``.
+    """
 
     member: str | None
     name: str | None
-    x: float | None
-    y: float | None
-    z: float | None
-    frame: str | None
+    wx: float | None
+    wy: float | None
+    wz: float | None
+    world_id: str | None
     radius: float | None
     vertical: float | None
     medium: str | None
 
 
 def _step_member_targets(
-    step: Step, member: str | None, manifest: CapabilityManifest
+    step: Step,
+    member: str | None,
+    manifest: CapabilityManifest,
+    anchor: FrameAnchor | None,
+    world_frame: str | None,
+    shared_frames: set[str],
 ) -> list[_MemberTarget]:
-    """Resolve a step's spatial targets to operational volumes for `member`."""
+    """Resolve a step's spatial targets to world-frame operational volumes."""
     medium = _medium_of(manifest)
     clearance = manifest.mobility.clearance if manifest.mobility is not None else None
     radius = clearance.radius_m if clearance is not None else None
     vertical = clearance.vertical_m if clearance is not None else None
+    frames_by_name = {f.name: f for f in manifest.frames}
+
+    def make(loc_name: str | None, x: float | None, y: float | None, z: float | None, frame: str | None) -> _MemberTarget:
+        if x is None or y is None or frame is None:
+            return _MemberTarget(member, loc_name, None, None, None, None, radius, vertical, medium)
+        resolved = resolve_to_world(
+            (x, y, z if z is not None else 0.0), frame, frames_by_name, anchor, world_frame, shared_frames
+        )
+        if resolved is None:
+            return _MemberTarget(member, loc_name, None, None, None, None, radius, vertical, medium)
+        (wx, wy, wz), world_id = resolved
+        return _MemberTarget(member, loc_name, wx, wy, wz, world_id, radius, vertical, medium)
 
     name = step.primitive_name
     args = getattr(step, name)
-    out: list[_MemberTarget] = []
 
     # move_to with an explicit pose+frame (no named location).
     if name == "move_to" and args.location is None and args.pose is not None and args.frame is not None:
         z = float(args.pose.z) if args.pose.z is not None else None
-        out.append(
-            _MemberTarget(member, None, float(args.pose.x), float(args.pose.y), z, args.frame,
-                         radius, vertical, medium)
-        )
-        return out
+        return [make(None, float(args.pose.x), float(args.pose.y), z, args.frame)]
 
-    # Named-location primitives: resolve the pose from the member's manifest.
+    out: list[_MemberTarget] = []
     for loc_name in _step_location_names(step):
         resolved = _location_pose_in_manifest(loc_name, manifest)
         if resolved is not None:
             x, y, z, frame = resolved
-            out.append(_MemberTarget(member, loc_name, x, y, z, frame, radius, vertical, medium))
+            out.append(make(loc_name, x, y, z, frame))
         else:
-            # Unresolvable (a capability error is already raised); keep for the name
-            # fallback with no frame, so it is simply never compared.
-            out.append(_MemberTarget(member, loc_name, None, None, None, None, radius, vertical, medium))
+            out.append(make(loc_name, None, None, None, None))
     return out
 
 
 def _collect_member_targets(
-    node: object, member: str | None, members: Mapping[str, CapabilityManifest]
+    node: object,
+    member: str | None,
+    members: Mapping[str, CapabilityManifest],
+    anchors: Mapping[str, FrameAnchor | None],
+    world_frame: str | None,
+    shared_frames: set[str],
 ) -> list[_MemberTarget]:
-    """All operational volumes a subtree targets, honoring `on:` scopes."""
+    """All world-resolved operational volumes a subtree targets, honoring `on:`."""
     out: list[_MemberTarget] = []
     if isinstance(node, Step):
         if member is not None and member in members:
-            out.extend(_step_member_targets(node, member, members[member]))
+            out.extend(
+                _step_member_targets(
+                    node, member, members[member], anchors.get(member), world_frame, shared_frames
+                )
+            )
     elif isinstance(node, OnMember):
-        out.extend(_collect_member_targets(node.body, node.member, members))
+        out.extend(_collect_member_targets(node.body, node.member, members, anchors, world_frame, shared_frames))
     elif isinstance(node, Sequence):
         for sub in node.steps:
-            out.extend(_collect_member_targets(sub, member, members))
+            out.extend(_collect_member_targets(sub, member, members, anchors, world_frame, shared_frames))
     elif isinstance(node, Branch):
-        out.extend(_collect_member_targets(node.if_true, member, members))
+        out.extend(_collect_member_targets(node.if_true, member, members, anchors, world_frame, shared_frames))
         if node.if_false is not None:
-            out.extend(_collect_member_targets(node.if_false, member, members))
+            out.extend(_collect_member_targets(node.if_false, member, members, anchors, world_frame, shared_frames))
     elif isinstance(node, Parallel):
         for sub in node.branches:
-            out.extend(_collect_member_targets(sub, member, members))
+            out.extend(_collect_member_targets(sub, member, members, anchors, world_frame, shared_frames))
     elif isinstance(node, Retry):
-        out.extend(_collect_member_targets(node.behavior, member, members))
+        out.extend(_collect_member_targets(node.behavior, member, members, anchors, world_frame, shared_frames))
     return out
 
 
-def _volumes_conflict(
-    a: _MemberTarget, b: _MemberTarget, shared: set[str]
-) -> tuple[bool, dict[str, Any] | None]:
-    """UTM strategic deconfliction between two operational volumes.
+def _volumes_conflict(a: _MemberTarget, b: _MemberTarget) -> tuple[bool, dict[str, Any] | None]:
+    """UTM strategic deconfliction between two world-resolved operational volumes.
 
-    Conflict iff the volumes are NOT separated laterally, vertically, in medium,
-    or by frame. (Temporal separation — a `barrier` — is handled by the caller,
-    which only compares volumes inside one `parallel`.)
+    Conflict iff the volumes are NOT separated by world (both must resolve to the
+    same world id), by medium (air and water never share space), laterally, or
+    vertically. Temporal separation — a `barrier` — is handled by the caller, which
+    only compares volumes inside one `parallel`.
     """
-    # Frame gate: only compare targets in a declared shared physical frame.
-    if a.frame is None or a.frame != b.frame or a.frame not in shared:
+    # World gate: both must resolve to the same shared world.
+    if a.world_id is None or b.world_id is None or a.world_id != b.world_id:
         return False, None
-    # Medium gate: air and water never share physical space.
-    if a.medium is not None and b.medium is not None and a.medium != b.medium:
+    # Medium gate: only air vs water is exempt (truly disjoint media). Air vs ground
+    # is geometric — a low-flying drone can collide with a ground robot (RFC-0290).
+    if a.medium is not None and b.medium is not None and {a.medium, b.medium} == {"air", "water"}:
         return False, None
-    # Geometric (UTM): both must declare a clearance volume and have coordinates.
+    # Geometric (UTM): both must declare a clearance volume and have world coordinates.
     if (
         a.radius is not None and b.radius is not None
         and a.vertical is not None and b.vertical is not None
-        and a.x is not None and a.y is not None and b.x is not None and b.y is not None
+        and a.wx is not None and a.wy is not None and b.wx is not None and b.wy is not None
     ):
-        lateral = hypot(a.x - b.x, a.y - b.y)
-        az = a.z if a.z is not None else 0.0
-        bz = b.z if b.z is not None else 0.0
+        lateral = hypot(a.wx - b.wx, a.wy - b.wy)
+        az = a.wz if a.wz is not None else 0.0
+        bz = b.wz if b.wz is not None else 0.0
         vertical_lo = max(az - a.vertical, bz - b.vertical)
         vertical_hi = min(az + a.vertical, bz + b.vertical)
         required = a.radius + b.radius
         if lateral < required and vertical_lo <= vertical_hi:
             return True, {
                 "reason": "geometric",
-                "frame": a.frame,
+                "frame": a.world_id,
                 "lateral_m": round(lateral, 3),
                 "required_lateral_m": round(required, 3),
                 "media": [a.medium, b.medium],
             }
         return False, None
-    # Name fallback (now frame- and medium-gated): same declared location name.
+    # Name fallback (world-gated): same declared location name, no clearance declared.
     if a.name is not None and a.name == b.name:
-        return True, {"reason": "name", "frame": a.frame, "location": a.name}
+        return True, {"reason": "name", "frame": a.world_id, "location": a.name}
     return False, None
 
 
@@ -556,23 +583,30 @@ def _check_concurrent_workspace(
     program: URMLProgram,
     sole_member: str | None,
     members: Mapping[str, CapabilityManifest],
-    shared_frames: set[str],
+    roster: FleetRoster,
 ) -> list[ValidationError]:
     """Reject two members whose operational volumes conflict in one `parallel`.
 
     The branches of a `parallel` run concurrently (one UTM time window); a
-    `barrier` outside the parallel separates volumes in time. Within a window,
-    two distinct members conflict only if their volumes are not separated
-    laterally, vertically, by medium, or by frame (RFC-0287 strategic
-    deconfliction). When a member declares no `clearance`, the comparison falls
-    back to declared-location-name equality, still gated by a shared frame.
+    `barrier` outside the parallel separates volumes in time. Within a window, each
+    member's target is resolved into the fleet's world (via the member's `anchor`
+    and frame graph, or a `shared_frames` name), and two distinct members conflict
+    only if their world volumes are not separated by medium, laterally, or
+    vertically (RFC-0291/0288). When a member declares no `clearance`, the
+    comparison falls back to declared-location-name equality, world-gated.
     """
     out: list[ValidationError] = []
+    anchors: Mapping[str, FrameAnchor | None] = {m.name: m.anchor for m in roster.members}
+    world_frame = roster.world_frame
+    shared_frames = roster.shared_frame_set
 
     def visit(node: object, path: list[str], member: str | None) -> None:
         if isinstance(node, Parallel):
             branch_targets = [
-                _collect_member_targets(sub, member if member is not None else sole_member, members)
+                _collect_member_targets(
+                    sub, member if member is not None else sole_member,
+                    members, anchors, world_frame, shared_frames,
+                )
                 for sub in node.branches
             ]
             reported: set[tuple[frozenset[str], str | None, str]] = set()
@@ -582,10 +616,10 @@ def _check_concurrent_workspace(
                         for b in branch_targets[j]:
                             if a.member is None or b.member is None or a.member == b.member:
                                 continue
-                            conflict, detail = _volumes_conflict(a, b, shared_frames)
+                            conflict, detail = _volumes_conflict(a, b)
                             if not conflict or detail is None:
                                 continue
-                            key = (frozenset({a.member, b.member}), a.frame, detail["reason"])
+                            key = (frozenset({a.member, b.member}), a.world_id, detail["reason"])
                             if key in reported:
                                 continue
                             reported.add(key)
@@ -784,6 +818,11 @@ def validate_fleet(
                     detail={"member": member_name},
                 )
             )
+    # RFC-0290: each member's frame graph must be well-formed.
+    for member_name in sorted(members):
+        for err in _check_frame_graph(members[member_name]):
+            err.detail = {**(err.detail or {}), "member": member_name}
+            errors.append(err)
     if errors:
         return ValidationResult(accepted=False, errors=errors, warnings=warnings)
 
@@ -838,11 +877,11 @@ def validate_fleet(
             if link is None:
                 errors.append(_fleet_barrier_peer_link_error(path, member_name))
 
-    # ----- Cross-robot workspace collision (RFC-0287 strategic deconfliction) -----
+    # ----- Cross-robot workspace collision (RFC-0291/0288 strategic deconfliction) -----
     shared_frames = roster_model.shared_frame_set
-    errors.extend(_check_concurrent_workspace(program_model, sole_member, members, shared_frames))
-    # A shared_frame no member declares silently disables the geometric check for it.
     declared_frames = {f.name for m in members.values() for f in m.frames}
+    errors.extend(_check_concurrent_workspace(program_model, sole_member, members, roster_model))
+    # A shared_frame no member declares silently disables the geometric check for it.
     for frame in sorted(shared_frames - declared_frames):
         warnings.append(
             ValidationError(
@@ -860,6 +899,28 @@ def validate_fleet(
                 detail={"frame": frame},
             )
         )
+    # RFC-0290: a world-anchor whose frame the member does not declare silently
+    # disables resolution for that member.
+    for rmember in roster_model.members:
+        if rmember.anchor is not None and rmember.anchor.frame not in {
+            f.name for f in members[rmember.name].frames
+        }:
+            warnings.append(
+                ValidationError(
+                    code=ErrorCode.FLEET_ANCHOR_FRAME_UNDECLARED,
+                    primitive=None,
+                    severity="warning",
+                    path=["<roster>", "members"],
+                    field="anchor",
+                    message=(
+                        f"member {rmember.name!r} anchors frame {rmember.anchor.frame!r} to the "
+                        f"world, but its manifest declares no frame by that name; its targets "
+                        f"will not resolve to the world."
+                    ),
+                    suggestion=f"Anchor a frame {rmember.name!r} actually declares.",
+                    detail={"member": rmember.name, "frame": rmember.anchor.frame},
+                )
+            )
 
     # ----- Pass 4: bindings across the whole fleet tree -----
     errors.extend(_check_bindings(program_model))
@@ -1025,6 +1086,54 @@ def _location_declared(manifest: CapabilityManifest, name: str) -> bool:
 
 def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(f.name == name for f in manifest.frames)
+
+
+def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0290: the frame graph must be a forest — every `parent` declared, no cycle."""
+    out: list[ValidationError] = []
+    by_name = {f.name: f for f in manifest.frames}
+    for frame in manifest.frames:
+        if frame.parent is not None and frame.parent not in by_name:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_FRAME_PARENT_UNDECLARED,
+                    primitive=None,
+                    path=["<manifest>", "frames"],
+                    field="parent",
+                    message=(
+                        f"frame {frame.name!r} declares parent {frame.parent!r}, which is "
+                        f"not a declared frame."
+                    ),
+                    suggestion=f"Declare a frame named {frame.parent!r}, or fix the parent.",
+                    detail={"frame": frame.name, "parent": frame.parent},
+                )
+            )
+    # Cycle detection: walk each frame to its root; report the first cycle once.
+    cycle: list[str] = []
+    for frame in manifest.frames:
+        seen: list[str] = []
+        current: Frame | None = frame
+        while current is not None and current.parent is not None:
+            if current.name in seen:
+                cycle = [*seen[seen.index(current.name):], current.name]
+                break
+            seen.append(current.name)
+            current = by_name.get(current.parent)
+        if cycle:
+            break
+    if cycle:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_FRAME_CYCLE,
+                primitive=None,
+                path=["<manifest>", "frames"],
+                field="parent",
+                message=f"frame graph has a cycle: {' -> '.join(cycle)}. Frames must form a tree.",
+                suggestion="Break the parent cycle so the frame graph is acyclic.",
+                detail={"cycle": cycle},
+            )
+        )
+    return out
 
 
 def _check_move_to_caps(
@@ -2087,58 +2196,67 @@ def _check_point_in_any_geofence(
     point: tuple[float, float],
     frame: str,
     envelope: SafetyEnvelope | None,
+    frames: Mapping[str, Frame],
     z: float | None = None,
 ) -> tuple[bool, list[str], str | None]:
     """Check ``point`` (in ``frame``) against every declared geofence.
 
-    Returns ``(ok, applicable_geofence_names, failure_reason)``. ``ok`` is
-    True if either no geofences apply (frame mismatch) or the point lies
-    inside at least one frame-matching geofence AND (when ``z`` is
-    provided) within that geofence's altitude band. The list of
-    applicable names is used in diagnostics to tell the author *which*
-    geofences were considered. ``failure_reason`` is ``"footprint"`` if
-    the (x, y) was outside every footprint, or ``"altitude"`` if at least
-    one footprint matched but no matching geofence's altitude band
-    accepted ``z``; it is None on success.
+    A geofence applies when it is in the same frame OR the point can be resolved
+    into the geofence's frame through the manifest's frame graph (RFC-0290). When
+    no geofence applies (frame mismatch with no connecting transform) the check
+    abstains. ``failure_reason`` is ``"footprint"`` or ``"altitude"`` as before.
     """
     if envelope is None or not envelope.geofences:
         return True, [], None
-    applicable = [g for g in envelope.geofences if g.frame == frame]
+    # (geofence, point-in-its-frame, z-in-its-frame).
+    applicable: list[tuple[Any, tuple[float, float], float | None]] = []
+    for g in envelope.geofences:
+        if g.frame == frame:
+            applicable.append((g, point, z))
+            continue
+        resolved = transform_point_between(
+            (point[0], point[1], z if z is not None else 0.0), frame, g.frame, frames
+        )
+        if resolved is not None:
+            applicable.append((g, (resolved[0], resolved[1]), resolved[2]))
     if not applicable:
-        # No geofence declared in this frame — author is responsible for
-        # frame discipline; the envelope check abstains here.
+        # No geofence in this frame and none reachable — the check abstains.
         return True, [], None
     footprint_match = False
-    for g in applicable:
-        if _point_in_polygon(point, g.vertices):
+    for g, gpoint, gz in applicable:
+        if _point_in_polygon(gpoint, g.vertices):
             footprint_match = True
-            if _altitude_in_band(z, g):
+            if _altitude_in_band(gz, g):
                 return True, [g.name], None
     reason = "altitude" if footprint_match else "footprint"
-    return False, [g.name for g in applicable], reason
+    return False, [g.name for g, _, _ in applicable], reason
 
 
 def _check_point_in_any_occupancy_zone(
     point: tuple[float, float],
     frame: str,
     envelope: SafetyEnvelope | None,
+    frames: Mapping[str, Frame],
 ) -> tuple[bool, str | None]:
     """Check ``point`` against people-occupancy zones.
 
-    Returns ``(ok, intruded_zone_name)``. **Denylist** semantics: ``ok``
-    is False iff the point lies inside at least one frame-matching
-    occupancy zone whose ``allow_override`` is False. Zones with
-    ``allow_override: true`` are deployer-acknowledged risks and do not
-    reject the program (the deployment has accepted the trade-off).
+    A zone applies when it is in the same frame OR the point resolves into the
+    zone's frame (RFC-0290). **Denylist** semantics: ``ok`` is False iff the point
+    lies inside at least one applicable zone whose ``allow_override`` is False.
     """
     if envelope is None or not envelope.people_occupancy_zones:
         return True, None
     for zone in envelope.people_occupancy_zones:
-        if zone.frame != frame:
-            continue
         if zone.allow_override:
             continue
-        if _point_in_polygon(point, zone.vertices):
+        if zone.frame == frame:
+            zpoint: tuple[float, float] = point
+        else:
+            resolved = transform_point_between((point[0], point[1], 0.0), frame, zone.frame, frames)
+            if resolved is None:
+                continue
+            zpoint = (resolved[0], resolved[1])
+        if _point_in_polygon(zpoint, zone.vertices):
             return False, zone.name
     return True, None
 
@@ -2230,8 +2348,9 @@ def _check_envelope_geofence(
     name = step.primitive_name
     out: list[ValidationError] = []
 
+    frames_by_name = {f.name: f for f in manifest.frames}
     for point, z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
-        ok, applicable, reason = _check_point_in_any_geofence(point, frame, envelope, z=z)
+        ok, applicable, reason = _check_point_in_any_geofence(point, frame, envelope, frames_by_name, z=z)
         if not ok:
             if reason == "altitude":
                 # Footprint matched, altitude band did not.
@@ -2289,8 +2408,9 @@ def _check_envelope_occupancy_zones(
     name = step.primitive_name
     out: list[ValidationError] = []
 
+    frames_by_name = {f.name: f for f in manifest.frames}
     for point, _z, frame, field_label in _collect_spatial_targets(step, manifest, envelope):
-        ok, zone_name = _check_point_in_any_occupancy_zone(point, frame, envelope)
+        ok, zone_name = _check_point_in_any_occupancy_zone(point, frame, envelope, frames_by_name)
         if not ok:
             out.append(
                 _err(
