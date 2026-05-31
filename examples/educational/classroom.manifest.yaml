@@ -1,0 +1,90 @@
+# Companion manifest for the educational starter scenarios
+# (hello-square, classroom-patrol, fetch-the-block).
+#
+# A micro:bit/Arduino-class differential classroom buggy with a gentle
+# claw servo. Modelled on the `microbit_edu` validator fixture and the
+# educational profile (RFC-0011): conservative drive speed, a gentle
+# grip ceiling, and a closed object vocabulary so an unrecognized
+# `detect` target fails closed rather than guessing.
+#
+# Validate (compliance off, the on-stage demo posture):
+#   urml validate hello-square.urml.yaml -m classroom.manifest.yaml --profile educational --no-policy
+#
+# No provenance block: a classroom buggy attests no covered hardware,
+# so the bundled US-federal default policy (RFC-0004) has nothing to
+# deny and accepts it even without `--no-policy`.
+
+manifest_version: "0.1"
+robot_id: classroom_buggy_1
+description: Two-wheel classroom buggy with a light sensor and a gentle claw servo.
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: home_base
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+    description: Where the buggy starts and returns.
+  - name: waypoint_a
+    pose: { x: 0.5, y: 0.0 }
+    frame: floor
+    description: A patrol checkpoint.
+  - name: corner_ne
+    pose: { x: 0.6, y: 0.6 }
+    frame: floor
+  - name: corner_nw
+    pose: { x: -0.6, y: 0.6 }
+    frame: floor
+  - name: corner_sw
+    pose: { x: -0.6, y: -0.6 }
+    frame: floor
+  - name: corner_se
+    pose: { x: 0.6, y: -0.6 }
+    frame: floor
+  - name: shelf
+    pose: { x: 0.4, y: 0.3 }
+    frame: floor
+    description: Where a block waits to be fetched.
+  - name: table
+    pose: { x: -0.4, y: 0.3 }
+    frame: floor
+    description: Where a fetched block is placed.
+
+declared_events:
+  - line_detected
+  - button_pressed
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.2
+  station_keeping: false
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_servo
+      kind: servo_electric
+      force_min_n: 0.1
+      force_max_n: 2.0
+      accepted_classes: [block, ball]
+      movable: false
+  reachable_workspace_m: 0.12
+
+perception:
+  sensors:
+    - name: light
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 1023.0
+      units: adc
+  object_vocabulary:
+    - block
+    - ball
+
+outputs:
+  named_endpoints:
+    - classroom_log

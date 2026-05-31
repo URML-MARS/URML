@@ -1,0 +1,35 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: educational/fetch-the-block
+# Source NL: "Find the block on the shelf, pick it up gently, and put it on the table."
+#            (see fetch-the-block.en.txt)
+#
+# Introduces manipulation under the educational profile's two pedagogical
+# safety rules (RFC-0011):
+#   - grasp force is `gentle`, capped by the gripper's force_max_n.
+#   - `detect` of a class outside the manifest's object_vocabulary fails
+#     CLOSED: the buggy stops and reports rather than guessing. Change
+#     `object: block` to `object: dragon` and re-validate to see the
+#     program stop safely instead of improvising.
+#
+#   urml validate fetch-the-block.urml.yaml -m classroom.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: shelf
+    - detect:
+        object: block
+        store_as: target_block
+    - grasp:
+        target: $target_block
+        force: gentle
+    - move_to:
+        location: table
+        carrying: $target_block
+    - release:
+        mode: place
+        at: table
