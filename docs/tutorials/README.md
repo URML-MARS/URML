@@ -14,7 +14,7 @@
 
 # URML Tutorials
 
-A hands-on path from *"I've never heard of URML"* to *"I can validate my own URML programs and translate natural language to robot intent."* You should be able to work through all four tutorials in about an hour.
+A hands-on path from *"I've never heard of URML"* to *"I can validate my own URML programs and translate natural language to robot intent."* You should be able to work through the first four tutorials in about an hour; the fifth is a ready-to-run classroom lesson.
 
 If you only have five minutes, read [Tutorial 1](01-getting-started.md) — it's the elevator pitch with commands you can copy-paste.
 
@@ -26,6 +26,7 @@ If you only have five minutes, read [Tutorial 1](01-getting-started.md) — it's
 | 2 | [Anatomy of a URML program](02-anatomy-of-a-program.md) | A working mental model of Layer 1 (manifest), Layer 2 (primitives), Layer 3 (composition). |
 | 3 | [Natural language to URML](03-natural-language-to-urml.md) | An LLM translating English requests into validated URML programs, with the revision loop in action. |
 | 4 | [Writing your own manifest](04-writing-your-own-manifest.md) | A manifest tailored to *your* robot, not a copied template. |
+| 5 | [Teaching URML in a classroom](05-teaching-urml.md) | A 30-minute lesson plan that runs with no robot, no API key, and no internet after install. |
 
 ## What URML is, in one paragraph
 

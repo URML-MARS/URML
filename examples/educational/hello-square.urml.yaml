@@ -1,0 +1,27 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: educational/hello-square
+# Source NL: "Drive around the four corners of the room and come back home."
+#            (see hello-square.en.txt)
+#
+# The "hello world" of URML motion: navigation-only, four named
+# stations, no manipulation. The simplest complete URML program a
+# student can read and change — edit the station names, not coordinates.
+#
+#   urml validate hello-square.urml.yaml -m classroom.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: corner_ne
+    - move_to:
+        location: corner_nw
+    - move_to:
+        location: corner_sw
+    - move_to:
+        location: corner_se
+    - move_to:
+        location: home_base

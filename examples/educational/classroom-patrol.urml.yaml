@@ -1,0 +1,23 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: educational/classroom-patrol
+# Source NL: "Go to the checkpoint, then come back to base." (see classroom-patrol.en.txt)
+#
+# The teachable twin of the conformance patrol fixtures under
+# conformance/fixtures/educational/: start -> waypoint -> home. The same
+# three-step shape every educational platform (VEX, LEGO, Thymio, Marty,
+# Petoi, CircuitPython) is conformance-tested against.
+#
+#   urml validate classroom-patrol.urml.yaml -m classroom.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: home_base
+    - move_to:
+        location: waypoint_a
+    - move_to:
+        location: home_base

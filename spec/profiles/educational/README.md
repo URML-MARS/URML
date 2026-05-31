@@ -85,3 +85,7 @@ v0.1 educational programs are core-primitive programs and are already exercised 
 ## Layer-4 (LLM bridge) integration
 
 The educational profile is where the bridge's *explain-what-it-will-do-before-doing-it* behavior matters most: a teaching deployment should surface the generated URML back to the student in plain language before execution. That is a bridge-side affordance, not normative to this profile, but it is the profile most likely to drive it.
+
+## Worked examples and a classroom lesson
+
+Runnable programs for this profile live in [`examples/educational/`](../../../examples/educational/): `hello-square` (navigation-only), `classroom-patrol` (start → checkpoint → base), and `fetch-the-block` (gentle grasp plus the fail-closed `detect` rule). They validate and execute hermetically against the mock substrate, no robot required. [Tutorial 5: Teaching URML in a classroom](../../../docs/tutorials/05-teaching-urml.md) turns them into a 30-minute lesson that runs with no API key and no internet after install.

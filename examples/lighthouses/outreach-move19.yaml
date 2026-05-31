@@ -1,0 +1,92 @@
+# Move #19 outreach ledger. One row per target.
+#
+# Move #19 (this file): **the education-community wave.** Moves 1-16
+# asked "which vendor could write an adapter"; Move #17 engaged
+# governance bodies; Move #18 broke the robot-vendor frame. Move #19
+# asks: "where do the next students meet a robot, and who teaches
+# them?" The answer is not a device vendor. It is the classroom
+# programming-environment and curriculum layer.
+#
+# This is deliberately distinct from the device-toolchain threads on
+# Move #18 that declined: PROS/VEX (RFC-0236) and Pybricks/LEGO
+# (RFC-0235) are device SDKs. Move #19 targets the *environment /
+# curriculum* layer above them, a different audience and a different
+# ask (URML as a plain-language, validated-intent front door and a
+# teaching bridge, not "ship our adapter into your SDK").
+#
+# Tier A (this file, RFCs 0287-0289) — GitHub-routable classroom
+# programming environments:
+#   - Open Roberta Lab (Fraunhofer IAIS, Apache-2.0): NEPO blocks over
+#     LEGO / micro:bit / Thymio — the exact platforms URML's edu-runtime
+#     already drives.
+#   - Microsoft MakeCode (microsoft/pxt, MIT): the highest-reach
+#     micro:bit authoring environment; complements the micro:bit
+#     Foundation thread (RFC-0172) at the IDE layer.
+#   - Snap! (jmoenig/Snap, AGPL-3.0): UC Berkeley BJC high-school CS
+#     curriculum; cross-citation + lesson bridge (AGPL boundary).
+#
+# Tier B — partnership / email / forum education orgs (FIRST, REC
+# Foundation, RoboCup Junior, Raspberry Pi Foundation / CoderDojo) are
+# NOT GitHub-routable and are drafted in founder-actions-move19.md for
+# founder posting, mirroring the Move #17 sub-wave-B precedent. They are
+# not ledgered here until shaped and sent.
+#
+# Surfaces verified 2026-05-31 via GitHub API (license, stars,
+# has_issues, isArchived, last push). All three: Issues enabled,
+# Discussions disabled, not archived, active.
+#
+# Like Moves #2-#18, this file is NOT under the Move #1 parity test
+# (conformance/tests/test_outreach_ledger.py guards Move #1 only). It is
+# under the schema-v2 conformance test (RFC-0275).
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none` is
+# the truthful default. All three rows are DRAFTED, not yet posted;
+# posting and per-row state changes are founder-authorized.
+
+- slug: open-roberta
+  rfc: 287
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OpenRoberta/openroberta-lab (Apache-2.0, ~143 stars, Issues enabled, Discussions disabled, last push 2026-04-22, **not archived**). Fraunhofer IAIS, Germany. NEPO block environment for LEGO / micro:bit / Thymio / Calliope — the platforms URML's edu-runtime already targets."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on OpenRoberta/openroberta-lab pointing to RFC-0287, framed as a request for comment, leading with the platform overlap (LEGO/micro:bit/Thymio). Record posted_url + flip last_touch on send."
+  notes: "Tier B (environment/curriculum layer, not a device SDK). Strongest Move-19 fit: exact platform overlap with edu-runtime, both Apache-2.0, both beginner-first. URML-fit: high for the front-door / capability-descriptor-alignment framing. Distinct from declined RFC-0235 (Pybricks) / RFC-0236 (PROS-VEX) device threads. Surfaces a queued block-environment-substrate-declaration Spec RFC."
+
+- slug: makecode
+  rfc: 288
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "microsoft/pxt (MIT, ~2.3k stars, Issues enabled, Discussions disabled, active, **not archived**) with microsoft/pxt-microbit (~800 stars). Microsoft, US. Blocks/TypeScript compiler for micro:bit / Arcade; very high classroom reach."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on microsoft/pxt pointing to RFC-0288, stating the RFC-0172 (micro:bit Foundation) boundary up front so it does not read as duplicate outreach. Record posted_url + flip last_touch on send."
+  notes: "Tier B. Complements RFC-0172 at the authoring-environment layer (Foundation = platform; MakeCode = IDE). Light-touch response likely given project size. URML-fit: front-door / board-definition alignment. Shares the firmware-language-substrate Spec RFC question with RFC-0172."
+
+- slug: snap-bjc
+  rfc: 289
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "jmoenig/Snap (AGPL-3.0, ~1.6k stars, Issues enabled, Discussions disabled, active, **not archived**). UC Berkeley; the block language behind the Beauty and Joy of Computing (BJC) high-school CS curriculum."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Draft posted in posts-move19.md. Founder to open a single Issue on jmoenig/Snap pointing to RFC-0289, stating the AGPL boundary up front (cross-citation + lesson bridge, no shared code). Ask whether the repo or the BJC curriculum team is the right channel. Record posted_url + flip last_touch on send."
+  notes: "Tier B. High-school CS curriculum reach (BJC). AGPL-3.0 limits integration to mapping / cross-citation / lesson material — stated honestly. URML-fit: pedagogical, harder to measure than an adapter. Distinct niche from MakeCode / Open Roberta."

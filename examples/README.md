@@ -26,6 +26,10 @@ examples/
 │   ├── red-mug.*                   # The manifesto example (move/detect/grasp/release).
 │   ├── evening-routine.*           # Conversational routine (speak/listen/wait_for/dock/wait).
 │   └── patient-fetch.*             # Layer-3: retry + branch + variables.
+├── educational/                educational-profile programs (RFC-0011; classroom buggy, zero ROS).
+│   ├── hello-square.*               # The "hello world" of motion: drive four corners and home.
+│   ├── classroom-patrol.*           # start → checkpoint → base (teachable twin of the conformance patrol).
+│   └── fetch-the-block.*            # gentle grasp + fail-closed detect (the profile's safety rules).
 ├── drone/                      drone-profile programs (v0.1).
 │   ├── roof-inspection.*           # Citizen-inspector roof scan (take_off/capture/RTH/land).
 │   ├── bridge-survey.*             # Structure survey (scan/hover/measure).
@@ -72,6 +76,7 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 | Profile | v0.1 content | How it grows |
 |---|---|---|
 | [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock); `patient-fetch` (retry/branch). | Additional home scenarios land alongside the home-profile spec. |
+| [`educational/`](educational/) | `hello-square` (nav-only "hello world"); `classroom-patrol` (start/checkpoint/base); `fetch-the-block` (gentle grasp + fail-closed detect). See [Tutorial 5](../docs/tutorials/05-teaching-urml.md). | Additional classroom scenarios land alongside the educational profile (RFC-0011). |
 | [`drone/`](drone/) | `roof-inspection` (citizen-inspector); `bridge-survey` (scan/hover/measure); `parallel-watch` (parallel); `link-aware-patrol` (connectivity + link-loss). | Additional drone scenarios land alongside the drone-profile spec. |
 | [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
 | [`legged/`](legged/) | `spot-patrol` (nav-only quadruped patrol; RFC-0009). | Additional legged scenarios land alongside the legged runtime. |
