@@ -1,0 +1,22 @@
+# RFC-0287 fixture: an underwater robot. Vertical separation is by DEPTH (z<0).
+manifest_version: "0.1"
+robot_id: utm_rov
+description: Underwater ROV with a UTM-style operational clearance (RFC-0287).
+
+frames:
+  - name: water
+
+declared_locations:
+  - { name: shallow, pose: { x: 0.0, y: 0.0, z: -2.0 }, frame: water }   # 2 m depth
+  - { name: deep,    pose: { x: 0.0, y: 0.0, z: -8.0 }, frame: water }   # 8 m depth
+  - { name: mid,     pose: { x: 0.0, y: 0.0, z: -5.0 }, frame: water }
+  - { name: mid2,    pose: { x: 0.0, y: 0.0, z: -5.0 }, frame: water }   # same depth as mid
+
+mobility:
+  drive_type: underwater_thrusters
+  max_velocity: 1.0
+  clearance: { radius_m: 0.5, vertical_m: 2.0 }   # ±2 m vertical band
+
+connectivity:
+  links:
+    - role: peer_link

@@ -1,0 +1,19 @@
+# RFC-0287 — WATER: two ROVs at the same (x,y) but 6 m apart in DEPTH (z<0). Their
+# depth bands (±2 m) are disjoint -> deconflicted -> ACCEPT.
+name: fleet/10_water_depth_separation_accepted
+description: Two ROVs separated by depth; no conflict.
+roster:
+  - { name: a, manifest: utm_rov }
+  - { name: b, manifest: utm_rov }
+shared_frames: [water]
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: parallel
+    branches:
+      - { type: "on", member: a, body: { move_to: { location: shallow } } }
+      - { type: "on", member: b, body: { move_to: { location: deep } } }
+expected_validation:
+  accepted: true

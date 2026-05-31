@@ -14,11 +14,13 @@ description: Differential-drive courier base for the fleet handoff demo.
 frames:
   - name: map
     parent: null
+  - name: site         # RFC-0287: the shared site frame both members reference at the dock
+    parent: null
 
 declared_locations:
   - name: handoff_dock
     pose: { x: 4.0, y: 2.0 }
-    frame: map
+    frame: site
     description: Shared exchange point where the arm picks from the courier's tray.
   - name: staging
     pose: { x: 0.0, y: 0.0 }

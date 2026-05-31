@@ -154,6 +154,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "kawasaki_rs": _EXAMPLES_FLEET / "kawasaki_rs.manifest.yaml",
     # RFC-0286: arm variant with no peer_link, for the barrier negative fixture.
     "kawasaki_rs_no_peer_link": _VALIDATOR_FIXTURES / "manifests" / "kawasaki_rs_no_peer_link.yaml",
+    # RFC-0287: per-medium robots with operational-clearance volumes (UTM deconfliction).
+    "utm_ground": _VALIDATOR_FIXTURES / "manifests" / "utm_ground.yaml",
+    "utm_drone": _VALIDATOR_FIXTURES / "manifests" / "utm_drone.yaml",
+    "utm_rov": _VALIDATOR_FIXTURES / "manifests" / "utm_rov.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -263,6 +267,10 @@ class FixtureCase(BaseModel):
     manifest: str | None = Field(None, description="Name of a registered manifest (single-robot).")
     roster: list[RosterMemberRef] | None = Field(
         None, description="Fleet roster (RFC-0286): member handles → registered manifests."
+    )
+    shared_frames: list[str] = Field(
+        default_factory=list,
+        description="Fleet only (RFC-0287): frames shared as a common physical reference.",
     )
     member_envelopes: dict[str, str] | None = Field(
         None, description="Fleet only: per-member envelope names (member handle → registered envelope)."

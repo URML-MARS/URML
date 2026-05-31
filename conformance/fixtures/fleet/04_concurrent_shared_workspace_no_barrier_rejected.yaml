@@ -7,6 +7,7 @@ description: Courier and arm both move_to handoff_dock in parallel, no rendezvou
 roster:
   - { name: courier, manifest: husky_amr }
   - { name: arm, manifest: kawasaki_rs }
+shared_frames: [site]
 policy: none
 profiles: [industrial]
 

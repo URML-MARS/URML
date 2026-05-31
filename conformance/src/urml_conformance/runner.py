@@ -269,6 +269,7 @@ class ConformanceRunner:
             roster = {
                 "roster_version": "0.1",
                 "members": [{"name": m.name, "manifest": m.manifest} for m in case.roster],
+                "shared_frames": case.shared_frames,
             }
             member_envelopes = (
                 {k: resolve_envelope(v) for k, v in case.member_envelopes.items()}

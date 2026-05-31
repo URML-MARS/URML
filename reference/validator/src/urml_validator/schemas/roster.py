@@ -69,6 +69,17 @@ class FleetRoster(BaseModel):
     roster_version: str = Field("0.1", description="Roster schema version this fleet targets.")
     members: list[RosterMember] = Field(..., min_length=1)
     description: str | None = None
+    shared_frames: list[Identifier] = Field(
+        default_factory=list,
+        description=(
+            "Frame names that denote ONE common physical coordinate reference across "
+            "all members (e.g. 'site', 'water', 'agl') — the fleet's shared geodetic "
+            "reference, in UTM terms (RFC-0287). The geometric cross-robot collision "
+            "check only compares targets whose frame is in this list; a member's own "
+            "local frame (e.g. each robot's private 'floor') is never compared against "
+            "another's. Empty (default) means the check abstains across members."
+        ),
+    )
 
     @model_validator(mode="after")
     def _unique_names(self) -> FleetRoster:
@@ -76,9 +87,17 @@ class FleetRoster(BaseModel):
         if len(names) != len(set(names)):
             dupes = sorted({n for n in names if names.count(n) > 1})
             raise ValueError(f"roster has duplicate member name(s): {dupes}")
+        if len(self.shared_frames) != len(set(self.shared_frames)):
+            dupes = sorted({f for f in self.shared_frames if self.shared_frames.count(f) > 1})
+            raise ValueError(f"roster has duplicate shared_frame(s): {dupes}")
         return self
 
     @property
     def member_names(self) -> set[str]:
         """The set of declared member handles."""
         return {m.name for m in self.members}
+
+    @property
+    def shared_frame_set(self) -> set[str]:
+        """The set of frames declared as a common physical reference (RFC-0287)."""
+        return set(self.shared_frames)

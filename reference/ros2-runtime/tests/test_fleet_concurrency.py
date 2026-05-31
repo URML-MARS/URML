@@ -47,6 +47,7 @@ _MANIFEST = {
 ROSTER = {
     "roster_version": "0.1",
     "members": [{"name": "a", "manifest": "m"}, {"name": "b", "manifest": "m"}],
+    "shared_frames": ["map"],  # RFC-0287: a shared frame so the collision check compares
 }
 MEMBERS = {"a": copy.deepcopy(_MANIFEST), "b": copy.deepcopy(_MANIFEST)}
 

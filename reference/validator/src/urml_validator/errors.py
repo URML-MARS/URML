@@ -104,6 +104,9 @@ class ErrorCode(StrEnum):
     # A `barrier` names a member whose manifest does not declare the `peer_link`
     # connectivity role required to synchronize (RFC-0006 reserved that role).
     FLEET_BARRIER_MISSING_PEER_LINK = "fleet.barrier_missing_peer_link"
+    # RFC-0287: warning — a roster `shared_frame` is declared by no member, so the
+    # geometric collision check silently has nothing to compare in it.
+    FLEET_SHARED_FRAME_UNDECLARED = "fleet.shared_frame_undeclared"
 
     # Internal / programmer-error categories.
     INTERNAL = "internal.error"

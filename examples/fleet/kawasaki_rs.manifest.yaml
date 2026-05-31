@@ -13,11 +13,13 @@ description: Stationary industrial arm for the fleet handoff demo.
 frames:
   - name: cell
     parent: null
+  - name: site         # RFC-0287: the shared site frame both members reference at the dock
+    parent: null
 
 declared_locations:
   - name: handoff_dock
-    pose: { x: 0.6, y: 0.0, z: 0.4 }
-    frame: cell
+    pose: { x: 4.0, y: 2.0, z: 0.4 }
+    frame: site
     description: Shared exchange point — the same named dock the courier drives to.
   - name: conveyor_a
     pose: { x: 0.4, y: 0.5, z: 0.4 }
