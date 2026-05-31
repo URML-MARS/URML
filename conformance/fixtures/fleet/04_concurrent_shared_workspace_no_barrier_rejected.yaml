@@ -1,0 +1,30 @@
+# RFC-0286 fleet conformance — negative: two members are driven to the same
+# declared location concurrently inside one `parallel` with no barrier between
+# them. The cross-robot collision class. Validator-only.
+name: fleet/04_concurrent_shared_workspace_no_barrier_rejected
+description: Courier and arm both move_to handoff_dock in parallel, no rendezvous.
+
+roster:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs }
+policy: none
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: parallel
+    complete_when: all
+    branches:
+      - type: "on"
+        member: courier
+        body:
+          move_to: { location: handoff_dock }
+      - type: "on"
+        member: arm
+        body:
+          move_to: { location: handoff_dock }
+
+expected_validation:
+  accepted: false
+  error_codes: [fleet.concurrent_shared_workspace]

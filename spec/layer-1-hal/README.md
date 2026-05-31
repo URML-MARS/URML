@@ -106,6 +106,19 @@ Each declared link carries abstract properties only: `required_for_operation`, `
 
 The deployment-time counterpart — what the robot must *do* when a declared link is lost — lives in the safety envelope's `link_loss_policy`, not here. The validator (Pass 2 and Pass 3) statically rejects a policy whose action the manifest cannot satisfy; see [RFC-0006](../../docs/rfcs/0006-connectivity-and-link-loss.md) §Detailed design.
 
+## Fleet roster (RFC-0286)
+
+[RFC-0286](../../docs/rfcs/0286-multi-robot-fleet-addressing.md) adds the multi-robot analogue of the capability manifest: a `roster`. A roster gives each robot in a fleet a short, English-callable handle and points at that robot's **existing, unchanged** per-robot manifest:
+
+```yaml
+roster_version: "0.1"
+members:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm,     manifest: kawasaki_rs }
+```
+
+The roster does not nest or alter a manifest — it binds N already-valid manifests by name. The handle declared here (`courier`, `arm`) is what a Layer-3 `on:` scope and a `barrier:` node address. The roster is optional infrastructure: a single-robot program needs none. A fleet mission file is two YAML documents — the roster, then the program — and the multi-robot validator (`validate_fleet`) checks each member's program subtree against that member's manifest, plus the cross-robot rules (collision-free concurrency, `peer_link` for barriers). The roster activates the `peer_link` role this layer reserved under Connectivity above.
+
 ## Conformance points
 
 The conformance suite (`/conformance/fixtures/`) tests:

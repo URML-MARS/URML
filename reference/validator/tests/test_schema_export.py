@@ -33,8 +33,8 @@ EXAMPLES_ROOT = REPO_ROOT / "examples"
 
 
 def test_registry_lists_all_expected_artifacts() -> None:
-    """The exporter knows about program, manifest, envelope, and policy."""
-    assert set(SCHEMA_REGISTRY.keys()) == {"program", "manifest", "envelope", "policy"}
+    """The exporter knows about program, manifest, envelope, policy, and roster."""
+    assert set(SCHEMA_REGISTRY.keys()) == {"program", "manifest", "envelope", "policy", "roster"}
 
 
 @pytest.mark.parametrize("name", sorted(SCHEMA_REGISTRY.keys()))
@@ -59,6 +59,22 @@ def test_manifest_schema_requires_robot_id() -> None:
     schema = export_schema("manifest")
     required = set(schema.get("required", []))
     assert "robot_id" in required
+
+
+def test_program_schema_includes_fleet_nodes() -> None:
+    """RFC-0286: the `on:` scope and `barrier:` rendezvous nodes must reach the
+    emitted program schema (they are part of the behavior union)."""
+    schema_text = json.dumps(export_schema("program"))
+    for token in ("OnMember", "Barrier"):
+        assert token in schema_text, f"program schema does not mention {token}"
+
+
+def test_roster_schema_requires_members() -> None:
+    """RFC-0286: the roster schema exports with members + RosterMember."""
+    schema = export_schema("roster")
+    required = set(schema.get("required", []))
+    assert "members" in required
+    assert "RosterMember" in json.dumps(schema)
 
 
 def test_comment_block_is_machine_readable_json() -> None:

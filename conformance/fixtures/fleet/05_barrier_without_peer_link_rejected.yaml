@@ -1,0 +1,27 @@
+# RFC-0286 fleet conformance — negative: a barrier names a member whose manifest
+# does not declare the `peer_link` connectivity role required to synchronize.
+# The arm here uses the no-peer-link manifest variant. Validator-only.
+name: fleet/05_barrier_without_peer_link_rejected
+description: A barrier names the arm, which declares no peer_link.
+
+roster:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs_no_peer_link }
+policy: none
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    steps:
+      - type: "on"
+        member: courier
+        body:
+          move_to: { location: handoff_dock }
+      - type: barrier
+        members: [courier, arm]
+
+expected_validation:
+  accepted: false
+  error_codes: [fleet.barrier_missing_peer_link]

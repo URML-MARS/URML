@@ -17,9 +17,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from urml_ros2_runtime import MockROSAdapter, URMLRuntime
+from urml_ros2_runtime import FleetRuntime, MockROSAdapter, URMLRuntime
 from urml_ros2_runtime.substrate.base import ROSAdapter
-from urml_validator import validate
+from urml_validator import validate, validate_fleet
 
 from urml_conformance.fixtures import (
     AdapterOverrides,
@@ -141,6 +141,33 @@ def _diag_execution(case: FixtureCase, result: Any, audit_log: list[dict[str, An
     return diagnostics
 
 
+def _diag_fleet_execution(case: FixtureCase, result: Any) -> list[str]:
+    """Compare a FleetRuntimeResult against expected_execution (RFC-0286)."""
+    expected = case.expected_execution
+    if expected is None:
+        return []
+    diagnostics: list[str] = []
+    if result.success != expected.success:
+        diagnostics.append(f"execution success={result.success}, expected={expected.success}")
+    if expected.steps_executed is not None and result.steps_executed != expected.steps_executed:
+        diagnostics.append(
+            f"steps_executed={result.steps_executed}, expected={expected.steps_executed}"
+        )
+    if expected.per_member_audit is not None:
+        for member, expected_methods in expected.per_member_audit.items():
+            log = result.per_member_audit.get(member)
+            if log is None:
+                diagnostics.append(f"per_member_audit missing member {member!r}")
+                continue
+            actual = [entry["method"] for entry in log]
+            if actual != expected_methods:
+                diagnostics.append(
+                    f"member {member!r} audit methods do not match: actual={actual!r}, "
+                    f"expected={expected_methods!r}"
+                )
+    return diagnostics
+
+
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
@@ -176,7 +203,10 @@ class ConformanceRunner:
         return ConformanceReport(results=results)
 
     def _run_case(self, case: FixtureCase) -> CaseResult:
+        if case.roster is not None:
+            return self._run_fleet_case(case)
         try:
+            assert case.manifest is not None  # guaranteed by FixtureCase validator
             manifest = resolve_manifest(case.manifest)
             envelope = resolve_envelope(case.envelope) if case.envelope else None
             policy = resolve_policy(case.policy)
@@ -229,3 +259,52 @@ class ConformanceRunner:
             passed=not diagnostics,
             diagnostics=diagnostics,
         )
+
+    def _run_fleet_case(self, case: FixtureCase) -> CaseResult:
+        """Run a multi-robot fleet fixture (RFC-0286) through validate_fleet
+        and (when execution is expected) FleetRuntime."""
+        assert case.roster is not None
+        try:
+            members = {m.name: resolve_manifest(m.manifest) for m in case.roster}
+            roster = {
+                "roster_version": "0.1",
+                "members": [{"name": m.name, "manifest": m.manifest} for m in case.roster],
+            }
+            member_envelopes = (
+                {k: resolve_envelope(v) for k, v in case.member_envelopes.items()}
+                if case.member_envelopes
+                else None
+            )
+            policy = resolve_policy(case.policy)
+        except (KeyError, ValueError) as exc:
+            return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
+
+        diagnostics: list[str] = []
+        validation = validate_fleet(
+            roster,
+            members,
+            case.program,
+            member_envelopes,
+            profiles=tuple(case.profiles),
+            policy=policy,
+        )
+        diagnostics.extend(_diag_validation(case, validation))
+
+        if case.expected_execution is None or not validation.accepted:
+            return CaseResult(name=case.name, passed=not diagnostics, diagnostics=diagnostics)
+
+        adapters: dict[str, ROSAdapter] = {name: self._adapter_factory() for name in members}
+        try:
+            fleet_result = FleetRuntime(adapters).execute(
+                roster,
+                members,
+                case.program,
+                member_envelopes,
+                profiles=tuple(case.profiles),
+            )
+        except Exception as exc:
+            diagnostics.append(f"fleet runtime raised: {type(exc).__name__}: {exc}")
+            return CaseResult(name=case.name, passed=False, diagnostics=diagnostics)
+
+        diagnostics.extend(_diag_fleet_execution(case, fleet_result))
+        return CaseResult(name=case.name, passed=not diagnostics, diagnostics=diagnostics)

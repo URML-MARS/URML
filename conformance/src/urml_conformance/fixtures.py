@@ -13,10 +13,10 @@ so authors don't have to inline the full manifest in every case.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from urml_ros2_runtime.substrate import (
     CaptureResult,
     DetectionResult,
@@ -38,6 +38,10 @@ from urml_ros2_runtime.substrate import (
 # parents[0]=urml_conformance, [1]=src, [2]=conformance, [3]=URML repo root.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _VALIDATOR_FIXTURES = _REPO_ROOT / "reference" / "validator" / "tests" / "fixtures"
+# RFC-0286: the fleet demo manifests are the canonical fleet members. The
+# conformance registry points at the single source in examples/fleet rather than
+# duplicating them, so there is one place to keep correct.
+_EXAMPLES_FLEET = _REPO_ROOT / "examples" / "fleet"
 
 #: Public registry: maps a short manifest name to its YAML path. Authors
 #: reference these by name in fixture files so the loader resolves them
@@ -145,6 +149,11 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "kuka_cell": _VALIDATOR_FIXTURES / "manifests" / "kuka_cell.yaml",
     # RFC-0028: FANUC integration (Move #1 lighthouse) — closes original-six gap.
     "fanuc_cell": _VALIDATOR_FIXTURES / "manifests" / "fanuc_cell.yaml",
+    # RFC-0286: fleet demo members (canonical source lives in examples/fleet).
+    "husky_amr": _EXAMPLES_FLEET / "husky_amr.manifest.yaml",
+    "kawasaki_rs": _EXAMPLES_FLEET / "kawasaki_rs.manifest.yaml",
+    # RFC-0286: arm variant with no peer_link, for the barrier negative fixture.
+    "kawasaki_rs_no_peer_link": _VALIDATOR_FIXTURES / "manifests" / "kawasaki_rs_no_peer_link.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -221,17 +230,43 @@ class ExpectedExecution(BaseModel):
         None,
         description="If set, last_outcome.reason must equal this value.",
     )
+    per_member_audit: dict[str, list[str]] | None = Field(
+        None,
+        description=(
+            "Fleet (RFC-0286) only. If set, each member's adapter call_log "
+            "methods must match the listed sequence exactly, in order."
+        ),
+    )
+
+
+class RosterMemberRef(BaseModel):
+    """One fleet member in a conformance roster: a handle and a manifest name."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    manifest: str = Field(..., description="Name of a registered manifest.")
 
 
 class FixtureCase(BaseModel):
-    """One declarative test case."""
+    """One declarative test case.
+
+    Single-robot cases set ``manifest``; fleet cases (RFC-0286) set ``roster``
+    instead. Exactly one of the two must be present.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     name: str
     description: str | None = None
 
-    manifest: str = Field(..., description="Name of a registered manifest.")
+    manifest: str | None = Field(None, description="Name of a registered manifest (single-robot).")
+    roster: list[RosterMemberRef] | None = Field(
+        None, description="Fleet roster (RFC-0286): member handles → registered manifests."
+    )
+    member_envelopes: dict[str, str] | None = Field(
+        None, description="Fleet only: per-member envelope names (member handle → registered envelope)."
+    )
     envelope: str | None = Field(
         None, description="Name of a registered envelope (optional)."
     )
@@ -264,6 +299,12 @@ class FixtureCase(BaseModel):
             "not invoked. Set this for any test that exercises execution."
         ),
     )
+
+    @model_validator(mode="after")
+    def _exactly_one_target(self) -> FixtureCase:
+        if (self.manifest is None) == (self.roster is None):
+            raise ValueError("a fixture must set exactly one of `manifest` or `roster`")
+        return self
 
 
 class AdapterOverrides(BaseModel):
@@ -358,7 +399,7 @@ def resolve_envelope(name: str) -> dict[str, Any]:
     return result
 
 
-def resolve_policy(name: str | None) -> dict[str, Any] | None | str:
+def resolve_policy(name: str | None) -> dict[str, Any] | None | Literal["DEFAULT"]:
     """Resolve a fixture's `policy:` field to the argument the validator expects.
 
     Returns one of:

@@ -39,7 +39,8 @@ def test_every_fixture_parses_into_a_valid_case_model() -> None:
     for case in discover_fixtures():
         assert isinstance(case, FixtureCase)
         assert case.name
-        assert case.manifest
+        # Exactly one of manifest (single-robot) / roster (fleet, RFC-0286).
+        assert (case.manifest is None) != (case.roster is None)
         assert isinstance(case.profiles, list)
         assert "behavior" in case.program
 
@@ -60,6 +61,10 @@ def test_full_suite_passes_against_mock_runtime() -> None:
     assert any("branch" in n for n in names)
     assert any("retry" in n for n in names)
     assert any("parallel" in n for n in names)
+    # RFC-0286: the fleet lane ships at least one positive and one rejected case.
+    fleet_names = [n for n in names if n.startswith("fleet/")]
+    assert any("positive" in n for n in fleet_names)
+    assert any("rejected" in n for n in fleet_names)
 
 
 def test_report_render_includes_pass_count() -> None:

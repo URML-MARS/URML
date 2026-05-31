@@ -1,0 +1,36 @@
+# Fleet demo — member manifest: the courier (a mobile base).
+#
+# One half of the courier-to-arm handoff (RFC-0286). A differential-drive
+# mobile base that ferries a tray to a shared handoff dock and returns to
+# staging. It declares `peer_link` so it can synchronize with the arm at a
+# `barrier`. `handoff_dock` is declared with the same name on both members'
+# manifests — that shared name is what the validator's cross-robot workspace
+# check reasons over.
+
+manifest_version: "0.1"
+robot_id: husky_amr
+description: Differential-drive courier base for the fleet handoff demo.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: handoff_dock
+    pose: { x: 4.0, y: 2.0 }
+    frame: map
+    description: Shared exchange point where the arm picks from the courier's tray.
+  - name: staging
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+    description: Courier's idle/return position.
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.5
+  station_keeping: false
+
+connectivity:
+  links:
+    - role: peer_link
+      description: Robot-to-robot link used to rendezvous with the arm at a barrier.

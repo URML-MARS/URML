@@ -1,0 +1,22 @@
+# RFC-0286 fleet conformance — negative: an `on:` node names a member the roster
+# does not declare. Validator-only (no expected_execution).
+name: fleet/02_undeclared_member_rejected
+description: An `on:` scope addresses 'gripper', which is not a roster member.
+
+roster:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs }
+policy: none
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: "on"
+    member: gripper          # not in the roster
+    body:
+      move_to: { location: handoff_dock }
+
+expected_validation:
+  accepted: false
+  error_codes: [fleet.undeclared_member]

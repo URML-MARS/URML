@@ -34,6 +34,7 @@ from urml_ros2_runtime.errors import (
     UnsupportedCompositionError,
     ValidationRejectedError,
 )
+from urml_ros2_runtime.fleet import FleetRuntime, FleetRuntimeResult
 from urml_ros2_runtime.primitives import PrimitiveOutcome
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
 from urml_ros2_runtime.substrate import (
@@ -55,6 +56,8 @@ __all__ = [
     "CaptureResult",
     "ConditionEvalError",
     "DetectionResult",
+    "FleetRuntime",
+    "FleetRuntimeResult",
     "MeasurementResult",
     "MockROSAdapter",
     "NavigationResult",
