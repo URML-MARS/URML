@@ -2,9 +2,9 @@
 rfc: 0167
 title: Meta fairseq / NLLB-200 (archived seq2seq toolkit, 200-language model) integration, request for comment from facebookresearch maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-30
 supersedes: —
 superseded-by: —
 ---
@@ -24,6 +24,8 @@ superseded-by: —
 ---
 
 # RFC-0167: Meta fairseq / NLLB-200 (200-language translation model, archived toolkit) integration, request for comment from facebookresearch maintainers
+
+> **Update 2026-05-30 (retargeted to successor surface).** This RFC was deferred at posting time 2026-05-28 because `facebookresearch/fairseq` is archived and `gh issue create` is refused there. The RFC's own primary ask was the successor-surface question. The candidate successor named below, [`facebookresearch/seamless_communication`](https://github.com/facebookresearch/seamless_communication), is live (Issues + Discussions). The engagement was posted there ([seamless_communication#578](https://github.com/facebookresearch/seamless_communication/issues/578)), framed as the successor-surface question plus the manifest-level model-license note. The CC-BY-NC non-commercial-weights caveat is unchanged and stated plainly in the post. State moves Draft → Open.
 
 ## Summary
 

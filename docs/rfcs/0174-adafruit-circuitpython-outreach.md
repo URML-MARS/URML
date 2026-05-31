@@ -2,9 +2,9 @@
 rfc: 0174
 title: Adafruit CircuitPython (Python on MCU) integration, request for comment from adafruit maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-05-28
-updated: 2026-05-28
+updated: 2026-05-31
 supersedes: —
 superseded-by: —
 ---
@@ -47,18 +47,20 @@ The natural URML integration shape is host-side: a Mu / Thonny / Code-with-Mu ID
 
 ### URML v0.1 capability-manifest mapping (planned `adafruit_feather_rp2040_cell.yaml` fixture)
 
+This table is reconciled to **[RFC-0270](0270-substrate-mcu-class.md)** (the Spec RFC that adds the MCU substrate declaration); the earlier draft of this RFC proposed ad-hoc `mcu_class` / `firmware_language` / `host_interface` fields, which RFC-0270 supersedes with `substrate.class` + `substrate.mcu_options`.
+
 | URML field | Maps to CircuitPython attribute |
 |---|---|
 | `name` | Specific board (`adafruit_feather_rp2040`, `adafruit_qt_py_esp32`) |
-| `mcu_class: custom` (`circuitpython_compatible`) | Declares CircuitPython-compatible board-class |
-| `firmware_language: custom` (`circuitpython`) | Python derivative on the MCU |
-| `host_interface: custom` (`circuitpython_repl` / `code_drag_drop`) | CircuitPython's distinctive USB-mass-storage `code.py` model |
-| `library_namespace: custom` (`adafruit_circuitpython_*`) | Adafruit library naming convention |
+| `substrate.class: circuitpython` | Declares the CircuitPython MCU substrate. RFC-0270 gives `circuitpython` and `micropython` **distinct** enum values (per @dhalbert: CircuitPython is a friendly fork of MicroPython with different hardware modules, so the two are distinct mappings). |
+| `substrate.mcu_options.board` / `.chip` | Board + MCU-family identifier (`adafruit_feather_rp2040` / `rp2040`) per RFC-0270 |
+| `substrate.mcu_options.bus_protocols` | MCU-side comms (`i2c` / `spi` / `uart`) per RFC-0270 |
+| `substrate.mcu_options.library_bundle: circuitpython_community_bundle` | Where the device-side helper library lives — per @dhalbert, the [Community Bundle](https://github.com/adafruit/CircuitPython_Community_Bundle), not core |
 
 ### What URML v0.1 does not yet express for CircuitPython
 
 1. **Python-on-MCU language substrate declaration.** URML's v0.1 has no `circuitpython` or generic `python_on_mcu` firmware-language declaration. Spec RFC queued (shared with RFC-0172 micro:bit MicroPython).
-2. **Drag-drop `code.py` deploy-model declaration.** CircuitPython's distinguishing feature is USB-mass-storage drag-drop deploy — URML's manifest cannot today declare this deploy-model class.
+2. **Host-side comms, not drag-drop deploy.** URML integrates as a **host-side comms program** (serial / REPL), which @dhalbert confirmed is the direction CircuitPython/MicroPython favour. USB-mass-storage `code.py` drag-drop is **not assumed** — it is not available on every board (some lack an MSC drive). No manifest field is needed for the deploy model; the host-side adapter (see `reference/edu-runtime`) is the integration surface, and the device-side receiver's home is the Community Bundle.
 3. **CircuitPython-compatible board-variant scale.** 400+ board variants means URML's manifest needs a structured identifier scheme, not per-board enum entries.
 
 ### Compatibility notes
@@ -72,7 +74,7 @@ The natural URML integration shape is host-side: a Mu / Thonny / Code-with-Mu ID
 ### Spec / validator / reference-runtime / conformance changes
 
 - Spec / validator: none in this RFC; Python-on-MCU substrate + drag-drop deploy-model Spec RFCs queued.
-- Reference runtime: future `reference/edu-runtime/CircuitPythonAdapter` is a candidate — composes with the existing `microbit_edu` fixture pattern at the Python-MCU layer.
+- Reference runtime: **`CircuitPythonAdapter` shipped** in `reference/edu-runtime` (2026-05-31, in response to the engaged reply) — a host-side comms adapter mirroring the `RoboticalMartyAdapter` / `PetoiAdapter` parametric-dispatch shape, with a manifest fixture (`adafruit_feather_rp2040_cell`) and an educational conformance fixture (`educational/circuitpython_patrol_positive`). The concrete host-bridge package and the device-side Community-Bundle receiver are pending hardware validation.
 
 ## Backward compatibility
 
@@ -110,9 +112,21 @@ For the adafruit maintainers:
 6. **Conformance listing.** Would Adafruit consider a README link to URML's compatible-runtimes registry once a working adapter ships?
 7. **Anything else.**
 
+## Maintainer responses
+
+**2026-05-28, @dhalbert (`adafruit/circuitpython` COLLABORATOR, Adafruit) on [adafruit/circuitpython#11035](https://github.com/adafruit/circuitpython/issues/11035):** "We would not mind being listed in the spec," with five concrete points.
+
+1. **Drag-drop deploy is not universal.** Some boards lack a USB-MSC drive, so `code.py` drag-drop cannot be assumed. URML's response: the integration is a host-side comms program (serial / REPL), no MSC assumption; the manifest table above is reframed accordingly.
+2. **Adapter home is the Community Bundle, not core.** Adafruit will not maintain the URML adapter; the device-side helper library belongs in the [Adafruit CircuitPython Community Bundle](https://github.com/adafruit/CircuitPython_Community_Bundle). URML's response: the shipped `CircuitPythonAdapter` is the **host-side** half (in `reference/edu-runtime`); the device-side receiver targets the Community Bundle and is a founder action pending hardware validation.
+3. **awesome-circuitpython pointer.** A pointer to URML can be added to [awesome-circuitpython](https://github.com/adafruit/awesome-circuitpython). URML's response: accepted as a founder action once the adapter is hardware-validated.
+4. **CircuitPython is a friendly fork of MicroPython** sharing the base language but with different hardware modules — two distinct mappings are needed. URML's response: [RFC-0270](0270-substrate-mcu-class.md) already gives `circuitpython` and `micropython` **distinct** `substrate.class` enum values; the split is honoured at the spec layer.
+5. **Host-side comms preferred, and a human reply requested.** @dhalbert noted MicroPython is deemphasizing MSC in favour of host-side comms programs, and asked to discuss with a human rather than an LLM. URML's response: the host-side adapter design follows this preference; the substantive thread reply is a founder action (a human reply), per [VIBE.md](../../VIBE.md).
+
+Open items for the maintainers (Q1–Q7 above) remain available; the engaged response resolved the adapter-home (Q5) and library-namespace questions and reframed the deploy-model (Q3).
+
 ## Implementation note
 
-RFC-0174 ships as a single RFC document PR. Ledger entry in [`examples/lighthouses/outreach-move13.yaml`](../../examples/lighthouses/outreach-move13.yaml).
+RFC-0174 began as a single RFC document; the engaged reply produced a shipped host-side adapter (2026-05-31), so it now carries reference-runtime code, a manifest fixture, and a conformance fixture (the Marty / Petoi engagement-to-adapter pattern). Ledger entry in [`examples/lighthouses/outreach-move13.yaml`](../../examples/lighthouses/outreach-move13.yaml).
 
 ## How to respond
 

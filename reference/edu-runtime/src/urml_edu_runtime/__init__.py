@@ -5,6 +5,7 @@
   ThymioAdapter        — Thymio over the Aseba TDM (Thymio Device Manager).
   RoboticalMartyAdapter — Robotical Marty v1/v2 via the martypy skill library.
   PetoiAdapter         — Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library.
+  CircuitPythonAdapter — Adafruit CircuitPython (Python on MCU) via a host-side comms bridge.
   (+ EduConfig, BRAND_ADAPTERS, load_edu_config)
 
 The classroom/maker adoption flywheel (RFC-0011). Each platform's
@@ -22,6 +23,7 @@ from __future__ import annotations
 
 from urml_edu_runtime._version import __version__
 from urml_edu_runtime.adapter import (
+    CircuitPythonAdapter,
     EduCommand,
     EduConfig,
     EduSkillCall,
@@ -39,10 +41,12 @@ BRAND_ADAPTERS = {
     "thymio": ThymioAdapter,
     "marty": RoboticalMartyAdapter,
     "petoi": PetoiAdapter,
+    "circuitpython": CircuitPythonAdapter,
 }
 
 __all__ = [
     "BRAND_ADAPTERS",
+    "CircuitPythonAdapter",
     "EduCommand",
     "EduConfig",
     "EduSkillCall",

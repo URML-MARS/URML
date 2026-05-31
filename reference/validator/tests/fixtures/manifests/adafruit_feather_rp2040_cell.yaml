@@ -1,0 +1,65 @@
+# Fixture: Adafruit Feather RP2040 via CircuitPython; Adafruit Industries, New York, US.
+# Substrate = urml-edu-runtime, zero ROS. RFC-0011 educational flywheel; RFC-0174 integration.
+# CircuitPython (Python on MCU) over a host-side comms bridge (serial / REPL), NOT USB-MSC
+# drag-drop, per maintainer engagement on adafruit/circuitpython#11035 (@dhalbert, 2026-05-28).
+# United States — passes the default US-federal policy (US origin). Default policy ACCEPTS.
+
+manifest_version: "0.1"
+robot_id: adafruit_feather_rp2040_1
+description: "Adafruit Feather RP2040 via CircuitPython; Adafruit Industries, New York, US."
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+declared_locations:
+  - name: start_pad
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+  - name: waypoint_a
+    pose: { x: 0.3, y: 0.0 }
+    frame: floor
+  - name: rest_pad
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+
+declared_events:
+  - button_pressed
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.2
+  station_keeping: false
+
+perception:
+  sensors:
+    - name: analog_input
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 3.3
+      units: volts
+    - name: distance
+      measurement_type: custom    # v0.1 enum has no distance type; using custom escape-hatch
+      range_min: 0.0
+      range_max: 500.0
+      units: cm
+  object_vocabulary: []
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: adafruit_feather_rp2040_board
+      role: critical
+      vendor: adafruit
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/adafruit_feather_rp2040.cdx.json
+        sha256: "8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f"
+
+outputs:
+  named_endpoints:
+    - classroom_log
