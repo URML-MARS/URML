@@ -102,6 +102,103 @@ def build_system_prompt(
 
 
 # ---------------------------------------------------------------------------
+# Fleet prompt (RFC-0286) — natural language to a multi-robot program
+# ---------------------------------------------------------------------------
+
+
+_FLEET_INSTRUCTION_HEADER = """\
+You are a robot-intent translator for a FLEET of robots. Convert the user's
+natural-language request into a single URML program that commands several named
+robots.
+
+You MUST emit a single JSON object that conforms to the URML program schema
+attached below. Do NOT wrap the JSON in Markdown code fences. Do NOT include
+commentary outside the JSON.
+
+Multi-robot rules:
+- Address one robot by wrapping its work in an `on` node:
+  {"type": "on", "member": "<roster member>", "body": <behavior-or-step>}.
+  Every primitive must sit under an `on` node naming a declared roster member.
+- Synchronize robots with a barrier:
+  {"type": "barrier", "members": ["<member>", "<member>", ...]}.
+  Execution does not pass a barrier until every named member reaches it. Use a
+  barrier whenever one robot must wait for another (a handoff, a rendezvous).
+- Run robots at the same time by putting their `on` nodes in a `parallel`.
+- Use ONLY the members, and per member ONLY the locations, objects, sensors, and
+  programs that member's manifest below declares. If the request needs something
+  no member can do, emit a `report` step (under an `on` node) with
+  `status: failure` and a `facts.reason`. Do not invent capabilities.
+- Do not send two different members to the same declared location inside one
+  `parallel`; separate them with a `barrier` or use distinct locations.
+"""
+
+
+def build_fleet_system_prompt(
+    *,
+    schema: dict[str, Any],
+    roster: dict[str, Any],
+    member_manifests: dict[str, dict[str, Any]],
+    profiles: tuple[str, ...] = (),
+    few_shots: list[FewShot] | None = None,
+    revision_context: str | None = None,
+) -> str:
+    """Assemble the system prompt for a multi-robot (fleet) translation.
+
+    Mirrors `build_system_prompt`, but summarizes the whole roster (one
+    capability summary per member) instead of a single manifest.
+    """
+    parts: list[str] = [_FLEET_INSTRUCTION_HEADER]
+    parts.append(f"Active profile(s): {', '.join(profiles) if profiles else '(none declared)'}")
+    parts.append("")
+
+    parts.append("=== Fleet roster ===")
+    parts.append(_summarise_roster(roster, member_manifests))
+    parts.append("")
+
+    if few_shots:
+        parts.append("=== Examples ===")
+        for idx, ex in enumerate(few_shots, start=1):
+            parts.append(f"--- Example {idx} ---")
+            if ex.note:
+                parts.append(f"# {ex.note}")
+            parts.append(f"User request: {ex.user}")
+            parts.append("Emitted URML:")
+            parts.append(json.dumps(ex.program, indent=2))
+            parts.append("")
+
+    parts.append("=== URML program JSON Schema ===")
+    parts.append(json.dumps(schema, indent=2, sort_keys=True))
+    parts.append("")
+
+    if revision_context:
+        parts.append("=== Revision required ===")
+        parts.append(revision_context)
+        parts.append("")
+
+    return "\n".join(parts)
+
+
+def _summarise_roster(roster: dict[str, Any], member_manifests: dict[str, dict[str, Any]]) -> str:
+    """Render the roster as a compact, prompt-friendly summary: one capability
+    block per member, keyed by the member handle the program must address."""
+    members = roster.get("members") or []
+    lines: list[str] = [
+        f"This fleet has {len(members)} member(s). Address each by its handle with an "
+        "`on` node; synchronize them with a `barrier` node.",
+    ]
+    for member in members:
+        name = member.get("name", "<unknown>")
+        lines.append("")
+        lines.append(f"### member `{name}`")
+        manifest = member_manifests.get(name)
+        if manifest is None:
+            lines.append("(no manifest resolved)")
+            continue
+        lines.append(_summarise_manifest(manifest))
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
 # Compact summaries
 # ---------------------------------------------------------------------------
 

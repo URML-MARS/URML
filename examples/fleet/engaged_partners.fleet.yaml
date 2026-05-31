@@ -1,0 +1,66 @@
+# URML v0.1 fleet mission — a synchronized roll-call of URML's engaged partners (RFC-0286).
+#
+# Four heterogeneous real robots, named and synchronized in one program:
+#   marty   — Robotical Marty v2     (biped,        UK)   robotical/martypy#52
+#   petoi   — Petoi Bittle X         (quadruped,    CN)   PetoiCamp/OpenCat#113
+#   feather — Adafruit Feather RP2040 (differential, US)   adafruit/circuitpython#11035
+#   arm     — Kawasaki cell          (manipulator,  JP)   Kawasaki-Robotics/khi_ros2#9
+#
+# The choreography: each robot moves to a station, they rendezvous at a barrier,
+# take a SYNCHRONIZED sensor reading (the in-sync moment), rendezvous again, then
+# stand down. Validated against the four real partner manifests; run it with
+#   python run_partners_demo.py
+#
+# Honest note on the moves: the validator's cross-robot collision check is
+# name-based in v0.1, and three of these robots happen to declare a location
+# named `waypoint_a`. So each robot targets a DISTINCT declared location in any
+# single `parallel` — the synchronization that matters here is the `measure`
+# sweep and the barriers, not a shared destination. (A geometric workspace-volume
+# check that would let same-named-but-distinct locations coexist is named as
+# future work in RFC-0286.)
+
+roster_version: "0.1"
+description: A synchronized roll-call of four engaged-partner robots.
+members:
+  - { name: marty,   manifest: robotical_marty_v2 }
+  - { name: petoi,   manifest: petoi_bittle_x }
+  - { name: feather, manifest: adafruit_feather_rp2040_cell }
+  - { name: arm,     manifest: kawasaki_cell }
+---
+profile: [educational, industrial]
+description: Move to stations, sync at a barrier, take a synchronized reading, stand down.
+behavior:
+  type: sequence
+  steps:
+    # 1. Take your marks — each robot moves to a distinct station, all at once.
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: marty,   body: { move_to: { location: waypoint_a } } }
+        - { type: "on", member: petoi,   body: { move_to: { location: start_mat } } }
+        - { type: "on", member: feather, body: { move_to: { location: start_pad } } }
+        - { type: "on", member: arm,     body: { move_to: { location: home_pose } } }
+
+    - type: barrier
+      members: [marty, petoi, feather, arm]
+
+    # 2. The synchronized moment — every robot takes a sensor reading at once.
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: marty,   body: { measure: { what: voltage,  store_as: marty_v } } }
+        - { type: "on", member: petoi,   body: { measure: { what: voltage,  store_as: petoi_v } } }
+        - { type: "on", member: feather, body: { measure: { what: voltage,  store_as: feather_v } } }
+        - { type: "on", member: arm,     body: { measure: { what: pressure, store_as: arm_force } } }
+
+    - type: barrier
+      members: [marty, petoi, feather, arm]
+
+    # 3. Stand down — each to a distinct rest spot; the arm runs its home routine.
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: marty,   body: { move_to: { location: rest_mat } } }
+        - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+        - { type: "on", member: feather, body: { move_to: { location: rest_pad } } }
+        - { type: "on", member: arm,     body: { call_program: { name: home_all } } }

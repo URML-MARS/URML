@@ -24,10 +24,11 @@ Bypassing the validator is prohibited (CLAUDE.md safety boundary).
 
 from __future__ import annotations
 
-from typing import Any
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from urml_validator import ValidationResult, validate_fleet
+from urml_validator import Policy, ValidationResult, validate_fleet
 from urml_validator.schemas.composition import (
     Barrier,
     Branch,
@@ -67,7 +68,13 @@ class FleetRuntimeResult(BaseModel):
 class FleetRuntime:
     """Executes a validated multi-robot URML program across member adapters."""
 
-    def __init__(self, adapters: dict[str, ROSAdapter], *, revalidate: bool = True) -> None:
+    def __init__(
+        self,
+        adapters: dict[str, ROSAdapter],
+        *,
+        revalidate: bool = True,
+        sequential: bool = False,
+    ) -> None:
         """Construct a fleet runtime bound to one adapter per member.
 
         Args:
@@ -77,9 +84,18 @@ class FleetRuntime:
                         via `validate_fleet` before dispatching (defense-in-depth;
                         see CLAUDE.md). Set False only for already-validated input
                         in a deterministic test harness.
+            sequential: When True, `parallel` branches run one after another
+                        (fully deterministic — used by conformance for byte-stable
+                        audits). When False (default), branches run CONCURRENTLY on
+                        a thread pool: members dispatch to their adapters at the
+                        same time, which is what makes "the robots move together"
+                        real. Per-member audit stays deterministic regardless —
+                        each member owns its adapter, so its call-log is ordered;
+                        only the cross-member interleaving differs.
         """
         self._adapters = dict(adapters)
         self._revalidate = revalidate
+        self._sequential = sequential
 
     def execute(
         self,
@@ -88,8 +104,14 @@ class FleetRuntime:
         program: dict[str, Any] | URMLProgram,
         member_envelopes: dict[str, dict[str, Any]] | None = None,
         profiles: tuple[str, ...] = (),
+        policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
     ) -> FleetRuntimeResult:
         """Execute a fleet program against the runtime's member adapters.
+
+        ``policy`` is forwarded to the defense-in-depth re-validation, so a
+        deployment can run ``--no-policy`` (``policy=None``) exactly as the
+        validator does — the no-bypass rule is about skipping validation, not
+        about the optional compliance pass.
 
         Raises ``ValidationRejectedError`` if defense-in-depth re-validation
         rejects the program, or ``UnsupportedCompositionError`` for a node this
@@ -97,7 +119,8 @@ class FleetRuntime:
         """
         if self._revalidate:
             result: ValidationResult = validate_fleet(
-                roster, member_manifests, program, member_envelopes, profiles=profiles
+                roster, member_manifests, program, member_envelopes,
+                profiles=profiles, policy=policy,
             )
             if not result.accepted:
                 raise ValidationRejectedError(
@@ -237,13 +260,33 @@ class FleetRuntime:
         bindings: dict[str, Any],
         steps_executed: int,
     ) -> tuple[int, PrimitiveOutcome | None]:
-        """Execute branches (sequentially, deterministically) and aggregate.
+        """Execute `parallel` branches concurrently (default) or sequentially.
 
         Branches may each dispatch to a different member's adapter via an inner
-        `on:` node. Aggregation mirrors the single-robot runtime: ``all`` halts
-        on first failure, ``any`` needs one success, ``first_to_succeed``
-        short-circuits.
+        `on:` node. The default concurrent path is what makes the members move
+        *at the same time*; `sequential=True` runs them in order for byte-stable
+        determinism. Aggregation is identical: ``all`` fails on any branch
+        failure, ``any`` needs one success, ``first_to_succeed`` selects the
+        first successful branch in declaration order.
         """
+        if self._sequential:
+            return self._exec_parallel_sequential(
+                node, adapter=adapter, path=path, bindings=bindings, steps_executed=steps_executed
+            )
+        return self._exec_parallel_concurrent(
+            node, adapter=adapter, path=path, bindings=bindings, steps_executed=steps_executed
+        )
+
+    def _exec_parallel_sequential(
+        self,
+        node: Parallel,
+        *,
+        adapter: ROSAdapter | None,
+        path: list[str],
+        bindings: dict[str, Any],
+        steps_executed: int,
+    ) -> tuple[int, PrimitiveOutcome | None]:
+        """Run branches one after another (deterministic; short-circuits)."""
         succeeded = 0
         last_outcome: PrimitiveOutcome | None = None
         for idx, sub in enumerate(node.branches):
@@ -276,6 +319,76 @@ class FleetRuntime:
             if succeeded >= 1:
                 return steps_executed, last_outcome
             return steps_executed, PrimitiveOutcome(
+                success=False, reason="parallel.first_to_succeed: no branch succeeded"
+            )
+        raise UnsupportedCompositionError(
+            f"unknown parallel.complete_when: {node.complete_when!r}"
+        )
+
+    def _exec_parallel_concurrent(
+        self,
+        node: Parallel,
+        *,
+        adapter: ROSAdapter | None,
+        path: list[str],
+        bindings: dict[str, Any],
+        steps_executed: int,
+    ) -> tuple[int, PrimitiveOutcome | None]:
+        """Run branches concurrently on a thread pool, then aggregate.
+
+        Each branch gets its own copy of the bindings (thread-safe — no shared
+        mutation mid-flight; a cross-branch ``$ref`` dependency is a hazard the
+        validator already discourages). All branches run to completion, then the
+        results are aggregated in declaration order and their bindings merged.
+        """
+
+        def run_branch(
+            idx: int, sub: Any
+        ) -> tuple[int, int, PrimitiveOutcome | None, dict[str, Any]]:
+            branch_bindings = dict(bindings)
+            steps, outcome = self._exec(
+                sub,
+                adapter=adapter,
+                path=[*path, "branches", str(idx)],
+                bindings=branch_bindings,
+                steps_executed=0,
+            )
+            return idx, steps, outcome, branch_bindings
+
+        results_by_idx: dict[int, tuple[int, PrimitiveOutcome | None, dict[str, Any]]] = {}
+        with ThreadPoolExecutor(max_workers=len(node.branches)) as pool:
+            futures = [pool.submit(run_branch, idx, sub) for idx, sub in enumerate(node.branches)]
+            for fut in as_completed(futures):
+                idx, steps, outcome, branch_bindings = fut.result()
+                results_by_idx[idx] = (steps, outcome, branch_bindings)
+        ordered = [results_by_idx[i] for i in range(len(node.branches))]
+
+        total = steps_executed
+        succeeded = 0
+        first_failure: PrimitiveOutcome | None = None
+        last_outcome: PrimitiveOutcome | None = None
+        for steps, outcome, branch_bindings in ordered:
+            total += steps
+            bindings.update(branch_bindings)
+            last_outcome = outcome
+            if outcome is None or outcome.success:
+                succeeded += 1
+            elif first_failure is None:
+                first_failure = outcome
+
+        if node.complete_when == "all":
+            return total, (first_failure if first_failure is not None else last_outcome)
+        if node.complete_when == "any":
+            if succeeded >= 1:
+                return total, PrimitiveOutcome(success=True, reason=f"parallel.any:{succeeded}")
+            return total, PrimitiveOutcome(
+                success=False, reason="parallel.any: every branch failed"
+            )
+        if node.complete_when == "first_to_succeed":
+            for steps, outcome, branch_bindings in ordered:
+                if outcome is None or outcome.success:
+                    return total, outcome
+            return total, PrimitiveOutcome(
                 success=False, reason="parallel.first_to_succeed: no branch succeeded"
             )
         raise UnsupportedCompositionError(

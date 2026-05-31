@@ -71,6 +71,10 @@ programs:                          # RFC-0015: commissioned AS-language programs
 
 docking_stations: []
 
+connectivity:                        # RFC-0286: declare peer_link so the arm can join a fleet barrier
+  links:
+    - role: peer_link
+
 outputs:
   named_endpoints:
     - line_controller

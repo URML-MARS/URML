@@ -43,6 +43,7 @@ from urml_validator import (
     ValidationResult,
     export_schema,
     validate,
+    validate_fleet,
 )
 
 from urml_llm_bridge.errors import (
@@ -50,8 +51,12 @@ from urml_llm_bridge.errors import (
     BridgeRevisionExhausted,
     ProviderError,
 )
-from urml_llm_bridge.few_shot import FewShot, few_shots_for
-from urml_llm_bridge.prompt import build_system_prompt, render_revision_context
+from urml_llm_bridge.few_shot import FewShot, few_shots_for, fleet_few_shots
+from urml_llm_bridge.prompt import (
+    build_fleet_system_prompt,
+    build_system_prompt,
+    render_revision_context,
+)
 from urml_llm_bridge.providers.base import LLMProvider
 
 
@@ -192,6 +197,113 @@ class Bridge:
             )
 
         assert last_result is not None  # the loop runs at least once
+        raise BridgeRevisionExhausted(
+            f"validator rejected the LLM's emission in all {attempts_total} attempt(s)",
+            last_result=last_result,
+            attempts=attempts_total,
+        )
+
+
+class FleetBridge:
+    """Provider-agnostic translator from natural language to a validated
+    multi-robot URML program (RFC-0286).
+
+    The inter-robot analogue of `Bridge`: it summarizes a whole roster (one
+    capability block per member) in the prompt and validates each emission with
+    `validate_fleet` instead of `validate`. The revision loop, provider protocol,
+    and `TranslateResult` shape are identical.
+    """
+
+    def __init__(
+        self,
+        *,
+        provider: LLMProvider,
+        roster: dict[str, Any],
+        member_manifests: dict[str, dict[str, Any]],
+        member_envelopes: dict[str, dict[str, Any]] | None = None,
+        profiles: tuple[str, ...] = (),
+        few_shots: list[FewShot] | None = None,
+        max_revisions: int = 3,
+        policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
+    ) -> None:
+        self._provider = provider
+        self._roster = roster
+        self._member_manifests = member_manifests
+        self._member_envelopes = member_envelopes
+        self._profiles = tuple(profiles)
+        self._few_shots = few_shots if few_shots is not None else fleet_few_shots()
+        self._max_revisions = max_revisions
+        self._policy = policy
+        self._schema = export_schema("program")
+
+    def translate(self, user_request: str) -> TranslateResult:
+        """Translate a natural-language request into a validated fleet program.
+
+        Same contract as `Bridge.translate` — raises `BridgeRevisionExhausted`,
+        `BridgePolicyViolation`, or `ProviderError`.
+        """
+        revision_context: str | None = None
+        raw_completions: list[str] = []
+        last_result: ValidationResult | None = None
+
+        attempts_total = self._max_revisions + 1
+        for attempt_idx in range(attempts_total):
+            system_prompt = build_fleet_system_prompt(
+                schema=self._schema,
+                roster=self._roster,
+                member_manifests=self._member_manifests,
+                profiles=self._profiles,
+                few_shots=self._few_shots,
+                revision_context=revision_context,
+            )
+            try:
+                raw = self._provider.complete(
+                    system=system_prompt,
+                    user=user_request,
+                    schema=self._schema,
+                )
+            except Exception as exc:
+                raise ProviderError(f"provider raised: {type(exc).__name__}: {exc}") from exc
+
+            raw_completions.append(raw)
+
+            program = _parse_emission(raw)
+            result = validate_fleet(
+                self._roster,
+                self._member_manifests,
+                program,
+                self._member_envelopes,
+                profiles=self._profiles,
+                policy=self._policy,
+            )
+            last_result = result
+
+            if result.accepted:
+                return TranslateResult(
+                    accepted=True,
+                    program=program,
+                    revision_count=attempt_idx,
+                    last_validation=result,
+                    raw_completions=raw_completions,
+                )
+
+            non_policy_errors = [e for e in result.errors if not _is_policy_error(e)]
+            if not non_policy_errors:
+                raise BridgePolicyViolation(
+                    "validation rejected for compliance-policy reasons only; "
+                    "revision cannot fix hardware provenance",
+                    last_result=result,
+                    attempts=attempt_idx + 1,
+                )
+
+            if attempt_idx + 1 >= attempts_total:
+                break
+            revision_context = render_revision_context(
+                prior_emission=raw,
+                error_payload=[_error_to_dict(e) for e in non_policy_errors],
+            )
+
+        assert last_result is not None
         raise BridgeRevisionExhausted(
             f"validator rejected the LLM's emission in all {attempts_total} attempt(s)",
             last_result=last_result,

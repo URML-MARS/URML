@@ -50,6 +50,31 @@ The point is not the syntax — it is the cross-robot safety the validator enfor
 - **Synchronization is real.** Each `barrier` member must declare the `peer_link`
   connectivity role (`fleet.barrier_missing_peer_link`).
 
+## A second demo: the engaged-partners roll-call
+
+[`run_partners_demo.py`](run_partners_demo.py) drives a fleet of the **real robots whose
+maintainers engaged with URML** — Robotical Marty (biped), Petoi Bittle (quadruped),
+Adafruit CircuitPython (differential), and a Kawasaki arm — named as one fleet and
+synchronized: each moves to a station, they rendezvous at a barrier, take a synchronized
+sensor reading, and stand down. It validates against each robot's *real* capability
+manifest and executes hermetically (mock adapters; swap in the real adapter on real
+hardware). Mission: [`engaged_partners.fleet.yaml`](engaged_partners.fleet.yaml).
+
+```bash
+python run_partners_demo.py
+```
+
+And the capstone — **one English sentence moves the whole fleet, in sync**:
+[`run_nl_partners_demo.py`](run_nl_partners_demo.py) runs the full loop, *natural
+language → `FleetBridge` (LLM → validated multi-robot program) → concurrent
+`FleetRuntime`*. It uses `EchoProvider` for hermetic CI; swap in a real provider
+(Anthropic / OpenAI / on-device) and the same bridge translates a free-form
+sentence for real.
+
+```bash
+python run_nl_partners_demo.py
+```
+
 ## Get your robot into a fleet
 
 The lightest rung on the engagement ladder is to **claim your robot's fleet name** — publish

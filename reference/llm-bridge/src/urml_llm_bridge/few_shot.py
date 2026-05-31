@@ -385,6 +385,79 @@ def drone_few_shots() -> list[FewShot]:
 
 
 # ===========================================================================
+# Fleet examples (RFC-0286) — multi-robot programs with on:/barrier nodes
+# ===========================================================================
+#
+# These teach the multi-robot SHAPE: address a member with `{type: "on", member,
+# body}`, synchronize members with `{type: "barrier", members: [...]}`. Each
+# command is scoped to one roster member and checked against that member's
+# manifest. Two members never target the same declared location in one `parallel`
+# (the v0.1 cross-robot collision check is name-based), so the examples send each
+# robot to a distinct location.
+
+
+_FLEET_CONVERGE: dict[str, Any] = {
+    "profile": "home",
+    "behavior": {
+        "type": "sequence",
+        "steps": [
+            {
+                "type": "parallel",
+                "complete_when": "all",
+                "branches": [
+                    {"type": "on", "member": "lead", "body": {"move_to": {"location": "gate"}}},
+                    {"type": "on", "member": "follow", "body": {"move_to": {"location": "start"}}},
+                ],
+            },
+            {"type": "barrier", "members": ["lead", "follow"]},
+        ],
+    },
+}
+
+
+_FLEET_LEAD_THEN_HOME: dict[str, Any] = {
+    "profile": "home",
+    "behavior": {
+        "type": "sequence",
+        "steps": [
+            {"type": "on", "member": "lead", "body": {"move_to": {"location": "gate"}}},
+            {"type": "barrier", "members": ["lead", "follow"]},
+            {
+                "type": "parallel",
+                "complete_when": "all",
+                "branches": [
+                    {"type": "on", "member": "lead", "body": {"move_to": {"location": "lead_home"}}},
+                    {"type": "on", "member": "follow", "body": {"move_to": {"location": "follow_home"}}},
+                ],
+            },
+        ],
+    },
+}
+
+
+def fleet_few_shots() -> list[FewShot]:
+    """Return the multi-robot (RFC-0286) few-shot example set.
+
+    Examples validate against a two-member roster (`lead`, `follow`) of mobile
+    robots; see `test_few_shot_library.py` for the reference manifests.
+    """
+    return [
+        FewShot(
+            user="Move the lead to the gate and the follower to its start at the same time, then sync up.",
+            program=_FLEET_CONVERGE,
+            note="A `parallel` of two `on:`-scoped moves (members run at once), "
+            "then a `barrier` to rendezvous. Each member targets a distinct location.",
+        ),
+        FewShot(
+            user="Send the lead to the gate, then once both robots are ready, send each one home.",
+            program=_FLEET_LEAD_THEN_HOME,
+            note="Address one member with `on:`, synchronize with `barrier:`, then "
+            "move both concurrently. The barrier is what makes 'once both are ready' real.",
+        ),
+    ]
+
+
+# ===========================================================================
 # Profile selector
 # ===========================================================================
 
@@ -396,6 +469,7 @@ _PROFILE_FACTORIES: dict[str, object] = {
     "home": home_few_shots,
     "industrial": industrial_few_shots,
     "drone": drone_few_shots,
+    "fleet": fleet_few_shots,
 }
 
 
