@@ -3,7 +3,7 @@ rfc: 0236
 title: PROS VEX V5 toolchain integration, request for comment from purduesigbots/pros maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-05-31
 state: Draft
 supersedes: —
 superseded-by: —
@@ -64,7 +64,7 @@ PROS is the Purdue Sigma Bots toolchain that a large slice of competitive VRC te
 
 ## Drawbacks
 
-- License badge on `purduesigbots/pros` currently reads "Other", which blocks a clean Apache-2.0 composition story until clarified.
+- License is MPL-2.0, which composes cleanly with URML's Apache-2.0. The `purduesigbots/pros` badge reads "Other" only because an automated check returns NOASSERTION on the linked FreeRTOS / GPL notices; the LICENSE file itself is plainly MPL-2.0. A maintainer confirmed this on the outreach thread, so there is no real clarification ask. (The RFC originally raised one in error.)
 - Last commit was 2026-03-31, roughly two months stale; response cadence is unknown.
 - A toolchain field in the manifest is a small spec-surface decision that future runtimes will inherit, even though no normative spec change is proposed in this RFC.
 
@@ -78,7 +78,7 @@ Best channel is a single GitHub Issue on `purduesigbots/pros` (Issues are enable
 
 ## Self-review (Phase 0)
 
-- [x] License clarification flagged as an explicit drawback.
+- [x] License confirmed MPL-2.0 (the "Other" badge is a NOASSERTION false flag from linked FreeRTOS / GPL notices); no clarification needed.
 - [x] Repo is not archived; last commit 2026-03-31.
 - [x] No spec change proposed; manifest-field addition only.
 - [x] Ledger row drafted in `outreach-move18.yaml`.
