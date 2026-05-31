@@ -1,0 +1,173 @@
+# Move #20 outreach ledger. One row per target.
+#
+# Move #1 (outreach.yaml): 16 Tier-1 OEMs and component vendors, with
+# parity test in conformance/tests/test_outreach_ledger.py.
+#
+# Move #8 (outreach-move8.yaml): URML's first dedicated home-assistance
+# wave (RFCs 0100-0107): Roomba, Husqvarna Automower, Bear Robotics,
+# Maytronics Dolphin, ROBOTIS Dynamixel, Luxonis OAK-D, Home Assistant,
+# OpenVoiceOS.
+#
+# Move #20 (this file): **home-assistance robotics, round two**. A fresh
+# candidate sweep (May 2026) that the Move #8 set did not touch, screened
+# against US-federal default-policy alignment per RFC-0003.
+# Five policy-clean vendors carry full Outreach RFCs (0292-0296); three
+# PRC-domiciled vendors are recorded as deferred-with-cause so the
+# research is preserved without contradicting the default policy (same
+# logic that excluded Roborock/Ecovacs in RFC-0100 and Beatbot/Aiper in
+# RFC-0103).
+# Split: 1 GitHub auto-post (Blue Frog) + 4 off-GitHub courtesy
+# (OhmniLabs, Labrador, ElliQ, Andromeda) + 3 deferred PRC.
+# Geographic spread: 2 US, 1 FR, 1 IL, 1 AU (clean) + 3 CN (deferred).
+#
+# Like Moves #2-#19, this file is NOT under the Move #1 parity test.
+# It is covered by the schema-v2 validator
+# (conformance/tests/test_outreach_ledger_schema_v2.py).
+#
+# Schema mirrors outreach-move8.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, tier, country,
+# sector, comments, claude_directives, next_action, notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none`
+# is the truthful default. The three CN rows are deferred with cause
+# (channel: deferred), never sent.
+
+- slug: blue-frog-buddy
+  rfc: 293
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "BlueFrogRobotics/BlueFrog_SDK_examples (Issues enabled, not archived, 7 stars, last pushed 2024-09-23). The active developer-facing repo in the BlueFrogRobotics org; Buddy SDK is a Java/Android API documented at sdk.buddytherobot.com."
+  last_touch: 2026-05-31
+  response: none
+  tier: A
+  country: FR
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "post Issue on BlueFrogRobotics/BlueFrog_SDK_examples pointing at RFC-0293, with the AI-authoring disclosure. Then set posted_url + sent_at + last_touch. Wait 14-30 d; if silent, polite follow-up; if reply, set response per enum."
+  notes: "Move #20 GitHub-surface target. Blue Frog Robotics Buddy is an open-platform emotional companion robot (home companionship, elder support, inclusion, education). EU-domiciled (Paris, FR), default-policy pass. First Move #20 target that natively exercises the home-profile speak/listen extensions. Proposed BuddyAdapter in reference/home-runtime/ over a Python<->Java SDK bridge, fake-SDK hermetic tests (RFC-0073 pattern). Cross-link RFC-0100 (home-runtime parent), RFC-0106 (HA hub), RFC-0292 (off-GitHub sibling). Verified 2026-05-31."
+
+- slug: ohmnilabs-ohmni
+  rfc: 292
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OhmniLabs: live developer surface is the documentation portal docs.ohmnilabs.com (WebAPI + ROS-on-Docker + Arduino devkit, Ohmni Developer Edition) and the company site ohmnilabs.com. The github.com/ohmnilabs org exists but its repos (ohmni-ros-demo Apache-2.0, ohmni-devkit-arduino) have been dormant since 2018; engagement is off-GitHub, not a post on a dead repo."
+  last_touch: 2026-05-31
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments:
+    - date: "2026-05-31"
+      text: "GitHub org dormant since 2018 (verified via gh repo view: ohmni-ros-demo last pushed 2018-09, ohmni-devkit-arduino 2018-12). Downgraded from GitHub auto-post to off-GitHub courtesy at draft time; live surface is the dev portal. Founder to send via ohmnilabs.com / docs.ohmnilabs.com contact."
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via ohmnilabs.com / docs.ohmnilabs.com developer-portal contact, pointing at RFC-0292, with the AI-authoring disclosure. On send, set channel + sent_at + posted_url. If OhmniLabs surfaces a live GitHub Issue surface or a dev-relations email, pivot and bump last_touch."
+  notes: "Move #20 off-GitHub target. OhmniLabs Ohmni is a US-domiciled (Santa Clara, CA) telepresence + home-care robot with a documented Developer Edition (WebAPI, ROS-on-Docker, Arduino). Telepresence-for-aging-in-place is on the home-assistance continuum. ROS-on-Docker is the clean adapter target (reuses URML's ROS 2 reference runtime). Proposed OhmniAdapter in reference/home-runtime/, pending engagement. RFC-0102 (Bear) off-GitHub precedent. Verified 2026-05-31 (GitHub dormancy documented)."
+
+- slug: labrador-systems-retriever
+  rfc: 294
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Labrador Systems: no public developer API / SDK / GitHub org located 2026-05-31. Control surfaces are the consumer app, voice (incl. Alexa), and scheduling. Channel is the company contact surface at labradorsystems.com."
+  last_touch: 2026-05-31
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via labradorsystems.com contact surface, pointing at RFC-0294, asking whether a developer/integration surface exists or is planned. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #20 off-GitHub target and the strongest pure home-assistance fit in the wave. Labrador Retriever is a US-domiciled (Oak Park, CA) assistive home robot (meal/laundry/fetch delivery to saved bus-stops; app/voice/schedule control). No public developer API. Region-based mobility; manipulation not_applicable (self-loading tray, not a manipulator). Home-profile 0.5 m/s ceiling already matches an assistive in-home robot. RFC-0102 (Bear) off-GitHub precedent. Verified 2026-05-31 (absence of developer surface documented)."
+
+- slug: intuition-robotics-elliq
+  rfc: 295
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Intuition Robotics / ElliQ: no public developer API / SDK located 2026-05-31. Published surfaces are consumer + caregiver apps. Channel is the company contact surface at elliq.com / intuitionrobotics.com."
+  last_touch: 2026-05-31
+  response: none
+  tier: B
+  country: IL
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via elliq.com / intuitionrobotics.com contact surface, pointing at RFC-0295, asking whether a developer surface exists. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #20 off-GitHub target. ElliQ (Intuition Robotics, Ramat Gan, IL; allied, default-policy pass) is a stationary tabletop elder-care companion. Value lives in the home-profile speak/listen extensions, not mobility/manipulation. Lower-bound mapping per RFC-0014 honest-substrate-limit norm: speak/listen/measure/report only; move_to/grasp/release return not_supported_on_stationary_companion. IL-origin sibling of Maytronics RFC-0103 (also the lower-bound-mapping precedent). Privacy-sensitive (elder-care voice); honor no-telemetry-without-opt-in. Verified 2026-05-31 (absence of developer surface documented)."
+
+- slug: andromeda-abi
+  rfc: 296
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Andromeda Robotics / Abi: no public developer API / SDK / GitHub org located 2026-05-31; platform in active build-out (funding raised early 2026, platform-engineering hiring). Channel is the company contact surface at andromedarobotics.ai."
+  last_touch: 2026-05-31
+  response: none
+  tier: B
+  country: AU
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: forward-looking courtesy outreach via andromedarobotics.ai contact surface, pointing at RFC-0296, asking whether an integration surface is planned as the platform matures. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #20 off-GitHub + early-stage target; closes the wave. Abi (Andromeda Robotics, Melbourne, AU; allied, default-policy pass) is a child-sized humanoid companion for aged care / assisted living. Youngest Move #20 target: a forward-looking touch to be on the radar before the integration surface solidifies. Companion mapping centers speak/listen/measure(presence)/report; honest-substrate-limit norm (RFC-0014) governs the rest. Privacy-sensitive (aged-care conversation). RFC-0102 (Bear) off-GitHub precedent; RFC-0293/0295 Move #20 companion siblings. Verified 2026-05-31 (absence of developer surface documented)."
+
+# --- Deferred-with-cause: PRC-domiciled, out of US-federal default scope
+# per RFC-0003. Recorded so the research is preserved; never contacted.
+# No Outreach RFC document; rfc points at RFC-0003 (the policy basis).
+
+- slug: segway-navimow
+  rfc: 3
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED with cause. Segway Navimow (Ninebot, CN) publishes an open Navimow X3-series API (navimow.com/pages/navimow-openapi, US-available) and a NavimowFleet IoT integration. Real, capable surface; recorded for completeness."
+  last_touch: 2026-05-31
+  response: none
+  tier: C
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-05-31"
+      text: "Deferred under RFC-0003 US-federal default-policy alignment: Ninebot/Segway is PRC-domiciled, out of URML's default scope. Same exclusion logic as Roborock/Ecovacs (RFC-0100) and Beatbot/Aiper (RFC-0103). Not contacted. The open X3 API is the most capable mower surface found in the sweep; revisit only if URML's policy posture changes for an explicitly opted-in deployment."
+  claude_directives: []
+  next_action: "no action. Deferred with cause (PRC-domiciled, RFC-0003). Do not contact. Recorded for research completeness."
+  notes: "Move #20 deferred candidate. Segway Navimow wire-free robotic mowers (i/X3/X4 series). Open X3-series API + NavimowFleet. Excluded from outreach under RFC-0003 default policy; row exists so a future policy review has the surface on file. Verified 2026-05-31."
+
+- slug: mammotion
+  rfc: 3
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED with cause. Mammotion (CN) robot mowers (Luba, Yuka) have a community Python API (PyMammotion: MQTT/Cloud/Bluetooth) and a native Home Assistant lawn_mower integration. Real, capable surface; recorded for completeness."
+  last_touch: 2026-05-31
+  response: none
+  tier: C
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-05-31"
+      text: "Deferred under RFC-0003 US-federal default-policy alignment: Mammotion is PRC-domiciled, out of URML's default scope. Same exclusion logic as Roborock/Ecovacs (RFC-0100) and Beatbot/Aiper (RFC-0103). Not contacted. PyMammotion + HA integration is a capable community surface; revisit only if URML's policy posture changes for an explicitly opted-in deployment."
+  claude_directives: []
+  next_action: "no action. Deferred with cause (PRC-domiciled, RFC-0003). Do not contact. Recorded for research completeness."
+  notes: "Move #20 deferred candidate. Mammotion Luba/Yuka robotic mowers. PyMammotion (MQTT/Cloud/Bluetooth) + native HA lawn_mower device. Excluded from outreach under RFC-0003 default policy. Verified 2026-05-31."
+
+- slug: dreame
+  rfc: 3
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED with cause. Dreame (CN) robot mowers and vacuums; community Home Assistant custom integration via HACS. Real surface; recorded for completeness."
+  last_touch: 2026-05-31
+  response: none
+  tier: C
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-05-31"
+      text: "Deferred under RFC-0003 US-federal default-policy alignment: Dreame is PRC-domiciled, out of URML's default scope. Same exclusion logic as Roborock/Ecovacs (RFC-0100) and Beatbot/Aiper (RFC-0103). Not contacted. Revisit only if URML's policy posture changes for an explicitly opted-in deployment."
+  claude_directives: []
+  next_action: "no action. Deferred with cause (PRC-domiciled, RFC-0003). Do not contact. Recorded for research completeness."
+  notes: "Move #20 deferred candidate. Dreame robotic mowers / vacuums; community HA custom integration. Excluded from outreach under RFC-0003 default policy. Verified 2026-05-31."
