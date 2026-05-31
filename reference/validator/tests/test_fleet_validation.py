@@ -21,9 +21,10 @@ from urml_validator import ErrorCode, validate, validate_fleet
 
 COURIER_MANIFEST = {
     "robot_id": "courier",
-    "frames": [{"name": "map"}],
+    "frames": [{"name": "map"}, {"name": "site"}],
     "declared_locations": [
-        {"name": "handoff_dock", "pose": {"x": 1.0, "y": 1.0}, "frame": "map"},
+        # handoff_dock is the shared site frame both robots reference; staging is local.
+        {"name": "handoff_dock", "pose": {"x": 1.0, "y": 1.0}, "frame": "site"},
         {"name": "staging", "pose": {"x": 0.0, "y": 0.0}, "frame": "map"},
     ],
     "mobility": {"drive_type": "differential", "max_velocity": 1.5},
@@ -32,9 +33,9 @@ COURIER_MANIFEST = {
 
 ARM_MANIFEST = {
     "robot_id": "arm",
-    "frames": [{"name": "cell"}],
+    "frames": [{"name": "cell"}, {"name": "site"}],
     "declared_locations": [
-        {"name": "handoff_dock", "pose": {"x": 1.0, "y": 1.0}, "frame": "cell"},
+        {"name": "handoff_dock", "pose": {"x": 1.0, "y": 1.0}, "frame": "site"},
         {"name": "conveyor_a", "pose": {"x": 2.0, "y": 0.0}, "frame": "cell"},
     ],
     "mobility": {"drive_type": "manipulator_base", "max_velocity": 0.0},
@@ -54,6 +55,7 @@ ROSTER = {
         {"name": "courier", "manifest": "husky_amr"},
         {"name": "arm", "manifest": "kawasaki_rs"},
     ],
+    "shared_frames": ["site"],
 }
 
 MEMBERS = {"courier": COURIER_MANIFEST, "arm": ARM_MANIFEST}
@@ -270,3 +272,191 @@ def test_bad_roster_short_circuits():
     bad_roster = {"roster_version": "0.1", "members": []}  # min_length 1
     result = validate_fleet(bad_roster, MEMBERS, HANDOFF_PROGRAM, policy=None)
     assert not result.accepted
+
+
+# ===========================================================================
+# RFC-0287 — geometric (UTM) strategic deconfliction across the three media
+# ===========================================================================
+
+
+def _geo_manifest(robot_id, drive, frame, locs, radius, vertical, *, ceiling=None, autopilot=None):
+    mob = {
+        "drive_type": drive,
+        "max_velocity": 1.0,
+        "clearance": {"radius_m": radius, "vertical_m": vertical},
+    }
+    if ceiling is not None:
+        mob["service_ceiling"] = ceiling
+    manifest = {
+        "robot_id": robot_id,
+        "frames": [{"name": frame}],
+        "declared_locations": locs,
+        "mobility": mob,
+        "connectivity": {"links": [{"role": "peer_link"}]},
+    }
+    if autopilot is not None:
+        manifest["substrate"] = {"autopilot_class": autopilot}
+    return manifest
+
+
+def _loc(name, x, y, z, frame):
+    return {"name": name, "pose": {"x": x, "y": y, "z": z}, "frame": frame}
+
+
+def _roster2(shared):
+    return {
+        "roster_version": "0.1",
+        "members": [{"name": "a", "manifest": "a"}, {"name": "b", "manifest": "b"}],
+        "shared_frames": shared,
+    }
+
+
+def _parallel2(loc_a, loc_b):
+    return {
+        "profile": "home",
+        "behavior": {
+            "type": "parallel",
+            "branches": [
+                {"type": "on", "member": "a", "body": {"move_to": {"location": loc_a}}},
+                {"type": "on", "member": "b", "body": {"move_to": {"location": loc_b}}},
+            ],
+        },
+    }
+
+
+def _geo_fleet(a, b, program, shared):
+    return validate_fleet(_roster2(shared), {"a": a, "b": b}, program, policy=None)
+
+
+# ---- 07 ground: footprints overlap (distinct names) -> REJECT --------------
+
+
+def test_geometric_ground_footprint_overlap_rejected():
+    a = _geo_manifest("a", "differential", "site", [_loc("spot_a", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    b = _geo_manifest("b", "differential", "site", [_loc("spot_b", 0.4, 0.0, 0.0, "site")], 0.5, 1.0)
+    result = _geo_fleet(a, b, _parallel2("spot_a", "spot_b"), ["site"])
+    assert not result.accepted
+    assert result.has(ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE)
+
+
+# ---- 08/09 air: altitude separation -> ACCEPT; same altitude -> REJECT -----
+
+
+def test_geometric_air_vertical_separation_accepted():
+    a = _geo_manifest("a", "multirotor", "agl", [_loc("low", 0.0, 0.0, 0.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    b = _geo_manifest("b", "multirotor", "agl", [_loc("high", 0.0, 0.0, 30.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    result = _geo_fleet(a, b, _parallel2("low", "high"), ["agl"])
+    assert result.accepted, result.codes()
+
+
+def test_geometric_air_same_altitude_rejected():
+    a = _geo_manifest("a", "multirotor", "agl", [_loc("p_a", 0.0, 0.0, 30.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    b = _geo_manifest("b", "multirotor", "agl", [_loc("p_b", 0.0, 0.0, 30.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    result = _geo_fleet(a, b, _parallel2("p_a", "p_b"), ["agl"])
+    assert not result.accepted
+    assert result.has(ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE)
+
+
+# ---- 10/11 water: depth separation -> ACCEPT; same depth -> REJECT ---------
+
+
+def test_geometric_water_depth_separation_accepted():
+    a = _geo_manifest("a", "underwater_thrusters", "water", [_loc("shallow", 0.0, 0.0, -2.0, "water")], 0.5, 2.0)
+    b = _geo_manifest("b", "underwater_thrusters", "water", [_loc("deep", 0.0, 0.0, -8.0, "water")], 0.5, 2.0)
+    result = _geo_fleet(a, b, _parallel2("shallow", "deep"), ["water"])
+    assert result.accepted, result.codes()
+
+
+def test_geometric_water_same_depth_rejected():
+    a = _geo_manifest("a", "underwater_thrusters", "water", [_loc("d_a", 0.0, 0.0, -5.0, "water")], 0.5, 2.0)
+    b = _geo_manifest("b", "underwater_thrusters", "water", [_loc("d_b", 0.0, 0.0, -5.0, "water")], 0.5, 2.0)
+    result = _geo_fleet(a, b, _parallel2("d_a", "d_b"), ["water"])
+    assert not result.accepted
+    assert result.has(ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE)
+
+
+# ---- 12 cross-medium: air vs water never collide -> ACCEPT -----------------
+
+
+def test_geometric_cross_medium_accepted():
+    drone = _geo_manifest("a", "multirotor", "site", [_loc("p_a", 0.0, 0.0, 0.0, "site")], 0.5, 5.0, ceiling=120, autopilot="px4")
+    rov = _geo_manifest("b", "underwater_thrusters", "site", [_loc("p_b", 0.0, 0.0, 0.0, "site")], 0.5, 5.0)
+    result = _geo_fleet(drone, rov, _parallel2("p_a", "p_b"), ["site"])
+    assert result.accepted, result.codes()  # overlapping poses, but medium gate stops it
+
+
+# ---- 13 temporal: a barrier deconflicts the same volume -> ACCEPT ----------
+
+
+def test_temporal_barrier_deconflicts():
+    a = _geo_manifest("a", "differential", "site", [_loc("spot", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    b = _geo_manifest("b", "differential", "site", [_loc("spot", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    program = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"type": "on", "member": "a", "body": {"move_to": {"location": "spot"}}},
+                {"type": "barrier", "members": ["a", "b"]},
+                {"type": "on", "member": "b", "body": {"move_to": {"location": "spot"}}},
+            ],
+        },
+    }
+    result = _geo_fleet(a, b, program, ["site"])
+    assert result.accepted, result.codes()  # not concurrent: the barrier separates them in time
+
+
+# ---- 14 local frames: not a shared frame -> no false positive -> ACCEPT ----
+
+
+def test_local_frame_not_compared_accepted():
+    # The engaged-partners case: three robots each with a private `floor` frame and
+    # a same-named `waypoint_a`. With no shared frame, they are never compared.
+    def mover(rid):
+        return _geo_manifest(rid, "differential", "floor", [_loc("waypoint_a", 0.3, 0.0, 0.0, "floor")], 0.5, 1.0)
+
+    roster = {
+        "roster_version": "0.1",
+        "members": [{"name": n, "manifest": n} for n in ("m1", "m2", "m3")],
+        "shared_frames": [],
+    }
+    program = {
+        "profile": "home",
+        "behavior": {
+            "type": "parallel",
+            "branches": [
+                {"type": "on", "member": n, "body": {"move_to": {"location": "waypoint_a"}}}
+                for n in ("m1", "m2", "m3")
+            ],
+        },
+    }
+    result = validate_fleet(roster, {n: mover(n) for n in ("m1", "m2", "m3")}, program, policy=None)
+    assert result.accepted, result.codes()
+
+
+# ---- 15 name fallback still works when no clearance declared ---------------
+
+
+def test_name_fallback_within_shared_frame_rejected():
+    # No clearance declared -> fall back to name-equality, but now frame-gated.
+    a = {
+        "robot_id": "a",
+        "frames": [{"name": "site"}],
+        "declared_locations": [_loc("dock", 0.0, 0.0, 0.0, "site")],
+        "mobility": {"drive_type": "differential", "max_velocity": 1.0},
+        "connectivity": {"links": [{"role": "peer_link"}]},
+    }
+    b = copy.deepcopy(a)
+    b["robot_id"] = "b"
+    result = _geo_fleet(a, b, _parallel2("dock", "dock"), ["site"])
+    assert not result.accepted
+    assert result.has(ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE)
+
+
+def test_shared_frame_undeclared_warns():
+    a = _geo_manifest("a", "differential", "site", [_loc("spot_a", 0.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    b = _geo_manifest("b", "differential", "site", [_loc("spot_b", 5.0, 0.0, 0.0, "site")], 0.5, 1.0)
+    # Declare a shared frame no member has -> warning, still accepted (well separated).
+    result = _geo_fleet(a, b, _parallel2("spot_a", "spot_b"), ["nonexistent"])
+    assert result.accepted, result.codes()
+    assert result.has(ErrorCode.FLEET_SHARED_FRAME_UNDECLARED)

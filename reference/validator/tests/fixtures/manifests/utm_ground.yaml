@@ -1,0 +1,21 @@
+# RFC-0287 fixture: a ground robot with an operational-clearance volume.
+manifest_version: "0.1"
+robot_id: utm_ground_robot
+description: Ground robot with a UTM-style operational clearance (RFC-0287).
+
+frames:
+  - name: site
+
+declared_locations:
+  - { name: spot_a, pose: { x: 0.0, y: 0.0, z: 0.0 }, frame: site }
+  - { name: spot_b, pose: { x: 0.4, y: 0.0, z: 0.0 }, frame: site }   # 0.4 m from spot_a
+  - { name: far,    pose: { x: 5.0, y: 0.0, z: 0.0 }, frame: site }   # well clear
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  clearance: { radius_m: 0.5, vertical_m: 1.0 }
+
+connectivity:
+  links:
+    - role: peer_link

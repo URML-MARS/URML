@@ -1,0 +1,19 @@
+# RFC-0287 — AIR: two drones at the same (x,y) but 30 m apart in altitude. Their
+# vertical bands (±5 m) are disjoint -> strategically deconflicted -> ACCEPT.
+name: fleet/08_air_vertical_separation_accepted
+description: Two drones vertically separated by altitude; no conflict.
+roster:
+  - { name: a, manifest: utm_drone }
+  - { name: b, manifest: utm_drone }
+shared_frames: [agl]
+policy: none
+profiles: [drone]
+program:
+  profile: drone
+  behavior:
+    type: parallel
+    branches:
+      - { type: "on", member: a, body: { move_to: { location: alt_low } } }
+      - { type: "on", member: b, body: { move_to: { location: alt_high } } }
+expected_validation:
+  accepted: true

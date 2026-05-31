@@ -9,6 +9,7 @@ description: >
 roster:
   - { name: courier, manifest: husky_amr }
   - { name: arm, manifest: kawasaki_rs }
+shared_frames: [site]
 policy: none
 profiles: [industrial]
 

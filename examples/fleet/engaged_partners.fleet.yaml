@@ -11,13 +11,12 @@
 # stand down. Validated against the four real partner manifests; run it with
 #   python run_partners_demo.py
 #
-# Honest note on the moves: the validator's cross-robot collision check is
-# name-based in v0.1, and three of these robots happen to declare a location
-# named `waypoint_a`. So each robot targets a DISTINCT declared location in any
-# single `parallel` — the synchronization that matters here is the `measure`
-# sweep and the barriers, not a shared destination. (A geometric workspace-volume
-# check that would let same-named-but-distinct locations coexist is named as
-# future work in RFC-0286.)
+# Note on the moves: the three mobile robots converge on `waypoint_a`. Each robot
+# declares that name in its OWN local `floor` frame, and this roster declares no
+# `shared_frames`, so the RFC-0287 deconfliction check correctly treats the three
+# `waypoint_a`s as distinct places and does not flag a collision. (Earlier this
+# demo had to send each robot to a distinct name to dodge the old name-based
+# check; RFC-0287 removed that wart.)
 
 roster_version: "0.1"
 description: A synchronized roll-call of four engaged-partner robots.
@@ -32,13 +31,16 @@ description: Move to stations, sync at a barrier, take a synchronized reading, s
 behavior:
   type: sequence
   steps:
-    # 1. Take your marks — each robot moves to a distinct station, all at once.
+    # 1. Take your marks — the three mobile robots CONVERGE on waypoint_a, all at
+    #    once, while the arm moves to its home pose. Each robot's `waypoint_a` is a
+    #    point in its OWN local `floor` frame, so the RFC-0287 deconfliction check
+    #    (frame-gated, no shared_frames declared) correctly does not flag them.
     - type: parallel
       complete_when: all
       branches:
         - { type: "on", member: marty,   body: { move_to: { location: waypoint_a } } }
-        - { type: "on", member: petoi,   body: { move_to: { location: start_mat } } }
-        - { type: "on", member: feather, body: { move_to: { location: start_pad } } }
+        - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+        - { type: "on", member: feather, body: { move_to: { location: waypoint_a } } }
         - { type: "on", member: arm,     body: { move_to: { location: home_pose } } }
 
     - type: barrier
@@ -56,11 +58,11 @@ behavior:
     - type: barrier
       members: [marty, petoi, feather, arm]
 
-    # 3. Stand down — each to a distinct rest spot; the arm runs its home routine.
+    # 3. Stand down — the mats robots return to rest together; the arm homes itself.
     - type: parallel
       complete_when: all
       branches:
         - { type: "on", member: marty,   body: { move_to: { location: rest_mat } } }
-        - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+        - { type: "on", member: petoi,   body: { move_to: { location: rest_mat } } }
         - { type: "on", member: feather, body: { move_to: { location: rest_pad } } }
         - { type: "on", member: arm,     body: { call_program: { name: home_all } } }

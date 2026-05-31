@@ -39,7 +39,9 @@ Scope of this milestone:
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
 from importlib import resources
+from math import hypot
 from typing import Any, Literal
 
 import yaml
@@ -416,59 +418,178 @@ def _step_location_names(step: Step) -> set[str]:
     return locs
 
 
-def _collect_member_locations(node: object, member: str | None) -> set[tuple[str | None, str]]:
-    """All (member, location-name) pairs a subtree targets, honoring `on:` scopes."""
-    out: set[tuple[str | None, str]] = set()
-    if isinstance(node, Step):
-        for loc in _step_location_names(node):
-            out.add((member, loc))
-    elif isinstance(node, OnMember):
-        out |= _collect_member_locations(node.body, node.member)
-    elif isinstance(node, Sequence):
-        for sub in node.steps:
-            out |= _collect_member_locations(sub, member)
-    elif isinstance(node, Branch):
-        out |= _collect_member_locations(node.if_true, member)
-        if node.if_false is not None:
-            out |= _collect_member_locations(node.if_false, member)
-    elif isinstance(node, Parallel):
-        for sub in node.branches:
-            out |= _collect_member_locations(sub, member)
-    elif isinstance(node, Retry):
-        out |= _collect_member_locations(node.behavior, member)
+# RFC-0287: medium is derived from drive_type, not declared. Air and water
+# operations never share physical space.
+_WATER_DRIVE_TYPES = {"underwater_thrusters"}
+
+
+def _medium_of(manifest: CapabilityManifest) -> str | None:
+    """The operating medium of a robot: 'air' | 'water' | 'ground' | None."""
+    if manifest.mobility is None:
+        return None
+    drive = manifest.mobility.drive_type
+    if drive in _AERIAL_DRIVE_TYPES:
+        return "air"
+    if drive in _WATER_DRIVE_TYPES:
+        return "water"
+    return "ground"
+
+
+@dataclass(frozen=True)
+class _MemberTarget:
+    """One member's spatial target, as a UTM-style operational volume (RFC-0287)."""
+
+    member: str | None
+    name: str | None
+    x: float | None
+    y: float | None
+    z: float | None
+    frame: str | None
+    radius: float | None
+    vertical: float | None
+    medium: str | None
+
+
+def _step_member_targets(
+    step: Step, member: str | None, manifest: CapabilityManifest
+) -> list[_MemberTarget]:
+    """Resolve a step's spatial targets to operational volumes for `member`."""
+    medium = _medium_of(manifest)
+    clearance = manifest.mobility.clearance if manifest.mobility is not None else None
+    radius = clearance.radius_m if clearance is not None else None
+    vertical = clearance.vertical_m if clearance is not None else None
+
+    name = step.primitive_name
+    args = getattr(step, name)
+    out: list[_MemberTarget] = []
+
+    # move_to with an explicit pose+frame (no named location).
+    if name == "move_to" and args.location is None and args.pose is not None and args.frame is not None:
+        z = float(args.pose.z) if args.pose.z is not None else None
+        out.append(
+            _MemberTarget(member, None, float(args.pose.x), float(args.pose.y), z, args.frame,
+                         radius, vertical, medium)
+        )
+        return out
+
+    # Named-location primitives: resolve the pose from the member's manifest.
+    for loc_name in _step_location_names(step):
+        resolved = _location_pose_in_manifest(loc_name, manifest)
+        if resolved is not None:
+            x, y, z, frame = resolved
+            out.append(_MemberTarget(member, loc_name, x, y, z, frame, radius, vertical, medium))
+        else:
+            # Unresolvable (a capability error is already raised); keep for the name
+            # fallback with no frame, so it is simply never compared.
+            out.append(_MemberTarget(member, loc_name, None, None, None, None, radius, vertical, medium))
     return out
 
 
-def _check_concurrent_workspace(
-    program: URMLProgram, sole_member: str | None
-) -> list[ValidationError]:
-    """Reject two distinct members driven to the same location in one `parallel`.
+def _collect_member_targets(
+    node: object, member: str | None, members: Mapping[str, CapabilityManifest]
+) -> list[_MemberTarget]:
+    """All operational volumes a subtree targets, honoring `on:` scopes."""
+    out: list[_MemberTarget] = []
+    if isinstance(node, Step):
+        if member is not None and member in members:
+            out.extend(_step_member_targets(node, member, members[member]))
+    elif isinstance(node, OnMember):
+        out.extend(_collect_member_targets(node.body, node.member, members))
+    elif isinstance(node, Sequence):
+        for sub in node.steps:
+            out.extend(_collect_member_targets(sub, member, members))
+    elif isinstance(node, Branch):
+        out.extend(_collect_member_targets(node.if_true, member, members))
+        if node.if_false is not None:
+            out.extend(_collect_member_targets(node.if_false, member, members))
+    elif isinstance(node, Parallel):
+        for sub in node.branches:
+            out.extend(_collect_member_targets(sub, member, members))
+    elif isinstance(node, Retry):
+        out.extend(_collect_member_targets(node.behavior, member, members))
+    return out
 
-    The branches of a `parallel` run concurrently; if two of them target the
-    same declared location under different members, the robots are sent into the
-    same place at the same time. The barriers that bracket a safe handoff sit
-    *outside* the parallel (they serialize the approach), so within a parallel
-    the only safe shape is for at most one member to occupy a given location.
+
+def _volumes_conflict(
+    a: _MemberTarget, b: _MemberTarget, shared: set[str]
+) -> tuple[bool, dict[str, Any] | None]:
+    """UTM strategic deconfliction between two operational volumes.
+
+    Conflict iff the volumes are NOT separated laterally, vertically, in medium,
+    or by frame. (Temporal separation — a `barrier` — is handled by the caller,
+    which only compares volumes inside one `parallel`.)
+    """
+    # Frame gate: only compare targets in a declared shared physical frame.
+    if a.frame is None or a.frame != b.frame or a.frame not in shared:
+        return False, None
+    # Medium gate: air and water never share physical space.
+    if a.medium is not None and b.medium is not None and a.medium != b.medium:
+        return False, None
+    # Geometric (UTM): both must declare a clearance volume and have coordinates.
+    if (
+        a.radius is not None and b.radius is not None
+        and a.vertical is not None and b.vertical is not None
+        and a.x is not None and a.y is not None and b.x is not None and b.y is not None
+    ):
+        lateral = hypot(a.x - b.x, a.y - b.y)
+        az = a.z if a.z is not None else 0.0
+        bz = b.z if b.z is not None else 0.0
+        vertical_lo = max(az - a.vertical, bz - b.vertical)
+        vertical_hi = min(az + a.vertical, bz + b.vertical)
+        required = a.radius + b.radius
+        if lateral < required and vertical_lo <= vertical_hi:
+            return True, {
+                "reason": "geometric",
+                "frame": a.frame,
+                "lateral_m": round(lateral, 3),
+                "required_lateral_m": round(required, 3),
+                "media": [a.medium, b.medium],
+            }
+        return False, None
+    # Name fallback (now frame- and medium-gated): same declared location name.
+    if a.name is not None and a.name == b.name:
+        return True, {"reason": "name", "frame": a.frame, "location": a.name}
+    return False, None
+
+
+def _check_concurrent_workspace(
+    program: URMLProgram,
+    sole_member: str | None,
+    members: Mapping[str, CapabilityManifest],
+    shared_frames: set[str],
+) -> list[ValidationError]:
+    """Reject two members whose operational volumes conflict in one `parallel`.
+
+    The branches of a `parallel` run concurrently (one UTM time window); a
+    `barrier` outside the parallel separates volumes in time. Within a window,
+    two distinct members conflict only if their volumes are not separated
+    laterally, vertically, by medium, or by frame (RFC-0287 strategic
+    deconfliction). When a member declares no `clearance`, the comparison falls
+    back to declared-location-name equality, still gated by a shared frame.
     """
     out: list[ValidationError] = []
 
     def visit(node: object, path: list[str], member: str | None) -> None:
         if isinstance(node, Parallel):
-            branch_sets = [
-                _collect_member_locations(sub, member if member is not None else sole_member)
+            branch_targets = [
+                _collect_member_targets(sub, member if member is not None else sole_member, members)
                 for sub in node.branches
             ]
-            reported: set[tuple[str, frozenset[str]]] = set()
-            for i in range(len(branch_sets)):
-                for j in range(i + 1, len(branch_sets)):
-                    for ma, la in branch_sets[i]:
-                        for mb, lb in branch_sets[j]:
-                            if la == lb and ma is not None and mb is not None and ma != mb:
-                                key = (la, frozenset({ma, mb}))
-                                if key in reported:
-                                    continue
-                                reported.add(key)
-                                out.append(_fleet_concurrent_workspace_error(path, la, ma, mb))
+            reported: set[tuple[frozenset[str], str | None, str]] = set()
+            for i in range(len(branch_targets)):
+                for j in range(i + 1, len(branch_targets)):
+                    for a in branch_targets[i]:
+                        for b in branch_targets[j]:
+                            if a.member is None or b.member is None or a.member == b.member:
+                                continue
+                            conflict, detail = _volumes_conflict(a, b, shared_frames)
+                            if not conflict or detail is None:
+                                continue
+                            key = (frozenset({a.member, b.member}), a.frame, detail["reason"])
+                            if key in reported:
+                                continue
+                            reported.add(key)
+                            out.append(_fleet_concurrent_workspace_error(path, a, b, detail))
             for idx, sub in enumerate(node.branches):
                 visit(sub, [*path, "branches", str(idx)], member)
             return
@@ -534,24 +655,34 @@ def _rekey_capability_to_member(err: ValidationError, member: str) -> Validation
 
 
 def _fleet_concurrent_workspace_error(
-    path: list[str], location: str, member_a: str, member_b: str
+    path: list[str], a: _MemberTarget, b: _MemberTarget, detail: dict[str, Any]
 ) -> ValidationError:
-    pair = sorted({member_a, member_b})
+    pair = sorted({m for m in (a.member, b.member) if m is not None})
+    if detail["reason"] == "geometric":
+        what = (
+            f"their operational volumes overlap in frame {detail['frame']!r} "
+            f"({detail['lateral_m']} m apart laterally, vertical bands overlapping; "
+            f"they need {detail['required_lateral_m']} m of lateral separation)"
+        )
+    else:
+        what = (
+            f"both target the declared location {detail['location']!r} in shared "
+            f"frame {detail['frame']!r} (no clearance declared, so name-based)"
+        )
     return ValidationError(
         code=ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE,
         primitive=None,
         path=path,
         field="branches",
         message=(
-            f"members {pair[0]!r} and {pair[1]!r} are driven to the same declared "
-            f"location {location!r} in concurrent `parallel` branches with no "
-            f"barrier between them — a cross-robot collision risk."
+            f"members {pair[0]!r} and {pair[1]!r} run concurrently in one `parallel` "
+            f"with no barrier and {what} — a cross-robot collision risk."
         ),
         suggestion=(
-            "Separate the two members with a `barrier` so only one occupies "
-            f"{location!r} at a time, or send them to distinct locations."
+            "Separate them with a `barrier` (temporal deconfliction), raise their "
+            "declared `clearance`, or send them to non-overlapping volumes."
         ),
-        detail={"location": location, "members": pair},
+        detail={"members": pair, **detail},
     )
 
 
@@ -707,8 +838,28 @@ def validate_fleet(
             if link is None:
                 errors.append(_fleet_barrier_peer_link_error(path, member_name))
 
-    # ----- Cross-robot workspace collision -----
-    errors.extend(_check_concurrent_workspace(program_model, sole_member))
+    # ----- Cross-robot workspace collision (RFC-0287 strategic deconfliction) -----
+    shared_frames = roster_model.shared_frame_set
+    errors.extend(_check_concurrent_workspace(program_model, sole_member, members, shared_frames))
+    # A shared_frame no member declares silently disables the geometric check for it.
+    declared_frames = {f.name for m in members.values() for f in m.frames}
+    for frame in sorted(shared_frames - declared_frames):
+        warnings.append(
+            ValidationError(
+                code=ErrorCode.FLEET_SHARED_FRAME_UNDECLARED,
+                primitive=None,
+                severity="warning",
+                path=["<roster>", "shared_frames"],
+                field="shared_frames",
+                message=(
+                    f"roster declares shared frame {frame!r}, but no member's manifest "
+                    f"declares a frame by that name; the geometric collision check will "
+                    f"not compare any targets in it."
+                ),
+                suggestion=f"Remove {frame!r} from shared_frames, or declare it in a member's frames.",
+                detail={"frame": frame},
+            )
+        )
 
     # ----- Pass 4: bindings across the whole fleet tree -----
     errors.extend(_check_bindings(program_model))

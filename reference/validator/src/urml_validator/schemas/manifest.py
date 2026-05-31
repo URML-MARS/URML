@@ -46,6 +46,29 @@ class DeclaredLocation(BaseModel):
     description: str | None = None
 
 
+class OperationalClearance(BaseModel):
+    """The robot's operational-volume buffer for fleet deconfliction (RFC-0287).
+
+    Models a UTM operational volume (ASTM F3548 Volume3D) as a buffer around the
+    robot's target: a lateral footprint circle of ``radius_m`` and a vertical band
+    of ``±vertical_m`` (altitude for aerial robots, depth for underwater robots,
+    a thin ground band otherwise). Two members conflict only if their volumes
+    intersect both laterally and vertically within a shared frame and the same
+    medium; a `barrier` separates them in time.
+
+    Optional: a robot without `clearance` falls back to name-based comparison.
+    Forward path: asymmetric ``vertical_up_m`` / ``vertical_down_m`` and a polygon
+    footprint are additive future fields — circle + symmetric band is the v0.1 minimal.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    radius_m: float = Field(..., gt=0, description="Lateral footprint radius (m).")
+    vertical_m: float = Field(
+        ..., gt=0, description="Vertical half-band (m): altitude (air) / depth (water)."
+    )
+
+
 class Mobility(BaseModel):
     """Mobility capabilities declared by the robot.
 
@@ -80,6 +103,13 @@ class Mobility(BaseModel):
     )
     service_ceiling: float | None = Field(
         None, ge=0, description="Maximum altitude (m). Required for aerial profiles."
+    )
+    clearance: OperationalClearance | None = Field(
+        None,
+        description=(
+            "Operational-volume buffer for fleet collision deconfliction (RFC-0287). "
+            "Optional; absent means name-based fallback for pairs involving this robot."
+        ),
     )
 
 

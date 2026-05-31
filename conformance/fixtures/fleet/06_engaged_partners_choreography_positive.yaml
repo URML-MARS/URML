@@ -25,8 +25,8 @@ program:
         complete_when: all
         branches:
           - { type: "on", member: marty,   body: { move_to: { location: waypoint_a } } }
-          - { type: "on", member: petoi,   body: { move_to: { location: start_mat } } }
-          - { type: "on", member: feather, body: { move_to: { location: start_pad } } }
+          - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+          - { type: "on", member: feather, body: { move_to: { location: waypoint_a } } }
           - { type: "on", member: arm,     body: { move_to: { location: home_pose } } }
       - type: barrier
         members: [marty, petoi, feather, arm]
@@ -43,7 +43,7 @@ program:
         complete_when: all
         branches:
           - { type: "on", member: marty,   body: { move_to: { location: rest_mat } } }
-          - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+          - { type: "on", member: petoi,   body: { move_to: { location: rest_mat } } }
           - { type: "on", member: feather, body: { move_to: { location: rest_pad } } }
           - { type: "on", member: arm,     body: { call_program: { name: home_all } } }
 

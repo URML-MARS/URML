@@ -1,0 +1,19 @@
+# RFC-0287 — WATER: two ROVs at the same (x,y) AND the same depth -> conflict.
+name: fleet/11_water_same_depth_rejected
+description: Two ROVs at the same point and depth; depth bands overlap.
+roster:
+  - { name: a, manifest: utm_rov }
+  - { name: b, manifest: utm_rov }
+shared_frames: [water]
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: parallel
+    branches:
+      - { type: "on", member: a, body: { move_to: { location: mid } } }
+      - { type: "on", member: b, body: { move_to: { location: mid2 } } }
+expected_validation:
+  accepted: false
+  error_codes: [fleet.concurrent_shared_workspace]

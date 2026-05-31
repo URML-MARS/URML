@@ -1,0 +1,20 @@
+# RFC-0287 — TEMPORAL: two ground robots want the SAME volume, but a `barrier`
+# separates them in time -> deconflicted -> ACCEPT (UTM temporal separation).
+name: fleet/13_temporal_barrier_deconflicts_accepted
+description: Same volume, but a barrier serializes the two robots in time.
+roster:
+  - { name: a, manifest: utm_ground }
+  - { name: b, manifest: utm_ground }
+shared_frames: [site]
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    steps:
+      - { type: "on", member: a, body: { move_to: { location: spot_a } } }
+      - { type: barrier, members: [a, b] }
+      - { type: "on", member: b, body: { move_to: { location: spot_a } } }
+expected_validation:
+  accepted: true
