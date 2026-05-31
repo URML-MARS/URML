@@ -20,13 +20,16 @@ from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schema_export import export_all_schemas, export_schema, write_schemas
 from urml_validator.schemas.policy import Policy, PolicyRule
 from urml_validator.schemas.program import URMLProgram
-from urml_validator.validator import DEFAULT_POLICY, validate
+from urml_validator.schemas.roster import FleetRoster, RosterMember
+from urml_validator.validator import DEFAULT_POLICY, validate, validate_fleet
 
 __all__ = [
     "DEFAULT_POLICY",
     "ErrorCode",
+    "FleetRoster",
     "Policy",
     "PolicyRule",
+    "RosterMember",
     "URMLProgram",
     "ValidationError",
     "ValidationResult",
@@ -35,5 +38,6 @@ __all__ = [
     "export_all_schemas",
     "export_schema",
     "validate",
+    "validate_fleet",
     "write_schemas",
 ]

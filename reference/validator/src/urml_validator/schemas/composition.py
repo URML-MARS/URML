@@ -17,6 +17,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Discriminator, Field, Tag, model_validator
 
+from urml_validator.schemas.common import Identifier
 from urml_validator.schemas.primitives import (
     CallProgramArgs,
     CaptureArgs,
@@ -141,15 +142,22 @@ class _BaseBehavior(BaseModel):
     label: str | None = None  # optional human-readable annotation
 
 
-_TAG_TYPES = {"sequence", "branch", "parallel", "retry"}
+# RFC-0286 adds two fleet-addressing nodes: `on` (scope a subtree to a fleet
+# member) and `barrier` (synchronize members). They are tagged like every other
+# composition node so the discriminator stays a single, closed switch.
+_TAG_TYPES = {"sequence", "branch", "parallel", "retry", "on", "barrier"}
+
+# Map a composition class name back to its tag. `OnMember` is the one node whose
+# class name is not its tag, so the discriminator cannot just lowercase it.
+_CLASS_NAME_TO_TAG = {"onmember": "on", "barrier": "barrier"}
 
 
 def _discriminate(value: object) -> str:
     """Pick the discriminator tag for a BehaviorOrStep node.
 
-    - dict with `type: sequence|branch|parallel|retry` -> that type
+    - dict with `type: sequence|branch|parallel|retry|on|barrier` -> that type
     - any other dict (single-key primitive dict) -> "step"
-    - pydantic model instance: its class name lowered, or "step"
+    - pydantic model instance: its class name lowered (or mapped), or "step"
     """
     if isinstance(value, dict):
         type_field = value.get("type")
@@ -157,6 +165,8 @@ def _discriminate(value: object) -> str:
             return type_field
         return "step"
     cls_name = type(value).__name__.lower()
+    if cls_name in _CLASS_NAME_TO_TAG:
+        return _CLASS_NAME_TO_TAG[cls_name]
     if cls_name in _TAG_TYPES:
         return cls_name
     return "step"
@@ -195,12 +205,68 @@ class Retry(_BaseBehavior):
     until: str | None = None  # condition expression
 
 
+# ---------------------------------------------------------------------------
+# Fleet-addressing nodes (RFC-0286).
+# ---------------------------------------------------------------------------
+
+
+class OnMember(_BaseBehavior):
+    """Scope `body` to a single fleet member (RFC-0286).
+
+    Every primitive beneath an `on:` node is dispatched to the named roster
+    member's robot. The node has exactly one child (`body`), so it preserves
+    the single-root-tree invariant — it is a tagged wrapper, not a new kind of
+    fan-out. A program with no `on:` node is a single-robot program and behaves
+    exactly as before this RFC.
+
+    YAML surface:
+
+        - type: on
+          member: courier
+          body:
+            type: sequence
+            steps: [ ... ]
+    """
+
+    type: Literal["on"] = "on"
+    member: Identifier  # roster handle this subtree is dispatched to
+    body: BehaviorOrStep
+
+
+class Barrier(_BaseBehavior):
+    """Synchronize fleet members at a rendezvous point (RFC-0286).
+
+    A leaf node: execution does not proceed past a `barrier` until every named
+    member has reached it. This is the "sync command" — it is what makes a
+    handoff safe (the receiving robot does not act until the delivering robot
+    has arrived and stopped). Every named member must declare the `peer_link`
+    connectivity role (validated by `fleet.barrier_missing_peer_link`).
+
+    YAML surface:
+
+        - type: barrier
+          members: [courier, arm]
+    """
+
+    type: Literal["barrier"] = "barrier"
+    members: list[Identifier] = Field(..., min_length=2)
+
+    @model_validator(mode="after")
+    def _unique_members(self) -> Barrier:
+        if len(self.members) != len(set(self.members)):
+            dupes = sorted({m for m in self.members if self.members.count(m) > 1})
+            raise ValueError(f"barrier has duplicate member(s): {dupes}")
+        return self
+
+
 # The Behavior-or-Step union -- tagged for pydantic's discriminator.
 BehaviorOrStep = Annotated[
     Annotated[Sequence, Tag("sequence")]
     | Annotated[Branch, Tag("branch")]
     | Annotated[Parallel, Tag("parallel")]
     | Annotated[Retry, Tag("retry")]
+    | Annotated[OnMember, Tag("on")]
+    | Annotated[Barrier, Tag("barrier")]
     | Annotated[Step, Tag("step")],
     Discriminator(_discriminate),
 ]
@@ -212,6 +278,8 @@ Sequence.model_rebuild()
 Branch.model_rebuild()
 Parallel.model_rebuild()
 Retry.model_rebuild()
+OnMember.model_rebuild()
+Barrier.model_rebuild()
 
 
 # Public alias used by program.py.

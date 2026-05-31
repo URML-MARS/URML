@@ -5,8 +5,8 @@ revise emissions. Stability here matters: any code surfaced by a returned
 ``ValidationError`` is a part of the public API.
 
 Error codes are namespaced: ``argument.*``, ``capability.*``, ``envelope.*``,
-``binding.*``, ``policy.*``. New codes may be added between minor versions;
-existing codes do not change meaning.
+``binding.*``, ``policy.*``, ``fleet.*``. New codes may be added between minor
+versions; existing codes do not change meaning.
 """
 
 from __future__ import annotations
@@ -89,6 +89,21 @@ class ErrorCode(StrEnum):
     POLICY_HBOM_MISSING = "policy.hbom_missing"
     POLICY_ATTESTATION_INSUFFICIENT = "policy.attestation_insufficient"
     POLICY_RULE_INVALID = "policy.rule_invalid"
+
+    # Fleet — multi-robot coherence (RFC-0286). Fired only by `validate_fleet`;
+    # a single-robot program with no roster never produces these.
+    # An `on:` / `barrier:` node names a member not declared in the roster, or a
+    # step is not addressed to any member of a multi-member fleet.
+    FLEET_UNDECLARED_MEMBER = "fleet.undeclared_member"
+    # A primitive scoped to a member whose manifest cannot satisfy it (the
+    # underlying single-robot capability check, re-keyed to that member).
+    FLEET_CAPABILITY_UNSUPPORTED_ON_MEMBER = "fleet.capability_unsupported_on_member"
+    # Two distinct members are driven to the same declared location concurrently
+    # inside one `parallel` with no rendezvous — a cross-robot collision risk.
+    FLEET_CONCURRENT_SHARED_WORKSPACE = "fleet.concurrent_shared_workspace"
+    # A `barrier` names a member whose manifest does not declare the `peer_link`
+    # connectivity role required to synchronize (RFC-0006 reserved that role).
+    FLEET_BARRIER_MISSING_PEER_LINK = "fleet.barrier_missing_peer_link"
 
     # Internal / programmer-error categories.
     INTERNAL = "internal.error"

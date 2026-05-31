@@ -47,11 +47,20 @@ from pydantic import ValidationError as PydanticValidationError
 
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
 from urml_validator.policy_engine import evaluate_policy
-from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
-from urml_validator.schemas.connectivity import LinkLossAction
+from urml_validator.schemas.composition import (
+    Barrier,
+    Branch,
+    OnMember,
+    Parallel,
+    Retry,
+    Sequence,
+    Step,
+)
+from urml_validator.schemas.connectivity import LinkLossAction, LinkRole
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
+from urml_validator.schemas.roster import FleetRoster
 from urml_validator.schemas.primitives import (
     CallProgramArgs,
     CaptureArgs,
@@ -280,7 +289,442 @@ def _walk_behavior(node: object, path: list[str]) -> Iterator[tuple[list[str], S
     if isinstance(node, Retry):
         yield from _walk_behavior(node.behavior, [*path, "behavior"])
         return
+    if isinstance(node, OnMember):
+        # RFC-0286: an `on:` scope is transparent to the single-robot passes —
+        # they still see (and check) every step beneath it. The member handle is
+        # only meaningful under `validate_fleet`; here the body's steps are
+        # walked against whatever single manifest the caller passed.
+        yield from _walk_behavior(node.body, [*path, "body"])
+        return
+    if isinstance(node, Barrier):
+        # RFC-0286: a barrier is a leaf rendezvous marker, not a step. It carries
+        # no primitive, so the per-step passes have nothing to check here.
+        return
     raise TypeError(f"unexpected behavior node type: {type(node).__name__!r}")
+
+
+# =============================================================================
+# RFC-0286: fleet validation
+# =============================================================================
+#
+# `validate_fleet` is the multi-robot entry point. It reuses every single-robot
+# pass verbatim, re-keyed by fleet member, and adds four cross-robot checks:
+#
+#   fleet.undeclared_member             an `on:`/`barrier:` names a member the
+#                                       roster does not declare (or a step in a
+#                                       multi-member fleet is unaddressed).
+#   fleet.capability_unsupported_on_member  a primitive scoped to a member whose
+#                                       manifest fails the existing per-robot
+#                                       capability check.
+#   fleet.concurrent_shared_workspace   two members driven to the same declared
+#                                       location concurrently in one `parallel`.
+#   fleet.barrier_missing_peer_link     a `barrier` member lacks the `peer_link`
+#                                       connectivity role (RFC-0006 reserved it).
+#
+# A single-robot program (no `on:`/`barrier:` node) validated through `validate`
+# is wholly unaffected — none of this code runs on that path.
+
+
+def walk_program_scoped(
+    program: URMLProgram,
+) -> Iterator[tuple[list[str], Step, str | None]]:
+    """Like `walk_program`, but also yields the nearest enclosing `on:` member.
+
+    The member is None for a step outside any `on:` scope. `validate_fleet`
+    resolves None against the sole roster member (a fleet of one) or rejects it
+    (an unaddressed step in a multi-member fleet).
+    """
+    yield from _walk_behavior_scoped(program.behavior, ["behavior"], None)
+
+
+def _walk_behavior_scoped(
+    node: object, path: list[str], member: str | None
+) -> Iterator[tuple[list[str], Step, str | None]]:
+    if isinstance(node, Step):
+        yield path, node, member
+        return
+    if isinstance(node, Sequence):
+        for idx, sub in enumerate(node.steps):
+            yield from _walk_behavior_scoped(sub, [*path, "steps", str(idx)], member)
+        return
+    if isinstance(node, Branch):
+        yield from _walk_behavior_scoped(node.if_true, [*path, "if_true"], member)
+        if node.if_false is not None:
+            yield from _walk_behavior_scoped(node.if_false, [*path, "if_false"], member)
+        return
+    if isinstance(node, Parallel):
+        for idx, sub in enumerate(node.branches):
+            yield from _walk_behavior_scoped(sub, [*path, "branches", str(idx)], member)
+        return
+    if isinstance(node, Retry):
+        yield from _walk_behavior_scoped(node.behavior, [*path, "behavior"], member)
+        return
+    if isinstance(node, OnMember):
+        yield from _walk_behavior_scoped(node.body, [*path, "body"], node.member)
+        return
+    if isinstance(node, Barrier):
+        return
+    raise TypeError(f"unexpected behavior node type: {type(node).__name__!r}")
+
+
+def _iter_barriers(program: URMLProgram) -> Iterator[tuple[list[str], Barrier]]:
+    """Yield every Barrier node in the program, with its path."""
+
+    def visit(node: object, path: list[str]) -> Iterator[tuple[list[str], Barrier]]:
+        if isinstance(node, Barrier):
+            yield path, node
+            return
+        if isinstance(node, Sequence):
+            for idx, sub in enumerate(node.steps):
+                yield from visit(sub, [*path, "steps", str(idx)])
+        elif isinstance(node, Branch):
+            yield from visit(node.if_true, [*path, "if_true"])
+            if node.if_false is not None:
+                yield from visit(node.if_false, [*path, "if_false"])
+        elif isinstance(node, Parallel):
+            for idx, sub in enumerate(node.branches):
+                yield from visit(sub, [*path, "branches", str(idx)])
+        elif isinstance(node, Retry):
+            yield from visit(node.behavior, [*path, "behavior"])
+        elif isinstance(node, OnMember):
+            yield from visit(node.body, [*path, "body"])
+
+    yield from visit(program.behavior, ["behavior"])
+
+
+def _step_location_names(step: Step) -> set[str]:
+    """Declared-location names a step targets, for the workspace-collision check.
+
+    Name-based and conservative: v0.1 has no workspace-volume geometry in the
+    manifest, so two members are "in the same workspace" iff they target the
+    same declared location *name*. A `workspace_volumes` block with polygon
+    overlap is named as future work in RFC-0286.
+    """
+    name = step.primitive_name
+    args = getattr(step, name)
+    locs: set[str] = set()
+    if name == "move_to" and args.location is not None:
+        locs.add(args.location)
+    elif name == "pick_from":
+        locs.add(args.source)
+    elif name == "place_at":
+        locs.add(args.target)
+    elif name == "dock" and args.at is not None:
+        locs.add(args.at)
+    elif name == "swap_tool":
+        locs.add(args.at)
+    return locs
+
+
+def _collect_member_locations(node: object, member: str | None) -> set[tuple[str | None, str]]:
+    """All (member, location-name) pairs a subtree targets, honoring `on:` scopes."""
+    out: set[tuple[str | None, str]] = set()
+    if isinstance(node, Step):
+        for loc in _step_location_names(node):
+            out.add((member, loc))
+    elif isinstance(node, OnMember):
+        out |= _collect_member_locations(node.body, node.member)
+    elif isinstance(node, Sequence):
+        for sub in node.steps:
+            out |= _collect_member_locations(sub, member)
+    elif isinstance(node, Branch):
+        out |= _collect_member_locations(node.if_true, member)
+        if node.if_false is not None:
+            out |= _collect_member_locations(node.if_false, member)
+    elif isinstance(node, Parallel):
+        for sub in node.branches:
+            out |= _collect_member_locations(sub, member)
+    elif isinstance(node, Retry):
+        out |= _collect_member_locations(node.behavior, member)
+    return out
+
+
+def _check_concurrent_workspace(
+    program: URMLProgram, sole_member: str | None
+) -> list[ValidationError]:
+    """Reject two distinct members driven to the same location in one `parallel`.
+
+    The branches of a `parallel` run concurrently; if two of them target the
+    same declared location under different members, the robots are sent into the
+    same place at the same time. The barriers that bracket a safe handoff sit
+    *outside* the parallel (they serialize the approach), so within a parallel
+    the only safe shape is for at most one member to occupy a given location.
+    """
+    out: list[ValidationError] = []
+
+    def visit(node: object, path: list[str], member: str | None) -> None:
+        if isinstance(node, Parallel):
+            branch_sets = [
+                _collect_member_locations(sub, member if member is not None else sole_member)
+                for sub in node.branches
+            ]
+            reported: set[tuple[str, frozenset[str]]] = set()
+            for i in range(len(branch_sets)):
+                for j in range(i + 1, len(branch_sets)):
+                    for ma, la in branch_sets[i]:
+                        for mb, lb in branch_sets[j]:
+                            if la == lb and ma is not None and mb is not None and ma != mb:
+                                key = (la, frozenset({ma, mb}))
+                                if key in reported:
+                                    continue
+                                reported.add(key)
+                                out.append(_fleet_concurrent_workspace_error(path, la, ma, mb))
+            for idx, sub in enumerate(node.branches):
+                visit(sub, [*path, "branches", str(idx)], member)
+            return
+        if isinstance(node, OnMember):
+            visit(node.body, [*path, "body"], node.member)
+        elif isinstance(node, Sequence):
+            for idx, sub in enumerate(node.steps):
+                visit(sub, [*path, "steps", str(idx)], member)
+        elif isinstance(node, Branch):
+            visit(node.if_true, [*path, "if_true"], member)
+            if node.if_false is not None:
+                visit(node.if_false, [*path, "if_false"], member)
+        elif isinstance(node, Retry):
+            visit(node.behavior, [*path, "behavior"], member)
+
+    visit(program.behavior, ["behavior"], None)
+    return out
+
+
+def _fleet_undeclared_member_error(
+    path: list[str], member: str | None, declared: set[str]
+) -> ValidationError:
+    declared_list = sorted(declared)
+    if member is None:
+        message = (
+            "step is not addressed to any fleet member; wrap it in an `on:` node. "
+            f"Declared members: {declared_list!r}."
+        )
+        suggestion = "Wrap this step in `{type: on, member: <name>, body: ...}`."
+    else:
+        message = (
+            f"`on:`/`barrier:` references member {member!r}, which the roster does "
+            f"not declare. Declared members: {declared_list!r}."
+        )
+        suggestion = f"Use a declared member name, or add {member!r} to the roster."
+    return ValidationError(
+        code=ErrorCode.FLEET_UNDECLARED_MEMBER,
+        primitive=None,
+        path=path,
+        field="member",
+        message=message,
+        suggestion=suggestion,
+        detail={"member": member, "declared_members": declared_list},
+    )
+
+
+def _rekey_capability_to_member(err: ValidationError, member: str) -> ValidationError:
+    """Re-wrap a single-robot capability error as a fleet member-scoped error.
+
+    The underlying predicate (and its message/suggestion) is reused verbatim;
+    only the code changes and the offending member is named, so the LLM bridge
+    knows the fix belongs to one member's manifest, not the shared program.
+    """
+    return ValidationError(
+        code=ErrorCode.FLEET_CAPABILITY_UNSUPPORTED_ON_MEMBER,
+        primitive=err.primitive,
+        path=err.path,
+        field=err.field,
+        message=f"member {member!r}: {err.message}",
+        suggestion=err.suggestion,
+        detail={"member": member, "underlying": err.code_str},
+    )
+
+
+def _fleet_concurrent_workspace_error(
+    path: list[str], location: str, member_a: str, member_b: str
+) -> ValidationError:
+    pair = sorted({member_a, member_b})
+    return ValidationError(
+        code=ErrorCode.FLEET_CONCURRENT_SHARED_WORKSPACE,
+        primitive=None,
+        path=path,
+        field="branches",
+        message=(
+            f"members {pair[0]!r} and {pair[1]!r} are driven to the same declared "
+            f"location {location!r} in concurrent `parallel` branches with no "
+            f"barrier between them — a cross-robot collision risk."
+        ),
+        suggestion=(
+            "Separate the two members with a `barrier` so only one occupies "
+            f"{location!r} at a time, or send them to distinct locations."
+        ),
+        detail={"location": location, "members": pair},
+    )
+
+
+def _fleet_barrier_peer_link_error(
+    path: list[str], member: str
+) -> ValidationError:
+    return ValidationError(
+        code=ErrorCode.FLEET_BARRIER_MISSING_PEER_LINK,
+        primitive=None,
+        path=path,
+        field="members",
+        message=(
+            f"barrier synchronizes member {member!r}, but that member's manifest "
+            f"declares no `peer_link` connectivity role required to rendezvous."
+        ),
+        suggestion=(
+            f"Add a `connectivity` link with role 'peer_link' to {member!r}'s "
+            "manifest, or remove it from the barrier."
+        ),
+        detail={"member": member},
+    )
+
+
+def validate_fleet(
+    roster: dict[str, Any] | FleetRoster,
+    member_manifests: dict[str, dict[str, Any] | CapabilityManifest],
+    program: dict[str, Any] | URMLProgram,
+    member_envelopes: dict[str, dict[str, Any] | SafetyEnvelope] | None = None,
+    profiles: tuple[str, ...] = (),
+    policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+) -> ValidationResult:
+    """Validate a multi-robot fleet program against a roster of member manifests.
+
+    Args:
+        roster:           The fleet roster. Raw dict or `FleetRoster`.
+        member_manifests: ``{member_name -> manifest}`` for every roster member.
+                          Each manifest is a raw dict or `CapabilityManifest`.
+        program:          The fleet program (one tree with `on:`/`barrier:` nodes).
+        member_envelopes: Optional ``{member_name -> envelope}`` for per-member
+                          envelope checks. Members without an envelope are
+                          envelope-unchecked, exactly like the single-robot path.
+        profiles:         Informational, as in `validate`.
+        policy:           Compliance policy for Pass 5; evaluated per member
+                          manifest. ``"DEFAULT"`` / ``None`` / dict / `Policy`,
+                          same contract as `validate`.
+
+    Returns:
+        A `ValidationResult` aggregating single-robot passes (re-keyed by member)
+        and the four cross-robot `fleet.*` checks.
+    """
+    errors: list[ValidationError] = []
+    warnings: list[ValidationError] = []
+
+    # ----- roster (Pass-1-style; a bad roster is a hard stop) -----
+    try:
+        roster_model: FleetRoster = (
+            roster if isinstance(roster, FleetRoster) else FleetRoster.model_validate(roster)
+        )
+    except PydanticValidationError as exc:
+        for e in _pydantic_errors_to_validation_errors(exc):
+            e.path = ["<roster>", *e.path]
+            errors.append(e)
+        return ValidationResult(accepted=False, errors=errors, warnings=warnings)
+
+    # ----- program (Pass 1) -----
+    try:
+        program_model: URMLProgram = (
+            program if isinstance(program, URMLProgram) else URMLProgram.model_validate(program)
+        )
+    except PydanticValidationError as exc:
+        errors.extend(_pydantic_errors_to_validation_errors(exc))
+        return ValidationResult(accepted=False, errors=errors, warnings=warnings)
+
+    # ----- member manifests -----
+    members: dict[str, CapabilityManifest] = {}
+    for name, raw in member_manifests.items():
+        try:
+            members[name] = (
+                raw if isinstance(raw, CapabilityManifest) else CapabilityManifest.model_validate(raw)
+            )
+        except PydanticValidationError as exc:
+            for e in _pydantic_errors_to_validation_errors(exc):
+                e.path = ["<manifest>", name, *e.path]
+                errors.append(e)
+    # Every declared member needs a resolved manifest.
+    for member_name in sorted(roster_model.member_names):
+        if member_name not in members:
+            errors.append(
+                ValidationError(
+                    code=ErrorCode.FLEET_UNDECLARED_MEMBER,
+                    primitive=None,
+                    path=["<roster>", "members"],
+                    field="manifest",
+                    message=(
+                        f"roster declares member {member_name!r} but no manifest was "
+                        f"resolved for it."
+                    ),
+                    suggestion=f"Provide member_manifests[{member_name!r}].",
+                    detail={"member": member_name},
+                )
+            )
+    if errors:
+        return ValidationResult(accepted=False, errors=errors, warnings=warnings)
+
+    # ----- member envelopes (optional) -----
+    envelopes: dict[str, SafetyEnvelope] = {}
+    if member_envelopes:
+        for name, raw_env in member_envelopes.items():
+            if raw_env is None:
+                continue
+            try:
+                envelopes[name] = (
+                    raw_env
+                    if isinstance(raw_env, SafetyEnvelope)
+                    else SafetyEnvelope.model_validate(raw_env)
+                )
+            except PydanticValidationError as exc:
+                for e in _pydantic_errors_to_validation_errors(exc):
+                    e.path = ["<envelope>", name, *e.path]
+                    errors.append(e)
+        if errors:
+            return ValidationResult(accepted=False, errors=errors, warnings=warnings)
+
+    declared = roster_model.member_names
+    sole_member = next(iter(declared)) if len(declared) == 1 else None
+
+    # ----- Pass 2/3 per step, re-keyed by member -----
+    for path, step, member in walk_program_scoped(program_model):
+        effective = member if member is not None else sole_member
+        if effective is None or effective not in declared:
+            errors.append(_fleet_undeclared_member_error(path, member, declared))
+            continue
+        manifest = members[effective]
+        for cap_err in _check_capabilities(step, manifest, path):
+            errors.append(_rekey_capability_to_member(cap_err, effective))
+        env = envelopes.get(effective)
+        for env_err in _check_envelope(step, manifest, env, path):
+            env_err.detail = {**(env_err.detail or {}), "member": effective}
+            errors.append(env_err)
+
+    # ----- Barriers: declared-membership + peer_link role -----
+    for path, barrier in _iter_barriers(program_model):
+        for member_name in barrier.members:
+            if member_name not in declared:
+                errors.append(_fleet_undeclared_member_error(path, member_name, declared))
+                continue
+            manifest = members[member_name]
+            link = (
+                manifest.connectivity.link_for(LinkRole.PEER_LINK)
+                if manifest.connectivity is not None
+                else None
+            )
+            if link is None:
+                errors.append(_fleet_barrier_peer_link_error(path, member_name))
+
+    # ----- Cross-robot workspace collision -----
+    errors.extend(_check_concurrent_workspace(program_model, sole_member))
+
+    # ----- Pass 4: bindings across the whole fleet tree -----
+    errors.extend(_check_bindings(program_model))
+
+    # ----- Pass 5: compliance policy, per member manifest -----
+    policy_model = _resolve_policy(policy, errors)
+    if policy_model is not None:
+        for member_name in sorted(members):
+            for issue in evaluate_policy(members[member_name], policy_model):
+                issue.detail = {**(issue.detail or {}), "member": member_name}
+                if issue.severity == "warning":
+                    warnings.append(issue)
+                else:
+                    errors.append(issue)
+
+    return ValidationResult(accepted=not errors, errors=errors, warnings=warnings)
 
 
 # =============================================================================
