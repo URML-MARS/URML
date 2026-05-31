@@ -1,0 +1,60 @@
+# RFC-0286 fleet conformance — positive: the engaged-partners roll-call validates
+# and executes across four real partner manifests (Marty, Petoi, CircuitPython,
+# Kawasaki). Mirrors examples/fleet/engaged_partners.fleet.yaml. policy: none
+# because Petoi's CN origin is an operator-context policy decision (RFC-0004).
+name: fleet/06_engaged_partners_choreography_positive
+description: >
+  Four heterogeneous engaged-partner robots move to stations, rendezvous at a
+  barrier, take a synchronized sensor reading, rendezvous again, and stand down.
+  Validated against each robot's real manifest; executed hermetically.
+
+roster:
+  - { name: marty,   manifest: robotical_marty_v2 }
+  - { name: petoi,   manifest: petoi_bittle_x }
+  - { name: feather, manifest: adafruit_feather_rp2040_cell }
+  - { name: arm,     manifest: kawasaki_cell }
+policy: none
+profiles: [educational, industrial]
+
+program:
+  profile: [educational, industrial]
+  behavior:
+    type: sequence
+    steps:
+      - type: parallel
+        complete_when: all
+        branches:
+          - { type: "on", member: marty,   body: { move_to: { location: waypoint_a } } }
+          - { type: "on", member: petoi,   body: { move_to: { location: start_mat } } }
+          - { type: "on", member: feather, body: { move_to: { location: start_pad } } }
+          - { type: "on", member: arm,     body: { move_to: { location: home_pose } } }
+      - type: barrier
+        members: [marty, petoi, feather, arm]
+      - type: parallel
+        complete_when: all
+        branches:
+          - { type: "on", member: marty,   body: { measure: { what: voltage,  store_as: marty_v } } }
+          - { type: "on", member: petoi,   body: { measure: { what: voltage,  store_as: petoi_v } } }
+          - { type: "on", member: feather, body: { measure: { what: voltage,  store_as: feather_v } } }
+          - { type: "on", member: arm,     body: { measure: { what: pressure, store_as: arm_force } } }
+      - type: barrier
+        members: [marty, petoi, feather, arm]
+      - type: parallel
+        complete_when: all
+        branches:
+          - { type: "on", member: marty,   body: { move_to: { location: rest_mat } } }
+          - { type: "on", member: petoi,   body: { move_to: { location: waypoint_a } } }
+          - { type: "on", member: feather, body: { move_to: { location: rest_pad } } }
+          - { type: "on", member: arm,     body: { call_program: { name: home_all } } }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 12
+  per_member_audit:
+    marty: [send_navigation_goal, take_measurement, send_navigation_goal]
+    petoi: [send_navigation_goal, take_measurement, send_navigation_goal]
+    feather: [send_navigation_goal, take_measurement, send_navigation_goal]
+    arm: [send_navigation_goal, take_measurement, call_named_program]

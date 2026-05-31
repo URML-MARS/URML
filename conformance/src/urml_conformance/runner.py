@@ -301,6 +301,7 @@ class ConformanceRunner:
                 case.program,
                 member_envelopes,
                 profiles=tuple(case.profiles),
+                policy=policy,
             )
         except Exception as exc:
             diagnostics.append(f"fleet runtime raised: {type(exc).__name__}: {exc}")

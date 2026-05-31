@@ -24,10 +24,10 @@ Bypassing the validator is prohibited (CLAUDE.md safety boundary).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from urml_validator import ValidationResult, validate_fleet
+from urml_validator import Policy, ValidationResult, validate_fleet
 from urml_validator.schemas.composition import (
     Barrier,
     Branch,
@@ -88,8 +88,14 @@ class FleetRuntime:
         program: dict[str, Any] | URMLProgram,
         member_envelopes: dict[str, dict[str, Any]] | None = None,
         profiles: tuple[str, ...] = (),
+        policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
     ) -> FleetRuntimeResult:
         """Execute a fleet program against the runtime's member adapters.
+
+        ``policy`` is forwarded to the defense-in-depth re-validation, so a
+        deployment can run ``--no-policy`` (``policy=None``) exactly as the
+        validator does — the no-bypass rule is about skipping validation, not
+        about the optional compliance pass.
 
         Raises ``ValidationRejectedError`` if defense-in-depth re-validation
         rejects the program, or ``UnsupportedCompositionError`` for a node this
@@ -97,7 +103,8 @@ class FleetRuntime:
         """
         if self._revalidate:
             result: ValidationResult = validate_fleet(
-                roster, member_manifests, program, member_envelopes, profiles=profiles
+                roster, member_manifests, program, member_envelopes,
+                profiles=profiles, policy=policy,
             )
             if not result.accepted:
                 raise ValidationRejectedError(

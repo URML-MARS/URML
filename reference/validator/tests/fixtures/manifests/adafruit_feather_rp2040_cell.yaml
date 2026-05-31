@@ -47,6 +47,10 @@ perception:
       units: cm
   object_vocabulary: []
 
+connectivity:                        # RFC-0286: declare peer_link so the board can join a fleet barrier
+  links:
+    - role: peer_link
+
 provenance:
   manifest_attestation: self_declared
   components:

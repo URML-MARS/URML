@@ -48,6 +48,10 @@ perception:
       units: g
   object_vocabulary: []
 
+connectivity:                        # RFC-0286: declare peer_link so Marty can join a fleet barrier
+  links:
+    - role: peer_link
+
 provenance:
   manifest_attestation: self_declared
   components:
