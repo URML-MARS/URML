@@ -1,7 +1,7 @@
-# RFC-0287 fixture: an aerial robot. Vertical separation is by ALTITUDE.
+# RFC-0291 fixture: an aerial robot. Vertical separation is by ALTITUDE.
 manifest_version: "0.1"
 robot_id: utm_drone
-description: Multirotor with a UTM-style operational clearance (RFC-0287).
+description: Multirotor with a UTM-style operational clearance (RFC-0291).
 
 frames:
   - name: agl

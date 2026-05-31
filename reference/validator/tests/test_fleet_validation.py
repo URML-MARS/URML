@@ -275,7 +275,7 @@ def test_bad_roster_short_circuits():
 
 
 # ===========================================================================
-# RFC-0287 — geometric (UTM) strategic deconfliction across the three media
+# RFC-0291 — geometric (UTM) strategic deconfliction across the three media
 # ===========================================================================
 
 
@@ -463,7 +463,7 @@ def test_shared_frame_undeclared_warns():
 
 
 # ===========================================================================
-# RFC-0288 — cross-frame deconfliction via world-anchors (a drone's agl vs a
+# RFC-0290 — cross-frame deconfliction via world-anchors (a drone's agl vs a
 # rover's site, resolved into one world)
 # ===========================================================================
 

@@ -89,7 +89,7 @@ LocationOrPose = str | Pose
 
 
 class Rotation(BaseModel):
-    """A 3D rotation as roll/pitch/yaw Euler angles, in radians (RFC-0288).
+    """A 3D rotation as roll/pitch/yaw Euler angles, in radians (RFC-0290).
 
     Applied in the ZYX convention (yaw, then pitch, then roll), matching the
     common ROS/aerospace order: R = Rz(yaw) · Ry(pitch) · Rx(roll). The same
@@ -104,7 +104,7 @@ class Rotation(BaseModel):
 
 
 class Translation(BaseModel):
-    """A 3D translation in metres (RFC-0288)."""
+    """A 3D translation in metres (RFC-0290)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -114,7 +114,7 @@ class Translation(BaseModel):
 
 
 class Transform(BaseModel):
-    """A rigid-body (SE(3)) transform: a translation plus a rotation (RFC-0288).
+    """A rigid-body (SE(3)) transform: a translation plus a rotation (RFC-0290).
 
     On a `Frame`, it expresses that frame's pose **in its parent frame**: a point
     `p` in the frame maps to the parent as `R · p + t`. As a roster world-anchor,

@@ -1,4 +1,4 @@
-# RFC-0288 — CROSS-FRAME: the SAME drone+rover, but the drone is at 30 m altitude.
+# RFC-0290 — CROSS-FRAME: the SAME drone+rover, but the drone is at 30 m altitude.
 # Resolved into world, their vertical bands are disjoint -> deconflicted -> ACCEPT.
 name: fleet/17_cross_frame_drone_high_above_rover_accepted
 description: A high drone over a rover; altitude separation holds in world.

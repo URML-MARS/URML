@@ -36,7 +36,7 @@ from urml_validator.schemas.common import Identifier, Transform
 
 
 class FrameAnchor(BaseModel):
-    """A member's extrinsic placement in the fleet's shared world (RFC-0288).
+    """A member's extrinsic placement in the fleet's shared world (RFC-0290).
 
     ``frame`` is one of the member's own frames (normally its root); ``transform``
     places that frame in the roster's ``world_frame``. With an anchor, a member's
@@ -72,7 +72,7 @@ class RosterMember(BaseModel):
     )
     anchor: FrameAnchor | None = Field(
         None,
-        description="RFC-0288: extrinsic placement of one of this member's frames in the world frame.",
+        description="RFC-0290: extrinsic placement of one of this member's frames in the world frame.",
     )
 
 
@@ -92,7 +92,7 @@ class FleetRoster(BaseModel):
     world_frame: Identifier | None = Field(
         None,
         description=(
-            "RFC-0288: the name of the fleet's shared world frame. When members declare "
+            "RFC-0290: the name of the fleet's shared world frame. When members declare "
             "`anchor`s into it, their targets resolve to common world coordinates and are "
             "compared geometrically across differing frames. `shared_frames` remains the "
             "simpler same-name path (a frame listed there is treated as the world directly)."
@@ -103,7 +103,7 @@ class FleetRoster(BaseModel):
         description=(
             "Frame names that denote ONE common physical coordinate reference across "
             "all members (e.g. 'site', 'water', 'agl') — the fleet's shared geodetic "
-            "reference, in UTM terms (RFC-0287). The geometric cross-robot collision "
+            "reference, in UTM terms (RFC-0291). The geometric cross-robot collision "
             "check only compares targets whose frame is in this list; a member's own "
             "local frame (e.g. each robot's private 'floor') is never compared against "
             "another's. Empty (default) means the check abstains across members."
@@ -128,5 +128,5 @@ class FleetRoster(BaseModel):
 
     @property
     def shared_frame_set(self) -> set[str]:
-        """The set of frames declared as a common physical reference (RFC-0287)."""
+        """The set of frames declared as a common physical reference (RFC-0291)."""
         return set(self.shared_frames)

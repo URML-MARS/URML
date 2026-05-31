@@ -22,7 +22,7 @@ class Frame(BaseModel):
     """A declared coordinate frame.
 
     `parent` is the frame this frame is expressed relative to; the root frame
-    has no parent. `transform` (RFC-0288) is this frame's pose *in its parent*:
+    has no parent. `transform` (RFC-0290) is this frame's pose *in its parent*:
     a point `p` here maps to the parent as `R·p + t`. With transforms declared
     up the parent chain, the validator can express any pose in any connected
     frame (cross-frame geometry). A frame with a `parent` but no `transform` is
@@ -52,7 +52,7 @@ class DeclaredLocation(BaseModel):
 
 
 class OperationalClearance(BaseModel):
-    """The robot's operational-volume buffer for fleet deconfliction (RFC-0287).
+    """The robot's operational-volume buffer for fleet deconfliction (RFC-0291).
 
     Models a UTM operational volume (ASTM F3548 Volume3D) as a buffer around the
     robot's target: a lateral footprint circle of ``radius_m`` and a vertical band
@@ -112,7 +112,7 @@ class Mobility(BaseModel):
     clearance: OperationalClearance | None = Field(
         None,
         description=(
-            "Operational-volume buffer for fleet collision deconfliction (RFC-0287). "
+            "Operational-volume buffer for fleet collision deconfliction (RFC-0291). "
             "Optional; absent means name-based fallback for pairs involving this robot."
         ),
     )

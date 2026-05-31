@@ -39,7 +39,7 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_CAMERA = "capability.missing_camera"
     CAPABILITY_MISSING_SENSOR = "capability.missing_sensor"
     CAPABILITY_MISSING_FRAME = "capability.missing_frame"
-    # RFC-0288: the manifest's frame graph is malformed.
+    # RFC-0290: the manifest's frame graph is malformed.
     CAPABILITY_FRAME_PARENT_UNDECLARED = "capability.frame_parent_undeclared"
     CAPABILITY_FRAME_CYCLE = "capability.frame_cycle"
     CAPABILITY_MISSING_LOCATION = "capability.missing_location"
@@ -107,10 +107,10 @@ class ErrorCode(StrEnum):
     # A `barrier` names a member whose manifest does not declare the `peer_link`
     # connectivity role required to synchronize (RFC-0006 reserved that role).
     FLEET_BARRIER_MISSING_PEER_LINK = "fleet.barrier_missing_peer_link"
-    # RFC-0287: warning — a roster `shared_frame` is declared by no member, so the
+    # RFC-0291: warning — a roster `shared_frame` is declared by no member, so the
     # geometric collision check silently has nothing to compare in it.
     FLEET_SHARED_FRAME_UNDECLARED = "fleet.shared_frame_undeclared"
-    # RFC-0288: warning — a member's world `anchor` names a frame it doesn't declare,
+    # RFC-0290: warning — a member's world `anchor` names a frame it doesn't declare,
     # so its targets won't resolve to the world.
     FLEET_ANCHOR_FRAME_UNDECLARED = "fleet.anchor_frame_undeclared"
 

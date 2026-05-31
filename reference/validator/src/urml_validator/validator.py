@@ -198,7 +198,7 @@ def validate(
     errors.extend(_check_substrate_required_for_drone(manifest_model))
     # RFC-0251: substrate.rmw_implementation + qos_profile rules.
     errors.extend(_check_substrate_rmw_options(manifest_model))
-    # RFC-0288: the frame graph must be acyclic with declared parents.
+    # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
 
     # ----- Pass 3: envelope checks -----
@@ -421,7 +421,7 @@ def _step_location_names(step: Step) -> set[str]:
     return locs
 
 
-# RFC-0287: medium is derived from drive_type, not declared. Air and water
+# RFC-0291: medium is derived from drive_type, not declared. Air and water
 # operations never share physical space.
 _WATER_DRIVE_TYPES = {"underwater_thrusters"}
 
@@ -440,7 +440,7 @@ def _medium_of(manifest: CapabilityManifest) -> str | None:
 
 @dataclass(frozen=True)
 class _MemberTarget:
-    """One member's spatial target, resolved into the fleet's world (RFC-0287/0288).
+    """One member's spatial target, resolved into the fleet's world (RFC-0291/0288).
 
     ``wx/wy/wz`` are world coordinates and ``world_id`` is the comparison frame id
     (the world frame for an anchored member, or the shared-frame name); two targets
@@ -549,7 +549,7 @@ def _volumes_conflict(a: _MemberTarget, b: _MemberTarget) -> tuple[bool, dict[st
     if a.world_id is None or b.world_id is None or a.world_id != b.world_id:
         return False, None
     # Medium gate: only air vs water is exempt (truly disjoint media). Air vs ground
-    # is geometric — a low-flying drone can collide with a ground robot (RFC-0288).
+    # is geometric — a low-flying drone can collide with a ground robot (RFC-0290).
     if a.medium is not None and b.medium is not None and {a.medium, b.medium} == {"air", "water"}:
         return False, None
     # Geometric (UTM): both must declare a clearance volume and have world coordinates.
@@ -592,7 +592,7 @@ def _check_concurrent_workspace(
     member's target is resolved into the fleet's world (via the member's `anchor`
     and frame graph, or a `shared_frames` name), and two distinct members conflict
     only if their world volumes are not separated by medium, laterally, or
-    vertically (RFC-0287/0288). When a member declares no `clearance`, the
+    vertically (RFC-0291/0288). When a member declares no `clearance`, the
     comparison falls back to declared-location-name equality, world-gated.
     """
     out: list[ValidationError] = []
@@ -818,7 +818,7 @@ def validate_fleet(
                     detail={"member": member_name},
                 )
             )
-    # RFC-0288: each member's frame graph must be well-formed.
+    # RFC-0290: each member's frame graph must be well-formed.
     for member_name in sorted(members):
         for err in _check_frame_graph(members[member_name]):
             err.detail = {**(err.detail or {}), "member": member_name}
@@ -877,7 +877,7 @@ def validate_fleet(
             if link is None:
                 errors.append(_fleet_barrier_peer_link_error(path, member_name))
 
-    # ----- Cross-robot workspace collision (RFC-0287/0288 strategic deconfliction) -----
+    # ----- Cross-robot workspace collision (RFC-0291/0288 strategic deconfliction) -----
     shared_frames = roster_model.shared_frame_set
     declared_frames = {f.name for m in members.values() for f in m.frames}
     errors.extend(_check_concurrent_workspace(program_model, sole_member, members, roster_model))
@@ -899,7 +899,7 @@ def validate_fleet(
                 detail={"frame": frame},
             )
         )
-    # RFC-0288: a world-anchor whose frame the member does not declare silently
+    # RFC-0290: a world-anchor whose frame the member does not declare silently
     # disables resolution for that member.
     for rmember in roster_model.members:
         if rmember.anchor is not None and rmember.anchor.frame not in {
@@ -1089,7 +1089,7 @@ def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
 
 
 def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:
-    """RFC-0288: the frame graph must be a forest — every `parent` declared, no cycle."""
+    """RFC-0290: the frame graph must be a forest — every `parent` declared, no cycle."""
     out: list[ValidationError] = []
     by_name = {f.name: f for f in manifest.frames}
     for frame in manifest.frames:
@@ -2202,7 +2202,7 @@ def _check_point_in_any_geofence(
     """Check ``point`` (in ``frame``) against every declared geofence.
 
     A geofence applies when it is in the same frame OR the point can be resolved
-    into the geofence's frame through the manifest's frame graph (RFC-0288). When
+    into the geofence's frame through the manifest's frame graph (RFC-0290). When
     no geofence applies (frame mismatch with no connecting transform) the check
     abstains. ``failure_reason`` is ``"footprint"`` or ``"altitude"`` as before.
     """
@@ -2241,7 +2241,7 @@ def _check_point_in_any_occupancy_zone(
     """Check ``point`` against people-occupancy zones.
 
     A zone applies when it is in the same frame OR the point resolves into the
-    zone's frame (RFC-0288). **Denylist** semantics: ``ok`` is False iff the point
+    zone's frame (RFC-0290). **Denylist** semantics: ``ok`` is False iff the point
     lies inside at least one applicable zone whose ``allow_override`` is False.
     """
     if envelope is None or not envelope.people_occupancy_zones:

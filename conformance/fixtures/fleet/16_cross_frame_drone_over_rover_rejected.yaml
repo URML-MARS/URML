@@ -1,8 +1,8 @@
-# RFC-0288 — CROSS-FRAME: a drone (targets in `agl`) and a rover (targets in
+# RFC-0290 — CROSS-FRAME: a drone (targets in `agl`) and a rover (targets in
 # `site`) are anchored into one `world`. The drone's low target and the rover's
-# target land at the same world point -> conflict. This is the case RFC-0287's
+# target land at the same world point -> conflict. This is the case RFC-0291's
 # name/same-frame check could never see (different frame names) AND that the old
-# medium gate wrongly exempted (air vs ground); RFC-0288 catches it.
+# medium gate wrongly exempted (air vs ground); RFC-0290 catches it.
 name: fleet/16_cross_frame_drone_over_rover_rejected
 description: A low drone and a ground rover resolve to the same world point.
 world_frame: world

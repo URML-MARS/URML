@@ -1,4 +1,4 @@
-# RFC-0287 — WATER: two ROVs at the same (x,y) AND the same depth -> conflict.
+# RFC-0291 — WATER: two ROVs at the same (x,y) AND the same depth -> conflict.
 name: fleet/11_water_same_depth_rejected
 description: Two ROVs at the same point and depth; depth bands overlap.
 roster:

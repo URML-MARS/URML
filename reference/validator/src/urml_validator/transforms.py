@@ -1,14 +1,14 @@
-"""SE(3) rigid-body transform math + a frame-graph resolver (RFC-0288).
+"""SE(3) rigid-body transform math + a frame-graph resolver (RFC-0290).
 
 Pure Python (no numpy) so the validator keeps minimal dependencies. A rigid
 transform is a ``(R, t)`` pair: a 3x3 rotation matrix and a 3-vector translation.
 A point ``p`` maps as ``R @ p + t``.
 
 The resolver walks a manifest's frame graph (the ``Frame.parent`` chain, now
-carrying a ``Frame.transform`` per RFC-0288) to express a point declared in one
+carrying a ``Frame.transform`` per RFC-0290) to express a point declared in one
 frame in terms of another. Frames that are not connected, or a chain with a
 missing transform, resolve to ``None`` — the caller then abstains, preserving the
-pre-RFC-0288 behavior (frames were compared only by string-equal name).
+pre-RFC-0290 behavior (frames were compared only by string-equal name).
 """
 
 from __future__ import annotations
@@ -148,10 +148,10 @@ def resolve_to_world(
     point and a world identifier. Two targets are comparable iff both resolve and
     share that identifier.
 
-    - **Anchor path** (RFC-0288): if the member has an `anchor` and `frame`
+    - **Anchor path** (RFC-0290): if the member has an `anchor` and `frame`
       resolves (via the frame tree) to the anchored frame, apply the anchor's
       transform. World id is `world_frame`.
-    - **Shared-frame path** (RFC-0287): if `frame` is in `shared_frames`, the
+    - **Shared-frame path** (RFC-0291): if `frame` is in `shared_frames`, the
       frame IS the world (identity). World id is the frame name.
     - Otherwise `None` — not resolvable; the caller abstains.
     """

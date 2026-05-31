@@ -1,4 +1,4 @@
-"""RFC-0288 — SE(3) transform math + frame-graph validation."""
+"""RFC-0290 — SE(3) transform math + frame-graph validation."""
 
 from __future__ import annotations
 
@@ -152,7 +152,7 @@ def test_frame_cycle_rejected():
 
 
 # ---------------------------------------------------------------------------
-# Single-robot geofence cross-frame resolution (RFC-0288)
+# Single-robot geofence cross-frame resolution (RFC-0290)
 # ---------------------------------------------------------------------------
 
 # base_link sits at site (10, 0, 0); a 0..20 box geofence is declared in `site`.
@@ -192,7 +192,7 @@ def test_geofence_cross_frame_outside_rejected():
 
 def test_geofence_no_transform_abstains():
     # Same setup but base_link has no transform -> not resolvable -> geofence
-    # abstains -> no violation (backward-compatible with pre-RFC-0288).
+    # abstains -> no violation (backward-compatible with pre-RFC-0290).
     manifest = {
         "robot_id": "rover",
         "frames": [{"name": "site"}, {"name": "base_link", "parent": "site"}],
