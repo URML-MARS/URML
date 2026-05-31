@@ -64,6 +64,17 @@ hardware). Mission: [`engaged_partners.fleet.yaml`](engaged_partners.fleet.yaml)
 python run_partners_demo.py
 ```
 
+And the capstone — **one English sentence moves the whole fleet, in sync**:
+[`run_nl_partners_demo.py`](run_nl_partners_demo.py) runs the full loop, *natural
+language → `FleetBridge` (LLM → validated multi-robot program) → concurrent
+`FleetRuntime`*. It uses `EchoProvider` for hermetic CI; swap in a real provider
+(Anthropic / OpenAI / on-device) and the same bridge translates a free-form
+sentence for real.
+
+```bash
+python run_nl_partners_demo.py
+```
+
 ## Get your robot into a fleet
 
 The lightest rung on the engagement ladder is to **claim your robot's fleet name** — publish
