@@ -1,0 +1,13 @@
+# Optional dev tooling for the outreach dashboard (RFC-0275).
+# Not required for `urml` itself; install only if you want to run
+# `make outreach-browse` or re-run the schema-v2 migration.
+#
+#   python -m pip install -r tools/requirements-dev.txt
+#
+# Stack:
+#   datasette       Read-only browser UI over the SQLite mirror.
+#   ruamel.yaml     Round-trip YAML preservation for the migration script
+#                   and the future write plugin (RFC-0275 PR 5).
+
+datasette>=0.64
+ruamel.yaml>=0.18

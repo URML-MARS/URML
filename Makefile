@@ -9,7 +9,7 @@
 # Nothing here is public or irreversible: `make clean` removes the venv
 # and every trace.
 
-.PHONY: help install install-dev demo demo-run demo-record kawasaki-demo-record architecture-record audit test clean
+.PHONY: help install install-dev demo demo-run demo-record kawasaki-demo-record architecture-record audit outreach-refresh outreach-browse outreach-schema-migrate test clean
 
 VENV   := .venv
 PYBIN  := $(VENV)/bin
@@ -27,6 +27,14 @@ help:
 	@echo "  make architecture-record  Regenerate the homepage architecture-stack SVG."
 	@echo "  make audit        Re-measure every suite + fixture count; print a paste-ready"
 	@echo "                    block for docs/launch/claims-audit.md (does not auto-edit)."
+	@echo "  make outreach-refresh   Regenerate tools/outreach.db from every"
+	@echo "                          examples/lighthouses/outreach*.yaml. See RFC-0275."
+	@echo "  make outreach-browse    Launch Datasette on http://localhost:8001 with the"
+	@echo "                          read-only outreach mirror + canned queries."
+	@echo "  make outreach-schema-migrate"
+	@echo "                          One-shot: add the schema-v2 fields (tier, country,"
+	@echo "                          sector, comments, claude_directives) to every row."
+	@echo "                          Run once during rollout; idempotent."
 	@echo "  make test         Run every package's test suite (each in its own process)."
 	@echo "  make clean        Remove .venv (full, reversible teardown)."
 	@echo ""
@@ -94,6 +102,20 @@ architecture-record:
 # "report drift, don't silently rewrite" discipline.
 audit:
 	$(PYBIN)/python tools/scripts/refresh_audit.py
+
+# Outreach dashboard (RFC-0275). Source of truth: outreach*.yaml.
+# The SQLite mirror is derived and gitignored. Datasette is a dev dep;
+# `pip install -r tools/requirements-dev.txt` if not already present.
+outreach-refresh:
+	$(PYBIN)/python tools/scripts/refresh_outreach_db.py
+
+outreach-browse: outreach-refresh
+	$(PYBIN)/datasette serve tools/outreach.db \
+	    --metadata tools/outreach-datasette-metadata.yaml \
+	    --port 8001
+
+outreach-schema-migrate:
+	$(PYBIN)/python tools/scripts/migrate_outreach_schema_v2.py
 
 # Each suite runs in its own pytest process: the packages have
 # same-named test modules, so a single combined invocation collides on

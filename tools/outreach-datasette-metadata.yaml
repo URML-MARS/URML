@@ -1,0 +1,179 @@
+title: URML outreach dashboard
+description_html: |
+  Read-only mirror of every outreach ledger row.
+  Source of truth lives in <code>examples/lighthouses/outreach*.yaml</code>.
+  Regenerate this database with <code>make outreach-refresh</code>.
+  See <a href="https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0275-outreach-ledger-schema-v2.md">RFC-0275</a>
+  for the schema.
+
+databases:
+  outreach:
+    description_html: |
+      <p><strong>Start here:</strong> the <em>canned queries</em> below answer
+      the four concerns this dashboard exists to surface
+      (numbers, sectors, success, blockers) plus the to-do list left for Claude.</p>
+
+    queries:
+      top_line_numbers:
+        title: 1 — Top-line numbers
+        description: One-row summary of every ledger row across every wave.
+        sql: |
+          SELECT
+            (SELECT COUNT(*) FROM targets)                                                AS total,
+            (SELECT COUNT(*) FROM targets WHERE sent_at != '')                            AS posted,
+            (SELECT COUNT(*) FROM targets WHERE response = 'engaged')                     AS engaged,
+            (SELECT COUNT(*) FROM targets WHERE response = 'wontfix')                     AS wontfix,
+            (SELECT COUNT(*) FROM targets WHERE response = 'declined')                    AS declined,
+            (SELECT COUNT(*) FROM targets WHERE is_stale = 1)                             AS stale,
+            (SELECT COUNT(*) FROM claude_directives WHERE status = 'pending')             AS pending_directives
+
+      engagement_leaderboard:
+        title: 2 — Engagement leaderboard
+        description: |
+          Every row whose maintainer has substantively replied,
+          most recent first. Click a row for the full notes / next_action.
+        sql: |
+          SELECT
+            wave, slug, sector, country, tier, last_touch, rfc, posted_url
+          FROM targets
+          WHERE response = 'engaged'
+          ORDER BY last_touch DESC
+
+      blockers:
+        title: 3 — Blockers
+        description: |
+          Every row whose maintainer closed the thread (wontfix or declined),
+          with a short notes excerpt for the close reason.
+        sql: |
+          SELECT
+            wave, slug, sector, country, response, last_touch,
+            substr(notes, 1, 240) AS notes_excerpt, rfc, posted_url
+          FROM targets
+          WHERE response IN ('wontfix', 'declined')
+          ORDER BY last_touch DESC
+
+      stale_radar:
+        title: 4 — Stale-thread radar
+        description: |
+          Rows posted more than 28 days ago with no response yet.
+          The "who needs a poke" list. Oldest first.
+        sql: |
+          SELECT
+            wave, slug, sector, country, sent_at, days_since_sent,
+            rfc, posted_url
+          FROM targets
+          WHERE is_stale = 1
+          ORDER BY sent_at ASC
+
+      pending_directives_for_claude:
+        title: 5 — Pending directives for Claude
+        description: |
+          The to-do list the founder leaves for Claude.
+          Claude reads pending directives on touching a row and marks
+          status: done in the same commit that satisfies them.
+        sql: |
+          SELECT
+            d.wave, d.slug, d.date, d.text, t.sector, t.response, t.rfc
+          FROM claude_directives d
+          JOIN targets t ON t.wave = d.wave AND t.slug = d.slug
+          WHERE d.status = 'pending'
+          ORDER BY d.date ASC
+
+      recent_comments:
+        title: 6 — Recent comments (last 14 days)
+        description: Maintainer notes left while scanning the dashboard.
+        sql: |
+          SELECT
+            c.wave, c.slug, c.date, c.text, t.sector, t.response
+          FROM comments c
+          JOIN targets t ON t.wave = c.wave AND t.slug = c.slug
+          WHERE c.date >= date('now', '-14 day')
+          ORDER BY c.date DESC
+
+      funnel_by_sector:
+        title: 7 — Funnel by sector
+        description: |
+          Sector by response state. Surfaces which sectors are converting.
+        sql: |
+          SELECT
+            sector,
+            COUNT(*)                                            AS total,
+            SUM(CASE WHEN sent_at != '' THEN 1 ELSE 0 END)      AS posted,
+            SUM(CASE WHEN response = 'acked'     THEN 1 ELSE 0 END) AS acked,
+            SUM(CASE WHEN response = 'engaged'   THEN 1 ELSE 0 END) AS engaged,
+            SUM(CASE WHEN response = 'wontfix'   THEN 1 ELSE 0 END) AS wontfix,
+            SUM(CASE WHEN response = 'declined'  THEN 1 ELSE 0 END) AS declined,
+            SUM(is_stale)                                       AS stale
+          FROM targets
+          GROUP BY sector
+          ORDER BY total DESC
+
+      funnel_by_tier:
+        title: 8 — Funnel by tier
+        description: A vs B vs C engagement rates. Validates tier discipline.
+        sql: |
+          SELECT
+            tier,
+            COUNT(*)                                              AS total,
+            SUM(CASE WHEN response = 'engaged' THEN 1 ELSE 0 END) AS engaged,
+            SUM(CASE WHEN response = 'wontfix' THEN 1 ELSE 0 END) AS wontfix,
+            SUM(is_stale)                                         AS stale,
+            ROUND(100.0 * SUM(CASE WHEN response = 'engaged' THEN 1 ELSE 0 END) / NULLIF(SUM(CASE WHEN sent_at != '' THEN 1 ELSE 0 END), 0), 1) AS engaged_pct_of_posted
+          FROM targets
+          GROUP BY tier
+          ORDER BY tier
+
+      funnel_by_country:
+        title: 9 — Funnel by country (top 15)
+        description: Origin distribution and response distribution.
+        sql: |
+          SELECT
+            country,
+            COUNT(*)                                              AS total,
+            SUM(CASE WHEN response = 'engaged' THEN 1 ELSE 0 END) AS engaged,
+            SUM(CASE WHEN response = 'wontfix' THEN 1 ELSE 0 END) AS wontfix,
+            SUM(is_stale)                                         AS stale
+          FROM targets
+          GROUP BY country
+          ORDER BY total DESC
+          LIMIT 15
+
+      funnel_by_wave:
+        title: 10 — Funnel by wave (Move 1-18)
+        description: Per-Move conversion shape.
+        sql: |
+          SELECT
+            move_num, total, posted, acked, engaged, wontfix, declined, stale
+          FROM waves
+          ORDER BY move_num
+
+    tables:
+      targets:
+        title: All outreach targets (one row per ledger row)
+        description: |
+          229 rows across 18 ledger files. Click any row for the full
+          notes and next_action. Filter by `sector`, `tier`, `country`,
+          `response`, or `is_stale` to drill down.
+        sort_desc: last_touch
+
+      comments:
+        title: All comments
+        description: |
+          Append-only list of maintainer notes left on rows while
+          scanning the dashboard. Sorted by date desc by default.
+        sort_desc: date
+
+      claude_directives:
+        title: Per-row directives for Claude
+        description: |
+          Explicit work the founder has left for Claude on a specific
+          row. Status is one of pending / done / skip. Sorted by date
+          desc by default.
+        sort_desc: date
+
+      waves:
+        title: Per-wave metadata
+        description: |
+          One row per outreach-moveN.yaml (plus outreach.yaml for
+          Move-1). Funnel counters are pre-aggregated.
+        sort: move_num
