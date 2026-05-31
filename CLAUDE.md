@@ -154,7 +154,9 @@ Two ledger files under [`examples/lighthouses/`](examples/lighthouses/):
 - `outreach.yaml` (Move #1, RFCs 0023 through 0038): the 16 Tier-1 robot OEMs and component vendors. Parity-locked to `examples/lighthouses/demo.py::LIGHTHOUSES` by `conformance/tests/test_outreach_ledger.py`. Do not add a row without updating both, or the test fails.
 - `outreach-move2.yaml` (Move #2 onward, RFC 0040+): the AI / ML layer and substrate follow-ons. Mirroring schema, no parity test (different audience, not every target has an in-repo manifest).
 
-Response enum: `none | acked | engaged | declined | wontfix`. Default state for fresh outreach is `none` with `last_touch == sent_at`. Do not massage state to look more engaged than reality. When state changes, edit the ledger first; everything else (the demo runner, future dashboards, the claims-audit) reads from it.
+Response enum: `none | acked | engaged | declined | wontfix`. Default state for fresh outreach is `none` with `last_touch == sent_at`. Do not massage state to look more engaged than reality. When state changes, edit the ledger first; everything else (the demo runner, the outreach dashboard, the claims-audit) reads from it.
+
+The outreach dashboard (RFC-0275) reads a SQLite mirror at `tools/outreach.db`, not the YAML directly. The mirror is a derived view: regenerated on demand by `python tools/scripts/refresh_outreach_db.py`, deterministic, and never committed. Do not hand-edit the `.db`, and keep it out of git. YAML stays the single source of truth. **Always refresh the mirror after any ledger change** (a post, a response, a deferral) so the dashboard reflects reality. The rebuild deletes and rewrites the file, so it fails while a dashboard process holds it open; stop the dashboard first, then refresh.
 
 ### Public commitments are deferred until measured
 
