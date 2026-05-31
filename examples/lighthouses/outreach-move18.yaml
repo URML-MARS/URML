@@ -193,11 +193,11 @@
   sent_at: "2026-05-29"
   posted_url: "https://github.com/purduesigbots/pros/issues/789"
   channel: github
-  contact: "purduesigbots/pros (Other license — clarification ask, 311 stars, Issues enabled, last commit 2026-03-31 (~2-mo stale), **not archived**). VEX V5 microcontroller C/C++ toolchain maintained by Purdue Sigma Bots."
+  contact: "purduesigbots/pros (MPL-2.0 — badge reads 'Other' via NOASSERTION on linked FreeRTOS/GPL notices, confirmed on thread; 311 stars, Issues enabled, last commit 2026-03-31 (~2-mo stale), **not archived**). VEX V5 microcontroller C/C++ toolchain maintained by Purdue Sigma Bots."
   last_touch: "2026-05-29"
   response: declined
-  next_action: "Posted 2026-05-29 (idoco2003); CLOSED. Substantive feedback before the close (@djava): license is plainly MPL-2.0 — drop the clarification ask (the NOASSERTION flag came from linked FreeRTOS/GPL notices); PROS version is the field that matters, template-linked libs sit below the manifest line; the mapping is too high-level and PROS-vs-VEXcode is the wrong framing (PROS-only is cleaner scope). @WillXuCodes raised an educational-harm objection (abstraction removes the learning); @djava + @BennyBot asked to keep it human / doubted the review claim. Do not repost; fold the MPL-2.0 + PROS-version corrections into the RFC if it is ever revisited."
-  notes: "Tier A pending license clarification. Origin Purdue / US student org; passes US-federal default policy. URML-fit: second VEX-V5 engagement (URML edu-runtime already has a VEX adapter; this RFC asks about the PROS toolchain side specifically). Surfaces Spec RFCs: education-toolchain-class declaration; VRC competition-context metadata."
+  next_action: "Posted 2026-05-29 (idoco2003); CLOSED. Substantive feedback before the close (@djava): license is plainly MPL-2.0 (RFC-0236 corrected 2026-05-31 to drop the clarification ask; the NOASSERTION flag came from linked FreeRTOS/GPL notices); PROS version is the field that matters, template-linked libs sit below the manifest line; the mapping is too high-level and PROS-vs-VEXcode is the wrong framing (PROS-only is cleaner scope). @WillXuCodes raised an educational-harm objection (abstraction removes the learning); @djava + @BennyBot asked to keep it human / doubted the review claim. Do not repost; the PROS-version / mapping-scope corrections remain for any future revisit."
+  notes: "Tier A (license MPL-2.0, confirmed on thread; the 'Other' badge is a NOASSERTION false flag). Origin Purdue / US student org; passes US-federal default policy. URML-fit: second VEX-V5 engagement (URML edu-runtime already has a VEX adapter; this RFC asks about the PROS toolchain side specifically). Surfaces Spec RFCs: education-toolchain-class declaration; VRC competition-context metadata."
 
 # ---- Humanoid platforms (4) ----
 
