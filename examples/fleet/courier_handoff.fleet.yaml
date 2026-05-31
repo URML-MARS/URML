@@ -1,0 +1,65 @@
+# URML v0.1 fleet mission — courier-to-arm handoff (RFC-0286).
+#
+# Two heterogeneous robots, one program, one job neither can do alone:
+#   1. The courier (a mobile base) drives to the shared handoff dock.
+#   2. BARRIER — neither robot proceeds until both have reached the rendezvous.
+#      The exchange cannot start half-ready.
+#   3. In parallel: the arm picks a widget from the dock and places it on the
+#      conveyor, while the courier holds station (waits).
+#   4. BARRIER — the courier only leaves once the arm has cleared.
+#   5. The courier returns to staging.
+#
+# What the validator catches before anything moves:
+#   - every primitive is checked against ITS member's manifest (place_at against
+#     the arm, move_to against the courier);
+#   - remove a barrier and the arm could reach in before the courier has stopped
+#     -> fleet.concurrent_shared_workspace;
+#   - each barrier member must declare `peer_link` -> fleet.barrier_missing_peer_link.
+#
+# Run it hermetically (no ROS, no cloud):  python run_demo.py
+#
+# This file is two YAML documents: the roster, then the program.
+
+# --- Document 1: the roster (binds member handles to per-robot manifests) ---
+roster_version: "0.1"
+description: A mobile courier and a stationary arm performing one handoff.
+members:
+  - { name: courier, manifest: husky_amr }
+  - { name: arm, manifest: kawasaki_rs }
+---
+# --- Document 2: the fleet program ---
+profile: industrial
+description: Courier delivers a tray to the dock; the arm transfers a widget to the conveyor.
+behavior:
+  type: sequence
+  steps:
+    - type: "on"   # quoted: YAML 1.1 reads bare `on` as the boolean true
+      member: courier
+      body:
+        move_to: { location: handoff_dock }
+
+    - type: barrier
+      members: [courier, arm]
+
+    - type: parallel
+      complete_when: all
+      branches:
+        - type: "on"   # quoted: YAML 1.1 reads bare `on` as the boolean true
+          member: arm
+          body:
+            type: sequence
+            steps:
+              - pick_from: { source: handoff_dock, object: widget, store_as: part }
+              - place_at: { target: conveyor_a, held: $part }
+        - type: "on"   # quoted: YAML 1.1 reads bare `on` as the boolean true
+          member: courier
+          body:
+            wait: { duration: "2s" }
+
+    - type: barrier
+      members: [courier, arm]
+
+    - type: "on"   # quoted: YAML 1.1 reads bare `on` as the boolean true
+      member: courier
+      body:
+        move_to: { location: staging }
