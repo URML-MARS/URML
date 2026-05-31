@@ -35,6 +35,8 @@ def _aerial_manifest(
             "station_keeping": True,
             "service_ceiling": 120.0,
         },
+        # RFC-0250: drone-class drive_type requires substrate.autopilot_class.
+        "substrate": {"autopilot_class": "px4"},
         "connectivity": {"links": links if links is not None else [{"role": "command_link"}]},
     }
     return m

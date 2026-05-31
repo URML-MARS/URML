@@ -1,0 +1,36 @@
+# Fixture: ground manifest with qos_profile history=keep_last but no history_depth.
+# Negative fixture for the RFC-0251 keep-last-requires-depth rule.
+
+manifest_version: "0.1"
+robot_id: ground_qos_keep_last_no_depth
+description: Ground robot manifest with qos_profile.history=keep_last and no history_depth (RFC-0251 negative fixture).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+substrate:
+  rmw_implementation: rmw_fastrtps_cpp
+  rmw_options:
+    qos_profile:
+      reliability: reliable
+      history: keep_last
+      # Intentionally omitting history_depth — RFC-0251 requires it
+      # when history is keep_last.
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []

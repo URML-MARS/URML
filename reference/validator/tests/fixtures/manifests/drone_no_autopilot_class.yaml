@@ -1,11 +1,10 @@
-# Fixture: capability manifest for a civilian multirotor drone, drone profile.
-# Used by the validator test suite and conformance fixtures. Hand-authored to
-# be the minimum manifest needed to validate the canonical roof-inspection
-# scenario per spec/profiles/drone/README.md.
+# Fixture: drone (multirotor) manifest WITHOUT substrate.autopilot_class.
+# Designed to exercise the RFC-0250 rejected-when-drone validator rule.
+# Identical to drone_civilian.yaml minus the `substrate:` block.
 
 manifest_version: "0.1"
-robot_id: civilian_inspector
-description: Civilian multirotor for roof / tower inspection.
+robot_id: drone_missing_autopilot
+description: Drone manifest deliberately omitting substrate.autopilot_class (RFC-0250 negative fixture).
 
 frames:
   - name: wgs84
@@ -17,7 +16,6 @@ declared_locations:
   - name: home
     pose: { x: 0.0, y: 0.0, z: 0.0 }
     frame: agl
-    description: Takeoff / landing position.
   - name: roof_north
     pose: { x: 10.0, y: 5.0, z: 30.0 }
     frame: agl
@@ -33,9 +31,7 @@ mobility:
   service_ceiling: 120.0
   max_payload: 0.5
 
-# RFC-0250: drone deployments declare the autopilot substrate.
-substrate:
-  autopilot_class: px4
+# Intentionally no `substrate:` block — RFC-0250 requires it for drones.
 
 perception:
   cameras:
@@ -44,20 +40,13 @@ perception:
       supports_photo: true
       supports_video: true
       max_resolution: "4k"
-  sensors:
-    - name: rangefinder
-      measurement_type: distance
-      range_min: 0.5
-      range_max: 50.0
-      units: m
+  sensors: []
   object_vocabulary:
     - person
-    - vehicle
 
 outputs:
   named_endpoints: []
 
-# US-compliant illustrative provenance so the bundled default policy passes.
 provenance:
   manifest_attestation: self_declared
   components:
@@ -69,13 +58,4 @@ provenance:
       hbom_ref:
         format: cyclonedx-1.7
         uri: ./hbom/flight_controller.cdx.json
-        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
-    - id: imaging_camera
-      role: critical
-      vendor: example_camera_vendor
-      country_of_origin: JP
-      country_of_final_assembly: US
-      hbom_ref:
-        format: cyclonedx-1.7
-        uri: ./hbom/camera.cdx.json
         sha256: "0000000000000000000000000000000000000000000000000000000000000000"

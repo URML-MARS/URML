@@ -1,0 +1,31 @@
+# Fixture: ground manifest with substrate.rmw_implementation: custom but no note.
+# Negative fixture for the RFC-0251 custom-requires-note rule.
+
+manifest_version: "0.1"
+robot_id: ground_rmw_custom_no_note
+description: Ground robot manifest with rmw_implementation=custom and no note (RFC-0251 negative fixture).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+substrate:
+  rmw_implementation: custom
+  # Intentionally omitting rmw_implementation_note — RFC-0251 requires it.
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
