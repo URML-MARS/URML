@@ -34,8 +34,8 @@
 
 - slug: blue-frog-buddy
   rfc: 293
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-05-31"
+  posted_url: "https://github.com/BlueFrogRobotics/BlueFrog_SDK_examples/issues/4"
   channel: github_issue
   contact: "BlueFrogRobotics/BlueFrog_SDK_examples (Issues enabled, not archived, 7 stars, last pushed 2024-09-23). The active developer-facing repo in the BlueFrogRobotics org; Buddy SDK is a Java/Android API documented at sdk.buddytherobot.com."
   last_touch: 2026-05-31
@@ -43,9 +43,11 @@
   tier: A
   country: FR
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-05-31"
+      text: "Posted issue #4 on BlueFrogRobotics/BlueFrog_SDK_examples pointing at RFC-0293, with the AI-authoring disclosure up front (posted under idoco2003 after the RFC landed on main via PR #255). Four questions asked: SDK access posture, Python<->Java bridge expectation, authoritative speak/listen + mobility manifest values, adapter home."
   claude_directives: []
-  next_action: "post Issue on BlueFrogRobotics/BlueFrog_SDK_examples pointing at RFC-0293, with the AI-authoring disclosure. Then set posted_url + sent_at + last_touch. Wait 14-30 d; if silent, polite follow-up; if reply, set response per enum."
+  next_action: "wait 14-30 d. If silent, polite follow-up on issue #4. If reply, bump last_touch and set response per enum (acked/engaged/declined/wontfix). If a vibe-coding/AI-content concern is raised, accept gracefully per the OVOS/Arduino precedents; the disclosure is already up front."
   notes: "Move #20 GitHub-surface target. Blue Frog Robotics Buddy is an open-platform emotional companion robot (home companionship, elder support, inclusion, education). EU-domiciled (Paris, FR), default-policy pass. First Move #20 target that natively exercises the home-profile speak/listen extensions. Proposed BuddyAdapter in reference/home-runtime/ over a Python<->Java SDK bridge, fake-SDK hermetic tests (RFC-0073 pattern). Cross-link RFC-0100 (home-runtime parent), RFC-0106 (HA hub), RFC-0292 (off-GitHub sibling). Verified 2026-05-31."
 
 - slug: ohmnilabs-ohmni
