@@ -5,7 +5,7 @@ below had at least one field where regex extraction fell back to a
 low-confidence default. The maintainer is asked to review each row's
 `notes` field, decide the correct value, and edit the YAML directly.
 
-**Total uncertain rows:** 69 of 241
+**Total uncertain rows:** 63 of 229
 
 | Wave | Slug | Tier | Country | Sector | Low-conf |
 |---|---|---|---|---|---|
@@ -20,12 +20,6 @@ low-confidence default. The maintainer is asked to review each row's
 | outreach-move17.yaml | `enisa-cra-standardisation-watch` | A (`medium`) | US (`low`) | governance-body (`high`) | country |
 | outreach-move17.yaml | `ros-industrial-industrial-ci` | B (`high`) | US (`low`) | governance-body (`medium`) | country |
 | outreach-move17.yaml | `ros-industrial-consortium-scan-n-plan` | B (`high`) | US (`low`) | governance-body (`medium`) | country |
-| outreach-move18.yaml | `octoprint` | B (`high`) | US (`low`) | substrate-runtime (`high`) | country |
-| outreach-move18.yaml | `linuxcnc` | B (`high`) | US (`low`) | substrate-runtime (`high`) | country |
-| outreach-move18.yaml | `naoqi-driver` | B (`high`) | US (`low`) | robot-platform (`high`) | country |
-| outreach-move18.yaml | `pepper-dcm-robot` | C (`high`) | US (`low`) | robot-platform (`high`) | country |
-| outreach-move18.yaml | `open-interpreter` | A (`high`) | US (`low`) | conceptual-peer (`high`) | country |
-| outreach-move18.yaml | `viam-rdk` | A (`high`) | US (`low`) | conceptual-peer (`high`) | country |
 | outreach-move2.yaml | `lerobot` | A (`low`) | US (`low`) | ai-language (`medium`) | tier, country |
 | outreach-move2.yaml | `ardupilot` | A (`low`) | US (`low`) | substrate-runtime (`high`) | tier, country |
 | outreach-move2.yaml | `waymo` | A (`low`) | US (`low`) | ai-language (`medium`) | tier, country |

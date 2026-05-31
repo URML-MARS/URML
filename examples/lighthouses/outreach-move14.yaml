@@ -115,7 +115,7 @@
   last_touch: "2026-05-28"
   response: none
   tier: A
-  country: NO
+  country: "NO"
   sector: robot-platform
   comments: []
   claude_directives: []

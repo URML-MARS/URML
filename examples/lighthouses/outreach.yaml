@@ -207,7 +207,7 @@
   last_touch: 2026-05-27
   response: engaged
   tier: A
-  country: NO
+  country: "NO"
   sector: component-vendor
   comments: []
   claude_directives: []
