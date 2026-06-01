@@ -40,8 +40,8 @@
 
 - slug: vda5050
   rfc: 297
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-01"
+  posted_url: "https://github.com/VDA5050/VDA5050/issues/620"
   channel: github_issue
   contact: "VDA5050/VDA5050 (the canonical standard repo: JSON message schemas + protocol docs; Issues enabled, not archived, ~430 stars, last push 2026-05-21). The dominant AGV/AMR master-control<->vehicle interface standard (German VDA/VDMA)."
   last_touch: 2026-06-01
@@ -49,15 +49,17 @@
   tier: A
   country: DE
   sector: protocol-substrate
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Posted issue #620 pointing at RFC-0297, with the AI-authoring disclosure up front (under idoco2003, after RFC-0297 landed on main via PR #258). Four questions: integration boundary (order-emit vs vehicle-client), action-set mapping convention, worked example as contribution, value vs the RMF-drives-VDA5050 path."
   claude_directives: []
-  next_action: "post Issue on VDA5050/VDA5050 pointing at RFC-0297, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if silent, polite follow-up; if reply, set response per enum."
+  next_action: "wait 14-30 d. If silent, polite follow-up on issue #620. If reply, bump last_touch and set response per enum. If a vibe-coding/AI-content concern is raised, accept gracefully (OVOS/Arduino precedents); disclosure is already up front."
   notes: "First Move #21 RFC; interop core. URML composes ABOVE VDA5050: URML intent -> validated primitives -> VDA5050 order/instantActions on MQTT. Differentiator over a per-vehicle interface: cross-robot static validation (validate_fleet RFC-0286 + clearance RFC-0291) before any order is emitted. Zero new vocabulary (RFC-0022). Cross-link RFC-0053 (RMF sibling), RFC-0298 (InOrbit), RFC-0299 (openTCS). Origin DE (allied). Verified 2026-06-01."
 
 - slug: inorbit-ros-amr-interop
   rfc: 298
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-01"
+  posted_url: "https://github.com/inorbit-ai/ros_amr_interop/issues/74"
   channel: github_issue
   contact: "inorbit-ai/ros_amr_interop (BSD-3-Clause, Issues enabled, not archived, ~110 stars, last push 2026-05-18). Implements the MassRobotics AMR Interop Standard + an Open-RMF fleet adapter (rmf_inorbit_fleet_adapter) + VDA5050 adapter examples. InOrbit, Mountain View CA."
   last_touch: 2026-06-01
@@ -65,15 +67,17 @@
   tier: A
   country: US
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Posted issue #74 pointing at RFC-0298, naming the MassRobotics-standard + Open-RMF-adapter + VDA5050 overlap, with the AI-authoring disclosure up front (under idoco2003, after RFC-0298 landed on main via PR #258). Three questions: adapter boundary (RMF vs MassRobotics message layer), venue for the MassRobotics standard given its dormant repo, VDA5050-vs-MassRobotics path preference. This post is also URML's engagement vehicle for the MassRobotics standard (massrobotics-amr-interop row)."
   claude_directives: []
-  next_action: "post Issue on inorbit-ai/ros_amr_interop pointing at RFC-0298, naming the MassRobotics-standard + Open-RMF-adapter + VDA5050 overlap, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if reply, set response per enum."
+  next_action: "wait 14-30 d. If silent, polite follow-up on issue #74. If reply, bump last_touch and set response per enum (mirror to the massrobotics-amr-interop row if the standard itself is discussed)."
   notes: "Move #21 interop HUB: three URML interest-lines converge here (MassRobotics AMR Interop Standard implementation + Open-RMF fleet adapter + VDA5050 examples). ALSO URML's engagement vehicle for the MassRobotics standard itself (its own spec repo is dormant since 2021). URML composes above: one intent description, two orchestration exits (MassRobotics messages OR RMF tasks). Cross-link RFC-0053/0297/0299, RFC-0022/0286/0291. Origin US. Verified 2026-06-01."
 
 - slug: opentcs
   rfc: 299
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-01"
+  posted_url: "https://github.com/openTCS/opentcs/issues/262"
   channel: github_issue
   contact: "openTCS/opentcs (Fraunhofer IML; Issues enabled, not archived, ~510 stars, last push 2026-05-26). Open Transportation Control System: dispatches transport orders to and routes AGV/AMR fleets; has a VDA5050 comm-adapter (opentcs-commadapter-vda5050). License not SPDX-detected by gh; asked as an RFC question."
   last_touch: 2026-06-01
@@ -81,9 +85,11 @@
   tier: A
   country: DE
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Posted issue #262 pointing at RFC-0299, with the AI-authoring disclosure up front (under idoco2003, after RFC-0299 landed on main via PR #258). Four questions: kernel-API integration surface, named-location-to-model binding, current license (for license_alignment), URML->openTCS->VDA5050 as the recommended open stack."
   claude_directives: []
-  next_action: "post Issue on openTCS/opentcs pointing at RFC-0299, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if reply, set response per enum."
+  next_action: "wait 14-30 d. If silent, polite follow-up on issue #262. If reply, bump last_touch and set response per enum; capture the license answer in the contact/notes once given."
   notes: "Move #21 interop core. URML composes above: URML intent -> openTCS transport orders (kernel API) -> VDA5050 (or vendor) comm-adapter -> vehicle = a fully open, offline fleet-control stack. Pre-dispatch static validation (RFC-0286/0291) complements openTCS runtime routing. Java kernel -> Python bridge boundary noted. License is an open question. Cross-link RFC-0297 (VDA5050 path), RFC-0298, RFC-0053. Origin DE (Fraunhofer, allied). Verified 2026-06-01."
 
 - slug: locus-robotics
