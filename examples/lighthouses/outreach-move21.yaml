@@ -1,0 +1,212 @@
+# Move #21 outreach ledger. One row per target.
+#
+# Move #1 (outreach.yaml): 16 Tier-1 OEMs and component vendors, with
+# parity test in conformance/tests/test_outreach_ledger.py.
+#
+# Move #8 (outreach-move8.yaml): home-assistance robotics, round one.
+# Move #20 (outreach-move20.yaml): home-assistance robotics, round two.
+#
+# Move #21 (this file): **warehouse / intralogistics AMR vendors + the
+# interoperability layer**. Puts real targets behind URML's warehouse
+# machinery: the warehouse domain profile (RFC-0022), the Open-RMF
+# bridge (RFC-0053), fleet addressing (RFC-0286), and frame-transform +
+# geometric deconfliction (RFC-0290/0291).
+#
+# Research finding: the household AMR makers (Locus, Vecna, Seegrid, MiR,
+# OTTO, Symbotic, 6 River, Geek+) almost all have CLOSED GitHub surfaces
+# (Move #15 documented this). So this wave LEADS with the GitHub-live
+# interoperability + open-fleet-control layer (VDA5050, InOrbit
+# ros_amr_interop, openTCS), where URML's compose-above thesis is
+# sharpest, and treats the closed-surface vendors as off-GitHub courtesy.
+# Already covered, NOT duplicated: Clearpath (RFC-0072, engaged),
+# Fetch/Zebra (RFC-0188), Open-RMF (RFC-0053), Starship (RFC-0193),
+# AnyBotics (RFC-0049), AgileX (RFC-0066).
+#
+# Split: 3 GitHub interop (auto-post) + 4 off-GitHub vendor-direct +
+# 1 MassRobotics (engaged via the InOrbit RFC) + 2 deferred PRC.
+# Geographic spread: 4 US, 2 DE, 1 DK (clean) + 2 CN (deferred).
+#
+# Like Moves #2-#20, this file is NOT under the Move #1 parity test.
+# It is covered by the schema-v2 validator
+# (conformance/tests/test_outreach_ledger_schema_v2.py).
+#
+# Schema mirrors outreach-move20.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, tier, country,
+# sector, comments, claude_directives, next_action, notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none`
+# is the truthful default. The two CN rows are deferred with cause
+# (channel: deferred), never sent.
+
+- slug: vda5050
+  rfc: 297
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "VDA5050/VDA5050 (the canonical standard repo: JSON message schemas + protocol docs; Issues enabled, not archived, ~430 stars, last push 2026-05-21). The dominant AGV/AMR master-control<->vehicle interface standard (German VDA/VDMA)."
+  last_touch: 2026-06-01
+  response: none
+  tier: A
+  country: DE
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "post Issue on VDA5050/VDA5050 pointing at RFC-0297, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if silent, polite follow-up; if reply, set response per enum."
+  notes: "First Move #21 RFC; interop core. URML composes ABOVE VDA5050: URML intent -> validated primitives -> VDA5050 order/instantActions on MQTT. Differentiator over a per-vehicle interface: cross-robot static validation (validate_fleet RFC-0286 + clearance RFC-0291) before any order is emitted. Zero new vocabulary (RFC-0022). Cross-link RFC-0053 (RMF sibling), RFC-0298 (InOrbit), RFC-0299 (openTCS). Origin DE (allied). Verified 2026-06-01."
+
+- slug: inorbit-ros-amr-interop
+  rfc: 298
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "inorbit-ai/ros_amr_interop (BSD-3-Clause, Issues enabled, not archived, ~110 stars, last push 2026-05-18). Implements the MassRobotics AMR Interop Standard + an Open-RMF fleet adapter (rmf_inorbit_fleet_adapter) + VDA5050 adapter examples. InOrbit, Mountain View CA."
+  last_touch: 2026-06-01
+  response: none
+  tier: A
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "post Issue on inorbit-ai/ros_amr_interop pointing at RFC-0298, naming the MassRobotics-standard + Open-RMF-adapter + VDA5050 overlap, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if reply, set response per enum."
+  notes: "Move #21 interop HUB: three URML interest-lines converge here (MassRobotics AMR Interop Standard implementation + Open-RMF fleet adapter + VDA5050 examples). ALSO URML's engagement vehicle for the MassRobotics standard itself (its own spec repo is dormant since 2021). URML composes above: one intent description, two orchestration exits (MassRobotics messages OR RMF tasks). Cross-link RFC-0053/0297/0299, RFC-0022/0286/0291. Origin US. Verified 2026-06-01."
+
+- slug: opentcs
+  rfc: 299
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "openTCS/opentcs (Fraunhofer IML; Issues enabled, not archived, ~510 stars, last push 2026-05-26). Open Transportation Control System: dispatches transport orders to and routes AGV/AMR fleets; has a VDA5050 comm-adapter (opentcs-commadapter-vda5050). License not SPDX-detected by gh; asked as an RFC question."
+  last_touch: 2026-06-01
+  response: none
+  tier: A
+  country: DE
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "post Issue on openTCS/opentcs pointing at RFC-0299, with the AI-authoring disclosure. Then set posted_url + sent_at. Wait 14-30 d; if reply, set response per enum."
+  notes: "Move #21 interop core. URML composes above: URML intent -> openTCS transport orders (kernel API) -> VDA5050 (or vendor) comm-adapter -> vehicle = a fully open, offline fleet-control stack. Pre-dispatch static validation (RFC-0286/0291) complements openTCS runtime routing. Java kernel -> Python bridge boundary noted. License is an open question. Cross-link RFC-0297 (VDA5050 path), RFC-0298, RFC-0053. Origin DE (Fraunhofer, allied). Verified 2026-06-01."
+
+- slug: locus-robotics
+  rfc: 300
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Locus Robotics: no public developer API / SDK / GitHub org located 2026-06-01 (consistent with the Move #15 closed-surface finding for major AMR makers). Channel is the company contact surface at locusrobotics.com. Interop link: MassRobotics AMR Interop Standard participant."
+  last_touch: 2026-06-01
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via locusrobotics.com contact surface, pointing at RFC-0300, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #21 off-GitHub vendor-direct. Locus Robotics (Wilmington MA, US) is the goods-to-person picking AMR leader (350+ sites). Closed GitHub surface; realistic technical bridge is the interop layer (RFC-0297 VDA5050 / RFC-0298 MassRobotics+RMF), not a Locus-private API. Zero new URML vocabulary (RFC-0022). RFC-0102 (Bear) / RFC-0294 (Labrador) off-GitHub precedents. Origin US. Verified 2026-06-01 (absence of developer surface documented)."
+
+- slug: vecna-robotics
+  rfc: 301
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Vecna Robotics: no public developer API / SDK / GitHub org located 2026-06-01. Channel is the company contact surface at vecnarobotics.com (Pivotal orchestration platform). Interop link: MassRobotics AMR Interop Standard working-group member."
+  last_touch: 2026-06-01
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via vecnarobotics.com contact surface, pointing at RFC-0301, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #21 off-GitHub vendor-direct. Vecna Robotics (Waltham MA, US) builds pallet/tugger/case material-handling AMRs (Pivotal platform). Closed GitHub surface; interop layer is the realistic bridge. Load-handling actions are vendor-specific (VDA5050 action-set caveat per RFC-0297). Zero new vocabulary (RFC-0022). Origin US. Verified 2026-06-01 (absence of developer surface documented)."
+
+- slug: seegrid
+  rfc: 302
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Seegrid: no public developer API / SDK / GitHub org located 2026-06-01. Channel is the company contact surface at seegrid.com (vision-guided AMRs, Palion lift/tow + fleet management). Interop link: MassRobotics AMR Interop Standard working-group member."
+  last_touch: 2026-06-01
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via seegrid.com contact surface, pointing at RFC-0302, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #21 off-GitHub vendor-direct. Seegrid (Pittsburgh PA, US) builds infrastructure-free vision-guided AMRs/AGVs. Closed GitHub surface; interop layer is the realistic bridge. Maps to named locations/docks, not Seegrid's internal perception. Zero new vocabulary (RFC-0022). Origin US. Verified 2026-06-01 (absence of developer surface documented)."
+
+- slug: mobile-industrial-robots
+  rfc: 303
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Mobile Industrial Robots (MiR): no open developer GitHub org for community integration located 2026-06-01; MiR exposes a customer product REST/fleet interface, not an open developer community. Channel is the company/developer contact surface at mobile-industrial-robots.com. Interop link: MiR products support VDA5050."
+  last_touch: 2026-06-01
+  response: none
+  tier: B
+  country: DK
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "founder-action: courtesy outreach via mobile-industrial-robots.com contact surface, pointing at RFC-0303, asking whether VDA5050 or the product REST API is the recommended integration path. On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  notes: "Move #21 off-GitHub vendor-direct; closes the wave's vendor set. MiR (Odense DK, Teradyne-owned; allied, default-policy pass) is a global AMR leader (MiR100-1350 + MiR Fleet). VDA5050 support makes RFC-0297 the natural bridge (URML intent -> VDA5050 orders -> MiR fleet). Adds the allied-EU data point to a US-heavy vendor set. Zero new vocabulary (RFC-0022). Origin DK. Verified 2026-06-01."
+
+# --- MassRobotics AMR Interop Standard: engaged via the InOrbit RFC (0298),
+# not posted on its own dormant spec repo (last push 2021). Recorded so the
+# standard is tracked; optional off-GitHub courtesy to the MassRobotics org.
+
+- slug: massrobotics-amr-interop
+  rfc: 298
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "MassRobotics AMR Interoperability Standard (MassRobotics, Boston MA non-profit). Spec repo MassRobotics-AMR/AMR_Interop_Standard has Issues enabled but is dormant (last push 2021). Live engagement is via the InOrbit implementation (RFC-0298, inorbit-ai/ros_amr_interop). Optional off-GitHub courtesy to massrobotics.org."
+  last_touch: 2026-06-01
+  response: none
+  tier: B
+  country: US
+  sector: protocol-substrate
+  comments:
+    - date: "2026-06-01"
+      text: "Not posted on the dormant AMR_Interop_Standard repo (last push 2021) per the same low-yield reasoning that routed RFC-0292 OhmniLabs off-GitHub. URML's engagement vehicle for the MassRobotics standard is the active InOrbit implementation (RFC-0298). This row tracks the standard itself; founder may optionally send a courtesy note to MassRobotics the org (governance-body-adjacent, Boston)."
+  claude_directives: []
+  next_action: "no GitHub post (dormant repo). Engagement rides RFC-0298 (InOrbit). Optional founder-action: courtesy note to MassRobotics (massrobotics.org) referencing RFC-0298. If MassRobotics re-activates the standard repo, reconsider a direct touch."
+  notes: "Move #21, the interop STANDARD behind RFC-0298. US-origin vendor-neutral AMR interop standard from the Boston MassRobotics non-profit. Engaged via InOrbit's active implementation (rfc: 298). Cross-link RFC-0298 (live vehicle), RFC-0297 (VDA5050 peer standard). Verified 2026-06-01 (spec-repo dormancy documented)."
+
+# --- Deferred-with-cause: PRC-domiciled, out of US-federal default scope
+# per RFC-0003. Recorded so the research is preserved; never contacted.
+
+- slug: geekplus
+  rfc: 3
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED with cause. Geek+ (Geekplus, CN) is a global warehouse-robotics leader (goods-to-person, sortation, moving robots) with a large installed base. Capable vendor; recorded for completeness."
+  last_touch: 2026-06-01
+  response: none
+  tier: C
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-06-01"
+      text: "Deferred under RFC-0003 US-federal default-policy alignment: Geek+ is PRC-domiciled, out of URML's default scope. Same exclusion logic as Roborock/Ecovacs (RFC-0100) and the Move #20 PRC mowers. Not contacted. Revisit only if URML's policy posture changes for an explicitly opted-in deployment."
+  claude_directives: []
+  next_action: "no action. Deferred with cause (PRC-domiciled, RFC-0003). Do not contact. Recorded for research completeness."
+  notes: "Move #21 deferred candidate. Geek+ warehouse AMRs (goods-to-person + sortation). Excluded from outreach under RFC-0003 default policy. Verified 2026-06-01."
+
+- slug: hai-robotics
+  rfc: 3
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED with cause. Hai Robotics (CN) builds ACR (autonomous case-handling robot) warehouse systems. Capable vendor; recorded for completeness."
+  last_touch: 2026-06-01
+  response: none
+  tier: C
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-06-01"
+      text: "Deferred under RFC-0003 US-federal default-policy alignment: Hai Robotics is PRC-domiciled, out of URML's default scope. Same exclusion logic as Geek+ above and the Move #20 PRC mowers. Not contacted. Revisit only if URML's policy posture changes for an explicitly opted-in deployment."
+  claude_directives: []
+  next_action: "no action. Deferred with cause (PRC-domiciled, RFC-0003). Do not contact. Recorded for research completeness."
+  notes: "Move #21 deferred candidate. Hai Robotics autonomous case-handling robots (ACR). Excluded from outreach under RFC-0003 default policy. Verified 2026-06-01."
