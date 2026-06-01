@@ -284,15 +284,17 @@
   posted_url: "https://github.com/cubert-hyperspectral/cuvis.sdk/issues/89"
   channel: github_issue
   contact: "cubert-hyperspectral/cuvis.sdk (Apache-2.0, 22 stars, 5 open issues, Issues enabled, last commit 2026-05-26 active TODAY). Vendor-org Cubert GmbH (Ulm DE), 35 public repos, Apache-2.0 across the board. Also publishes cuvis-ai + cuvis-ai-agentic-skills (LLM-tool surface already exists)."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-01"
+  response: wontfix
   tier: A
   country: DE
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Closed 2026-06-01 by nghorbani (CONTRIBUTOR) — CONSTRUCTIVE/warm wontfix, the Arduino/Moteus family (NOT the OVOS/Sensirion AI-flag family). Positively acknowledged the AI-authoring disclosure + the Move #10 framing. Factual corrections that undercut the RFC's 'high-leverage angle': (1) cuvis-ai-agentic-skills is a Claude Code SKILL.md bundle (English->pipeline authoring help for a human in a coding session), NOT a machine-callable runtime API an external system could invoke; (2) spectral classification (e.g. SpectralAngleMapper) is a pipeline Node composed into a YAML and run via restore-pipeline / Python Predictor / cuvis-ai-core gRPC Inference RPC, NOT a standalone 'classify' tool to bind; (3) no robotics/actuation surface anywhere in the ecosystem. Robot-intent manifest mapping is outside their roadmap. GRANT: everything is Apache-2.0, so URML is welcome to build a URML-side adapter if useful to the community, with the explicit request that it be described as community-built, NOT an official Cubert integration. 'Best of luck with URML.'"
   claude_directives: []
-  next_action: "Posted as Issue cubert-hyperspectral/cuvis.sdk#89 on 2026-05-28. URML's first hyperspectral RFC; cubert is the strongest vendor surface in Move-10 (35 repos uniformly Apache-2.0, daily commits). cuvis-ai-agentic-skills bridge is the high-leverage URML-NL surface. Light-touch follow-up at 2026-06-18 (3-week cadence given active vendor)."
-  notes: "Tier A. Origin DE (pass). Best-in-slice vendor surface: 35 repos, Apache-2.0 uniformly, daily commits, agentic-AI posture already public. First hyperspectral RFC in URML's outreach. URML-fit: extremely high — they have done the LLM-tool work already."
+  next_action: "Thread CLOSED wontfix (constructive) 2026-06-01. RECOMMENDED: a brief gracious ack reply (Arduino/Moteus precedent) thanking nghorbani for the corrections, accepting the close, and affirming that any URML-side adapter would be clearly labeled community-built (not official Cubert) per their request -- pending founder go-ahead (public post). Do NOT pursue an official integration. If a community adapter is ever built (Apache-2.0 grant stands), it must carry the community-built label. Correct the RFC-0123 misread (agentic-skills is not a runtime API) wherever the claim recurs; do not retroactively edit the posted issue body (OVOS precedent)."
+  notes: "Tier A. Origin DE (pass). Cubert GmbH (Ulm): 35 repos, Apache-2.0 uniformly, active. First hyperspectral RFC. 2026-06-01: constructive wontfix from nghorbani with an Apache-2.0 community-adapter grant (label as community-built) + a warm acknowledgement of the AI disclosure. CORRECTION on record: the RFC's premise that cuvis-ai-agentic-skills is a ready LLM-tool/runtime surface was wrong -- it's a Claude Code skill bundle, and there is no actuation surface; URML-fit is lower than the original note claimed. Warmest perception close to date; contrast Sensirion/Trinamic same-day."
 
 - slug: sensirion-env
   rfc: 124
