@@ -286,19 +286,22 @@
 
 - slug: fairseq
   rfc: 167
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
-  contact: "facebookresearch/fairseq (MIT, 32.2k stars, Issues enabled, Discussions disabled, **archived 2025-09-30**). Meta's seq2seq toolkit. NLLB-200 weights are hosted here. Origin US (Meta)."
-  last_touch: ""
-  response: none
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/facebookresearch/seamless_communication/issues/578"
+  channel: issue
+  contact: "RFC-0167 targets NLLB-200. Its original home `facebookresearch/fairseq` (MIT, archived 2025-09-30, read-only) cannot take Issues, so the post landed on the live successor surface `facebookresearch/seamless_communication` (Issues enabled, **not archived**), Meta's nearest active multilingual-communication repo. NLLB-200 weights are CC-BY-NC 4.0. Origin US (Meta)."
+  last_touch: "2026-06-01"
+  response: engaged
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      author: avidale
+      summary: "@avidale (David Dale, NLLB/Seamless researcher, contributor) answered all four questions: (1) no NLLB successor, the project is finished, this Issue channel is fine; (2) declare whatever license level so long as it correctly informs users of NLLB's limitations; (3) CC-BY-NC 4.0 is the only license for NLLB-200, and for a commercial path consider permissive open LLMs (Qwen 3.5, Gemma 4) that translate hundreds of languages; (4) this Issue is the right channel. Opened with 'Please engage in human-only communication, as you suggest.'"
   claude_directives: []
-  next_action: "Posting deferred 2026-05-28: facebookresearch/fairseq is archived (read-only), createIssue refused by GitHub. The RFC's primary engagement-ask was the successor-surface question; the archive-blocker is itself the answer that needs Meta input. Candidate successor target identified during posting attempt: facebookresearch/seamless_communication (Issues enabled, not archived). Requires post body re-framing and founder review before posting there. RFC-0167 body in examples/lighthouses/posts-move12.md unchanged in this update. Originally drafted: RFC-0167 drafted 2026-05-28 on URML branch rfc/move12-batch2-translation (docs/rfcs/0167-fairseq-outreach.md). **Archived friction**: no PRs merge. NLLB-200 weights are **CC-BY-NC 4.0** (non-commercial only). Engagement-ask: what is the successor surface for NLLB engagement now that fairseq is archived? Introduces novel model-license + commercial-use-gate manifest fields (first concrete case where model-license declaration is load-bearing). Awaiting founder review then post Issue on facebookresearch/fairseq."
-  notes: "Tier B. Origin US (pass). Friction = archived + non-commercial model weights. Engagement value is the NLLB-200-as-substrate question, not fairseq itself."
+  next_action: "**Engaged 2026-06-01** at facebookresearch/seamless_communication#578 by @avidale (Meta NLLB/Seamless researcher). Substantive all-question answer. CC-BY-NC 4.0 confirmed as the only NLLB-200 license, which validates URML's `translation_model_license: cc_by_nc_4_0` manifest modeling; license-declaration granularity is our call so long as it informs users of NLLB's non-commercial limit. He steered the commercial path toward permissive open LLMs (Qwen 3.5 / Gemma 4) for translation. **Human-only reply owed** — avidale explicitly asked us to honor the human-only-communication offer, so the reply is drafted for the founder to post in their own words (no AI-assist footer, no vibe-coding defense; he already accepted the disclosure). Per [[feedback_outreach_confidentiality]], the reply names no other engaged maintainers/orgs. Spec follow-up (let the manifest declare a permissive translation substrate alongside NLLB for commercial paths) is deferred to its own Spec RFC, not bundled here."
+  notes: "Tier B. Origin US (pass). First engaged target in the AI-language / translation sector (LibreTranslate RFC-0168 and OVOS RFC-0107 both declined as AI-spam). NLLB-200-as-substrate modeling validated by a Meta NLLB researcher."
 
 - slug: libretranslate
   rfc: 168
