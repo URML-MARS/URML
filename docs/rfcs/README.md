@@ -331,6 +331,7 @@ Move #19 targets the one education layer no prior wave touched: the classroom pr
 | [0301](0301-vecna-robotics-outreach.md) | Outreach | Vecna Robotics integration; Move #21; research-collab, **off-GitHub**; pallet / material-handling AMRs (Pivotal); MassRobotics-standard working-group member; interop layer is the bridge; request for comment from Vecna Robotics | Draft | 2026-06-01 |
 | [0302](0302-seegrid-outreach.md) | Outreach | Seegrid integration; Move #21; research-collab, **off-GitHub**; infrastructure-free vision-guided AMRs/AGVs (Palion); MassRobotics-standard working-group member; interop layer is the bridge; request for comment from Seegrid | Draft | 2026-06-01 |
 | [0303](0303-mir-outreach.md) | Outreach | Mobile Industrial Robots (MiR) integration; Move #21, **closes the wave**; research-collab, **off-GitHub** (DK / Teradyne; allied); global AMR leader with VDA5050 support → RFC-0297 is the natural bridge; request for comment from MiR | Draft | 2026-06-01 |
+| [0304](0304-permissive-translation-alternative.md) | Spec | `language.translation_alternatives` — declaring a commercial-eligible permissive translation substrate alongside a license-gated primary; adds an `open_llm` engine class (Qwen / Gemma families) extending RFC-0260, pairs with RFC-0262's `commercial_use_gate`, and converts RFC-0268's commercial-plus-CC-BY-NC hard failure into a fork when a permissive alternative is declared; surfaced by the NLLB-200 maintainer's guidance on RFC-0167 | Draft | 2026-06-01 |
 
 ## Lifecycle states
 
