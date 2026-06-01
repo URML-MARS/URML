@@ -94,66 +94,74 @@
 
 - slug: locus-robotics
   rfc: 300
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Locus Robotics: no public developer API / SDK / GitHub org located 2026-06-01 (consistent with the Move #15 closed-surface finding for major AMR makers). Channel is the company contact surface at locusrobotics.com. Interop link: MassRobotics AMR Interop Standard participant."
+  channel: email
+  contact: "Founder emailed info@locusrobotics.com 2026-06-01 (from greenvh@gmail.com) pointing at RFC-0300. Locus has no public developer API / GitHub org (Move #15 closed-surface finding); MassRobotics AMR Interop Standard participant; partnerships surface locusrobotics.com/about-us/partnerships/."
   last_touch: 2026-06-01
   response: none
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0300 courtesy outreach to info@locusrobotics.com (from greenvh@gmail.com, AI-authoring disclosure included), asking whether the MassRobotics standard / VDA5050 is the expected third-party integration path. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via locusrobotics.com contact surface, pointing at RFC-0300, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d (commercial cadence). If silent, polite follow-up. If reply, bump last_touch and set response per enum; if an integration surface is named, scope the interop-layer mapping (RFC-0297/0298)."
   notes: "Move #21 off-GitHub vendor-direct. Locus Robotics (Wilmington MA, US) is the goods-to-person picking AMR leader (350+ sites). Closed GitHub surface; realistic technical bridge is the interop layer (RFC-0297 VDA5050 / RFC-0298 MassRobotics+RMF), not a Locus-private API. Zero new URML vocabulary (RFC-0022). RFC-0102 (Bear) / RFC-0294 (Labrador) off-GitHub precedents. Origin US. Verified 2026-06-01 (absence of developer surface documented)."
 
 - slug: vecna-robotics
   rfc: 301
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Vecna Robotics: no public developer API / SDK / GitHub org located 2026-06-01. Channel is the company contact surface at vecnarobotics.com (Pivotal orchestration platform). Interop link: MassRobotics AMR Interop Standard working-group member."
+  channel: email
+  contact: "Founder emailed team@vecnarobotics.com 2026-06-01 (from greenvh@gmail.com) pointing at RFC-0301. No public developer API / GitHub org; Pivotal orchestration platform; MassRobotics AMR Interop Standard working-group member."
   last_touch: 2026-06-01
   response: none
   tier: B
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0301 courtesy outreach to team@vecnarobotics.com (from greenvh@gmail.com, AI-authoring disclosure included), asking how pallet/tugger load operations are exposed for a substrate-neutral mapping. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via vecnarobotics.com contact surface, pointing at RFC-0301, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum; scope the interop-layer mapping (RFC-0297/0298) if a surface is named."
   notes: "Move #21 off-GitHub vendor-direct. Vecna Robotics (Waltham MA, US) builds pallet/tugger/case material-handling AMRs (Pivotal platform). Closed GitHub surface; interop layer is the realistic bridge. Load-handling actions are vendor-specific (VDA5050 action-set caveat per RFC-0297). Zero new vocabulary (RFC-0022). Origin US. Verified 2026-06-01 (absence of developer surface documented)."
 
 - slug: seegrid
   rfc: 302
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Seegrid: no public developer API / SDK / GitHub org located 2026-06-01. Channel is the company contact surface at seegrid.com (vision-guided AMRs, Palion lift/tow + fleet management). Interop link: MassRobotics AMR Interop Standard working-group member."
+  channel: email
+  contact: "Founder emailed sales@seegrid.com 2026-06-01 (from greenvh@gmail.com) pointing at RFC-0302. No public developer API / GitHub org; vision-guided AMRs (Palion lift/tow) + fleet management; MassRobotics AMR Interop Standard working-group member."
   last_touch: 2026-06-01
   response: none
   tier: B
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0302 courtesy outreach to sales@seegrid.com (from greenvh@gmail.com, AI-authoring disclosure included), asking where a third party submits transport intent to a Seegrid fleet. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via seegrid.com contact surface, pointing at RFC-0302, asking whether an integration surface exists (directly or via the MassRobotics standard / VDA5050). On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum; scope the interop-layer mapping (RFC-0297/0298) if a surface is named."
   notes: "Move #21 off-GitHub vendor-direct. Seegrid (Pittsburgh PA, US) builds infrastructure-free vision-guided AMRs/AGVs. Closed GitHub surface; interop layer is the realistic bridge. Maps to named locations/docks, not Seegrid's internal perception. Zero new vocabulary (RFC-0022). Origin US. Verified 2026-06-01 (absence of developer surface documented)."
 
 - slug: mobile-industrial-robots
   rfc: 303
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Mobile Industrial Robots (MiR): no open developer GitHub org for community integration located 2026-06-01; MiR exposes a customer product REST/fleet interface, not an open developer community. Channel is the company/developer contact surface at mobile-industrial-robots.com. Interop link: MiR products support VDA5050."
+  channel: web_form
+  contact: "Founder submitted the RFC-0303 outreach via the MiR contact form at mobile-industrial-robots.com/contacts on 2026-06-01 (no public email; reply-to greenvh@gmail.com). MiR routes form inquiries to a local automation expert (~2 business days). Interop link: MiR products support VDA5050."
   last_touch: 2026-06-01
   response: none
   tier: B
   country: DK
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder submitted the RFC-0303 courtesy outreach via the MiR contact form (web_form; MiR exposes no public email), asking whether VDA5050 or the product REST API is the recommended integration path. AI-authoring disclosure included. Awaiting reply (MiR routes to a local expert, ~2 business days)."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via mobile-industrial-robots.com contact surface, pointing at RFC-0303, asking whether VDA5050 or the product REST API is the recommended integration path. On send, set channel + sent_at. If a surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d (MiR routes via a local automation expert). If silent, polite follow-up via the form. If reply, bump last_touch and set response per enum; VDA5050 (RFC-0297) is the natural bridge to scope."
   notes: "Move #21 off-GitHub vendor-direct; closes the wave's vendor set. MiR (Odense DK, Teradyne-owned; allied, default-policy pass) is a global AMR leader (MiR100-1350 + MiR Fleet). VDA5050 support makes RFC-0297 the natural bridge (URML intent -> VDA5050 orders -> MiR fleet). Adds the allied-EU data point to a US-heavy vendor set. Zero new vocabulary (RFC-0022). Origin DK. Verified 2026-06-01."
 
 # --- MassRobotics AMR Interop Standard: engaged via the InOrbit RFC (0298),
