@@ -289,15 +289,18 @@
   posted_url: "https://github.com/eclipse-iceoryx/iceoryx/issues/2530"
   channel: github_issue
   contact: "eclipse-iceoryx/iceoryx (Apache-2.0, 2.1k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Zero-copy IPC for ROS 2 intra-process."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-01"
+  response: engaged
   tier: B
   country: INTL
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      author: elBoberido
+      summary: "@elBoberido (eclipse-iceoryx member) invited @idoco2003 to the iceoryx developer meetup tomorrow (2026-06-02) at 5pm CEST. Accepted and asked for the joining link + offered a short URML / IPC-sub-substrate-mapping intro (issuecomment-4594143261)."
   claude_directives: []
-  next_action: "posted 2026-05-29 to https://github.com/eclipse-iceoryx/iceoryx/issues/2530 (iceoryx Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
-  notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer."
+  next_action: "**Engaged 2026-06-01** — @elBoberido (member) invited the maintainer to the iceoryx developer meetup on 2026-06-02 at 5pm CEST. Replied yes and asked for the joining link/platform (issuecomment-4594143261). **Founder action: attend the meetup** and confirm joining details once @elBoberido shares them. First live-meeting invitation from any URML outreach target; capture meetup outcomes back here afterward."
+  notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer. First outreach target to invite URML to a live developer meeting."
 
 - slug: stella-vslam
   rfc: 211
