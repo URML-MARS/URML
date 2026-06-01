@@ -87,15 +87,17 @@
   posted_url: "https://github.com/analogdevicesinc/TMC-API/issues/86"
   channel: github_issue
   contact: "Trinamic/TMC-API (MIT, 260 stars, Issues enabled, last commit 2026-04-07, **not archived**). Trinamic Motion Control (Analog Devices subsidiary). Origin Hamburg DE."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-01"
+  response: wontfix
   tier: A
   country: DE
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Closed NOT_PLANNED 2026-06-01 by trinamic-ed (CONTRIBUTOR): 'Purpose unclear - ticket is being closed.' Neutral-dismissive, NOT an AI-content flag (distinct from OVOS/LibreTranslate/QGC); the chip-class cross-citation framing did not land with a low-level C-API repo's maintainer. URML accepts the close. Validates the RFC's own caveat that a chip-vendor API is a low-yield engagement surface vs the integrator/board level."
   claude_directives: []
-  next_action: "Posted as Issue analogdevicesinc/TMC-API#86 on 2026-05-28 (note: GitHub redirects Trinamic/TMC-API to analogdevicesinc/TMC-API post-ADI acquisition). Chip-class cross-citation framing. Light-touch follow-up at 2026-06-25."
-  notes: "Tier A. Origin DE (pass, NATO allied). Vendor-direct via ADI acquisition. URML-fit: medium for stepper-class actuators (3D printers, lab gantries, educational hardware)."
+  next_action: "Thread CLOSED wontfix 2026-06-01. Do not pursue analogdevicesinc/TMC-API further. The chip-class actuator angle (RFC-0171; stepper_driver_chip manifest class) is better reached at the integrator/board level if user-side demand surfaces; the queued Spec RFC for a stepper-driver-chip actuator class stands on its own merits, independent of this thread."
+  notes: "Tier A. Origin DE (pass, NATO allied). Vendor-direct via ADI acquisition. URML-fit: medium for stepper-class actuators (3D printers, lab gantries, educational hardware). 2026-06-01: closed wontfix ('purpose unclear') by trinamic-ed; confirms chip-vendor-API repos are the wrong engagement altitude for a robotics-intent spec."
 
 # ---- MCU + maker platforms (5) ----
 
