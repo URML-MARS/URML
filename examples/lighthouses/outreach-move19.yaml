@@ -27,9 +27,12 @@
 #
 # Tier B — partnership / email / forum education orgs (FIRST, REC
 # Foundation, RoboCup Junior, Raspberry Pi Foundation / CoderDojo) are
-# NOT GitHub-routable and are drafted in founder-actions-move19.md for
-# founder posting, mirroring the Move #17 sub-wave-B precedent. They are
-# not ledgered here until shaped and sent.
+# NOT GitHub-routable; ready-to-send bodies + researched channels live in
+# founder-actions-move19.md (Move #17 sub-wave-B precedent). Ledgered here
+# once actually sent: FIRST, REC Foundation, and Raspberry Pi Foundation /
+# CoderDojo were founder-submitted via their web contact forms on
+# 2026-05-31 (rows below). RoboCup Junior is held pending forum-account
+# approval, not yet ledgered.
 #
 # Surfaces verified 2026-05-31 via GitHub API (license, stars,
 # has_issues, isArchived, last push). All three: Issues enabled,
@@ -40,8 +43,10 @@
 # under the schema-v2 conformance test (RFC-0275).
 #
 # Phase 1 posture: do not massage `response` / `last_touch`. `none` is
-# the truthful default. All three rows are DRAFTED, not yet posted;
-# posting and per-row state changes are founder-authorized.
+# the truthful default. The three Tier-A rows were posted live on
+# 2026-05-31; the three Tier-B rows were founder-submitted via web form on
+# 2026-05-31. All await first response. Posting and per-row state changes
+# are founder-authorized.
 
 - slug: open-roberta
   rfc: 287
@@ -89,4 +94,56 @@
   comments: []
   claude_directives: []
   next_action: "Posted as Issue jmoenig/Snap#3543 on 2026-05-31 (completes the Move-19 Tier-A wave). AGPL boundary stated up front (cross-citation + lesson bridge, no shared code); asked whether the repo or the BJC curriculum team is the right channel. Awaiting first response. Light-touch follow-up at 2026-06-28."
-  notes: "Tier B. High-school CS curriculum reach (BJC). AGPL-3.0 limits integration to mapping / cross-citation / lesson material — stated honestly. URML-fit: pedagogical, harder to measure than an adapter. Distinct niche from MakeCode / Open Roberta."
+  notes: "Tier B. High-school CS curriculum reach (BJC). AGPL-3.0 limits integration to mapping / cross-citation / lesson material, stated honestly. URML-fit: pedagogical, harder to measure than an adapter. Distinct niche from MakeCode / Open Roberta."
+
+# ============================================================
+# Move #19 Tier B (3) — education-community orgs, founder-submitted via
+# web contact form on 2026-05-31. No per-org RFC doc (see
+# founder-actions-move19.md for the channel + the body that was sent).
+# No posted_url: web forms have no public permalink.
+# ============================================================
+
+- slug: first-inspires
+  sent_at: "2026-05-31"
+  posted_url: ""
+  channel: web_form
+  contact: "FIRST (firstinspires.org). Largest US school robotics org (FRC / FTC / FLL). Submitted via the Contact Support form at help.firstinspires.org/s/contactsupport; no public partnership email (program emails are for registered teams)."
+  last_touch: "2026-05-31"
+  response: none
+  tier: B
+  country: US
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Founder submitted the Contact Support web form (https://help.firstinspires.org/s/contactsupport) on 2026-05-31. No public submission URL. Curriculum/program layer; WPILib software is the separate RFC-0228 thread. Awaiting first response; light-touch follow-up 2026-06-28."
+  notes: "Tier B. Org-level outreach (not the WPILib codebase, RFC-0228). Web-form channel only. Sent body in founder-actions-move19.md."
+
+- slug: rec-foundation
+  sent_at: "2026-05-31"
+  posted_url: ""
+  channel: web_form
+  contact: "REC Foundation (roboticseducation.org). Runs the VEX competition ecosystem + classroom curriculum. Submitted via the contact form at roboticseducation.org/contact-us; phone (214) 771-0975; Greenville TX."
+  last_touch: "2026-05-31"
+  response: none
+  tier: B
+  country: US
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Founder submitted the REC Foundation contact form (https://roboticseducation.org/contact-us/) on 2026-05-31, framed as curriculum, explicitly not the VEX device toolchain. No public submission URL. Awaiting first response; light-touch follow-up 2026-06-28."
+  notes: "Tier B. Curriculum/competition org; distinct from the declined PROS/VEX device toolchain (RFC-0236). Web-form channel. Sent body in founder-actions-move19.md."
+
+- slug: raspberry-pi-foundation
+  sent_at: "2026-05-31"
+  posted_url: ""
+  channel: web_form
+  contact: "Raspberry Pi Foundation (raspberrypi.org) + CoderDojo network. Submitted via the contact form at raspberrypi.org/contact with an education-mission subject; not the hardware channel (raspberrypi.com)."
+  last_touch: "2026-05-31"
+  response: none
+  tier: B
+  country: GB
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Founder submitted the Raspberry Pi Foundation contact form (https://www.raspberrypi.org/contact/, education subject) on 2026-05-31. No public submission URL. Awaiting first response; light-touch follow-up 2026-06-28."
+  notes: "Tier B. Education arm + CoderDojo; distinct from the Pico SDK thread (RFC-0175). Offline / no-telemetry posture is the selling point for youth education. Web-form channel. Sent body in founder-actions-move19.md."
