@@ -300,15 +300,17 @@
   posted_url: "https://github.com/Sensirion/arduino-i2c-scd30/issues/12"
   channel: github_issue
   contact: "Sensirion/* — 252 vendor-org public repos, BSD-3-Clause uniformly, multi-week activity cadence; flagship pattern is per-sensor arduino-i2c-* + embedded-i2c-* pairs (e.g. arduino-i2c-scd30 = 13/1/2026-05-26 active). Vendor org Sensirion AG (Switzerland), 343 followers."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-01"
+  response: wontfix
   tier: A
   country: CH
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Closed 2026-06-01 by quentin-cy: polite decline ('I will not be able to follow up... not especially related to this repository and/or seems a bit unclear') WITH an explicit AI-content objection ('Please do not ask AI bots to open issues around Github like this') AND a constructive redirect ('reach out yourself to our company support with a clear and accurate request'). Fourth AI-content-flag close (after OVOS / LibreTranslate / QGC); the post already carried the VIBE.md disclosure, so disclosure alone does not prevent the objection on a chip-/sensor-API repo. URML accepts the close. NO reply (their explicit no-AI-bots request + the standing accept-AI-flag-closes-silently norm)."
   claude_directives: []
-  next_action: "Posted as Issue Sensirion/arduino-i2c-scd30#12 on 2026-05-28. URML's first environmental-sensor RFC. Env-scalar-array Spec RFC queued. Light-touch follow-up at 2026-06-25; Sensirion's 252-repo uniform BSD-3-Clause posture is exemplary."
-  notes: "Tier A. Origin CH (pass; NATO-aligned). 252 public repos, OSI license uniform, exemplary maintenance posture. First environmental-sensor RFC in URML's outreach. URML-fit: high for CO2/humidity/particulate; manifest sensors-block extension needed for env types."
+  next_action: "Thread CLOSED wontfix 2026-06-01. Do not reply (explicit no-AI-bots request). Do not retroactively edit the post (OVOS precedent). Optional founder-action ONLY (human-written, off-GitHub): if URML ever wants Sensirion env sensors, the maintainer invited a clear human request to Sensirion company support; low priority, not pursued now. The env-scalar-array Spec RFC stands on its own merits, independent of this thread."
+  notes: "Tier A. Origin CH (pass; NATO-aligned). 252 public repos, OSI license uniform. First environmental-sensor RFC in URML's outreach. URML-fit: high for CO2/humidity/particulate; manifest sensors-block extension needed for env types. 2026-06-01: closed wontfix with an AI-content objection + redirect to human company support; per-sensor C/Arduino API repos are the wrong engagement altitude, same lesson as Trinamic RFC-0171."
 
 - slug: bosch-sensortec
   rfc: 125
