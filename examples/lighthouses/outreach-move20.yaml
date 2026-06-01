@@ -52,68 +52,76 @@
 
 - slug: ohmnilabs-ohmni
   rfc: 292
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "OhmniLabs: live developer surface is the documentation portal docs.ohmnilabs.com (WebAPI + ROS-on-Docker + Arduino devkit, Ohmni Developer Edition) and the company site ohmnilabs.com. The github.com/ohmnilabs org exists but its repos (ohmni-ros-demo Apache-2.0, ohmni-devkit-arduino) have been dormant since 2018; engagement is off-GitHub, not a post on a dead repo."
-  last_touch: 2026-05-31
-  response: none
+  channel: email
+  contact: "Founder emailed partnerships@ohmnilabs.com 2026-06-01 pointing at RFC-0292. Auto/templated reply from OhmniLabs Support same day. Backup channels on file: support@ohmnilabs.com, hello@ohmnilabs.com, contact form at ohmnilabs.com/about-us/contact-us/. Company is now a product line of Symbotic (acquired Dec 2024)."
+  last_touch: 2026-06-01
+  response: acked
   tier: A
   country: US
   sector: robot-platform
   comments:
     - date: "2026-05-31"
       text: "GitHub org dormant since 2018 (verified via gh repo view: ohmni-ros-demo last pushed 2018-09, ohmni-devkit-arduino 2018-12). Downgraded from GitHub auto-post to off-GitHub courtesy at draft time; live surface is the dev portal. Founder to send via ohmnilabs.com / docs.ohmnilabs.com contact."
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0292 outreach; received a templated OhmniLabs Support reply (acked, ticket-bot class per the Move-17 NIST precedent, not engaged). SUBSTANCE: the Ohmni Telepresence Robot is END-OF-LIFE as of 2026-01-01 — no ongoing technical support, troubleshooting, parts, or software updates (except active extended warranties). This undercuts RFC-0292's premise (a live Developer Edition / WebAPI / ROS-on-Docker adapter target). Currently supported lines are OhmniCare (telehealth, care-support@ohmnilabs.com) and OhmniClean (UV-C disinfection, clean-support@ohmnilabs.com) — neither is the home-assistance/telepresence target pitched. Base cloud app.ohmnilabs.com remains live (calling/basic functionality) with no retirement plan, but no new features. Conclusion: the OhmniAdapter premise is not viable for the telepresence robot."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via ohmnilabs.com / docs.ohmnilabs.com developer-portal contact, pointing at RFC-0292, with the AI-authoring disclosure. On send, set channel + sent_at + posted_url. If OhmniLabs surfaces a live GitHub Issue surface or a dev-relations email, pivot and bump last_touch."
-  notes: "Move #20 off-GitHub target. OhmniLabs Ohmni is a US-domiciled (Santa Clara, CA) telepresence + home-care robot with a documented Developer Edition (WebAPI, ROS-on-Docker, Arduino). Telepresence-for-aging-in-place is on the home-assistance continuum. ROS-on-Docker is the clean adapter target (reuses URML's ROS 2 reference runtime). Proposed OhmniAdapter in reference/home-runtime/, pending engagement. RFC-0102 (Bear) off-GitHub precedent. Verified 2026-05-31 (GitHub dormancy documented)."
+  next_action: "do not pursue the telepresence-robot adapter: the platform is EOL (2026-01-01). No further outreach unless URML develops a use case for a currently-supported Symbotic/Ohmni line (OhmniCare telehealth or OhmniClean UV-C), both of which are outside the home-assistance scope of Move #20. RFC-0292 carries a maintainer-response note recording the EOL outcome."
+  notes: "Move #20 off-GitHub target. OhmniLabs Ohmni was a US-domiciled (Santa Clara, CA) telepresence + home-care robot with a documented Developer Edition (WebAPI, ROS-on-Docker, Arduino). 2026-06-01: outreach returned an EOL notice — the telepresence robot reached end-of-life 2026-01-01 (now a Symbotic product line; supported lines pivoted to OhmniCare + OhmniClean). The proposed OhmniAdapter target no longer exists as a supported platform. RFC-0102 (Bear) off-GitHub precedent. Verified 2026-05-31 (GitHub dormancy); EOL recorded 2026-06-01."
 
 - slug: labrador-systems-retriever
   rfc: 294
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Labrador Systems: no public developer API / SDK / GitHub org located 2026-05-31. Control surfaces are the consumer app, voice (incl. Alexa), and scheduling. Channel is the company contact surface at labradorsystems.com."
-  last_touch: 2026-05-31
+  channel: web_form
+  contact: "Founder sent 2026-06-01 via the labradorsystems.com/contact/ form (Business Development inquiry type), pointing at RFC-0294. Email backups on file: team@labradorsystems.com (partnerships), press@labradorsystems.com."
+  last_touch: 2026-06-01
   response: none
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0294 courtesy outreach via the labradorsystems.com contact form (Business Development), asking whether a developer/integration surface exists or is planned. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via labradorsystems.com contact surface, pointing at RFC-0294, asking whether a developer/integration surface exists or is planned. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d (commercial cadence). If silent, polite follow-up via team@labradorsystems.com. If reply, bump last_touch and set response per enum; if a developer surface is named, pivot to a LabradorAdapter scope discussion."
   notes: "Move #20 off-GitHub target and the strongest pure home-assistance fit in the wave. Labrador Retriever is a US-domiciled (Oak Park, CA) assistive home robot (meal/laundry/fetch delivery to saved bus-stops; app/voice/schedule control). No public developer API. Region-based mobility; manipulation not_applicable (self-loading tray, not a manipulator). Home-profile 0.5 m/s ceiling already matches an assistive in-home robot. RFC-0102 (Bear) off-GitHub precedent. Verified 2026-05-31 (absence of developer surface documented)."
 
 - slug: intuition-robotics-elliq
   rfc: 295
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Intuition Robotics / ElliQ: no public developer API / SDK located 2026-05-31. Published surfaces are consumer + caregiver apps. Channel is the company contact surface at elliq.com / intuitionrobotics.com."
-  last_touch: 2026-05-31
+  channel: web_form
+  contact: "Founder sent 2026-06-01 via the intuitionrobotics.com/contact-us form (B2B fields: company, job title, message), pointing at RFC-0295. No public general/partnerships email; press routes via Si14 Global Communications."
+  last_touch: 2026-06-01
   response: none
   tier: B
   country: IL
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0295 courtesy outreach via the intuitionrobotics.com contact form, asking whether a developer/integration surface exists (perhaps via the ElliQ Caregiver product) and noting opt-in-only data handling for the elder-care context. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: courtesy outreach via elliq.com / intuitionrobotics.com contact surface, pointing at RFC-0295, asking whether a developer surface exists. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d. If silent, polite follow-up via the same form. If reply, bump last_touch and set response per enum; keep the lower-bound speak/listen/measure/report mapping (RFC-0014) if a surface is named."
   notes: "Move #20 off-GitHub target. ElliQ (Intuition Robotics, Ramat Gan, IL; allied, default-policy pass) is a stationary tabletop elder-care companion. Value lives in the home-profile speak/listen extensions, not mobility/manipulation. Lower-bound mapping per RFC-0014 honest-substrate-limit norm: speak/listen/measure/report only; move_to/grasp/release return not_supported_on_stationary_companion. IL-origin sibling of Maytronics RFC-0103 (also the lower-bound-mapping precedent). Privacy-sensitive (elder-care voice); honor no-telemetry-without-opt-in. Verified 2026-05-31 (absence of developer surface documented)."
 
 - slug: andromeda-abi
   rfc: 296
-  sent_at: ""
+  sent_at: "2026-06-01"
   posted_url: ""
-  channel: deferred
-  contact: "Andromeda Robotics / Abi: no public developer API / SDK / GitHub org located 2026-05-31; platform in active build-out (funding raised early 2026, platform-engineering hiring). Channel is the company contact surface at andromedarobotics.ai."
-  last_touch: 2026-05-31
+  channel: email
+  contact: "Founder emailed abi@andromedarobotics.ai 2026-06-01 pointing at RFC-0296. Backups on file: contact form at andromedarobotics.ai/contact-us, phone +61 438 270 515."
+  last_touch: 2026-06-01
   response: none
   tier: B
   country: AU
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-01"
+      text: "Founder sent the RFC-0296 forward-looking courtesy outreach to abi@andromedarobotics.ai, asking whether an integration surface is planned as the platform matures and noting opt-in-only data handling for the aged-care context. Awaiting reply."
   claude_directives: []
-  next_action: "founder-action: forward-looking courtesy outreach via andromedarobotics.ai contact surface, pointing at RFC-0296, asking whether an integration surface is planned as the platform matures. On send, set channel + sent_at. If a developer surface or contact surfaces, pivot and bump last_touch."
+  next_action: "wait 14-30 d (early-stage; cadence may be slow). If silent, no aggressive follow-up (forward-looking touch). If reply, bump last_touch and set response per enum."
   notes: "Move #20 off-GitHub + early-stage target; closes the wave. Abi (Andromeda Robotics, Melbourne, AU; allied, default-policy pass) is a child-sized humanoid companion for aged care / assisted living. Youngest Move #20 target: a forward-looking touch to be on the radar before the integration surface solidifies. Companion mapping centers speak/listen/measure(presence)/report; honest-substrate-limit norm (RFC-0014) governs the rest. Privacy-sensitive (aged-care conversation). RFC-0102 (Bear) off-GitHub precedent; RFC-0293/0295 Move #20 companion siblings. Verified 2026-05-31 (absence of developer surface documented)."
 
 # --- Deferred-with-cause: PRC-domiciled, out of US-federal default scope
