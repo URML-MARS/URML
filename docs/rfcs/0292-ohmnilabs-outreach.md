@@ -2,9 +2,9 @@
 rfc: 0292
 title: OhmniLabs / Ohmni integration, research-collab proposal (off-GitHub developer portal)
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Withdrawn
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-01
 supersedes: —
 superseded-by: —
 ---
@@ -115,6 +115,14 @@ OhmniLabs' maintained surface is the developer portal at `docs.ohmnilabs.com` an
 This RFC and any accompanying outreach are AI-assisted under the maintainer's direction and review; URML's authoring posture is documented in [`VIBE.md`](../../VIBE.md).
 
 URML's own public Discussions: https://github.com/URML-MARS/URML/discussions
+
+## Maintainer response (2026-06-01) — RFC withdrawn
+
+URML sent this outreach on 2026-06-01 and received a templated reply from OhmniLabs Support. The reply reports that **the Ohmni Telepresence Robot is end-of-life as of 2026-01-01**: no ongoing technical support, troubleshooting, parts replacement, or software updates, except where required under active extended warranties. OhmniLabs is now a product line of Symbotic (acquired December 2024), and its currently supported platforms are **OhmniCare** (telehealth) and **OhmniClean** (UV-C disinfection robots). The base cloud at `app.ohmnilabs.com` remains available for calling and basic functionality with no retirement plan, but no new features are planned.
+
+This undercuts the premise of this RFC: the proposed `OhmniAdapter` targeted the telepresence robot's Developer Edition (WebAPI / ROS-on-Docker), which is no longer a supported platform. The two supported lines (telehealth, UV-C disinfection) are outside the home-assistance scope of Move #20.
+
+**Outcome: withdrawn.** No `OhmniAdapter` will be pursued for the telepresence robot. This RFC stays in the directory as an honest record of an outreach that found its target discontinued. A future RFC could revisit a Symbotic/Ohmni surface if URML develops a use case for a currently-supported line, but that is out of scope here. The ledger row in [`examples/lighthouses/outreach-move20.yaml`](../../examples/lighthouses/outreach-move20.yaml) records `response: acked` (templated support reply) with the EOL substance.
 
 ## Self-review (Phase 0)
 
