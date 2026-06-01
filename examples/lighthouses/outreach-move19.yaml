@@ -31,8 +31,9 @@
 # founder-actions-move19.md (Move #17 sub-wave-B precedent). Ledgered here
 # once actually sent: FIRST, REC Foundation, and Raspberry Pi Foundation /
 # CoderDojo were founder-submitted via their web contact forms on
-# 2026-05-31 (rows below). RoboCup Junior is held pending forum-account
-# approval, not yet ledgered.
+# 2026-05-31 (rows below). RoboCup Junior was submitted as a forum topic
+# on 2026-06-01 and is in moderation (no public URL yet); ledgered below
+# as submitted-pending, URL to be backfilled on approval.
 #
 # Surfaces verified 2026-05-31 via GitHub API (license, stars,
 # has_issues, isArchived, last push). All three: Issues enabled,
@@ -147,3 +148,18 @@
   claude_directives: []
   next_action: "Founder submitted the Raspberry Pi Foundation contact form (https://www.raspberrypi.org/contact/, education subject) on 2026-05-31. No public submission URL. Awaiting first response; light-touch follow-up 2026-06-28."
   notes: "Tier B. Education arm + CoderDojo; distinct from the Pico SDK thread (RFC-0175). Offline / no-telemetry posture is the selling point for youth education. Web-form channel. Sent body in founder-actions-move19.md."
+
+- slug: robocup-junior
+  sent_at: "2026-06-01"
+  posted_url: ""
+  channel: forum
+  contact: "RoboCupJunior (junior.robocup.org). School-age, community-run division of RoboCup; international. New topic submitted on the official forum (junior.forum.robocup.org); no public committee email. Topic is in moderation, no public URL yet."
+  last_touch: "2026-06-01"
+  response: none
+  tier: B
+  country: INTL
+  sector: education-toolchain
+  comments: []
+  claude_directives: []
+  next_action: "Founder submitted a new topic on the RoboCupJunior forum (https://junior.forum.robocup.org/) on 2026-06-01; in moderation, awaiting approval before it is publicly visible. Record the topic URL in posted_url once approved. Treat any bot/auto-reply as acked, not engaged. Light-touch follow-up 2026-06-29."
+  notes: "Tier B. International community org (forum / Discord / mailing list; no public committee email). Submitted via forum topic, pending moderation; URL pending. Sent body in founder-actions-move19.md. Completes the four Move-19 Tier-B orgs."

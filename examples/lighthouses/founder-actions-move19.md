@@ -18,7 +18,7 @@ The Tier-A Move #19 targets (Open Roberta, MakeCode, Snap!) are GitHub-routable 
 
 Each entry now carries a researched channel (verified 2026-05-31) and a ready-to-send body. Paste the body into the named channel, fill the form's name/email fields with `greenvh@gmail.com`, and record the result.
 
-**Status (2026-05-31).** Submitted via web contact form by the founder and ledgered in `outreach-move19.yaml` (`response: none`): **FIRST**, **REC Foundation**, **Raspberry Pi Foundation / CoderDojo**. **Held:** **RoboCup Junior** — the forum requires account approval before a topic can be posted; send once approved, then ledger it.
+**Status (updated 2026-06-01).** All four Tier-B orgs submitted by the founder and ledgered in `outreach-move19.yaml` (`response: none`): **FIRST**, **REC Foundation**, **Raspberry Pi Foundation / CoderDojo** (web contact forms, 2026-05-31), and **RoboCup Junior** (forum topic, 2026-06-01, in moderation, public URL to be backfilled on approval).
 
 Two standing constraints apply to every contact below:
 
