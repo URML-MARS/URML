@@ -273,14 +273,16 @@
   posted_url: "https://github.com/eclipse-zenoh/zenoh/issues/2626"
   channel: github_issue
   contact: "eclipse-zenoh/zenoh (Other — EPL-2.0 / Apache-2.0, 2.8k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Next-gen pub-sub overlay; substrate-emerging."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-02"
+  response: acked
   tier: B
   country: INTL
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-02"
+      text: "@yellowhatter (CONTRIBUTOR) acknowledged the thread and routed it internally: 'Tagging @YuanYuYuan @sashacmc'. No substantive response yet; a maintainer noticed and pulled in colleagues for visibility. Watch for @YuanYuYuan / @sashacmc to engage on the RMW-manifest-mapping questions."
   claude_directives: []
-  next_action: "posted 2026-05-29 to https://github.com/eclipse-zenoh/zenoh/issues/2626 (Zenoh Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "**Acked 2026-06-02** — @yellowhatter (CONTRIBUTOR) tagged @YuanYuYuan and @sashacmc into the thread (internal routing, no substance yet). Move-16 substrate-spine wave. Hold for the tagged maintainers to respond on the RMW-manifest mapping; if they engage substantively, set response to engaged and record which questions they answer. No reply needed yet (the tag is to colleagues, not a question to us)."
   notes: "Tier B. Origin Eclipse Foundation. Emerging substrate; cross-citation appropriate until Zenoh adoption matures."
 
 - slug: eclipse-iceoryx
