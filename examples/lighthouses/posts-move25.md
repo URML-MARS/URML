@@ -33,24 +33,24 @@ em-dashes. VIBE disclosure line last.
 
 All 10 repos have Issues enabled (verified 2026-06-02), so each is a single Issue.
 
-**Posting status:** DRAFTED, not yet posted. Post under `idoco2003` only after
-RFCs 0332-0341 land on `main`. Then fill `sent_at` / `posted_url` per row in
-`outreach-move25.yaml` and refresh `outreach.db`.
+**Posting status:** all 10 POSTED live under `idoco2003` on 2026-06-02, after
+RFCs 0332-0341 landed on `main` via PR #278. Ledger `outreach-move25.yaml`
+carries the live URLs; `response` stays `none` until a maintainer replies.
 
 **Routing summary**
 
-| RFC | Target | Channel | Status |
-|---|---|---|---|
-| 0332 | robot_localization | Issue on `cra-ros-pkg/robot_localization` | Drafted (post after merge) |
-| 0333 | GTSAM | Issue on `borglab/gtsam` | Drafted (post after merge) |
-| 0334 | OpenVINS | Issue on `rpng/open_vins` | Drafted (post after merge) |
-| 0335 | KISS-ICP | Issue on `PRBonn/kiss-icp` | Drafted (post after merge) |
-| 0336 | GLIM | Issue on `koide3/glim` | Drafted (post after merge) |
-| 0337 | OctoMap | Issue on `OctoMap/octomap` | Drafted (post after merge) |
-| 0338 | Ceres Solver | Issue on `ceres-solver/ceres-solver` | Drafted (post after merge) |
-| 0339 | fuse | Issue on `locusrobotics/fuse` | Drafted (post after merge) |
-| 0340 | DLIO | Issue on `vectr-ucla/direct_lidar_inertial_odometry` | Drafted (post after merge) |
-| 0341 | Kimera | Issue on `MIT-SPARK/Kimera-VIO` | Drafted (post after merge) |
+| RFC | Target | Channel | Status | Live URL |
+|---|---|---|---|---|
+| 0332 | robot_localization | Issue on `cra-ros-pkg/robot_localization` | **Posted 2026-06-02** | https://github.com/cra-ros-pkg/robot_localization/issues/972 |
+| 0333 | GTSAM | Issue on `borglab/gtsam` | **Posted 2026-06-02** | https://github.com/borglab/gtsam/issues/2557 |
+| 0334 | OpenVINS | Issue on `rpng/open_vins` | **Posted 2026-06-02** | https://github.com/rpng/open_vins/issues/545 |
+| 0335 | KISS-ICP | Issue on `PRBonn/kiss-icp` | **Posted 2026-06-02** | https://github.com/PRBonn/kiss-icp/issues/504 |
+| 0336 | GLIM | Issue on `koide3/glim` | **Posted 2026-06-02** | https://github.com/koide3/glim/issues/304 |
+| 0337 | OctoMap | Issue on `OctoMap/octomap` | **Posted 2026-06-02** | https://github.com/OctoMap/octomap/issues/447 |
+| 0338 | Ceres Solver | Issue on `ceres-solver/ceres-solver` | **Posted 2026-06-02** | https://github.com/ceres-solver/ceres-solver/issues/1201 |
+| 0339 | fuse | Issue on `locusrobotics/fuse` | **Posted 2026-06-02** | https://github.com/locusrobotics/fuse/issues/427 |
+| 0340 | DLIO | Issue on `vectr-ucla/direct_lidar_inertial_odometry` | **Posted 2026-06-02** | https://github.com/vectr-ucla/direct_lidar_inertial_odometry/issues/107 |
+| 0341 | Kimera | Issue on `MIT-SPARK/Kimera-VIO` | **Posted 2026-06-02** | https://github.com/MIT-SPARK/Kimera-VIO/issues/260 |
 
 ---
 
