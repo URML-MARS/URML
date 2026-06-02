@@ -28,24 +28,24 @@ terms. The mandatory VIBE disclosure line goes last in every body.
 
 All 10 repos have Issues enabled (verified 2026-06-02), so each is a single Issue.
 
-**Posting status:** DRAFTED, not yet posted. Post under `idoco2003` only after
-RFCs 0322-0331 land on `main`. Then fill `sent_at` / `posted_url` per row in
-`outreach-move24.yaml` and refresh `outreach.db`.
+**Posting status:** all 10 POSTED live under `idoco2003` on 2026-06-02, after
+RFCs 0322-0331 landed on `main` via PR #276. Ledger `outreach-move24.yaml`
+carries the live URLs; `response` stays `none` until a maintainer replies.
 
 **Routing summary**
 
-| RFC | Target | Channel | Status |
-|---|---|---|---|
-| 0322 | Genesis | Issue on `Genesis-Embodied-AI/Genesis` | Drafted (post after merge) |
-| 0323 | NVIDIA Isaac Sim | Issue on `isaac-sim/IsaacSim` | Drafted (post after merge) |
-| 0324 | O3DE | Issue on `o3de/o3de` | Drafted (post after merge) |
-| 0325 | CARLA | Issue on `carla-simulator/carla` | Drafted (post after merge) |
-| 0326 | Unity Robotics Hub | Issue on `Unity-Technologies/Unity-Robotics-Hub` | Drafted (post after merge) |
-| 0327 | Habitat | Issue on `facebookresearch/habitat-sim` | Drafted (post after merge) |
-| 0328 | Project Chrono | Issue on `projectchrono/chrono` | Drafted (post after merge) |
-| 0329 | Brax | Issue on `google/brax` | Drafted (post after merge) |
-| 0330 | Eclipse Ditto | Issue on `eclipse-ditto/ditto` | Drafted (post after merge) |
-| 0331 | Gymnasium | Issue on `Farama-Foundation/Gymnasium` | Drafted (post after merge) |
+| RFC | Target | Channel | Status | Live URL |
+|---|---|---|---|---|
+| 0322 | Genesis | Issue on `Genesis-Embodied-AI/Genesis` | **Posted 2026-06-02** | https://github.com/Genesis-Embodied-AI/genesis-world/issues/2881 |
+| 0323 | NVIDIA Isaac Sim | Issue on `isaac-sim/IsaacSim` | **Posted 2026-06-02** | https://github.com/isaac-sim/IsaacSim/issues/649 |
+| 0324 | O3DE | Issue on `o3de/o3de` | **Posted 2026-06-02** | https://github.com/o3de/o3de/issues/19806 |
+| 0325 | CARLA | Issue on `carla-simulator/carla` | **Posted 2026-06-02** | https://github.com/carla-simulator/carla/issues/9771 |
+| 0326 | Unity Robotics Hub | Issue on `Unity-Technologies/Unity-Robotics-Hub` | **Posted 2026-06-02** | https://github.com/Unity-Technologies/Unity-Robotics-Hub/issues/440 |
+| 0327 | Habitat | Issue on `facebookresearch/habitat-sim` | **Posted 2026-06-02** | https://github.com/facebookresearch/habitat-sim/issues/2636 |
+| 0328 | Project Chrono | Issue on `projectchrono/chrono` | **Posted 2026-06-02** | https://github.com/projectchrono/chrono/issues/746 |
+| 0329 | Brax | Issue on `google/brax` | **Posted 2026-06-02** | https://github.com/google/brax/issues/673 |
+| 0330 | Eclipse Ditto | Issue on `eclipse-ditto/ditto` | **Posted 2026-06-02** | https://github.com/eclipse-ditto/ditto/issues/2463 |
+| 0331 | Gymnasium | Issue on `Farama-Foundation/Gymnasium` | **Posted 2026-06-02** | https://github.com/Farama-Foundation/Gymnasium/issues/1588 |
 
 ---
 
