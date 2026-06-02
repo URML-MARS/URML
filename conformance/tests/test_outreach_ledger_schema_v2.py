@@ -137,15 +137,19 @@ def test_comments_list_shape(path: Path) -> None:
             assert isinstance(c, dict), (
                 f"{path.name}::{slug}: comments[{i}] must be a dict"
             )
-            assert "date" in c and "text" in c, (
-                f"{path.name}::{slug}: comments[{i}] missing date/text keys"
+            assert "date" in c, (
+                f"{path.name}::{slug}: comments[{i}] missing date key"
             )
             assert isinstance(c["date"], str) and DATE_RE.match(c["date"]), (
                 f"{path.name}::{slug}: comments[{i}].date={c['date']!r} "
                 f"is not YYYY-MM-DD"
             )
-            assert isinstance(c["text"], str) and c["text"], (
-                f"{path.name}::{slug}: comments[{i}].text must be a non-empty string"
+            # The comment body is carried as `text` (original shape) or as
+            # `summary` (the richer {date, author, summary} shape); exactly one
+            # non-empty body field is required, and `author` is optional.
+            body = c.get("text") if isinstance(c.get("text"), str) else c.get("summary")
+            assert isinstance(body, str) and body, (
+                f"{path.name}::{slug}: comments[{i}] needs a non-empty `text` or `summary`"
             )
 
 

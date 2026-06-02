@@ -145,7 +145,7 @@ New test file `conformance/tests/test_outreach_ledger_schema_v2.py`. The new tes
 - Asserts `tier` is one of `{A, B, C}`.
 - Asserts `country` matches the regex `^[A-Z]{2}$` OR is the literal `INTL`.
 - Asserts `sector` is in the closed enum.
-- Asserts that when `comments` is present it is a list of `{date, text}` dicts with `date` matching ISO 8601 date format.
+- Asserts that when `comments` is present it is a list of comment dicts, each with a `date` matching ISO 8601 date format and a non-empty body. The body is carried either as `text` (original shape) or as `summary` with an optional `author` (the richer `{date, author, summary}` shape used when a comment records who said what); exactly one non-empty body field is required.
 - Asserts that when `claude_directives` is present it is a list of `{date, text, status}` dicts with `status ∈ {pending, done, skip}`.
 
 The existing `conformance/tests/test_outreach_ledger.py` (Move-1 parity test) keeps its existing assertions. The two tests are complementary: Move-1 has parity-with-`demo.py::LIGHTHOUSES`, Move-2-through-18 has v2-schema enforcement.

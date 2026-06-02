@@ -228,7 +228,7 @@ def build(db_path: Path, today: date | None = None) -> dict:
                         continue
                     conn.execute(
                         "INSERT INTO comments (wave, slug, seq, date, text) VALUES (?,?,?,?,?)",
-                        (wave, slug, i, c.get("date", ""), c.get("text", "")),
+                        (wave, slug, i, c.get("date", ""), c.get("text") or c.get("summary") or ""),
                     )
                 for i, d in enumerate(directives):
                     if not isinstance(d, dict):
