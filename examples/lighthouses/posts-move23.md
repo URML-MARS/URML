@@ -32,17 +32,17 @@ All three repos have Issues enabled (verified 2026-06-02). `ros2_control` and
 `ros2_canopen` have Discussions disabled, so each is a single Issue;
 `ethercat_driver_ros2` has both, so an Issue or a Discussion is fine.
 
-**Posting status:** DRAFTED, not yet posted. Post under `idoco2003` only after
-RFCs 0319-0321 land on `main`. Then fill `sent_at` / `posted_url` and add a
-posted comment per row in `outreach-move23.yaml`, and refresh `outreach.db`.
+**Posting status:** all three POSTED live under `idoco2003` on 2026-06-02, after
+RFCs 0319-0321 landed on `main` via PR #274. Ledger `outreach-move23.yaml`
+carries the live URLs; `response` stays `none` until a maintainer replies.
 
 **Routing summary**
 
-| RFC | Target | Channel | Status |
-|---|---|---|---|
-| 0319 | ros2_control (framework anchor) | Issue on `ros-controls/ros2_control` | Drafted (post after merge) |
-| 0320 | ethercat_driver_ros2 | Issue/Discussion on `ICube-Robotics/ethercat_driver_ros2` | Drafted (post after merge) |
-| 0321 | ros2_canopen | Issue on `ros-industrial/ros2_canopen` | Drafted (post after merge) |
+| RFC | Target | Channel | Status | Live URL |
+|---|---|---|---|---|
+| 0319 | ros2_control (framework anchor) | Issue on `ros-controls/ros2_control` | **Posted 2026-06-02** | https://github.com/ros-controls/ros2_control/issues/3376 |
+| 0320 | ethercat_driver_ros2 | Issue on `ICube-Robotics/ethercat_driver_ros2` | **Posted 2026-06-02** | https://github.com/ICube-Robotics/ethercat_driver_ros2/issues/224 |
+| 0321 | ros2_canopen | Issue on `ros-industrial/ros2_canopen` | **Posted 2026-06-02** | https://github.com/ros-industrial/ros2_canopen/issues/435 |
 
 ---
 
