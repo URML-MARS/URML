@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-edu-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "Educational-platform reference runtime for URML — VEX V5, LEGO Mindstorms/SPIKE, Thymio, Robotical Marty, Petoi Bittle / Nybble, zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }

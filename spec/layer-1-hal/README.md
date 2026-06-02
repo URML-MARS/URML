@@ -14,7 +14,7 @@
 
 # Layer 1 — Hardware Abstraction
 
-**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the capability-manifest schema (frames, locations, events, mobility, manipulation, perception, docking, outputs) plus the `provenance:` (RFC-0004) and `connectivity:` (RFC-0006) blocks. The Pass-5 compliance policy is specified in [`policy.md`](policy.md). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
+**Status:** Drafted. The normative specification is [`v0.2.0.md`](v0.2.0.md) — the capability-manifest schema (frames, locations, events, mobility, manipulation, perception, docking, outputs) plus the `provenance:` (RFC-0004) and `connectivity:` (RFC-0006) blocks, and (v0.2.0) the fleet `roster`, frame `transform`s, and operational `clearance` (RFC-0286/0290/0291). The Pass-5 compliance policy is specified in [`policy.md`](policy.md). This README is the orientation; `v0.2.0.md` is what a runtime must implement. The prior [`v0.1.0.md`](v0.1.0.md) is retained for history.
 
 ## Purpose
 
@@ -37,7 +37,7 @@ Layer 1 must also **not** absorb concerns from adjacent layers:
 
 ## What the normative document specifies
 
-[`v0.1.0.md`](v0.1.0.md) carries the manifest schema in full; the items below were the original drafting checklist (see `v0.1.0.md` §5 for the two — URDF cross-reference, envelope-schema folding — that the shipped schema deliberately does *not* implement):
+[`v0.2.0.md`](v0.2.0.md) carries the manifest schema in full; the items below were the original drafting checklist (see `v0.2.0.md` §5 for the two — URDF cross-reference, envelope-schema folding — that the shipped schema deliberately does *not* implement):
 
 - The capability manifest schema (YAML canonical; JSON-LD for tooling). Sections: mobility, manipulation, perception, frames, limits, safety envelope.
 - The safety-envelope schema: declared maximums (velocity, payload, force), declared forbidden zones, declared required preconditions.

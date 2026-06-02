@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-ros2-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "ROS 2 reference runtime for URML — Universal Robot Language."
 readme = "README.md"
 license = { text = "Apache-2.0" }

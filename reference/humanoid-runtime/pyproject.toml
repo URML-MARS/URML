@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-humanoid-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "Humanoid reference runtime for URML — Agility Digit (locomotion subset, v0.1)."
 readme = "README.md"
 license = { text = "Apache-2.0" }

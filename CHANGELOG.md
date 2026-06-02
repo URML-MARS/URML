@@ -22,6 +22,28 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 Nothing pending.
 
+## [0.2.0] — 2026-06-02
+
+Minor release. The first spec-bumping release since v0.1.0: it transcribes the accepted multi-robot fleet RFCs into the normative layer specs, so the specification stops lagging its own accepted decisions. Layers 1, 3, and 4 advance to v0.2.0; Layer 2 is unchanged (still 20 normative primitives). All additions are backward-compatible — a v0.1.0 manifest and a single-robot program validate unchanged.
+
+### Added — Specification
+
+- **Layer 1 (HAL) → v0.2.0.** Three additive, optional items: a frame `transform` (SE(3) pose in the parent frame), a `mobility.clearance` operational volume (lateral footprint + vertical altitude/depth band), and the new §6 fleet `roster` (binds N per-robot manifests by handle; `world_frame`, `shared_frames`, per-member `anchor`s) plus the `validate_fleet` cross-robot checks. RFCs [0286](docs/rfcs/0286-multi-robot-fleet-addressing.md), [0290](docs/rfcs/0290-frame-transform-graph.md), [0291](docs/rfcs/0291-utm-strategic-deconfliction.md). `manifest_version` stays `"0.1"`.
+- **Layer 3 (behavior composition) → v0.2.0.** Two additive composition nodes: `on` (scope a subtree to a fleet member) and `barrier` (synchronize members at a rendezvous). RFC [0286](docs/rfcs/0286-multi-robot-fleet-addressing.md).
+- **Layer 4 (NL grammar) → v0.2.0.** Roster-aware fleet (multi-member) prompt assembly and a fleet revision loop (`validate_fleet`), emitting `on`/`barrier` programs. RFC [0286](docs/rfcs/0286-multi-robot-fleet-addressing.md).
+- **Sensor schema v0.2 reconciled.** The RFC-0039 sensor capability fields (`beam_count`, `channels`, `time_sync_methods`, `rate_hz_max`, `point_cloud` type), already shipped in the Layer-1 doc since v0.1.1, are now carried normatively at v0.2.0. RFC [0039](docs/rfcs/0039-sensor-schema-v0-2-iteration.md).
+
+### Added — Reference implementation
+
+- **Multi-robot fleet vertical slice.** `validate_fleet` (four cross-robot checks plus shared-frame/anchor validation), a concurrent `FleetRuntime`, the courier-to-arm handoff demo, and a fleet conformance lane (`conformance/fixtures/fleet/`, 14 cases covering ground/air/water separation and the engaged-partners choreography). RFCs [0286](docs/rfcs/0286-multi-robot-fleet-addressing.md), [0290](docs/rfcs/0290-frame-transform-graph.md), [0291](docs/rfcs/0291-utm-strategic-deconfliction.md).
+- **`urml-edu-runtime`: fourth platform.** `RoboticalMartyAdapter` graduated to production (real-`martypy` API-surface CI gate), joining VEX V5, LEGO SPIKE, and Thymio.
+
+### Notes
+
+- All 17 in-repo packages (5 published on PyPI + 12 in-repo runtimes) bump 0.1.1 → 0.2.0 in lockstep.
+- This is **strategic** cross-robot deconfliction: static rejection of plans that would put two robots in one volume at one time, before execution. It is not a live collision-avoidance loop and not a building-scale traffic manager (that is Open-RMF's domain; URML composes above it).
+- The PyPI publish, the `v0.2.0` git tag, and the README/Tutorial-01 install-instruction flip follow [`RELEASING.md`](RELEASING.md) and are gated on the maintainer.
+
 ## [0.1.1] — 2026-05-26
 
 Patch release. Phase 1 maintenance since v0.1.0: the first outreach-feedback-driven adapter, two committed homepage diagrams with byte-exact guard tests, and the PyPI packaging fix that should have shipped earlier. No spec change (RFC-0039 sensor schema v0.2 remains in **Draft**); no breaking change.
