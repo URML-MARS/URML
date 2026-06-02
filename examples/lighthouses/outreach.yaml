@@ -251,7 +251,9 @@
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-05-22"
+      text: "Discourse channel touch (off-GitHub, surfaced to the ledger 2026-06-02): the founder opened the topic 'URML composition draft over ROS-Industrial drivers: does the manifest match?' on the OSRF / Open Robotics Discourse (discourse.openrobotics.org, Industrial robotics category), addressed to ROS-Industrial driver maintainers @mrobinson and @gavanderhoorn, framing URML as an Apache-2.0 intent-level spec composing over ROS-Industrial drivers (urml_ros2_runtime). No maintainer reply yet."
   claude_directives: []
-  next_action: "wait for ROS-Industrial Consortium feedback on RFC-0038 (institutional umbrella)"
-  notes: "institutional RFC — engagement at consortium level, not single repo"
+  next_action: "Two channels open for ROS-Industrial, both awaiting response: (1) GitHub RFC-0038 institutional-umbrella ask to @ros-industrial; (2) a Discourse technical thread (2026-05-22) on discourse.openrobotics.org to driver maintainers @mrobinson / @gavanderhoorn asking whether the URML manifest matches ROS-Industrial driver composition. Watch the Discourse thread; if a maintainer engages there, set response per enum and note which channel."
+  notes: "institutional RFC — engagement at consortium level, not single repo. The founder also runs a Discourse technical thread (manifest-composition question) against the same target; tracked as a comment on this row rather than a separate row (the Move-1 ledger is parity-locked to demo.py::LIGHTHOUSES)."
