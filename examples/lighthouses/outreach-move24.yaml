@@ -1,0 +1,494 @@
+# Move #24 outreach ledger. One row per target.
+#
+# Move #1 (outreach.yaml): 16 Tier-1 OEMs and component vendors, with
+# parity test in conformance/tests/test_outreach_ledger.py.
+#
+# Move #23 (outreach-move23.yaml): the ros2_control / actuation-control
+# stack (URML's Layer-1 HAL seam).
+#
+# Move #24 (this file): **simulation and digital-twin**. The layer where
+# an NL->validated-intent loop can run with zero hardware. URML's hermetic
+# demo posture (validate -> execute against a mock/sim) makes simulators a
+# natural substrate: validated English intent -> URML primitive -> a robot
+# entity in a simulator -> motion, no real robot in the loop. The
+# digital-twin half (Eclipse Ditto) treats URML's capability manifest as a
+# robot's capability twin.
+#
+# Already covered, NOT duplicated: MuJoCo (RFC-0060), Drake (RFC-0059),
+# Gazebo/OSRF (Move #1), NVIDIA Isaac Lab (RFC-0050), DeepMind
+# mujoco_playground (RFC-0144), AI2-THOR (RFC-0147), Webots (RFC-0234),
+# gz_ros2_control (Move #23 folded).
+#
+# Split: 10 live Tier-A posts (10 distinct orgs) + 13 folded/Tier-B/Tier-C
+# rows (sibling repos folded under their anchor, plus research sims and
+# closed/stale surfaces recorded with cause). Funnel-volume wave: it
+# materially grows the top-of-funnel toward the ~1000-potential target.
+#
+# Like Moves #2-#23, this file is NOT under the Move #1 parity test. It is
+# covered by the schema-v2 validator
+# (conformance/tests/test_outreach_ledger_schema_v2.py).
+#
+# Schema mirrors outreach-move23.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, tier, country,
+# sector, comments, claude_directives, next_action, notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none` is the
+# truthful default. Tier-A rows are DRAFTED (sent_at / posted_url empty)
+# until RFCs 0322-0331 land on main; then posted under idoco2003 and
+# reconciled. Folded / deferred rows are never posted (channel: deferred).
+
+# ============================================================
+# Tier A — live posts (drafted; post after RFCs land on main)
+# ============================================================
+
+- slug: genesis
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Genesis-Embodied-AI/Genesis (canonical name genesis-world; generative / differentiable physics + embodied-AI simulator; ~29,168 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02, very active). License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0322 drafted (Move #24 sim flagship). Not yet posted: waits until RFC-0322 lands on main, then a GitHub Issue under idoco2003 with the AI-authoring disclosure up front. Framed as URML's hermetic-demo vehicle (validated English -> primitive -> Genesis robot entity -> sim motion, no hardware)."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0322 merges, post the posts-move24.md Genesis body as an Issue on Genesis-Embodied-AI/Genesis under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+  notes: "Move #24 highest-momentum sim target. URML composes above: intent -> validated primitive -> Genesis entity. Differentiator: static validation vs the capability manifest + envelope before the sim steps. Manifest gaps queued as Spec RFCs (simulator-target class hint, sim-vs-real provenance marker). Cross-link RFC-0060 (MuJoCo), RFC-0234 (Webots). Origin INTL community. Verified 2026-06-02."
+
+- slug: nvidia-isaac-sim
+  rfc: 323
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "isaac-sim/IsaacSim (NVIDIA Omniverse robotics simulator, now open-sourced; ~3,345 stars, Issues AND Discussions enabled, not archived, last push 2026-03-31). License not SPDX-detected by gh (asked as an RFC question). NVIDIA (US)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0323 drafted (Move #24). DISTINCT from RFC-0050 (Isaac Lab, the RL framework): IsaacSim is the simulator app. Explicitly NOT a re-pitch of the NVIDIA relationship; RFC-0050 cross-linked. NVIDIA Warp folded into this engagement (no third NVIDIA thread). Post as a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0323 merges, post the posts-move24.md Isaac Sim body on isaac-sim/IsaacSim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep distinct from RFC-0050; do not re-pitch NVIDIA broadly."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML -> Isaac Sim via the ROS 2 bridge / Action Graph; manifest aligns with the USD robot description. Manifest gaps queued (USD-robot-description alignment, simulator-target class hint, shared with RFC-0322). NVIDIA already engaged via Isaac Lab (RFC-0050); this is the sim-app conversation. Warp folded (nvidia-warp row). Origin US. Verified 2026-06-02."
+
+- slug: o3de
+  rfc: 324
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "o3de/o3de (Open 3D Engine, Linux Foundation; ~9,257 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01, very active). The ROS 2 Robotics Gem lives in o3de/o3de-extras (folded row below). License Apache-2.0 / MIT dual (asked to confirm in the RFC). Linux Foundation."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0324 drafted (Move #24). LF-governed open 3D engine; the ROS 2 Robotics Gem (o3de-extras) is the robotics surface, named and folded into this thread. Post a GitHub Issue under idoco2003 after merge; ask whether o3de-extras is the better venue for Gem-specific follow-up."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0324 merges, post the posts-move24.md O3DE body on o3de/o3de under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If a maintainer routes to o3de-extras, fork the o3de-extras row to live."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML -> O3DE ROS 2 Gem simulated robot; manifest aligns with the imported URDF / spawnable. LF governance (clean, allied). o3de-extras folded. Manifest gap queued (simulator-target class hint). Cross-link RFC-0234 (Webots), RFC-0060 (MuJoCo). Origin INTL (Linux Foundation). Verified 2026-06-02."
+
+- slug: carla
+  rfc: 325
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "carla-simulator/carla (open autonomous-driving simulator; ~14,022 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02, very active). License not SPDX-detected by gh (understood MIT; asked as an RFC question). CARLA community (origin CVC Barcelona / Intel; INTL)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0325 drafted (Move #24). AV-domain simulator: URML mobility (ackermann / max_velocity) + perception (cameras, sensors) subset maps to a CARLA vehicle/actor + sensor suite. Honest AV-subset framing (no full driving profile yet). Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0325 merges, post the posts-move24.md CARLA body on carla-simulator/carla under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML -> CARLA actor control via the Python API or ROS bridge; perception manifest aligns with CARLA sensors. AV is a robotics subset; URML has no driving profile yet (queued Spec RFC: driving/road profile + traffic-rule envelope). Cross-link RFC-0006 (link-role boundary), RFC-0200 (ROS bridge). Origin INTL. Verified 2026-06-02."
+
+- slug: unity-robotics-hub
+  rfc: 326
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Unity-Technologies/Unity-Robotics-Hub (Unity <-> ROS bridge: ROS-TCP-Connector + URDF-Importer; ~2,523 stars, Issues enabled, Discussions DISABLED, not archived, BUT last push 2024-11-26, ~1.5 yr stale). License not SPDX-detected by gh (asked). Unity Technologies (US)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0326 drafted (Move #24). Staleness (last push 2024-11) flagged up front and as an explicit drawback: the post leads with a maintenance-status / right-venue check. Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0326 merges, post the posts-move24.md Unity Robotics Hub body on Unity-Technologies/Unity-Robotics-Hub under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If the project is confirmed dormant, record and do not chase."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d. Dormancy is a real risk; a maintenance-status reply (even 'unmaintained') is a useful signal. Set response per enum on reply."
+  notes: "Move #24. URML -> Unity-simulated robot via ROS-TCP-Connector; URDF-Importer aligns with the manifest. Staleness acknowledged (NAOqi RFC-0237 precedent for stale-substrate framing). Cross-link RFC-0200 (ROS bridge), RFC-0234 (Webots). Origin US. Verified 2026-06-02."
+
+- slug: habitat
+  rfc: 327
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "facebookresearch/habitat-sim (high-performance embodied-AI simulator; ~3,696 stars, Issues enabled, Discussions DISABLED, not archived, active, last push 2026-05-07). The task/training layer facebookresearch/habitat-lab (~3,000 stars) is folded into this thread (row below). License not SPDX-detected by gh (understood MIT; asked). Meta / FAIR (US)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0327 drafted (Move #24). Embodied-AI navigation/interaction sim. Honest lower-bound subset (navigation-and-perception-first, not full manipulation) per the RFC-0014 honest-substrate-limit norm. habitat-lab named and folded. Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0327 merges, post the posts-move24.md Habitat body on facebookresearch/habitat-sim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to habitat-lab, fork that row to live."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML navigation/interaction subset (move_to, scan, detect, measure, report) -> a Habitat agent's actions. Cross-link RFC-0147 (AI2-THOR, sibling embodied-AI sim), RFC-0234 (Webots). Manifest gap queued (embodied-agent / scene-dataset profile). habitat-lab folded. Origin US (Meta). Verified 2026-06-02."
+
+- slug: project-chrono
+  rfc: 328
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "projectchrono/chrono (high-fidelity multibody / multi-physics engine; Chrono::Vehicle terramechanics + Chrono::Sensor; ~2,865 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02, very active). License not SPDX-detected by gh (understood BSD-3-Clause; asked). UW-Madison / U. Parma academic project."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0328 drafted (Move #24). High-fidelity pre-deployment validation angle: validated URML intent simulated against rough-terrain / vehicle dynamics before real deployment. PyChrono / ROS boundary. Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0328 merges, post the posts-move24.md Project Chrono body on projectchrono/chrono under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML mobility (tracked / ackermann / max_payload) -> a Chrono vehicle model; perception -> Chrono::Sensor. The high-fidelity-validation use case. Cross-link RFC-0059 (Drake), RFC-0060 (MuJoCo). Manifest gaps queued (terramechanics fidelity hint, simulator-target class hint). Origin US (UW-Madison; UW + Parma). Verified 2026-06-02."
+
+- slug: brax
+  rfc: 329
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "google/brax (JAX-based massively-parallel differentiable physics for RL; ~3,175 stars, Issues AND Discussions enabled, not archived, last push 2026-05-18). License not SPDX-detected by gh (understood Apache-2.0; asked). Google (US)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0329 drafted (Move #24). Train-in-sim angle: URML is the intent/spec layer ABOVE a learned controller; a Brax-trained policy becomes a substrate URML dispatches to, bounded by the capability manifest + envelope. Honest that learned-controller-as-substrate is newer ground for URML. Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0329 merges, post the posts-move24.md Brax body on google/brax under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24. URML primitive <-> Brax env action/obs; manifest bounds what the trained policy may attempt. Cross-link RFC-0060 (MuJoCo), RFC-0144 (mujoco_playground, MJX-based RL sibling). Manifest gaps queued (learned-controller / policy-substrate declaration, RL-env alignment). Origin US (Google). Verified 2026-06-02."
+
+- slug: eclipse-ditto
+  rfc: 330
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "eclipse-ditto/ditto (IoT digital-twin framework; Thing/Feature model + state/twin API; ~887 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01). License not SPDX-detected by gh (understood EPL-2.0; asked). Eclipse Foundation (INTL; sibling Eclipse engagements: iceoryx RFC-0210/0305, Zenoh RFC-0209)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: middleware
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0330 drafted (Move #24 DIGITAL-TWIN anchor, conceptually distinct from the simulators). URML's capability manifest IS a robot's capability twin; maps to a Ditto Thing's Features. URML static validation complements Ditto's runtime twin. Raises W3C WoT Thing Description alignment. Post a GitHub Issue under idoco2003 after merge; the Eclipse Foundation already knows URML (light mention)."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0330 merges, post the posts-move24.md Eclipse Ditto body on eclipse-ditto/ditto under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. EPL-2.0 vs Apache-2.0 is cross-citation, not vendoring; state that."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24 digital-twin half. URML capability manifest <-> Ditto Thing/Feature model; the twin is a validation target. WoT TD alignment raised. Cross-link RFC-0004 (provenance on a twin), RFC-0286 (a fleet is many twins). Manifest gaps queued (WoT-TD / Thing-model alignment, twin-sync hint). Eclipse Foundation governance (INTL, allied). Verified 2026-06-02."
+
+- slug: gymnasium
+  rfc: 331
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Farama-Foundation/Gymnasium (the de-facto RL environment API standard; ~11,985 stars, Issues AND Discussions enabled, not archived, last push 2026-05-30). Sibling Farama repos PettingZoo (multi-agent) + Gymnasium-Robotics folded (row below). License not SPDX-detected by gh (understood MIT; asked). Farama Foundation (US non-profit)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: US
+  sector: conceptual-peer
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0331 drafted (Move #24 conceptual peer, NOT a simulator). Gymnasium is the RL env API; URML is an intent/spec layer above it. Framed as conceptual-peer + possible-adapter, honestly exploratory (different layers). PettingZoo tied to fleet RFC-0286. Post a GitHub Issue under idoco2003 after merge."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0331 merges, post the posts-move24.md Gymnasium body on Farama-Foundation/Gymnasium under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep the framing exploratory; do not overclaim a substrate mapping."
+      status: pending
+  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+  notes: "Move #24 conceptual peer. Two directions: a URML-validated policy exposing a Gym env; a manifest bounding a Gym action space to the declared-safe subset. PettingZoo (multi-agent) <-> URML fleet (RFC-0286). Cross-link RFC-0329 (Brax uses the Gym-style API). Manifest gap queued (RL-env / action-space alignment). Origin US (Farama). Verified 2026-06-02."
+
+# ============================================================
+# Tier B — folded under an anchor (no separate post)
+# ============================================================
+
+- slug: o3de-extras
+  rfc: 324
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "o3de/o3de-extras (~81 stars, Issues + Discussions enabled, active). Home of the O3DE ROS 2 Robotics Gem. Same org / maintainer community as the RFC-0324 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0324 O3DE anchor. The ROS 2 Robotics Gem lives here; named in the anchor Issue. Fork to a live row only if a maintainer routes the Gem-specific follow-up to this repo."
+  claude_directives: []
+  next_action: "no separate post. Engagement rides RFC-0324."
+  notes: "Move #24 folded sibling. The O3DE robotics surface; URML maps onto the Gem named in the anchor. Origin INTL (Linux Foundation). Verified 2026-06-02."
+
+- slug: habitat-lab
+  rfc: 327
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "facebookresearch/habitat-lab (~3,000 stars, Issues enabled, active). The task / training layer above habitat-sim. Same org as the RFC-0327 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0327 Habitat anchor. habitat-sim is the engine, habitat-lab the tasks; named in the anchor Issue, with a question about which is the right integration surface."
+  claude_directives: []
+  next_action: "no separate post. Engagement rides RFC-0327. Fork if maintainers route to habitat-lab."
+  notes: "Move #24 folded sibling. The Habitat task layer. Origin US (Meta). Verified 2026-06-02."
+
+- slug: nvidia-warp
+  rfc: 323
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "NVIDIA/warp (~6,720 stars, Issues + Discussions enabled, active). Differentiable-simulation kernel library. NVIDIA. Folded to avoid a third NVIDIA thread (Isaac Lab RFC-0050 + Isaac Sim RFC-0323 already)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0323 Isaac Sim engagement. NVIDIA is already engaged via Isaac Lab (RFC-0050) and Isaac Sim (RFC-0323); a third NVIDIA thread would be over-touch. Warp is a low-level sim kernel lib, below URML's mapping altitude. Recorded for coverage."
+  claude_directives: []
+  next_action: "no post. NVIDIA engagement rides RFC-0050 / RFC-0323. Recorded for completeness."
+  notes: "Move #24 folded (NVIDIA over-touch avoidance). Differentiable sim kernels; no direct URML mapping surface. Origin US. Verified 2026-06-02."
+
+- slug: farama-pettingzoo-gym-robotics
+  rfc: 331
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Farama-Foundation/PettingZoo (multi-agent RL API) + Farama-Foundation/Gymnasium-Robotics (robotics RL envs). Same Farama org / maintainer community as the RFC-0331 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: conceptual-peer
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0331 Gymnasium anchor. PettingZoo (multi-agent) is named in the anchor Issue with the URML-fleet (RFC-0286) tie; Gymnasium-Robotics is the robotics env collection. One Farama thread, not three."
+  claude_directives: []
+  next_action: "no separate post. Engagement rides RFC-0331."
+  notes: "Move #24 folded siblings. PettingZoo <-> URML fleet (RFC-0286); Gymnasium-Robotics is the robotics env set. Origin US (Farama). Verified 2026-06-02."
+
+- slug: sapien-maniskill
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "haosulab/SAPIEN (physical sim engine; ~770 stars, active) + haosulab/ManiSkill (manipulation benchmark on SAPIEN; ~2,943 stars, active). Hao Su Lab, UC San Diego. Issues + Discussions enabled."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded; graduate to its own RFC on demand. Research manipulation sim (SAPIEN engine + ManiSkill benchmark). Lower priority than the 10 Tier-A posts; documented for the funnel and for a later wave if manipulation-sim demand surfaces."
+  claude_directives: []
+  next_action: "no post yet. Graduate to a live RFC (sim wave) if manipulation-sim engagement is prioritized. Verify surface at draft time."
+  notes: "Move #24 Tier B. SAPIEN/ManiSkill, MuJoCo-class research manipulation sim. URML mapping would mirror the Genesis/Habitat shape. Origin US (UCSD). Verified 2026-06-02."
+
+- slug: robosuite
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ARISE-Initiative/robosuite (MuJoCo-based manipulation simulation framework; ~2,442 stars, Issues enabled, active). ARISE Initiative (US academic)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded. MuJoCo-based (URML already engaged MuJoCo, RFC-0060), so robosuite rides the MuJoCo substrate conceptually. Graduate to its own RFC only if manipulation-benchmark engagement is prioritized."
+  claude_directives: []
+  next_action: "no post yet. Recorded; graduate on demand."
+  notes: "Move #24 Tier B. robosuite sits on MuJoCo (RFC-0060). Origin US. Verified 2026-06-02."
+
+- slug: behavior-1k-omnigibson
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "StanfordVL/BEHAVIOR-1K (embodied-AI benchmark; OmniGibson simulator inside; ~1,491 stars, Issues + Discussions enabled, active). Stanford Vision and Learning Lab."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded. Embodied-AI benchmark (BEHAVIOR-1K) with the OmniGibson sim; overlaps the Habitat / AI2-THOR embodied-AI surface (RFC-0327 / RFC-0147). Graduate on demand."
+  claude_directives: []
+  next_action: "no post yet. Recorded; graduate on demand if the embodied-AI-benchmark line is prioritized."
+  notes: "Move #24 Tier B. BEHAVIOR-1K / OmniGibson, embodied-AI benchmark + sim. Origin US (Stanford). Verified 2026-06-02."
+
+- slug: airsim-cosys
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "Cosys-Lab/Cosys-AirSim (maintained AirSim successor; ~369 stars, Issues + Discussions enabled, active, last push 2026-05-19; University of Antwerp BE). Origin microsoft/AirSim (~18,210 stars) is widely cited but Microsoft moved to closed Project AirSim; the Cosys fork is the live open surface."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: BE
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded; strong candidate to graduate. AirSim (Unreal-based drone/car sim) has large mindshare but microsoft/AirSim is effectively superseded by closed Project AirSim; Cosys-AirSim (U. Antwerp) is the maintained open fork. Engage the fork, not the Microsoft repo, when graduated."
+  claude_directives: []
+  next_action: "no post yet. Graduate to a live RFC targeting Cosys-Lab/Cosys-AirSim (NOT microsoft/AirSim) if drone/AV-sim engagement is prioritized."
+  notes: "Move #24 Tier B. Cosys-AirSim is the live AirSim lineage (BE, allied); microsoft/AirSim is the deprecated origin. Verify isArchived / Project-AirSim status at draft time. Verified 2026-06-02."
+
+- slug: argos3
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ilpincy/argos3 (multi-robot / swarm-robotics simulator; ~309 stars, Issues enabled, last push 2026-02-12). Carlo Pinciroli (WPI US / IRIDIA; INTL)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded. Swarm-robotics sim; ties to URML's multi-robot fleet work (RFC-0286). Niche but distinct; graduate to its own RFC if a swarm/fleet-sim line is prioritized."
+  claude_directives: []
+  next_action: "no post yet. Graduate on demand; natural cross-link to RFC-0286 (fleet)."
+  notes: "Move #24 Tier B. ARGoS swarm sim; fleet-adjacent (RFC-0286). Origin INTL. Verified 2026-06-02."
+
+- slug: dart
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "dartsim/dart (Dynamic Animation and Robotics Toolkit; physics engine underlying Gazebo; ~1,095 stars, Issues + Discussions enabled, active). Georgia Tech lineage."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Tier B, recorded. DART is a physics-engine library (below the simulator-front-end altitude URML maps onto), and underlies Gazebo (already engaged via OSRF, Move #1). Recorded for coverage; low independent-mapping value."
+  claude_directives: []
+  next_action: "no post. Library altitude; recorded for completeness."
+  notes: "Move #24 Tier B. DART physics lib (under Gazebo). Origin US (Georgia Tech). Verified 2026-06-02."
+
+# ============================================================
+# Tier C — deferred with cause (recorded, never contacted)
+# ============================================================
+
+- slug: coppeliasim
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED. CoppeliaSim (formerly V-REP; Coppelia Robotics, Switzerland) is a widely used robotics simulator, but the core is closed-source / freemium. The open surface is the ZeroMQ / ROS 2 remote-API repos, not the simulator itself."
+  last_touch: "2026-06-02"
+  response: none
+  tier: C
+  country: CH
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Deferred: the CoppeliaSim core is closed-source. If engagement is prioritized, target the open remote-API repos (CoppeliaRobotics ZeroMQ / ROS 2 interface), verify the surface, and engage there, not the closed simulator. Not contacted."
+  claude_directives: []
+  next_action: "no post. Closed core. If prioritized, verify and target the open remote-API repo only."
+  notes: "Move #24 deferred-with-cause. CoppeliaSim closed core; open surface is the remote-API repos. Origin CH (allied). Verified 2026-06-02."
+
+- slug: pybullet-bullet3
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED (venue). bulletphysics/bullet3 (PyBullet; ~13k stars upstream) is widely used, but the upstream repo has Issues DISABLED and directs support to the Bullet forums / Discord. No clean GitHub-Issue surface for an outreach post."
+  last_touch: "2026-06-02"
+  response: none
+  tier: C
+  country: US
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Deferred on venue: the upstream bullet3 repo disables Issues and routes to the Bullet forum / Discord. A cold forum post is low-yield and off the GitHub-Issue pattern. If PyBullet engagement is prioritized, route via the forum as a founder-action, not a repo Issue. Not contacted."
+  claude_directives: []
+  next_action: "no GitHub Issue (disabled upstream). Optional founder-action via the Bullet forum if prioritized."
+  notes: "Move #24 deferred-with-cause (venue). PyBullet/bullet3 Issues disabled upstream. Origin US. Verified 2026-06-02 (Issues-disabled documented)."
+
+- slug: flightmare
+  rfc: 322
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED (stale). uzh-rpg/flightmare (drone simulator; ~1,364 stars, Issues enabled) last pushed 2024-06-14, roughly two years stale. University of Zurich RPG."
+  last_touch: "2026-06-02"
+  response: none
+  tier: C
+  country: CH
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Deferred: flightmare is ~2 years stale (last push 2024-06). Cold outreach to a dormant research repo is low-yield (PROS/abandonment-signal precedents). Recorded; revisit only if the project revives. Not contacted."
+  claude_directives: []
+  next_action: "no post (stale). Revisit only if the repo revives."
+  notes: "Move #24 deferred-with-cause (stale). Flightmare drone sim, dormant since 2024-06. Origin CH (UZH). Verified 2026-06-02."
