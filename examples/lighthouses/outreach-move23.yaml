@@ -1,0 +1,231 @@
+# Move #23 outreach ledger. One row per target.
+#
+# Move #1 (outreach.yaml): 16 Tier-1 OEMs and component vendors, with
+# parity test in conformance/tests/test_outreach_ledger.py.
+#
+# Move #16 (outreach-move16.yaml): the substrate spine (ROS 2 core, DDS,
+# SLAM, autopilots).
+#
+# Move #23 (this file): **the ros2_control / actuation-control stack** —
+# the hardware-interface + motion-control layer Move #16 deliberately
+# skipped. This is where URML's Layer-1 Hardware Abstraction
+# (spec/layer-1-hal/v0.1.0.md) actually lands on actuators: the seam
+# between a controller and a real (or simulated) drive.
+#
+# Altitude discipline: the `ros-controls` GitHub org owns most of the
+# relevant repos. Posting 4+ Issues into one org in a day is exactly the
+# pattern that has drawn AI-content closes (OVOS / LibreTranslate / QGC /
+# Sensirion). So this wave LEADS with one anchor Issue on ros2_control
+# (RFC-0319) that names the whole framework family, FOLDS the sibling
+# ros-controls repos and the underlying fieldbus libs into the anchor /
+# their driver thread, and gives a separate live post only to genuinely
+# DISTINCT orgs + mappings: the EtherCAT driver (ICube-Robotics, RFC-0320)
+# and the CANopen driver (ros-industrial, RFC-0321).
+#
+# Already covered, NOT duplicated: ROS 2 core (RFC-0200), MoveIt 2
+# (RFC-0202), MoveIt Task Constructor (RFC-0162), ODrive (0169), moteus
+# (0170), SimpleFOC (0179), VESC (0180), Dynamixel (0104), ODRI (0076),
+# Trinamic (0171). ros2_control composes ABOVE the motor controllers and
+# BELOW MoveIt; that is the framing.
+#
+# Split: 3 live Tier-A posts (3 distinct orgs) + 5 folded/recorded Tier-B
+# (ros-controls siblings + the fieldbus master libs) + 1 deferred Tier-C
+# (ETG consortium, no GitHub).
+#
+# Like Moves #2-#22, this file is NOT under the Move #1 parity test. It is
+# covered by the schema-v2 validator
+# (conformance/tests/test_outreach_ledger_schema_v2.py).
+#
+# Schema mirrors outreach-move21.yaml. Fields: slug, rfc, sent_at,
+# posted_url, channel, contact, last_touch, response, tier, country,
+# sector, comments, claude_directives, next_action, notes.
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none` is the
+# truthful default. The Tier-A rows are DRAFTED, not yet sent (sent_at and
+# posted_url empty): posting waits until RFCs 0319-0321 land on `main`,
+# then the founder / an authorized session posts under idoco2003 and
+# reconciles sent_at / posted_url / a comment per row. Folded and deferred
+# rows are never posted (channel: deferred).
+
+# ============================================================
+# Tier A — live posts (drafted; post after RFCs land on main)
+# ============================================================
+
+- slug: ros2-control
+  rfc: 319
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ros-controls/ros2_control (the controls framework anchor: hardware_interface + controller_manager + resource_manager; ~909 stars, Issues enabled, Discussions DISABLED, not archived, last push 2026-06-01). Design questions route to Issues / the ROS Control Working Group. License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0319 drafted (Move #23 anchor). Not yet posted: waits until RFC-0319 lands on main, then a GitHub Issue under idoco2003 with the AI-authoring disclosure up front. Anchor for the whole ros-controls family; ros2_controllers / gz_ros2_control / control_toolbox / realtime_tools / control_msgs / kinematics_interface ride this thread (folded rows below)."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0319 merges to main, post the posts-move23.md ros2_control body as an Issue on ros-controls/ros2_control under idoco2003; then set sent_at / posted_url / last_touch and add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge (Issue on ros-controls/ros2_control). Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum. If a maintainer wants a sibling repo on its own thread, fork a dedicated ledger row."
+  notes: "Move #23 anchor; URML's Layer-1 HAL seam. URML composes ABOVE: intent -> validated primitives -> ros2_control controllers / command interfaces -> hardware. Differentiator over the framework: static validation against the capability manifest + safety envelope BEFORE any command interface is claimed (complements resource_manager's runtime arbitration). Surfaces queued Spec RFCs (per-joint command/state-interface declaration, controller-type declaration, distro/version declaration) for separate follow-up; none proposed in the outreach RFC. Cross-link RFC-0200 (parent), RFC-0202 (MoveIt above), RFC-0320/0321 (fieldbus below). Origin community/multi-national. Verified 2026-06-02."
+
+- slug: ethercat-driver-ros2
+  rfc: 320
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ICube-Robotics/ethercat_driver_ros2 (a ros2_control SystemInterface for EtherCAT modules; ~308 stars, Issues AND Discussions enabled, not archived, last push 2026-03-06). ICube Laboratory robotics group, University of Strasbourg (FR). License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: FR
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0320 drafted (Move #23, EtherCAT fieldbus beneath ros2_control). Not yet posted: waits until RFC-0320 lands on main, then a GitHub Issue (or Discussion; the repo has both) under idoco2003 with the AI-authoring disclosure up front. OpenEtherCATsociety/SOEM (the master lib underneath) is folded into this thread (row below)."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0320 merges to main, post the posts-move23.md ethercat_driver_ros2 body on ICube-Robotics/ethercat_driver_ros2 under idoco2003; then set sent_at / posted_url / last_touch and add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "post after merge (Issue or Discussion on ICube-Robotics/ethercat_driver_ros2). Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum; capture the license answer in contact/notes once given."
+  notes: "Move #23 fieldbus-substrate, distinct from the anchor (different org, real-time-bus mapping). ros2_control-native, so the RFC-0319 primitive -> controller -> command-interface path carries through; the added concern is the bus (PDO/SDO, distributed clocks) which stays Layer 0 (RFC-0006 line). Grounds the substrate-neutrality claim at the hardest real-time end. SOEM folded (row below). Cross-link RFC-0319 (anchor), RFC-0321 (CANopen peer). Origin FR (ICube / U. Strasbourg), NATO-allied. Verified 2026-06-02."
+
+- slug: ros2-canopen
+  rfc: 321
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ros-industrial/ros2_canopen (CANopen driver framework presenting a ros2_control SystemInterface; CiA-402 motion-control profile; ~278 stars, Issues enabled, Discussions DISABLED, not archived, last push 2026-06-01). ROS-Industrial consortium. License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "RFC-0321 drafted (Move #23, CANopen fieldbus beneath ros2_control). Not yet posted: waits until RFC-0321 lands on main, then a GitHub Issue under idoco2003 with the AI-authoring disclosure up front. Framed as the ros2_canopen device-profile mapping specifically, NOT a re-pitch of the ROS-Industrial consortium (RFC-0038 cross-linked). CANopenNode (the stack underneath) is folded into this thread (row below)."
+  claude_directives:
+    - date: "2026-06-02"
+      text: "After RFC-0321 merges to main, post the posts-move23.md ros2_canopen body on ros-industrial/ros2_canopen under idoco2003; then set sent_at / posted_url / last_touch and add a posted comment; refresh outreach.db. Do NOT re-pitch the ROS-Industrial consortium (that is RFC-0038); keep this to the ros2_canopen mapping."
+      status: pending
+  next_action: "post after merge (Issue on ros-industrial/ros2_canopen). Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+  notes: "Move #23 fieldbus-substrate; completes the EtherCAT+CANopen pair under one ros2_control framing (two buses, one abstraction = substrate-neutrality data point). DISTINCT repo/conversation from the consortium-level RFC-0038 touch; cross-linked, not re-opened. CiA-402 object dictionaries / node IDs stay Layer 0. CANopenNode folded (row below). Cross-link RFC-0319 (anchor), RFC-0320 (EtherCAT peer), RFC-0038 (consortium, do-not-re-pitch). Origin ROS-Industrial consortium (US + allied). Verified 2026-06-02."
+
+# ============================================================
+# Tier B — recorded, folded under an anchor (no separate post)
+# ============================================================
+
+- slug: ros2-controllers
+  rfc: 319
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ros-controls/ros2_controllers (the controller library accompanying ros2_control: joint_trajectory_controller, diff_drive_controller, gripper_action_controller, forward_command_controller, ...; ~769 stars, Issues enabled, not archived, last push 2026-06-02). Same maintainer community as the RFC-0319 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: INTL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0319 ros2_control anchor (same org, same maintainer community). Not posted separately to avoid carpet-bombing the ros-controls org. The controllers are where a URML primitive's motion goal actually executes; named explicitly in the anchor Issue body."
+  claude_directives: []
+  next_action: "no separate post. Engagement rides RFC-0319. Fork a dedicated row only if a maintainer asks for a controllers-specific thread."
+  notes: "Move #23 folded sibling. The realizer layer below the framework: URML primitive -> ros2_controllers controller -> command interface. Recorded for completeness; engagement rides RFC-0319. Origin community/multi-national. Verified 2026-06-02."
+
+- slug: gz-ros2-control
+  rfc: 319
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ros-controls/gz_ros2_control (connects Gazebo to ros2_control; the simulation-side hardware interface; ~250 stars, Issues enabled, not archived, last push 2026-06-01). Same org as the RFC-0319 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: INTL
+  sector: simulator
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0319 ros2_control anchor (same org). The natural vehicle for a hermetic URML demo (validated intent -> controller -> simulated hardware, no real robot). Raised as question 4 in the RFC-0319 Issue rather than as a separate post."
+  claude_directives: []
+  next_action: "no separate post. Engagement rides RFC-0319 (it is the hermetic-demo question there). Fork a row if the maintainers want a sim-specific thread or if URML ships a gz_ros2_control demo fixture."
+  notes: "Move #23 folded sibling; the sim-side hardware interface. Strongest fit for URML's hermetic-demo posture (mock_components / gz_ros2_control), so it is the demo-vehicle question in RFC-0319 rather than its own post. Origin community/multi-national. Verified 2026-06-02."
+
+- slug: ros-controls-support-libs
+  rfc: 319
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "ros-controls support libraries: control_toolbox (PID / filters), realtime_tools (realtime-safe primitives), control_msgs (message definitions), kinematics_interface (kinematics plugin interface), ros2_control_demos (examples). All under the ros-controls org, same maintainer community as the RFC-0319 anchor."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: INTL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0319 ros2_control anchor. These are the infrastructure libs around the framework; URML maps onto the framework, not directly onto them. Recorded as one row to keep the ledger honest about coverage without spamming five more Issues at one org."
+  claude_directives: []
+  next_action: "no post. Engagement rides RFC-0319. Recorded for research/coverage completeness."
+  notes: "Move #23 folded siblings (one combined row). control_toolbox / realtime_tools / control_msgs / kinematics_interface / ros2_control_demos. No independent URML mapping surface; they support the framework RFC-0319 maps onto. Origin community/multi-national. Verified 2026-06-02."
+
+- slug: soem
+  rfc: 320
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OpenEtherCATsociety/SOEM (Simple Open EtherCAT Master; the master library ethercat_driver_ros2 builds on; ~1960 stars, Issues enabled, not archived, last push 2026-02-26). Open EtherCAT Society (NL origin, rt-labs lineage)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: NL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0320 ethercat_driver_ros2 thread. SOEM is the EtherCAT master beneath the ROS 2 driver; URML's primitive -> command-interface mapping lands at the driver, not the master lib. Recorded so the stack is tracked. License differs from the driver (asked only if engagement forks here)."
+  claude_directives: []
+  next_action: "no post. Engagement rides RFC-0320. Fork a row + verify SOEM's license only if a maintainer routes URML to the master-lib layer."
+  notes: "Move #23 folded sibling under RFC-0320. The EtherCAT master library; Layer-0-adjacent. URML does not map onto SOEM directly. Origin NL (Open EtherCAT Society). Verified 2026-06-02."
+
+- slug: canopennode
+  rfc: 321
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "CANopenNode/CANopenNode (open CANopen protocol stack; ~1900 stars, Issues enabled, not archived, last push 2025-11-22). Maintained by Janez Paternoster (SI lineage)."
+  last_touch: "2026-06-02"
+  response: none
+  tier: B
+  country: SI
+  sector: protocol-substrate
+  comments:
+    - date: "2026-06-02"
+      text: "Folded under the RFC-0321 ros2_canopen thread. CANopenNode is the CANopen protocol stack beneath the ROS 2 driver; URML maps onto the driver's ros2_control command interfaces, not the stack. Recorded for completeness."
+  claude_directives: []
+  next_action: "no post. Engagement rides RFC-0321. Fork a row only if a maintainer routes URML to the protocol-stack layer."
+  notes: "Move #23 folded sibling under RFC-0321. The CANopen protocol stack; Layer-0-adjacent. URML does not map onto it directly. Origin SI. Verified 2026-06-02."
+
+# ============================================================
+# Tier C — deferred with cause (recorded, never contacted)
+# ============================================================
+
+- slug: ethercat-technology-group
+  rfc: 320
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "DEFERRED. EtherCAT Technology Group (ETG, Nuremberg DE) is the membership consortium that owns the EtherCAT standard. No public GitHub surface; engagement would be a membership/standards-body email, not a repo thread."
+  last_touch: "2026-06-02"
+  response: none
+  tier: C
+  country: DE
+  sector: governance-body
+  comments:
+    - date: "2026-06-02"
+      text: "Deferred: ETG is a standards consortium with no GitHub surface. URML's EtherCAT engagement lands at the open driver (RFC-0320, ICube-Robotics), not the standards body. Optional founder-action: a courtesy note to ETG only if a deployment-level conversation ever needs the standard body in the loop. Per the Move #17 governance-body posture, do not over-invest in consortium membership pre-launch."
+  claude_directives: []
+  next_action: "no post (no GitHub). Optional founder-action courtesy email only if a real deployment surfaces a standards-body need. Recorded for completeness."
+  notes: "Move #23 deferred-with-cause. The EtherCAT standards consortium (DE). No public dev surface; engagement is at the driver layer (RFC-0320). Governance-body, allied origin. Verified 2026-06-02 (absence of a GitHub surface documented)."
