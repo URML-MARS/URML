@@ -173,7 +173,7 @@
   posted_url: "https://github.com/BehaviorTree/BehaviorTree.CPP/discussions/1147"
   channel: discussion
   contact: "BehaviorTree/BehaviorTree.CPP (MIT, 4.0k stars, Issues + Discussions both enabled, last commit 2026-05-22, **not archived**). Canonical C++ behavior-tree engine in robotics. Maintainer Davide Faconti. Origin IT (EU)."
-  last_touch: "2026-06-01"
+  last_touch: "2026-06-02"
   response: engaged
   tier: A
   country: IT
@@ -181,8 +181,10 @@
   comments:
     - date: "2026-06-01"
       text: "Community member (authorAssociation NONE, **not a BT maintainer**) commented enthusiastically: working on machine authoring + robotic workcell composition with URDF + USD (what exists in the workcell, how it's laid out, what machines can do), and sees URML + BT as answering 'how those things actually do the things' and 'how I create a sequence to execute them'. Did not answer the six maintainer questions in the RFC."
+    - date: "2026-06-02"
+      text: "@hxgndevbyday replied to our 2026-06-01 answer: will dig in soon, has the boilerplate to describe machine capabilities but not yet the actual 'what can this do?' descriptions, and 'will try to keep an eye on generating URML manifest'. Explicitly hopes maintainer Davide (Faconti) takes a moment on the thread. Warm continued community engagement; no direct question to us; maintainer still not engaged."
   claude_directives: []
-  next_action: "**Engaged 2026-06-01** (community-level). First response on discussion #1147 came from @hxgndevbyday, a community member (association NONE), not maintainer Davide Faconti — a genuine interested potential user with an adjacent URDF+USD workcell-authoring use case, but the six maintainer questions (runtime-slug, BT-XML schema version, custom-node registry, Groot-2 boundary, adapter home) remain open. Replied 2026-06-01 (discussioncomment-17139966): positioned URML Layer-3 as the intent/sequencing layer above BT, framed the capability manifest as the seam to their USD/URDF world, and asked what their machine-capability description looks like today. Maintainer engagement still pending."
+  next_action: "**Engaged 2026-06-01** (community-level). First response on discussion #1147 came from @hxgndevbyday, a community member (association NONE), not maintainer Davide Faconti — a genuine interested potential user with an adjacent URDF+USD workcell-authoring use case, but the six maintainer questions (runtime-slug, BT-XML schema version, custom-node registry, Groot-2 boundary, adapter home) remain open. Replied 2026-06-01 (discussioncomment-17139966): positioned URML Layer-3 as the intent/sequencing layer above BT, framed the capability manifest as the seam to their USD/URDF world, and asked what their machine-capability description looks like today. @hxgndevbyday replied 2026-06-02 (will try to generate a URML manifest, hopes Davide engages); answered 2026-06-02 (discussioncomment-17150743) with an encouraging nudge + offer to help map their capability list to a manifest. Maintainer (Faconti) engagement still pending."
   notes: "Tier A. Origin IT (pass — EU allied). The de facto C++ BT engine; URML Layer-3 angle is strong; substrate-neutral fit (BehaviorTree.CPP runs on ROS 2 and standalone). First robot-command-library RFC to draw a community-user response (vs maintainer)."
 
 - slug: py-trees
