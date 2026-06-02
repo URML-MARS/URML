@@ -49,8 +49,8 @@
 
 - slug: robot-localization
   rfc: 332
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/cra-ros-pkg/robot_localization/issues/972"
   channel: github_issue
   contact: "cra-ros-pkg/robot_localization (the canonical ROS EKF/UKF sensor-fusion and state-estimation package, Tom Moore; ~1,899 stars, Issues enabled, Discussions disabled, not archived, last push 2026-04-30). License not SPDX-detected by gh (understood BSD; asked as an RFC question). ROS community (INTL)."
   last_touch: "2026-06-02"
@@ -60,18 +60,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0332 drafted (Move #25 WAVE ANCHOR). robot_localization produces the fused pose + REP-105 transforms URML's frames / declared_locations are expressed against; URML declares the localization source, consumes the estimate, validates before dispatch. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #972 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0332 merges, post the posts-move25.md robot_localization body as an Issue on cra-ros-pkg/robot_localization under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+      status: done
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
   notes: "Move #25 anchor. URML consumes the state estimate; differentiator is static validation vs the declared world model + envelope before motion. Manifest gaps queued as Spec RFCs (localization/pose-source declaration, REP-105 frame-convention alignment, covariance/quality envelope threshold). Cross-link RFC-0290 (frames), RFC-0006, Move-16 SLAM RFCs (0205-0207, 0211). Origin INTL (ROS community). Verified 2026-06-02."
 
 - slug: gtsam
   rfc: 333
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/borglab/gtsam/issues/2557"
   channel: github_issue
   contact: "borglab/gtsam (factor-graph optimization backend, Georgia Tech Borg Lab / Frank Dellaert; ~3,499 stars, Issues AND Discussions enabled, not archived, last push 2026-05-29). License not SPDX-detected by gh (understood BSD; asked). US."
   last_touch: "2026-06-02"
@@ -81,18 +81,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-02"
-      text: "RFC-0333 drafted (Move #25). Honest lowest-direct-fit framing: GTSAM is the factor-graph backend many SLAM/estimation systems run on; URML does not map onto it directly, it benefits because the estimate ultimately grounds URML's frames. Ecosystem / boundary-clarification touch. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #2557 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0333 merges, post the posts-move25.md GTSAM body on borglab/gtsam under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep claims modest (backend, below URML's altitude)."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 backend touch (lowest direct fit, stated honestly). Factor-graph estimate is a pose-source URML consumes; internals are Layer 0. Cross-link RFC-0338 (Ceres, peer backend), RFC-0332 (anchor). Origin US (Georgia Tech). Verified 2026-06-02."
 
 - slug: openvins
   rfc: 334
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/rpng/open_vins/issues/545"
   channel: github_issue
   contact: "rpng/open_vins (MSCKF visual-inertial estimator; ~2,922 stars, Issues enabled, Discussions disabled, not archived, last push 2025-11-30). License GPL-3.0 (flagged in the RFC; relationship is runtime consumption / cross-citation, NOT code vendoring; URML stays Apache-2.0). University of Delaware Robot Perception and Navigation Group (US)."
   last_touch: "2026-06-02"
@@ -102,18 +102,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0334 drafted (Move #25). VIO pose estimate grounds URML frames; camera-IMU calibration + filter internals are Layer 0. GPL-3.0 copyleft flagged explicitly (cross-citation / runtime consumption, not vendoring). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #545 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0334 merges, post the posts-move25.md OpenVINS body on rpng/open_vins under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. State the GPL-3.0 boundary clearly."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 VIO. URML consumes the VIO pose estimate. GPL-3.0 (boundary: runtime consumption / cross-citation). Cross-link RFC-0341 (Kimera, VIO peer), RFC-0206 (ORB-SLAM3). Origin US (U. Delaware). Verified 2026-06-02."
 
 - slug: kiss-icp
   rfc: 335
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/PRBonn/kiss-icp/issues/504"
   channel: github_issue
   contact: "PRBonn/kiss-icp (minimal point-to-point ICP LiDAR odometry; ~2,205 stars, Issues AND Discussions enabled, not archived, last push 2026-05-14). License not SPDX-detected by gh (understood MIT; asked). University of Bonn Photogrammetry & Robotics (Stachniss lab), Germany (NATO-allied)."
   last_touch: "2026-06-02"
@@ -123,18 +123,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0335 drafted (Move #25). LiDAR odometry pose estimate grounds URML's odom frame; honest nuance: odometry-only (no IMU, no loop closure) means a drift-prone LiDAR-only localization source, not a globally consistent map. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #504 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0335 merges, post the posts-move25.md KISS-ICP body on PRBonn/kiss-icp under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 LiDAR odometry. Clean, active, responsive lab (PRBonn / Stachniss). Contrast with GLIM (RFC-0336, full SLAM) and DLIO (RFC-0340, LiDAR-inertial). Origin DE (allied). Verified 2026-06-02."
 
 - slug: glim
   rfc: 336
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/koide3/glim/issues/304"
   channel: github_issue
   contact: "koide3/glim (GPU / factor-graph LiDAR-inertial SLAM, Kenji Koide; ~1,610 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-07). Folds koide3/hdl_graph_slam (~2,283 stars, the older LiDAR graph SLAM, same maintainer). License not SPDX-detected by gh (understood MIT; asked). Japan / AIST (allied)."
   last_touch: "2026-06-02"
@@ -144,18 +144,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0336 drafted (Move #25). Globally-consistent LiDAR-inertial SLAM map + pose grounds URML frames; the map also feeds occupancy reasoning. hdl_graph_slam (same maintainer) named and folded, with a which-is-the-right-surface question. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #304 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0336 merges, post the posts-move25.md GLIM body on koide3/glim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to hdl_graph_slam, fork that row to live."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 LiDAR-inertial SLAM. Koide3 is responsive. hdl_graph_slam folded (row below). Globally-consistent contrast vs KISS-ICP (RFC-0335). Origin JP (AIST, allied). Verified 2026-06-02."
 
 - slug: octomap
   rfc: 337
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/OctoMap/octomap/issues/447"
   channel: github_issue
   contact: "OctoMap/octomap (canonical 3D occupancy-grid / octree mapping, Armin Hornung et al.; ~2,307 stars, Issues enabled, Discussions disabled, not archived, last push 2026-02-08). License: core `octomap` BSD, `octovis` GPL (split noted, asked to confirm). University of Freiburg lineage / community (DE, allied)."
   last_touch: "2026-06-02"
@@ -165,18 +165,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0337 drafted (Move #25, the occupancy/world-model side, distinct from the pose-estimators). URML consumes an occupancy map and statically validates a motion stays in free space before dispatch (cross-link RFC-0291 deconfliction). BSD/GPL split flagged. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #447 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0337 merges, post the posts-move25.md OctoMap body on OctoMap/octomap under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 map representation. URML's geofence/occupancy (Pass 3) + declared_locations check against the occupancy map. Cross-link RFC-0291 (deconfliction), RFC-0290 (frames). BSD core / GPL octovis split. Origin DE (Freiburg, allied). Verified 2026-06-02."
 
 - slug: ceres-solver
   rfc: 338
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/ceres-solver/ceres-solver/issues/1201"
   channel: github_issue
   contact: "ceres-solver/ceres-solver (general nonlinear least-squares optimizer underlying much SLAM / calibration / bundle adjustment; ~4,491 stars, Issues AND Discussions enabled, not archived, last push 2026-05-31). License not SPDX-detected by gh (understood BSD-3-Clause; asked). Google (US)."
   last_touch: "2026-06-02"
@@ -186,18 +186,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-02"
-      text: "RFC-0338 drafted (Move #25). Honest lowest-direct-fit (paired with GTSAM RFC-0333): Ceres is general-purpose math, not robotics-specific, and URML does not map onto it; it benefits only indirectly (the estimates Ceres helps produce ground URML's frames). Ecosystem-acknowledgement + clear boundary. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #1201 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0338 merges, post the posts-move25.md Ceres body on ceres-solver/ceres-solver under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep it short and honest; deepest substrate layer in the wave."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 optimization backend (deepest layer, lowest direct fit, stated). Below URML's altitude; recorded for ecosystem completeness. Cross-link RFC-0333 (GTSAM, peer backend). Origin US (Google). Verified 2026-06-02."
 
 - slug: fuse
   rfc: 339
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/locusrobotics/fuse/issues/427"
   channel: github_issue
   contact: "locusrobotics/fuse (graph-based ROS sensor-fusion / state-estimation framework, a modern plugin-based alternative to robot_localization; ~868 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-06). License not SPDX-detected by gh (understood BSD-3-Clause; asked). Locus Robotics (US)."
   last_touch: "2026-06-02"
@@ -207,18 +207,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0339 drafted (Move #25). DISTINCT conversation from the off-GitHub Locus warehouse engagement (RFC-0300): this is their open-source `fuse` state-estimation framework, cross-linked but not a re-pitch. Fused estimate grounds URML frames (same as the anchor RFC-0332). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #427 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0339 merges, post the posts-move25.md fuse body on locusrobotics/fuse under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Do NOT re-pitch the warehouse relationship (RFC-0300); keep to the fuse framework."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 sensor fusion. fuse positions vs robot_localization (RFC-0332) for a URML localization-source declaration. Distinct from RFC-0300 (Locus warehouse, off-GitHub). Origin US. Verified 2026-06-02."
 
 - slug: dlio
   rfc: 340
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/vectr-ucla/direct_lidar_inertial_odometry/issues/107"
   channel: github_issue
   contact: "vectr-ucla/direct_lidar_inertial_odometry (DLIO, lightweight accurate direct LiDAR-inertial odometry; ~994 stars, Issues enabled, Discussions disabled, not archived, last push 2026-04-03). License not SPDX-detected by gh (understood MIT; asked). UCLA Verifiable & Control-Theoretic Robotics Laboratory (US)."
   last_touch: "2026-06-02"
@@ -228,18 +228,18 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0340 drafted (Move #25). LiDAR-inertial odometry pose estimate grounds URML's odom frame; IMU-LiDAR extrinsics + filter internals are Layer 0. Contrasts with KISS-ICP (RFC-0335, LiDAR-only) and GLIM (RFC-0336, full SLAM). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #107 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0340 merges, post the posts-move25.md DLIO body on vectr-ucla/direct_lidar_inertial_odometry under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 LiDAR-inertial odometry. URML declares a LiDAR-inertial odometry source (drift, no global consistency). Cross-link RFC-0335 / RFC-0336 (LiDAR peers). Origin US (UCLA). Verified 2026-06-02."
 
 - slug: kimera
   rfc: 341
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/MIT-SPARK/Kimera-VIO/issues/260"
   channel: github_issue
   contact: "MIT-SPARK/Kimera-VIO (metric-semantic visual-inertial SLAM; ~1,870 stars, Issues enabled, Discussions disabled, not archived, last push 2025-03-01, ~14 months stale, noted). License not SPDX-detected by gh (understood BSD; asked). MIT SPARK Lab (Luca Carlone), US."
   last_touch: "2026-06-02"
@@ -249,12 +249,12 @@
   sector: perception
   comments:
     - date: "2026-06-02"
-      text: "RFC-0341 drafted (Move #25). Two surfaces: (1) VIO pose estimate grounds URML frames; (2) more speculatively, Kimera's per-element semantic labels could align with URML's perception object_vocabulary and declared_locations (a semantic place -> a named location). Mild staleness (~14mo) acknowledged. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #260 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0341 merges, post the posts-move25.md Kimera body on MIT-SPARK/Kimera-VIO under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #25 metric-semantic VIO. Speculative semantic-label <-> object_vocabulary alignment is the distinctive angle. Mild staleness noted. Cross-link RFC-0334 (OpenVINS, VIO peer), RFC-0206 (ORB-SLAM3). Origin US (MIT SPARK). Verified 2026-06-02."
 
 # ============================================================
