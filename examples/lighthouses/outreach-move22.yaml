@@ -1,0 +1,257 @@
+# Move #22 outreach ledger. One row per target.
+#
+# Move #22 (this file): **the communication-layer wave.** Targets the
+# communication surfaces URML had not yet engaged, after a coverage check
+# ruled out what is already done: the DDS/transport spine (Move #16:
+# Fast DDS, Cyclone DDS, Zenoh, iceoryx, MAVLink, DroneCAN, ROS 2 core),
+# fleet interop (Move #21: VDA5050, InOrbit/MassRobotics, openTCS; Move #2
+# Open-RMF), agent comms (RFC-0048 MCP), and most speech/dialogue
+# (Move #12). Vosk + Silero stay excluded (Russia-domiciled, US-alignment
+# posture) and are NOT revisited.
+#
+# Four slices, RFCs 0306-0318. The pitch is constant: URML composes
+# ABOVE each communication surface as the plain-language intent layer;
+# it never embeds, forks, or vendors the transport. License frictions
+# (EMQX BSL, UA-.NETStandard RCL, LCM/opcua-asyncio LGPL, milo/mosquitto
+# EPL) are stated in-RFC and resolved by client/IPC-boundary integration.
+#
+#   Slice 1 - web/teleop/viz bridges: rosbridge_suite, webrtc_ros
+#   Slice 2 - alt transports/messaging: micro-ROS, eCAL, LCM, Mosquitto, EMQX
+#   Slice 3 - industrial/OPC UA: open62541, UA-.NETStandard, Eclipse Milo, opcua-asyncio
+#   Slice 4 - human-robot dialogue (net-new only): openWakeWord, Rasa
+#
+# Surfaces verified 2026-06-01 via the GitHub API (license, stars,
+# has_issues, isArchived, last push). Research note:
+# examples/lighthouses/move22-research-2026-06-01.md.
+#
+# Like Moves #2-#21, this file is NOT under the Move #1 parity test
+# (conformance/tests/test_outreach_ledger.py guards Move #1 only). It is
+# under the schema-v2 conformance test (RFC-0275).
+#
+# Phase 1 posture: do not massage `response` / `last_touch`. `none` is
+# the truthful default. All rows are DRAFTED, not yet posted; posting and
+# per-row state changes are founder-authorized.
+
+# ============================================================
+# Slice 1 - web / teleop / visualization bridges (2)
+# ============================================================
+
+- slug: rosbridge-suite
+  rfc: 306
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "RobotWebTools/rosbridge_suite (BSD-3-Clause, ~1.2k stars, Issues + Discussions enabled, active, **not archived**). The canonical websocket bridge to ROS; URML validated intent rides over it as a rosbridge JSON producer."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0306 + post in posts-move22.md. Founder to open a single Issue (or Ideas Discussion) framed as a request for comment. Lead Move-22 web target."
+  notes: "Tier A. Lead web/teleop target. URML as a validated producer of rosbridge ops. Surfaces a queued websocket/bridge transport-declaration Spec RFC."
+
+- slug: webrtc-ros
+  rfc: 307
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "RobotWebTools/webrtc_ros (license Other - clarification ask, ~183 stars, Issues enabled, last push 2024-07, **not archived**). WebRTC teleop bridge; URML rides the data channel."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0307. Founder to open an Issue leading with the license-clarification ask. Relates to RFC-0006 link-loss for the teleop-safety angle."
+  notes: "Tier B. License unclear (clarification ask); upstream last push 2024-07. Validated-intent data-channel producer for teleop."
+
+# ============================================================
+# Slice 2 - alternative transports / messaging (5)
+# ============================================================
+
+- slug: micro-ros
+  rfc: 308
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "micro-ROS/micro_ros_setup (Apache-2.0, ~494 stars, Issues + Discussions enabled, active, **not archived**). MCU-class ROS 2 over micro-XRCE-DDS; cross-cites eProsima/Micro-XRCE-DDS (Apache-2.0), already engaged via Fast DDS in Move #16."
+  last_touch: ""
+  response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0308. Founder to open an Issue or Ideas Discussion. Extends the Move-16 DDS spine to the MCU tier; pairs with the microbit_edu (RFC-0018) + educational (RFC-0011) story."
+  notes: "Tier A. Lead transport target. MCU-transport substrate-class Spec RFC queued. Micro-XRCE-DDS wire protocol cross-cited, not re-pitched (eProsima already engaged)."
+
+- slug: ecal
+  rfc: 309
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "eclipse-ecal/ecal (Apache-2.0, ~1k stars, Issues + Discussions enabled, active, **not archived**). High-performance pub/sub middleware (automotive/robotics); a transport beside DDS."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0309. Founder to open an Issue or Discussion. Reinforces substrate neutrality; shares the transport-substrate-declaration Spec RFC with Move #16."
+  notes: "Tier B. Clean Apache-2.0; Eclipse-ecosystem sibling to Cyclone DDS / iceoryx. URML as a validated-intent publisher on eCAL topics."
+
+- slug: lcm
+  rfc: 310
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "lcm-proj/lcm (LGPL-2.1, ~1.2k stars, Issues enabled, active, **not archived**). Robotics-native low-latency message passing + marshalling (DARPA Urban Challenge heritage)."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0310. Founder to open an Issue with the LGPL boundary stated up front (library-boundary integration, no vendoring)."
+  notes: "Tier B. LGPL-2.1 -> library-boundary only. Still-deployed transport; a clean example of URML transport neutrality beyond DDS."
+
+- slug: mosquitto
+  rfc: 311
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "eclipse-mosquitto/mosquitto (EPL/EDL, ~10.9k stars, Issues enabled, active, **not archived**). The reference open MQTT broker; URML publishes validated intent to MQTT topics."
+  last_touch: ""
+  response: none
+  tier: A
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0311. Founder to open an Issue. Makes explicit the MQTT-broker layer already implicit under VDA5050-over-MQTT (RFC-0297)."
+  notes: "Tier A. Reference MQTT broker; URML is an MQTT client above it. MQTT transport/QoS declaration Spec RFC queued."
+
+- slug: emqx
+  rfc: 312
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "emqx/emqx (Business Source License - friction, ~16k stars, Issues + Discussions enabled, active, **not archived**). High-scale clustered MQTT broker; EMQ Technologies, China-domiciled."
+  last_touch: ""
+  response: none
+  tier: B
+  country: CN
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0312. Founder to open an Issue or Discussion with the BSL + CN-provenance note up front. Client-boundary engagement only; default-policy (hardware provenance) unaffected."
+  notes: "Tier B. BSL platform license + CN origin recorded honestly; URML is an at-arms-length MQTT client (Petoi-CN precedent for non-US OSS engagement). High-scale counterpart to Mosquitto."
+
+# ============================================================
+# Slice 3 - industrial / OPC UA (4) - URML's first OPC UA engagement
+# ============================================================
+
+- slug: open62541
+  rfc: 313
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "open62541/open62541 (MPL-2.0, ~3.1k stars, Issues enabled, active, **not archived**). The leading open C/C++ OPC UA stack; clean permissive license."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0313. Founder to open an Issue. URML's first OPC UA engagement; lead engineering target. OPC UA Robotics companion-spec mapping Spec RFC queued."
+  notes: "Tier A. On-manifesto (OPC UA Robotics is a named substrate). Validated intent -> OPC UA method call / variable write. No URML OPC UA runtime yet; this engagement would shape one."
+
+- slug: ua-dotnet-standard
+  rfc: 314
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "OPCFoundation/UA-.NETStandard (OPC Foundation reciprocal community license 'other' - members-only friction, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
+  last_touch: ""
+  response: none
+  tier: A
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0314. Founder to open an Issue or Discussion with the RCL/standards-body note up front. Highest OPC UA leverage (reaches the standard, not just an implementation)."
+  notes: "Tier A. OPC Foundation RCL recorded; protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
+
+- slug: eclipse-milo
+  rfc: 315
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "eclipse-milo/milo (EPL-2.0, ~1.4k stars, Issues + Discussions enabled, active, **not archived**). The leading open Java OPC UA stack; Eclipse ecosystem."
+  last_touch: ""
+  response: none
+  tier: B
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0315. Founder to open an Issue or Discussion. Covers the JVM corner of URML's OPC UA mapping; Eclipse-ecosystem sibling."
+  notes: "Tier B. JVM OPC UA implementation; same mapping as open62541. Lets the OPC UA mapping be validated across C / .NET / Java / Python stacks."
+
+- slug: opcua-asyncio
+  rfc: 316
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "FreeOpcUa/opcua-asyncio (LGPL-3.0, ~1.4k stars, Issues + Discussions enabled, active, **not archived**). The leading async Python OPC UA stack; successor to python-opcua."
+  last_touch: ""
+  response: none
+  tier: B
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0316. Founder to open an Issue or Discussion with the LGPL boundary stated up front. The natural prototype path from URML's Python tooling to an OPC UA server."
+  notes: "Tier B. LGPL-3.0 -> library-boundary only. Python stack matches URML's reference tooling; shortest path to an OPC UA adapter prototype."
+
+# ============================================================
+# Slice 4 - human-robot dialogue (2) - net-new beyond Move #12
+# ============================================================
+
+- slug: openwakeword
+  rfc: 317
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "dscripka/openWakeWord (Apache-2.0, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). Open wake-word engine; the permissive alternative to Porcupine (RFC-0165, commercial-SDK friction)."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0317. Founder to open an Issue or Ideas Discussion. Always-on front gate of the spoken-intent loop; fits URML's offline / no-API-key posture (Tutorial 5)."
+  notes: "Tier A. Net-new (Move #12 covered STT/TTS; Porcupine hit commercial-SDK friction). Wake-word / confidence-gated speech-input declaration Spec RFC queued (sibling to RFC-0230)."
+
+- slug: rasa
+  rfc: 318
+  sent_at: ""
+  posted_url: ""
+  channel: deferred
+  contact: "RasaHQ/rasa (Apache-2.0, ~21k stars, Issues enabled, active, **not archived**). The leading open dialogue-management framework; Rasa GmbH, Germany."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: ai-language
+  comments: []
+  claude_directives: []
+  next_action: "Draft RFC-0318. Founder to open an Issue framed as a complementary custom-action pattern (Rasa owns dialogue state, URML owns validated robot dispatch). Not a dialogue-manager overlap."
+  notes: "Tier A. Net-new dialogue-management layer above Move #12 speech I/O. A Rasa custom action emits validated URML intent; validation failure becomes a Rasa fallback."
