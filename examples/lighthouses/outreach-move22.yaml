@@ -29,8 +29,9 @@
 # under the schema-v2 conformance test (RFC-0275).
 #
 # Phase 1 posture: do not massage `response` / `last_touch`. `none` is
-# the truthful default. All rows are DRAFTED, not yet posted; posting and
-# per-row state changes are founder-authorized.
+# the truthful default. All 13 rows posted live on 2026-06-02 under
+# idoco2003 (response: none pending replies). Per-row state changes are
+# founder-authorized.
 
 # ============================================================
 # Slice 1 - web / teleop / visualization bridges (2)
@@ -38,34 +39,34 @@
 
 - slug: rosbridge-suite
   rfc: 306
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/RobotWebTools/rosbridge_suite/issues/1283"
+  channel: github_issue
   contact: "RobotWebTools/rosbridge_suite (BSD-3-Clause, ~1.2k stars, Issues + Discussions enabled, active, **not archived**). The canonical websocket bridge to ROS; URML validated intent rides over it as a rosbridge JSON producer."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: US
   sector: middleware
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0306 + post in posts-move22.md. Founder to open a single Issue (or Ideas Discussion) framed as a request for comment. Lead Move-22 web target."
+  next_action: "Posted as Issue RobotWebTools/rosbridge_suite#1283 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. Lead web/teleop target. URML as a validated producer of rosbridge ops. Surfaces a queued websocket/bridge transport-declaration Spec RFC."
 
 - slug: webrtc-ros
   rfc: 307
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/RobotWebTools/webrtc_ros/issues/73"
+  channel: github_issue
   contact: "RobotWebTools/webrtc_ros (license Other - clarification ask, ~183 stars, Issues enabled, last push 2024-07, **not archived**). WebRTC teleop bridge; URML rides the data channel."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: US
   sector: middleware
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0307. Founder to open an Issue leading with the license-clarification ask. Relates to RFC-0006 link-loss for the teleop-safety angle."
+  next_action: "Posted as Issue RobotWebTools/webrtc_ros#73 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. License unclear (clarification ask); upstream last push 2024-07. Validated-intent data-channel producer for teleop."
 
 # ============================================================
@@ -74,82 +75,82 @@
 
 - slug: micro-ros
   rfc: 308
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/micro-ROS/micro_ros_setup/issues/812"
+  channel: github_issue
   contact: "micro-ROS/micro_ros_setup (Apache-2.0, ~494 stars, Issues + Discussions enabled, active, **not archived**). MCU-class ROS 2 over micro-XRCE-DDS; cross-cites eProsima/Micro-XRCE-DDS (Apache-2.0), already engaged via Fast DDS in Move #16."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: INTL
   sector: substrate-runtime
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0308. Founder to open an Issue or Ideas Discussion. Extends the Move-16 DDS spine to the MCU tier; pairs with the microbit_edu (RFC-0018) + educational (RFC-0011) story."
+  next_action: "Posted as Issue micro-ROS/micro_ros_setup#812 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. Lead transport target. MCU-transport substrate-class Spec RFC queued. Micro-XRCE-DDS wire protocol cross-cited, not re-pitched (eProsima already engaged)."
 
 - slug: ecal
   rfc: 309
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/eclipse-ecal/ecal/issues/2634"
+  channel: github_issue
   contact: "eclipse-ecal/ecal (Apache-2.0, ~1k stars, Issues + Discussions enabled, active, **not archived**). High-performance pub/sub middleware (automotive/robotics); a transport beside DDS."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: DE
   sector: middleware
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0309. Founder to open an Issue or Discussion. Reinforces substrate neutrality; shares the transport-substrate-declaration Spec RFC with Move #16."
+  next_action: "Posted as Issue eclipse-ecal/ecal#2634 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. Clean Apache-2.0; Eclipse-ecosystem sibling to Cyclone DDS / iceoryx. URML as a validated-intent publisher on eCAL topics."
 
 - slug: lcm
   rfc: 310
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/lcm-proj/lcm/issues/625"
+  channel: github_issue
   contact: "lcm-proj/lcm (LGPL-2.1, ~1.2k stars, Issues enabled, active, **not archived**). Robotics-native low-latency message passing + marshalling (DARPA Urban Challenge heritage)."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: US
   sector: middleware
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0310. Founder to open an Issue with the LGPL boundary stated up front (library-boundary integration, no vendoring)."
+  next_action: "Posted as Issue lcm-proj/lcm#625 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. LGPL-2.1 -> library-boundary only. Still-deployed transport; a clean example of URML transport neutrality beyond DDS."
 
 - slug: mosquitto
   rfc: 311
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/eclipse-mosquitto/mosquitto/issues/3660"
+  channel: github_issue
   contact: "eclipse-mosquitto/mosquitto (EPL/EDL, ~10.9k stars, Issues enabled, active, **not archived**). The reference open MQTT broker; URML publishes validated intent to MQTT topics."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: INTL
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0311. Founder to open an Issue. Makes explicit the MQTT-broker layer already implicit under VDA5050-over-MQTT (RFC-0297)."
+  next_action: "Posted as Issue eclipse-mosquitto/mosquitto#3660 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. Reference MQTT broker; URML is an MQTT client above it. MQTT transport/QoS declaration Spec RFC queued."
 
 - slug: emqx
   rfc: 312
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/emqx/emqx/issues/17453"
+  channel: github_issue
   contact: "emqx/emqx (Business Source License - friction, ~16k stars, Issues + Discussions enabled, active, **not archived**). High-scale clustered MQTT broker; EMQ Technologies, China-domiciled."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: CN
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0312. Founder to open an Issue or Discussion with the BSL + CN-provenance note up front. Client-boundary engagement only; default-policy (hardware provenance) unaffected."
+  next_action: "Posted as Issue emqx/emqx#17453 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. BSL platform license + CN origin recorded honestly; URML is an at-arms-length MQTT client (Petoi-CN precedent for non-US OSS engagement). High-scale counterpart to Mosquitto."
 
 # ============================================================
@@ -158,66 +159,66 @@
 
 - slug: open62541
   rfc: 313
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/open62541/open62541/issues/8077"
+  channel: github_issue
   contact: "open62541/open62541 (MPL-2.0, ~3.1k stars, Issues enabled, active, **not archived**). The leading open C/C++ OPC UA stack; clean permissive license."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: DE
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0313. Founder to open an Issue. URML's first OPC UA engagement; lead engineering target. OPC UA Robotics companion-spec mapping Spec RFC queued."
+  next_action: "Posted as Issue open62541/open62541#8077 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. On-manifesto (OPC UA Robotics is a named substrate). Validated intent -> OPC UA method call / variable write. No URML OPC UA runtime yet; this engagement would shape one."
 
 - slug: ua-dotnet-standard
   rfc: 314
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/OPCFoundation/UA-.NETStandard/issues/3827"
+  channel: github_issue
   contact: "OPCFoundation/UA-.NETStandard (OPC Foundation reciprocal community license 'other' - members-only friction, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: INTL
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0314. Founder to open an Issue or Discussion with the RCL/standards-body note up front. Highest OPC UA leverage (reaches the standard, not just an implementation)."
+  next_action: "Posted as Issue OPCFoundation/UA-.NETStandard#3827 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. OPC Foundation RCL recorded; protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
 
 - slug: eclipse-milo
   rfc: 315
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/eclipse-milo/milo/issues/1761"
+  channel: github_issue
   contact: "eclipse-milo/milo (EPL-2.0, ~1.4k stars, Issues + Discussions enabled, active, **not archived**). The leading open Java OPC UA stack; Eclipse ecosystem."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: INTL
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0315. Founder to open an Issue or Discussion. Covers the JVM corner of URML's OPC UA mapping; Eclipse-ecosystem sibling."
+  next_action: "Posted as Issue eclipse-milo/milo#1761 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. JVM OPC UA implementation; same mapping as open62541. Lets the OPC UA mapping be validated across C / .NET / Java / Python stacks."
 
 - slug: opcua-asyncio
   rfc: 316
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/FreeOpcUa/opcua-asyncio/issues/1986"
+  channel: github_issue
   contact: "FreeOpcUa/opcua-asyncio (LGPL-3.0, ~1.4k stars, Issues + Discussions enabled, active, **not archived**). The leading async Python OPC UA stack; successor to python-opcua."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: B
   country: INTL
   sector: protocol-substrate
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0316. Founder to open an Issue or Discussion with the LGPL boundary stated up front. The natural prototype path from URML's Python tooling to an OPC UA server."
+  next_action: "Posted as Issue FreeOpcUa/opcua-asyncio#1986 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier B. LGPL-3.0 -> library-boundary only. Python stack matches URML's reference tooling; shortest path to an OPC UA adapter prototype."
 
 # ============================================================
@@ -226,32 +227,32 @@
 
 - slug: openwakeword
   rfc: 317
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/dscripka/openWakeWord/issues/333"
+  channel: github_issue
   contact: "dscripka/openWakeWord (Apache-2.0, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). Open wake-word engine; the permissive alternative to Porcupine (RFC-0165, commercial-SDK friction)."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: US
   sector: ai-language
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0317. Founder to open an Issue or Ideas Discussion. Always-on front gate of the spoken-intent loop; fits URML's offline / no-API-key posture (Tutorial 5)."
+  next_action: "Posted as Issue dscripka/openWakeWord#333 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. Net-new (Move #12 covered STT/TTS; Porcupine hit commercial-SDK friction). Wake-word / confidence-gated speech-input declaration Spec RFC queued (sibling to RFC-0230)."
 
 - slug: rasa
   rfc: 318
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-06-02"
+  posted_url: "https://github.com/RasaHQ/rasa/issues/13170"
+  channel: github_issue
   contact: "RasaHQ/rasa (Apache-2.0, ~21k stars, Issues enabled, active, **not archived**). The leading open dialogue-management framework; Rasa GmbH, Germany."
-  last_touch: ""
+  last_touch: "2026-06-02"
   response: none
   tier: A
   country: DE
   sector: ai-language
   comments: []
   claude_directives: []
-  next_action: "Draft RFC-0318. Founder to open an Issue framed as a complementary custom-action pattern (Rasa owns dialogue state, URML owns validated robot dispatch). Not a dialogue-manager overlap."
+  next_action: "Posted as Issue RasaHQ/rasa#13170 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
   notes: "Tier A. Net-new dialogue-management layer above Move #12 speech I/O. A Rasa custom action emits validated URML intent; validation failure becomes a Rasa fallback."
