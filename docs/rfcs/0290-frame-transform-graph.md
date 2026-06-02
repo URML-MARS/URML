@@ -2,9 +2,9 @@
 rfc: 0290
 title: Frame-transform graph — SE(3) transforms for cross-frame geometry
 author: Ido Yahalomi (ido@jacob-ai.com)
-state: Accepted
+state: Implemented
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-02
 supersedes: —
 superseded-by: —
 ---

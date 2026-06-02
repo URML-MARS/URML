@@ -2,9 +2,9 @@
 rfc: 0039
 title: Sensor schema v0.2 iteration: point-cloud sensors, beam count, channels, time sync, rate ceiling
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-22
-updated: 2026-05-22
+updated: 2026-06-02
 supersedes: —
 superseded-by: —
 ---

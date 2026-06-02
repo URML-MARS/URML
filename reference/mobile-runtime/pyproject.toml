@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-mobile-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "Wheeled AMR reference runtime for URML — Clearpath Husky / Jackal."
 readme = "README.md"
 license = { text = "Apache-2.0" }

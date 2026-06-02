@@ -14,7 +14,7 @@
 
 # Layer 3 — Behavior Composition
 
-**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the four composition operators (`sequence`/`branch`/`parallel`/`retry`), the `on_error` model, the variable system, and the condition-expression grammar, transcribed from the shipped implementation (Layer 3 has no dedicated RFC; RFC-0002 deferred the formal grammar). This README is the orientation; `v0.1.0.md` is what a runtime must implement.
+**Status:** Drafted. The normative specification is [`v0.2.0.md`](v0.2.0.md) — the four core composition operators (`sequence`/`branch`/`parallel`/`retry`), the two fleet-addressing nodes (`on`/`barrier`, v0.2.0, RFC-0286), the `on_error` model, the variable system, and the condition-expression grammar, transcribed from the shipped implementation (Layer 3 has no dedicated RFC; RFC-0002 deferred the formal grammar). This README is the orientation; `v0.2.0.md` is what a runtime must implement. The prior [`v0.1.0.md`](v0.1.0.md) is retained for history.
 
 ## Purpose
 
@@ -40,7 +40,7 @@ Layer 3 must **not** include:
 
 ## What the normative document specifies
 
-[`v0.1.0.md`](v0.1.0.md) carries:
+[`v0.2.0.md`](v0.2.0.md) carries:
 
 - The full composition grammar: every operator's syntax, semantics, and termination conditions.
 - The error-handling model: which primitives can fail, what failure looks like at the composition layer, how `on_error` interacts with `retry` and `parallel`.

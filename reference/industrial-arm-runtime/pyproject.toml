@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-industrial-arm-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "ROS-Industrial / MoveIt 2 reference runtime for URML — ABB, FANUC, KUKA, YASKAWA arms."
 readme = "README.md"
 license = { text = "Apache-2.0" }

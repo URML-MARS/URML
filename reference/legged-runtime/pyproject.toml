@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-legged-runtime"
-version = "0.1.1"
+version = "0.2.0"
 description = "Legged/quadruped reference runtime for URML — Boston Dynamics Spot, ANYbotics ANYmal."
 readme = "README.md"
 license = { text = "Apache-2.0" }

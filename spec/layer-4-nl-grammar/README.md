@@ -14,7 +14,7 @@
 
 # Layer 4 — Natural Language Interface
 
-**Status:** Drafted. The normative specification is [`v0.1.0.md`](v0.1.0.md) — the published prompt contract: the system-prompt surface, the few-shot library, the bounded validator-feedback revision loop, and the provider-neutral interface (Layer 4 has no dedicated RFC; the contract is the shipped `reference/llm-bridge/`). This README is the orientation; `v0.1.0.md` is what an integration must implement.
+**Status:** Drafted. The normative specification is [`v0.2.0.md`](v0.2.0.md) — the published prompt contract: the system-prompt surface, the few-shot library, the bounded validator-feedback revision loop, the provider-neutral interface, and (v0.2.0, RFC-0286) the roster-aware fleet (multi-member) assembly (Layer 4 has no dedicated RFC; the contract is the shipped `reference/llm-bridge/`). This README is the orientation; `v0.2.0.md` is what an integration must implement. The prior [`v0.1.0.md`](v0.1.0.md) is retained for history.
 
 ## Purpose
 
@@ -38,7 +38,7 @@ Layer 4 must **not** include:
 
 ## What the normative document specifies
 
-[`v0.1.0.md`](v0.1.0.md) carries the items below. Note its §5: the interactive
+[`v0.2.0.md`](v0.2.0.md) carries the items below. Note its §5: the interactive
 disambiguation protocol described next is **not** in v0.1 — ambiguity is
 resolved by a manifest-grounded default or a `report(status: failure)`, and
 the only loop is the deterministic validator-feedback loop.
