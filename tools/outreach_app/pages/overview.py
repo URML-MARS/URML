@@ -59,6 +59,7 @@ def _first_sentence(text: str, max_chars: int = 180) -> str:
 def render() -> None:
     render_drawer()
     kpi = data.top_line_numbers()
+    funnel = data.funnel_stage_counts()
     sectors = data.sector_distribution()
     waves = data.funnel_by_wave()
 
@@ -77,6 +78,18 @@ def render() -> None:
             _kpi("Blockers", kpi["blockers"], "block", "amber", "wontfix + declined")
             _kpi("Stale", kpi["stale"], "schedule", "red", ">= 28 days, no response")
             _kpi("Pending for Claude", kpi["pending_directives"], "task_alt", "purple", "to-do list left for me")
+
+        # Conversion funnel (full-width card directly under the KPI row)
+        with ui.card().classes("w-full"):
+            ui.label("Conversion funnel").classes("text-h6 mb-1")
+            ui.label(
+                "Where rows are in the pipeline. Each step shows the count, "
+                "share of total, and conversion rate from the prior step."
+            ).classes("text-grey-7 text-sm mb-3")
+            if not funnel or funnel["total"] == 0:
+                ui.label("No targets yet.").classes("text-grey-7 italic")
+            else:
+                _render_conversion_funnel(funnel)
 
         ui.separator()
 
@@ -246,6 +259,135 @@ def _response_color(response: str) -> str:
 # -----------------------------------------------------------------------------
 # Charts
 # -----------------------------------------------------------------------------
+
+
+# Conversion funnel stages — fixed order. The "key" matches funnel_stage_counts().
+_FUNNEL_STAGES = [
+    {"key": "queued",  "label": "Queued",  "icon": "schedule",   "color": "grey-6",      "hint": "not yet sent"},
+    {"key": "posted",  "label": "Posted",  "icon": "send",       "color": "blue-7",      "hint": "sent, no reply yet"},
+    {"key": "acked",   "label": "Acked",   "icon": "done",       "color": "light-blue-7", "hint": "noticed, no substantive reply"},
+    {"key": "engaged", "label": "Engaged", "icon": "forum",      "color": "positive",    "hint": "substantive reply"},
+    {"key": "closed",  "label": "Closed",  "icon": "block",      "color": "red-6",       "hint": "wontfix + declined"},
+]
+
+
+def _pct(num: int, denom: int) -> str:
+    return f"{(100.0 * num / denom):.1f} %" if denom else "—"
+
+
+_FUNNEL_HEX = {
+    "grey-6": "#757575",
+    "blue-7": "#1976d2",
+    "light-blue-7": "#0288d1",
+    "positive": "#21ba45",
+    "red-6": "#e53935",
+}
+
+
+def _render_conversion_funnel(funnel: dict) -> None:
+    """Two-part funnel display:
+
+    1. Five stage cards in a row (precise count + share-of-total + conversion
+       from prior).
+    2. ECharts funnel chart below (visual pipeline shape).
+
+    Both views are driven by the same `funnel_stage_counts()` helper.
+    No mock data: zero stages render their zero count truthfully; an empty
+    database short-circuits before this helper is ever called.
+    """
+    total = funnel["total"]
+
+    # ---- 1. Stage cards ----
+    prev_count: int | None = None
+    with ui.row().classes("w-full gap-3 items-stretch flex-wrap"):
+        for i, stage in enumerate(_FUNNEL_STAGES):
+            count = funnel.get(stage["key"], 0)
+            share = _pct(count, total)
+            from_prior = (
+                "first stage" if i == 0 else
+                _pct(count, prev_count) + " of prior" if prev_count else "—"
+            )
+            with ui.card().tight().classes(
+                f"flex-grow basis-[180px] shadow-1 border-l-4 border-{stage['color']}"
+            ):
+                with ui.card_section().classes("q-pa-md"):
+                    with ui.row().classes("items-center gap-2"):
+                        ui.icon(stage["icon"]).classes(f"text-{stage['color']}")
+                        ui.label(stage["label"]).classes(
+                            "text-grey-8 text-sm uppercase tracking-wide"
+                        )
+                    ui.label(str(count)).classes("text-h4 font-medium")
+                    ui.label(f"{share} of total").classes("text-grey-7 text-xs")
+                    ui.label(from_prior).classes("text-grey-6 text-xs")
+                    ui.label(stage["hint"]).classes("text-grey-5 text-xs mt-1 italic")
+                bar_pct = (100.0 * count / total) if total else 0.0
+                ui.linear_progress(
+                    value=min(1.0, count / total) if total else 0.0,
+                    show_value=False,
+                ).props(f"color={stage['color']}").classes("q-mt-none") \
+                    .tooltip(f"{count} of {total} = {bar_pct:.1f} % of total")
+            prev_count = count
+
+    # ---- 2. Horizontal bar chart ----
+    # One bar per stage in pipeline order (top -> bottom). Bar length is the
+    # absolute count, label shows count + % of total. Honest geometry: the
+    # tiny stages stay visible even when Posted is 5x the next-largest.
+    names = [s["label"] for s in _FUNNEL_STAGES]
+    bar_items = [
+        {
+            "value": funnel.get(s["key"], 0),
+            "name": s["label"],
+            "itemStyle": {
+                "color": _FUNNEL_HEX.get(s["color"], "#999"),
+                "borderRadius": [0, 6, 6, 0],
+            },
+            "label": {
+                "show": True,
+                "position": "right",
+                "formatter": (
+                    f"{funnel.get(s['key'], 0)}  "
+                    f"({(100.0 * funnel.get(s['key'], 0) / total):.1f} %)"
+                    if total else str(funnel.get(s["key"], 0))
+                ),
+                "color": "#333",
+                "fontSize": 12,
+                "fontWeight": "bold",
+            },
+        }
+        for s in _FUNNEL_STAGES
+    ]
+
+    ui.echart(
+        {
+            "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {"type": "shadow"},
+                "formatter": "{b}<br/>count: <b>{c}</b>",
+            },
+            "grid": {"left": 110, "right": 130, "top": 10, "bottom": 20},
+            "xAxis": {
+                "type": "value",
+                "splitLine": {"lineStyle": {"color": "#eee"}},
+                "axisLabel": {"color": "#666"},
+            },
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "inverse": True,
+                "axisLabel": {"color": "#333", "fontSize": 13, "fontWeight": "bold"},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+            },
+            "series": [
+                {
+                    "name": "count",
+                    "type": "bar",
+                    "data": bar_items,
+                    "barWidth": "55%",
+                }
+            ],
+        },
+    ).style("height: 280px").classes("w-full mt-4")
 
 
 def _render_sector_list(sectors: list[dict]) -> None:
