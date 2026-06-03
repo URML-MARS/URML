@@ -328,56 +328,66 @@ def _render_conversion_funnel(funnel: dict) -> None:
                     .tooltip(f"{count} of {total} = {bar_pct:.1f} % of total")
             prev_count = count
 
-    # ---- 2. ECharts funnel visualization ----
-    funnel_data = [
+    # ---- 2. Horizontal bar chart ----
+    # One bar per stage in pipeline order (top -> bottom). Bar length is the
+    # absolute count, label shows count + % of total. Honest geometry: the
+    # tiny stages stay visible even when Posted is 5x the next-largest.
+    names = [s["label"] for s in _FUNNEL_STAGES]
+    bar_items = [
         {
-            "value": funnel.get(stage["key"], 0),
-            "name": stage["label"],
+            "value": funnel.get(s["key"], 0),
+            "name": s["label"],
             "itemStyle": {
-                "color": _FUNNEL_HEX.get(stage["color"], "#999"),
-                "borderColor": "#fff",
-                "borderWidth": 2,
+                "color": _FUNNEL_HEX.get(s["color"], "#999"),
+                "borderRadius": [0, 6, 6, 0],
+            },
+            "label": {
+                "show": True,
+                "position": "right",
+                "formatter": (
+                    f"{funnel.get(s['key'], 0)}  "
+                    f"({(100.0 * funnel.get(s['key'], 0) / total):.1f} %)"
+                    if total else str(funnel.get(s["key"], 0))
+                ),
+                "color": "#333",
+                "fontSize": 12,
+                "fontWeight": "bold",
             },
         }
-        for stage in _FUNNEL_STAGES
+        for s in _FUNNEL_STAGES
     ]
 
     ui.echart(
         {
             "tooltip": {
-                "trigger": "item",
-                "formatter": "{b}<br/>count: <b>{c}</b> ({d}% of pipeline)",
+                "trigger": "axis",
+                "axisPointer": {"type": "shadow"},
+                "formatter": "{b}<br/>count: <b>{c}</b>",
             },
-            "legend": {
-                "data": [s["label"] for s in _FUNNEL_STAGES],
-                "top": "bottom",
-                "itemGap": 16,
+            "grid": {"left": 110, "right": 130, "top": 10, "bottom": 20},
+            "xAxis": {
+                "type": "value",
+                "splitLine": {"lineStyle": {"color": "#eee"}},
+                "axisLabel": {"color": "#666"},
+            },
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "inverse": True,
+                "axisLabel": {"color": "#333", "fontSize": 13, "fontWeight": "bold"},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
             },
             "series": [
                 {
-                    "name": "Conversion funnel",
-                    "type": "funnel",
-                    "left": "10%",
-                    "right": "10%",
-                    "top": 20,
-                    "bottom": 60,
-                    "sort": "none",
-                    "gap": 4,
-                    "minSize": "12%",
-                    "label": {
-                        "show": True,
-                        "position": "inside",
-                        "formatter": "{b}: {c}",
-                        "color": "#fff",
-                        "fontWeight": "bold",
-                        "fontSize": 13,
-                    },
-                    "labelLine": {"show": False},
-                    "data": funnel_data,
+                    "name": "count",
+                    "type": "bar",
+                    "data": bar_items,
+                    "barWidth": "55%",
                 }
             ],
-        }
-    ).style("height: 320px").classes("w-full mt-4")
+        },
+    ).style("height: 280px").classes("w-full mt-4")
 
 
 def _render_sector_list(sectors: list[dict]) -> None:
