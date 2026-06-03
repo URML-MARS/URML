@@ -70,7 +70,6 @@ The useful idea: URML can statically check that a motion request is admissible (
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0342-ompl-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is OMPL BSD-3-Clause?
 
 Thanks for OMPL; it is the quiet engine under a lot of robot motion.
 
@@ -97,7 +96,6 @@ URML's safety envelope already carries velocity, acceleration, and (where declar
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0343-ruckig-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is Ruckig MIT-licensed?
 
 Thanks for Ruckig; jerk-limited online generation done well is rarer than it should be.
 
@@ -124,7 +122,6 @@ In URML's stack, toppra sits after a geometric planner (I am talking to OMPL sep
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0344-toppra-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is toppra MIT-licensed?
 
 Thanks for toppra; time-optimal parameterization with a clean API is genuinely useful.
 
@@ -151,7 +148,6 @@ The real question: a URML capability declaration (reachability today, joint and 
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0345-pinocchio-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is Pinocchio BSD-2-Clause?
 
 Thanks for Pinocchio; the speed and the clean model API are a real gift to the field.
 
@@ -178,7 +174,6 @@ Two real questions. First, what is the cleanest boundary for "URML dynamic-motio
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0346-crocoddyl-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is Crocoddyl BSD-3-Clause?
 
 Thanks for Crocoddyl; fast multi-contact DDP changed what is practical.
 
@@ -205,7 +200,6 @@ Two real questions. First, what is the cleanest boundary for "URML intent plus c
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0347-ocs2-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is OCS2 BSD-3-Clause?
 
 Thanks for OCS2; a usable open MPC toolbox for switched systems is a big deal.
 
@@ -232,7 +226,6 @@ One real question: is there any meaningful point of contact between a high-level
 
 Full write-up: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0348-casadi-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is CasADi LGPL-3.0? To be clear, any relationship is runtime use and cross-citation, not vendoring code.
 
 Thanks for CasADi; it is load-bearing for a huge amount of optimal control.
 
@@ -259,7 +252,6 @@ So the real question: what is the cleanest way for URML to declare its constrain
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0349-acados-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is acados BSD-2-Clause?
 
 Thanks for acados; fast embedded NMPC that people can actually deploy is hard-won.
 
@@ -286,7 +278,6 @@ URML's manifest declares mobility (drive type, max velocity) and, with the envel
 
 Full write-up, with the manifest mapping table: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0350-teb-local-planner-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. What is the current license? If it is GPL, to be clear the relationship is runtime use and cross-citation, not vendoring.
 
 Thanks for teb_local_planner; it has guided a lot of real robots through tight spaces.
 
@@ -313,7 +304,6 @@ Two real questions. First, does a PlanSys2 PDDL action <-> URML primitive corres
 
 Full write-up, with the mapping: https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0351-plansys2-outreach.md
 
-One small thing: the GitHub API did not surface an SPDX license id at our verification time. Is PlanSys2 Apache-2.0?
 
 Thanks for PlanSys2; a maintained PDDL planning system for ROS 2 is exactly what the ecosystem needed.
 
