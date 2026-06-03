@@ -59,6 +59,7 @@ def _first_sentence(text: str, max_chars: int = 180) -> str:
 def render() -> None:
     render_drawer()
     kpi = data.top_line_numbers()
+    funnel = data.funnel_stage_counts()
     sectors = data.sector_distribution()
     waves = data.funnel_by_wave()
 
@@ -77,6 +78,18 @@ def render() -> None:
             _kpi("Blockers", kpi["blockers"], "block", "amber", "wontfix + declined")
             _kpi("Stale", kpi["stale"], "schedule", "red", ">= 28 days, no response")
             _kpi("Pending for Claude", kpi["pending_directives"], "task_alt", "purple", "to-do list left for me")
+
+        # Conversion funnel (full-width card directly under the KPI row)
+        with ui.card().classes("w-full"):
+            ui.label("Conversion funnel").classes("text-h6 mb-1")
+            ui.label(
+                "Where rows are in the pipeline. Each step shows the count, "
+                "share of total, and conversion rate from the prior step."
+            ).classes("text-grey-7 text-sm mb-3")
+            if not funnel or funnel["total"] == 0:
+                ui.label("No targets yet.").classes("text-grey-7 italic")
+            else:
+                _render_conversion_funnel(funnel)
 
         ui.separator()
 
@@ -246,6 +259,58 @@ def _response_color(response: str) -> str:
 # -----------------------------------------------------------------------------
 # Charts
 # -----------------------------------------------------------------------------
+
+
+# Conversion funnel stages — fixed order. The "key" matches funnel_stage_counts().
+_FUNNEL_STAGES = [
+    {"key": "queued",  "label": "Queued",  "icon": "schedule",   "color": "grey-6",      "hint": "not yet sent"},
+    {"key": "posted",  "label": "Posted",  "icon": "send",       "color": "blue-7",      "hint": "sent, no reply yet"},
+    {"key": "acked",   "label": "Acked",   "icon": "done",       "color": "light-blue-7", "hint": "noticed, no substantive reply"},
+    {"key": "engaged", "label": "Engaged", "icon": "forum",      "color": "positive",    "hint": "substantive reply"},
+    {"key": "closed",  "label": "Closed",  "icon": "block",      "color": "red-6",       "hint": "wontfix + declined"},
+]
+
+
+def _pct(num: int, denom: int) -> str:
+    return f"{(100.0 * num / denom):.1f} %" if denom else "—"
+
+
+def _render_conversion_funnel(funnel: dict) -> None:
+    """Five stage cards in a row. Each card shows count + % of total +
+    conversion from the prior non-zero stage. No mock data: zero stages
+    render their zero count truthfully.
+    """
+    total = funnel["total"]
+    prev_count: int | None = None
+    with ui.row().classes("w-full gap-3 items-stretch flex-wrap"):
+        for i, stage in enumerate(_FUNNEL_STAGES):
+            count = funnel.get(stage["key"], 0)
+            share = _pct(count, total)
+            from_prior = (
+                "first stage" if i == 0 else
+                _pct(count, prev_count) + " of prior" if prev_count else "—"
+            )
+            with ui.card().tight().classes(
+                f"flex-grow basis-[180px] shadow-1 border-l-4 border-{stage['color']}"
+            ):
+                with ui.card_section().classes("q-pa-md"):
+                    with ui.row().classes("items-center gap-2"):
+                        ui.icon(stage["icon"]).classes(f"text-{stage['color']}")
+                        ui.label(stage["label"]).classes(
+                            "text-grey-8 text-sm uppercase tracking-wide"
+                        )
+                    ui.label(str(count)).classes("text-h4 font-medium")
+                    ui.label(f"{share} of total").classes("text-grey-7 text-xs")
+                    ui.label(from_prior).classes("text-grey-6 text-xs")
+                    ui.label(stage["hint"]).classes("text-grey-5 text-xs mt-1 italic")
+                # Share-of-total progress bar at the bottom of the card
+                bar_pct = (100.0 * count / total) if total else 0.0
+                ui.linear_progress(
+                    value=min(1.0, count / total) if total else 0.0,
+                    show_value=False,
+                ).props(f"color={stage['color']}").classes("q-mt-none") \
+                    .tooltip(f"{count} of {total} = {bar_pct:.1f} % of total")
+            prev_count = count
 
 
 def _render_sector_list(sectors: list[dict]) -> None:

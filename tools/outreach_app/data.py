@@ -96,6 +96,35 @@ def top_line_numbers(db_path: Path | None = None) -> dict[str, int]:
     return {k: row[k] for k in row.keys()}
 
 
+def funnel_stage_counts(db_path: Path | None = None) -> dict[str, int]:
+    """Return the five conversion-funnel stages.
+
+    Stages are mutually exclusive and sum to `total`:
+      queued  = row has not been sent_at-set (sent_at == '')
+      posted  = sent, no maintainer reply (response == 'none')
+      acked   = response == 'acked'
+      engaged = response == 'engaged'
+      closed  = response in ('wontfix', 'declined')
+
+    The conversion funnel chart on the Overview page reads from this
+    helper; the KPI row also derives Posted / Engaged / Blockers from
+    here so the two cannot drift.
+    """
+    with _connect(db_path) as conn:
+        cur = conn.execute(
+            """SELECT
+                (SELECT COUNT(*) FROM targets)                                  AS total,
+                (SELECT COUNT(*) FROM targets WHERE sent_at = '' OR sent_at IS NULL) AS queued,
+                (SELECT COUNT(*) FROM targets WHERE sent_at != '' AND response = 'none')   AS posted,
+                (SELECT COUNT(*) FROM targets WHERE response = 'acked')         AS acked,
+                (SELECT COUNT(*) FROM targets WHERE response = 'engaged')       AS engaged,
+                (SELECT COUNT(*) FROM targets WHERE response IN ('wontfix','declined')) AS closed
+            """
+        )
+        row = cur.fetchone()
+    return {k: row[k] for k in row.keys()}
+
+
 def sector_distribution(filters: Filters | None = None, db_path: Path | None = None) -> list[dict]:
     """One row per sector with response breakdown.
 
