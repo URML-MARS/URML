@@ -250,18 +250,20 @@
   channel: github_issue
   contact: "PlanSys2/ros2_planning_system (PDDL2.1 task and temporal planning system for ROS 2: decomposes a goal into a plan of durative actions and dispatches them; ~483 stars, Issues AND Discussions enabled, not archived, last push 2026-05-30). License not SPDX-detected by gh (understood Apache-2.0, clean fit; asked). Intelligent Robotics Lab, Rey Juan Carlos University, Madrid (Spain, NATO-allied)."
   last_touch: "2026-06-03"
-  response: none
+  response: engaged
   tier: A
   country: ES
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #408 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-06-03"
+      text: "roveri-marco (Marco Roveri, planning/BDI researcher who has integrated BDI with PlanSys2) gave a substantive engaged reply on #408 (2026-06-03): PDDL is more expressive than URML; URML primitives can map to PDDL durative actions IF they carry duration; until / runtime conditions have no clean offline-PDDL encoding; URML's sequential core vs PDDL's parallel/time-triggered plans (concrete moveto/moveto/scan example with a scan-visibility correctness caveat); framed URML as a BDI-style architecture and cited Dal Moro/Robol/Roveri/Giorgini, PAAMS 2022 (BDI robotics with ROS2, integrated with PlanSys2). Replied positioning URML above the planner (intent compiles down to PDDL/PlanSys2, which owns parallelism/timing), conceding the duration + until + temporal-planning points, and offering a short conversation. Engaged."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0351 merges, post the posts-move26.md PlanSys2 body on PlanSys2/ros2_planning_system under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Frame as a peer-layer overlap, not URML strictly above."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (Marco Roveri). Position held: URML is the intent + validation layer above the planner; intent compiles down to PDDL and PlanSys2 owns the temporal/parallel plan. Recorded modeling concessions: durative actions need duration on primitives; runtime until stays execution-time (no offline-PDDL encoding); URML is not a temporal planner. Read the BDI paper (PAAMS 2022); offered a short conversation; follow up if he takes the call."
   notes: "Move #26 task-planning peer (closest to URML's own layer). PDDL action <-> URML primitive; plan -> URML behavior; URML as validation/lowering layer. Cross-link RFC-0160/0161 (behavior execution PlanSys2 dispatches into). Apache-2.0 clean fit. Origin ES (URJC, allied). Verified 2026-06-03."
 
 # ============================================================
