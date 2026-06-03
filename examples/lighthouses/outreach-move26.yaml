@@ -127,11 +127,13 @@
   comments:
     - date: "2026-06-03"
       text: "Posted issue #2901 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-06-03"
+      text: "nim65s (Pinocchio maintainer, INRIA/LAAS) replied on #2901 (2026-06-03), frustrated and unable to tell what the issue is asking; called the AI-assisted prose unprofessional/unrespectful/unsustainable and asked 'do you have an issue with pinocchio? Or a feature request?' plus 'please, human-only answers.' Thread open. No AI reply posted (would inflame); needs a short plain human reply from the founder or let it lapse."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0345 merges, post the posts-move26.md Pinocchio body on stack-of-tasks/pinocchio under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep claims modest (backend; URML talks to the planner, not Pinocchio)."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "FOUNDER human-only reply needed (nim65s explicitly demanded human-only and criticized the tool-use). Do NOT post an AI reply. Founder option: one plain line that URML is not asking pinocchio to change anything - it consumes the model/planner output and validates admissibility, nothing needed from them - or let it lapse/close. Same license-ask tell present (contact notes 'understood BSD-2-Clause; asked')."
   notes: "Move #26 dynamics backend (honest modest fit). Kinematic-model consistency for URML's reachability / joint-limit declaration. Cross-link RFC-0346 (Crocoddyl, built on Pinocchio). Origin FR (INRIA/LAAS, allied). Verified 2026-06-03."
 
 - slug: crocoddyl
