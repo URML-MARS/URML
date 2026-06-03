@@ -275,12 +275,29 @@ def _pct(num: int, denom: int) -> str:
     return f"{(100.0 * num / denom):.1f} %" if denom else "—"
 
 
+_FUNNEL_HEX = {
+    "grey-6": "#757575",
+    "blue-7": "#1976d2",
+    "light-blue-7": "#0288d1",
+    "positive": "#21ba45",
+    "red-6": "#e53935",
+}
+
+
 def _render_conversion_funnel(funnel: dict) -> None:
-    """Five stage cards in a row. Each card shows count + % of total +
-    conversion from the prior non-zero stage. No mock data: zero stages
-    render their zero count truthfully.
+    """Two-part funnel display:
+
+    1. Five stage cards in a row (precise count + share-of-total + conversion
+       from prior).
+    2. ECharts funnel chart below (visual pipeline shape).
+
+    Both views are driven by the same `funnel_stage_counts()` helper.
+    No mock data: zero stages render their zero count truthfully; an empty
+    database short-circuits before this helper is ever called.
     """
     total = funnel["total"]
+
+    # ---- 1. Stage cards ----
     prev_count: int | None = None
     with ui.row().classes("w-full gap-3 items-stretch flex-wrap"):
         for i, stage in enumerate(_FUNNEL_STAGES):
@@ -303,7 +320,6 @@ def _render_conversion_funnel(funnel: dict) -> None:
                     ui.label(f"{share} of total").classes("text-grey-7 text-xs")
                     ui.label(from_prior).classes("text-grey-6 text-xs")
                     ui.label(stage["hint"]).classes("text-grey-5 text-xs mt-1 italic")
-                # Share-of-total progress bar at the bottom of the card
                 bar_pct = (100.0 * count / total) if total else 0.0
                 ui.linear_progress(
                     value=min(1.0, count / total) if total else 0.0,
@@ -311,6 +327,57 @@ def _render_conversion_funnel(funnel: dict) -> None:
                 ).props(f"color={stage['color']}").classes("q-mt-none") \
                     .tooltip(f"{count} of {total} = {bar_pct:.1f} % of total")
             prev_count = count
+
+    # ---- 2. ECharts funnel visualization ----
+    funnel_data = [
+        {
+            "value": funnel.get(stage["key"], 0),
+            "name": stage["label"],
+            "itemStyle": {
+                "color": _FUNNEL_HEX.get(stage["color"], "#999"),
+                "borderColor": "#fff",
+                "borderWidth": 2,
+            },
+        }
+        for stage in _FUNNEL_STAGES
+    ]
+
+    ui.echart(
+        {
+            "tooltip": {
+                "trigger": "item",
+                "formatter": "{b}<br/>count: <b>{c}</b> ({d}% of pipeline)",
+            },
+            "legend": {
+                "data": [s["label"] for s in _FUNNEL_STAGES],
+                "top": "bottom",
+                "itemGap": 16,
+            },
+            "series": [
+                {
+                    "name": "Conversion funnel",
+                    "type": "funnel",
+                    "left": "10%",
+                    "right": "10%",
+                    "top": 20,
+                    "bottom": 60,
+                    "sort": "none",
+                    "gap": 4,
+                    "minSize": "12%",
+                    "label": {
+                        "show": True,
+                        "position": "inside",
+                        "formatter": "{b}: {c}",
+                        "color": "#fff",
+                        "fontWeight": "bold",
+                        "fontSize": 13,
+                    },
+                    "labelLine": {"show": False},
+                    "data": funnel_data,
+                }
+            ],
+        }
+    ).style("height: 320px").classes("w-full mt-4")
 
 
 def _render_sector_list(sectors: list[dict]) -> None:
