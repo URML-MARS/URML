@@ -120,7 +120,7 @@
   channel: github_issue
   contact: "stack-of-tasks/pinocchio (fast rigid-body kinematics and dynamics library; the model layer planners and MPC, including Crocoddyl, build on; ~3,434 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01). License not SPDX-detected by gh (understood BSD-2-Clause; asked). INRIA / LAAS-CNRS (France, NATO-allied)."
   last_touch: "2026-06-03"
-  response: none
+  response: wontfix
   tier: A
   country: FR
   sector: framework-skill
@@ -131,11 +131,13 @@
       text: "nim65s (Pinocchio maintainer, INRIA/LAAS) replied on #2901 (2026-06-03), frustrated and unable to tell what the issue is asking; called the AI-assisted prose unprofessional/unrespectful/unsustainable and asked 'do you have an issue with pinocchio? Or a feature request?' plus 'please, human-only answers.' Thread open. No AI reply posted (would inflame); needs a short plain human reply from the founder or let it lapse."
     - date: "2026-06-03"
       text: "Founder reached out human-to-human on #2901 (2026-06-03): apologized for the AI-prose confusion, clarified plainly that this is neither a bug nor a feature request and asks nothing of Pinocchio (URML would just sit above a Pinocchio model and consume its output), and offered a short online meeting, sharing his LinkedIn (greenvh). Awaiting nim65s."
+    - date: "2026-06-03"
+      text: "nim65s closed #2901 (COMPLETED) on 2026-06-03 without responding to the meeting offer or the LinkedIn. The AI-prose complaint stands; he did not take the human-meeting off-ramp. Treated as wontfix; no reply, no further contact (respecting his 'unsustainable' feedback)."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0345 merges, post the posts-move26.md Pinocchio body on stack-of-tasks/pinocchio under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep claims modest (backend; URML talks to the planner, not Pinocchio)."
       status: done
-  next_action: "Offered nim65s a short online meeting + founder LinkedIn (2026-06-03) with a plain-language answer to his 'bug or feature?' question. Awaiting reply; if he accepts, founder takes the meeting; if silent or declined, let it lapse - do not push, no further AI prose on this thread."
+  next_action: "Closed wontfix 2026-06-03 (nim65s closed without taking the meeting). Do not pursue; no reply; no LinkedIn follow-up. If Pinocchio is ever revisited it must be a human-authored, concrete, minimal ask."
   notes: "Move #26 dynamics backend (honest modest fit). Kinematic-model consistency for URML's reachability / joint-limit declaration. Cross-link RFC-0346 (Crocoddyl, built on Pinocchio). Origin FR (INRIA/LAAS, allied). Verified 2026-06-03."
 
 - slug: crocoddyl
