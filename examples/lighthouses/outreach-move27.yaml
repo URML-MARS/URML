@@ -47,8 +47,8 @@
 
 - slug: trac-ik
   rfc: 352
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/traclabs/trac_ik/issues/10"
   channel: github_issue
   contact: "traclabs/trac_ik (the de-facto fast inverse-kinematics solver across ROS manipulation; KDL + nonlinear-optimization hybrid; Issues enabled, not archived, actively maintained, last push 2026-06-02; canonical TRACLabs repo). TRACLabs (US)."
   last_touch: "2026-06-03"
@@ -58,18 +58,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0352 drafted (Move #27 WAVE ANCHOR). URML declares a target pose + reachable workspace; TRAC-IK computes the joint solution; URML validates the target is admissible (declared reachable workspace + envelope) before the solve, and treats a no-solution result as a validation signal. No license-ask (per 2026-06-03 guidance). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #10 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0352 merges, post the posts-move27.md TRAC-IK body as an Issue on traclabs/trac_ik under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+      status: done
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
   notes: "Move #27 anchor (IK). URML composes above: target pose -> validated reachability -> TRAC-IK -> joint config -> control. Manifest gaps queued as Spec RFCs (IK-target/joint-config declaration, joint-limit declaration). Cross-link RFC-0202 (MoveIt), RFC-0342 (OMPL), RFC-0010. Origin US (TRACLabs). Verified 2026-06-03."
 
 - slug: pink
   rfc: 353
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/stephane-caron/pink/issues/198"
   channel: github_issue
   contact: "stephane-caron/pink (differential IK via quadratic programming, built on Pinocchio; ~769 stars, Issues enabled, not archived, active, last push 2026-04-20). Stephane Caron (France-lineage, NATO-allied)."
   last_touch: "2026-06-03"
@@ -79,18 +79,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0353 drafted (Move #27). Differential IK as a QP over tasks, built on Pinocchio (RFC-0345). URML declares a frame-task target + capability; Pink computes joint velocities/config; URML validates admissibility before. Sibling to mink (RFC-0354, MuJoCo-based); contrast with TRAC-IK (RFC-0352, global pose-to-config). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #198 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0353 merges, post the posts-move27.md pink body on stephane-caron/pink under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 differential IK (Pinocchio-based, RFC-0345). QP task formulation. Origin FR (allied). Verified 2026-06-03."
 
 - slug: mink
   rfc: 354
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/kevinzakka/mink/issues/147"
   channel: github_issue
   contact: "kevinzakka/mink (differential IK for MuJoCo, task-based QP; ~1,370 stars, Issues enabled, not archived, active, last push 2026-05-15). Kevin Zakka (US). MuJoCo-based (RFC-0060)."
   last_touch: "2026-06-03"
@@ -100,18 +100,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0354 drafted (Move #27). The MuJoCo-native sibling of Pink: task-based differential IK as a QP. URML declares a frame-task target + capability; mink computes joint velocities; URML validates admissibility before. MuJoCo coupling (RFC-0060). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #147 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0354 merges, post the posts-move27.md mink body on kevinzakka/mink under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 differential IK (MuJoCo-based, RFC-0060). Sibling of Pink (RFC-0353). Origin US. Verified 2026-06-03."
 
 - slug: mplib
   rfc: 355
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/haosulab/MPlib/issues/127"
   channel: github_issue
   contact: "haosulab/MPlib (lightweight manipulation motion-planning library wrapping OMPL + FCL + a kinematics layer; used by the SAPIEN ecosystem; ~266 stars, Issues enabled, not archived, active, last push 2026-05-17). Hao Su Lab, UC San Diego (US). Distinct from the SAPIEN sim row recorded in Move #24."
   last_touch: "2026-06-03"
@@ -121,18 +121,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0355 drafted (Move #27). Manipulation-specific motion planning (wraps OMPL RFC-0342). URML move_to/grasp intent declares the target + arm capability; MPlib plans the trajectory; URML validates admissibility first. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #127 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0355 merges, post the posts-move27.md MPlib body on haosulab/MPlib under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 manipulation planning. Wraps OMPL (RFC-0342); manipulation-specific counterpart. haosulab (SAPIEN team; Move #24 Tier B). Origin US (UCSD). Verified 2026-06-03."
 
 - slug: graspnet
   rfc: 356
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/graspnet/graspnet-baseline/issues/148"
   channel: github_issue
   contact: "graspnet/graspnet-baseline (the GraspNet-1Billion baseline: a 6-DoF grasp-pose-detection network + graspnetAPI; ~952 stars, Issues enabled, not archived, last push 2025-02-17, ~16 months, still a reference baseline). Shanghai Jiao Tong University MVIG lab (academic open-source)."
   last_touch: "2026-06-03"
@@ -142,18 +142,18 @@
   sector: perception
   comments:
     - date: "2026-06-03"
-      text: "RFC-0356 drafted (Move #27). GraspNet is a grasp-pose SOURCE: URML declares the gripper capability (force range, accepted classes) + target; GraspNet proposes 6-DoF candidates; URML validates a chosen grasp against the declared gripper before execution. Mild staleness (~16mo) acknowledged. Open-source academic (RFC-0003 PRC-hardware exclusion does not apply to citing/consuming open-source; same precedent as Petoi). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #148 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0356 merges, post the posts-move27.md GraspNet body on graspnet/graspnet-baseline under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 grasp-pose source. URML gripper capability filters candidate grasps. Grasp-pose-source manifest gap queued. Origin CN (SJTU MVIG, academic open-source). Verified 2026-06-03."
 
 - slug: leap-hand
   rfc: 357
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/leap-hand/LEAP_Hand_API/issues/23"
   channel: github_issue
   contact: "leap-hand/LEAP_Hand_API (API for the LEAP Hand, a low-cost open-source 16-DoF anthropomorphic dexterous hand; ~163 stars, Issues enabled, not archived, last push 2025-10-20). Carnegie Mellon University (US), open hardware."
   last_touch: "2026-06-03"
@@ -163,18 +163,18 @@
   sector: component-vendor
   comments:
     - date: "2026-06-03"
-      text: "RFC-0357 drafted (Move #27). The LEAP Hand is exactly where URML's single-force-range gripper model is too coarse: a 16-DoF hand needs a richer capability declaration. Honest framing: this RFC partly asks what a dexterous-hand capability declaration should contain. URML declares the hand as a gripper today (lower-bound); the LEAP API executes. Dexterous/multi-DoF gripper declaration is the key queued Spec RFC. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #23 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0357 merges, post the posts-move27.md LEAP Hand body on leap-hand/LEAP_Hand_API under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 dexterous hand (open hardware). Surfaces the dexterous/multi-DoF gripper declaration gap (sibling Shadow Robot RFC-0358). Origin US (CMU). Verified 2026-06-03."
 
 - slug: shadow-robot
   rfc: 358
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/shadow-robot/sr_interface/issues/846"
   channel: github_issue
   contact: "shadow-robot/sr_interface (ROS interface for the Shadow Dexterous Hand, a 20+ actuated-DoF anthropomorphic hand; ~32 stars, Issues enabled, not archived, last push 2025-08-26). Shadow Robot Company (UK, NATO-allied), commercial open-source ROS stack."
   last_touch: "2026-06-03"
@@ -184,18 +184,18 @@
   sector: component-vendor
   comments:
     - date: "2026-06-03"
-      text: "RFC-0358 drafted (Move #27). The richest case for the dexterous-hand capability gap LEAP Hand (RFC-0357) raises: 20+ DoF. URML declares the hand as a gripper (lower-bound) today; sr_interface executes. Honest that the dexterous-hand capability declaration is the open question. Commercial vendor's open stack. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #846 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0358 merges, post the posts-move27.md Shadow Robot body on shadow-robot/sr_interface under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 dexterous hand (commercial open-source). Sibling LEAP Hand (RFC-0357). Dexterous/multi-DoF gripper declaration gap. Origin GB (Shadow Robot, allied). Verified 2026-06-03."
 
 - slug: rlbench
   rfc: 359
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/stepjam/RLBench/issues/298"
   channel: github_issue
   contact: "stepjam/RLBench (large-scale robot-learning manipulation benchmark, ~100 tasks, built on CoppeliaSim/PyRep; ~1,777 stars, Issues enabled, not archived, last push 2025-01-25, ~16 months, still widely used). Stephen James / Dyson Robotics Lab, Imperial College (UK, NATO-allied)."
   last_touch: "2026-06-03"
@@ -205,18 +205,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0359 drafted (Move #27, conceptual). RLBench defines manipulation TASKS with success conditions, close to what a URML behavior describes at intent level. Alignment: an RLBench task could be expressed as a URML behavior over validated primitives. Honest conceptual/benchmark-mapping conversation, not a runtime adapter. Mild staleness (~16mo) acknowledged. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #298 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0359 merges, post the posts-move27.md RLBench body on stepjam/RLBench under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 manipulation benchmark (conceptual peer). RLBench task <-> URML behavior. CoppeliaSim/PyRep dependency. Origin GB (Imperial / Dyson lab, allied). Verified 2026-06-03."
 
 - slug: robomimic
   rfc: 360
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/ARISE-Initiative/robomimic/issues/298"
   channel: github_issue
   contact: "ARISE-Initiative/robomimic (framework for learning manipulation from demonstrations; built on robosuite; ~1,437 stars, Issues enabled, not archived, active, last push 2026-02-05). ARISE Initiative (Stanford / UT Austin lineage, US)."
   last_touch: "2026-06-03"
@@ -226,18 +226,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0360 drafted (Move #27, learned-policy-as-substrate, like the Brax framing in Move #24). A robomimic policy is a manipulation controller URML can dispatch to; URML's capability manifest + envelope bound what the learned policy may attempt. Honest that learned-controller-as-substrate is newer ground. Builds on robosuite (Move #24 Tier B). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #298 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0360 merges, post the posts-move27.md robomimic body on ARISE-Initiative/robomimic under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 imitation-learning manipulation (learned-policy-as-substrate). URML bounds the policy's action space. Builds on robosuite (Move #24). Origin US (ARISE). Verified 2026-06-03."
 
 - slug: placo
   rfc: 361
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/Rhoban/placo/issues/31"
   channel: github_issue
   contact: "Rhoban/placo (quadratic-programming-based whole-body kinematics and control library; ~326 stars, Issues enabled, not archived, active, last push 2026-05-21). Rhoban team, University of Bordeaux (France, NATO-allied)."
   last_touch: "2026-06-03"
@@ -247,12 +247,12 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0361 drafted (Move #27). Whole-body IK/control as a QP over tasks + constraints; a sibling to Pink (RFC-0353) and mink (RFC-0354) with a whole-body/humanoid emphasis. URML declares a target task + capability; PlaCo computes the configuration; URML validates admissibility before. Whole-body tie to RFC-0010. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #31 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0361 merges, post the posts-move27.md PlaCo body on Rhoban/placo under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #27 whole-body IK/control. QP task formulation; sibling Pink (RFC-0353)/mink (RFC-0354); whole-body (RFC-0010). Origin FR (Rhoban/Bordeaux, allied). Verified 2026-06-03."
 
 # ============================================================
