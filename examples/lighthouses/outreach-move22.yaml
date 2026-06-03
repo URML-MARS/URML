@@ -142,17 +142,19 @@
 - slug: emqx
   rfc: 312
   sent_at: "2026-06-02"
-  posted_url: "https://github.com/emqx/emqx/issues/17453"
-  channel: github_issue
+  posted_url: "https://github.com/emqx/emqx/discussions/17457"
+  channel: github_discussion
   contact: "emqx/emqx (Business Source License - friction, ~16k stars, Issues + Discussions enabled, active, **not archived**). High-scale clustered MQTT broker; EMQ Technologies, China-domiciled."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-03"
+  response: engaged
   tier: B
   country: CN
   sector: protocol-substrate
-  comments: []
+  comments:
+    - date: "2026-06-03"
+      text: "Issue #17453 was converted to Q&A Discussion #17457. Maintainer zmstone answered (2026-06-03): keep URML broker-neutral and declare at the MQTT-contract level (cluster endpoint, topic namespace, per-class QoS, client TLS/auth/session settings), keeping EMQX cluster topology and routing internals out as operator concerns. Replied with thanks confirming that grain. Engaged; resolves the RFC-0312 manifest-grain question."
   claude_directives: []
-  next_action: "Posted as Issue emqx/emqx#17453 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
+  next_action: "Engaged via discussion #17457 (zmstone). Adopt the MQTT-contract grain (cluster endpoint, topic namespace, per-class QoS, client settings) for the manifest; keep broker internals out. Shared MQTT transport/QoS Spec RFC with RFC-0311 (Mosquitto)."
   notes: "Tier B. BSL platform license + CN origin recorded honestly; URML is an at-arms-length MQTT client (Petoi-CN precedent for non-US OSS engagement). High-scale counterpart to Mosquitto."
 
 # ============================================================

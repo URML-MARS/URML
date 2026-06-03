@@ -62,12 +62,12 @@
     - date: "2026-06-02"
       text: "Posted issue #972 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
     - date: "2026-06-03"
-      text: "SteveMacenski closed #972 on 2026-06-03: 'Closing AI generated garbage. Any human would find the obvious license file in the root of the directory.' Hostile AI-content close, his 2nd on URML (after Nav2 RFC-0201, 2026-05-29). The license jab is fair on process: RFC-0332 carried a license-clarification ask (the contact field even notes 'understood BSD; asked as an RFC question') when robot_localization's LICENSE is in the repo root. Accepted silently, no reply (OVOS/QGC/LibreTranslate/Nav2 discipline)."
+      text: "Closed by SteveMacenski on 2026-06-03, flagged as AI-generated and noting the license is stated in the repository. Accepted, no reply. Process note: RFC-0332 included a license-clarification question when the license was already determinable from the repo's LICENSE file; we will check the LICENSE first and omit that question going forward."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0332 merges, post the posts-move25.md robot_localization body as an Issue on cra-ros-pkg/robot_localization under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Closed wontfix 2026-06-03 by SteveMacenski (2nd hostile AI-content close after Nav2). Accepted silently, no reply. Do not pursue; avoid Macenski-controlled repos. Process lesson: never include a license-clarification ask when a LICENSE file is present, check it first and drop the boilerplate question."
+  next_action: "Closed wontfix 2026-06-03; accepted, no reply; not pursuing further. Process note: check the LICENSE file before including any license-clarification question, and omit it when the license is stated in the repo."
   notes: "Move #25 anchor. URML consumes the state estimate; differentiator is static validation vs the declared world model + envelope before motion. Manifest gaps queued as Spec RFCs (localization/pose-source declaration, REP-105 frame-convention alignment, covariance/quality envelope threshold). Cross-link RFC-0290 (frames), RFC-0006, Move-16 SLAM RFCs (0205-0207, 0211). Origin INTL (ROS community). Verified 2026-06-02."
 
 - slug: gtsam
