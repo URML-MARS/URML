@@ -52,8 +52,8 @@
 
 - slug: ompl
   rfc: 342
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/ompl/ompl/issues/1434"
   channel: github_issue
   contact: "ompl/ompl (Open Motion Planning Library; the de-facto sampling-based geometric + kinodynamic planning library, the planning core MoveIt builds on; ~2,070 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-31). License not SPDX-detected by gh (understood BSD-3-Clause; asked). Rice University (Kavraki Lab) lineage / community (US)."
   last_touch: "2026-06-03"
@@ -63,18 +63,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0342 drafted (Move #26 WAVE ANCHOR). URML declares a goal + constraints; OMPL computes a collision-free / kinodynamically-feasible path; URML statically validates the query is admissible (declared reachable workspace, envelope) before OMPL runs. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #1434 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0342 merges, post the posts-move26.md OMPL body as an Issue on ompl/ompl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+      status: done
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
   notes: "Move #26 anchor. URML composes above: intent -> validated goal+constraints -> OMPL path -> control. Manifest gaps queued as Spec RFCs (planner-class declaration, joint/dynamic-limit declaration, feasibility hint). Cross-link RFC-0202 (MoveIt uses OMPL), RFC-0319 (control executes), RFC-0332 (world model). Origin US (Rice/Kavraki). Verified 2026-06-03."
 
 - slug: ruckig
   rfc: 343
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/pantor/ruckig/issues/257"
   channel: github_issue
   contact: "pantor/ruckig (online, time-optimal, jerk-limited trajectory generation; used inside MoveIt for time-parameterization; ~1,243 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-31). License not SPDX-detected by gh (understood MIT; asked). Origin: Germany (Lars Berscheid / pantor)."
   last_touch: "2026-06-03"
@@ -84,18 +84,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0343 drafted (Move #26). URML's declared velocity / acceleration / jerk limits (today via the safety envelope) are the input constraints ruckig respects; URML validates the limits are coherent before motion, ruckig generates the online trajectory. Contrast with toppra (RFC-0344, offline). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #257 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0343 merges, post the posts-move26.md ruckig body on pantor/ruckig under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 online trajectory generation. URML kinematic limits -> ruckig input constraints. Online vs toppra's offline parameterization. Origin DE. Verified 2026-06-03."
 
 - slug: toppra
   rfc: 344
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/hungpham2511/toppra/issues/293"
   channel: github_issue
   contact: "hungpham2511/toppra (time-optimal path parameterization of a given geometric path under velocity / acceleration / torque limits; ~886 stars, Issues AND Discussions enabled, not archived, last push 2026-05-14). License not SPDX-detected by gh (understood MIT; asked). Academic (Hung Pham; INTL)."
   last_touch: "2026-06-03"
@@ -105,18 +105,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0344 drafted (Move #26). toppra adds time-optimal timing to a GIVEN path (after a geometric planner like OMPL RFC-0342) under URML's declared limits; the offline counterpart to ruckig's online generation (RFC-0343). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #293 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0344 merges, post the posts-move26.md toppra body on hungpham2511/toppra under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 time-optimal path parameterization. Sits after OMPL (path), offline counterpart to ruckig. URML declares the limits toppra consumes. Origin INTL. Verified 2026-06-03."
 
 - slug: pinocchio
   rfc: 345
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/stack-of-tasks/pinocchio/issues/2901"
   channel: github_issue
   contact: "stack-of-tasks/pinocchio (fast rigid-body kinematics and dynamics library; the model layer planners and MPC, including Crocoddyl, build on; ~3,434 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01). License not SPDX-detected by gh (understood BSD-2-Clause; asked). INRIA / LAAS-CNRS (France, NATO-allied)."
   last_touch: "2026-06-03"
@@ -126,18 +126,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0345 drafted (Move #26, HONEST backend like GTSAM RFC-0333). URML does not talk to Pinocchio directly; the useful contact point is consistency: the kinematic model is the ground truth a URML capability declaration (reachable_workspace_m, future joint limits) should stay consistent with. Boundary/consistency question, not a mapping. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #2901 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0345 merges, post the posts-move26.md Pinocchio body on stack-of-tasks/pinocchio under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep claims modest (backend; URML talks to the planner, not Pinocchio)."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 dynamics backend (honest modest fit). Kinematic-model consistency for URML's reachability / joint-limit declaration. Cross-link RFC-0346 (Crocoddyl, built on Pinocchio). Origin FR (INRIA/LAAS, allied). Verified 2026-06-03."
 
 - slug: crocoddyl
   rfc: 346
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/loco-3d/crocoddyl/issues/1505"
   channel: github_issue
   contact: "loco-3d/crocoddyl (fast DDP / optimal-control library for multi-contact dynamic motion: legged locomotion, dynamic manipulation; built on Pinocchio; ~1,225 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01). License not SPDX-detected by gh (understood BSD-3-Clause; asked). INRIA / LAAS-CNRS / University of Edinburgh (loco-3d, NATO-allied)."
   last_touch: "2026-06-03"
@@ -147,18 +147,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0346 drafted (Move #26). URML dynamic-motion intent (a legged move_to, a dynamic grasp) declares the goal + dynamic constraints; Crocoddyl computes the dynamically-feasible trajectory; URML validates admissibility first. Built on Pinocchio (RFC-0345). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #1505 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0346 merges, post the posts-move26.md Crocoddyl body on loco-3d/crocoddyl under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 DDP optimal control. Dynamic-motion trajectory optimization; built on Pinocchio (RFC-0345). Contrast with OCS2 (RFC-0347, real-time MPC). Cross-link RFC-0319, RFC-0010. Origin FR (INRIA/LAAS/Edinburgh, allied). Verified 2026-06-03."
 
 - slug: ocs2
   rfc: 347
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/leggedrobotics/ocs2/issues/128"
   channel: github_issue
   contact: "leggedrobotics/ocs2 (toolbox for real-time MPC / optimal control of switched systems: legged locomotion, mobile manipulation; ~1,416 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-14). License not SPDX-detected by gh (understood BSD-3-Clause; asked). ETH Zurich Robotic Systems Lab (Switzerland, NATO-allied)."
   last_touch: "2026-06-03"
@@ -168,18 +168,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0347 drafted (Move #26). URML continuous-motion intent declares the goal + constraints; OCS2 runs the real-time receding-horizon MPC that realizes it; URML validates admissibility before the controller engages. Contrast with Crocoddyl (RFC-0346, DDP trajectory optimization). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #128 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0347 merges, post the posts-move26.md OCS2 body on leggedrobotics/ocs2 under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 real-time MPC. Switched-systems optimal control; emphasizes receding-horizon MPC vs Crocoddyl's DDP. Cross-link RFC-0319, RFC-0332. Origin CH (ETH RSL, allied). Verified 2026-06-03."
 
 - slug: casadi
   rfc: 348
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/casadi/casadi/issues/4353"
   channel: github_issue
   contact: "casadi/casadi (general symbolic framework for nonlinear optimization and optimal control; many MPC tools, including acados and do-mpc, are built on it; ~2,222 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02). License not SPDX-detected by gh (understood LGPL-3.0; asked, and noted as runtime / cross-citation, not vendoring). KU Leuven (Belgium, NATO-allied) lineage."
   last_touch: "2026-06-03"
@@ -189,18 +189,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0348 drafted (Move #26, DEEPEST backend, honest like Ceres RFC-0338). General-purpose optimization math, well below URML's altitude; URML benefits only indirectly (controllers built with CasADi produce trajectories URML's intent drives). Ecosystem-acknowledgement + 'talk to the controller built on CasADi, not CasADi itself' boundary. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #4353 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0348 merges, post the posts-move26.md CasADi body on casadi/casadi under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep it short and honest; lowest direct fit, LGPL boundary noted."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 optimization backend (lowest direct fit, stated). Below URML's altitude; recorded for ecosystem completeness. acados (RFC-0349) + do-mpc built on it. LGPL-3.0 boundary (runtime / cross-citation). Origin BE (KU Leuven, allied). Verified 2026-06-03."
 
 - slug: acados
   rfc: 349
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/acados/acados/issues/1840"
   channel: github_issue
   contact: "acados/acados (fast embedded solvers for real-time nonlinear MPC and optimal control; built on CasADi; ~1,362 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-22). License not SPDX-detected by gh (understood BSD-2-Clause; asked). University of Freiburg syscop (Germany, NATO-allied) lineage."
   last_touch: "2026-06-03"
@@ -210,18 +210,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0349 drafted (Move #26, semi-backend, a notch more direct than CasADi). The direct contact point is constraints: URML declares the capability + safety limits the controller must respect, and an acados NMPC is where those become hard OCP constraints. URML talks to the MPC node, not the solver internals. Built on CasADi (RFC-0348). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #1840 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0349 merges, post the posts-move26.md acados body on acados/acados under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 embedded NMPC. URML constraints/limits -> OCP constraints. Built on CasADi (RFC-0348). Cross-link RFC-0319 (control). Origin DE (Freiburg syscop, allied). Verified 2026-06-03."
 
 - slug: teb-local-planner
   rfc: 350
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/rst-tu-dortmund/teb_local_planner/issues/438"
   channel: github_issue
   contact: "rst-tu-dortmund/teb_local_planner (Timed-Elastic-Band local navigation planner for mobile bases, widely used as a ROS local planner; ~1,314 stars, Issues enabled, Discussions disabled, not archived, last push 2026-01-09). Folds rst-tu-dortmund/mpc_local_planner (~653 stars, the MPC successor, same lab). License not SPDX-detected by gh (likely GPL-3.0 for teb; asked, copyleft noted as runtime/cross-citation). TU Dortmund Institute of Control Theory and Systems Engineering (RST), Germany (NATO-allied)."
   last_touch: "2026-06-03"
@@ -231,18 +231,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0350 drafted (Move #26). URML move_to intent + mobility constraints (drive_type, max_velocity, footprint) feed the local planner; URML validates the navigation goal is admissible, teb produces the local trajectory. mpc_local_planner (same lab) named and folded. Cross-link RFC-0201 (Nav2). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #438 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0350 merges, post the posts-move26.md teb_local_planner body on rst-tu-dortmund/teb_local_planner under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to mpc_local_planner, fork that row to live."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 local navigation planning (the nav side). URML mobile-base constraints -> teb local trajectory. mpc_local_planner folded. Cross-link RFC-0201 (Nav2 hub). Copyleft boundary noted. Origin DE (TU Dortmund RST, allied). Verified 2026-06-03."
 
 - slug: plansys2
   rfc: 351
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-03"
+  posted_url: "https://github.com/PlanSys2/ros2_planning_system/issues/408"
   channel: github_issue
   contact: "PlanSys2/ros2_planning_system (PDDL2.1 task and temporal planning system for ROS 2: decomposes a goal into a plan of durative actions and dispatches them; ~483 stars, Issues AND Discussions enabled, not archived, last push 2026-05-30). License not SPDX-detected by gh (understood Apache-2.0, clean fit; asked). Intelligent Robotics Lab, Rey Juan Carlos University, Madrid (Spain, NATO-allied)."
   last_touch: "2026-06-03"
@@ -252,12 +252,12 @@
   sector: framework-skill
   comments:
     - date: "2026-06-03"
-      text: "RFC-0351 drafted (Move #26, HIGHEST intent-layer fit, conceptual PEER). PlanSys2 task planning is close to URML's Layer-3 (behavior composition) + Layer-4 (NL->intent): a PDDL action <-> a URML primitive, a PlanSys2 plan could lower to a URML behavior, so URML adds static capability + safety validation to each dispatched action. Peer-layer conversation with real overlap, honestly framed. Cross-link RFC-0160 (BT.CPP), RFC-0161 (py-trees). Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #408 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0351 merges, post the posts-move26.md PlanSys2 body on PlanSys2/ros2_planning_system under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Frame as a peer-layer overlap, not URML strictly above."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #26 task-planning peer (closest to URML's own layer). PDDL action <-> URML primitive; plan -> URML behavior; URML as validation/lowering layer. Cross-link RFC-0160/0161 (behavior execution PlanSys2 dispatches into). Apache-2.0 clean fit. Origin ES (URJC, allied). Verified 2026-06-03."
 
 # ============================================================
