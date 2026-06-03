@@ -71,14 +71,16 @@
   posted_url: "https://github.com/mavlink/mavlink/issues/2508"
   channel: github_issue
   contact: "mavlink/mavlink (LGPL-3.0 with MIT generated-code exception, 2.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Drone protocol substrate; the interoperability layer between autopilot and ground station."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-03"
+  response: engaged
   tier: A
   country: INTL
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-03"
+      text: "hamishwillee (MAVLink maintainer) answered the RFC questions on #2508: protocol-class mavlink_v2, version v2, dialect = full set (all.xml) with custom as the exception; signing / multi-system topology deferred as out of scope for them. Offered to list URML on the mavlink.io implementations page once the manifest mapping stabilizes. Replied; engaged."
   claude_directives: []
-  next_action: "posted 2026-05-29 to https://github.com/mavlink/mavlink/issues/2508 (MAVLink Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "Engaged (hamishwillee). Stabilize the MAVLink manifest mapping (protocol mavlink_v2, version v2, dialect all.xml + custom exception), then follow up on #2508 to take the implementations.html listing offer. Do not model the signing / topology fields he flagged as unclear."
   notes: "Tier A. Origin Dronecode Foundation. URML-fit: very high. LGPL-3.0+MIT-exception is well-suited to URML's adapter pattern."
 
 - slug: mavsdk

@@ -92,14 +92,16 @@
   posted_url: "https://github.com/carnegierobotics/multisense_ros2/issues/81"
   channel: github_issue
   contact: "carnegierobotics/multisense_ros2 (MIT, 6 stars, 5 open issues, Issues enabled, last commit 2026-05-08 active). Vendor-org Carnegie Robotics LLC (Pittsburgh PA). Historical maintainers include Heiko Hirschmueller and Daniel Scharstein (well-known stereo-vision names; the same Hirschmueller is also at Roboception)."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-03"
+  response: wontfix
   tier: A
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-03"
+      text: "carnegierobotics/multisense_ros2#81 was closed with no comment (silent close); effectively wontfix. No engagement, no reply warranted."
   claude_directives: []
-  next_action: "Posted as Issue carnegierobotics/multisense_ros2#81 on 2026-05-28. Awaiting first response. Light-touch follow-up at 2026-06-25."
+  next_action: "Closed silently (wontfix). No further action; do not re-pitch."
   notes: "Tier A. Origin US (pass). Low GitHub stars (6) but vendor-direct and NDAA-friendly origin compensate; defense/space heritage. URML-fit: medium-high for stereo + RGB-D."
 
 - slug: roboception
