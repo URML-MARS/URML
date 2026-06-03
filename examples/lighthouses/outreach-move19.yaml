@@ -109,14 +109,16 @@
   posted_url: ""
   channel: web_form
   contact: "FIRST (firstinspires.org). Largest US school robotics org (FRC / FTC / FLL). Submitted via the Contact Support form at help.firstinspires.org/s/contactsupport; no public partnership email (program emails are for registered teams)."
-  last_touch: "2026-05-31"
-  response: none
+  last_touch: "2026-06-03"
+  response: acked
   tier: B
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-03"
+      text: "FIRST Customer Service replied to the contact-form submission on 2026-06-03: thanked, forwarded the message to the appropriate department for review, and said appropriate staff will contact directly if there is interest. Customer-service acknowledgement, not substantive engagement -> acked. No-reply channel; nothing to respond to."
   claude_directives: []
-  next_action: "Founder submitted the Contact Support web form (https://help.firstinspires.org/s/contactsupport) on 2026-05-31. No public submission URL. Curriculum/program layer; WPILib software is the separate RFC-0228 thread. Awaiting first response; light-touch follow-up 2026-06-28."
+  next_action: "Acked via FIRST Customer Service (2026-06-03), forwarded internally to the appropriate department. No-reply customer-service channel; wait for a staff member to make contact. Light-touch follow-up ~2026-07-03 if silent."
   notes: "Tier B. Org-level outreach (not the WPILib codebase, RFC-0228). Web-form channel only. Sent body in founder-actions-move19.md."
 
 - slug: rec-foundation
