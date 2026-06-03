@@ -53,19 +53,21 @@
   posted_url: "https://github.com/cra-ros-pkg/robot_localization/issues/972"
   channel: github_issue
   contact: "cra-ros-pkg/robot_localization (the canonical ROS EKF/UKF sensor-fusion and state-estimation package, Tom Moore; ~1,899 stars, Issues enabled, Discussions disabled, not archived, last push 2026-04-30). License not SPDX-detected by gh (understood BSD; asked as an RFC question). ROS community (INTL)."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-03"
+  response: wontfix
   tier: A
   country: INTL
   sector: perception
   comments:
     - date: "2026-06-02"
       text: "Posted issue #972 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
+    - date: "2026-06-03"
+      text: "SteveMacenski closed #972 on 2026-06-03: 'Closing AI generated garbage. Any human would find the obvious license file in the root of the directory.' Hostile AI-content close, his 2nd on URML (after Nav2 RFC-0201, 2026-05-29). The license jab is fair on process: RFC-0332 carried a license-clarification ask (the contact field even notes 'understood BSD; asked as an RFC question') when robot_localization's LICENSE is in the repo root. Accepted silently, no reply (OVOS/QGC/LibreTranslate/Nav2 discipline)."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0332 merges, post the posts-move25.md robot_localization body as an Issue on cra-ros-pkg/robot_localization under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+  next_action: "Closed wontfix 2026-06-03 by SteveMacenski (2nd hostile AI-content close after Nav2). Accepted silently, no reply. Do not pursue; avoid Macenski-controlled repos. Process lesson: never include a license-clarification ask when a LICENSE file is present, check it first and drop the boilerplate question."
   notes: "Move #25 anchor. URML consumes the state estimate; differentiator is static validation vs the declared world model + envelope before motion. Manifest gaps queued as Spec RFCs (localization/pose-source declaration, REP-105 frame-convention alignment, covariance/quality envelope threshold). Cross-link RFC-0290 (frames), RFC-0006, Move-16 SLAM RFCs (0205-0207, 0211). Origin INTL (ROS community). Verified 2026-06-02."
 
 - slug: gtsam
