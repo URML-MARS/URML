@@ -183,14 +183,16 @@
   posted_url: "https://github.com/OPCFoundation/UA-.NETStandard/issues/3827"
   channel: github_issue
   contact: "OPCFoundation/UA-.NETStandard (OPC Foundation reciprocal community license 'other' - members-only friction, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-03"
+  response: engaged
   tier: A
   country: INTL
   sector: protocol-substrate
-  comments: []
+  comments:
+    - date: "2026-06-03"
+      text: "marcschier (OPC Foundation maintainer) responded on #3827 (2026-06-03), strongly positive: the repo implements only what is in the standard (Core + companion specs), but a URML client/binding can be built on top easily, especially via the upcoming 2.0 source generator for ObjectType proxy classes; the full robot companion spec could be added as a client/server library given demand (a real project using it + an owner who maintains it). Any spec CHANGE goes through an OPC-F working group via a Mantis issue in the Robot CS area. He wrote 'this would be great to become a binding for your project/standard work. Great effort!' Replied confirming URML composes as a client/binding (no spec change), will build on the 2.0 source generator, and will file Mantis only if a real gap surfaces. Engaged."
   claude_directives: []
-  next_action: "Posted as Issue OPCFoundation/UA-.NETStandard#3827 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
+  next_action: "Engaged (marcschier, OPC-F). URML maps as a client/binding onto the robot companion nodeset (no spec change); build the OPC UA client mapping on the UA-.NETStandard 2.0 source generator when an adapter is pursued. File a Mantis issue (Robot CS area) only if a genuine companion-spec gap surfaces. Highest-leverage OPC UA thread; revisit with a hardware-validated adapter to anchor the library/listing."
   notes: "Tier A. OPC Foundation RCL recorded; protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
 
 - slug: eclipse-milo
