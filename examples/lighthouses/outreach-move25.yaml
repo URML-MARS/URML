@@ -159,18 +159,20 @@
   channel: github_issue
   contact: "OctoMap/octomap (canonical 3D occupancy-grid / octree mapping, Armin Hornung et al.; ~2,307 stars, Issues enabled, Discussions disabled, not archived, last push 2026-02-08). License: core `octomap` BSD, `octovis` GPL (split noted, asked to confirm). University of Freiburg lineage / community (DE, allied)."
   last_touch: "2026-06-02"
-  response: none
+  response: engaged
   tier: A
   country: DE
   sector: perception
   comments:
     - date: "2026-06-02"
       text: "Posted issue #447 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
+    - date: "2026-06-02"
+      text: "ahornung (OctoMap maintainer) clarified on #447: only octovis is GPL, the octomap core library is BSD. URML touches only the BSD core + occupancy queries. Replied; engaged. Resolves the RFC-0337 license caveat."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0337 merges, post the posts-move25.md OctoMap body on OctoMap/octomap under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (ahornung). Update RFC-0337: octomap core is BSD (only octovis GPL); URML maps against the BSD library / occupancy queries."
   notes: "Move #25 map representation. URML's geofence/occupancy (Pass 3) + declared_locations check against the occupancy map. Cross-link RFC-0291 (deconfliction), RFC-0290 (frames). BSD core / GPL octovis split. Origin DE (Freiburg, allied). Verified 2026-06-02."
 
 - slug: ceres-solver
@@ -201,18 +203,20 @@
   channel: github_issue
   contact: "locusrobotics/fuse (graph-based ROS sensor-fusion / state-estimation framework, a modern plugin-based alternative to robot_localization; ~868 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-06). License not SPDX-detected by gh (understood BSD-3-Clause; asked). Locus Robotics (US)."
   last_touch: "2026-06-02"
-  response: none
+  response: engaged
   tier: A
   country: US
   sector: perception
   comments:
     - date: "2026-06-02"
       text: "Posted issue #427 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
+    - date: "2026-06-02"
+      text: "svwilliams (fuse maintainer, Locus) answered on #427: fuse is highly configurable, but the common open-source config (single-robot pose + covariance from multiple sensors) mimics robot_localization, so model that as default and treat fuse + robot_localization as one pose-source declaration (fuse output is config-dependent). Strong caution: nothing in fuse is safety-rated; covariance is a best-guess (Gaussian, tunable). Confirmed BSD-3-Clause. Replied accepting the not-safety-rated framing; engaged."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0339 merges, post the posts-move25.md fuse body on locusrobotics/fuse under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Do NOT re-pitch the warehouse relationship (RFC-0300); keep to the fuse framework."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (svwilliams). Update RFC-0339: covariance is an opt-in advisory, explicitly NOT safety-rated (per his caution); model fuse as a config-dependent pose-source beside robot_localization. BSD-3-Clause confirmed."
   notes: "Move #25 sensor fusion. fuse positions vs robot_localization (RFC-0332) for a URML localization-source declaration. Distinct from RFC-0300 (Locus warehouse, off-GitHub). Origin US. Verified 2026-06-02."
 
 - slug: dlio

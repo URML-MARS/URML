@@ -44,13 +44,15 @@
   channel: github_issue
   contact: "RobotWebTools/rosbridge_suite (BSD-3-Clause, ~1.2k stars, Issues + Discussions enabled, active, **not archived**). The canonical websocket bridge to ROS; URML validated intent rides over it as a rosbridge JSON producer."
   last_touch: "2026-06-02"
-  response: none
+  response: wontfix
   tier: A
   country: US
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-02"
+      text: "Maintainer bjsowa closed AND locked rosbridge_suite#1283 (2026-06-02): unfamiliar with URML, not into LLMs, asked for a plain-human explanation. Issue is locked so no reply could be posted (a plain-human reply was drafted but could not be sent). Soft AI-prose pushback; effectively wontfix."
   claude_directives: []
-  next_action: "Posted as Issue RobotWebTools/rosbridge_suite#1283 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
+  next_action: "Closed + locked (wontfix); AI-prose pushback (bjsowa); no reply possible. Do not re-pitch; lead with a plain-human, non-LLM framing if ever revisited."
   notes: "Tier A. Lead web/teleop target. URML as a validated producer of rosbridge ops. Surfaces a queued websocket/bridge transport-declaration Spec RFC."
 
 - slug: webrtc-ros
