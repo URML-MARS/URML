@@ -36,6 +36,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_PERCEPTION = "capability.missing_perception"
     CAPABILITY_MISSING_STATION_KEEPING = "capability.missing_station_keeping"
     CAPABILITY_MISSING_GRIPPER = "capability.missing_gripper"
+    CAPABILITY_ARM_NOT_DECLARED = "capability.arm_not_declared"
+    CAPABILITY_BIMANUAL_REQUIRES_TWO_ARMS = "capability.bimanual_requires_two_arms"
     CAPABILITY_MISSING_CAMERA = "capability.missing_camera"
     CAPABILITY_MISSING_SENSOR = "capability.missing_sensor"
     CAPABILITY_MISSING_FRAME = "capability.missing_frame"
