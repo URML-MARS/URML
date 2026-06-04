@@ -1,0 +1,106 @@
+# Gated Project Chrono (high-fidelity validation substrate) integration workflow.
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic
+# unit suite already gates every PR).
+#
+#   chrono-smoke    — install a real pychrono (from conda-forge) and run
+#   the hermetic chrono suite + the live smoke under it. Fast, no scene.
+#   The high-fidelity analog of mujoco-integration's mujoco-smoke.
+#
+#   chrono-sitl-e2e — the real end-to-end: the conformance
+#   home/chrono_vehicle_terrain_positive fixture run through
+#   ConformanceRunner with a live ChronoAdapter advancing a real
+#   Chrono::Vehicle terramechanics scene. Heavy, best-effort.
+#
+# HONESTY NOTE: the e2e below was authored without a bundled
+# Chrono::Vehicle scene to drive. The ChronoAdapter and the fixture are
+# exercised hermetically (MockROSAdapter, fake pychrono) on every PR;
+# the scene-driven run needs a committed vehicle + terrain model and a
+# location->driver mapping pinned in chrono_adapter.yaml. The job fails
+# loudly until that is wired rather than green-washing. Do not treat the
+# first chrono-sitl-e2e run as a regression signal; treat it as the
+# calibration run, exactly as px4-integration's px4-sitl-e2e and
+# mujoco-integration's mujoco-sitl-e2e were treated.
+#
+# PyChrono is distributed via conda-forge, not as a PyPI wheel, so the
+# smoke job uses a conda environment for the engine and pip for the URML
+# packages (installed with --no-deps into the conda env, then their pure
+# deps added, to avoid pip trying to resolve the empty [chrono] extra's
+# engine from PyPI).
+
+name: chrono-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 15:00 UTC (staggered after the other integration lanes).
+    - cron: '0 15 * * 1'
+
+jobs:
+  chrono-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up conda (miniforge) with pychrono from conda-forge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: chrono
+          python-version: "3.11"
+
+      - name: Install pychrono
+        run: |
+          conda install -y -c conda-forge pychrono
+          python -c "import pychrono; print('pychrono import OK')"
+
+      - name: Install URML packages (pip, into the conda env)
+        run: |
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/chrono-runtime \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Run the hermetic chrono suite + live smoke under real pychrono
+        env:
+          URML_CHRONO_INTEGRATION: "1"
+        run: |
+          cd reference/chrono-runtime
+          python -m pytest tests/ -v
+
+  chrono-sitl-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for Chrono::Vehicle scene-driven e2e
+        run: |
+          # Wiring (calibration step): commit a small Chrono::Vehicle
+          # tracked model + a deformable-terrain patch, pin its
+          # location->driver mapping in a chrono_adapter.yaml, then with
+          # URML_CHRONO_INTEGRATION=1 run:
+          #   ConformanceRunner(
+          #     cases=[home/chrono_vehicle_terrain_positive],
+          #     adapter_factory=lambda: ChronoAdapter(load_chrono_config(
+          #       "chrono_adapter.yaml")))
+          # Fails loudly until pinned rather than green-washing.
+          echo "A bundled Chrono::Vehicle scene + location->driver mapping is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrono-sitl-e2e-diagnostics
+          path: reference/chrono-runtime
+          retention-days: 14
