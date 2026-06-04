@@ -189,11 +189,13 @@
       text: "Replied 2026-06-04 (idoco2003, issue #746): thanked Dan, confirmed the motion-primitive/driver-input manifest granularity, committed to building one worked PyChrono validation example and sharing it back."
     - date: "2026-06-04"
       text: "Shipped urml-chrono-runtime (PR #312, merged c294ea8) implementing the driver-input mapping Dan Negrut outlined on #746: ChronoAdapter routes each primitive to a ChSystem driver segment and returns the dynamics (sim time, contacts, commanded driver inputs) as validation evidence; conformance fixture 21 + gated chrono-integration.yml. Posted a follow-up on #746 linking the runtime."
+    - date: "2026-06-04"
+      text: "DanNegrut acknowledged the shipped runtime warmly on #746 (2026-06-04): 'quick progress :-) Best of luck, hopefully you'll find Chrono useful...' Thread now closed by the maintainer on a positive note. No reply needed (a sign-off, not a question)."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0328 merges, post the posts-move24.md Project Chrono body on projectchrono/chrono under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (DanNegrut, Chrono lead). Worked runtime shipped (urml-chrono-runtime, PR #312) + follow-up posted on #746. Next build step: a real Chrono::Vehicle terramechanics scene (contact forces, sinkage, tip margin) wired into the gated chrono-sitl-e2e calibration job; that unlocks the richer validation evidence."
+  next_action: "Engaged (DanNegrut, Chrono lead), positive close on #746. Worked runtime shipped (urml-chrono-runtime, PR #312). Next build step remains a real Chrono::Vehicle terramechanics scene wired into chrono-sitl-e2e for the richer evidence; no further reply owed on the thread."
   notes: "Move #24. URML mobility (tracked / ackermann / max_payload) -> a Chrono vehicle model; perception -> Chrono::Sensor. The high-fidelity-validation use case. Cross-link RFC-0059 (Drake), RFC-0060 (MuJoCo). Manifest gaps queued (terramechanics fidelity hint, simulator-target class hint). Origin US (UW-Madison; UW + Parma). Verified 2026-06-02."
 
 - slug: brax
