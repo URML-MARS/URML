@@ -135,6 +135,7 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # Ghost Vision 60 — US origin, SDK access-gated → manifest+spec only.
     "ghost_vision60": _VALIDATOR_FIXTURES / "manifests" / "ghost_vision60.yaml",
     "digit_biped": _VALIDATOR_FIXTURES / "manifests" / "digit_biped.yaml",
+    "digit_bimanual": _VALIDATOR_FIXTURES / "manifests" / "digit_bimanual.yaml",
     "optimus_biped": _VALIDATOR_FIXTURES / "manifests" / "optimus_biped.yaml",
     "figure_biped": _VALIDATOR_FIXTURES / "manifests" / "figure_biped.yaml",
     "apollo_biped": _VALIDATOR_FIXTURES / "manifests" / "apollo_biped.yaml",

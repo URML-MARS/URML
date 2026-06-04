@@ -1,0 +1,50 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: humanoid/digit-tote-lift
+# Source NL: "Find the tote, pick it up with both hands, carry it to
+#             staging, and set it down." (see digit-tote-lift.en.txt)
+#
+# Whole-body / bimanual manipulation (RFC-0010) on a two-arm humanoid.
+# A humanoid is a biped (mobility, RFC-0009) with two arms: this program
+# detects the tote, lifts it with both arms in one `bimanual together`
+# step (the runtime decomposes it into a left-arm and a right-arm
+# manipulation goal), walks to staging carrying it, then sets it down
+# with both arms. Uses the `home` profile — whole-body manipulation adds
+# no new profile (profiles over forks), matching the biped/quadruped
+# conformance fixtures. Validatable end-to-end via the companion
+# manifest, which declares two arms (`manipulation.arms: [left, right]`):
+#
+#   urml validate digit-tote-lift.urml.yaml \
+#     -m digit-tote-lift.manifest.yaml --profile home
+#
+# The manifest carries a compliant US provenance block, so it also
+# passes Pass 5; pass `--no-policy` to skip policy when exercising the
+# language path alone.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: tote
+        store_as: the_tote
+    - bimanual:
+        mode: together
+        left:
+          target: $the_tote
+          force: firm
+        right:
+          target: $the_tote
+          force: firm
+    - move_to:
+        location: staging_a
+        carrying: $the_tote
+    - bimanual:
+        mode: together
+        left:
+          mode: place
+          at: staging_a
+        right:
+          mode: place
+          at: staging_a

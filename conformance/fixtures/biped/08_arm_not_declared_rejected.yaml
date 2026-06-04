@@ -1,0 +1,23 @@
+name: biped/digit_arm_not_declared_rejected
+description: >
+  RFC-0010 negative: a grasp addresses an arm the manifest does not declare.
+  The dual-arm Digit manifest declares arms `left` and `right`; addressing
+  `third_hand` is rejected at Pass 2 with capability.arm_not_declared. Proves
+  the arm selector is checked against the manifest, not accepted blindly.
+
+manifest: digit_bimanual
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: tote, store_as: the_tote }
+      - grasp: { target: $the_tote, force: firm, arm: third_hand }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.arm_not_declared

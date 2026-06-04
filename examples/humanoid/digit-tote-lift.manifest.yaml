@@ -1,0 +1,98 @@
+# Capability manifest for a two-arm humanoid (Agility Robotics Digit).
+# Exercises RFC-0009 (mobility.drive_type: biped) and RFC-0010 (whole-body
+# manipulation): arm_count 2 with a named `arms` list binding each arm to its
+# gripper, so the validator can resolve `arm: left/right` and the `bimanual`
+# primitive against the manifest. US origin (Agility, Oregon); the provenance
+# block is fully compliant under the bundled US-federal default policy
+# (RFC-0004), so this validates with policy on. Companion to the dual-arm
+# conformance manifest `digit_bimanual`.
+
+manifest_version: "0.1"
+robot_id: digit_tote_demo
+description: Bipedal logistics humanoid with two arms (RFC-0009 + RFC-0010).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: tote_shelf
+    pose: { x: 6.0, y: 4.0, z: 0.0 }
+    frame: site
+    description: Where the tote starts.
+  - name: staging_a
+    pose: { x: 6.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Drop-off / staging area.
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Charging dock / idle pose.
+
+declared_events:
+  - estop_engaged
+  - aisle_clear
+
+mobility:
+  drive_type: biped          # RFC-0009
+  max_velocity: 1.5
+  station_keeping: true
+
+manipulation:                # RFC-0010
+  arm_count: 2
+  grippers:
+    - name: left_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 80.0
+      accepted_classes:
+        - tote
+    - name: right_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 80.0
+      accepted_classes:
+        - tote
+  arms:
+    - name: left
+      gripper_ref: left_hand
+    - name: right
+      gripper_ref: right_hand
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - tote
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - wms_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: digit_compute
+      role: critical
+      vendor: agility
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/digit_compute.cdx.json
+        sha256: "7777777777777777777777777777777777777777777777777777777777777777"
