@@ -61,6 +61,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #19 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0372 merges, post the posts-move29.md ToddlerBot body as an Issue on hshi74/toddlerbot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
@@ -82,6 +84,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #47 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0373 merges, post the posts-move29.md Open Duck Mini body on apirrone/Open_Duck_Mini under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
@@ -103,6 +107,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #539 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0374 merges, post the posts-move29.md K-Scale body on kscalelabs/ksim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to kos, fork that row to live."
@@ -124,6 +130,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #9 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0375 merges, post the posts-move29.md PAL TALOS body on pal-robotics/talos_robot under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
@@ -145,6 +153,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #98 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0376 merges, post the posts-move29.md legged_gym body on leggedrobotics/legged_gym under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
@@ -208,6 +218,8 @@
   comments:
     - date: "2026-06-04"
       text: "Posted issue #85 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Posted a correction comment on the issue. The original post overstated the gap: the biped and quadruped drive_type classes already existed (RFC-0009, Implemented), and the framing traced to a drifted Layer-1 spec doc, since fixed. The whole-body manipulation half shipped as RFC-0010 (Implemented 2026-06-04). The whole-body kinematics / balance declaration question stands. response unchanged (no maintainer reply yet)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0379 merges, post the posts-move29.md legged_control body on qiayuanl/legged_control under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
