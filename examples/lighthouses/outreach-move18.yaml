@@ -225,14 +225,18 @@
   posted_url: "https://github.com/pybricks/support/issues/2713"
   channel: github
   contact: "pybricks/pybricks-micropython (Other license — clarification ask, 324 stars, **Issues DISABLED on main repo**, last commit 2026-05-28, **not archived**). MicroPython firmware for LEGO SPIKE / EV3 / BOOST / WeDo. Sibling repo pybricks/support has Issues enabled (community Q&A); posted there."
-  last_touch: "2026-05-29"
-  response: declined
+  last_touch: "2026-06-04"
+  response: wontfix
   tier: A
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-05-29"
+      text: "laurensvalk (Pybricks founder) objected on #2713: 'please do not make your AI do the work of asking real humans to do work for you. That is wrong on so many levels.' Reacting specifically to the post's 'Human-only correspondence available on request' line."
+    - date: "2026-06-04"
+      text: "laurensvalk closed #2713: 'The bot stopped replying, so closing this issue.' Hostile AI-content close. Accepted silently, no reply (cf. OVOS/QGC/Macenski/LibreTranslate/Sensirion). This post also carried the license-ask anti-pattern: pybricks-micropython shows 'Other' and we asked the maintainer to confirm the OSI license."
   claude_directives: []
-  next_action: "Posted 2026-05-29 (idoco2003) to pybricks/support#2713 (open). @laurensvalk (maintainer) pushed back on the method: 'We are always open to discussions, new technologies, and new ideas, but please do not make your AI do the work of asking real humans to do work for you.' Open-in-principle on substance, but objects to AI-driven outreach; no technical engagement. No auto-follow-up; any re-engagement is human-only."
+  next_action: "Hostile AI-content close (laurensvalk, Pybricks founder), closed 2026-06-04. Accept silently per discipline; no reply, no RFC edit, no further pybricks outreach. Post carried the license-ask anti-pattern (confirm-the-OSI-license on a repo showing 'Other')."
   notes: "Tier A pending license clarification ('Other' may resolve to MIT-style on inspection). Origin Pybricks community OSS (BE / community); passes US-federal default policy. URML-fit: education-bridge, complements existing URML SPIKE adapter (in edu-runtime). Surfaces Spec RFCs: license-clarification field; Pybricks-runtime-class declaration."
 
 - slug: pros-vex
