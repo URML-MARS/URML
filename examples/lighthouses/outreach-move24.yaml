@@ -258,11 +258,13 @@
       text: "pseudo-rnd-thoughts (Mark Towers, Farama Foundation maintainer) replied on #1588 (2026-06-02): language-as-action converted to raw actions is a known technique (cited arXiv 2112.08907), confirmed MIT. Brief but constructive, no hostility. Owe a short human reply."
     - date: "2026-06-04"
       text: "Replied 2026-06-04 (idoco2003, issue #1588): clarified URML sits a layer above the env API as the intent/validation surface, Gymnasium being one compile target; acknowledged the reference."
+    - date: "2026-06-04"
+      text: "pseudo-rnd-thoughts (Mark Towers, Farama) closed #1588 on 2026-06-04 after the exchange, no further comment. Neutral/constructive close (he had answered the license + given a reference and the framing exchange was substantive), not a rejection. Stays engaged; a silent close is a sign-off, no reply owed."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0331 merges, post the posts-move24.md Gymnasium body on Farama-Foundation/Gymnasium under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep the framing exploratory; do not overclaim a substrate mapping."
       status: done
-  next_action: "Engaged-light (Mark Towers, Farama). Replied 2026-06-04. No further action unless they re-engage."
+  next_action: "Engaged (Mark Towers, Farama), thread closed neutrally after a constructive exchange. Nothing owed. No further Gymnasium action unless they re-engage."
   notes: "Move #24 conceptual peer. Two directions: a URML-validated policy exposing a Gym env; a manifest bounding a Gym action space to the declared-safe subset. PettingZoo (multi-agent) <-> URML fleet (RFC-0286). Cross-link RFC-0329 (Brax uses the Gym-style API). Manifest gap queued (RL-env / action-space alignment). Origin US (Farama). Verified 2026-06-02."
 
 # ============================================================
