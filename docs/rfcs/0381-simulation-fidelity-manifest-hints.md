@@ -2,7 +2,7 @@
 rfc: 0381
 title: Simulation-fidelity manifest hints, terrain_fidelity and simulator_target_class
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-06-04
 updated: 2026-06-04
 supersedes: —
@@ -179,3 +179,7 @@ This is a Spec RFC. Comments belong in the RFC's PR thread on `URML-MARS/URML`.
 - [x] No Layer-2 primitive added; no substrate coupling (the block is read by any sim runtime, ignored safely by others).
 - [x] Implementation note explains how it lands.
 - [x] Re-read CLAUDE.md §What Claude Should Never Do; closed enums preserve the gate, no substrate lock-in, no cloud dependency.
+
+## Implementation status
+
+Implemented 2026-06-04. Landed: the `ValidationContext` model + optional `validation` field on `CapabilityManifest` (closed Literal enums, `extra: forbid`); the `validation` block on the `chrono_vehicle_cell` fixture manifest; `ChronoConfig.terrain_fidelity` and its surfacing in the Chrono adapter's evidence payload (`terrain_class`); validator schema tests (`test_validation_block_rfc0381.py`) and a chrono-runtime evidence test; and the Layer-1 spec §2.11 documenting the block. Enum membership is enforced by pydantic; report-surfacing in the `--json` output and the `granular` deformable-terrain consumer remain the noted follow-ups (Unresolved questions 1 and 3).

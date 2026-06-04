@@ -41,6 +41,12 @@ mobility:
   max_velocity: 3.0
   station_keeping: false
 
+# RFC-0381: simulation-fidelity hints. This deployment runs over deformable
+# terrain and is validated against a high-fidelity multibody engine (Chrono).
+validation:
+  terrain_fidelity: deformable
+  simulator_target_class: high_fidelity_multibody
+
 perception:
   sensors:
     - name: imu

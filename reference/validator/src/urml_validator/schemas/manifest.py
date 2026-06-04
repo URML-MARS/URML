@@ -523,6 +523,36 @@ class Substrate(BaseModel):
     rmw_options: RmwOptions | None = None
 
 
+class ValidationContext(BaseModel):
+    """Optional simulation-fidelity hints (RFC-0381).
+
+    Two advisory, closed-enum fields recording the validation context a
+    deployment's intent was checked in: the terrain class it runs over and
+    the fidelity tier it was validated against. Both are read by the
+    simulation reference runtimes (a Chrono runtime selects a deformable
+    terrain model for ``terrain_fidelity: deformable``); neither gates a
+    primitive, and the validator enforces only enum membership. Surfaced
+    and queued by RFC-0328 (Project Chrono) and the Move #24 sim wave.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    terrain_fidelity: Literal["rigid", "deformable", "granular", "unmodeled"] | None = Field(
+        default=None,
+        description="Terrain class the deployment runs over. Read by sim runtimes; not enforced.",
+    )
+    simulator_target_class: Literal[
+        "kinematic",
+        "rigid_body",
+        "high_fidelity_multibody",
+        "photoreal",
+        "hardware",
+    ] | None = Field(
+        default=None,
+        description="Fidelity tier the intent was validated against. Closed enum; growth is RFC-gated.",
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -558,3 +588,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0250: optional substrate-class declarations (autopilot, RMW, IPC, etc.).
     substrate: Substrate | None = None
+
+    # RFC-0381: optional simulation-fidelity hints (terrain + validation tier).
+    validation: ValidationContext | None = None

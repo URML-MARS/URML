@@ -132,6 +132,7 @@ class ChronoAdapter:
             "n_contacts": int(system.GetNcontacts()),
             "steps": int(steps),
             "driver": [float(v) for v in driver],
+            "terrain_class": self._config.terrain_fidelity,  # RFC-0381 hint, mirrored from the manifest
             "backend": "pychrono",
         }
         self._last_evidence = ev
