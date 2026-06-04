@@ -215,6 +215,9 @@ def validate(
     errors.extend(_check_link_loss_coherence(manifest_model, envelope_model))
     # RFC-0382: monitorable temporal-logic properties parse + resolve signals.
     errors.extend(_check_monitorable_properties(manifest_model, envelope_model))
+    # RFC-0383: learned-policy training-envelope coherence (severity per enforcement).
+    for issue in _check_learned_policy(manifest_model, envelope_model):
+        (warnings if issue.severity == "warning" else errors).append(issue)
 
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
@@ -2641,6 +2644,107 @@ def _check_monitorable_properties(
                 )
             )
     return out
+
+
+def _min_non_none(*values: float | None) -> float | None:
+    """The strictest (smallest) non-None ceiling, or None if all are None."""
+    present = [v for v in values if v is not None]
+    return min(present) if present else None
+
+
+def _check_learned_policy(
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+) -> list[ValidationError]:
+    """Pass 2/3 (RFC-0383): a deployment must stay inside a learned policy's training envelope.
+
+    When the manifest declares ``learned_policy``, the validator checks that the
+    deployment's admissible ceiling (the strictest of the mechanical ``mobility``
+    limit and the safety-envelope cap) does not exceed what the policy was
+    trained for, and that the declared terrain is within the trained terrain
+    classes. Severity follows ``enforcement`` (``reject`` -> error, ``warn`` ->
+    warning). The validator does not load or run the policy; ``policy_ref`` is
+    opaque. Per-primitive intent-to-command inference is a documented follow-on.
+    """
+    out: list[ValidationError] = []
+    lp = manifest.learned_policy
+    if lp is None:
+        return out
+    severity: Literal["error", "warning"] = "error" if lp.enforcement == "reject" else "warning"
+
+    # Terrain coherence: the validated terrain must be one the policy trained on.
+    vc = manifest.validation
+    if vc is not None and vc.terrain_fidelity is not None and lp.terrain_classes:
+        if vc.terrain_fidelity not in lp.terrain_classes:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH,
+                    severity=severity,
+                    primitive=None,
+                    path=["<manifest>", "learned_policy", "terrain_classes"],
+                    field="terrain_classes",
+                    message=(
+                        f"deployment terrain_fidelity {vc.terrain_fidelity!r} is not among the "
+                        f"policy's trained terrain_classes {list(lp.terrain_classes)}."
+                    ),
+                    suggestion=(
+                        "Run the policy only on terrain it was trained for, or widen "
+                        "learned_policy.terrain_classes. Per RFC-0383."
+                    ),
+                )
+            )
+
+    # Velocity ceiling vs the trained command range.
+    trained_velocity = [cr.max for cr in lp.command_ranges if cr.quantity in ("linear_velocity_x", "linear_velocity_y")]
+    if trained_velocity:
+        trained_max = max(trained_velocity)
+        mob_v = manifest.mobility.max_velocity if manifest.mobility is not None else None
+        env_v = envelope.max_velocity if envelope is not None else None
+        ceiling = _min_non_none(mob_v, env_v)
+        if ceiling is not None and ceiling > trained_max:
+            out.append(
+                _learned_policy_exceeds(
+                    severity,
+                    "velocity",
+                    f"the admissible velocity ceiling {ceiling} (strictest of mobility/envelope) "
+                    f"exceeds the policy's trained max {trained_max} m/s.",
+                )
+            )
+
+    # Payload ceiling vs the trained payload range.
+    if lp.payload_range is not None:
+        mob_p = manifest.mobility.max_payload if manifest.mobility is not None else None
+        env_p = envelope.max_payload if envelope is not None else None
+        ceiling_p = _min_non_none(mob_p, env_p)
+        if ceiling_p is not None and ceiling_p > lp.payload_range.max:
+            out.append(
+                _learned_policy_exceeds(
+                    severity,
+                    "payload",
+                    f"the admissible payload ceiling {ceiling_p} kg (strictest of mobility/envelope) "
+                    f"exceeds the policy's trained max {lp.payload_range.max} kg.",
+                )
+            )
+    return out
+
+
+def _learned_policy_exceeds(
+    severity: Literal["error", "warning"],
+    quantity: str,
+    detail: str,
+) -> ValidationError:
+    return ValidationError(
+        code=ErrorCode.CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING,
+        severity=severity,
+        primitive=None,
+        path=["<manifest>", "learned_policy", "command_ranges"],
+        field=quantity,
+        message=f"learned_policy training envelope exceeded: {detail}",
+        suggestion=(
+            "Tighten the mechanical limit or the safety-envelope cap to the trained range, "
+            "or retrain/redeclare the policy for the wider range. Per RFC-0383."
+        ),
+    )
 
 
 _DRONE_DRIVE_TYPES = {"multirotor", "fixed_wing", "vtol"}
