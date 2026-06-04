@@ -51,19 +51,21 @@
   posted_url: "https://github.com/traclabs/trac_ik/issues/10"
   channel: github_issue
   contact: "traclabs/trac_ik (the de-facto fast inverse-kinematics solver across ROS manipulation; KDL + nonlinear-optimization hybrid; Issues enabled, not archived, actively maintained, last push 2026-06-02; canonical TRACLabs repo). TRACLabs (US)."
-  last_touch: "2026-06-03"
-  response: none
+  last_touch: "2026-06-04"
+  response: wontfix
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #10 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "kbrameld (TracLabs) closed #10 on 2026-06-03 constructively: no action items or changes required for the TRAC-IK codebase, good luck with the URML project. Courteous close, no AI-skepticism (cf. the Arduino / ODrive constructive closes, not the hostile pattern)."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0352 merges, post the posts-move27.md TRAC-IK body as an Issue on traclabs/trac_ik under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+  next_action: "Closed constructively; nothing owed. Optional one-line gracious thanks. No further trac-ik outreach."
   notes: "Move #27 anchor (IK). URML composes above: target pose -> validated reachability -> TRAC-IK -> joint config -> control. Manifest gaps queued as Spec RFCs (IK-target/joint-config declaration, joint-limit declaration). Cross-link RFC-0202 (MoveIt), RFC-0342 (OMPL), RFC-0010. Origin US (TRACLabs). Verified 2026-06-03."
 
 - slug: pink
