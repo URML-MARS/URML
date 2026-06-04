@@ -44,8 +44,8 @@
 
 - slug: toddlerbot
   rfc: 372
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/hshi74/toddlerbot/issues/19"
   channel: github_issue
   contact: "hshi74/toddlerbot (open-source, low-cost, 3D-printable bipedal humanoid with a full sim-to-real learning stack; ~692 stars, Issues enabled, not archived, active, last push 2026-04-19). Stanford (US), open hardware."
   last_touch: "2026-06-04"
@@ -55,18 +55,18 @@
   sector: robot-platform
   comments:
     - date: "2026-06-04"
-      text: "RFC-0372 drafted (Move #29 WAVE ANCHOR). The accessible open biped URML wants to describe: English intent -> validated capability -> ToddlerBot. Clearest motivation for the legged-mobility-class + whole-body capability gap (a biped with arms fits no current drive_type). Honest that URML describes it coarsely today; partly a design conversation. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #19 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0372 merges, post the posts-move29.md ToddlerBot body as an Issue on hshi74/toddlerbot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+      status: done
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
   notes: "Move #29 anchor. Open low-cost humanoid (Stanford). Headline queued Spec RFC: legged-mobility-class + whole-body capability (tied RFC-0010). Cross-link RFC-0069 (Berkeley Humanoid Lite), RFC-0319. Origin US. Verified 2026-06-04."
 
 - slug: open-duck-mini
   rfc: 373
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/apirrone/Open_Duck_Mini/issues/47"
   channel: github_issue
   contact: "apirrone/Open_Duck_Mini (open-source miniature BDX-style bipedal robot with an RL walk policy + full build; ~3,046 stars, Issues enabled, not archived, active, last push 2026-01-31). Antoine Pirrone and community (France-lineage, NATO-allied)."
   last_touch: "2026-06-04"
@@ -76,18 +76,18 @@
   sector: robot-platform
   comments:
     - date: "2026-06-04"
-      text: "RFC-0373 drafted (Move #29). Small open biped with a learned walk controller. Same legged-mobility-class gap; the nuance is that locomotion is a learned policy, so URML declares capability + bounds a navigation-level intent while the RL walk policy is the substrate (learned-policy-as-substrate framing). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #47 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0373 merges, post the posts-move29.md Open Duck Mini body on apirrone/Open_Duck_Mini under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 open biped (learned walk policy). Navigation-level intent vs gait-level. Origin FR (allied). Verified 2026-06-04."
 
 - slug: kscale
   rfc: 374
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/kscalelabs/ksim/issues/539"
   channel: github_issue
   contact: "kscalelabs/ksim (open humanoid simulation + RL training stack; ~225 stars, Issues enabled, not archived, active, last push 2025-10-29). Folds kscalelabs/kos (~73 stars, the K-Scale robot operating system / onboard runtime). K-Scale Labs (US), open humanoid startup."
   last_touch: "2026-06-04"
@@ -97,18 +97,18 @@
   sector: robot-platform
   comments:
     - date: "2026-06-04"
-      text: "RFC-0374 drafted (Move #29). K-Scale builds a fully open humanoid stack: ksim (training) + kos (onboard runtime, folded). Clean open target spanning sim-to-on-robot; asks where a validated-intent layer sits relative to kos. Same legged-mobility-class + whole-body gap. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #539 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0374 merges, post the posts-move29.md K-Scale body on kscalelabs/ksim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to kos, fork that row to live."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 open humanoid stack (ksim training + kos runtime, folded). Where URML intent sits above kos. Origin US (K-Scale Labs). Verified 2026-06-04."
 
 - slug: pal-talos
   rfc: 375
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/pal-robotics/talos_robot/issues/9"
   channel: github_issue
   contact: "pal-robotics/talos_robot (ROS packages for TALOS, PAL Robotics' full-size torque-controlled humanoid; ~25 stars, Issues enabled, not archived, active, last push 2026-02-20). PAL Robotics (Barcelona, Spain, NATO-allied), commercial humanoid OEM with an open ROS stack."
   last_touch: "2026-06-04"
@@ -118,18 +118,18 @@
   sector: robot-platform
   comments:
     - date: "2026-06-04"
-      text: "RFC-0375 drafted (Move #29). TALOS is the full-size commercial-OEM humanoid counterpart to the hobby/research bipeds in this wave. PAL's TIAGo was engaged earlier (RFC-0068, wheeled mobile manipulator); TALOS is the legged/humanoid sibling at OEM scale, same legged-mobility-class gap. URML composes above the ROS stack (ros2_control RFC-0319). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #9 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0375 merges, post the posts-move29.md PAL TALOS body on pal-robotics/talos_robot under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 full-size humanoid OEM (allied). Sibling of TIAGo (RFC-0068). Legged-mobility-class at OEM scale. Origin ES (PAL Robotics, allied). Verified 2026-06-04."
 
 - slug: legged-gym
   rfc: 376
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/leggedrobotics/legged_gym/issues/98"
   channel: github_issue
   contact: "leggedrobotics/legged_gym (reference Isaac-Gym-based environment for training legged-locomotion policies with massively-parallel RL; ~2,994 stars, Issues enabled, not archived, last push 2025-05-29). ETH Zurich Robotic Systems Lab (Switzerland, NATO-allied). Built on the Isaac stack (RFC-0050)."
   last_touch: "2026-06-04"
@@ -139,18 +139,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0376 drafted (Move #29, legged-locomotion-control substrate). Where many quadruped/humanoid walk policies are trained. The trained policy is the locomotion substrate; URML declares capability + bounds a navigation-level intent. Builds on Isaac (RFC-0050). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #98 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0376 merges, post the posts-move29.md legged_gym body on leggedrobotics/legged_gym under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 legged RL training (ETH). Trained policy = locomotion substrate. Built on Isaac (RFC-0050). Sibling rsl_rl (RFC-0377). Origin CH (ETH RSL, allied). Verified 2026-06-04."
 
 - slug: rsl-rl
   rfc: 377
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/leggedrobotics/rsl_rl/issues/216"
   channel: github_issue
   contact: "leggedrobotics/rsl_rl (fast GPU-accelerated on-policy RL library for legged robots, used by legged_gym and Isaac Lab; ~2,654 stars, Issues enabled, not archived, active, last push 2026-05-27). ETH Zurich Robotic Systems Lab (Switzerland, NATO-allied), same group as legged_gym (RFC-0376)."
   last_touch: "2026-06-04"
@@ -160,18 +160,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0377 drafted (Move #29). The RL library underneath legged_gym / Isaac Lab legged training, one layer below legged_gym (closer to a backend). Honest backend-boundary framing: URML talks to the trained policy / platform, not the trainer; the useful question is whether a trained policy could export the capability/limits it was trained under so a URML manifest stays consistent. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #216 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0377 merges, post the posts-move29.md rsl_rl body on leggedrobotics/rsl_rl under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 RL library (ETH, backend boundary). Capability/limits export from a trained policy. Sibling legged_gym (RFC-0376). Origin CH (allied). Verified 2026-06-04."
 
 - slug: dial-mpc
   rfc: 378
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/LeCAR-Lab/dial-mpc/issues/31"
   channel: github_issue
   contact: "LeCAR-Lab/dial-mpc (training-free, real-time legged-robot whole-body controller using diffusion-style sampling-based MPC; ~975 stars, Issues enabled, not archived, last push 2025-05-28). CMU LeCAR Lab (US)."
   last_touch: "2026-06-04"
@@ -181,18 +181,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0378 drafted (Move #29, model-based legged control). Training-free legged whole-body controller (contrast to the learned-policy stacks). URML declares capability + a navigation/task-level intent; DIAL-MPC realizes whole-body motion; URML validates admissibility first. Contrast legged_gym (RFC-0376, learned) and OCS2 (RFC-0347, general MPC). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #31 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0378 merges, post the posts-move29.md DIAL-MPC body on LeCAR-Lab/dial-mpc under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 training-free legged MPC (CMU LeCAR). Whole-body control; contrast learned (RFC-0376) + OCS2 (RFC-0347). Origin US. Verified 2026-06-04."
 
 - slug: legged-control
   rfc: 379
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/qiayuanl/legged_control/issues/85"
   channel: github_issue
   contact: "qiayuanl/legged_control (legged-robot control framework combining MPC and Whole-Body Control, built on OCS2; ~1,702 stars, Issues enabled, not archived, last push 2025-02-13). Qiayuan Liao (open-source academic). Builds on OCS2 (RFC-0347)."
   last_touch: "2026-06-04"
@@ -202,18 +202,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0379 drafted (Move #29). Complete MPC+WBC stack for quadrupeds/humanoids, built on OCS2 (RFC-0347), ros2_control-style interfaces (RFC-0319). URML declares capability + intent; legged_control realizes locomotion; URML validates admissibility before. Open-source academic. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #85 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0379 merges, post the posts-move29.md legged_control body on qiayuanl/legged_control under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 MPC+WBC legged stack (built on OCS2 RFC-0347). Open-source academic. Cross-link RFC-0319. Origin INTL (open-academic). Verified 2026-06-04."
 
 - slug: rl-games
   rfc: 380
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/Denys88/rl_games/issues/352"
   channel: github_issue
   contact: "Denys88/rl_games (fast, high-throughput RL library widely used to train Isaac Gym / Isaac Lab locomotion and manipulation policies; ~1,350 stars, Issues enabled, not archived, active, last push 2026-05-25). Denys Makoviichuk and contributors (open-source; INTL)."
   last_touch: "2026-06-04"
@@ -223,12 +223,12 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0380 drafted (Move #29, training-infrastructure backend). Trains many of the legged/humanoid policies that become a URML locomotion substrate (with Isaac RFC-0050). Honest lowest-direct-fit / backend boundary (mirrors rsl_rl RFC-0377): URML talks to the trained policy / platform, not the trainer; the useful question is a capability/limits export from a trained policy. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #352 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0380 merges, post the posts-move29.md rl_games body on Denys88/rl_games under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #29 RL training infra (backend, lowest direct fit, stated). Capability/limits export from a trained policy. Cross-link RFC-0050, RFC-0360. Origin INTL. Verified 2026-06-04."
 
 # ============================================================
