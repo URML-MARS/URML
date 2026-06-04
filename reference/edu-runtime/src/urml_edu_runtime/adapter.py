@@ -302,6 +302,7 @@ class VexV5Adapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -374,6 +375,7 @@ class LegoSpikeAdapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -496,6 +498,7 @@ class RoboticalMartyAdapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -692,6 +695,7 @@ class PetoiAdapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -853,6 +857,7 @@ class CircuitPythonAdapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -947,6 +952,7 @@ class ThymioAdapter(_EduBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 

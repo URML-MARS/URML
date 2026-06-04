@@ -343,6 +343,7 @@ class RclpyAdapter:
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         from control_msgs.action import GripperCommand  # type: ignore[import-not-found,unused-ignore]
 

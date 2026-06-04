@@ -7,19 +7,23 @@ industrial-arm and ANYmal adapters use. The per-brand surface is real
 (distinct class, brand-scoped not-supported tag); ROS 2 plumbing is not
 duplicated.
 
-## v0.1 scope: locomotion subset
+## v0.1 scope: locomotion + whole-body manipulation
 
-Digit has arms and does whole-body manipulation (it is a logistics
-humanoid). URML's `grasp` requires a detected `$target`, and
-whole-body/bimanual manipulation semantics are a deliberate **future
-RFC** (see the multi-brand plan: "v0.1 humanoid coverage is the
-locomotion + single-arm subset"). v0.1 therefore supports the
-locomotion path — `move_to`/`hover`, `wait`, `measure`, `wait_for`,
-`report` — and returns ``not_supported_on_humanoid[digit]`` for
-`grasp`/`release` (pending the manipulation RFC), `dock`, `detect`,
-`scan`, `capture`, `speak`, `listen`, and the drone trio. This is the
-same returned-not-raised pattern PX4Adapter and the other families use;
-a manipulation/vision payload pairs via a companion adapter.
+Digit is a logistics humanoid: a biped (locomotion) with two arms.
+Both classes are in scope as of RFC-0010 (whole-body / bimanual
+manipulation). This adapter supports the locomotion path —
+`move_to`/`hover`, `wait`, `measure`, `wait_for`, `report` — and
+manipulation — `grasp`/`release` (with the optional `arm` selector)
+and `bimanual` (decomposed by the runtime into two arm-addressed
+manipulation goals, per RFC-0010). All of these delegate to the
+composed ROS 2 adapter.
+
+It still returns ``not_supported_on_humanoid[digit]`` for `dock`,
+`detect`, `scan`, `capture`, `speak`, `listen`, and the drone trio:
+onboard perception and speech pair via a companion adapter (a
+manipulation `$target` is supplied by that companion's `detect`). This
+is the same returned-not-raised pattern PX4Adapter and the other
+families use.
 
 ``rclpy`` is imported lazily inside :class:`RclpyAdapter`, so importing
 this module works on every host; constructing the adapter needs a
@@ -55,8 +59,8 @@ from urml_humanoid_runtime._version import __version__
 __all__ = ["DigitAdapter", "__version__"]
 
 _NOT_SUPPORTED = (
-    "not_supported_on_humanoid[digit]: v0.1 covers the locomotion subset only. "
-    "{capability} is pending (whole-body/bimanual manipulation is a future RFC). "
+    "not_supported_on_humanoid[digit]: v0.1 covers locomotion and whole-body "
+    "manipulation (RFC-0010). {capability} is not on Digit's own surface. "
     "Pair Digit with a companion adapter for full coverage; the URML program, "
     "manifest, and validator are unchanged."
 )
@@ -148,10 +152,6 @@ class DigitAdapter:
             to=to, facts=facts, attachments=attachments, status=status, severity=severity
         )
 
-    # ------------------------------------------------------------------
-    # Not supported in v0.1 (locomotion subset)
-    # ------------------------------------------------------------------
-
     def send_manipulation_goal(
         self,
         *,
@@ -161,8 +161,27 @@ class DigitAdapter:
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
-        return ManipulationResult(success=False, reason=self._reason("manipulation"))
+        """Manipulation, including the `arm` selector (RFC-0010).
+
+        `bimanual` reaches the adapter as two arm-addressed calls (the
+        runtime decomposes it), so a single delegating method covers both
+        the single-arm and whole-body paths.
+        """
+        return self._inner.send_manipulation_goal(
+            action=action,
+            target=target,
+            force_n=force_n,
+            approach=approach,
+            release_mode=release_mode,
+            release_at=release_at,
+            arm=arm,
+        )
+
+    # ------------------------------------------------------------------
+    # Not supported in v0.1 (companion-paired: perception, speech)
+    # ------------------------------------------------------------------
 
     def send_docking_goal(self, *, station: str, service: str, until: str | None = None) -> NavigationResult:
         return NavigationResult(success=False, reason=self._reason("docking"))

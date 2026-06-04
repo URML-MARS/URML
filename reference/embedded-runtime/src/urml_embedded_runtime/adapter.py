@@ -152,6 +152,7 @@ class EmbeddedAdapter:
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         cmd = self._config.manipulation_commands.get(action)
         if cmd is None:

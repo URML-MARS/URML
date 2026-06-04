@@ -270,6 +270,7 @@ class UrRtdeAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         # v0.1: a gripper open/close command. Scalar force_n is honoured;
@@ -346,6 +347,7 @@ class FrankaFciAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -425,6 +427,7 @@ class DoosanDrflAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -504,6 +507,7 @@ class TechmanTmflowAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -587,6 +591,7 @@ class KinovaKortexAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -667,6 +672,7 @@ class MecademicMeca500Adapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -745,6 +751,7 @@ class NeuraMairaAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -833,6 +840,7 @@ class KassowKrAdapter(_CobotBase):
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)

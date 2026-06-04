@@ -19,6 +19,7 @@ from typing import Any, Literal, Protocol
 from pydantic import BaseModel, ConfigDict
 from urml_validator.schemas.composition import Step
 from urml_validator.schemas.primitives import (
+    BimanualArgs,
     CallProgramArgs,
     CaptureArgs,
     DetectArgs,
@@ -299,6 +300,7 @@ def exec_grasp(
         approach=args.approach,
         release_mode=None,
         release_at=None,
+        arm=args.arm,
     )
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
@@ -314,8 +316,61 @@ def exec_release(
         approach="auto",
         release_mode=args.mode,
         release_at=release_at,
+        arm=args.arm,
     )
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_bimanual(
+    args: BimanualArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0010: decompose a bimanual intent into two arm-addressed
+    manipulation goals (left then right) and record the coordination mode.
+
+    True joint force coordination for a shared payload is a substrate concern;
+    the reference runtime issues the two goals and reports combined success.
+    """
+    results: list[ManipulationResult] = []
+    for side, sub in (("left", args.left), ("right", args.right)):
+        if isinstance(sub, GraspArgs):
+            resolved = resolve(sub.target, bindings)
+            target_dict: dict[str, Any] | None = resolved if isinstance(resolved, dict) else None
+            results.append(
+                adapter.send_manipulation_goal(
+                    action="grasp",
+                    target=target_dict,
+                    force_n=_force_newtons(sub.force),
+                    approach=sub.approach,
+                    release_mode=None,
+                    release_at=None,
+                    arm=side,
+                )
+            )
+        else:
+            release_at = _resolve_target_field(sub.at, bindings)
+            results.append(
+                adapter.send_manipulation_goal(
+                    action="release",
+                    target=None,
+                    force_n=None,
+                    approach="auto",
+                    release_mode=sub.mode,
+                    release_at=release_at,
+                    arm=side,
+                )
+            )
+    success = all(r.success for r in results)
+    reason = None if success else next((r.reason for r in results if not r.success), None)
+    # The two arm-addressed goals are the runtime evidence in the audit log;
+    # `mode` is an intent-level declaration carried by the program. `raw` holds
+    # the combined manipulation outcome (one ManipulationResult, like the
+    # single-arm path), keeping the result model substrate-agnostic.
+    grip = next((r.grip_force_n for r in results if r.grip_force_n is not None), None)
+    return PrimitiveOutcome(
+        success=success,
+        reason=reason,
+        raw=ManipulationResult(success=success, reason=reason, grip_force_n=grip),
+    )
 
 
 def exec_detect(
@@ -644,6 +699,7 @@ PRIMITIVE_EXECUTORS: dict[
     "wait_for": exec_wait_for,
     "grasp": exec_grasp,
     "release": exec_release,
+    "bimanual": exec_bimanual,
     "detect": exec_detect,
     "scan": exec_scan,
     "measure": exec_measure,

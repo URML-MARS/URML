@@ -172,6 +172,7 @@ class OpcUaAdapter:
         approach: Literal["top", "side", "front", "auto"] = "auto",
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
     ) -> ManipulationResult:
         mt = self._config.manipulation_methods.get(action)
         if mt is None:
