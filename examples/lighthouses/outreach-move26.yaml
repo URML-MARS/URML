@@ -147,18 +147,20 @@
   channel: github_issue
   contact: "loco-3d/crocoddyl (fast DDP / optimal-control library for multi-contact dynamic motion: legged locomotion, dynamic manipulation; built on Pinocchio; ~1,225 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01). License not SPDX-detected by gh (understood BSD-3-Clause; asked). INRIA / LAAS-CNRS / University of Edinburgh (loco-3d, NATO-allied)."
   last_touch: "2026-06-03"
-  response: none
+  response: wontfix
   tier: A
   country: FR
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #1505 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-06-03"
+      text: "nim65s closed #1505 (COMPLETED) on 2026-06-03 with 'same answer', linking his AI-prose rejection on stack-of-tasks/pinocchio#2901. Same maintainer, same loco-3d/INRIA-LAAS ecosystem (Crocoddyl builds on Pinocchio), same stance. wontfix; no reply (respect the close, as with Pinocchio)."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0346 merges, post the posts-move26.md Crocoddyl body on loco-3d/crocoddyl under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Closed wontfix 2026-06-03 (nim65s, same as Pinocchio). Do not pursue; no reply; no further cold outreach to nim65s-controlled loco-3d / stack-of-tasks repos. Same license-ask tell present in the contact field."
   notes: "Move #26 DDP optimal control. Dynamic-motion trajectory optimization; built on Pinocchio (RFC-0345). Contrast with OCS2 (RFC-0347, real-time MPC). Cross-link RFC-0319, RFC-0010. Origin FR (INRIA/LAAS/Edinburgh, allied). Verified 2026-06-03."
 
 - slug: ocs2

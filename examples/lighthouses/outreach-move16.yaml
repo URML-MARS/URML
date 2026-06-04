@@ -71,7 +71,7 @@
   posted_url: "https://github.com/mavlink/mavlink/issues/2508"
   channel: github_issue
   contact: "mavlink/mavlink (LGPL-3.0 with MIT generated-code exception, 2.3k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Dronecode Foundation. Drone protocol substrate; the interoperability layer between autopilot and ground station."
-  last_touch: "2026-06-03"
+  last_touch: "2026-06-04"
   response: engaged
   tier: A
   country: INTL
@@ -79,8 +79,10 @@
   comments:
     - date: "2026-06-03"
       text: "hamishwillee (MAVLink maintainer) answered the RFC questions on #2508: protocol-class mavlink_v2, version v2, dialect = full set (all.xml) with custom as the exception; signing / multi-system topology deferred as out of scope for them. Offered to list URML on the mavlink.io implementations page once the manifest mapping stabilizes. Replied; engaged."
+    - date: "2026-06-04"
+      text: "Update 2026-06-04: hamishwillee closed #2508 (COMPLETED) with AI-prose feedback - 'I found your post extremely hard to understand, it is written by an AI that tells me very little about why this is a MAVLink question. But anyhow, good luck.' Constructive (not hostile); his earlier substantive answers + the mavlink.io implementations-page listing offer still stand. No further reply (more AI prose would only confirm his critique)."
   claude_directives: []
-  next_action: "Engaged (hamishwillee). Stabilize the MAVLink manifest mapping (protocol mavlink_v2, version v2, dialect all.xml + custom exception), then follow up on #2508 to take the implementations.html listing offer. Do not model the signing / topology fields he flagged as unclear."
+  next_action: "Engaged but thread closed 2026-06-04 with an AI-prose critique (constructive; listing offer stands). When the MAVLink manifest mapping stabilizes, take the mavlink.io/implementations listing offer via a SHORT HUMAN message (no AI prose). Mapping: protocol mavlink_v2, version v2, dialect all.xml + custom exception."
   notes: "Tier A. Origin Dronecode Foundation. URML-fit: very high. LGPL-3.0+MIT-exception is well-suited to URML's adapter pattern."
 
 - slug: mavsdk
