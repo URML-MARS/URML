@@ -187,11 +187,13 @@
       text: "DanNegrut (Dan Negrut, Project Chrono lead) replied on #746 (2026-06-02), substantive and constructive, no AI-skepticism: PyChrono is the right boundary for URML-primitive to Chrono model (multibody dynamics, chrono.vehicle, chrono.sensor, terrain models, all Python-scriptable); a chrono_ros bridge if closing the loop with ROS-native planners; align the capability manifest at the level of Chrono motion primitives / driver inputs, mirroring the asset/model hierarchy (vehicle + terrain patch + sensor rig to a ChSystem config); confirmed BSD-3-Clause. Owe a short human reply."
     - date: "2026-06-04"
       text: "Replied 2026-06-04 (idoco2003, issue #746): thanked Dan, confirmed the motion-primitive/driver-input manifest granularity, committed to building one worked PyChrono validation example and sharing it back."
+    - date: "2026-06-04"
+      text: "Shipped urml-chrono-runtime (PR #312, merged c294ea8) implementing the driver-input mapping Dan Negrut outlined on #746: ChronoAdapter routes each primitive to a ChSystem driver segment and returns the dynamics (sim time, contacts, commanded driver inputs) as validation evidence; conformance fixture 21 + gated chrono-integration.yml. Posted a follow-up on #746 linking the runtime."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0328 merges, post the posts-move24.md Project Chrono body on projectchrono/chrono under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (DanNegrut, Chrono lead). Replied 2026-06-04. Open build item: a worked PyChrono validation example (URML primitive to short Chrono sim segment to contact/terrain/sensor evidence), each manifest entry mapped to a ChSystem config; share back on #746 when up."
+  next_action: "Engaged (DanNegrut, Chrono lead). Worked runtime shipped (urml-chrono-runtime, PR #312) + follow-up posted on #746. Next build step: a real Chrono::Vehicle terramechanics scene (contact forces, sinkage, tip margin) wired into the gated chrono-sitl-e2e calibration job; that unlocks the richer validation evidence."
   notes: "Move #24. URML mobility (tracked / ackermann / max_payload) -> a Chrono vehicle model; perception -> Chrono::Sensor. The high-fidelity-validation use case. Cross-link RFC-0059 (Drake), RFC-0060 (MuJoCo). Manifest gaps queued (terramechanics fidelity hint, simulator-target class hint). Origin US (UW-Madison; UW + Parma). Verified 2026-06-02."
 
 - slug: brax
