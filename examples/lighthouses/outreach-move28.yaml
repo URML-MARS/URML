@@ -125,11 +125,13 @@
       text: "Posted issue #435 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
     - date: "2026-06-04"
       text: "ivanperez-keera (Ivan Perez, NASA Ames; Ogma/Copilot lead) responded warmly on #435 (2026-06-04): transferring it to a Discussion for now, open to creating tickets later to make an Ogma<->URML connection easier, and offered to chat by email (ivan.perezdominguez@nasa.gov). Engaged - NASA formal-methods contact with a personal email invite."
+    - date: "2026-06-04"
+      text: "Founder emailed Ivan Perez (ivan.perezdominguez@nasa.gov) on 2026-06-04 from greenvh@gmail.com: proposed URML as a front end that emits Ogma requirement inputs (envelope constraints = declared properties Ogma/Copilot would monitor at runtime), asked what shape Ogma would want them in, and offered a short call. Awaiting his reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0365 merges, post the posts-move28.md Ogma body on nasa/ogma under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (Ivan Perez, NASA Ames). FOUNDER-ACTION: email ivan.perezdominguez@nasa.gov directly to take the Ogma<->URML connection forward (human-to-human; NASA marquee contact; he offered email). Issue transferred to a Discussion; no AI reply on the thread. Framing: a URML envelope = declared properties, Ogma/Copilot generates the runtime monitor that enforces/tests them."
+  next_action: "Founder emailed Ivan Perez 2026-06-04 (NASA Ames); awaiting his reply on whether a URML envelope can emit Ogma requirement inputs and the shape Ogma wants. If he engages, this is a concrete formal-verification integration (URML envelope -> Ogma/Copilot runtime monitors). Human-to-human email channel; keep replies in the founder's hand."
   notes: "Move #28 RV monitor codegen (NASA; emits Copilot RFC-0364, ROS integration). A URML envelope could be an Ogma input. Highest downstream fit in the wave. Origin US (NASA). Verified 2026-06-04."
 
 - slug: scenic
