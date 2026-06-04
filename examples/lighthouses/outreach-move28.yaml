@@ -116,18 +116,20 @@
   channel: github_issue
   contact: "nasa/ogma (NASA tool generating runtime-monitoring applications from formal requirements; emits Copilot monitors + integrations for frameworks like ROS and cFS; ~564 stars, Issues enabled, not archived, active, last push 2026-06-02). NASA (US)."
   last_touch: "2026-06-04"
-  response: none
+  response: engaged
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-04"
       text: "Posted issue #435 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "ivanperez-keera (Ivan Perez, NASA Ames; Ogma/Copilot lead) responded warmly on #435 (2026-06-04): transferring it to a Discussion for now, open to creating tickets later to make an Ogma<->URML connection easier, and offered to chat by email (ivan.perezdominguez@nasa.gov). Engaged - NASA formal-methods contact with a personal email invite."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0365 merges, post the posts-move28.md Ogma body on nasa/ogma under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (Ivan Perez, NASA Ames). FOUNDER-ACTION: email ivan.perezdominguez@nasa.gov directly to take the Ogma<->URML connection forward (human-to-human; NASA marquee contact; he offered email). Issue transferred to a Discussion; no AI reply on the thread. Framing: a URML envelope = declared properties, Ogma/Copilot generates the runtime monitor that enforces/tests them."
   notes: "Move #28 RV monitor codegen (NASA; emits Copilot RFC-0364, ROS integration). A URML envelope could be an Ogma input. Highest downstream fit in the wave. Origin US (NASA). Verified 2026-06-04."
 
 - slug: scenic
