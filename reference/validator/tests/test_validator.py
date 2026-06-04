@@ -539,6 +539,120 @@ def test_grasp_force_exceeded(turtlebot_manifest: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# RFC-0010: arm selector + bimanual capability checks.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def digit_bimanual_manifest() -> dict:
+    """A two-arm humanoid: arm_count 2 with named arms left/right."""
+    return _load_yaml(FIXTURE_ROOT / "manifests" / "digit_bimanual.yaml")
+
+
+def _detect_tote_then(step: dict[str, Any]) -> dict[str, Any]:
+    """A two-step home program: detect a tote, then run `step`."""
+    return {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"detect": {"object": "tote", "store_as": "the_tote"}},
+                step,
+            ],
+        },
+    }
+
+
+def test_grasp_arm_left_right_resolve_on_dual_arm(digit_bimanual_manifest: dict) -> None:
+    """`left`/`right` resolve on a manifest that declares two arms."""
+    for arm in ("left", "right"):
+        program = _detect_tote_then(
+            {"grasp": {"target": "$the_tote", "force": "firm", "arm": arm}}
+        )
+        result = validate(program, digit_bimanual_manifest, policy=None)
+        assert result.accepted, (arm, [e.code.value for e in result.errors])
+
+
+def test_grasp_arm_any_is_the_default(turtlebot_manifest: dict) -> None:
+    """Regression: omitting `arm` (default `any`) still validates on one arm."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"detect": {"object": "mug", "store_as": "m"}},
+                {"grasp": {"target": "$m", "force": "gentle"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, policy=None)
+    assert result.accepted, [e.code.value for e in result.errors]
+
+
+def test_grasp_arm_left_rejected_on_single_arm(turtlebot_manifest: dict) -> None:
+    """Addressing `left` on a single-arm (arm_count 1) manifest is rejected."""
+    program: dict[str, Any] = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"detect": {"object": "mug", "store_as": "m"}},
+                {"grasp": {"target": "$m", "arm": "left"}},
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_ARM_NOT_DECLARED)
+
+
+def test_grasp_unknown_named_arm_rejected(digit_bimanual_manifest: dict) -> None:
+    """A name absent from manipulation.arms is rejected even on a two-arm robot."""
+    program = _detect_tote_then({"grasp": {"target": "$the_tote", "arm": "third_hand"}})
+    result = validate(program, digit_bimanual_manifest, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_ARM_NOT_DECLARED)
+
+
+def test_bimanual_accepted_on_dual_arm(digit_bimanual_manifest: dict) -> None:
+    """A `bimanual together` two-arm grasp validates against a two-arm manifest."""
+    program = _detect_tote_then(
+        {
+            "bimanual": {
+                "mode": "together",
+                "left": {"target": "$the_tote", "force": "firm"},
+                "right": {"target": "$the_tote", "force": "firm"},
+            }
+        }
+    )
+    result = validate(program, digit_bimanual_manifest, policy=None)
+    assert result.accepted, [e.code.value for e in result.errors]
+
+
+def test_bimanual_requires_two_arms(turtlebot_manifest: dict) -> None:
+    """`bimanual` on a single-arm manifest is rejected with the two-arm code."""
+    program = {
+        "profile": "home",
+        "behavior": {
+            "type": "sequence",
+            "steps": [
+                {"detect": {"object": "mug", "store_as": "m"}},
+                {
+                    "bimanual": {
+                        "mode": "together",
+                        "left": {"target": "$m", "force": "gentle"},
+                        "right": {"target": "$m", "force": "gentle"},
+                    }
+                },
+            ],
+        },
+    }
+    result = validate(program, turtlebot_manifest, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_BIMANUAL_REQUIRES_TWO_ARMS)
+
+
+# ---------------------------------------------------------------------------
 # Binding pass.
 # ---------------------------------------------------------------------------
 

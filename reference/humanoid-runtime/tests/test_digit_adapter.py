@@ -30,6 +30,12 @@ class _RecordingInner:
         self.calls.append("send_navigation_goal")
         return NavigationResult(success=True, frame="map")
 
+    def send_manipulation_goal(self, **kw: Any) -> ManipulationResult:
+        # Record the addressed arm so the delegation test can assert the
+        # RFC-0010 `arm` selector reaches the composed adapter unchanged.
+        self.calls.append(f"send_manipulation_goal[{kw.get('arm')}]")
+        return ManipulationResult(success=True)
+
     def take_measurement(self, **kw: Any) -> SubstrateResult:
         self.calls.append("take_measurement")
         return SubstrateResult(success=True)
@@ -68,12 +74,15 @@ def test_locomotion_subset_delegates() -> None:
         assert digit.emit_report(
             to="wms", facts={"tote": 7}, attachments=None, status="success", severity="info"
         ).success
+        # RFC-0010: manipulation (with the `arm` selector) delegates too.
+        assert digit.send_manipulation_goal(action="grasp", arm="left").success
     assert inner.calls == [
         "send_navigation_goal",
         "wait_passively",
         "take_measurement",
         "wait_for_condition",
         "emit_report",
+        "send_manipulation_goal[left]",
     ]
     assert inner.closed is True
 
@@ -82,9 +91,7 @@ def test_non_locomotion_returns_v01_sentinel() -> None:
     inner = _RecordingInner()
     digit = DigitAdapter(inner_factory=lambda: inner)
     tag = "not_supported_on_humanoid[digit]"
-    grip: ManipulationResult = digit.send_manipulation_goal(action="grasp")
     results = [
-        grip,
         digit.send_docking_goal(station="d", service="park"),
         digit.query_detection(object_class="tote"),
         digit.run_scan(area={}, pattern="grid", overlap=0.1, altitude=None, media="photo", sensor=None),
