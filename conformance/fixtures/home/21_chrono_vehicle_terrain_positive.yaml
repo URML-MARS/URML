@@ -1,0 +1,38 @@
+name: home/chrono_vehicle_terrain_positive
+description: >
+  The sentence→motion loop on a high-fidelity multibody substrate
+  (Project Chrono) with zero ROS — the pre-deployment-validation case
+  (RFC-0328). Navigation-only: drive from the terrain start, to a ridge
+  waypoint, then back to the terrain home. Exercises ONLY navigation —
+  no perception, manipulation, speech, or docking-action — so it runs
+  hermetically against MockROSAdapter (default suite) and
+  adapter-agnostically against the chrono runtime's ChronoAdapter (which
+  applies driver inputs and advances a ChSystem). `terrain_home` is
+  referenced as a declared *location* (it has a pose), not a docking
+  action. The point URML proves here: the same validated intent that
+  passes the static capability and envelope check is exactly what the
+  high-fidelity engine then exercises.
+
+manifest: chrono_vehicle_cell
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: terrain_start }
+      - move_to: { location: ridge_waypoint }
+      - move_to: { location: terrain_home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

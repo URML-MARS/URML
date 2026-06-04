@@ -1,0 +1,56 @@
+# Fixture: a Project Chrono ground-vehicle model for high-fidelity validation.
+# The substrate is a Chrono::Vehicle tracked model over deformable terrain
+# (urml-chrono-runtime, ChronoAdapter) — no ROS, no robot. This manifest
+# exercises the sentence→motion loop on a high-fidelity multibody engine:
+# URML validates the intent statically against the declared capability and
+# envelope first, then drives it through a short Chrono simulation segment.
+# Navigation-only, so it runs hermetically against MockROSAdapter and
+# adapter-agnostically against ChronoAdapter. No provenance block: Project
+# Chrono is an open academic engine (University of Wisconsin-Madison /
+# University of Parma), there is no hardware to attest, so the bundled
+# US-federal default policy (RFC-0004) accepts it (nothing to deny),
+# exactly as mujoco_arm_sim / isaac_arm_sim do.
+
+manifest_version: "0.1"
+robot_id: chrono_vehicle_1
+description: High-fidelity Chrono::Vehicle tracked model over deformable terrain, driven through the URML frozen Protocol.
+
+frames:
+  - name: world
+    parent: null
+  - name: chassis
+    parent: world
+
+declared_locations:
+  - name: terrain_start
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+  - name: ridge_waypoint
+    pose: { x: 8.0, y: 2.0 }
+    frame: world
+  - name: terrain_home
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+
+declared_events:
+  - settled
+  - contact
+
+mobility:
+  drive_type: tracked
+  max_velocity: 3.0
+  station_keeping: false
+
+perception:
+  sensors:
+    - name: imu
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - rock
+
+outputs:
+  named_endpoints:
+    - chrono_log

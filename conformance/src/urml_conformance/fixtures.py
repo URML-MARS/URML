@@ -74,6 +74,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "bluerov_marine": _VALIDATOR_FIXTURES / "manifests" / "bluerov_marine.yaml",
     # MuJoCo simulator substrate (zero ROS) — sentence→motion acid-test proof.
     "mujoco_arm_sim": _VALIDATOR_FIXTURES / "manifests" / "mujoco_arm_sim.yaml",
+    # Project Chrono high-fidelity validation substrate (zero ROS) — RFC-0328.
+    "chrono_vehicle_cell": _VALIDATOR_FIXTURES / "manifests" / "chrono_vehicle_cell.yaml",
     # OPC UA Robotics industrial cell (zero ROS, US provenance).
     "opcua_cell": _VALIDATOR_FIXTURES / "manifests" / "opcua_cell.yaml",
     # Zero-ROS collaborative arm (UR / Franka native SDKs).
