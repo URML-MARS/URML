@@ -1,0 +1,28 @@
+name: industrial/bimanual_one_arm_rejected
+description: >
+  RFC-0010 negative: a `bimanual` step on a single-arm manifest. The cobot
+  cell declares arm_count 1, so the whole-body intent is rejected at Pass 2
+  with capability.bimanual_requires_two_arms. Proves bimanual is gated on a
+  two-arm manifest rather than silently degrading to one arm. (The grasp
+  sub-intents themselves are well-formed against the cell's gripper; the only
+  asserted error is the two-arm requirement.)
+
+manifest: cobot_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: widget_red, store_as: part }
+      - bimanual:
+          mode: together
+          left: { target: $part, force: firm }
+          right: { target: $part, force: firm }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.bimanual_requires_two_arms

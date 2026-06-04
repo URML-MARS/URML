@@ -2,10 +2,10 @@ name: biped/digit_patrol_positive
 description: >
   RFC-0009 follow-up: a navigation-only patrol on the compliant
   Agility Digit manifest (drive_type: biped, US origin). The
-  locomotion subset the humanoid runtime's DigitAdapter implements in
-  v0.1 (manipulation is the RFC-0010 deferral). Nav-only, so it runs
-  hermetically against MockROSAdapter and adapter-agnostically against
-  DigitAdapter.
+  navigation half of what DigitAdapter implements; whole-body
+  manipulation (RFC-0010) is exercised by the bimanual fixtures on the
+  dual-arm Digit manifest. Nav-only, so it runs hermetically against
+  MockROSAdapter and adapter-agnostically against DigitAdapter.
 
 manifest: digit_biped
 profiles: [home]

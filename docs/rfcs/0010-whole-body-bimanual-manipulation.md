@@ -2,9 +2,9 @@
 rfc: 0010
 title: Whole-body and bimanual manipulation
 author: URML Maintainers (maintainers@urml.dev)
-state: Draft
+state: Implemented
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-06-04
 supersedes: —
 superseded-by: —
 ---
@@ -27,7 +27,9 @@ superseded-by: —
 
 ## Summary
 
-URML's manipulation vocabulary assumes one arm acting on one detected object: `grasp`/`release` take a single `target: VarRef` and the manifest declares an `arm_count` but no per-arm addressing. Humanoids (Agility Digit, and the manifest-only Optimus/Apollo/NEO) and dual-arm cobots cannot express two-arm-coordinated actions (lift a tote with both arms, hold-with-one/work-with-other, hand-off between arms). This RFC proposes the vocabulary for multi-arm manipulation. It is **Draft**: it fixes the problem statement and the design space, recommends a direction, and explicitly does **not** ship an implementation — new primitive semantics are a one-way door and must be agreed before code (RFC-0002 primitive-economy principle).
+URML's manipulation vocabulary assumes one arm acting on one detected object: `grasp`/`release` take a single `target: VarRef` and the manifest declares an `arm_count` but no per-arm addressing. Humanoids (Agility Digit, and the manifest-only Optimus/Apollo/NEO) and dual-arm cobots cannot express two-arm-coordinated actions (lift a tote with both arms, hold-with-one/work-with-other, hand-off between arms). This RFC specifies the vocabulary for multi-arm manipulation.
+
+**State: Implemented** (resolved 2026-06-04, the casting-to-building build). The core fork is resolved in favor of **Option A** — an `arm` selector on `grasp`/`release` plus a `bimanual` coordination primitive. The Draft deliberately deferred this one-way-door decision (RFC-0002 primitive-economy principle); it is now made and shipped as a single vertical slice (spec → schema → validator → runtime → conformance → runnable example). See the [Resolution](#resolution-2026-06-04) and [Implementation note](#implementation-note) below.
 
 ## Motivation
 
@@ -47,7 +49,7 @@ grasp(target=$tote)            # which arm? both? URML can't say.
 
 ## Detailed design
 
-The design space, with a recommended direction. The fork is real and is the main unresolved question; this section is deliberately a menu, not a decree.
+The design space, with the recommended direction. The fork was the main open question in Draft; it is resolved to **Option A** (see [Resolution](#resolution-2026-06-04)). This section keeps the full menu for the decision record.
 
 **Option A (recommended) — an `arm` selector plus a `bimanual` coordination block.** Extend `GraspArgs`/`ReleaseArgs` with an optional `arm: Literal["left","right","any"] | Identifier` (default `any`, fully backward compatible — every existing program keeps meaning). Add one new Layer-2 primitive `bimanual` that wraps two manipulation sub-intents with a coordination mode (`together` for a single shared payload, `independent` for hold-and-work). Layer 1 gains an optional `Manipulation.arms: list[{name, gripper_ref}]` so the validator can check an addressed arm exists; `arm_count` stays and `arms` is the richer optional form.
 
@@ -67,11 +69,11 @@ A new check: an addressed `arm` must exist in the manifest (`arms[].name`, or be
 
 ### Reference runtime changes
 
-`ROSAdapter.send_manipulation_goal` gains an optional `arm` parameter (keyword, default preserves today's behavior). A new `send_bimanual_goal` Protocol method, or `bimanual` decomposed by the runtime into two coordinated `send_manipulation_goal` calls — itself an unresolved question (below). When implemented, `DigitAdapter` and a dual-arm UR/Franka cell move manipulation out of `not_supported`.
+`ROSAdapter.send_manipulation_goal` gains an optional `arm` parameter (keyword, default preserves today's behavior). **Decided:** the runtime **decomposes** `bimanual` into two arm-addressed `send_manipulation_goal(arm=...)` calls (left then right) rather than adding a `send_bimanual_goal` Protocol method — so every existing adapter gains `bimanual` for free the moment it accepts the `arm` keyword, and the audit shows one goal per arm. A future optional `send_bimanual_goal` remains open for substrates that do genuine joint force control (see Resolution Q2). `DigitAdapter` is flipped out of `not_supported` for manipulation in this build; a dual-arm UR/Franka cell follows the same shape mechanically.
 
 ### Conformance suite changes
 
-New fixtures: a humanoid two-arm tote lift (positive), a hold-and-work bimanual (positive), an `arm: left` on a single-arm manifest (rejected, new error code), `bimanual` with `arm_count: 1` (rejected). Added when this RFC reaches Accepted, not in this PR.
+New fixtures (shipped in this build): a humanoid two-arm tote lift (`biped/06_digit_bimanual_lift_positive`), an `arm`-addressed single grasp (`biped/07_digit_arm_addressed_positive`), an `arm: left` on a single-arm manifest (`biped/08_arm_not_declared_rejected` → `capability.arm_not_declared`), and `bimanual` on `arm_count: 1` (`industrial/47_bimanual_one_arm_rejected` → `capability.bimanual_requires_two_arms`). Plus the runnable `examples/humanoid/digit-tote-lift` slice and validator unit tests for both error codes.
 
 ## Backward compatibility
 
@@ -89,16 +91,18 @@ Options B and C above (rejected / fallback, with reasons). Also considered and r
 
 MoveIt 2 dual-arm planning groups and the `moveit_msgs` multi-group interface; ROS 2 `control_msgs` per-controller addressing; whole-body control / task-space inverse dynamics (TSID, OpenSoT) for humanoids; the Agility Digit manipulation API (per-arm addressing); behavior-tree dual-arm coordination nodes. URML-internal: RFC-0002 (primitive economy — adding is a one-way door, which is why this is RFC-first); RFC-0009 (the immediately prior Layer-1 widening, whose additive discipline this follows).
 
-## Unresolved questions
+## Resolution (2026-06-04)
 
-- **The core fork**: Option A's `bimanual` primitive vs Option C's composition-plus-`arm`-selector. Needs one or two real dual-arm programs written both ways before Accepted.
-- Protocol shape: a new `send_bimanual_goal` method vs runtime decomposition into coordinated `send_manipulation_goal(arm=...)` calls. Affects every adapter; decide before implementation.
-- Arm naming: fixed `left`/`right` vs manifest-declared arm identifiers vs both. Humanoids vs N-arm industrial cells pull differently.
-- Force/grasp coordination for a shared payload: does URML express joint force intent, or is that explicitly a substrate concern URML only declares the *intent* for?
+The four Draft questions, decided when this shipped:
+
+- **The core fork (Option A vs C):** **Option A.** A two-arm lift of one shared payload needs joint success and a place to declare coordination *mode* that behavior-level `parallel` does not give (Option C's own text concedes this). The `arm` selector that Option C keeps is included regardless, so Option A is a strict superset that adds exactly one primitive for the case the others cannot express. The named retreat path to C stays valid if `bimanual` ever proves under-specified.
+- **Protocol shape:** **runtime decomposition.** `bimanual` lowers to two arm-addressed `send_manipulation_goal(arm=...)` calls; no new Protocol method. This gives every adapter the primitive for free and keeps the result model substrate-agnostic. A future optional `send_bimanual_goal` is left open for substrates that do genuine joint force control — adding it is backward compatible.
+- **Arm naming:** **both.** `left`/`right` resolve on any `arm_count >= 2` manifest (the humanoid common case); a manifest-declared `manipulation.arms[].name` is addressable by name (the N-arm industrial case). `any` (default) preserves all pre-RFC programs.
+- **Force/grasp coordination:** **intent only.** URML declares the bimanual *intent and mode*; true joint force coordination for a shared payload is a substrate concern. The reference runtime issues the two goals and reports combined success. This is the honest scope line — URML should not own a control-theoretic whole-body model.
 
 ## Implementation note
 
-RFC-first by design. This PR adds **only this document in `state: Draft`** — no schema, Protocol, or runtime change, because the unresolved fork would otherwise bake an unreviewed one-way decision into the surface. Sequence once Accepted: (1) `arm` selector + Layer-1 `arms` + validator check (additive, low-risk, unblocks the common case); (2) `bimanual` primitive + Protocol + conformance fixtures; (3) flip `DigitAdapter` and a dual-arm cell out of `not_supported`. Each is its own PR. Contrast with RFC-0009, whose change was a single closed-enum widening with no semantic fork, so it shipped RFC + implementation together; this one must not.
+The Draft shipped RFC-first (document only, `state: Draft`) so the one-way-door fork would not bake an unreviewed decision into the surface. This build resolves the fork to Option A and ships the whole slice in one PR, in the sequence the Draft set out: (1) `arm` selector + Layer-1 `Manipulation.arms` + the two new validator checks (`capability.arm_not_declared`, `capability.bimanual_requires_two_arms`); (2) the `bimanual` primitive + runtime decomposition + conformance fixtures + the `examples/humanoid` slice; (3) `DigitAdapter` flipped out of `not_supported` for manipulation. Fully additive: `arm` defaults to `any`, `arms` is optional, `bimanual` is net-new, `manifest_version` stays `"0.1"`, and every existing program/manifest/fixture/runtime is unchanged. (Contrast RFC-0009, a single closed-enum widening that shipped RFC + implementation together; this one had a real semantic fork, so the Draft correctly came first.)
 
 ## Self-review (Phase 0)
 
@@ -107,4 +111,4 @@ RFC-first by design. This PR adds **only this document in `state: Draft`** — n
 - [x] More than one alternative is genuinely considered; the recommended one is marked and the fallback named.
 - [x] Backward compatibility is explicit (Option A is fully additive, pre-v1.0).
 - [x] Drawbacks are honest, including the "what is a primitive" expansion and a named retreat path.
-- [ ] The core fork (Option A vs C) is resolved — deliberately left open; that is what moving Draft → Open is for.
+- [x] The core fork (Option A vs C) is resolved — Option A, per the [Resolution](#resolution-2026-06-04); shipped as a full vertical slice.

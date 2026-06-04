@@ -161,6 +161,10 @@ class GraspArgs(BaseModel):
     target: VarRef
     force: Force | Literal["gentle", "firm"] | float | None = None
     approach: Literal["top", "side", "front", "auto"] = "auto"
+    arm: Literal["left", "right", "any"] | Identifier = "any"
+    """Which arm performs the grasp (RFC-0010). `any` (default) preserves
+    pre-RFC-0010 single-arm behavior; `left`/`right` or a manifest-declared
+    arm name select a specific arm on a multi-arm manipulator."""
 
 
 # ---------------------------------------------------------------------------
@@ -176,12 +180,39 @@ class ReleaseArgs(BaseModel):
     mode: Literal["drop", "place", "hand_to_user"]
     at: VarRef | Identifier | None = None
     height: float | None = Field(None, ge=0)
+    arm: Literal["left", "right", "any"] | Identifier = "any"
+    """Which arm performs the release (RFC-0010). See `GraspArgs.arm`."""
 
     @model_validator(mode="after")
     def _place_requires_at(self) -> ReleaseArgs:
         if self.mode == "place" and self.at is None:
             raise ValueError("release(mode: place) requires `at`")
         return self
+
+
+# ---------------------------------------------------------------------------
+# 7b. bimanual (RFC-0010)
+# ---------------------------------------------------------------------------
+
+
+class BimanualArgs(BaseModel):
+    """Coordinate two arms in a single manipulation intent (RFC-0010).
+
+    `left` and `right` are each a `grasp` or `release` sub-intent; the side
+    fixes the arm (a sub-intent's own `arm` field is ignored). `mode` is
+    `together` for a single shared payload (joint-success / shared-force
+    intent) or `independent` for hold-with-one / work-with-the-other.
+    Requires a manifest with two arms (`arm_count >= 2` or two declared
+    `manipulation.arms`). The reference runtime decomposes a `bimanual` into
+    two arm-addressed `grasp`/`release` calls and records `mode` in the audit;
+    true joint force coordination is a substrate concern (RFC-0010).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["together", "independent"]
+    left: GraspArgs | ReleaseArgs
+    right: GraspArgs | ReleaseArgs
 
 
 # ---------------------------------------------------------------------------
@@ -523,6 +554,7 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "wait_for",
     "grasp",
     "release",
+    "bimanual",
     "detect",
     "scan",
     "measure",
@@ -547,6 +579,7 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "wait_for": WaitForArgs,
     "grasp": GraspArgs,
     "release": ReleaseArgs,
+    "bimanual": BimanualArgs,
     "detect": DetectArgs,
     "scan": ScanArgs,
     "measure": MeasureArgs,

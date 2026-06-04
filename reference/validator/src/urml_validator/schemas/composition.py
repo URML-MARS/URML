@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Discriminator, Field, Tag, model_val
 
 from urml_validator.schemas.common import Identifier
 from urml_validator.schemas.primitives import (
+    BimanualArgs,
     CallProgramArgs,
     CaptureArgs,
     DetectArgs,
@@ -55,6 +56,7 @@ _PRIMITIVE_FIELDS = (
     "wait_for",
     "grasp",
     "release",
+    "bimanual",
     "detect",
     "scan",
     "measure",
@@ -92,6 +94,7 @@ class Step(BaseModel):
     wait_for: WaitForArgs | None = None
     grasp: GraspArgs | None = None
     release: ReleaseArgs | None = None
+    bimanual: BimanualArgs | None = None
     detect: DetectArgs | None = None
     scan: ScanArgs | None = None
     measure: MeasureArgs | None = None

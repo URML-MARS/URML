@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from urml_validator.schemas.common import Identifier, Pose, Transform
 from urml_validator.schemas.connectivity import Connectivity
@@ -131,11 +131,28 @@ class Gripper(BaseModel):
     movable: bool = True
 
 
+class Arm(BaseModel):
+    """A named arm in a multi-arm manipulator (RFC-0010).
+
+    The optional, richer form of `arm_count`: declares each arm by name and
+    binds it to a declared gripper, so the validator can check that an
+    addressed `grasp(arm: ...)` / `release(arm: ...)` / `bimanual` references
+    an arm that exists and resolve the force/accepted-classes check against
+    that arm's gripper. `arm_count` is retained; `arms` is optional and, when
+    present, SHOULD have `len(arms) == arm_count`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    gripper_ref: Identifier
+
+
 class Manipulation(BaseModel):
     """Manipulation capabilities declared by the robot.
 
-    Required by `grasp`, `release`. A robot without `manipulation` cannot
-    execute those.
+    Required by `grasp`, `release`, `bimanual`. A robot without `manipulation`
+    cannot execute those.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -143,6 +160,33 @@ class Manipulation(BaseModel):
     arm_count: int = Field(..., ge=0)
     grippers: list[Gripper] = Field(default_factory=list)
     reachable_workspace_m: float | None = Field(None, ge=0)
+    arms: list[Arm] = Field(
+        default_factory=list,
+        description=(
+            "Optional per-arm declaration (RFC-0010). Each arm has a `name` and "
+            "a `gripper_ref` into `grippers`. Absent means arms are anonymous and "
+            "`arm_count` alone bounds multi-arm addressing."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _arms_are_consistent(self) -> Manipulation:
+        """Each declared arm's `gripper_ref` must resolve to a declared gripper,
+        and arm names must be unique (RFC-0010 manifest integrity)."""
+        if not self.arms:
+            return self
+        gripper_names = {g.name for g in self.grippers}
+        seen: set[str] = set()
+        for arm in self.arms:
+            if arm.name in seen:
+                raise ValueError(f"manipulation.arms has duplicate arm name {arm.name!r}")
+            seen.add(arm.name)
+            if arm.gripper_ref not in gripper_names:
+                raise ValueError(
+                    f"manipulation.arms[{arm.name!r}].gripper_ref {arm.gripper_ref!r} "
+                    f"is not a declared gripper (declared: {sorted(gripper_names)!r})"
+                )
+        return self
 
 
 class Camera(BaseModel):

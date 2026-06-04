@@ -65,6 +65,7 @@ from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.roster import FleetRoster, FrameAnchor
 from urml_validator.transforms import resolve_to_world, transform_point_between
 from urml_validator.schemas.primitives import (
+    BimanualArgs,
     CallProgramArgs,
     CaptureArgs,
     DetectArgs,
@@ -981,6 +982,7 @@ _PRIMITIVE_NAMES_FROZEN = (
     "wait_for",
     "grasp",
     "release",
+    "bimanual",
     "detect",
     "scan",
     "measure",
@@ -1031,6 +1033,8 @@ def _check_capabilities(
         return _check_grasp_caps(args, manifest, path)
     if name == "release":
         return _check_release_caps(args, manifest, path)
+    if name == "bimanual":
+        return _check_bimanual_caps(args, manifest, path)
     if name == "detect":
         return _check_detect_caps(args, manifest, path)
     if name == "scan":
@@ -1308,6 +1312,40 @@ def _resolve_force(force: Any) -> float | None:
     return None
 
 
+def _check_arm_addressable(
+    arm: str, manifest: CapabilityManifest, primitive: str, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0010: an addressed arm must exist.
+
+    `any` (the default) always resolves. `left`/`right` resolve when
+    `arm_count >= 2` or a declared arm carries that name. A named arm must
+    appear in `manipulation.arms`. Assumes the caller has already confirmed
+    `manipulation` is present.
+    """
+    if arm == "any":
+        return []
+    manip = manifest.manipulation
+    if manip is None:
+        return []  # missing-manipulation already reported by the caller
+    declared = {a.name for a in manip.arms}
+    if arm in declared:
+        return []
+    if arm in ("left", "right") and manip.arm_count >= 2:
+        return []
+    return [
+        _err(
+            ErrorCode.CAPABILITY_ARM_NOT_DECLARED,
+            primitive,
+            path,
+            f"{primitive} addresses arm {arm!r} but the manifest does not declare it "
+            f"(arm_count={manip.arm_count}, declared arms={sorted(declared)!r}).",
+            field="arm",
+            suggestion="Use arm: any, set arm_count >= 2 for left/right addressing, "
+            "or declare the arm in manipulation.arms.",
+        )
+    ]
+
+
 def _check_grasp_caps(
     args: GraspArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
@@ -1339,11 +1377,12 @@ def _check_grasp_caps(
                     suggestion="Pick a softer/firmer level, or declare a gripper covering the requested range.",
                 )
             )
+    out += _check_arm_addressable(args.arm, manifest, "grasp", path)
     return out
 
 
 def _check_release_caps(
-    _args: ReleaseArgs, manifest: CapabilityManifest, path: list[str]
+    args: ReleaseArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
     out: list[ValidationError] = []
     if manifest.manipulation is None or not manifest.manipulation.grippers:
@@ -1355,6 +1394,47 @@ def _check_release_caps(
                 "release requires the manifest to declare `manipulation` with at least one gripper.",
             )
         )
+        return out
+    out += _check_arm_addressable(args.arm, manifest, "release", path)
+    return out
+
+
+def _check_bimanual_caps(
+    args: BimanualArgs, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0010: `bimanual` requires two arms; each side is a grasp/release
+    sub-intent validated exactly like its single-arm form."""
+    out: list[ValidationError] = []
+    manip = manifest.manipulation
+    if manip is None or not manip.grippers:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MANIPULATION,
+                "bimanual",
+                path,
+                "bimanual requires the manifest to declare `manipulation` with at least one gripper.",
+                suggestion="Add a `manipulation` block with grippers and two arms.",
+            )
+        )
+        return out
+    if manip.arm_count < 2 and len(manip.arms) < 2:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_BIMANUAL_REQUIRES_TWO_ARMS,
+                "bimanual",
+                path,
+                f"bimanual requires two arms (arm_count >= 2 or two declared arms); "
+                f"manifest declares arm_count={manip.arm_count}, "
+                f"arms={[a.name for a in manip.arms]!r}.",
+                suggestion="Declare arm_count >= 2, or two entries in manipulation.arms.",
+            )
+        )
+    for side, sub in (("left", args.left), ("right", args.right)):
+        sub_path = path + [side]
+        if isinstance(sub, GraspArgs):
+            out += _check_grasp_caps(sub, manifest, sub_path)
+        else:
+            out += _check_release_caps(sub, manifest, sub_path)
     return out
 
 

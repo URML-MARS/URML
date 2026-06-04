@@ -1,0 +1,35 @@
+name: biped/digit_bimanual_lift_positive
+description: >
+  RFC-0010 whole-body manipulation: a two-arm tote lift on the dual-arm
+  Agility Digit manifest (drive_type: biped, manipulation.arms left+right,
+  US origin). The robot detects the tote, then a single `bimanual together`
+  step grips it with both arms. The runtime decomposes the bimanual into two
+  arm-addressed manipulation goals, so the audit shows the detection followed
+  by one send_manipulation_goal per arm. Runs hermetically against
+  MockROSAdapter and adapter-agnostically against DigitAdapter.
+
+manifest: digit_bimanual
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: tote, store_as: the_tote }
+      - bimanual:
+          mode: together
+          left: { target: $the_tote, force: firm }
+          right: { target: $the_tote, force: firm }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - query_detection
+    - send_manipulation_goal
+    - send_manipulation_goal

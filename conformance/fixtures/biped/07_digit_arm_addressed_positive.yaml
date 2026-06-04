@@ -1,0 +1,29 @@
+name: biped/digit_arm_addressed_positive
+description: >
+  RFC-0010 arm selector: a single-arm grasp that addresses the left arm by
+  name on the dual-arm Digit manifest. `arm: left` resolves because the
+  manifest declares two arms (arm_count 2 / manipulation.arms). This is the
+  hold-with-one-arm half of whole-body manipulation without the bimanual
+  wrapper. Hermetic against MockROSAdapter.
+
+manifest: digit_bimanual
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: tote, store_as: the_tote }
+      - grasp: { target: $the_tote, force: firm, arm: left }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - query_detection
+    - send_manipulation_goal

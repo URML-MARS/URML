@@ -1,0 +1,94 @@
+# Fixture: Agility Robotics Digit — RFC-0010 dual-arm manifest.
+# drive_type: biped (RFC-0009) plus a two-arm manipulation block
+# (RFC-0010): arm_count 2 with a named `arms` list binding each arm to
+# its gripper. US origin (Agility, Oregon), compliant under the bundled
+# US-federal default policy. Companion to digit_biped.yaml; this one
+# exercises whole-body / bimanual manipulation (the `bimanual` primitive
+# and the `arm` selector on grasp/release).
+
+manifest_version: "0.1"
+robot_id: digit_bimanual_1
+description: Bipedal logistics humanoid with two arms (RFC-0010), v0.1.
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: staging_a
+    pose: { x: 6.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: tote_shelf
+    pose: { x: 6.0, y: 4.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+  - aisle_clear
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.5
+  station_keeping: true
+
+manipulation:
+  arm_count: 2
+  grippers:
+    - name: left_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 80.0
+      accepted_classes:
+        - tote
+    - name: right_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 80.0
+      accepted_classes:
+        - tote
+  arms:
+    - name: left
+      gripper_ref: left_hand
+    - name: right
+      gripper_ref: right_hand
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - tote
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - wms_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: digit_compute
+      role: critical
+      vendor: agility
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/digit_compute.cdx.json
+        sha256: "7777777777777777777777777777777777777777777777777777777777777777"
