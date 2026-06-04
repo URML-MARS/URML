@@ -48,8 +48,8 @@
 
 - slug: rtamt
   rfc: 362
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/nickovic/rtamt/issues/206"
   channel: github_issue
   contact: "nickovic/rtamt (Python library for Signal Temporal Logic (STL) specification and online/offline runtime monitoring; ~76 stars, Issues enabled, not archived, active, last push 2025-11-20). Dejan Nickovic / AIT Austrian Institute of Technology (Austria, NATO-allied)."
   last_touch: "2026-06-04"
@@ -59,18 +59,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0362 drafted (Move #28 WAVE ANCHOR). RTAMT is the reference open STL monitoring library, exactly the formal vocabulary URML's safety envelope lacks: URML declares an envelope (limits, geofence, occupancy) and validates statically; an STL monitor could enforce the same envelope as temporal-logic properties at runtime. Clean static/pre-dispatch vs runtime-monitoring complement. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #206 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0362 merges, post the posts-move28.md RTAMT body as an Issue on nickovic/rtamt under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+      status: done
+  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
   notes: "Move #28 anchor (STL runtime monitoring). URML envelope <-> STL properties; static pre-dispatch + runtime monitor cover the lifecycle. Monitorable-property Spec RFC queued. Cross-link RFC-0006 (link-loss safety), RFC-0004 (policy), RFC-0291 (deconfliction). Origin AT (AIT, allied). Verified 2026-06-04."
 
 - slug: reelay
   rfc: 363
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/doganulus/reelay/issues/33"
   channel: github_issue
   contact: "doganulus/reelay (header-only C++ library + toolset for runtime verification, building efficient monitors from temporal-logic / past-MTL specifications; ~43 stars, Issues enabled, not archived, active, last push 2026-01-03). Dogan Ulus (academic, NATO-allied lineage)."
   last_touch: "2026-06-04"
@@ -80,18 +80,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0363 drafted (Move #28). Reelay builds efficient runtime monitors from temporal-logic specs, with an embedded/real-time emphasis (header-only C++). For URML, the runtime-monitor implementation that could enforce an envelope property on-robot. Contrast with RTAMT (RFC-0362, STL/Python). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #33 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0363 merges, post the posts-move28.md Reelay body on doganulus/reelay under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 runtime verification (efficient C++ monitors, past-MTL). On-robot monitor for envelope properties. Sibling RTAMT (RFC-0362). Origin INTL (allied). Verified 2026-06-04."
 
 - slug: copilot-rv
   rfc: 364
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/Copilot-Language/copilot/issues/738"
   channel: github_issue
   contact: "Copilot-Language/copilot (runtime-verification framework: a stream-based hard-real-time language embedded in Haskell that generates hard-real-time C monitors; ~829 stars, Issues enabled, not archived, active, last push 2026-05-08). NASA Langley / Galois lineage (US), aerospace-grade."
   last_touch: "2026-06-04"
@@ -101,18 +101,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0364 drafted (Move #28). Copilot generates provably hard-real-time C monitors from stream specifications (aerospace use). For URML, the deployment-grade monitor generator: URML's safety-envelope properties could be expressed as Copilot specs and compiled to on-robot monitors. Ogma (RFC-0365) emits Copilot. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #738 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0364 merges, post the posts-move28.md Copilot body on Copilot-Language/copilot under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 stream-based RV (hard-real-time C monitors, NASA/Galois). Deployment-grade runtime guard for envelope properties. Ogma (RFC-0365) builds on it. Origin US. Verified 2026-06-04."
 
 - slug: ogma
   rfc: 365
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/nasa/ogma/issues/435"
   channel: github_issue
   contact: "nasa/ogma (NASA tool generating runtime-monitoring applications from formal requirements; emits Copilot monitors + integrations for frameworks like ROS and cFS; ~564 stars, Issues enabled, not archived, active, last push 2026-06-02). NASA (US)."
   last_touch: "2026-06-04"
@@ -122,18 +122,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0365 drafted (Move #28). Ogma turns formal requirements into runtime monitors (emits Copilot RFC-0364, integrates with ROS). The closest existing tool to what URML's safety envelope wants downstream: a path from a declared property to a generated, framework-integrated monitor, and it already targets ROS (which URML targets). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #435 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0365 merges, post the posts-move28.md Ogma body on nasa/ogma under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 RV monitor codegen (NASA; emits Copilot RFC-0364, ROS integration). A URML envelope could be an Ogma input. Highest downstream fit in the wave. Origin US (NASA). Verified 2026-06-04."
 
 - slug: scenic
   rfc: 366
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/BerkeleyLearnVerify/Scenic/issues/476"
   channel: github_issue
   contact: "BerkeleyLearnVerify/Scenic (probabilistic programming language for specifying scenarios / environments to test and train autonomous systems; ~374 stars, Issues enabled, not archived, very active, last push 2026-06-03). UC Berkeley (US)."
   last_touch: "2026-06-04"
@@ -143,18 +143,18 @@
   sector: conceptual-peer
   comments:
     - date: "2026-06-04"
-      text: "RFC-0366 drafted (Move #28, specification-language PEER). Both URML and Scenic are specification languages on different axes: URML specifies robot INTENT + capability; Scenic specifies the SCENARIO / world. A URML behavior is a natural system-under-test for a Scenic scenario; the pair gives a complete human-readable test spec (intent x environment). Peer-and-compose, not URML-above. Sibling VerifAI (RFC-0367, same Berkeley group). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #476 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0366 merges, post the posts-move28.md Scenic body on BerkeleyLearnVerify/Scenic under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Frame as a peer specification language, not URML-above."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 spec-language peer. URML (intent) x Scenic (scenario) = complete test spec. Scenario-spec-linkage Spec RFC queued. Sibling VerifAI (RFC-0367). Origin US (UC Berkeley). Verified 2026-06-04."
 
 - slug: verifai
   rfc: 367
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/BerkeleyLearnVerify/VerifAI/issues/64"
   channel: github_issue
   contact: "BerkeleyLearnVerify/VerifAI (toolkit for formal design and analysis of systems with AI/ML components: falsification, error-table analysis, data augmentation, often driven by Scenic; ~214 stars, Issues enabled, not archived, active, last push 2026-05-13). UC Berkeley (US), same group as Scenic (RFC-0366)."
   last_touch: "2026-06-04"
@@ -164,18 +164,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0367 drafted (Move #28). VerifAI falsifies a system against a specification (often via Scenic). The pairing for URML: URML's safety envelope declares properties; VerifAI searches for scenarios that falsify them against a URML-governed system; failures feed back as envelope/capability refinements. URML provides a declared property set + a validated system-under-test. Scenic coupling (RFC-0366). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #64 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0367 merges, post the posts-move28.md VerifAI body on BerkeleyLearnVerify/VerifAI under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 falsification / verification. URML envelope properties -> VerifAI falsification loop -> envelope/capability refinement. Falsifiable-property-export Spec RFC queued. Scenic sibling (RFC-0366), same Berkeley group. Origin US. Verified 2026-06-04."
 
 - slug: safe-control-gym
   rfc: 368
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/learnsyslab/safe-control-gym/issues/211"
   channel: github_issue
   contact: "learnsyslab/safe-control-gym (benchmark suite for safe control and safe RL with constraints; CBF/MPC/RL controllers on quadrotor and cartpole; ~885 stars, Issues enabled, not archived, active, last push 2026-04-29). Learning Systems and Robotics Lab (formerly UTIAS / University of Toronto, Canada, NATO-allied)."
   last_touch: "2026-06-04"
@@ -185,18 +185,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0368 drafted (Move #28, control level). safe-control-gym benchmarks controllers under safety constraints. URML declares capability + safety limits at the intent level; this is where they become control-theoretic constraints (state/input, CBFs) and a controller is evaluated for satisfying them. URML provides a declared, portable constraint set; the gym evaluates control-level satisfaction. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #211 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0368 merges, post the posts-move28.md safe-control-gym body on learnsyslab/safe-control-gym under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 safe-control benchmark. URML intent-level limits <-> control-level constraints (CBF/MPC). Cross-link RFC-0319 (control). Origin CA (U Toronto / LSY lab, allied). Verified 2026-06-04."
 
 - slug: omnisafe
   rfc: 369
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/PKU-Alignment/omnisafe/issues/389"
   channel: github_issue
   contact: "PKU-Alignment/omnisafe (infrastructural framework for safe reinforcement learning: constrained-RL algorithms + benchmarks; ~1,123 stars, Issues enabled, not archived, last push 2025-03-17, ~14 months). Folds PKU-Alignment/safety-gymnasium (~564 stars, the safe-RL environment suite). Peking University PKU-Alignment (China; open-source academic)."
   last_touch: "2026-06-04"
@@ -206,18 +206,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0369 drafted (Move #28, learning level). OmniSafe trains policies under explicit safety constraints (constrained MDPs). A safe-RL policy is a learned controller bounded by constraints; URML's safety envelope is a constraint declaration, and URML statically bounds what such a policy may attempt (learned-policy-as-substrate, like robomimic RFC-0360 / Brax). safety-gymnasium folded. Open-source academic (RFC-0003 PRC-hardware exclusion does not apply to citing/consuming open-source; GraspNet/Petoi precedent). Mild staleness (~14mo) acknowledged. No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #389 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0369 merges, post the posts-move28.md OmniSafe body on PKU-Alignment/omnisafe under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If routed to safety-gymnasium, fork that row to live."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 safe RL (constrained MDP). URML envelope <-> constraint; bounds a learned policy (RFC-0360 framing). safety-gymnasium folded. Origin CN (PKU, academic open-source). Verified 2026-06-04."
 
 - slug: esmini
   rfc: 370
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/esmini/esmini/issues/816"
   channel: github_issue
   contact: "esmini/esmini (lightweight player + tool suite for ASAM OpenSCENARIO / OpenDRIVE; define, replay, and test driving/robot scenarios; ~916 stars, Issues enabled, not archived, very active, last push 2026-06-02). Open-source community (Swedish lineage, NATO-allied)."
   last_touch: "2026-06-04"
@@ -227,18 +227,18 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0370 drafted (Move #28, scenario standard). esmini executes standardized ASAM OpenSCENARIO test scenarios. A URML-governed system can be the ego/agent exercised by a scenario, giving a portable, standards-based way to test that URML's static validation + resulting behavior hold up. Contrast with Scenic (RFC-0366, probabilistic scenario language vs the industry standard player). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #816 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0370 merges, post the posts-move28.md esmini body on esmini/esmini under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 OpenSCENARIO player (standards-based test harness). URML-governed agent as the controlled entity. Contrast Scenic (RFC-0366). Origin SE (community, allied). Verified 2026-06-04."
 
 - slug: moonlight
   rfc: 371
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-04"
+  posted_url: "https://github.com/MoonLightSuite/moonlight/issues/35"
   channel: github_issue
   contact: "MoonLightSuite/moonlight (tool for monitoring temporal and SPATIO-temporal logic properties, Spatio-Temporal Reach and Escape Logic / STREL, over signals; ~21 stars, Issues enabled, not archived, active, last push 2026-01-25). IMT School / consortium (Italy, NATO-allied). Specialized reference STREL monitor (low star count)."
   last_touch: "2026-06-04"
@@ -248,12 +248,12 @@
   sector: framework-skill
   comments:
     - date: "2026-06-04"
-      text: "RFC-0371 drafted (Move #28, spatio-temporal). MoonLight monitors STREL (spatio-temporal) properties, the right vocabulary for URML envelope properties that are inherently spatial AND temporal: a geofence held over time, a fleet separation distance maintained (cross-ref RFC-0291). Spatio-temporal sibling of RTAMT (RFC-0362). No license-ask. Post a GitHub Issue under idoco2003 after merge."
+      text: "Posted issue #35 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0371 merges, post the posts-move28.md MoonLight body on MoonLightSuite/moonlight under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
-      status: pending
-  next_action: "post after merge. Then wait 14-30 d; follow-up if silent; set response per enum on reply."
+      status: done
+  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
   notes: "Move #28 spatio-temporal monitoring (STREL). URML geofence/occupancy/separation envelope <-> STREL; multi-robot spatial monitoring (RFC-0291). Sibling RTAMT (RFC-0362). Origin IT (IMT, allied). Verified 2026-06-04."
 
 # ============================================================
