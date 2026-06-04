@@ -80,6 +80,9 @@ class ErrorCode(StrEnum):
     ENVELOPE_LINK_LOSS_UNDECLARED_ROLE = "envelope.link_loss_undeclared_role"
     ENVELOPE_LINK_LOSS_INCOHERENT = "envelope.link_loss_incoherent"
     ENVELOPE_LINK_OUTAGE_EXCEEDS_DECLARED = "envelope.link_outage_exceeds_declared"
+    # RFC-0382: monitorable temporal-logic properties.
+    ENVELOPE_MONITORABLE_PARSE_ERROR = "envelope.monitorable_parse_error"
+    ENVELOPE_MONITORABLE_UNDECLARED_SIGNAL = "envelope.monitorable_undeclared_signal"
 
     # Pass 4 — variable bindings.
     BINDING_DUPLICATE_STORE_AS = "binding.duplicate_store_as"

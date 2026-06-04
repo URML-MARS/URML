@@ -59,6 +59,12 @@ from urml_validator.schemas.composition import (
     Step,
 )
 from urml_validator.schemas.connectivity import LinkLossAction, LinkRole
+from urml_validator.monitorable import (
+    MonitorableParseError,
+    parse_property,
+    referenced_signals,
+    referenced_signals_custom,
+)
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import Camera, CapabilityManifest, Frame, Gripper, Sensor
 from urml_validator.schemas.policy import Policy
@@ -207,6 +213,8 @@ def validate(
         errors.extend(_check_envelope(step, manifest_model, envelope_model, path))
     # RFC-0006: link-loss policy coherence is a whole-envelope check.
     errors.extend(_check_link_loss_coherence(manifest_model, envelope_model))
+    # RFC-0382: monitorable temporal-logic properties parse + resolve signals.
+    errors.extend(_check_monitorable_properties(manifest_model, envelope_model))
 
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
@@ -2552,6 +2560,87 @@ def _link_loss_envelope_error(
         message=message,
         suggestion=suggestion,
     )
+
+
+#: RFC-0382: built-in runtime quantities a monitorable property may reference
+#: without declaring a sensor. The envelope's own numeric quantities plus the
+#: people-distance quantity an occupancy zone implies.
+_MONITORABLE_BUILTIN_SIGNALS = frozenset(
+    {"speed", "altitude", "payload", "grip_force", "person_distance"}
+)
+
+
+def _monitorable_declared_signals(manifest: CapabilityManifest) -> set[str]:
+    """The signal names a monitorable property may reference (RFC-0382).
+
+    Built-in runtime quantities, plus every declared sensor name and declared
+    event. A property that references anything outside this set is rejected:
+    you cannot monitor what the manifest never said the robot can sense.
+    """
+    declared: set[str] = set(_MONITORABLE_BUILTIN_SIGNALS)
+    declared |= {str(event) for event in manifest.declared_events}
+    if manifest.perception is not None:
+        declared |= {str(sensor.name) for sensor in manifest.perception.sensors}
+    return declared
+
+
+def _check_monitorable_properties(
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+) -> list[ValidationError]:
+    """Pass 3 (RFC-0382): each monitorable property parses and resolves signals.
+
+    For every property: parse the expression against its dialect (``custom`` is
+    not parsed, only scanned for identifiers); then resolve every referenced
+    signal, plus any explicitly listed ``signals``, against the declared set.
+    Unparseable expressions and undeclared signals are errors. The validator
+    does not evaluate the property (it has no runtime trace); a monitor backend
+    compiles and runs it.
+    """
+    out: list[ValidationError] = []
+    if envelope is None or not envelope.monitorable_properties:
+        return out
+    declared = _monitorable_declared_signals(manifest)
+    for idx, prop in enumerate(envelope.monitorable_properties):
+        base_path = ["<envelope>", "monitorable_properties", str(idx)]
+        if prop.dialect == "custom":
+            refs = referenced_signals_custom(prop.expression)
+        else:
+            try:
+                ast = parse_property(prop.expression, dialect=prop.dialect)
+            except MonitorableParseError as exc:
+                out.append(
+                    ValidationError(
+                        code=ErrorCode.ENVELOPE_MONITORABLE_PARSE_ERROR,
+                        primitive=None,
+                        path=[*base_path, "expression"],
+                        field="expression",
+                        message=f"monitorable property {str(prop.name)!r} failed to parse: {exc}",
+                        suggestion="Fix the expression syntax. See RFC-0382 for the core grammar.",
+                    )
+                )
+                continue
+            refs = referenced_signals(ast)
+        to_resolve = refs | {str(sig) for sig in prop.signals}
+        for sig in sorted(s for s in to_resolve if s not in declared):
+            out.append(
+                ValidationError(
+                    code=ErrorCode.ENVELOPE_MONITORABLE_UNDECLARED_SIGNAL,
+                    primitive=None,
+                    path=[*base_path, "expression"],
+                    field="expression",
+                    message=(
+                        f"monitorable property {str(prop.name)!r} references undeclared "
+                        f"signal {sig!r}."
+                    ),
+                    suggestion=(
+                        "Reference only a declared sensor, a declared event, or a built-in "
+                        "quantity (speed, altitude, payload, grip_force, person_distance). "
+                        "Per RFC-0382."
+                    ),
+                )
+            )
+    return out
 
 
 _DRONE_DRIVE_TYPES = {"multirotor", "fixed_wing", "vtol"}

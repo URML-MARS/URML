@@ -2,7 +2,7 @@
 rfc: 0382
 title: Monitorable properties, a temporal-logic specification attached to the safety envelope
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-06-04
 updated: 2026-06-04
 supersedes: —
@@ -182,3 +182,9 @@ This is a Spec RFC. Comments belong in the RFC's PR thread on `URML-MARS/URML`.
 - [x] No Layer-2 primitive added; the declaration is substrate-neutral (compiles to multiple monitor backends, none assumed).
 - [x] Implementation note explains how it lands (STL first, STREL/Copilot follow-on).
 - [x] Re-read CLAUDE.md §What Claude Should Never Do; the core is closed and RFC-gated, no backend is embedded, no cloud dependency.
+
+## Implementation status
+
+Implemented 2026-06-04. Landed: the `MonitorableProperty` model + `monitorable_properties` field on `SafetyEnvelope`; `urml_validator.monitorable` (a hand-rolled tokenizer + recursive-descent parser for the closed temporal-logic core, signal extraction, and `compile_to_stl`, zero new dependencies); the Pass-3 `_check_monitorable_properties` envelope check (parse + signal resolution against declared sensors / events / built-in quantities) with two error codes (`envelope.monitorable_parse_error`, `envelope.monitorable_undeclared_signal`); parser unit tests + validator integration tests; and Layer-3 spec §7a.
+
+The `stl` core (atoms, boolean, `always`/`eventually`/`until` with bounds) parses and compiles to STL; the `stl_strel` spatial operators (`somewhere`/`everywhere`/`surround`) parse and resolve signals but have no STL compile (STREL/Copilot compilation, and surfacing the compiled form in the `--json` report, remain the noted follow-ons). The built-in runtime-signal set is `speed`, `altitude`, `payload`, `grip_force`, `person_distance`; a richer runtime-signal vocabulary is Unresolved question 2.
