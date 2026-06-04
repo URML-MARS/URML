@@ -185,11 +185,13 @@
       text: "Posted issue #746 pointing at the RFC (under idoco2003, after RFCs 0322-0331 landed on main via PR #276), AI-authoring disclosure up front. Awaiting maintainer reply."
     - date: "2026-06-04"
       text: "DanNegrut (Dan Negrut, Project Chrono lead) replied on #746 (2026-06-02), substantive and constructive, no AI-skepticism: PyChrono is the right boundary for URML-primitive to Chrono model (multibody dynamics, chrono.vehicle, chrono.sensor, terrain models, all Python-scriptable); a chrono_ros bridge if closing the loop with ROS-native planners; align the capability manifest at the level of Chrono motion primitives / driver inputs, mirroring the asset/model hierarchy (vehicle + terrain patch + sensor rig to a ChSystem config); confirmed BSD-3-Clause. Owe a short human reply."
+    - date: "2026-06-04"
+      text: "Replied 2026-06-04 (idoco2003, issue #746): thanked Dan, confirmed the motion-primitive/driver-input manifest granularity, committed to building one worked PyChrono validation example and sharing it back."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0328 merges, post the posts-move24.md Project Chrono body on projectchrono/chrono under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (DanNegrut, Chrono lead). Concrete handed-back step: map each manifest entry to a ChSystem config at the motion-primitive / driver-input level. Candidate for a worked PyChrono validation example (URML primitive to short Chrono sim segment to contact/terrain/sensor evidence). Short human reply owed."
+  next_action: "Engaged (DanNegrut, Chrono lead). Replied 2026-06-04. Open build item: a worked PyChrono validation example (URML primitive to short Chrono sim segment to contact/terrain/sensor evidence), each manifest entry mapped to a ChSystem config; share back on #746 when up."
   notes: "Move #24. URML mobility (tracked / ackermann / max_payload) -> a Chrono vehicle model; perception -> Chrono::Sensor. The high-fidelity-validation use case. Cross-link RFC-0059 (Drake), RFC-0060 (MuJoCo). Manifest gaps queued (terramechanics fidelity hint, simulator-target class hint). Origin US (UW-Madison; UW + Parma). Verified 2026-06-02."
 
 - slug: brax
@@ -250,11 +252,13 @@
       text: "Posted issue #1588 pointing at the RFC (under idoco2003, after RFCs 0322-0331 landed on main via PR #276), AI-authoring disclosure up front. Awaiting maintainer reply."
     - date: "2026-06-04"
       text: "pseudo-rnd-thoughts (Mark Towers, Farama Foundation maintainer) replied on #1588 (2026-06-02): language-as-action converted to raw actions is a known technique (cited arXiv 2112.08907), confirmed MIT. Brief but constructive, no hostility. Owe a short human reply."
+    - date: "2026-06-04"
+      text: "Replied 2026-06-04 (idoco2003, issue #1588): clarified URML sits a layer above the env API as the intent/validation surface, Gymnasium being one compile target; acknowledged the reference."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0331 merges, post the posts-move24.md Gymnasium body on Farama-Foundation/Gymnasium under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep the framing exploratory; do not overclaim a substrate mapping."
       status: done
-  next_action: "Engaged-light (Mark Towers, Farama). Short human ack noting the reference; position URML as the intent / validation layer alongside the env API, not a new action wrapper. Low follow-up priority."
+  next_action: "Engaged-light (Mark Towers, Farama). Replied 2026-06-04. No further action unless they re-engage."
   notes: "Move #24 conceptual peer. Two directions: a URML-validated policy exposing a Gym env; a manifest bounding a Gym action space to the declared-safe subset. PettingZoo (multi-agent) <-> URML fleet (RFC-0286). Cross-link RFC-0329 (Brax uses the Gym-style API). Manifest gap queued (RL-env / action-space alignment). Origin US (Farama). Verified 2026-06-02."
 
 # ============================================================
