@@ -277,3 +277,41 @@ Ido Yahalomi (URML, greenvh@gmail.com)
 
 *AI-assisted prose, maintainer-reviewed before posting (see [VIBE.md](https://github.com/URML-MARS/URML/blob/main/VIBE.md)). Human-only correspondence available on request.*
 ```
+
+---
+
+## Correction comments (2026-06-04)
+
+The "URML has no legged / bipedal / quadruped class" framing above is **false**:
+`biped` and `quadruped` have been in `mobility.drive_type` since RFC-0009
+(Implemented 2026-05-19). The error came from reading a drifted Layer-1 spec
+doc (reconciled in the RFC-0010 build). The whole-body manipulation half of the
+queued work then shipped as RFC-0010 (Implemented 2026-06-04).
+
+**Post the correction below to the 6 threads that carried the claim**, AFTER
+RFC-0010 (PR #308) lands on `main` so the RFC-0010 reference is live:
+
+- RFC-0372 ToddlerBot — https://github.com/hshi74/toddlerbot/issues/19
+- RFC-0373 Open Duck Mini — https://github.com/apirrone/Open_Duck_Mini/issues/47
+- RFC-0374 K-Scale Labs — https://github.com/kscalelabs/ksim/issues/539
+- RFC-0375 PAL TALOS — https://github.com/pal-robotics/talos_robot/issues/9
+- RFC-0376 legged_gym — https://github.com/leggedrobotics/legged_gym/issues/98
+- RFC-0379 legged_control — https://github.com/qiayuanl/legged_control/issues/85
+
+**No correction needed** (these posts never made the false claim; they ask
+about the policy/MPC boundary): RFC-0377 rsl_rl, RFC-0378 DIAL-MPC,
+RFC-0380 rl_games.
+
+Reusable comment text:
+
+```
+A correction to my message above, in the interest of accuracy.
+
+I overstated the gap. URML does have legged mobility classes today: `mobility.drive_type` includes `biped` and `quadruped` (shipped in RFC-0009). So "no legged mobility class" was wrong, and I apologize for the inaccuracy.
+
+The whole-body piece I described as queued has since landed too: RFC-0010 adds two-arm / bimanual manipulation (an `arm` selector on grasp/release and a `bimanual` primitive).
+
+What remains genuinely open, and what I would still value your view on, is the richer whole-body capability shape: whole-body kinematic structure and balance / stability constraints in the manifest, and where the boundary should sit between a URML intent and your locomotion / control stack. That question stands.
+
+Ido Yahalomi (URML, greenvh@gmail.com)
+```

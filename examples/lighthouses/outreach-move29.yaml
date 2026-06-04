@@ -10,16 +10,21 @@
 # RFC-0076, iCub RFC-0192, 1X RFC-0187, Reachy RFC-0240, NAO/Pepper
 # RFC-0237/0238, Poppy RFC-0239).
 #
-# THE LOAD-BEARING GAP this wave surfaces: URML's mobility.drive_type enum
-# is { differential, omnidirectional, ackermann, tracked, multirotor,
-# fixed_wing, vtol, manipulator_base, underwater_thrusters } and has NO
-# legged / bipedal / quadruped class, and no whole-body (legs + arms)
-# capability shape. Every Tier-A RFC flags a legged-mobility-class +
-# whole-body capability declaration as the queued Spec RFC (tied to
-# RFC-0010 whole-body manipulation). URML composes ABOVE a legged platform
-# (intent + validated capability -> the platform's locomotion stack ->
-# joints); the locomotion controller (learned policy or MPC/WBC) is the
+# THE GAP this wave surfaces: the richer whole-body (legs + arms, balance)
+# capability shape a humanoid manifest needs. URML composes ABOVE a legged
+# platform (intent + validated capability -> the platform's locomotion stack
+# -> joints); the locomotion controller (learned policy or MPC/WBC) is the
 # substrate.
+#
+# CORRECTION (2026-06-04): the original framing here and in the posts/RFCs
+# claimed drive_type "has NO legged / bipedal / quadruped class." That is
+# FALSE. `biped` and `quadruped` have existed since RFC-0009 (Implemented
+# 2026-05-19); the error came from reading a drifted Layer-1 spec doc (fixed
+# in the RFC-0010 build). The whole-body manipulation half of the queued work
+# then shipped as RFC-0010 (Implemented 2026-06-04). The genuine open question
+# (what a humanoid manifest should declare for whole-body kinematics and
+# balance) stands. The 9 live issues get a correction comment; do not massage
+# `response` state.
 #
 # Tiering reality: the category skews PRC-domiciled (Unitree, RobotEra) and
 # research-heavy. The 9 live Tier-A are allied / active / open (US, ETH-CH,
