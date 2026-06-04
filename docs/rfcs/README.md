@@ -113,7 +113,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0007](0007-manufacturer-go-to-market.md) | Spec | Manufacturer go-to-market: URML as an opportunity and a channel for robot OEMs and component makers | Implemented | 2026-05-16 |
 | [0008](0008-community-discussions.md) | Spec | Community Discussions: a public Q&A and feedback channel brought forward into Phase 0 | Implemented | 2026-05-16 |
 | [0009](0009-legged-humanoid-mobility.md) | Spec | Legged and humanoid mobility in the capability manifest | Implemented | 2026-05-19 |
-| [0010](0010-whole-body-bimanual-manipulation.md) | Spec | Whole-body and bimanual manipulation | Draft | 2026-05-17 |
+| [0010](0010-whole-body-bimanual-manipulation.md) | Spec | Whole-body and bimanual manipulation | Implemented | 2026-06-04 |
 | [0011](0011-educational-profile.md) | Spec | Educational profile | Accepted | 2026-05-19 |
 | [0012](0012-research-profile.md) | Spec | Research profile | Accepted | 2026-05-19 |
 | [0013](0013-industrial-layer2-primitives.md) | Spec | Industrial-profile Layer-2 primitives — pick_from, place_at, swap_tool | Implemented | 2026-05-19 |

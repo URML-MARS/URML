@@ -84,8 +84,11 @@ Two real gaps, both closed in the PR that adds this document:
 
 ## The matrix
 
-All twenty primitives are fully covered. Fixture column cites one
+All twenty-two primitives are fully covered. Fixture column cites one
 representative fixture; most primitives have several (positive and negative).
+The `arm` selector on `grasp`/`release` (RFC-0010) rides their existing rows;
+it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
+`biped/08_arm_not_declared_rejected`).
 
 | # | Primitive | Spec | Schema | Impl (ros2) | Conformance (representative) | Example |
 |---|---|---|---|---|---|---|
@@ -110,6 +113,7 @@ representative fixture; most primitives have several (positive and negative).
 | 19 | `place_at` | v0.1.0 §3.7 | `PlaceAtArgs` | `exec_place_at` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
 | 20 | `swap_tool` | v0.1.0 §3.8 | `SwapToolArgs` | `exec_swap_tool` | `industrial/05_swap_tool_positive` | `industrial/pick-place-tool-change` |
 | 21 | `call_program` | v0.1.0 §3.9 | `CallProgramArgs` | `exec_call_program` | `industrial/10_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
+| 22 | `bimanual` | v0.1.0 §3.10 | `BimanualArgs` | `exec_bimanual` | `biped/06_digit_bimanual_lift_positive` | `humanoid/digit-tote-lift` |
 
 ## Notes (honest deferrals, not gaps)
 
