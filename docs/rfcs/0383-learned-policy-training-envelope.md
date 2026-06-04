@@ -2,7 +2,7 @@
 rfc: 0383
 title: learned_policy, declaring the envelope a learned controller was trained under
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-06-04
 updated: 2026-06-04
 supersedes: —
@@ -164,3 +164,9 @@ This is a Spec RFC. Comments belong in the RFC's PR thread on `URML-MARS/URML`.
 - [x] No Layer-2 primitive added; the block is substrate-neutral (describes the policy's boundary, not any framework).
 - [x] Implementation note explains how it lands and its only dependency (RFC-0381's enum).
 - [x] Re-read CLAUDE.md §What Claude Should Never Do; closed enums preserve the gate, no framework is embedded, no cloud dependency, no telemetry.
+
+## Implementation status
+
+Implemented 2026-06-04. Landed: the `LearnedPolicy` / `CommandRange` / `PayloadRange` models + the optional `learned_policy` field on `CapabilityManifest`; the `_check_learned_policy` Pass-2/3 coherence check (terrain within the trained classes; the admissible velocity and payload ceiling, strictest of `mobility` and the safety envelope, against the trained maxima) with severity routed by `enforcement` (`reject` to errors, `warn` to warnings) and two error codes (`capability.learned_policy_terrain_mismatch`, `capability.learned_policy_exceeds_training`); integration tests; and Layer-1 spec §2.12.
+
+The shipped check is the manifest/envelope ceiling form (it catches the case where admissible intent could exceed training regardless of any specific program). Per-primitive intent-to-command inference (reading an explicit `move_to` speed against a command range) and the manipulation command quantities are the documented follow-ons (Unresolved questions 1 and 2). `terrain_classes` reuses the RFC-0381 `terrain_fidelity` enum, now landed.

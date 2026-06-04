@@ -553,6 +553,71 @@ class ValidationContext(BaseModel):
     )
 
 
+class CommandRange(BaseModel):
+    """One command quantity a learned policy was trained over (RFC-0383)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    quantity: Literal["linear_velocity_x", "linear_velocity_y", "yaw_rate"] = Field(
+        ...,
+        description="Command quantity (closed set; grows by RFC as a fixture exercises each).",
+    )
+    min: float
+    max: float
+    unit: Literal["m_per_s", "rad_per_s"]
+
+    @model_validator(mode="after")
+    def _ordered(self) -> CommandRange:
+        if self.max < self.min:
+            raise ValueError(f"command_range max {self.max} is below min {self.min}")
+        return self
+
+
+class PayloadRange(BaseModel):
+    """Payload mass range a learned policy was trained under (RFC-0383)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    min: float = Field(0.0, ge=0)
+    max: float = Field(..., ge=0)
+    unit: Literal["kg"] = "kg"
+
+    @model_validator(mode="after")
+    def _ordered(self) -> PayloadRange:
+        if self.max < self.min:
+            raise ValueError(f"payload_range max {self.max} is below min {self.min}")
+        return self
+
+
+class LearnedPolicy(BaseModel):
+    """The envelope a learned controller was trained and validated under (RFC-0383).
+
+    A learned policy is valid only inside its training distribution. This block
+    declares that distribution so the validator can refuse a deployment whose
+    admissible intent (the strictest of the mechanical and safety-envelope
+    ceilings) exceeds what the policy was trained for. The export mechanism (how
+    a training framework emits these limits) is out of scope; URML defines the
+    declaration and the static check.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    policy_ref: str | None = Field(
+        default=None,
+        description="Opaque handle to the policy artifact (URI / registry id / path). Documentation, not parsed.",
+    )
+    command_ranges: list[CommandRange] = Field(default_factory=list)
+    terrain_classes: list[Literal["rigid", "deformable", "granular", "unmodeled"]] = Field(
+        default_factory=list,
+        description="Terrain classes (RFC-0381 vocabulary) the policy was trained and validated on.",
+    )
+    payload_range: PayloadRange | None = None
+    enforcement: Literal["reject", "warn"] = Field(
+        "warn",
+        description="Whether an out-of-training-envelope deployment is a validation error or a warning.",
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -591,3 +656,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0381: optional simulation-fidelity hints (terrain + validation tier).
     validation: ValidationContext | None = None
+
+    # RFC-0383: optional learned-controller training envelope.
+    learned_policy: LearnedPolicy | None = None
