@@ -453,6 +453,16 @@ Move #29 targets the 2025-26 open-humanoid surge plus the open legged-locomotion
 | [0379](0379-legged-control-outreach.md) | Outreach | legged_control integration; Move #29; complete MPC+WBC legged stack built on OCS2 (RFC-0347), ros2_control-style (RFC-0319); open-academic; request for comment from legged_control maintainers | Draft | 2026-06-04 |
 | [0380](0380-rl-games-outreach.md) | Outreach | rl_games integration; Move #29; high-throughput RL training library behind many Isaac locomotion policies; **backend, lowest direct fit** (boundary check + capability-export question, mirrors rsl_rl); request for comment from rl_games maintainers | Draft | 2026-06-04 |
 
+### Spec RFCs from engagement feedback (RFCs 0381-0383)
+
+These are **Spec** RFCs (they change URML's normative surface) surfaced by the engaged outreach threads, not new outreach. Each one converts a gap a maintainer pointed at into a concrete, optional, backward-compatible schema addition, for review. None adds a Layer-2 primitive.
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0381](0381-simulation-fidelity-manifest-hints.md) | Spec | Optional Layer-1 `validation` block: `terrain_fidelity` + `simulator_target_class` closed-enum hints; surfaced + queued by RFC-0328 (Chrono) and the Move #24 sim wave; read by the sim runtimes, checked but not enforced by the validator | Draft | 2026-06-04 |
+| [0382](0382-monitorable-temporal-logic-envelope.md) | Spec | Optional `monitorable_properties` on the safety envelope: a small closed temporal-logic core (STL/STREL) over declared signals, compiled to monitor backends; the load-bearing queued Spec RFC named by the Move #28 safety wave (RTAMT/Reelay/Copilot/Ogma/MoonLight) | Draft | 2026-06-04 |
+| [0383](0383-learned-policy-training-envelope.md) | Spec | Optional Layer-1 `learned_policy` block declaring a learned controller's training envelope (command ranges, terrain classes, payload); validator refuses intent outside it; surfaced by rsl_rl (RFC-0377) + the learned-policy-as-substrate threads (rl_games/legged_gym/Open Duck Mini/OmniSafe/robomimic) | Draft | 2026-06-04 |
+
 ## Lifecycle states
 
 Per RFC-0001:
