@@ -242,19 +242,23 @@
   posted_url: "https://github.com/Rhoban/placo/issues/31"
   channel: github_issue
   contact: "Rhoban/placo (quadratic-programming-based whole-body kinematics and control library; ~326 stars, Issues enabled, not archived, active, last push 2026-05-21). Rhoban team, University of Bordeaux (France, NATO-allied)."
-  last_touch: "2026-06-03"
-  response: none
+  last_touch: "2026-06-04"
+  response: engaged
   tier: A
   country: FR
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #31 pointing at the RFC (under idoco2003, after RFCs 0352-0361 landed on main via PR #298), AI-authoring disclosure up front, NO license-ask (per the 2026-06-03 guidance), with the URML-declares-and-validates-the-substrate-solves framing. Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "Gregwar (Gregoire Passault, Rhoban/PlaCo lead) replied on #31 (2026-06-04), substantive and constructive, no AI-skepticism: pointed at the kinematics + dynamics docs and the placo-examples repo; flagged that re-creating tasks each step has memory-reallocation overhead (update task data and re-solve instead, per 6axis_trajectory.py); asked us to elaborate on what 'restating the model' means."
+    - date: "2026-06-04"
+      text: "Replied 2026-06-04 (idoco2003): answered the 'restating' question (URML's manifest stays abstract - arm count, reachable workspace, drive type - and does NOT re-describe the URDF/links/joints PlaCo owns; URML carries abstract capability + validated target, PlaCo holds model + task/constraint set and solves), acknowledged the update-don't-recreate guidance, asked if that matches his boundary."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0361 merges, post the posts-move27.md PlaCo body on Rhoban/placo under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (Gregwar, Rhoban/PlaCo lead). Clean model/intent boundary exchange; he confirmed PlaCo updates task data on an already-loaded model (no reload), which matches URML's no-restate stance. Await his confirmation of the boundary framing. Ties to the parallel Pink/mink single-arm IK threads (same differential-IK altitude)."
   notes: "Move #27 whole-body IK/control. QP task formulation; sibling Pink (RFC-0353)/mink (RFC-0354); whole-body (RFC-0010). Origin FR (Rhoban/Bordeaux, allied). Verified 2026-06-03."
 
 # ============================================================
