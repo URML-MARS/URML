@@ -54,7 +54,10 @@ _PREFIX_TEMPORAL = ("always", "eventually", "somewhere", "everywhere")
 _INFIX_BINARY = ("until", "surround")
 _SPATIAL = ("somewhere", "everywhere", "surround")
 _KEYWORDS = frozenset(
-    ("always", "eventually", "until", "not", "and", "or", "implies", "somewhere", "everywhere", "surround", "true", "false")
+    (
+        "always", "eventually", "until", "not", "and", "or",
+        "implies", "somewhere", "everywhere", "surround", "true", "false",
+    )
 )
 
 

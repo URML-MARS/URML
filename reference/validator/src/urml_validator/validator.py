@@ -2586,7 +2586,7 @@ def _monitorable_declared_signals(manifest: CapabilityManifest) -> set[str]:
 
 def _check_monitorable_properties(
     manifest: CapabilityManifest,
-    envelope: SafetyEnvelope,
+    envelope: SafetyEnvelope | None,
 ) -> list[ValidationError]:
     """Pass 3 (RFC-0382): each monitorable property parses and resolves signals.
 
@@ -2598,7 +2598,7 @@ def _check_monitorable_properties(
     compiles and runs it.
     """
     out: list[ValidationError] = []
-    if not envelope.monitorable_properties:
+    if envelope is None or not envelope.monitorable_properties:
         return out
     declared = _monitorable_declared_signals(manifest)
     for idx, prop in enumerate(envelope.monitorable_properties):
