@@ -73,6 +73,14 @@ class ChronoConfig(BaseModel):
         default_factory=dict,
         description="Map manifest-declared location names to a driver segment.",
     )
+    terrain_fidelity: Literal["rigid", "deformable", "granular", "unmodeled"] | None = Field(
+        default=None,
+        description=(
+            "RFC-0381 terrain class this deployment runs over, mirrored from the "
+            "manifest's validation.terrain_fidelity. A future scene-driven build "
+            "selects the terrain model from it; v0.1 records it in the evidence."
+        ),
+    )
 
     def resolve_location(self, name: str) -> DriverSegment | None:
         """Return the driver segment for a named location, or None if unmapped.

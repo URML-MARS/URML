@@ -110,6 +110,25 @@ def test_smc_system_type_is_honored(fake_pychrono: _FakePychrono) -> None:
     assert fake_pychrono.systems and fake_pychrono.systems[0].steps == 3
 
 
+def test_terrain_fidelity_recorded_in_evidence(fake_pychrono: _FakePychrono) -> None:
+    """RFC-0381: a configured terrain class flows into the validation evidence."""
+    from urml_chrono_runtime import ChronoAdapter, ChronoConfig
+    from urml_chrono_runtime.adapter import DriverSegment
+
+    cfg = ChronoConfig(
+        terrain_fidelity="deformable",
+        location_to_segment={"ridge": DriverSegment(driver=[0.5])},
+    )
+    with ChronoAdapter(cfg) as sim:
+        sim.send_navigation_goal(location="ridge")
+        meas = sim.take_measurement(what="dynamics", target=None, sensor=None)
+        assert meas.payload is not None and meas.payload["terrain_class"] == "deformable"
+    # Unconfigured terrain class stays None, not invented.
+    with ChronoAdapter(ChronoConfig(location_to_segment={"r": DriverSegment(driver=[0.1])})) as sim2:
+        sim2.send_navigation_goal(location="r")
+        assert sim2._last_evidence is not None and sim2._last_evidence["terrain_class"] is None
+
+
 def test_unsupported_and_sim_sentinels(fake_pychrono: _FakePychrono) -> None:
     from urml_chrono_runtime import ChronoAdapter, ChronoConfig
 
