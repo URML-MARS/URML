@@ -154,18 +154,20 @@
   channel: github_issue
   contact: "leggedrobotics/rsl_rl (fast GPU-accelerated on-policy RL library for legged robots, used by legged_gym and Isaac Lab; ~2,654 stars, Issues enabled, not archived, active, last push 2026-05-27). ETH Zurich Robotic Systems Lab (Switzerland, NATO-allied), same group as legged_gym (RFC-0376)."
   last_touch: "2026-06-04"
-  response: none
+  response: engaged
   tier: A
   country: CH
   sector: framework-skill
   comments:
     - date: "2026-06-04"
       text: "Posted issue #216 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "ClemensSchwarke (ETH Zurich RSL maintainer) answered on #216 (2026-06-04), helpful and constructive (no AI-skepticism): the training-limits metadata (terrain, command ranges, MDP specifics) would be best exported from Isaac Lab alongside the policy; rsl_rl is the algorithm layer and is unaware of MDP specifics. Replied with thanks, taking the question to the Isaac Lab side. Engaged - routes the 'policy exports its training limits' question to the Isaac Lab / task layer."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0377 merges, post the posts-move29.md rsl_rl body on leggedrobotics/rsl_rl under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (ClemensSchwarke, ETH RSL). Routed: the 'export the limits a policy was trained under' question belongs at the Isaac Lab / task-definition layer, not rsl_rl (the RL algorithm). Pursue it in the Isaac ecosystem (Isaac Sim #649 RandomOakForest acked; Isaac Lab RFC-0050), not here. Clean constructive close; no further action on rsl_rl."
   notes: "Move #29 RL library (ETH, backend boundary). Capability/limits export from a trained policy. Sibling legged_gym (RFC-0376). Origin CH (allied). Verified 2026-06-04."
 
 - slug: dial-mpc
