@@ -190,19 +190,21 @@
   posted_url: "https://github.com/casadi/casadi/issues/4353"
   channel: github_issue
   contact: "casadi/casadi (general symbolic framework for nonlinear optimization and optimal control; many MPC tools, including acados and do-mpc, are built on it; ~2,222 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02). License not SPDX-detected by gh (understood LGPL-3.0; asked, and noted as runtime / cross-citation, not vendoring). KU Leuven (Belgium, NATO-allied) lineage."
-  last_touch: "2026-06-03"
-  response: none
+  last_touch: "2026-06-04"
+  response: declined
   tier: A
   country: BE
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #4353 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-06-04"
+      text: "jgillis (Joris Gillis, CasADi lead) closed #4353 on 2026-06-04 with a reasoned misfit decline: 'It is nice to explore connections between tools, but this is clearly a misfit. CasADi is several layers down in abstraction. We do not have notions of robots, capabilities or collisions.' Addressed it to 'Ido or AI representative' (mild AI flag) but the substance is a wrong-altitude decline, not an AI-spam slam. Accepted silently, no reply."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0348 merges, post the posts-move26.md CasADi body on casadi/casadi under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep it short and honest; lowest direct fit, LGPL boundary noted."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Declined (jgillis, wrong-altitude misfit). CasADi is a symbolic math / optimization-and-AD backend below URML's intent altitude, same lesson as the component-API repos (Trinamic/Sensirion): engage optimization/solver libraries at the planner/integrator level (acados RFC-0349, Crocoddyl, OCS2) that consume CasADi, not CasADi itself. No reply, no further CasADi pursuit."
   notes: "Move #26 optimization backend (lowest direct fit, stated). Below URML's altitude; recorded for ecosystem completeness. acados (RFC-0349) + do-mpc built on it. LGPL-3.0 boundary (runtime / cross-citation). Origin BE (KU Leuven, allied). Verified 2026-06-03."
 
 - slug: acados
