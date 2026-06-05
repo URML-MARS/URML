@@ -157,14 +157,16 @@
   posted_url: "https://github.com/raspberrypi/pico-sdk/issues/2975"
   channel: github_issue
   contact: "raspberrypi/pico-sdk (BSD-3-Clause, 4.8k stars, Issues enabled, last commit 2026-05-28 daily activity, **not archived**). Owned by **Raspberry Pi Limited** (business org, UK Cambridge), NOT the Raspberry Pi Foundation (charity org); the two are separate entities (correction per @lurch CONTRIBUTOR, 2026-05-28)."
-  last_touch: "2026-05-28"
+  last_touch: "2026-06-04"
   response: acked
   tier: A
   country: UK
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-04"
+      text: "lurch (Raspberry Pi) noted on #2975 that RP2040/RP2350 + pico-sdk are from Raspberry Pi Limited (the company), distinct from the Raspberry Pi Foundation (the charity). Factual attribution correction, no question. Replied 2026-06-04 (idoco2003): noted, will use the correct attribution. Surfaced 2026-06-05 via the sweep."
   claude_directives: []
-  next_action: "Acked 2026-05-28 by @lurch (CONTRIBUTOR) at raspberrypi/pico-sdk#2975 (issuecomment-4565768381) with an org-attribution correction: RP2040/RP2350/pico-sdk are produced by Raspberry Pi Limited (business), not the Raspberry Pi Foundation (charity). Useful correction; thread still OPEN. **Action shape:** (a) propagate Raspberry-Pi-Limited attribution into RFC-0175 prose + any registry copy; (b) follow-up at 2026-06-25 if no further substantive reply. No founder reply required (light correction, not a question)."
+  next_action: "Acked (lurch, Raspberry Pi). Apply the Raspberry Pi Limited (not Foundation) attribution correction in URML's pico/RP2040 references. No further action owed."
   notes: "Tier A. Origin UK (pass). Daily activity. URML-fit: very high. Org-attribution gotcha noted for downstream Raspberry-Pi-Foundation-related references."
 
 - slug: platformio
