@@ -224,19 +224,23 @@
   posted_url: "https://github.com/esmini/esmini/issues/816"
   channel: github_issue
   contact: "esmini/esmini (lightweight player + tool suite for ASAM OpenSCENARIO / OpenDRIVE; define, replay, and test driving/robot scenarios; ~916 stars, Issues enabled, not archived, very active, last push 2026-06-02). Open-source community (Swedish lineage, NATO-allied)."
-  last_touch: "2026-06-04"
-  response: none
+  last_touch: "2026-06-05"
+  response: engaged
   tier: A
   country: SE
   sector: framework-skill
   comments:
     - date: "2026-06-04"
       text: "Posted issue #816 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
+    - date: "2026-06-05"
+      text: "eknabevcc (esmini maintainer) replied on #816, warm and constructive, no AI-skepticism: 'At first glance it sounds really interesting!' OpenSCENARIO XML is road-user-centric (change speed/lane/follow trajectory) and esmini has good coverage there; AnimationAction (car doors) could in principle extend to joints/limbs but esmini does not support animation yet and won't prioritize it; closed with 'I think we can adjust ourselves to make URML fit.'"
+    - date: "2026-06-05"
+      text: "Replied 2026-06-05 (idoco2003): agreed the road-user action model maps onto URML's mobility layer, so the meaningful slice today is a URML-governed ground agent running validated navigation intent as the controlled entity; conceded the AnimationAction/joints-limbs idea is the manipulation/whole-body frontier and out of scope while animation is unsupported; named the external-controller / co-simulation boundary as the wiring path; thanked the openness to adjusting esmini."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0370 merges, post the posts-move28.md esmini body on esmini/esmini under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (eknabevcc, esmini). Concrete first cut: a URML-governed ground agent driving validated navigation intent as an OpenSCENARIO controlled entity, via the external-controller / co-simulation boundary. Manipulation/whole-body (AnimationAction -> joints/limbs) deferred until esmini supports animation. Sibling Scenic engagement (RFC-0366) is the probabilistic-scenario counterpart."
   notes: "Move #28 OpenSCENARIO player (standards-based test harness). URML-governed agent as the controlled entity. Contrast Scenic (RFC-0366). Origin SE (community, allied). Verified 2026-06-04."
 
 - slug: moonlight
