@@ -425,14 +425,16 @@
   posted_url: "https://github.com/xsens/xsens_mti_ros_node/issues/79"
   channel: github_issue
   contact: "xsens/xsens_mti_ros_node (NOASSERTION, 89 stars, 25 open issues, Issues enabled, last commit 2019-02-27 STALE ~7 years on GitHub branch). Vendor-org xsens (Enschede NL); 8 public repos; vendor has migrated newer ROS 2 driver off-GitHub to movella.com tarball distribution. Live driver: https://github.com/xsenssupport/Xsens_MTi_ROS_Driver_and_Ntrip_Client/. Support channel: support@xsens.com."
-  last_touch: "2026-05-28"
+  last_touch: "2026-06-04"
   response: acked
   tier: B
   country: NL
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-04"
+      text: "ineelb (Xsens) pointed on #79 to the official driver repo (xsenssupport/Xsens_MTi_ROS_Driver_and_Ntrip_Client), said the moderator would mention it, and gave support@xsens.com for technical questions. Helpful pointer, no question. Replied 2026-06-04 (idoco2003): will point URML's Xsens references at the official driver repo and use support@xsens.com. Surfaced 2026-06-05 via the sweep."
   claude_directives: []
-  next_action: "Acked 2026-05-28 by @ineelb (authorAssociation NONE) at xsens/xsens_mti_ros_node#79 (issuecomment-4565843416). Predicted outcome confirmed: the active Xsens ROS1/2 driver lives at xsenssupport/Xsens_MTi_ROS_Driver_and_Ntrip_Client. @ineelb committed to having a moderator cross-link the new home on the stale repo. For technical questions: support@xsens.com. **Action shape:** (a) RFC-0131 retarget the manifest mapping at the new xsenssupport repo; (b) verify license/maintenance posture of the new repo before any registry listing; (c) follow-up at 2026-07-09 if no moderator cross-link appears. No founder reply required."
+  next_action: "Acked (ineelb, Xsens). Point URML's Xsens references at the official Xsens_MTi_ROS_Driver_and_Ntrip_Client repo; technical specifics via support@xsens.com. No further action owed."
   notes: "Tier B. Origin NL (pass). Predicted off-GitHub redirect partially confirmed — active driver IS on GitHub, just on a different org (xsenssupport, not xsens). Engagement-channel question answered."
 
 - slug: tdk-invensense
