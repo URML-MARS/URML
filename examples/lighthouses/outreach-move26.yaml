@@ -200,6 +200,8 @@
       text: "Posted issue #4353 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
     - date: "2026-06-04"
       text: "jgillis (Joris Gillis, CasADi lead) closed #4353 on 2026-06-04 with a reasoned misfit decline: 'It is nice to explore connections between tools, but this is clearly a misfit. CasADi is several layers down in abstraction. We do not have notions of robots, capabilities or collisions.' Addressed it to 'Ido or AI representative' (mild AI flag) but the substance is a wrong-altitude decline, not an AI-spam slam. Accepted silently, no reply."
+    - date: "2026-06-04"
+      text: "Replied 2026-06-04 (idoco2003): brief gracious concession, conceded CasADi sits below URML's altitude and that we'll engage the planner/integrator stacks that build on it (acados/Crocoddyl/OCS2) rather than CasADi directly. jgillis's close was polite/reasoned (Arduino/ODrive-style constructive decline), so a one-line human ack was warranted. Stays declined; no further CasADi pursuit."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0348 merges, post the posts-move26.md CasADi body on casadi/casadi under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep it short and honest; lowest direct fit, LGPL boundary noted."
