@@ -453,7 +453,7 @@ Move #29 targets the 2025-26 open-humanoid surge plus the open legged-locomotion
 | [0379](0379-legged-control-outreach.md) | Outreach | legged_control integration; Move #29; complete MPC+WBC legged stack built on OCS2 (RFC-0347), ros2_control-style (RFC-0319); open-academic; request for comment from legged_control maintainers | Draft | 2026-06-04 |
 | [0380](0380-rl-games-outreach.md) | Outreach | rl_games integration; Move #29; high-throughput RL training library behind many Isaac locomotion policies; **backend, lowest direct fit** (boundary check + capability-export question, mirrors rsl_rl); request for comment from rl_games maintainers | Draft | 2026-06-04 |
 
-### Spec RFCs from engagement feedback (RFCs 0381-0384)
+### Spec RFCs from engagement feedback (RFCs 0381-0385)
 
 These are **Spec** RFCs (they change URML's normative surface) surfaced by the engaged outreach threads, not new outreach. Each one converts a gap a maintainer pointed at into a concrete, optional, backward-compatible schema addition, for review. None adds a Layer-2 primitive.
 
@@ -463,6 +463,7 @@ These are **Spec** RFCs (they change URML's normative surface) surfaced by the e
 | [0382](0382-monitorable-temporal-logic-envelope.md) | Spec | Optional `monitorable_properties` on the safety envelope: a small closed temporal-logic core (STL/STREL) over declared signals, compiled to monitor backends; the load-bearing queued Spec RFC named by the Move #28 safety wave (RTAMT/Reelay/Copilot/Ogma/MoonLight) | Implemented | 2026-06-04 |
 | [0383](0383-learned-policy-training-envelope.md) | Spec | Optional Layer-1 `learned_policy` block declaring a learned controller's training envelope (command ranges, terrain classes, payload); validator refuses intent outside it; surfaced by rsl_rl (RFC-0377) + the learned-policy-as-substrate threads (rl_games/legged_gym/Open Duck Mini/OmniSafe/robomimic) | Implemented | 2026-06-04 |
 | [0384](0384-whole-body-capability-declaration.md) | Spec | Optional Layer-1 `whole_body` block: kinematic chains (legs/arms/torso, DoF, arm_ref into manipulation.arms) + static-stability limits (static_stable, can_carry_while_moving, max_incline/tilt, center_of_mass within support_polygon); validator checks structure + CoM-in-polygon + a carry-while-moving gate; the locomotion-side complement to RFC-0010, answering the Move #29 humanoid threads (ToddlerBot/K-Scale/TALOS/Open Duck Mini/legged_gym/legged_control) | Implemented | 2026-06-04 |
+| [0385](0385-ipc-substrate-declaration.md) | Spec | Optional `substrate.ipc` block: the zero-copy IPC sub-substrate beneath the RMW (iceoryx generation). generation iceoryx1/iceoryx2/custom + runtime_name (iceoryx1) vs config_path (iceoryx2) + messaging_pattern/memory-budget/pub-sub counts; validator enforces generation coherence (4 codes); realizes the spec gap the engaged iceoryx/iceoryx2 thread named (RFC-0210/0305, @elBoberido, iceoryx#2530) | Implemented | 2026-06-06 |
 
 ## Lifecycle states
 
