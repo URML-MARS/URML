@@ -1,0 +1,178 @@
+# Move #31 outreach ledger. One row per target.
+#
+# Move #31: **the space / planetary wave.** The first URML wave into space
+# robotics (0 prior coverage). Civilian / research scope only (NASA civil
+# missions, JPL, OSRF, Eclipse-style foundations) — no defense. Surfaces
+# verified 2026-06-06 (stars / Issues+Discussions / license / not archived /
+# last activity).
+#
+# Three shapes, mapped to existing URML surfaces (no new spec):
+#   - ROS 2 substrates URML's runtime targets directly: Space-ROS (0388),
+#     Astrobee (0392), OmniLRS lunar sim (0393), JPL Open Source Rover (0394).
+#   - Flight-software substrates URML binds via call_program (RFC-0015/0019
+#     pattern): F` (0389), cFS (0390).
+#   - Language-layer peer: ROSA (0391, "ROSA emits, URML validates").
+#   - Observability integration (adjacent, not a substrate): Open MCT (0395).
+#
+# Tier B (engage, lower direct fit): open-source-rover (education angle, software
+# stale 2023) and openmct (adjacent observability). DEFERRED Tier-B-thin:
+# LeoRover leo_simulator-ros2 (MIT ROS2 rover sim, ~16 stars) — clean but tiny;
+# fold into a later education/sim touch if a fixture needs it.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move31.md body under idoco2003
+# (Discussion or Issue per the row's channel), set sent_at / posted_url /
+# last_touch, add a posted comment, refresh outreach.db. No license-ask anywhere
+# (all Apache/BSD/MIT — state the license). VIBE.md disclosure up front.
+
+- slug: space-ros
+  rfc: 388
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "space-ros/space-ros (BSD-3-Clause, ~232 stars, Issues + Discussions enabled, not archived, active — jazzy-2026.04.0 2026-05-01). NASA + Open Robotics + Blue Origin safety-hardened ROS 2 for spaceflight. US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md Space-ROS body as a GitHub Discussion on space-ros/space-ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. The bullseye: URML's ROS 2 runtime targets Space-ROS directly; fold the space-ros/demos Curiosity/Canadarm2 surface into the post."
+  notes: "First space-wave target and the anchor. No new spec (rides the shipped ROS 2 runtime + validator). Ask: what a space-robot capability manifest should declare (radiation/thermal/comms-window/power). No license-ask (BSD-3)."
+
+- slug: fprime
+  rfc: 389
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa/fprime (Apache-2.0, ~11k stars, Issues + Discussions enabled, not archived, active — v4.2.2 2026-04-24). JPL component-driven flight-software framework (CubeSats, SmallSats, instruments). US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md F` body as a GitHub Discussion on nasa/fprime under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Highest-leverage non-ROS target: a flight-software substrate URML binds via call_program (RFC-0019 ara::com pattern); rate-group timing -> realtime (RFC-0016)."
+  notes: "No new primitive (rides call_program + a command binding). Ask: is command/opcode/typed-args the right binding granularity; command dictionary as the binding source. No license-ask (Apache-2.0)."
+
+- slug: cfs
+  rfc: 390
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa/cFS (Apache-2.0, ~1.3k stars, Issues + Discussions enabled, not archived, active — v7.0.1 2026-05-14). NASA Goddard core Flight System: app/software-bus flight-software architecture. US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md cFS body as a GitHub Discussion on nasa/cFS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Second flight-software substrate binding (sibling of F` 0389); app-command binding via call_program; scheduler timing -> realtime."
+  notes: "No new primitive. Ask: app/command-code/typed-message binding granularity; cmd/tlm database as the binding source. No license-ask (Apache-2.0)."
+
+- slug: rosa
+  rfc: 391
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa-jpl/rosa (Apache-2.0, ~1.5k stars, Issues + Discussions enabled, not archived, active — v1.0.10 2026-03-17). JPL LLM+ROS natural-language agent (LangChain over ROS 1/2). US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: US
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md ROSA body as a GitHub Discussion on nasa-jpl/rosa under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Closest conceptual neighbor; framing 'ROSA emits, URML validates before dispatch' (complementary, not competing). Ask about a joint NL->ROSA->URML-validation->robot demo."
+  notes: "Peer at the LANGUAGE layer, not a substrate below. URML is provider-agnostic so it does not compete with ROSA's agent; it adds typed validate-before-dispatch. No license-ask (Apache-2.0)."
+
+- slug: astrobee
+  rfc: 392
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "nasa/astrobee (Apache-2.0, ~1.4k stars, Issues enabled, Discussions NOT enabled, not archived; last release v0.19.1 2024-07-19 — software stale-ish). NASA Ames ISS free-flying robots, ROS-based. US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md Astrobee body as a GitHub Issue (Discussions not enabled) on nasa/astrobee under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Issue (no Discussions); lead with the framing not a version ask (software stale). Flagship crewed-vehicle free-flyer; manifest question (keep-out zones, prop limits, docking preconditions)."
+  notes: "URML ROS 2 runtime targets it. ~2yr-stale releases -> engage via Issues, frame around the capability-manifest design question. No license-ask (Apache-2.0)."
+
+- slug: omnilrs
+  rfc: 393
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "OmniLRS/OmniLRS (BSD-3-Clause, ~219 stars, Issues enabled, Discussions NOT enabled, not archived, active — v2.5 / Isaac Sim 5.0 2025-11-13). Omniverse Lunar Robotics Simulator with ROS 2 / Space-ROS teleop. INTL (research)."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: INTL
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md OmniLRS body as a GitHub Issue (Discussions not enabled) on OmniLRS/OmniLRS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Lunar sim substrate; URML drives a rover via its ROS2/Space-ROS bridge; ties to RFC-0381 validation (terrain/regolith fidelity)."
+  notes: "Already Space-ROS-aware (bridges to RFC-0388). Ask: lunar manifest declaration (regolith/traction/lighting/thermal). No license-ask (BSD-3)."
+
+- slug: jpl-open-source-rover
+  rfc: 394
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa-jpl/open-source-rover (Apache-2.0, ~9.4k stars, Issues + Discussions enabled, not archived; software last v4.0.0 2023-09-14 — stale). JPL build-it-yourself 6-wheel Mars-style educational rover. US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md Open Source Rover body as a GitHub Discussion on nasa-jpl/open-source-rover under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Education/demo angle (software stale 2023; big 9.4k audience). Pitch URML's NL->motion loop as a classroom teaching layer + a community example."
+  notes: "Tier B: education engagement, not flight-software. Lead with pedagogy. Ties to the Move #19 education wave + examples/educational/. No license-ask (Apache-2.0)."
+
+- slug: openmct
+  rfc: 395
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "nasa/openmct (Apache-2.0, ~13k stars, Issues + Discussions enabled, not archived; last v4.1.0 2025-02-04). NASA Ames mission-control / telemetry visualization framework. US."
+  last_touch: "2026-06-06"
+  response: none
+  tier: B
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move31.md Open MCT body as a GitHub Discussion on nasa/openmct under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ADJACENT (observability), not a substrate; honest framing: URML's audit trail + safety-envelope state as an Open MCT telemetry source. Big 13k audience."
+  notes: "Tier B: integration/visibility, NOT 'URML sits above it'. Frame as a telemetry source (validated-intent + envelope state). Ties to RFC-0382 monitorable properties. No license-ask (Apache-2.0)."

@@ -474,6 +474,21 @@ Targeted outreach to the communities whose gaps the casting->building run just c
 | [0386](0386-autoware-outreach.md) | Outreach | Autoware integration; Move #30; URML as a validated intent layer above Autoware — maps RFC-0020 `plan_path` -> planning pipeline and `follow_trajectory` -> control stack, research-grade (no AV-safety claim); request for comment from the Autoware community (autowarefoundation/autoware, 11.7k stars) | Draft | 2026-06-06 |
 | [0387](0387-eclipse-score-outreach.md) | Outreach | Eclipse S-CORE integration; Move #30; URML's RFC-0019 `ara::com` program binding (service/instance/method id triple on a `call_program`) + RFC-0016 `realtime` for Execution-Management timing, mapped onto the open AUTOSAR-Adaptive SDV core; request for comment from the eclipse-score/score maintainers | Draft | 2026-06-06 |
 
+### The space / planetary wave (Move #31, RFCs 0388-0395)
+
+URML's first wave into space robotics (civilian/research only). Three shapes mapped onto existing URML surfaces (no new spec): ROS 2 substrates the runtime targets directly, flight-software substrates bound via `call_program` (the RFC-0019 pattern), a language-layer peer, and one observability integration. Surfaces verified 2026-06-06. Drafted; posting awaits authorization (ledger [`outreach-move31.yaml`](../../examples/lighthouses/outreach-move31.yaml), bodies [`posts-move31.md`](../../examples/lighthouses/posts-move31.md)).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0388](0388-space-ros-outreach.md) | Outreach | Space-ROS integration; Move #31 anchor; URML's ROS 2 runtime targets the NASA/Open Robotics/Blue Origin safety-hardened ROS 2 directly (space-ros/space-ros, BSD-3); folds the space-ros/demos Curiosity/Canadarm2 surface; RFC from the Space-ROS community | Draft | 2026-06-06 |
+| [0389](0389-fprime-outreach.md) | Outreach | F´ (F Prime) integration; Move #31; a flight-software substrate bound via `call_program` (the RFC-0019/0015 pattern) + rate-group timing -> RFC-0016 `realtime`; nasa/fprime (Apache-2.0, ~11k stars); RFC from F´ maintainers | Draft | 2026-06-06 |
+| [0390](0390-cfs-outreach.md) | Outreach | core Flight System (cFS) integration; Move #31; second flight-software substrate binding (app-command via `call_program`); nasa/cFS (Apache-2.0); RFC from cFS maintainers | Draft | 2026-06-06 |
+| [0391](0391-rosa-outreach.md) | Outreach | ROSA (JPL) integration; Move #31; language-layer **peer** (not a substrate) — "ROSA emits, URML validates before dispatch"; nasa-jpl/rosa (Apache-2.0); RFC on a validate-before-dispatch layer + joint demo | Draft | 2026-06-06 |
+| [0392](0392-astrobee-outreach.md) | Outreach | Astrobee (NASA) integration; Move #31; flagship ISS free-flyer, URML ROS 2 runtime target; manifest design question (keep-out zones, prop limits); nasa/astrobee (Apache-2.0, Issues only); RFC from Astrobee maintainers | Draft | 2026-06-06 |
+| [0393](0393-omnilrs-outreach.md) | Outreach | OmniLRS integration; Move #31; Omniverse Lunar Robotics Simulator, URML drives a rover via its ROS 2 / Space-ROS bridge; ties to RFC-0381 `validation`; OmniLRS/OmniLRS (BSD-3, Issues only); RFC from OmniLRS maintainers | Draft | 2026-06-06 |
+| [0394](0394-jpl-open-source-rover-outreach.md) | Outreach | JPL Open Source Rover integration; Move #31; **Tier B** education/demo angle (URML NL->motion as a teaching layer); nasa-jpl/open-source-rover (Apache-2.0, ~9.4k stars, software stale 2023); RFC from the rover community | Draft | 2026-06-06 |
+| [0395](0395-openmct-outreach.md) | Outreach | Open MCT (NASA) integration; Move #31; **Tier B adjacent** — URML's audit trail + safety-envelope state as an Open MCT telemetry source (integration/visibility, not a substrate claim); nasa/openmct (Apache-2.0, ~13k stars); RFC from Open MCT maintainers | Draft | 2026-06-06 |
+
 ## Lifecycle states
 
 Per RFC-0001:
