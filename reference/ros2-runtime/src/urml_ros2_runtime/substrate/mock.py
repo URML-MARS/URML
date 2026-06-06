@@ -27,6 +27,7 @@ from urml_ros2_runtime.substrate.base import (
     ProgramCallResult,
     ScanResult,
     SubstrateResult,
+    TrajectoryPlanResult,
     WaitResult,
 )
 
@@ -489,4 +490,50 @@ class MockROSAdapter:
         )
         if self._rth_override is not None:
             return self._rth_override
+        return NavigationResult(success=True)
+
+    # ----- AV-profile dispatch (RFC-0020; also satisfies TrajectoryAdapter) -----
+
+    def plan_trajectory(
+        self,
+        *,
+        start: dict[str, float] | str | None,
+        goal: dict[str, float] | str,
+        along: str | None = None,
+    ) -> TrajectoryPlanResult:
+        self.call_log.append(
+            {
+                "method": "plan_trajectory",
+                "start": start,
+                "goal": goal,
+                "along": along,
+            }
+        )
+        # A deterministic stub trajectory: two waypoints (start -> goal).
+        return TrajectoryPlanResult(
+            success=True,
+            payload={
+                "waypoints": [start, goal],
+                "duration_s": 0.0,
+                "frame": "map",
+            },
+        )
+
+    def follow_trajectory_goal(
+        self,
+        *,
+        trajectory: dict[str, Any] | None,
+        max_velocity_mps: float | None = None,
+        max_accel_mps2: float | None = None,
+        on_off_route: Literal["abort", "replan"] = "abort",
+    ) -> NavigationResult:
+        self.call_log.append(
+            {
+                "method": "follow_trajectory_goal",
+                "trajectory": trajectory,
+                "max_velocity_mps": max_velocity_mps,
+                "max_accel_mps2": max_accel_mps2,
+                "on_off_route": on_off_route,
+            }
+        )
         return NavigationResult(success=True)

@@ -820,6 +820,65 @@ class Realtime(BaseModel):
     )
 
 
+class HdMap(BaseModel):
+    """A bound HD map a planner cost-maps against (RFC-0020).
+
+    Format-neutral: `format` is a free label (lanelet2, opendrive, ...); the
+    validator checks the declaration is present, not the map's internals.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    format: str = Field(..., description="HD-map format label, e.g. lanelet2 or opendrive.")
+    uri: str = Field(..., description="Location of the map artifact.")
+    sha256: str | None = Field(None, description="Optional content hash of the map artifact.")
+    frame: Identifier | None = Field(None, description="Frame the map is expressed in.")
+
+
+class OddRegion(BaseModel):
+    """A named region of the operational design domain (RFC-0020)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    polygon: list[Point2] = Field(..., min_length=3, description="Region boundary (>= 3 vertices).")
+
+
+class Odd(BaseModel):
+    """Operational Design Domain: where the AV is allowed to operate (RFC-0020)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    regions: list[OddRegion] = Field(default_factory=list)
+    max_velocity_mps: float | None = Field(
+        None, ge=0, description="ODD speed cap; follow_trajectory must not exceed it."
+    )
+    weather: list[str] | None = Field(None, description="Permitted weather conditions.")
+
+
+class Mrm(BaseModel):
+    """Minimum-Risk Maneuver when the ODD is exited or a trajectory aborts (RFC-0020)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    strategy: Literal["pull_over", "stop_in_lane", "controlled_stop"]
+
+
+class AvProfile(BaseModel):
+    """AV-profile manifest block (RFC-0020): HD map, ODD, and MRM.
+
+    Research-grade by construction; `production_safety_certified` is a profile
+    attribute (`spec/profiles/av/`), not a manifest claim. The block is optional
+    and fully additive; `plan_path` requires `hd_map` to be present.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    hd_map: HdMap | None = None
+    odd: Odd | None = None
+    mrm: Mrm | None = None
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -867,3 +926,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0016: optional cyclic / real-time timing contract.
     realtime: Realtime | None = None
+
+    # RFC-0020: optional AV-profile declarations (HD map, ODD, MRM).
+    av: AvProfile | None = None

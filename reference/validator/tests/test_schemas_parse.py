@@ -109,6 +109,9 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     # call_program: substrate-program invocation (RFC-0015), gated by the
     # manifest `programs:` declaration rather than by profile.
     cross_profile_extensions = {"call_program"}
+    # av: plan_path (compute) + follow_trajectory (actuate), the research-grade
+    # autonomous-vehicle pair (RFC-0020); gated by the manifest `av` block.
+    av_extensions = {"plan_path", "follow_trajectory"}
     expected = (
         core
         | home_extensions
@@ -116,6 +119,7 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         | industrial_extensions
         | manipulation_extensions
         | cross_profile_extensions
+        | av_extensions
     )
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected

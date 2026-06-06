@@ -60,6 +60,7 @@ The vocabulary is shaped by three principles, in priority order:
 - Drone: `take_off`, `land`.
 - Home: `speak`, `listen`.
 - Industrial: `pick_from(bin|conveyor|pallet)`, `place_at(fixture|station)`, `swap_tool`.
+- AV (research-grade): `plan_path` (compute a trajectory), `follow_trajectory` (execute it) ([RFC-0020](0020-autoware-av-substrate.md)).
 - Capability-gated (not bound to a profile, enabled by a manifest declaration): `call_program` ([RFC-0015](0015-control-program-invocation.md), manifest-declared programs), `bimanual` ([RFC-0010](0010-whole-body-bimanual-manipulation.md), two-arm manifests).
 
 Each profile RFC follows this RFC's template.

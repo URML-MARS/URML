@@ -1,0 +1,26 @@
+# Fixture: an AV-style manifest with no declared HD map (RFC-0020 negative).
+# Mobility is present, but the `av.hd_map` plan_path needs is absent, so a
+# plan_path program is rejected at Pass 2.
+
+manifest_version: "0.1"
+robot_id: autoware_no_map
+description: AV manifest missing av.hd_map (RFC-0020 negative fixture).
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: depot
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: map
+  - name: dropoff
+    pose: { x: 120.0, y: 40.0, z: 0.0 }
+    frame: map
+
+mobility:
+  drive_type: ackermann
+  max_velocity: 20.0
+
+outputs:
+  named_endpoints: []

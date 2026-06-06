@@ -24,6 +24,7 @@ from urml_validator.schemas.primitives import (
     CaptureArgs,
     DetectArgs,
     DockArgs,
+    FollowTrajectoryArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
@@ -32,6 +33,7 @@ from urml_validator.schemas.primitives import (
     MoveToArgs,
     PickFromArgs,
     PlaceAtArgs,
+    PlanPathArgs,
     ReleaseArgs,
     ReportArgs,
     ReturnToHomeArgs,
@@ -71,6 +73,8 @@ _PRIMITIVE_FIELDS = (
     "place_at",
     "swap_tool",
     "call_program",
+    "plan_path",
+    "follow_trajectory",
 )
 
 
@@ -109,6 +113,8 @@ class Step(BaseModel):
     place_at: PlaceAtArgs | None = None
     swap_tool: SwapToolArgs | None = None
     call_program: CallProgramArgs | None = None
+    plan_path: PlanPathArgs | None = None
+    follow_trajectory: FollowTrajectoryArgs | None = None
 
     @model_validator(mode="after")
     def _exactly_one_primitive(self) -> Step:

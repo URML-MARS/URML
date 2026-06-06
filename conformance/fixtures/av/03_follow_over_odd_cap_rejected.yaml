@@ -1,0 +1,24 @@
+name: av/follow_over_odd_cap_rejected
+description: >
+  RFC-0020 negative: a follow_trajectory speed envelope above the ODD speed cap
+  (15 m/s). Rejected at Pass 3 with envelope.velocity_exceeded (the strictest of
+  the ODD cap, mobility max, and envelope max).
+
+manifest: autoware_av
+profiles: [av]
+
+program:
+  profile: av
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - plan_path: { from: depot, to: dropoff, store_as: route }
+      - follow_trajectory:
+          trajectory: $route
+          speed_envelope: { max_velocity_mps: 50.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.velocity_exceeded

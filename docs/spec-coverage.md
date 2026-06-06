@@ -84,7 +84,7 @@ Two real gaps, both closed in the PR that adds this document:
 
 ## The matrix
 
-All twenty-two primitives are fully covered. Fixture column cites one
+All twenty-four primitives are fully covered. Fixture column cites one
 representative fixture; most primitives have several (positive and negative).
 The `arm` selector on `grasp`/`release` (RFC-0010) rides their existing rows;
 it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
@@ -114,6 +114,8 @@ it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
 | 20 | `swap_tool` | v0.1.0 §3.8 | `SwapToolArgs` | `exec_swap_tool` | `industrial/05_swap_tool_positive` | `industrial/pick-place-tool-change` |
 | 21 | `call_program` | v0.1.0 §3.9 | `CallProgramArgs` | `exec_call_program` | `industrial/10_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
 | 22 | `bimanual` | v0.1.0 §3.10 | `BimanualArgs` | `exec_bimanual` | `biped/06_digit_bimanual_lift_positive` | `humanoid/digit-tote-lift` |
+| 23 | `plan_path` | v0.1.0 §3.11 | `PlanPathArgs` | `exec_plan_path` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
+| 24 | `follow_trajectory` | v0.1.0 §3.12 | `FollowTrajectoryArgs` | `exec_follow_trajectory` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
 
 ## Notes (honest deferrals, not gaps)
 

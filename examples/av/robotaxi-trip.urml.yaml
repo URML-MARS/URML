@@ -1,0 +1,35 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: av/robotaxi-trip
+# Source NL: "Plan a route from the depot to the drop-off and drive it,
+#             staying within the city speed limit." (see robotaxi-trip.en.txt)
+#
+# Research-grade autonomous-vehicle program (RFC-0020). `plan_path` is a
+# compute verb: it cost-maps a trajectory against the manifest's HD map and
+# binds it (`route`). `follow_trajectory` is the only verb that actuates: it
+# executes the bound trajectory under a speed envelope. The validator checks
+# the trajectory speed against the ODD cap declared in the manifest, and that
+# `follow_trajectory` consumes a trajectory bound by `plan_path` (the AV analog
+# of detect -> grasp). Uses the `av` profile (research-grade; not production
+# safety-certified). Validatable end-to-end via the companion manifest:
+#
+#   urml validate robotaxi-trip.urml.yaml \
+#     -m robotaxi-trip.manifest.yaml --profile av
+#
+# Pass `--no-policy` to skip Pass 5 against a manifest without provenance.
+
+profile: av
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - plan_path:
+        from: depot
+        to: dropoff
+        along: city_map
+        store_as: route
+    - follow_trajectory:
+        trajectory: $route
+        speed_envelope:
+          max_velocity_mps: 12.0
+        on_off_route: abort

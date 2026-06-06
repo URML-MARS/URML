@@ -75,6 +75,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_IPC_GENERATION_NOTE_REQUIRED = "capability.ipc_generation_note_required"
     # RFC-0016: realtime timing-block coherence.
     CAPABILITY_WATCHDOG_SHORTER_THAN_CYCLE = "capability.watchdog_shorter_than_cycle"
+    # RFC-0020: AV profile — plan_path requires a declared HD map.
+    CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"

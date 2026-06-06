@@ -1,0 +1,64 @@
+# Capability manifest for a research-grade autonomous vehicle (Autoware target).
+# Exercises RFC-0020: the `av` block (HD map, ODD with a 12 m/s downtown cap,
+# MRM) plus the plan_path/follow_trajectory primitives. Research-grade by
+# construction; `production_safety_certified: false` is an av-profile attribute
+# (spec/profiles/av/), not a manifest claim. US origin; the provenance block is
+# compliant under the bundled US-federal default policy, so this validates with
+# policy on.
+
+manifest_version: "0.1"
+robot_id: research_robotaxi
+description: Research-grade autonomous vehicle (RFC-0020), Autoware target.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: depot
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: map
+  - name: dropoff
+    pose: { x: 120.0, y: 40.0, z: 0.0 }
+    frame: map
+
+mobility:
+  drive_type: ackermann
+  max_velocity: 20.0
+
+av:
+  hd_map:
+    format: lanelet2
+    uri: ./maps/city.osm
+    frame: map
+  odd:
+    max_velocity_mps: 12.0
+    regions:
+      - name: downtown
+        polygon:
+          - { x: 0.0, y: 0.0 }
+          - { x: 200.0, y: 0.0 }
+          - { x: 200.0, y: 100.0 }
+          - { x: 0.0, y: 100.0 }
+    weather:
+      - clear
+      - light_rain
+  mrm:
+    strategy: pull_over
+
+outputs:
+  named_endpoints:
+    - fleet_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: av_compute
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/av_compute.cdx.json
+        sha256: "8888888888888888888888888888888888888888888888888888888888888888"

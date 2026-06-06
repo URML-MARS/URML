@@ -123,7 +123,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0017](0017-digital-io-actuation.md) | Spec | Digital-I/O actuation — driving a named substrate output | Draft | 2026-05-19 |
 | [0018](0018-minimal-mcu-capability-subset.md) | Spec | Minimal-MCU capability subset in the manifest | Draft | 2026-05-19 |
 | [0019](0019-autosar-adaptive-substrate.md) | Spec | AUTOSAR Adaptive substrate — binding ara::com to URML | Draft | 2026-05-20 |
-| [0020](0020-autoware-av-substrate.md) | Spec | Autoware AV substrate — research-grade autonomous-vehicle profile | Draft | 2026-05-20 |
+| [0020](0020-autoware-av-substrate.md) | Spec | Autoware AV substrate — research-grade autonomous-vehicle profile; two new Layer-2 primitives (`plan_path` compute + `follow_trajectory` actuate), the `trajectory` binding type, an `av` manifest block (HD map / ODD / MRM), and the `av` profile; executors via an optional `TrajectoryAdapter` capability Protocol | Implemented | 2026-06-06 |
 | [0021](0021-on-device-llm-bridge.md) | Spec | On-device LLM bridge — schema-derived GBNF, GGUF model contract, per-model conformance | Draft | 2026-05-21 |
 | [0022](0022-warehouse-domain-profile.md) | Spec | Warehouse domain profile — mixed-traffic AMR aisles, zero new primitives | Draft | 2026-05-21 |
 | [0023](0023-yaskawa-motoros2-integration.md) | Outreach | Yaskawa / MotoROS2 integration — request for comment from Yaskawa-Global maintainers | Draft | 2026-05-22 |

@@ -24,6 +24,7 @@ from urml_validator.schemas.primitives import (
     CaptureArgs,
     DetectArgs,
     DockArgs,
+    FollowTrajectoryArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
@@ -32,6 +33,7 @@ from urml_validator.schemas.primitives import (
     MoveToArgs,
     PickFromArgs,
     PlaceAtArgs,
+    PlanPathArgs,
     ReleaseArgs,
     ReportArgs,
     ReturnToHomeArgs,
@@ -55,6 +57,8 @@ from urml_ros2_runtime.substrate.base import (
     ROSAdapter,
     ScanResult,
     SubstrateResult,
+    TrajectoryAdapter,
+    TrajectoryPlanResult,
     WaitResult,
 )
 
@@ -75,6 +79,7 @@ RawSubstrateResult = (
     | WaitResult
     | ListenResult
     | ProgramCallResult
+    | TrajectoryPlanResult
 )
 
 
@@ -684,6 +689,67 @@ def exec_call_program(
     )
 
 
+def _location_or_pose_value(value: Any) -> dict[str, float] | str | None:
+    """Normalize a LocationOrPose (str location name or Pose) for the adapter."""
+    if value is None or isinstance(value, str):
+        return value
+    out: dict[str, float] = {"x": value.x, "y": value.y}
+    for field in ("z", "yaw", "pitch", "roll"):
+        v = getattr(value, field, None)
+        if v is not None:
+            out[field] = v
+    return out
+
+
+def exec_plan_path(
+    args: PlanPathArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0020: compute a trajectory and bind it (compute verb, no actuation)."""
+    if not isinstance(adapter, TrajectoryAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate has no trajectory planner "
+            "(plan_path requires a TrajectoryAdapter, RFC-0020).",
+        )
+    result = adapter.plan_trajectory(
+        start=_location_or_pose_value(args.from_),
+        goal=_location_or_pose_value(args.to),
+        along=args.along,
+    )
+    new_bindings: dict[str, Any] = {}
+    if result.payload is not None:
+        new_bindings[args.store_as] = result.payload
+        if args.store_alt_as is not None:
+            # Minimum-Risk fallback binding; same shape, flagged so a consumer
+            # can tell it apart at runtime.
+            new_bindings[args.store_alt_as] = {**result.payload, "fallback": True}
+    return PrimitiveOutcome(
+        success=result.success, reason=result.reason, raw=result, bindings=new_bindings
+    )
+
+
+def exec_follow_trajectory(
+    args: FollowTrajectoryArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0020: execute a trajectory bound by plan_path (the only AV actuator)."""
+    if not isinstance(adapter, TrajectoryAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate cannot follow a trajectory "
+            "(follow_trajectory requires a TrajectoryAdapter, RFC-0020).",
+        )
+    resolved = resolve(args.trajectory, bindings)
+    traj = resolved if isinstance(resolved, dict) else None
+    se = args.speed_envelope
+    result = adapter.follow_trajectory_goal(
+        trajectory=traj,
+        max_velocity_mps=getattr(se, "max_velocity_mps", None) if se is not None else None,
+        max_accel_mps2=getattr(se, "max_accel_mps2", None) if se is not None else None,
+        on_off_route=args.on_off_route,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -714,6 +780,8 @@ PRIMITIVE_EXECUTORS: dict[
     "place_at": exec_place_at,
     "swap_tool": exec_swap_tool,
     "call_program": exec_call_program,
+    "plan_path": exec_plan_path,
+    "follow_trajectory": exec_follow_trajectory,
 }
 
 
