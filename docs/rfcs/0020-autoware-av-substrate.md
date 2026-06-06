@@ -1,10 +1,10 @@
 ---
 rfc: 0020
 title: Autoware AV substrate — research-grade autonomous-vehicle profile
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-06
 supersedes: —
 superseded-by: —
 ---
@@ -41,8 +41,17 @@ decision** by the spec-gap loop (RFC-0014); the companion
 green adapter — the no-SDK-humanoid (`ghost_vision60`, `optimus_biped`,
 `figure_biped`, `apollo_biped`, `neo_biped`) precedent. The RFC
 proposes two new Layer-2 primitives (`plan_path`, `follow_trajectory`)
-and a new `av` profile with AV-specific manifest blocks; **none ship
-until ratified**.
+and a new `av` profile with AV-specific manifest blocks.
+
+**State: Implemented** (2026-06-06). The maintainer chose to ship the
+**full implementation** in one slice rather than the staged
+manifest-and-spec-only scaffold the Draft recommended: the two primitives,
+the `av` manifest block (HD map, ODD, MRM), the `trajectory` binding type, the
+Pass-2/Pass-3 validator checks, the runtime executors (via a new optional
+`TrajectoryAdapter` capability Protocol, so the frozen `ROSAdapter` Protocol per
+RFC-0014 is untouched and only AV-capable adapters implement it), conformance
+fixtures, and a runnable `examples/av/` slice all ship here. A green
+`reference/autoware-runtime/` adapter remains a follow-on.
 
 ## Motivation
 
@@ -146,20 +155,23 @@ v0.1; the standard provenance/origin rules still apply.
 
 ### Reference runtime changes
 
-A future `reference/autoware-runtime/` PR — explicitly *not* in this
-RFC's manifest-and-spec-only scaffold — implements the ROS-side
-binding. The non-ROS Apex.OS binding is a follow-on demonstrating the
-substrate-neutrality acid test.
+The executors ship via a new optional `TrajectoryAdapter` capability Protocol
+(`plan_trajectory` + `follow_trajectory_goal`), kept separate from the frozen
+`ROSAdapter` Protocol (RFC-0014) so existing adapters are untouched and only
+AV-capable substrates implement it. `MockROSAdapter` implements it, so the
+hermetic suite and the `examples/av/` slice run end to end. A green
+`reference/autoware-runtime/` PR (binding to Autoware's mission/behavior/motion
+planners and control stack) and the non-ROS Apex.OS binding remain follow-ons.
 
 ### Conformance suite changes
 
-The manifest-and-spec-only scaffold (companion PR) lands one
-acceptance fixture under a new `conformance/fixtures/research/` dir
-(reuses the existing RFC-0012 research profile by Identifier — no
-schema for `av` until RFC-0020 ratifies), validating the
-`autoware_av_research` manifest under `program: { ... report ... }`.
-A future fixture exercises `plan_path` + `follow_trajectory` once
-this RFC + the new primitives ratify; not filed here.
+Shipped: a `conformance/fixtures/av/` dir with one positive
+(`plan_follow_positive`, exercising `plan_path` -> `follow_trajectory` through
+the Mock's `TrajectoryAdapter`) and three rejections (no `av.hd_map` ->
+`capability.missing_hd_map`; speed over the ODD cap ->
+`envelope.velocity_exceeded`; a non-trajectory binding ->
+`binding.type_mismatch`), plus the `autoware_av` / `autoware_av_no_map`
+manifests.
 
 ## Backward compatibility
 
@@ -219,37 +231,40 @@ typed-over-opaque tradeoff this RFC inherits), the no-SDK-humanoid
 precedent (`ghost_vision60.yaml` → manifest-and-spec-only when
 adapter is premature).
 
-## Unresolved questions
+## Resolved / unresolved questions
 
-- `plan_path` cost model: cost-map URI in the manifest, or a per-call
-  preset? Probably preset (`comfort | sport | conservative`) to keep
-  the program simple; the cost-map binding is deployment config.
-- HD-map format: bound to Lanelet2 (Autoware's choice) or kept
-  format-neutral via `format` field? Lean: format-neutral, validator
-  checks the bound file exists.
-- Whether `av` should be a *profile* (declared in `program.profile`)
-  or a *manifest section* (declared in `capability_manifest.av`).
-  Lean profile, mirroring the existing five (home/drone/industrial/
-  educational/research).
-- Profile name: `av` vs `autonomous_vehicle` vs `automotive` — left
-  for the maintainer to choose during RFC review (flagged in the
-  approved plan).
+Resolved on implementation (2026-06-06):
 
-Each is small enough to settle before Open → Accepted.
+- **`plan_path` cost model:** kept out of the schema for v0.1. The cost-map and
+  any `comfort | sport | conservative` preset are deployment config; `plan_path`
+  carries `from`/`to`/`along`/`store_as`/`store_alt_as` only.
+- **HD-map format:** **format-neutral.** `av.hd_map.format` is a free label
+  (lanelet2, opendrive, ...); the validator checks the declaration is present,
+  not the map's internals.
+- **Profile vs manifest section:** **both, by role.** `av` is a *profile*
+  (`program.profile: av`) and there is also an `av` *manifest block* (the HD
+  map / ODD / MRM the profile reads). They are complementary, not alternatives.
+- **Profile name:** **`av`** (over `autonomous_vehicle` / `automotive`): shortest,
+  matches the spec dir and the working name throughout the RFC.
+
+Still open (small, non-blocking): an HD-map-alignment / perception-latency
+envelope SLA, and whether `plan_path.along` should be validated against a named
+map in `av.hd_map`.
 
 ## Implementation note
 
-This is a Draft-only RFC. A companion PR
-`feat/autoware-manifest-spec-only` ships the `autoware_av_research`
-manifest fixture + a `conformance/fixtures/research/` acceptance
-fixture (under the existing `research` profile, since the `av` profile
-does not exist until this RFC ratifies; the fixture's program is a
-single `report` so it passes the frozen Protocol). No
-`reference/autoware-runtime/` package lands until after RFC-0020
-ratification + a follow-up PR adds the validator changes, the two
-primitives, the `av` profile spec, the validator checks, and the
-adapter. That is a coordinated multi-layer change, hence correctly an
-RFC.
+Shipped as the full vertical slice in one PR (the maintainer chose this over the
+Draft's staged scaffold-only path): the two Layer-2 primitives + JSON Schemas,
+the `av` manifest block (`HdMap`/`Odd`/`Mrm`), the `trajectory` binding type
+(`plan_path` produces it, `follow_trajectory` consumes it — the detect->grasp
+precedent), the Pass-2 (`capability.missing_hd_map`) and Pass-3
+(`envelope.velocity_exceeded` vs the ODD cap) checks, the runtime executors via
+a new optional `TrajectoryAdapter` capability Protocol (the frozen `ROSAdapter`
+Protocol per RFC-0014 stays untouched; `MockROSAdapter` implements the AV
+surface), the `av` profile spec (`spec/profiles/av/`), the `conformance/fixtures/av/`
+set, and the runnable `examples/av/robotaxi-trip` slice. A green
+`reference/autoware-runtime/` adapter (ROS) and an Apex.OS binding (non-ROS) are
+the remaining follow-ons.
 
 ## Self-review (Phase 0)
 
