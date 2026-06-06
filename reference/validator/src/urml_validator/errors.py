@@ -72,6 +72,11 @@ class ErrorCode(StrEnum):
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
 
+    # RFC-0384: whole-body kinematic structure + stability limits.
+    CAPABILITY_WHOLE_BODY_INCONSISTENT = "capability.whole_body_inconsistent"
+    CAPABILITY_WHOLE_BODY_UNSTABLE_COM = "capability.whole_body_unstable_com"
+    CAPABILITY_CANNOT_CARRY_WHILE_MOVING = "capability.cannot_carry_while_moving"
+
     # Pass 3 — safety envelope (numeric caps + spatial constraints).
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"
     ENVELOPE_ALTITUDE_EXCEEDED = "envelope.altitude_exceeded"

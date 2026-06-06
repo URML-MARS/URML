@@ -207,6 +207,8 @@ def validate(
     errors.extend(_check_substrate_rmw_options(manifest_model))
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
+    # RFC-0384: whole-body kinematic structure + stability consistency.
+    errors.extend(_check_whole_body_caps(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -1151,6 +1153,95 @@ def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:
     return out
 
 
+def _xy_in_polygon(x: float, y: float, polygon: list) -> bool:
+    """Ray-casting point-in-polygon test (even-odd rule).
+
+    `polygon` is a list of objects with `.x` / `.y`. Used by RFC-0384 to check a
+    declared center of mass against a declared support polygon. Boundary points
+    are not guaranteed inside; that edge case is the manifest author's call.
+    (Distinct from `_point_in_polygon`, the geofence helper, which takes tuples.)
+    """
+    inside = False
+    n = len(polygon)
+    j = n - 1
+    for i in range(n):
+        xi, yi = polygon[i].x, polygon[i].y
+        xj, yj = polygon[j].x, polygon[j].y
+        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _check_whole_body_caps(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0384: validate the whole-body declaration against the rest of the manifest.
+
+    - leg-chain count matches a legged `drive_type` (biped=2, quadruped=4);
+    - each arm chain's `arm_ref` resolves to a declared `manipulation.arms[].name`;
+    - a declared center of mass lies within the declared support polygon.
+
+    All checks are skipped when `whole_body` is absent (the block is optional).
+    """
+    wb = manifest.whole_body
+    if wb is None:
+        return []
+    out: list[ValidationError] = []
+    path = ["<manifest>", "whole_body"]
+
+    # Leg-chain count vs drive_type (only when legs are declared and drive_type is legged).
+    legs = [c for c in wb.chains if c.kind == "leg"]
+    if legs and manifest.mobility is not None:
+        expected = {"biped": 2, "quadruped": 4}.get(manifest.mobility.drive_type)
+        if expected is not None and len(legs) != expected:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_WHOLE_BODY_INCONSISTENT,
+                    "whole_body",
+                    path + ["chains"],
+                    f"drive_type {manifest.mobility.drive_type!r} expects {expected} leg "
+                    f"chains but whole_body declares {len(legs)}.",
+                    field="chains",
+                    suggestion=f"Declare exactly {expected} chains of kind 'leg', or correct drive_type.",
+                )
+            )
+
+    # Arm chains must reference a declared arm (when manipulation.arms is declared).
+    declared_arms = (
+        {a.name for a in manifest.manipulation.arms}
+        if manifest.manipulation is not None
+        else set()
+    )
+    for chain in wb.chains:
+        if chain.kind == "arm" and chain.arm_ref is not None and chain.arm_ref not in declared_arms:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_WHOLE_BODY_INCONSISTENT,
+                    "whole_body",
+                    path + ["chains"],
+                    f"whole_body arm chain {chain.name!r} references arm {chain.arm_ref!r}, "
+                    f"not declared in manipulation.arms (declared: {sorted(declared_arms)!r}).",
+                    field="arm_ref",
+                    suggestion="Add the arm to manipulation.arms, or fix the arm_ref.",
+                )
+            )
+
+    # Static stability: a declared CoM must lie within the declared support polygon.
+    if wb.center_of_mass is not None and wb.support_polygon is not None:
+        if not _xy_in_polygon(wb.center_of_mass.x, wb.center_of_mass.y, wb.support_polygon):
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_WHOLE_BODY_UNSTABLE_COM,
+                    "whole_body",
+                    path + ["center_of_mass"],
+                    "declared center_of_mass (x, y) lies outside the declared support_polygon; "
+                    "the static-stability declaration is inconsistent.",
+                    field="center_of_mass",
+                    suggestion="Move the CoM within the support polygon, or correct the polygon vertices.",
+                )
+            )
+    return out
+
+
 def _check_move_to_caps(
     args: MoveToArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
@@ -1186,6 +1277,26 @@ def _check_move_to_caps(
                 f"move_to.pose references undeclared frame {args.frame!r}.",
                 field="frame",
                 suggestion=f"Add {args.frame!r} to manifest.frames.",
+            )
+        )
+    # RFC-0384: a legged platform that cannot carry while moving rejects move_to(carrying=...).
+    if (
+        args.carrying is not None
+        and manifest.mobility is not None
+        and manifest.mobility.drive_type in ("biped", "quadruped")
+        and manifest.whole_body is not None
+        and not manifest.whole_body.can_carry_while_moving
+    ):
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_CANNOT_CARRY_WHILE_MOVING,
+                "move_to",
+                path,
+                "move_to carries a payload, but the manifest declares the legged platform "
+                "cannot carry while moving (whole_body.can_carry_while_moving = false).",
+                field="carrying",
+                suggestion="Set whole_body.can_carry_while_moving: true, or stage the carry "
+                "as a stationary handoff.",
             )
         )
     return out

@@ -189,6 +189,127 @@ class Manipulation(BaseModel):
         return self
 
 
+class Point2(BaseModel):
+    """A 2-D point (metres) in the robot's body frame (RFC-0384).
+
+    Used for `whole_body.support_polygon` vertices.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    x: float
+    y: float
+
+
+class Point3(BaseModel):
+    """A 3-D point (metres) in the robot's body frame (RFC-0384).
+
+    Used for `whole_body.center_of_mass`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    x: float
+    y: float
+    z: float
+
+
+class KinematicChain(BaseModel):
+    """One kinematic chain (limb) of a whole-body robot (RFC-0384).
+
+    A declarative structural element, not a dynamics model: it names a limb,
+    classifies it, and states its degrees of freedom. An `arm` chain MAY bind
+    to a declared `manipulation.arms[].name` via `arm_ref` so the whole-body
+    structure and the manipulation surface stay consistent.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    kind: Literal["leg", "arm", "torso", "head", "other"]
+    dof: int = Field(..., ge=1, description="Degrees of freedom in this chain.")
+    arm_ref: Identifier | None = Field(
+        None,
+        description=(
+            "For kind=arm: the `manipulation.arms[].name` this chain realizes "
+            "(RFC-0010). Resolved by the validator."
+        ),
+    )
+
+
+class WholeBody(BaseModel):
+    """Whole-body kinematic structure and stability limits (RFC-0384).
+
+    The capability shape of a legged / humanoid robot: which limbs it has, and
+    the static stability envelope a request is validated against. URML declares
+    these as structure and limits; realizing balance is the substrate's job
+    (the RFC-0010 line). Every field is a static declaration, not live state.
+
+    The richer stability fields (`center_of_mass`, `support_polygon`,
+    `max_tilt_deg`) are declarations the validator checks statically (a declared
+    center of mass must lie within the declared support polygon); they are not a
+    runtime controller model.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    chains: list[KinematicChain] = Field(
+        default_factory=list,
+        description="The robot's kinematic chains (legs, arms, torso, head).",
+    )
+    static_stable: bool = Field(
+        True,
+        description=(
+            "Whether the robot can hold a static pose without continuously "
+            "stepping/balancing. False means it must keep moving to stay upright."
+        ),
+    )
+    can_carry_while_moving: bool = Field(
+        True,
+        description="Whether the platform can locomote while holding a payload.",
+    )
+    max_incline_deg: float | None = Field(
+        None, ge=0, le=90,
+        description="Steepest ground incline (degrees) the platform can traverse.",
+    )
+    max_tilt_deg: float | None = Field(
+        None, ge=0, le=90,
+        description="Maximum body tilt (degrees) the platform tolerates while stable.",
+    )
+    center_of_mass: Point3 | None = Field(
+        None,
+        description="Nominal center of mass in the body frame (m). Static declaration.",
+    )
+    support_polygon: list[Point2] | None = Field(
+        None,
+        description=(
+            "Nominal support footprint as a polygon of body-frame vertices (m). "
+            "With `center_of_mass`, the validator checks static stability "
+            "(the CoM must lie within the polygon)."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _well_formed(self) -> WholeBody:
+        """Intra-block integrity: unique chain names, `arm_ref` only on arms, and
+        a support polygon (when present) needs at least three vertices. Cross-block
+        rules (leg count vs drive_type, arm_ref resolution, CoM-in-polygon) carry
+        stable error codes and live in the validator (RFC-0384)."""
+        seen: set[str] = set()
+        for chain in self.chains:
+            if chain.name in seen:
+                raise ValueError(f"whole_body.chains has duplicate chain name {chain.name!r}")
+            seen.add(chain.name)
+            if chain.kind != "arm" and chain.arm_ref is not None:
+                raise ValueError(
+                    f"whole_body.chains[{chain.name!r}] sets arm_ref but kind is "
+                    f"{chain.kind!r}, not 'arm'"
+                )
+        if self.support_polygon is not None and len(self.support_polygon) < 3:
+            raise ValueError("whole_body.support_polygon needs at least 3 vertices")
+        return self
+
+
 class Camera(BaseModel):
     """A camera declared in the manifest's perception block."""
 
@@ -659,3 +780,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0383: optional learned-controller training envelope.
     learned_policy: LearnedPolicy | None = None
+
+    # RFC-0384: optional whole-body kinematic structure + stability limits.
+    whole_body: WholeBody | None = None
