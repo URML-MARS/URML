@@ -1,0 +1,33 @@
+# Fixture: an AUTOSAR ara::com binding missing its method_id (RFC-0019 negative).
+# The id triple is incomplete, so the runtime could not resolve the call;
+# rejected at Pass 2 with capability.ara_com_binding_incomplete.
+
+manifest_version: "0.1"
+robot_id: autosar_ecu_incomplete
+description: AUTOSAR ECU with an incomplete ara::com binding (RFC-0019 negative).
+
+frames:
+  - name: base
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: base
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+programs:
+  - name: set_wheel_torque
+    args:
+      - { name: torque_nm, type: number }
+    binding:
+      kind: ara_com
+      service_id: 4097
+      instance_id: 1
+      # method_id intentionally omitted — RFC-0019 requires the full triple.
+
+outputs:
+  named_endpoints: []

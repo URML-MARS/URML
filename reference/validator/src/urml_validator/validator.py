@@ -209,6 +209,8 @@ def validate(
     errors.extend(_check_substrate_ipc(manifest_model))
     # RFC-0016: realtime timing-block coherence.
     errors.extend(_check_realtime(manifest_model))
+    # RFC-0019: AUTOSAR ara::com program bindings must declare the full id triple.
+    errors.extend(_check_program_bindings(manifest_model))
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
@@ -3134,6 +3136,46 @@ def _check_realtime(manifest: CapabilityManifest) -> list[ValidationError]:
                 ),
             )
         )
+    return out
+
+
+def _check_program_bindings(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0019): a program's `ara_com` binding must be complete.
+
+    AUTOSAR rides `call_program` (RFC-0015) rather than a new primitive; the
+    binding only adds the routing triple. When a program declares
+    `binding: { kind: ara_com }`, all of `service_id`, `instance_id`, and
+    `method_id` must be present, so the runtime can resolve the service-method
+    call. Programs without a binding (or with no `programs:` at all) are
+    unaffected. AUTOSAR Execution Management timing rides the `realtime` block
+    (RFC-0016); no separate field here.
+    """
+    out: list[ValidationError] = []
+    for i, program in enumerate(manifest.programs):
+        binding = program.binding
+        if binding is None or binding.kind != "ara_com":
+            continue
+        missing = [
+            name
+            for name in ("service_id", "instance_id", "method_id")
+            if getattr(binding, name) is None
+        ]
+        if missing:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_ARA_COM_BINDING_INCOMPLETE,
+                    primitive=None,
+                    path=["<manifest>", "programs", str(i), "binding"],
+                    field="binding",
+                    message=(
+                        f"program {program.name!r} declares an ara_com binding but is "
+                        f"missing {missing!r}; the full service/instance/method id triple "
+                        "is required to resolve the call."
+                    ),
+                    suggestion="Declare service_id, instance_id, and method_id on the "
+                    "ara_com binding. Per RFC-0019.",
+                )
+            )
     return out
 
 
