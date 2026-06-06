@@ -64,6 +64,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "substrate_ipc_runtime_on_iceoryx2": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_runtime_on_iceoryx2.yaml",
     "substrate_ipc_iceoryx1_no_runtime": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_iceoryx1_no_runtime.yaml",
     "substrate_ipc_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_custom_no_note.yaml",
+    # RFC-0016: realtime cyclic-timing fixtures.
+    "substrate_realtime_cyclic": _VALIDATOR_FIXTURES / "manifests" / "substrate_realtime_cyclic.yaml",
+    "substrate_realtime_watchdog_short": _VALIDATOR_FIXTURES / "manifests" / "substrate_realtime_watchdog_short.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

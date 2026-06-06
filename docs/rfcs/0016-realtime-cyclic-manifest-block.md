@@ -1,10 +1,10 @@
 ---
 rfc: 0016
 title: Real-time / cyclic timing declaration in the capability manifest
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-19
-updated: 2026-05-19
+updated: 2026-06-06
 supersedes: —
 superseded-by: —
 ---
@@ -31,11 +31,18 @@ Fieldbus and OPC UA substrates operate under a *cyclic timing
 contract*: a fixed update period, a watchdog deadline, a requested
 packet interval (RPI). The Layer-1 capability manifest has no way to
 declare any of this, so a runtime cannot state — and the validator
-cannot check — the timing regime a deployment runs under. This RFC is
-filed as a **Draft for maintainer decision** by the spec-gap loop
-(RFC-0014); the `urml-opcua-runtime` build surfaced it. It proposes an
-optional `realtime:` declaration block. It is *not* a primitive and
-makes no claim that URML enforces real-time guarantees.
+cannot check — the timing regime a deployment runs under. Surfaced by the
+spec-gap loop (RFC-0014) from the `urml-opcua-runtime` build, this RFC adds
+an optional `realtime:` declaration block. It is *not* a primitive and makes
+no claim that URML enforces real-time guarantees.
+
+**State: Implemented** (2026-06-06). Ships the schema block, a validator
+*internal-coherence* check (`watchdog_ms >= cyclic_period_ms` — a watchdog
+shorter than one cycle is incoherent), conformance fixtures, and unit tests.
+The maintainer chose to mature the original parse-only v0.1 scope with that
+one coherence rule, which checks the declaration without asserting any
+real-time guarantee. The envelope-dwell Pass-3 enforcement rule remains
+explicitly deferred.
 
 ## Motivation
 
@@ -76,10 +83,14 @@ does not police.
 
 ### Validator changes
 
-Schema parse only in v0.1 (the same staging RFC-0011/0013 used:
-declare now, enforce later). A *future* RFC may add a Pass-3 check
-("envelope dwell shorter than `watchdog_ms`"); v0.1 deliberately does
-not, to keep this change small and honest about what is enforced.
+One Pass-2 **internal-coherence** check ships: `watchdog_ms >=
+cyclic_period_ms` (`capability.watchdog_shorter_than_cycle`). A watchdog
+shorter than one control cycle would fault before a cycle completes, so it is
+an incoherent declaration regardless of the real-time regime. This checks the
+declaration's self-consistency; it is *not* real-time enforcement. The Pass-3
+*envelope-dwell* rule ("envelope hold shorter than `watchdog_ms`") remains a
+future RFC, deliberately deferred to keep this change honest about what is
+enforced.
 
 ### Reference runtime changes
 
@@ -89,8 +100,12 @@ its subscription) but is not obligated to in v0.1.
 
 ### Conformance suite changes
 
-A manifest-acceptance fixture proving a `realtime`-bearing manifest
-parses and validates; no execution semantics to test in v0.1.
+Two fixtures ship: a positive (`home/realtime_cyclic_positive`, a coherent
+`realtime`-bearing manifest parses and validates) and a negative
+(`home/realtime_watchdog_short_rejected`, watchdog < cycle →
+`capability.watchdog_shorter_than_cycle`). No execution semantics to test in
+v0.1. Validator unit tests in `test_realtime.py` add the boundary and no-block
+cases.
 
 ## Backward compatibility
 
@@ -133,22 +148,26 @@ timing extensions; ROS 2 `rmw` QoS deadline. URML-internal: RFC-0006
 follows: declare the contract, don't implement the transport) and
 RFC-0011 (the declare-now/enforce-later staging).
 
-## Unresolved questions
+## Resolved / unresolved questions
 
-- Whether `guarantee` belongs here or is over-engineering for v0.1.
-- Whether `requested_packet_interval_ms` is OPC-UA-specific enough that
-  it should be a generic `link` field instead.
-- The eventual Pass-3 enforcement rule (explicitly out of scope here).
+- `guarantee` is **kept** (a required field), exactly because it is the honesty
+  knob that lets the manifest state its regime without implying enforcement.
+- `requested_packet_interval_ms` is **kept on `realtime`** for v0.1; whether a
+  generic `link`-level field is a better home is a possible later refinement,
+  not a blocker.
+- The Pass-3 *envelope-dwell* enforcement rule (an envelope hold shorter than
+  `watchdog_ms`) remains **deferred** to a future RFC. The v0.1 watchdog-vs-cycle
+  coherence check is internal consistency, not that enforcement.
 
 ## Implementation note
 
-Draft only — no code lands until the maintainer decides. The
-`urml-opcua-runtime` ships with timing as deployment config in
-`opcua_adapter.yaml` (unchanged) and does **not** read a manifest
-`realtime` block, because none exists yet. If accepted, landing is a
-single Layer-1-only change (schema + spec + one acceptance fixture) —
-no multi-layer coordination, but still an RFC because it changes the
-manifest schema.
+Shipped as a single Layer-1-only change: schema (`Realtime` + the optional
+`realtime` field), one validator coherence check + error code, two conformance
+fixtures, unit tests, and spec §2.15. No multi-layer coordination and no
+runtime change. The `urml-opcua-runtime` still carries timing as deployment
+config in `opcua_adapter.yaml`; it MAY now read the manifest `realtime` block
+to configure its session (mapping `requested_packet_interval_ms` to its
+subscription) but is not obligated to in v0.1.
 
 ## Self-review (Phase 0)
 

@@ -119,7 +119,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0013](0013-industrial-layer2-primitives.md) | Spec | Industrial-profile Layer-2 primitives — pick_from, place_at, swap_tool | Implemented | 2026-05-19 |
 | [0014](0014-substrate-conformance.md) | Spec | Substrate conformance — what makes a runtime URML-compatible | Draft | 2026-05-19 |
 | [0015](0015-control-program-invocation.md) | Spec | Control-program invocation — calling a named substrate program | Open | 2026-05-29 |
-| [0016](0016-realtime-cyclic-manifest-block.md) | Spec | Real-time / cyclic timing declaration in the capability manifest | Draft | 2026-05-19 |
+| [0016](0016-realtime-cyclic-manifest-block.md) | Spec | Real-time / cyclic timing declaration in the capability manifest (optional `realtime` block: cyclic_period/watchdog/RPI/guarantee + watchdog>=cycle coherence check) | Implemented | 2026-06-06 |
 | [0017](0017-digital-io-actuation.md) | Spec | Digital-I/O actuation — driving a named substrate output | Draft | 2026-05-19 |
 | [0018](0018-minimal-mcu-capability-subset.md) | Spec | Minimal-MCU capability subset in the manifest | Draft | 2026-05-19 |
 | [0019](0019-autosar-adaptive-substrate.md) | Spec | AUTOSAR Adaptive substrate — binding ara::com to URML | Draft | 2026-05-20 |

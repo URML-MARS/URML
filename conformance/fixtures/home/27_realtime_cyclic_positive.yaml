@@ -1,0 +1,27 @@
+name: home/realtime_cyclic_positive
+description: >
+  RFC-0016: a ground robot declaring a coherent cyclic timing contract
+  (10 ms control period, 50 ms watchdog, 10 ms RPI, soft guarantee). The
+  watchdog allows more than one cycle, so the declaration is coherent and a
+  trivial navigation program validates and runs. Hermetic against
+  MockROSAdapter.
+
+manifest: substrate_realtime_cyclic
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - send_navigation_goal

@@ -207,6 +207,8 @@ def validate(
     errors.extend(_check_substrate_rmw_options(manifest_model))
     # RFC-0385: substrate.ipc generation coherence.
     errors.extend(_check_substrate_ipc(manifest_model))
+    # RFC-0016: realtime timing-block coherence.
+    errors.extend(_check_realtime(manifest_model))
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
@@ -3004,6 +3006,41 @@ def _check_substrate_ipc(manifest: CapabilityManifest) -> list[ValidationError]:
                     "Per RFC-0385.",
                 )
             )
+    return out
+
+
+def _check_realtime(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0016): realtime timing-block internal coherence.
+
+    The only v0.1 rule is consistency, not real-time enforcement: the watchdog
+    deadline must be at least one control cycle (`watchdog_ms >=
+    cyclic_period_ms`); a watchdog shorter than the period would fault before a
+    single cycle completes. The envelope-dwell Pass-3 rule is deferred.
+
+    Optional: a manifest without `realtime` is unaffected.
+    """
+    out: list[ValidationError] = []
+    rt = manifest.realtime
+    if rt is None:
+        return out
+    if rt.watchdog_ms < rt.cyclic_period_ms:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_WATCHDOG_SHORTER_THAN_CYCLE,
+                primitive=None,
+                path=["<manifest>", "realtime", "watchdog_ms"],
+                field="watchdog_ms",
+                message=(
+                    f"realtime.watchdog_ms ({rt.watchdog_ms}) is shorter than "
+                    f"realtime.cyclic_period_ms ({rt.cyclic_period_ms}); the watchdog "
+                    "would fault before one control cycle completes."
+                ),
+                suggestion=(
+                    "Set watchdog_ms >= cyclic_period_ms (the watchdog must allow at "
+                    "least one cycle). Per RFC-0016."
+                ),
+            )
+        )
     return out
 
 
