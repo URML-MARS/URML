@@ -34,8 +34,8 @@
 
 - slug: farmbot
   rfc: 404
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/FarmBot/farmbot_os/issues/1529"
   channel: github_issue
   contact: "FarmBot/farmbot_os (MIT, ~1.2k stars + ~967 on Farmbot-Web-App, Issues enabled, Discussions OFF — active Forum; not archived, active — v15.5.2 2026-06-02). Canonical open-source CNC farming robot; named sequences over a REST + MQTT API. US."
   last_touch: "2026-06-06"
@@ -43,18 +43,20 @@
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0404 body to https://github.com/FarmBot/farmbot_os/issues/1529 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md FarmBot body as a GitHub Issue (Discussions off) on FarmBot/farmbot_os under idoco2003; reference (do not separately post) Farmbot-Web-App; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor of the wave. Non-ROS: bind FarmBot sequences via call_program (RFC-0019 pattern) / its REST API. Ask: farm-bed capability manifest (bed geometry, tools, plant vocab, coordinate bounds)."
   notes: "Most accessible open farm robot. Issue venue (Discussions off; Forum exists). No license-ask (MIT)."
 
 - slug: farm-ng
   rfc: 405
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/farm-ng/amiga-dev-kit/discussions/335"
   channel: github_discussion
   contact: "farm-ng/amiga-dev-kit (license present, ~24 stars, Issues + Discussions enabled, not archived, active — 2025-06-11). Open dev kit (gRPC + ROS bridges) for the Amiga rugged ag micro-tractor/rover. US."
   last_touch: "2026-06-06"
@@ -62,18 +64,20 @@
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0405 body to https://github.com/farm-ng/amiga-dev-kit/discussions/335 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md farm-ng body as a GitHub Discussion on farm-ng/amiga-dev-kit under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Commercial-but-open ag rover; URML dispatches drive/nav intent via the ROS bridge (or gRPC binding). Discussions enabled = clean venue. Ask: ag-rover manifest."
   notes: "Prefer amiga-dev-kit over the bare farm-ng-amiga submodule. No license-ask."
 
 - slug: cropcraft
   rfc: 406
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/Romea/cropcraft/issues/18"
   channel: github_issue
   contact: "Romea/cropcraft (Apache-2.0, ~106 stars, Issues enabled, Discussions OFF, not archived, active). Procedural 3D crop-field world generator for robotics sim (Blender backend, LiDAR/camera ground truth). INTL (France; Romea ag-robotics group)."
   last_touch: "2026-06-06"
@@ -81,18 +85,20 @@
   tier: A
   country: INTL
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0406 body to https://github.com/Romea/cropcraft/issues/18 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md CropCraft body as a GitHub Issue (Discussions off) on Romea/cropcraft under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Strongest ag-sim by stars+license. URML drives a field robot in a CropCraft world via ROS 2; ties RFC-0381. Romea middleware = org-level integration point."
   notes: "Permissive (Apache-2.0). Ask: field-robot manifest (drive, rows, implements, crop vocab, GNSS). No license-ask."
 
 - slug: openweedlocator
   rfc: 407
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/geezacoleman/OpenWeedLocator/discussions/207"
   channel: github_discussion
   contact: "geezacoleman/OpenWeedLocator (MIT, ~471 stars, Issues + Discussions enabled, not archived, active — v3.0.0 2026-04-04). Low-cost image-based weed-detection + spot-spray device (Raspberry Pi, relay/solenoid actuation). INTL (Australia)."
   last_touch: "2026-06-06"
@@ -100,18 +106,20 @@
   tier: A
   country: INTL
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0407 body to https://github.com/geezacoleman/OpenWeedLocator/discussions/207 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md OpenWeedLocator body as a GitHub Discussion on geezacoleman/OpenWeedLocator under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. detect-then-spray maps onto URML's detect->act split. Discussions enabled. Ask: sprayer manifest (detection classes, nozzles/relays, application-rate limits, no-spray zones)."
   notes: "Most-engaged open weeding project. No license-ask (MIT)."
 
 - slug: agri-opencore-lcas
   rfc: 408
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/LCAS/aoc_tomato_farm/issues/5"
   channel: github_issue
   contact: "LCAS/aoc_tomato_farm (Apache-2.0, Issues enabled, ROS 2 Humble, not archived, active). Tomato-glasshouse digital-twin generator + sim from L-CAS / Agri-OpenCore (Univ. Lincoln) — the most active academic agri-robotics ecosystem found (also Qualicrop, GNSS drivers, hunter_with_arm). INTL (UK)."
   last_touch: "2026-06-06"
@@ -119,18 +127,20 @@
   tier: A
   country: INTL
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0408 body to https://github.com/LCAS/aoc_tomato_farm/issues/5 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md Agri-OpenCore body as a GitHub Issue on LCAS/aoc_tomato_farm under idoco2003; reference (do not separately post) Qualicrop / hunter_with_arm; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. L-CAS org-anchor (one issue, reference the sibling repos). URML drives the glasshouse digital twin via ROS 2; harvesting ties RFC-0010. Ask: glasshouse/field agri-robot manifest."
   notes: "Highest-value academic ag ecosystem. Org-anchor courtesy. No license-ask (Apache-2.0)."
 
 - slug: farmbot-ros2
   rfc: 409
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/farmbot-ros/interfaces/issues/1"
   channel: github_issue
   contact: "farmbot-ros/interfaces (MIT, ~0-1 stars per repo, Issues enabled, not archived, last activity 2025-04-28). Modular ROS 2 Humble re-implementation of FarmBot control (cartograph/trailblazer/taskforce/polestar + shared interfaces), AURA / Maynooth University. INTL (Ireland)."
   last_touch: "2026-06-06"
@@ -138,18 +148,20 @@
   tier: B
   country: INTL
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0409 body to https://github.com/farmbot-ros/interfaces/issues/1 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md FarmBot-ROS2 body as a GitHub Issue on farmbot-ros/interfaces under idoco2003; reference (do not separately post) the module repos; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Pure ROS 2 FarmBot stack URML's runtime targets directly; align typed intent with the interfaces package (Nav2/ros2_control pattern). Org-anchor on interfaces. Tier B (tiny audience, clean fit)."
   notes: "Sibling of FarmBot (0404, non-ROS). No license-ask (MIT)."
 
 - slug: prbonn-agribot
   rfc: 410
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/PRBonn/agribot/issues/6"
   channel: github_issue
   contact: "PRBonn/agribot (BSD-2-Clause, ~179 stars, Issues enabled, Discussions OFF, not archived; ROS Melodic+ era, lower recent activity). From-scratch ag data-recording field robot from the Univ. Bonn Photogrammetry & Robotics lab (high-credibility ag-perception group). INTL (Germany)."
   last_touch: "2026-06-06"
@@ -157,18 +169,20 @@
   tier: A
   country: INTL
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0410 body to https://github.com/PRBonn/agribot/issues/6 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md PRBonn AgriBot body as a GitHub Issue (Discussions off) on PRBonn/agribot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Credible academic field robot + ag-perception lab; URML consumes their crop/weed perception as detect sources (Move #25 pattern). Lead with the manifest design question (older repo)."
   notes: "BSD-2 permissive. PRBonn = high-credibility engagement even if the repo is older. No license-ask."
 
 - slug: smart-diffbot
   rfc: 411
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/SaxionMechatronics/smart_diffbot/issues/1"
   channel: github_issue
   contact: "SaxionMechatronics/smart_diffbot (Apache-2.0, ~17 stars, Issues enabled, not archived, active). ROS 2 differential-drive robot with Nav2-based outdoor GNSS navigation. INTL (Netherlands; Saxion)."
   last_touch: "2026-06-06"
@@ -176,10 +190,12 @@
   tier: B
   country: INTL
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted the RFC-0411 body to https://github.com/SaxionMechatronics/smart_diffbot/issues/1 under idoco2003 (Move #33 agriculture wave). Awaiting response."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md smart_diffbot body as a GitHub Issue on SaxionMechatronics/smart_diffbot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Small clean Nav2 GNSS outdoor rover; URML move_to onto Nav2 (Move #16). Tier B (low-risk teaching/demo fit)."
   notes: "Permissive (Apache-2.0). Outdoor-GNSS shape is a common field-robot case. No license-ask."
