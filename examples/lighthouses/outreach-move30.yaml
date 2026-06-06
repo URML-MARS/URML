@@ -1,0 +1,60 @@
+# Move #30 outreach ledger. One row per target.
+#
+# Move #30: **outreach to what we just built for.** A small, focused wave
+# (2 targets) aimed at the communities whose capability gaps the
+# casting->building run just closed, each now backed by a shipped, Implemented
+# spec artifact:
+#   - Autoware (RFC-0386) <- RFC-0020 (av profile + plan_path/follow_trajectory).
+#   - Eclipse S-CORE (RFC-0387) <- RFC-0019 (AUTOSAR ara::com program binding),
+#     riding RFC-0015 (call_program) + RFC-0016 (realtime).
+#
+# Both are Outreach RFCs ("No spec change is proposed here"); each is a
+# request-for-comment to the target's maintainers with the shipped spec as the
+# concrete artifact. Surfaces verified 2026-06-06 (stars / Issues+Discussions
+# enabled / Apache-2.0 / not archived / active).
+#
+# DRAFTED, NOT POSTED: rows carry empty sent_at / posted_url and response:none
+# until the founder authorizes posting. Then post the posts-move30.md body as a
+# GitHub Discussion under idoco2003, set sent_at / posted_url / last_touch, add
+# a posted comment, and refresh outreach.db. Do not massage response state.
+#
+# No license-ask in either post (both repos are Apache-2.0; state the license).
+# AI-assisted-authoring disclosure (VIBE.md) up front in each.
+
+- slug: autoware
+  rfc: 386
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "autowarefoundation/autoware (Apache-2.0, ~11.7k stars, Issues + Discussions enabled, not archived, active — release 1.8.0 2026-05-04). The Autoware Foundation's autonomous-driving meta-repo; component impls in autoware.universe. INTL foundation."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move30.md Autoware body as a GitHub Discussion on autowarefoundation/autoware under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization to post. Venue: GitHub Discussions (RFC-style intro) on autowarefoundation/autoware. Maps RFC-0020 plan_path->planning pipeline, follow_trajectory->control stack; research-grade (no AV-safety claim)."
+  notes: "Outreach to the community RFC-0020 (av profile) was designed against; the spec is shipped (Implemented 2026-06-06), so there is a concrete artifact. Autoware is the runtime vertex of URML's AV triangle (Waymo RFC-0042 recorded-driving, CARLA RFC-0040-family simulator). No license-ask (Apache-2.0)."
+
+- slug: eclipse-score
+  rfc: 387
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "eclipse-score/score (Apache-2.0, ~94 stars but Eclipse Foundation + BMW/Mercedes-Benz/ETAS/Accenture/Qorix backing; Issues + Discussions enabled, not archived, active — v0.5.5 2026-04-26). The Eclipse Safe Open Vehicle Core: an open, service-oriented, AUTOSAR-Adaptive-aligned SDV core for high-performance ECUs. INTL (Eclipse / European OEMs)."
+  last_touch: "2026-06-06"
+  response: none
+  tier: A
+  country: INTL
+  sector: middleware
+  comments: []
+  claude_directives:
+    - date: "2026-06-06"
+      text: "When authorized, post the posts-move30.md Eclipse S-CORE body as a GitHub Discussion on eclipse-score/score under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization to post. Venue: GitHub Discussions on eclipse-score/score. Maps RFC-0019 ara::com binding (service/instance/method id triple on a call_program) + RFC-0016 realtime for Execution-Management timing."
+  notes: "Outreach to the open AUTOSAR-Adaptive community RFC-0019 targets; the binding is shipped (Implemented 2026-06-06). Young repo (94 stars) but the right, foundation-backed community. No new primitive (rides call_program); no license-ask (Apache-2.0)."
