@@ -465,6 +465,15 @@ These are **Spec** RFCs (they change URML's normative surface) surfaced by the e
 | [0384](0384-whole-body-capability-declaration.md) | Spec | Optional Layer-1 `whole_body` block: kinematic chains (legs/arms/torso, DoF, arm_ref into manipulation.arms) + static-stability limits (static_stable, can_carry_while_moving, max_incline/tilt, center_of_mass within support_polygon); validator checks structure + CoM-in-polygon + a carry-while-moving gate; the locomotion-side complement to RFC-0010, answering the Move #29 humanoid threads (ToddlerBot/K-Scale/TALOS/Open Duck Mini/legged_gym/legged_control) | Implemented | 2026-06-04 |
 | [0385](0385-ipc-substrate-declaration.md) | Spec | Optional `substrate.ipc` block: the zero-copy IPC sub-substrate beneath the RMW (iceoryx generation). generation iceoryx1/iceoryx2/custom + runtime_name (iceoryx1) vs config_path (iceoryx2) + messaging_pattern/memory-budget/pub-sub counts; validator enforces generation coherence (4 codes); realizes the spec gap the engaged iceoryx/iceoryx2 thread named (RFC-0210/0305, @elBoberido, iceoryx#2530) | Implemented | 2026-06-06 |
 
+### Outreach to what we built for (Move #30, RFCs 0386-0387)
+
+Targeted outreach to the communities whose gaps the casting->building run just closed, each now backed by a shipped, Implemented spec artifact. Outreach RFCs ("No spec change is proposed here"). Drafted; posting awaits authorization (ledger [`outreach-move30.yaml`](../../examples/lighthouses/outreach-move30.yaml), bodies [`posts-move30.md`](../../examples/lighthouses/posts-move30.md)).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0386](0386-autoware-outreach.md) | Outreach | Autoware integration; Move #30; URML as a validated intent layer above Autoware — maps RFC-0020 `plan_path` -> planning pipeline and `follow_trajectory` -> control stack, research-grade (no AV-safety claim); request for comment from the Autoware community (autowarefoundation/autoware, 11.7k stars) | Draft | 2026-06-06 |
+| [0387](0387-eclipse-score-outreach.md) | Outreach | Eclipse S-CORE integration; Move #30; URML's RFC-0019 `ara::com` program binding (service/instance/method id triple on a `call_program`) + RFC-0016 `realtime` for Execution-Management timing, mapped onto the open AUTOSAR-Adaptive SDV core; request for comment from the eclipse-score/score maintainers | Draft | 2026-06-06 |
+
 ## Lifecycle states
 
 Per RFC-0001:
