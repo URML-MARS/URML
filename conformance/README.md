@@ -24,6 +24,8 @@ A sibling sub-suite, [`conformance/llm-bridge/`](./llm-bridge/), scores `(model,
 
 The conformance suite is part of the [Core Commitment](../CORE_COMMITMENT.md). It will always be Apache 2.0. The eventual *certification program* — the trademark *URML-Certified* — may be paid; the *tests themselves* remain free, public, and runnable by anyone. This separation is deliberate: it lets URML's compatibility claim be honest (anyone can verify it) while preserving a commercial moat in the surround (the mark is licensed, not the tests).
 
+The **normative, human-readable contract** this suite enforces — the six clauses a runtime must satisfy, the two tiers, and the spec-gap loop — is [`spec/conformance/v0.1.0.md`](../spec/conformance/v0.1.0.md) ([RFC-0014](../docs/rfcs/0014-substrate-conformance.md)). This suite is its executable form (clause 6); that document is its written form.
+
 ## How conformance is structured
 
 Conformance is **per-specification-version**, not whole-project. A runtime that passes the Layer-2 v0.1 tests and the home-profile v0.1 tests is conformant to *those* specs at *those* versions, no more and no less. The runtime declares this in its own `CONFORMANCE.md`.

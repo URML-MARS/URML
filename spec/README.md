@@ -24,7 +24,8 @@ spec/
 ├── layer-2-primitives/       The atomic intent vocabulary. Verbs: move_to, grasp, hover, scan, detect, ...
 ├── layer-3-behavior/         Composition: sequence, branch, parallel, retry, error handling, variables.
 ├── layer-4-nl-grammar/       Natural-language interface. The LLM prompt contract, schemas, examples.
-└── profiles/                 Domain-specific extensions: home, drone, industrial, ...
+├── profiles/                 Domain-specific extensions: home, drone, industrial, ...
+└── conformance/              What makes a runtime URML-compatible: the six-clause contract + tiers (RFC-0014).
 ```
 
 Layer 0 (substrate) is named in the Manifesto and the architecture document, but is **not** specified here — ROS 2, PX4, AUTOSAR, OPC UA and others are *targeted*, not defined.
