@@ -1,10 +1,10 @@
 ---
 rfc: 0014
 title: Substrate conformance — what makes a runtime URML-compatible
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-19
-updated: 2026-05-19
+updated: 2026-06-06
 supersedes: —
 superseded-by: —
 ---
@@ -39,6 +39,11 @@ and changes no existing schema; it writes down a boundary that already exists
 implicitly, so that the universality claim is provable rather than asserted, and
 so that the eventual *URML-Certified* trademark program has a specification to
 certify against.
+
+**State: Implemented** (2026-06-06). The contract ships as the versioned
+[`spec/conformance/v0.1.0.md`](../../spec/conformance/v0.1.0.md). No code,
+schema, or fixture changes: every reference runtime already satisfies the six
+clauses, and the conformance suite is already the contract's executable form.
 
 ## Motivation
 
@@ -160,14 +165,14 @@ spec gaps as proposals, never as silent expansion.
 This RFC is a normative definition; it adds no primitive, no manifest field, no
 behavior semantics, and no profile.
 
-The normative text of clauses 1–6, the tiers, and the gap loop should live as a
+The normative text of clauses 1–6, the tiers, and the gap loop lives as a
 versioned specification document so it has parity with the layer specs and a
-semver of its own. **Open question for the maintainer (do not silently choose):**
-either (a) a new `spec/conformance/v0.1.0.md` — recommended, because it gives
+semver of its own. **Resolved (2026-06-06): option (a)** — the contract ships as
+[`spec/conformance/v0.1.0.md`](../../spec/conformance/v0.1.0.md), giving
 substrate conformance the same versioned, citable status as Layers 1–4 and the
-profiles; or (b) an elevation of the existing `conformance/README.md` to
-normative status. This RFC's acceptance does not depend on which; the document
-placement is recorded in Unresolved questions.
+profiles, with an orientation `spec/conformance/README.md`. Option (b)
+(elevating `conformance/README.md` in place) was rejected because it would not
+carry an independent semver.
 
 Layer 1 / Layer 2 / Layer 3 / Layer 4 / profile specs: unchanged. This RFC cites
 and must not contradict CLAUDE.md (the acid test and the Core Commitment),
@@ -254,25 +259,27 @@ this RFC promotes to normative).
 
 ## Unresolved questions
 
-- **Document placement.** New `spec/conformance/v0.1.0.md` (recommended) vs.
-  elevating `conformance/README.md`. Maintainer decision; small enough to settle
-  before this RFC moves Open → Accepted.
+- **Document placement.** *Resolved (2026-06-06): option (a).* The normative
+  contract lives at [`spec/conformance/v0.1.0.md`](../../spec/conformance/v0.1.0.md),
+  versioned independently like the layer specs, with an orientation
+  `spec/conformance/README.md`. `conformance/README.md` now points to it as the
+  written form of the suite. Elevating `conformance/README.md` in place (option b)
+  was rejected: it would not have given the contract its own semver.
 - **Self-report artifact.** Whether a machine-readable conformance self-report
   (profiles claimed, suite version, commit) should be standardized later. Out of
   scope for v0.1; noted so it is not silently invented.
 
 ## Implementation note
 
-This lands as one documentation-only PR: this RFC, filed `state: Draft`. No
-code, no schema, no fixture. The conformance suite already exists as the
-contract's executable form, so there is nothing to implement to make the
-definition true — the reference runtimes already satisfy it. After the
-maintainer settles the document-placement question and advances this RFC, a
-follow-up PR adds the chosen `spec/conformance/` document (or elevates
-`conformance/README.md`) and updates the `docs/rfcs/README.md` index. The
-in-flight substrate PRs (OPC UA, cobot, MuJoCo, embedded) cite this RFC as the
-contract they are built against and carry their own `SPEC-GAPS.md` per the gap
-loop above.
+Shipped as one documentation slice: this RFC advanced to `state: Implemented`,
+plus the normative [`spec/conformance/v0.1.0.md`](../../spec/conformance/v0.1.0.md)
+(clauses 1-6, the two tiers, the gap loop) and its `README.md`, the
+`spec/README.md` layout entry, and a pointer from `conformance/README.md`. No
+code, schema, or fixture: the conformance suite already exists as the contract's
+executable form, and every reference runtime already satisfies clauses 1-6, so
+there is nothing to implement to make the definition true. The in-flight
+substrate PRs (OPC UA, cobot, MuJoCo, embedded) cite this contract and carry
+their own `SPEC-GAPS.md` per the gap loop above.
 
 ## Self-review (Phase 0)
 
