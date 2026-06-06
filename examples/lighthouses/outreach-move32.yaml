@@ -34,8 +34,8 @@
 
 - slug: blue-rdml
   rfc: 396
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/Robotic-Decision-Making-Lab/blue/discussions/432"
   channel: github_discussion
   contact: "Robotic-Decision-Making-Lab/blue (MIT, ~98 stars, Issues + Discussions enabled, not archived, active — last commit 2025-07-26). ROS 2 platform for underwater R&D onboard BlueROV2 via ArduSub. US lab."
   last_touch: "2026-06-06"
@@ -43,18 +43,20 @@
   tier: A
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Discussion (Ideas) under idoco2003: https://github.com/Robotic-Decision-Making-Lab/blue/discussions/432. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md blue body as a GitHub Discussion on Robotic-Decision-Making-Lab/blue under idoco2003; reference (do not separately post) auv_controllers + angler; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor of the wave + the closest analog to URML's marine-runtime. Fold auv_controllers (ros2_control, Move #23) + angler (UVMS, RFC-0010 manipulation)."
   notes: "Bullseye: URML's BlueRovAdapter dispatches into the same BlueROV2/ArduSub substrate. Ask: underwater capability manifest (depth rating, thrusters, buoyancy, tether/comms). No license-ask (MIT)."
 
 - slug: orca4
   rfc: 397
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/clydemcqueen/orca4/issues/54"
   channel: github_issue
   contact: "clydemcqueen/orca4 (MIT, ~186 stars, Issues enabled, Discussions NOT enabled, not archived, very active — orca5 successor referenced). ROS 2 AUV for BlueROV2 on ArduSub + Nav2 + mavros. US (individual)."
   last_touch: "2026-06-06"
@@ -62,18 +64,20 @@
   tier: A
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/clydemcqueen/orca4/issues/54. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md orca4 body as a GitHub Issue (Discussions not enabled) on clydemcqueen/orca4 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Most-starred direct-fit vehicle; URML move_to onto orca4's Nav2 (Nav2 already a URML substrate, Move #16). Ask: AUV mission manifest + the intent/mission seam."
   notes: "Exact BlueROV2 + ArduSub + Nav2 pairing URML's marine-runtime targets. Issue venue (no Discussions). No license-ask (MIT)."
 
 - slug: blueos
   rfc: 398
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/bluerobotics/BlueOS/discussions/3943"
   channel: github_discussion
   contact: "bluerobotics/BlueOS (AGPL-3.0 + custom components, ~415 stars, Issues + Discussions enabled, not archived, active — 1.4.3 2026-01-23; busy repo, ~487 open issues). Onboard software for BlueROV / BlueBoat, hosts MAVLink/ArduSub. US (Blue Robotics)."
   last_touch: "2026-06-06"
@@ -81,18 +85,20 @@
   tier: A
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Discussion (Ideas) under idoco2003: https://github.com/bluerobotics/BlueOS/discussions/3943. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md BlueOS body as a GitHub Discussion on bluerobotics/BlueOS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Onboard layer beneath URML's BlueROV target; URML rides the MAVLink/ArduSub surface BlueOS hosts. Discussion (busy issue tracker)."
   notes: "Vendor onboard OS for the BlueROV URML's marine-runtime drives. State license correctly (AGPL-3.0+custom); URML ships nothing under it (integrates over MAVLink). No license-ask."
 
 - slug: stonefish
   rfc: 399
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/patrykcieslak/stonefish/issues/82"
   channel: github_issue
   contact: "patrykcieslak/stonefish (GPL-3.0, ~256 stars, Issues enabled, Discussions NOT enabled, not archived, active — ICRA 2025 release 2025-06-10). Advanced C++ marine-robotics sim with a ROS 2 package (stonefish_ros). INTL (academic)."
   last_touch: "2026-06-06"
@@ -100,18 +106,20 @@
   tier: A
   country: INTL
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/patrykcieslak/stonefish/issues/82. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md Stonefish body as a GitHub Issue (Discussions not enabled) on patrykcieslak/stonefish under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. High-fidelity underwater sim; URML drives via stonefish_ros; ties RFC-0381 (validation fidelity)."
   notes: "GPL-3.0 (only non-permissive sim here) — state it, URML integrates over the ROS 2 surface, ships nothing under it; NO license-ask. Ask: underwater manifest (buoyancy/depth/currents)."
 
 - slug: dave
   rfc: 400
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/IOES-Lab/dave/issues/49"
   channel: github_issue
   contact: "IOES-Lab/dave (Apache-2.0, ~43 stars, Issues enabled, not archived, active — ROS 2 / Gazebo Harmonic continuation of Project DAVE). Underwater sim/test environment for AUVs + manipulators. INTL (academic)."
   last_touch: "2026-06-06"
@@ -119,18 +127,20 @@
   tier: A
   country: INTL
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/IOES-Lab/dave/issues/49. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md DAVE body as a GitHub Issue on IOES-Lab/dave under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Active continuation of Project DAVE (use this fork, not the stale upstream). URML drives via the ROS 2 / Gazebo bridge."
   notes: "Permissive (Apache-2.0). Sibling sim of Stonefish/HoloOcean/MARUS. Ask: underwater manifest declaration. No license-ask."
 
 - slug: holoocean
   rfc: 401
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/byu-holoocean/holoocean-ros/issues/21"
   channel: github_issue
   contact: "byu-holoocean/holoocean-ros (MIT, ~40 stars, Issues enabled, Discussions NOT enabled, not archived, fresh release 2026-05-05). ROS 2 bridge for HoloOcean, a UE5 underwater sim (HoloOcean 2.0 adds ROS 2 + Fossen dynamics). US (BYU)."
   last_touch: "2026-06-06"
@@ -138,18 +148,20 @@
   tier: B
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/byu-holoocean/holoocean-ros/issues/21. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md HoloOcean body as a GitHub Issue (Discussions not enabled) on byu-holoocean/holoocean-ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. URML drives a sim AUV via the ROS 2 bridge (the engageable seam; UE5 core is separate). Tier B (newer/smaller)."
   notes: "Permissive (MIT). Ties RFC-0381 (validation fidelity). No license-ask."
 
 - slug: marus
   rfc: 402
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/MARUSimulator/marus-core/issues/79"
   channel: github_issue
   contact: "MARUSimulator/marus-core (Apache-2.0, ~27 stars, Issues enabled, Discussions NOT enabled, not archived, active — 2026-03-05). Unity-based marine simulator core (LABUST, U. Zagreb) with ROS 2 via a gRPC adapter. INTL (Croatia/EU)."
   last_touch: "2026-06-06"
@@ -157,18 +169,20 @@
   tier: B
   country: INTL
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/MARUSimulator/marus-core/issues/79. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md MARUS body as a GitHub Issue (Discussions not enabled) on MARUSimulator/marus-core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. URML drives surface/underwater vessels via the gRPC ROS 2 adapter. Tier B (smaller)."
   notes: "Permissive (Apache-2.0). Surface + underwater. Ties RFC-0381. No license-ask."
 
 - slug: ros-maritime-wg
   rfc: 403
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-06"
+  posted_url: "https://github.com/ros-maritime/maritime_interfaces/issues/8"
   channel: github_issue
   contact: "ros-maritime (ROS Maritime Working Group): maritime_interfaces (MIT, standard maritime-autonomy ROS 2 interfaces, Issues enabled), community (charter/meetings, Issues disabled), awesome-maritime-robotics (landscape). INTL (ROS/OSRF community)."
   last_touch: "2026-06-06"
@@ -176,10 +190,12 @@
   tier: A
   country: INTL
   sector: governance-body
-  comments: []
+  comments:
+    - date: "2026-06-06"
+      text: "Posted as a GitHub Issue under idoco2003: https://github.com/ros-maritime/maritime_interfaces/issues/8. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move32.md ROS Maritime WG body as a GitHub Issue on ros-maritime/maritime_interfaces (community Issues are disabled) under idoco2003, or via the ROS Discourse Maritime category; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Standards altitude (highest ecosystem leverage); WG-style engagement like ROS-Industrial / iceoryx — venue is the WG's channels, not a cold vehicle repo. Align URML with maritime_interfaces."
   notes: "Align, not compete: URML targets the standard interfaces rather than inventing parallel ones (the Nav2 / ros2_control pattern). No license-ask (MIT)."
