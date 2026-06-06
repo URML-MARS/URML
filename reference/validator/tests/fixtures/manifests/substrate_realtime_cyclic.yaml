@@ -1,0 +1,32 @@
+# Fixture: Ground robot declaring a coherent cyclic timing contract (RFC-0016 positive).
+
+manifest_version: "0.1"
+robot_id: ground_realtime_cyclic
+description: Ground robot declaring a coherent cyclic timing contract (RFC-0016 positive).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+realtime:
+  cyclic_period_ms: 10.0
+  watchdog_ms: 50.0
+  requested_packet_interval_ms: 10.0
+  guarantee: soft
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []

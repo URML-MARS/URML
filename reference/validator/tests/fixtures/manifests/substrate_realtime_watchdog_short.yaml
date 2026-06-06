@@ -1,0 +1,31 @@
+# Fixture: Ground robot whose watchdog is shorter than one cycle (RFC-0016 negative).
+
+manifest_version: "0.1"
+robot_id: ground_realtime_watchdog_short
+description: Ground robot whose watchdog is shorter than one cycle (RFC-0016 negative).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+realtime:
+  cyclic_period_ms: 10.0
+  watchdog_ms: 5.0
+  guarantee: best_effort
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
