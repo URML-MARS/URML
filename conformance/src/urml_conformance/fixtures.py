@@ -138,6 +138,11 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "ghost_vision60": _VALIDATOR_FIXTURES / "manifests" / "ghost_vision60.yaml",
     "digit_biped": _VALIDATOR_FIXTURES / "manifests" / "digit_biped.yaml",
     "digit_bimanual": _VALIDATOR_FIXTURES / "manifests" / "digit_bimanual.yaml",
+    # RFC-0384: whole-body kinematic structure + stability limits.
+    "digit_wholebody": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody.yaml",
+    "digit_wholebody_no_carry": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_no_carry.yaml",
+    "digit_wholebody_fourlegs": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_fourlegs.yaml",
+    "digit_wholebody_unstable": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_unstable.yaml",
     "optimus_biped": _VALIDATOR_FIXTURES / "manifests" / "optimus_biped.yaml",
     "figure_biped": _VALIDATOR_FIXTURES / "manifests" / "figure_biped.yaml",
     "apollo_biped": _VALIDATOR_FIXTURES / "manifests" / "apollo_biped.yaml",

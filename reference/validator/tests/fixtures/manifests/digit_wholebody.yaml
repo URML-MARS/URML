@@ -1,15 +1,13 @@
-# Capability manifest for a two-arm humanoid (Agility Robotics Digit).
-# Exercises RFC-0009 (mobility.drive_type: biped) and RFC-0010 (whole-body
-# manipulation): arm_count 2 with a named `arms` list binding each arm to its
-# gripper, so the validator can resolve `arm: left/right` and the `bimanual`
-# primitive against the manifest. US origin (Agility, Oregon); the provenance
-# block is fully compliant under the bundled US-federal default policy
-# (RFC-0004), so this validates with policy on. Companion to the dual-arm
-# conformance manifest `digit_bimanual`.
+# Fixture: Agility Robotics Digit — RFC-0384 whole-body manifest.
+# Biped (RFC-0009) + two arms (RFC-0010) + a whole_body block (RFC-0384):
+# kinematic chains (2 legs, 2 arms bound to manipulation.arms, torso) and a
+# static-stability declaration (center_of_mass within support_polygon).
+# can_carry_while_moving is true, so a carry-while-walking program validates.
+# US origin (Agility, Oregon), compliant under the bundled default policy.
 
 manifest_version: "0.1"
-robot_id: digit_tote_demo
-description: Bipedal logistics humanoid with two arms (RFC-0009 + RFC-0010).
+robot_id: digit_wholebody_1
+description: Bipedal logistics humanoid, whole-body declaration (RFC-0384).
 
 frames:
   - name: site
@@ -18,29 +16,26 @@ frames:
     parent: site
 
 declared_locations:
-  - name: tote_shelf
-    pose: { x: 6.0, y: 4.0, z: 0.0 }
-    frame: site
-    description: Where the tote starts.
   - name: staging_a
     pose: { x: 6.0, y: 0.0, z: 0.0 }
     frame: site
-    description: Drop-off / staging area.
+  - name: tote_shelf
+    pose: { x: 6.0, y: 4.0, z: 0.0 }
+    frame: site
   - name: dock
     pose: { x: 0.0, y: 0.0, z: 0.0 }
     frame: site
-    description: Charging dock / idle pose.
 
 declared_events:
   - estop_engaged
   - aisle_clear
 
 mobility:
-  drive_type: biped          # RFC-0009
+  drive_type: biped
   max_velocity: 1.5
   station_keeping: true
 
-manipulation:                # RFC-0010
+manipulation:
   arm_count: 2
   grippers:
     - name: left_hand
@@ -61,7 +56,7 @@ manipulation:                # RFC-0010
     - name: right
       gripper_ref: right_hand
 
-whole_body:                  # RFC-0384
+whole_body:
   chains:
     - name: left_leg
       kind: leg
@@ -72,7 +67,7 @@ whole_body:                  # RFC-0384
     - name: left_arm
       kind: arm
       dof: 7
-      arm_ref: left          # binds to manipulation.arms (RFC-0010)
+      arm_ref: left
     - name: right_arm
       kind: arm
       dof: 7
@@ -81,11 +76,11 @@ whole_body:                  # RFC-0384
       kind: torso
       dof: 1
   static_stable: true
-  can_carry_while_moving: true   # so the carry-to-staging step validates
+  can_carry_while_moving: true
   max_incline_deg: 15.0
   max_tilt_deg: 10.0
   center_of_mass: { x: 0.0, y: 0.0, z: 0.9 }
-  support_polygon:               # CoM (0,0) lies within -> statically stable
+  support_polygon:
     - { x: -0.20, y: -0.15 }
     - { x: 0.20, y: -0.15 }
     - { x: 0.20, y: 0.15 }
@@ -99,12 +94,6 @@ perception:
       supports_video: false
       supports_stream: false
       max_resolution: "1080p"
-  sensors:
-    - name: battery
-      measurement_type: voltage
-      range_min: 0.0
-      range_max: 100.0
-      units: percent
   object_vocabulary:
     - tote
 

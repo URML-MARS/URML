@@ -1,0 +1,55 @@
+# Fixture: a biped whose whole_body declares it cannot carry while moving
+# (RFC-0384). Valid in every other respect (2 legs, CoM within the support
+# polygon); used to exercise the move_to(carrying=...) rejection gate. No
+# manipulation block is needed: the carry gate keys on the payload + drive_type.
+
+manifest_version: "0.1"
+robot_id: digit_no_carry_1
+description: Biped that cannot carry while moving (RFC-0384 carry gate).
+
+frames:
+  - name: site
+    parent: null
+
+declared_locations:
+  - name: staging_a
+    pose: { x: 6.0, y: 0.0, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.5
+  station_keeping: true
+
+whole_body:
+  chains:
+    - name: left_leg
+      kind: leg
+      dof: 6
+    - name: right_leg
+      kind: leg
+      dof: 6
+    - name: torso
+      kind: torso
+      dof: 1
+  static_stable: true
+  can_carry_while_moving: false
+  center_of_mass: { x: 0.0, y: 0.0, z: 0.9 }
+  support_polygon:
+    - { x: -0.20, y: -0.15 }
+    - { x: 0.20, y: -0.15 }
+    - { x: 0.20, y: 0.15 }
+    - { x: -0.20, y: 0.15 }
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - tote
+
+docking_stations: []

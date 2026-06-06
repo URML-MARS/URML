@@ -1,0 +1,31 @@
+name: biped/digit_wholebody_carry_positive
+description: >
+  RFC-0384 whole-body declaration: a biped that declares its kinematic chains
+  (2 legs, 2 arms bound to manipulation.arms, torso) and a static-stability
+  envelope (center_of_mass within support_polygon), with
+  can_carry_while_moving true. The robot detects a tote and walks it to
+  staging while carrying it. The whole_body block is consistent, so the
+  program validates; execution shows the detection and the carrying navigation
+  goal. Hermetic against MockROSAdapter.
+
+manifest: digit_wholebody
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: tote, store_as: the_tote }
+      - move_to: { location: staging_a, carrying: $the_tote }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - query_detection
+    - send_navigation_goal
