@@ -489,6 +489,21 @@ URML's first wave into space robotics (civilian/research only). Three shapes map
 | [0394](0394-jpl-open-source-rover-outreach.md) | Outreach | JPL Open Source Rover integration; Move #31; **Tier B** education/demo angle (URML NL->motion as a teaching layer); nasa-jpl/open-source-rover (Apache-2.0, ~9.4k stars, software stale 2023); RFC from the rover community | Draft | 2026-06-06 |
 | [0395](0395-openmct-outreach.md) | Outreach | Open MCT (NASA) integration; Move #31; **Tier B adjacent** — URML's audit trail + safety-envelope state as an Open MCT telemetry source (integration/visibility, not a substrate claim); nasa/openmct (Apache-2.0, ~13k stars); RFC from Open MCT maintainers | Draft | 2026-06-06 |
 
+### The marine / underwater wave (Move #32, RFCs 0396-0403)
+
+URML's first ocean-robotics wave, leveraging the shipped marine-runtime (BlueRovAdapter over ArduSub/MAVLink). Civilian/research only. BlueROV2/ArduSub stacks the runtime targets directly, underwater simulators driven via the ROS 2 bridge, and the ROS Maritime WG at the standards altitude. Surfaces verified 2026-06-06. Drafted; posting awaits authorization (ledger [`outreach-move32.yaml`](../../examples/lighthouses/outreach-move32.yaml), bodies [`posts-move32.md`](../../examples/lighthouses/posts-move32.md)). ArduSub/ArduPilot excluded (venue-declined earlier).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0396](0396-blue-rdml-outreach.md) | Outreach | blue (Robotic Decision Making Lab) integration; Move #32 anchor; ROS 2 underwater platform on BlueROV2/ArduSub — the closest analog to URML's marine-runtime; folds auv_controllers (ros2_control) + angler (UVMS); MIT; RFC from the lab | Draft | 2026-06-06 |
+| [0397](0397-orca4-outreach.md) | Outreach | orca4 integration; Move #32; ROS 2 AUV for BlueROV2 (ArduSub + Nav2 + mavros) — the exact pairing URML's marine-runtime targets; MIT, ~186 stars; RFC from the maintainer | Draft | 2026-06-06 |
+| [0398](0398-blueos-outreach.md) | Outreach | BlueOS (Blue Robotics) integration; Move #32; the onboard OS hosting the MAVLink/ArduSub surface URML's marine-runtime rides; AGPL-3.0+custom (no license-ask; URML ships nothing under it); RFC from Blue Robotics | Draft | 2026-06-06 |
+| [0399](0399-stonefish-outreach.md) | Outreach | Stonefish integration; Move #32; high-fidelity underwater sim (stonefish_ros) — URML drives via the ROS 2 bridge, ties RFC-0381; GPL-3.0 (no license-ask); RFC from the maintainer | Draft | 2026-06-06 |
+| [0400](0400-dave-outreach.md) | Outreach | DAVE (IOES-Lab) integration; Move #32; active ROS 2/Gazebo continuation of Project DAVE, underwater sim/test env; Apache-2.0; RFC from the maintainers | Draft | 2026-06-06 |
+| [0401](0401-holoocean-outreach.md) | Outreach | HoloOcean integration; Move #32; **Tier B**; ROS 2 bridge onto the UE5 underwater sim (HoloOcean 2.0 + Fossen dynamics); MIT; RFC from the BYU maintainers | Draft | 2026-06-06 |
+| [0402](0402-marus-outreach.md) | Outreach | MARUS (LABUST) integration; Move #32; **Tier B**; Unity marine sim (surface + underwater) with a gRPC ROS 2 adapter; Apache-2.0; RFC from the maintainers | Draft | 2026-06-06 |
+| [0403](0403-ros-maritime-wg-outreach.md) | Outreach | ROS Maritime Working Group integration; Move #32; standards altitude — align URML with `maritime_interfaces` (target the standard, not a parallel one), WG-style engagement (Discourse/meeting venue); MIT; RFC from the WG | Draft | 2026-06-06 |
+
 ## Lifecycle states
 
 Per RFC-0001:
