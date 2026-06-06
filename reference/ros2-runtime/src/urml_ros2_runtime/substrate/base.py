@@ -145,6 +145,21 @@ class ProgramCallResult(SubstrateResult):
     )
 
 
+class TrajectoryPlanResult(SubstrateResult):
+    """Result of a `plan_trajectory` call (AV profile `plan_path`, RFC-0020).
+
+    A successful plan carries a trajectory payload the runtime binds to
+    `store_as` as type `trajectory`; `follow_trajectory` consumes it. The
+    payload is opaque to URML beyond being a dict (waypoints, duration, etc.).
+    """
+
+    payload: dict[str, Any] | None = Field(
+        None,
+        description="Trajectory dict (e.g. `waypoints`, `duration_s`, `frame`). "
+        "None when success is False.",
+    )
+
+
 def unsupported_program_call(substrate: str) -> ProgramCallResult:
     """A uniform `call_named_program` failure for substrates that expose no
     named programs (RFC-0015). Most adapters have no program mechanism; rather
@@ -378,4 +393,45 @@ class ROSAdapter(Protocol):
         altitude: float | None = None,
     ) -> NavigationResult:
         """Abort current intent and fly to declared home. Used by `return_to_home`."""
+        ...
+
+
+@runtime_checkable
+class TrajectoryAdapter(Protocol):
+    """Optional AV capability surface (RFC-0020): trajectory planning + following.
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only
+    substrates that do autonomous-driving-style planning (Autoware, Apex.OS)
+    implement it. The runtime checks ``isinstance(adapter, TrajectoryAdapter)``
+    and returns an unsuccessful result for substrates that do not, exactly as a
+    substrate lacking any other capability does. An adapter may implement both
+    Protocols; `MockROSAdapter` does, so the hermetic suite can exercise the AV
+    path.
+    """
+
+    def plan_trajectory(
+        self,
+        *,
+        start: dict[str, float] | str | None,
+        goal: dict[str, float] | str,
+        along: str | None = None,
+    ) -> TrajectoryPlanResult:
+        """Plan a trajectory from start to goal, optionally along an HD-map corridor.
+
+        Used by `plan_path`. Returns a trajectory payload bound downstream.
+        """
+        ...
+
+    def follow_trajectory_goal(
+        self,
+        *,
+        trajectory: dict[str, Any] | None,
+        max_velocity_mps: float | None = None,
+        max_accel_mps2: float | None = None,
+        on_off_route: Literal["abort", "replan"] = "abort",
+    ) -> NavigationResult:
+        """Execute a planned trajectory under an optional speed envelope.
+
+        Used by `follow_trajectory`. The only AV verb that actuates.
+        """
         ...
