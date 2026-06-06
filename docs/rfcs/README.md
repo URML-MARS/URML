@@ -504,6 +504,21 @@ URML's first ocean-robotics wave, leveraging the shipped marine-runtime (BlueRov
 | [0402](0402-marus-outreach.md) | Outreach | MARUS (LABUST) integration; Move #32; **Tier B**; Unity marine sim (surface + underwater) with a gRPC ROS 2 adapter; Apache-2.0; RFC from the maintainers | Draft | 2026-06-06 |
 | [0403](0403-ros-maritime-wg-outreach.md) | Outreach | ROS Maritime Working Group integration; Move #32; standards altitude — align URML with `maritime_interfaces` (target the standard, not a parallel one), WG-style engagement (Discourse/meeting venue); MIT; RFC from the WG | Draft | 2026-06-06 |
 
+### The agriculture / farm-robotics wave (Move #33, RFCs 0404-0411)
+
+URML's farm-robotics vertical. Civilian/research only. The open ag-robotics surface is moderately thin (most ag-robot vendors are proprietary); ~8 quality engageable targets, anchored by FarmBot (mature open CNC farming, bound via `call_program` over its sequence API) and the L-CAS / Agri-OpenCore academic cluster. Open farm platforms, the ROS 2 ag control stack, ag simulators driven via the ROS 2 bridge (ties RFC-0381), and a detect-then-spray weeding device. Surfaces verified 2026-06-06. Drafted; posting awaits authorization (ledger [`outreach-move33.yaml`](../../examples/lighthouses/outreach-move33.yaml), bodies [`posts-move33.md`](../../examples/lighthouses/posts-move33.md)). Closed vendors (Naio/Carbon/FarmWise/Ecorobotix/Bosch) and stale orgs (ros-agriculture, OpenAg) excluded.
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0404](0404-farmbot-outreach.md) | Outreach | FarmBot (`FarmBot/farmbot_os`) integration; Move #33 anchor; canonical open-source CNC farming robot, non-ROS — bind named sequences via `call_program` (RFC-0019 pattern) over its REST/MQTT API; folds Farmbot-Web-App; MIT; RFC from FarmBot maintainers | Draft | 2026-06-06 |
+| [0405](0405-farm-ng-outreach.md) | Outreach | farm-ng Amiga (`farm-ng/amiga-dev-kit`) integration; Move #33; open dev kit (gRPC + ROS bridges) for the Amiga rugged ag micro-tractor; URML dispatches drive/nav intent via the ROS bridge; RFC from farm-ng maintainers | Draft | 2026-06-06 |
+| [0406](0406-cropcraft-outreach.md) | Outreach | CropCraft (`Romea/cropcraft`) integration; Move #33; procedural 3D crop-field world generator for robotics sim — URML drives a field robot in a CropCraft world via ROS 2, ties RFC-0381; Apache-2.0; RFC from the Romea ag-robotics group | Draft | 2026-06-06 |
+| [0407](0407-openweedlocator-outreach.md) | Outreach | OpenWeedLocator (`geezacoleman/OpenWeedLocator`) integration; Move #33; low-cost image-based weed-detection + spot-spray device — maps onto URML's detect-then-act split; MIT; RFC from the maintainer | Draft | 2026-06-06 |
+| [0408](0408-agri-opencore-lcas-outreach.md) | Outreach | Agri-OpenCore (`LCAS/aoc_tomato_farm`) integration; Move #33; L-CAS org-anchor; tomato-glasshouse digital-twin + sim from Univ. Lincoln (most active academic agri-robotics ecosystem); harvesting ties RFC-0010; Apache-2.0; RFC from L-CAS | Draft | 2026-06-06 |
+| [0409](0409-farmbot-ros2-outreach.md) | Outreach | FarmBot-ROS2 (`farmbot-ros/interfaces`) integration; Move #33; **Tier B**; modular ROS 2 Humble re-implementation of FarmBot control (AURA / Maynooth); org-anchor on `interfaces`; align typed intent with the message contracts; MIT; RFC from the maintainers | Draft | 2026-06-06 |
+| [0410](0410-prbonn-agribot-outreach.md) | Outreach | PRBonn AgriBot (`PRBonn/agribot`) integration; Move #33; from-scratch ag data-recording field robot from the Univ. Bonn Photogrammetry & Robotics lab; consume their crop/weed perception as `detect` sources (Move #25 pattern); BSD-2-Clause; RFC from the lab | Draft | 2026-06-06 |
+| [0411](0411-smart-diffbot-outreach.md) | Outreach | smart_diffbot (`SaxionMechatronics/smart_diffbot`) integration; Move #33; **Tier B**; ROS 2 differential-drive robot with Nav2-based outdoor GNSS navigation — `move_to` onto Nav2 (Move #16); Apache-2.0; RFC from the maintainers | Draft | 2026-06-06 |
+
 ## Lifecycle states
 
 Per RFC-0001:
