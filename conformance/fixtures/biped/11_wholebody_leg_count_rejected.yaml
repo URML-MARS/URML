@@ -1,0 +1,23 @@
+name: biped/wholebody_leg_count_rejected
+description: >
+  RFC-0384 negative: a biped whose whole_body declares four leg chains. The
+  leg-chain count must match the legged drive_type (biped = 2), so the manifest
+  is rejected at Pass 2 with capability.whole_body_inconsistent. This is a
+  manifest-integrity failure, independent of the program (a trivial move_to is
+  used to drive validation).
+
+manifest: digit_wholebody_fourlegs
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: staging_a }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.whole_body_inconsistent

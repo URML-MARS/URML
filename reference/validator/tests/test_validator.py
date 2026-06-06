@@ -12,6 +12,7 @@ level and may be tweaked between releases).
 
 from __future__ import annotations
 
+import copy
 from pathlib import Path
 from typing import Any
 
@@ -650,6 +651,81 @@ def test_bimanual_requires_two_arms(turtlebot_manifest: dict) -> None:
     result = validate(program, turtlebot_manifest, policy=None)
     assert not result.accepted
     assert result.has(ErrorCode.CAPABILITY_BIMANUAL_REQUIRES_TWO_ARMS)
+
+
+# ---------------------------------------------------------------------------
+# RFC-0384: whole-body kinematic structure + stability limits.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def digit_wholebody_manifest() -> dict:
+    """A biped declaring its whole_body shape: 2 legs, 2 arms, torso, a CoM
+    within its support polygon, and can_carry_while_moving true."""
+    return _load_yaml(FIXTURE_ROOT / "manifests" / "digit_wholebody.yaml")
+
+
+def _move(carrying: bool = False, obj: str = "tote", location: str = "staging_a") -> dict[str, Any]:
+    steps: list[dict[str, Any]] = [{"detect": {"object": obj, "store_as": "t"}}]
+    move: dict[str, Any] = {"location": location}
+    if carrying:
+        move["carrying"] = "$t"
+    steps.append({"move_to": move})
+    return {"profile": "home", "behavior": {"type": "sequence", "steps": steps}}
+
+
+def test_whole_body_valid_accepted(digit_wholebody_manifest: dict) -> None:
+    """A consistent whole_body declaration validates, including a carry step."""
+    result = validate(_move(carrying=True), digit_wholebody_manifest, policy=None)
+    assert result.accepted, [e.code.value for e in result.errors]
+
+
+def test_whole_body_leg_count_mismatch_rejected(digit_wholebody_manifest: dict) -> None:
+    """A biped declaring four leg chains is rejected."""
+    m = copy.deepcopy(digit_wholebody_manifest)
+    m["whole_body"]["chains"] = [
+        {"name": f"leg{i}", "kind": "leg", "dof": 6} for i in range(4)
+    ]
+    result = validate(_move(), m, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_WHOLE_BODY_INCONSISTENT)
+
+
+def test_whole_body_arm_ref_must_resolve(digit_wholebody_manifest: dict) -> None:
+    """An arm chain whose arm_ref is not a declared arm is rejected."""
+    m = copy.deepcopy(digit_wholebody_manifest)
+    m["whole_body"]["chains"].append(
+        {"name": "third_arm", "kind": "arm", "dof": 7, "arm_ref": "third"}
+    )
+    result = validate(_move(), m, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_WHOLE_BODY_INCONSISTENT)
+
+
+def test_whole_body_com_outside_support_polygon_rejected(digit_wholebody_manifest: dict) -> None:
+    """A center of mass outside the support polygon is statically unstable."""
+    m = copy.deepcopy(digit_wholebody_manifest)
+    m["whole_body"]["center_of_mass"] = {"x": 5.0, "y": 5.0, "z": 0.9}
+    result = validate(_move(), m, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_WHOLE_BODY_UNSTABLE_COM)
+
+
+def test_whole_body_cannot_carry_while_moving_rejected(digit_wholebody_manifest: dict) -> None:
+    """move_to(carrying=...) is rejected when the platform declares it cannot."""
+    m = copy.deepcopy(digit_wholebody_manifest)
+    m["whole_body"]["can_carry_while_moving"] = False
+    result = validate(_move(carrying=True), m, policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_CANNOT_CARRY_WHILE_MOVING)
+
+
+def test_whole_body_carry_allowed_without_block(turtlebot_manifest: dict) -> None:
+    """Regression: a non-legged platform with no whole_body block carries freely."""
+    result = validate(
+        _move(carrying=True, obj="mug", location="kitchen"), turtlebot_manifest, policy=None
+    )
+    assert result.accepted, [e.code.value for e in result.errors]
 
 
 # ---------------------------------------------------------------------------

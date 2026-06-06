@@ -1,0 +1,24 @@
+name: biped/wholebody_unstable_com_rejected
+description: >
+  RFC-0384 negative: a biped whose declared center_of_mass lies outside its
+  declared support_polygon. The static-stability declaration is inconsistent,
+  so the manifest is rejected at Pass 2 with
+  capability.whole_body_unstable_com. This is the check that earns the richer
+  stability fields their place: they are declarations the validator verifies,
+  not a runtime controller model.
+
+manifest: digit_wholebody_unstable
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: staging_a }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.whole_body_unstable_com

@@ -1,0 +1,39 @@
+# Fixture: a biped whose declared center_of_mass lies outside its declared
+# support_polygon (RFC-0384). Leg count is correct (2), so the only fault is
+# the static-stability declaration: rejected with
+# capability.whole_body_unstable_com regardless of program.
+
+manifest_version: "0.1"
+robot_id: digit_unstable_1
+description: Biped with CoM outside the support polygon (RFC-0384 negative).
+
+frames:
+  - name: site
+    parent: null
+
+declared_locations:
+  - name: staging_a
+    pose: { x: 6.0, y: 0.0, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.5
+
+whole_body:
+  chains:
+    - name: left_leg
+      kind: leg
+      dof: 6
+    - name: right_leg
+      kind: leg
+      dof: 6
+  static_stable: true
+  center_of_mass: { x: 1.5, y: 1.5, z: 0.9 }
+  support_polygon:
+    - { x: -0.20, y: -0.15 }
+    - { x: 0.20, y: -0.15 }
+    - { x: 0.20, y: 0.15 }
+    - { x: -0.20, y: 0.15 }
+
+docking_stations: []

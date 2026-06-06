@@ -1,0 +1,37 @@
+# Fixture: a biped whose whole_body declares four leg chains (RFC-0384).
+# The leg-count must match drive_type (biped=2), so this manifest is rejected
+# at validation with capability.whole_body_inconsistent regardless of program.
+
+manifest_version: "0.1"
+robot_id: digit_fourlegs_1
+description: Inconsistent biped declaring four legs (RFC-0384 negative).
+
+frames:
+  - name: site
+    parent: null
+
+declared_locations:
+  - name: staging_a
+    pose: { x: 6.0, y: 0.0, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.5
+
+whole_body:
+  chains:
+    - name: leg_1
+      kind: leg
+      dof: 6
+    - name: leg_2
+      kind: leg
+      dof: 6
+    - name: leg_3
+      kind: leg
+      dof: 6
+    - name: leg_4
+      kind: leg
+      dof: 6
+
+docking_stations: []
