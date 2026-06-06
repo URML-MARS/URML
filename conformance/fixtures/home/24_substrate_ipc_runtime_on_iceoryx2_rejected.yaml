@@ -1,0 +1,19 @@
+name: home/substrate_ipc_runtime_on_iceoryx2_rejected
+description: >
+  RFC-0385 negative: an iceoryx2 IPC sub-substrate that sets a RouDi runtime_name. iceoryx2 dropped the central RouDi daemon, so runtime_name does not apply; rejected at Pass 2.
+
+manifest: substrate_ipc_runtime_on_iceoryx2
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.ipc_runtime_name_not_applicable

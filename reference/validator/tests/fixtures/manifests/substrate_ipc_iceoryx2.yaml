@@ -1,0 +1,37 @@
+# Fixture: ground manifest declaring an iceoryx2 IPC sub-substrate (RFC-0385).
+# Decentralized: config_path, no RouDi daemon. A valid, complete declaration.
+
+manifest_version: "0.1"
+robot_id: ground_ipc_iceoryx2
+description: Ground robot on iceoryx2 zero-copy IPC (RFC-0385 positive fixture).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+substrate:
+  rmw_implementation: rmw_cyclonedds_cpp
+  ipc:
+    generation: iceoryx2
+    config_path: /etc/iceoryx2/config.toml
+    messaging_pattern: pub_sub
+    shared_memory_budget_mb: 256.0
+    max_publishers: 8
+    max_subscribers: 16
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []

@@ -58,6 +58,12 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0251: substrate.rmw_implementation + qos_profile negative-fixture manifests.
     "substrate_rmw_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "substrate_rmw_custom_no_note.yaml",
     "substrate_qos_keep_last_no_depth": _VALIDATOR_FIXTURES / "manifests" / "substrate_qos_keep_last_no_depth.yaml",
+    # RFC-0385: substrate.ipc (iceoryx zero-copy IPC sub-substrate) fixtures.
+    "substrate_ipc_iceoryx2": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_iceoryx2.yaml",
+    "substrate_ipc_no_config": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_no_config.yaml",
+    "substrate_ipc_runtime_on_iceoryx2": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_runtime_on_iceoryx2.yaml",
+    "substrate_ipc_iceoryx1_no_runtime": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_iceoryx1_no_runtime.yaml",
+    "substrate_ipc_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "substrate_ipc_custom_no_note.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

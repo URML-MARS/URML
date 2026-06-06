@@ -1,0 +1,19 @@
+name: home/substrate_ipc_no_config_rejected
+description: >
+  RFC-0385 negative: an iceoryx2 IPC sub-substrate that omits config_path. iceoryx2 is decentralized and has no RouDi daemon, so a global config_path is required; rejected at Pass 2.
+
+manifest: substrate_ipc_no_config
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.ipc_config_path_required

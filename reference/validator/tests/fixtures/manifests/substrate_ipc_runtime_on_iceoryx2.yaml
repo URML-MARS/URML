@@ -1,0 +1,32 @@
+# Fixture: iceoryx2 IPC with a RouDi runtime_name (RFC-0385 negative).
+
+manifest_version: "0.1"
+robot_id: ground_ipc_runtime_on_iceoryx2
+description: iceoryx2 IPC with a RouDi runtime_name (RFC-0385 negative).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+substrate:
+  ipc:
+    generation: iceoryx2
+    config_path: /etc/iceoryx2/config.toml
+    runtime_name: roudi   # not applicable to decentralized iceoryx2 — RFC-0385 rejects it.
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
