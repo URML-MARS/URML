@@ -295,7 +295,7 @@
   posted_url: "https://github.com/eclipse-iceoryx/iceoryx/issues/2530"
   channel: github_issue
   contact: "eclipse-iceoryx/iceoryx (Apache-2.0, 2.1k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Zero-copy IPC for ROS 2 intra-process."
-  last_touch: "2026-06-04"
+  last_touch: "2026-06-05"
   response: engaged
   tier: B
   country: INTL
@@ -307,8 +307,10 @@
       text: "Follow-up (issuecomment-4594313). **'Our focus has fully shifted to iceoryx2'** — the meetup is run from the Rust-successor project. Logistics (from iceoryx2 wiki Developer-Meetup): monthly, first Tuesday 17:00 CEST (next is 2026-06-02), Jitsi via an app.element.io link; propose agenda items in the iceoryx gitter (gitter.im/eclipse/iceoryx); meeting is SKIPPED if no agenda items exist the day before."
     - date: "2026-06-04"
       text: "elBoberido followed up (#2530): meeting link comes from iceoryx2 (focus fully shifted there), and 'do you have time to join the meeting' (the 2026-06-02 dev meetup). The direct question went unanswered and the meeting passed. Replied 2026-06-04 (idoco2003): apologized for missing the June 2 meetup, will join a future one, will aim URML's IPC-substrate mapping at iceoryx2 (RFC-0305 already retargets). Surfaced 2026-06-05 via a ball-in-our-court sweep."
+    - date: "2026-06-05"
+      text: "elBoberido replied again on #2530 (2026-06-05): 'the meetup is on the first Tuesday each month.' Friendly cadence note after our missed-meeting apology. Replied 2026-06-05 (idoco2003): noted the first-Tuesday cadence, will plan to join the next one and follow along on the iceoryx2 side."
   claude_directives: []
-  next_action: "Engaged (elBoberido, Eclipse iceoryx/iceoryx2). Replied; watching the iceoryx2 dev-meetup wiki for the next session. IPC-substrate mapping retargets to iceoryx2 (RFC-0305)."
+  next_action: "Engaged (elBoberido, Eclipse iceoryx/iceoryx2). Next iceoryx2 dev meetup is the first Tuesday of each month (5pm CEST; next: 2026-07-07). Founder to attend; IPC-substrate mapping retargets to iceoryx2 (RFC-0305). Optional: add the recurring meetup to the founder's calendar."
   notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer. First outreach target to invite URML to a live developer meeting. NOTE: active project is now iceoryx2 (Rust); C++ iceoryx is in maintenance — future URML substrate work should target iceoryx2."
 
 - slug: stella-vslam
@@ -317,12 +319,14 @@
   posted_url: "https://github.com/stella-cv/stella_vslam/issues/660"
   channel: github_issue
   contact: "stella-cv/stella_vslam (Other — license unclear, 1.2k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community fork of archived OpenVSLAM (originally JP-origin)."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-05"
+  response: declined
   tier: B
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-05"
+      text: "Issue #660 was CLOSED with zero maintainer comments (a silent close, no reason given), found 2026-06-05. Nothing to reply to. The post carried the license-clarification ask (the title literally reads 'license clarification'), the known AI-tell anti-pattern, which likely contributed. Per discipline: accept silently, no reply, no re-post."
   claude_directives: []
-  next_action: "posted 2026-05-29 to https://github.com/stella-cv/stella_vslam/issues/660 (Stella VSLAM Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "Declined (silent comment-less close). Do not re-post. Stella VSLAM is OpenVSLAM-lineage visual-SLAM; if it is ever needed, cover it via the ORB-SLAM3 sibling (RFC-0206) or only when concrete user-side demand surfaces. The lineage-declaration field idea (RFC-0211) stands on its own as a possible Spec RFC regardless."
   notes: "Tier B. Origin community fork (originally JP). License unclear. URML-fit: medium; community-fork posture."
