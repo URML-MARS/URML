@@ -295,7 +295,7 @@
   posted_url: "https://github.com/eclipse-iceoryx/iceoryx/issues/2530"
   channel: github_issue
   contact: "eclipse-iceoryx/iceoryx (Apache-2.0, 2.1k stars, Issues enabled, last commit 2026-05-28 today, **not archived**). Eclipse Foundation. Zero-copy IPC for ROS 2 intra-process."
-  last_touch: "2026-06-05"
+  last_touch: "2026-06-06"
   response: engaged
   tier: B
   country: INTL
@@ -308,9 +308,11 @@
     - date: "2026-06-04"
       text: "elBoberido followed up (#2530): meeting link comes from iceoryx2 (focus fully shifted there), and 'do you have time to join the meeting' (the 2026-06-02 dev meetup). The direct question went unanswered and the meeting passed. Replied 2026-06-04 (idoco2003): apologized for missing the June 2 meetup, will join a future one, will aim URML's IPC-substrate mapping at iceoryx2 (RFC-0305 already retargets). Surfaced 2026-06-05 via a ball-in-our-court sweep."
     - date: "2026-06-05"
-      text: "elBoberido replied again on #2530 (2026-06-05): 'the meetup is on the first Tuesday each month.' Friendly cadence note after our missed-meeting apology. Replied 2026-06-05 (idoco2003): noted the first-Tuesday cadence, will plan to join the next one and follow along on the iceoryx2 side."
+      text: "elBoberido replied again on #2530 (2026-06-05): 'the meetup is on the first Tuesday each month.' Friendly cadence note after our missed-meeting apology. Replied (idoco2003, 2026-06-06): noted the first-Tuesday cadence, will plan to join the next one and follow along on the iceoryx2 side."
+    - date: "2026-06-06"
+      text: "URML shipped the spec gap this thread surfaced: RFC-0385 adds an optional `substrate.ipc` block (generation iceoryx1|iceoryx2|custom; iceoryx2 needs config_path and forbids runtime_name; iceoryx1 needs runtime_name; custom needs a note) with validator coherence checks + conformance fixtures. This realizes the RFC-0210/0305 mapping as normative surface, so there is now a concrete URML artifact to show at the next meetup. response unchanged (engaged); no new maintainer reply."
   claude_directives: []
-  next_action: "Engaged (elBoberido, Eclipse iceoryx/iceoryx2). Next iceoryx2 dev meetup is the first Tuesday of each month (5pm CEST; next: 2026-07-07). Founder to attend; IPC-substrate mapping retargets to iceoryx2 (RFC-0305). Optional: add the recurring meetup to the founder's calendar."
+  next_action: "Engaged (elBoberido, Eclipse iceoryx/iceoryx2). Next iceoryx2 dev meetup is the first Tuesday of each month (5pm CEST; next: 2026-07-07). Founder to attend; URML now declares the IPC sub-substrate via `substrate.ipc` (RFC-0385, shipped), realizing the RFC-0305 iceoryx2 mapping. Optional: add the recurring meetup to the founder's calendar."
   notes: "Tier B. Origin Eclipse Foundation. Apache-2.0 clean fit. URML-fit: medium; IPC substrate is cross-citation-layer. First outreach target to invite URML to a live developer meeting. NOTE: active project is now iceoryx2 (Rust); C++ iceoryx is in maintenance — future URML substrate work should target iceoryx2."
 
 - slug: stella-vslam

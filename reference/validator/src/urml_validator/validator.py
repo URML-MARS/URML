@@ -205,6 +205,8 @@ def validate(
     errors.extend(_check_substrate_required_for_drone(manifest_model))
     # RFC-0251: substrate.rmw_implementation + qos_profile rules.
     errors.extend(_check_substrate_rmw_options(manifest_model))
+    # RFC-0385: substrate.ipc generation coherence.
+    errors.extend(_check_substrate_ipc(manifest_model))
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
@@ -2924,6 +2926,82 @@ def _check_substrate_rmw_options(
                         "Declare `history_depth` (>= 1) alongside "
                         "`history: keep_last`. Per RFC-0251."
                     ),
+                )
+            )
+    return out
+
+
+def _check_substrate_ipc(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0385): substrate.ipc generation coherence.
+
+    - `iceoryx1` is RouDi-daemon based and requires `runtime_name`.
+    - `iceoryx2` is decentralized: it requires `config_path` and MUST NOT set
+      `runtime_name` (the RouDi daemon is gone).
+    - `custom` requires `generation_note`.
+
+    Optional: a deployment without `substrate.ipc` is unaffected.
+    """
+    out: list[ValidationError] = []
+    sub = manifest.substrate
+    if sub is None or sub.ipc is None:
+        return out
+    ipc = sub.ipc
+    base = ["<manifest>", "substrate", "ipc"]
+
+    def _e(code: ErrorCode, leaf: str, message: str, suggestion: str) -> ValidationError:
+        return ValidationError(
+            code=code,
+            primitive=None,
+            path=base + [leaf],
+            field=leaf,
+            message=message,
+            suggestion=suggestion,
+        )
+
+    if ipc.generation == "iceoryx1":
+        if not (ipc.runtime_name and ipc.runtime_name.strip()):
+            out.append(
+                _e(
+                    ErrorCode.CAPABILITY_IPC_RUNTIME_NAME_REQUIRED,
+                    "runtime_name",
+                    "substrate.ipc.generation is 'iceoryx1' (RouDi-based), but "
+                    "runtime_name is missing or empty.",
+                    "Name the RouDi daemon in `runtime_name`, or move to generation "
+                    "'iceoryx2' and declare `config_path`. Per RFC-0385.",
+                )
+            )
+    elif ipc.generation == "iceoryx2":
+        if not (ipc.config_path and ipc.config_path.strip()):
+            out.append(
+                _e(
+                    ErrorCode.CAPABILITY_IPC_CONFIG_PATH_REQUIRED,
+                    "config_path",
+                    "substrate.ipc.generation is 'iceoryx2' (decentralized), but "
+                    "config_path is missing or empty.",
+                    "Declare the global `config_path`; iceoryx2 has no RouDi daemon. "
+                    "Per RFC-0385.",
+                )
+            )
+        if ipc.runtime_name is not None:
+            out.append(
+                _e(
+                    ErrorCode.CAPABILITY_IPC_RUNTIME_NAME_NOT_APPLICABLE,
+                    "runtime_name",
+                    "substrate.ipc.generation is 'iceoryx2', but runtime_name is set; "
+                    "iceoryx2 is decentralized and has no RouDi daemon to name.",
+                    "Remove `runtime_name` and declare `config_path` instead. Per RFC-0385.",
+                )
+            )
+    elif ipc.generation == "custom":
+        if not (ipc.generation_note and ipc.generation_note.strip()):
+            out.append(
+                _e(
+                    ErrorCode.CAPABILITY_IPC_GENERATION_NOTE_REQUIRED,
+                    "generation_note",
+                    "substrate.ipc.generation is 'custom', but generation_note is "
+                    "missing or empty.",
+                    "Provide a non-empty `generation_note` describing the IPC stack. "
+                    "Per RFC-0385.",
                 )
             )
     return out

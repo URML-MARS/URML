@@ -1,0 +1,27 @@
+name: home/substrate_ipc_iceoryx2_positive
+description: >
+  RFC-0385: a ground robot declaring a complete, coherent iceoryx2 IPC
+  sub-substrate (decentralized: config_path, no RouDi daemon; messaging
+  pattern, shared-memory budget, pub/sub counts). The declaration is valid,
+  so a trivial navigation program validates and runs. Hermetic against
+  MockROSAdapter.
+
+manifest: substrate_ipc_iceoryx2
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - send_navigation_goal

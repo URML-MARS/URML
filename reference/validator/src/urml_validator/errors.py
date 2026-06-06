@@ -68,6 +68,11 @@ class ErrorCode(StrEnum):
     # RFC-0251: substrate.rmw_implementation custom requires note; QoS history rule.
     CAPABILITY_RMW_IMPLEMENTATION_NOTE_REQUIRED = "capability.rmw_implementation_note_required"
     CAPABILITY_QOS_KEEP_LAST_REQUIRES_DEPTH = "capability.qos_keep_last_requires_depth"
+    # RFC-0385: substrate.ipc generation coherence.
+    CAPABILITY_IPC_RUNTIME_NAME_REQUIRED = "capability.ipc_runtime_name_required"
+    CAPABILITY_IPC_CONFIG_PATH_REQUIRED = "capability.ipc_config_path_required"
+    CAPABILITY_IPC_RUNTIME_NAME_NOT_APPLICABLE = "capability.ipc_runtime_name_not_applicable"
+    CAPABILITY_IPC_GENERATION_NOTE_REQUIRED = "capability.ipc_generation_note_required"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"

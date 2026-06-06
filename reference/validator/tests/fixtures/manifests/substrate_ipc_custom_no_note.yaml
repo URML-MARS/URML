@@ -1,0 +1,31 @@
+# Fixture: custom IPC missing generation_note (RFC-0385 negative).
+
+manifest_version: "0.1"
+robot_id: ground_ipc_custom_no_note
+description: custom IPC missing generation_note (RFC-0385 negative).
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+substrate:
+  ipc:
+    generation: custom
+    # generation_note intentionally omitted — RFC-0385 requires it for custom.
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: []
