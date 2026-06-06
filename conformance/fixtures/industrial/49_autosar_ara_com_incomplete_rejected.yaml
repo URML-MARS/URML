@@ -1,0 +1,24 @@
+name: industrial/autosar_ara_com_incomplete_rejected
+description: >
+  RFC-0019 negative: a program declares an ara_com binding missing its
+  method_id. The id triple is incomplete, so the manifest is rejected at Pass 2
+  with capability.ara_com_binding_incomplete, independent of the program (a
+  trivial call_program drives validation).
+
+manifest: autosar_ara_com_incomplete
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - call_program:
+          name: set_wheel_torque
+          args: { torque_nm: 5.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.ara_com_binding_incomplete

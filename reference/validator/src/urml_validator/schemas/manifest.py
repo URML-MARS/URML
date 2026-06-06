@@ -516,6 +516,27 @@ class ProgramArg(BaseModel):
     type: Literal["string", "number", "boolean"]
 
 
+class AraComBinding(BaseModel):
+    """AUTOSAR Adaptive `ara::com` binding for a declared program (RFC-0019).
+
+    Binds a `call_program` to a concrete AUTOSAR service-method invocation: the
+    service id / instance id / method id triple that identifies the operation on
+    the Adaptive Platform. The program's `args` are the typed argument template
+    the validator already checks (RFC-0015); this binding adds only the routing
+    triple, so AUTOSAR rides `call_program` rather than a new primitive. The id
+    fields are optional in the schema and required by the validator when a
+    binding is present, so an incomplete binding yields a stable `capability.*`
+    error rather than a generic argument error.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["ara_com"]
+    service_id: int | None = Field(None, ge=0, description="AUTOSAR service id.")
+    instance_id: int | None = Field(None, ge=0, description="AUTOSAR service-instance id.")
+    method_id: int | None = Field(None, ge=0, description="AUTOSAR method id within the service.")
+
+
 class Program(BaseModel):
     """A substrate-defined program/method the robot exposes by name.
 
@@ -526,6 +547,9 @@ class Program(BaseModel):
     with real primitives; a manifest only declares `programs:` when the
     substrate genuinely exposes named routines (e.g. a Kawasaki AS-language
     program, an OPC UA method node, a commissioned PLC job).
+
+    A program MAY carry an optional substrate `binding` (RFC-0019) pinning it to
+    a concrete substrate operation (currently `ara_com` for AUTOSAR Adaptive).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -535,6 +559,10 @@ class Program(BaseModel):
     args: list[ProgramArg] = Field(
         default_factory=list,
         description="Declared argument signature. Empty means the program takes no arguments.",
+    )
+    binding: AraComBinding | None = Field(
+        default=None,
+        description="Optional substrate binding (RFC-0019), e.g. an AUTOSAR ara::com id triple.",
     )
 
 

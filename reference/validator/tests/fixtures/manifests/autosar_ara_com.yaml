@@ -1,0 +1,40 @@
+# Fixture: an AUTOSAR Adaptive ECU exposing an ara::com service method as a
+# declared program with a full binding (RFC-0019), plus a cyclic timing
+# contract via the realtime block (RFC-0016; AUTOSAR Execution Management).
+# call_program (RFC-0015) is the verb; the binding pins it to the service.
+
+manifest_version: "0.1"
+robot_id: autosar_ecu_ara_com
+description: AUTOSAR Adaptive ECU with an ara::com-bound program (RFC-0019).
+
+frames:
+  - name: base
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: base
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+programs:
+  - name: set_wheel_torque
+    description: Invoke the drivetrain service's set-torque method.
+    args:
+      - { name: torque_nm, type: number }
+    binding:
+      kind: ara_com
+      service_id: 4097
+      instance_id: 1
+      method_id: 12
+
+realtime:
+  cyclic_period_ms: 10.0      # AUTOSAR MinimumCycleTime
+  watchdog_ms: 50.0           # AUTOSAR WatchdogTimeout
+  guarantee: soft
+
+outputs:
+  named_endpoints: []

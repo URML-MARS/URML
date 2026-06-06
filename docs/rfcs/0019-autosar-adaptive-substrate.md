@@ -1,10 +1,10 @@
 ---
 rfc: 0019
 title: AUTOSAR Adaptive substrate — binding ara::com to URML
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-06
 supersedes: —
 superseded-by: —
 ---
@@ -40,6 +40,14 @@ family** as RFC-0015 `call_program`, and its cyclic Execution
 Management is the **same gap** as RFC-0016's real-time manifest block.
 RFC-0019 is the *binding* layer between AUTOSAR and those two existing
 Drafts — never a third proposal.
+
+**State: Implemented** (2026-06-06). RFC-0015 (`call_program`) and RFC-0016
+(`realtime`) have both shipped, so the binding lands: an optional `ara_com`
+binding on a declared `program` (the service / instance / method id triple),
+plus a Pass-2 check that the triple is complete
+(`capability.ara_com_binding_incomplete`). No new primitive; AUTOSAR cyclic
+timing uses the `realtime` block as-is. A green `reference/autoware`-style
+AUTOSAR adapter that routes `call_program` through the binding is a follow-on.
 
 ## Motivation
 
@@ -100,12 +108,14 @@ until RFC-0019/RFC-0015 ratify.
 
 ### Validator changes
 
-When RFC-0019 + RFC-0015 are both accepted, Pass-2 gains one
-constraint: a `programs[*]` with `binding: ara_com` must declare the
-full id triple and a non-empty `arg_template`, and any `call_program`
-referencing it must satisfy the template. Until both ratify, the
-validator change is nil and the AUTOSAR scaffold exposes only the
-frozen-Protocol subset.
+Shipped: Pass-2 (`_check_program_bindings`) requires that a `programs[*]`
+with `binding: { kind: ara_com }` declares the full id triple
+(`service_id` / `instance_id` / `method_id`), else
+`capability.ara_com_binding_incomplete`. The program's `args` remain the
+typed argument template a `call_program` is already checked against
+(RFC-0015 `capability.program_arg_mismatch`). The id fields are optional in
+the schema and required by this check, so an incomplete binding yields a
+stable `capability.*` code rather than a generic argument error.
 
 ### Reference runtime changes
 
@@ -119,11 +129,13 @@ not express; AUTOSAR follows the same pattern.
 
 ### Conformance suite changes
 
-The scaffold's `industrial/<n>_autosar_ecu_positive.yaml` exercises
-nav + report only (no service invocation), so it is green today
-without RFC-0019 acceptance. A future `<n+1>_autosar_service_call_positive`
-fixture exercises the binding once both RFCs ratify; deliberately not
-filed in this RFC.
+Shipped: `industrial/48_autosar_ara_com_positive` invokes an ara::com-bound
+program via `call_program` (the manifest declares the full binding triple and
+a `realtime` block; the call validates and executes hermetically), and
+`industrial/49_autosar_ara_com_incomplete_rejected` proves an incomplete
+binding is rejected (`capability.ara_com_binding_incomplete`). Manifests
+`autosar_ara_com` / `autosar_ara_com_incomplete`; unit tests in
+`test_ara_com_binding.py`.
 
 ## Backward compatibility
 
@@ -179,25 +191,29 @@ when a substrate operation maps cleanly to an existing path —
 RFC-0019 makes the same compositional choice for ara::com method
 calls rather than inventing a new verb).
 
-## Unresolved questions
+## Resolved / unresolved questions
 
-- The exact `arg_template` shape (JSON Schema fragment? a small URML
-  type DSL?). Inherits from RFC-0015's `programs:` typing decision.
-- Whether `instance_id` should be optional (find-any-instance) or
-  required (named instance). Lean: required for v0.1, narrowed later.
-- Whether events warrant their own binding entry now or wait for a
-  real fixture (per Alternative 2 above).
+Resolved on implementation (2026-06-06):
 
-Each is small enough to settle before Open → Accepted.
+- **`arg_template` shape:** reuses RFC-0015's `programs[*].args` (a list of
+  `{name, type}` scalars). The binding adds only the routing triple, not a
+  second type system.
+- **`instance_id`:** **required** when a binding is present (named instance),
+  alongside `service_id` and `method_id`. Find-any-instance can be narrowed in
+  later if a real deployment needs it.
+- **Events:** deferred. `ara::com` events are waited on (`wait_for` territory);
+  no separate binding entry until a real fixture needs it (Alternative 2).
 
 ## Implementation note
 
-This is a Draft-only RFC. A companion PR `feat/autosar-runtime-scaffold`
-lands the runtime against the frozen-Protocol subset (nav/measure/report
-over `ara::com`); that PR's `SPEC-GAPS.md` cross-refs RFC-0019, RFC-0015,
-and RFC-0016 and does not invent any primitive. If RFC-0019 + RFC-0015
-both ratify, a follow-up PR adds the `call_program` resolution path
-through the AUTOSAR binding plus a conformance fixture exercising it.
+Shipped as a Layer-1-only slice: the optional `AraComBinding` on the RFC-0015
+`Program` model, the Pass-2 `_check_program_bindings` check + the
+`capability.ara_com_binding_incomplete` code, two conformance fixtures + their
+manifests, unit tests, and the layer-1 §2.8a spec note. No new primitive and no
+runtime change: `call_program` already executes (the Mock resolves it by name);
+a real AUTOSAR adapter routes through the binding's id triple, which is a
+follow-on `reference/autosar-runtime/` PR. AUTOSAR Execution Management timing
+uses the `realtime` block (RFC-0016) unchanged.
 
 ## Self-review (Phase 0)
 

@@ -77,6 +77,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_WATCHDOG_SHORTER_THAN_CYCLE = "capability.watchdog_shorter_than_cycle"
     # RFC-0020: AV profile — plan_path requires a declared HD map.
     CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
+    # RFC-0019: AUTOSAR ara::com program binding must declare the full id triple.
+    CAPABILITY_ARA_COM_BINDING_INCOMPLETE = "capability.ara_com_binding_incomplete"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"

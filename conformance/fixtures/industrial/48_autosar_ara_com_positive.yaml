@@ -1,0 +1,30 @@
+name: industrial/autosar_ara_com_positive
+description: >
+  RFC-0019: an AUTOSAR Adaptive ECU invokes an ara::com service method via
+  call_program (RFC-0015). The program declares a complete ara_com binding
+  (service/instance/method id triple), and the manifest declares its cyclic
+  timing via the realtime block (RFC-0016; Execution Management). The call
+  validates and executes hermetically (the Mock resolves call_program by name;
+  a real AUTOSAR adapter would route via the binding).
+
+manifest: autosar_ara_com
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - call_program:
+          name: set_wheel_torque
+          args: { torque_nm: 5.0 }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - call_named_program

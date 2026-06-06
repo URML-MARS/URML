@@ -70,6 +70,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0020: research-grade autonomous-vehicle (Autoware) fixtures.
     "autoware_av": _VALIDATOR_FIXTURES / "manifests" / "autoware_av.yaml",
     "autoware_av_no_map": _VALIDATOR_FIXTURES / "manifests" / "autoware_av_no_map.yaml",
+    # RFC-0019: AUTOSAR ara::com program-binding fixtures.
+    "autosar_ara_com": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com.yaml",
+    "autosar_ara_com_incomplete": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com_incomplete.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",
