@@ -20,6 +20,7 @@ from urml_validator.schemas.common import (
     Duration,
     Force,
     Identifier,
+    LocationOrPose,
     Pose,
     Speed,
     VarRef,
@@ -546,6 +547,60 @@ class CallProgramArgs(BaseModel):
 # Registry of primitive names -> arg-model classes.
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# 23. plan_path  (av profile — RFC-0020)
+# ---------------------------------------------------------------------------
+
+
+class PlanPathArgs(BaseModel):
+    """Compute a trajectory from `from_` to `to`, binding it to a variable.
+
+    A *compute* verb: it does not actuate. It returns a trajectory binding
+    (`store_as`, type `trajectory`) that `follow_trajectory` consumes — the AV
+    equivalent of `detect` -> `grasp($target)` (RFC-0002's decide/do split).
+    `store_alt_as` optionally binds a Minimum-Risk fallback trajectory.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # `from` is a Python keyword, so the field is `from_` with YAML alias `from`.
+    from_: LocationOrPose = Field(..., alias="from")
+    to: LocationOrPose
+    along: Identifier | None = Field(
+        None, description="Optional HD-map identifier constraining the corridor."
+    )
+    store_as: Identifier
+    store_alt_as: Identifier | None = Field(
+        None, description="Optional Minimum-Risk fallback trajectory binding."
+    )
+
+
+# ---------------------------------------------------------------------------
+# 24. follow_trajectory  (av profile — RFC-0020)
+# ---------------------------------------------------------------------------
+
+
+class SpeedEnvelope(BaseModel):
+    """Optional speed/accel bounds a `follow_trajectory` runs under (RFC-0020)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    max_velocity_mps: float | None = Field(None, ge=0)
+    max_accel_mps2: float | None = Field(None, ge=0)
+
+
+class FollowTrajectoryArgs(BaseModel):
+    """Execute a trajectory bound by `plan_path`. The only AV verb that actuates."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    trajectory: VarRef
+    speed_envelope: SpeedEnvelope | None = None
+    on_off_route: Literal["abort", "replan"] = Field(
+        "abort", description="ODD-violation response: abort to the MRM, or replan."
+    )
+
+
 PRIMITIVE_NAMES: tuple[str, ...] = (
     "move_to",
     "dock",
@@ -569,6 +624,8 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "place_at",
     "swap_tool",
     "call_program",
+    "plan_path",
+    "follow_trajectory",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -594,4 +651,6 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "place_at": PlaceAtArgs,
     "swap_tool": SwapToolArgs,
     "call_program": CallProgramArgs,
+    "plan_path": PlanPathArgs,
+    "follow_trajectory": FollowTrajectoryArgs,
 }

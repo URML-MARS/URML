@@ -1013,6 +1013,8 @@ _PRIMITIVE_NAMES_FROZEN = (
     "pick_from",
     "place_at",
     "swap_tool",
+    "plan_path",
+    "follow_trajectory",
 )
 
 
@@ -1080,6 +1082,10 @@ def _check_capabilities(
         return _check_swap_tool_caps(args, manifest, path)
     if name == "call_program":
         return _check_call_program_caps(args, manifest, path)
+    if name == "plan_path":
+        return _check_plan_path_caps(args, manifest, path)
+    if name == "follow_trajectory":
+        return _check_follow_trajectory_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -1824,6 +1830,54 @@ def _check_call_program_caps(
     return out
 
 
+def _check_plan_path_caps(
+    args: object, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0020: `plan_path` requires a declared HD map to plan against.
+
+    The trajectory is computed in a cost-map bound to the manifest's
+    `av.hd_map`; without a declared map there is nothing to plan against, so the
+    program is not expressible under this manifest.
+    """
+    out: list[ValidationError] = []
+    av = manifest.av
+    if av is None or av.hd_map is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_HD_MAP,
+                "plan_path",
+                path,
+                "plan_path requires the manifest to declare `av.hd_map` (the HD map "
+                "the planner cost-maps against).",
+                suggestion="Add an `av: { hd_map: { format, uri } }` block to the manifest.",
+            )
+        )
+    return out
+
+
+def _check_follow_trajectory_caps(
+    args: object, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0020: `follow_trajectory` actuates, so it requires `mobility`.
+
+    The trajectory reference is type-checked in the binding pass (it must be a
+    `trajectory` bound by `plan_path`); the ODD speed cap is a Pass-3 envelope
+    check.
+    """
+    out: list[ValidationError] = []
+    if manifest.mobility is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_MISSING_MOBILITY,
+                "follow_trajectory",
+                path,
+                "follow_trajectory requires the manifest to declare `mobility`.",
+                suggestion="Add a `mobility` block with at least `drive_type` and `max_velocity`.",
+            )
+        )
+    return out
+
+
 def _check_scan_caps(
     args: ScanArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
@@ -2157,6 +2211,8 @@ def _check_envelope(
         out.extend(_check_envelope_take_off(args, manifest, envelope, path))
     elif name == "return_to_home":
         out.extend(_check_envelope_return_to_home(args, manifest, envelope, path))
+    elif name == "follow_trajectory":
+        out.extend(_check_envelope_follow_trajectory(args, manifest, envelope, path))
 
     # Geofence containment + occupancy-zone intrusion run for every
     # spatial primitive. Each helper returns no errors when the envelope
@@ -2173,6 +2229,43 @@ def _strictest(*values: float | None) -> float | None:
     """Return the smallest non-None of the given numbers, or None if all are None."""
     finite = [v for v in values if v is not None]
     return min(finite) if finite else None
+
+
+def _check_envelope_follow_trajectory(
+    args: object,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """RFC-0020: a trajectory's declared max speed must not exceed the strictest
+    of the ODD speed cap (`av.odd.max_velocity_mps`), the mobility max, and the
+    envelope max."""
+    out: list[ValidationError] = []
+    se = getattr(args, "speed_envelope", None)
+    declared = getattr(se, "max_velocity_mps", None) if se is not None else None
+    if declared is None:
+        return out
+    manifest_max = manifest.mobility.max_velocity if manifest.mobility else None
+    envelope_max = envelope.max_velocity if envelope else None
+    odd_cap = (
+        manifest.av.odd.max_velocity_mps
+        if manifest.av is not None and manifest.av.odd is not None
+        else None
+    )
+    cap = _strictest(manifest_max, envelope_max, odd_cap)
+    if cap is not None and declared > cap:
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_VELOCITY_EXCEEDED,
+                "follow_trajectory",
+                path,
+                f"follow_trajectory.speed_envelope.max_velocity_mps ({declared}) exceeds "
+                f"the strictest cap ({cap} m/s) of the ODD / mobility / envelope.",
+                field="speed_envelope",
+                suggestion=f"Reduce max_velocity_mps to at most {cap} m/s.",
+            )
+        )
+    return out
 
 
 def _check_envelope_move_to(
@@ -3366,6 +3459,25 @@ def _check_bindings(program: URMLProgram) -> list[ValidationError]:
                 )
             else:
                 bound[store_as] = (path, _producer_type(name, args))
+
+        # plan_path optionally binds a Minimum-Risk fallback trajectory too
+        # (RFC-0020); register it with the same `trajectory` type.
+        store_alt_as = getattr(args, "store_alt_as", None)
+        if store_alt_as is not None:
+            if store_alt_as in bound:
+                out.append(
+                    _err(
+                        ErrorCode.BINDING_DUPLICATE_STORE_AS,
+                        name,
+                        path,
+                        f"duplicate `store_alt_as: {store_alt_as!r}` (first bound at "
+                        f"{'/'.join(bound[store_alt_as][0])}).",
+                        field="store_alt_as",
+                        suggestion=f"Pick a different name (e.g., {store_alt_as!r}_2).",
+                    )
+                )
+            else:
+                bound[store_alt_as] = (path, "trajectory")
     return out
 
 
@@ -3390,6 +3502,9 @@ _PRODUCER_TYPES: dict[str, str] = {
     # fed to grasp/move_to/etc. — only the permissive report.attachments /
     # report.facts surface may reference it (RFC-0015).
     "call_program": "program_result",
+    # plan_path binds a planned trajectory; follow_trajectory consumes it
+    # (RFC-0020). The AV analog of detect -> object -> grasp.
+    "plan_path": "trajectory",
 }
 
 
@@ -3457,4 +3572,8 @@ def _references_used_with_type(
         facts = getattr(args, "facts", None) or {}
         for v in facts.values():
             _maybe(v, None)
+    # follow_trajectory.trajectory: must be a trajectory bound by plan_path
+    # (RFC-0020).
+    if name == "follow_trajectory":
+        _maybe(getattr(args, "trajectory", None), {"trajectory"})
     return refs
