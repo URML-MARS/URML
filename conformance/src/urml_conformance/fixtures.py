@@ -67,6 +67,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0016: realtime cyclic-timing fixtures.
     "substrate_realtime_cyclic": _VALIDATOR_FIXTURES / "manifests" / "substrate_realtime_cyclic.yaml",
     "substrate_realtime_watchdog_short": _VALIDATOR_FIXTURES / "manifests" / "substrate_realtime_watchdog_short.yaml",
+    # RFC-0020: research-grade autonomous-vehicle (Autoware) fixtures.
+    "autoware_av": _VALIDATOR_FIXTURES / "manifests" / "autoware_av.yaml",
+    "autoware_av_no_map": _VALIDATOR_FIXTURES / "manifests" / "autoware_av_no_map.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

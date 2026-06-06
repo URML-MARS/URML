@@ -1,0 +1,22 @@
+name: av/plan_path_no_hd_map_rejected
+description: >
+  RFC-0020 negative: plan_path on a manifest that declares no av.hd_map. There
+  is nothing for the planner to cost-map against, so the program is rejected at
+  Pass 2 with capability.missing_hd_map.
+
+manifest: autoware_av_no_map
+profiles: [av]
+
+program:
+  profile: av
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - plan_path: { from: depot, to: dropoff, store_as: route }
+      - follow_trajectory: { trajectory: $route }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_hd_map

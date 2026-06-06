@@ -1,0 +1,32 @@
+name: av/plan_follow_positive
+description: >
+  RFC-0020: the research-grade AV happy path. plan_path computes a trajectory
+  (bound as `route`), follow_trajectory executes it under a speed envelope
+  within the ODD cap. The runtime decomposes this into a plan_trajectory call
+  (compute, binds the trajectory) and a follow_trajectory_goal call (actuate),
+  so the audit shows exactly those two methods. Hermetic against MockROSAdapter,
+  which implements the TrajectoryAdapter capability.
+
+manifest: autoware_av
+profiles: [av]
+
+program:
+  profile: av
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - plan_path: { from: depot, to: dropoff, store_as: route }
+      - follow_trajectory:
+          trajectory: $route
+          speed_envelope: { max_velocity_mps: 12.0 }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - plan_trajectory
+    - follow_trajectory_goal

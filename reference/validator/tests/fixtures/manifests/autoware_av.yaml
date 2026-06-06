@@ -1,0 +1,53 @@
+# Fixture: a research-grade autonomous-vehicle manifest (RFC-0020).
+# drive_type ackermann + an `av` block (HD map, ODD with a 15 m/s cap, MRM).
+# Research-grade: production_safety_certified is an av-profile attribute, not a
+# manifest claim. No provenance block (nothing for the default policy to deny).
+
+manifest_version: "0.1"
+robot_id: autoware_research_av
+description: Research-grade AV (Autoware target), RFC-0020.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: depot
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: map
+  - name: dropoff
+    pose: { x: 120.0, y: 40.0, z: 0.0 }
+    frame: map
+
+mobility:
+  drive_type: ackermann
+  max_velocity: 20.0
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary:
+    - cone
+
+av:
+  hd_map:
+    format: lanelet2
+    uri: ./maps/city.osm
+    frame: map
+  odd:
+    max_velocity_mps: 15.0
+    regions:
+      - name: downtown
+        polygon:
+          - { x: 0.0, y: 0.0 }
+          - { x: 200.0, y: 0.0 }
+          - { x: 200.0, y: 100.0 }
+          - { x: 0.0, y: 100.0 }
+    weather:
+      - clear
+      - light_rain
+  mrm:
+    strategy: pull_over
+
+outputs:
+  named_endpoints: []
