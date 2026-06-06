@@ -790,6 +790,36 @@ class LearnedPolicy(BaseModel):
     )
 
 
+class Realtime(BaseModel):
+    """Cyclic / real-time timing contract of the substrate (RFC-0016).
+
+    Fieldbus and OPC UA substrates run under a cyclic timing contract: a fixed
+    control period and a watchdog deadline that faults the cell to a safe state
+    if missed. This optional block lets the manifest declare that regime so it
+    is a faithful description of the hardware. It is a *declaration*, not a
+    contract URML enforces: `guarantee` states the honesty level, and v0.1
+    enforces only internal coherence (watchdog >= one cycle), never a real-time
+    guarantee. A future RFC may add an envelope-dwell Pass-3 rule.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    cyclic_period_ms: float = Field(..., gt=0, description="Nominal control-cycle period, ms.")
+    watchdog_ms: float = Field(
+        ..., gt=0, description="Deadline before the substrate faults to a safe state, ms."
+    )
+    requested_packet_interval_ms: float | None = Field(
+        None, gt=0, description="Fieldbus requested packet interval (RPI), ms. Optional."
+    )
+    guarantee: Literal["best_effort", "soft", "hard"] = Field(
+        ...,
+        description=(
+            "Honest timing regime. Explicit so a manifest cannot imply a "
+            "hard-real-time promise URML does not police."
+        ),
+    )
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -834,3 +864,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0384: optional whole-body kinematic structure + stability limits.
     whole_body: WholeBody | None = None
+
+    # RFC-0016: optional cyclic / real-time timing contract.
+    realtime: Realtime | None = None
