@@ -590,13 +590,58 @@ class RmwOptions(BaseModel):
     )
 
 
+class IpcSubstrate(BaseModel):
+    """Zero-copy IPC sub-substrate declaration (RFC-0385).
+
+    The transport beneath the RMW middleware: an Eclipse iceoryx generation
+    (or a custom equivalent) used for high-frequency, large-payload paths
+    (camera images, lidar clouds) via true shared-memory zero-copy. The two
+    iceoryx generations differ in a way the manifest must capture:
+
+    - `iceoryx1` is RouDi-daemon based; a deployment registers against a
+      central broker named by `runtime_name`.
+    - `iceoryx2` is decentralized (no RouDi); a deployment is configured from
+      a global config named by `config_path`, and `runtime_name` does not apply.
+
+    Surfaced by the engaged iceoryx / iceoryx2 thread
+    ([RFC-0210](../../../docs/rfcs/0210-iceoryx-outreach.md) /
+    [RFC-0305](../../../docs/rfcs/0305-iceoryx2-outreach.md)).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    generation: Literal["iceoryx1", "iceoryx2", "custom"]
+    runtime_name: str | None = Field(
+        default=None,
+        description="RouDi daemon name (iceoryx1 only; the central broker to register against).",
+    )
+    config_path: str | None = Field(
+        default=None,
+        description="Path to the decentralized global config (iceoryx2 only; replaces the RouDi daemon).",
+    )
+    generation_note: str | None = Field(
+        default=None,
+        description="Required when generation is 'custom'. Free-text description of the IPC stack.",
+    )
+    messaging_pattern: Literal["pub_sub", "request_response", "event"] | None = Field(
+        default=None,
+        description="Primary messaging pattern used over the IPC transport.",
+    )
+    shared_memory_budget_mb: float | None = Field(
+        default=None, ge=0,
+        description="Shared-memory budget for zero-copy transfers, in MiB.",
+    )
+    max_publishers: int | None = Field(default=None, ge=0)
+    max_subscribers: int | None = Field(default=None, ge=0)
+
+
 class Substrate(BaseModel):
     """Substrate-class declarations beneath URML's runtime.
 
     Added by RFC-0250 (autopilot_class). Extended by RFC-0251 with
-    rmw_implementation + rmw_options. Future RFCs in the 0252-0285 range
-    will add additional fields (ipc_substrate, maturity_tier, bridges,
-    etc.).
+    rmw_implementation + rmw_options, and by RFC-0385 with `ipc` (the
+    zero-copy IPC sub-substrate). Future RFCs in the 0252-0285 range will add
+    additional fields (maturity_tier, bridges, etc.).
 
     Validator rules currently enforced:
     - RFC-0250: drone-class drive_type requires autopilot_class; custom
@@ -604,6 +649,9 @@ class Substrate(BaseModel):
     - RFC-0251: rmw_implementation == 'custom' requires
       rmw_implementation_note; qos_profile.history == 'keep_last' requires
       history_depth (also enforced by QosProfile's own constraints).
+    - RFC-0385: ipc.generation coherence (iceoryx1 needs runtime_name;
+      iceoryx2 needs config_path and forbids runtime_name; custom needs
+      generation_note).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -642,6 +690,9 @@ class Substrate(BaseModel):
         description="Required when rmw_implementation is 'custom'. Free-text description of the RMW stack.",
     )
     rmw_options: RmwOptions | None = None
+
+    # RFC-0385: optional zero-copy IPC sub-substrate (iceoryx generation).
+    ipc: IpcSubstrate | None = None
 
 
 class ValidationContext(BaseModel):
