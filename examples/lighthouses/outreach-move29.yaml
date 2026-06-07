@@ -235,19 +235,23 @@
   posted_url: "https://github.com/Denys88/rl_games/issues/352"
   channel: github_issue
   contact: "Denys88/rl_games (fast, high-throughput RL library widely used to train Isaac Gym / Isaac Lab locomotion and manipulation policies; ~1,350 stars, Issues enabled, not archived, active, last push 2026-05-25). Denys Makoviichuk and contributors (open-source; INTL)."
-  last_touch: "2026-06-04"
-  response: none
+  last_touch: "2026-06-06"
+  response: engaged
   tier: A
   country: INTL
   sector: framework-skill
   comments:
     - date: "2026-06-04"
       text: "Posted issue #352 pointing at the RFC (under idoco2003, after RFCs 0372-0380 landed on main via PR #303), AI-authoring disclosure up front, NO license-ask, framed around the legged-mobility-class + whole-body capability gap (a genuine design ask). Awaiting maintainer reply."
+    - date: "2026-06-06"
+      text: "Denys88 (Denys Makoviichuk, rl_games author) gave a substantive engaged reply on #352, no AI-skepticism. Confirmed the boundary: the manifest-relevant limits (command ranges, body assumptions, reward/termination) live in the ENVIRONMENT (Isaac Lab, IsaacGymEnvs, legged_gym), not rl_games; the env-side projects are the load-bearing conversation for mobility.max_velocity/drive_type/command-ranges. rl_games already persists the full training YAML (clip_actions, clip_observations, normalize_input, env id) + running obs statistics with each checkpoint, so an adapter can derive a partial manifest from (checkpoint + YAML + env config) today. OFFERED to accept a small PR: an optional capability_manifest: block in the training YAML that rl_games stores verbatim in the checkpoint dict, schema-agnostic, so a manifest travels with the policy."
+    - date: "2026-06-06"
+      text: "Replied 2026-06-06 (idoco2003): agreed the boundary; noted RFC-0383 just landed the manifest side (learned_policy block) so the passthrough has something concrete to carry; COMMITTED to send the small PR adding the optional capability_manifest: passthrough (training YAML -> checkpoint dict, schema-agnostic), with the env-side derivation as a separate conversation."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0380 merges, post the posts-move29.md rl_games body on Denys88/rl_games under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged (Denys88, rl_games author). ACTION: build + submit the small PR to Denys88/rl_games adding an optional capability_manifest: passthrough in the training YAML, stored verbatim in the checkpoint dict (schema-agnostic on rl_games' side). It carries the RFC-0383 learned_policy block so a manifest travels with the trained policy. Separately pursue env-side derivation (Isaac Lab RFC-0050 / legged_gym RFC-0376) where the command ranges actually live. First maintainer-invited integration PR for the learned-policy line."
   notes: "Move #29 RL training infra (backend, lowest direct fit, stated). Capability/limits export from a trained policy. Cross-link RFC-0050, RFC-0360. Origin INTL. Verified 2026-06-04."
 
 # ============================================================
