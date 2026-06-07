@@ -1,0 +1,21 @@
+name: actuation/set_output_analog_out_of_range_rejected
+description: >
+  RFC-0017 negative: set_output drives the analog spray-rate line to 150, above
+  the declared range [0, 100]. The validator refuses the out-of-range setpoint
+  at Pass 2 with capability.output_value_out_of_range before anything actuates.
+
+manifest: cobot_cell_outputs
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: spray_rate, value: 150.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.output_value_out_of_range

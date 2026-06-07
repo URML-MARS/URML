@@ -1,0 +1,1 @@
+Move to the work pose, lay a bead of glue along the seam, then tell the cell controller the cycle is done.

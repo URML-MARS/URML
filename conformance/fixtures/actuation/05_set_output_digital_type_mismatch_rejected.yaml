@@ -1,0 +1,21 @@
+name: actuation/set_output_digital_type_mismatch_rejected
+description: >
+  RFC-0017 negative: set_output passes a numeric value (0.5) to the digital
+  glue-gun line, which only accepts a boolean. The validator rejects the type
+  mismatch at Pass 2 with capability.output_value_type_mismatch.
+
+manifest: cobot_cell_outputs
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: glue_gun, value: 0.5 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.output_value_type_mismatch

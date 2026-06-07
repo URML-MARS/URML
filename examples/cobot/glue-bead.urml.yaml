@@ -1,0 +1,43 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: cobot/glue-bead
+# Source NL: "Move to the work pose, lay a bead of glue along the seam, then
+#             tell the cell controller the cycle is done." (see glue-bead.en.txt)
+#
+# Digital/analog output actuation (RFC-0017). A glue gun is not something the
+# robot grasps and not a report — it is just a line write. `set_output` drives
+# a manifest-declared output line to a value: set the analog glue-flow setpoint
+# (range-checked against the line's declared [0, 100]), pulse the digital
+# glue-gun trigger for the bead (auto-reverting to its safe_state), then raise
+# the digital cycle-done handshake to the PLC. The validator rejects an
+# undeclared line, a non-bool on a digital line, or an out-of-range analog
+# value *before* anything actuates. Validatable end-to-end:
+#
+#   urml validate glue-bead.urml.yaml \
+#     -m glue-bead.manifest.yaml --profile industrial
+#
+# To watch it run on the hermetic mock (which implements the OutputAdapter
+# capability), each set_output becomes a set_output_line call in the audit:
+#
+#   urml execute glue-bead.urml.yaml \
+#     -m glue-bead.manifest.yaml --profile industrial --no-policy
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: work_pose
+    - set_output:
+        output: glue_flow
+        value: 65.0
+    - set_output:
+        output: glue_gun
+        value: true
+        pulse_ms: 800
+    - set_output:
+        output: cycle_done
+        value: true
+    - move_to:
+        location: home_pose

@@ -601,6 +601,32 @@ class FollowTrajectoryArgs(BaseModel):
     )
 
 
+# ---------------------------------------------------------------------------
+# 25. set_output  (digital/analog actuation — RFC-0017)
+# ---------------------------------------------------------------------------
+
+
+class SetOutputArgs(BaseModel):
+    """Drive a manifest-declared output line to a value (RFC-0017).
+
+    The narrow, *bounded* actuator for the class of end-effectors that are just
+    a line write: a glue gun, vacuum solenoid, spot-sprayer relay, MCU GPIO, or
+    PLC handshake. Unlike `call_program` (RFC-0015), the effect is a single
+    typed line write the validator fully understands: `output` must be a
+    declared line, a digital line rejects a non-bool, and an analog value is
+    range-checked against the declared `range` before anything actuates.
+    `pulse_ms` optionally auto-reverts the line to its `safe_state`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    output: Identifier
+    value: bool | float
+    pulse_ms: float | None = Field(
+        None, gt=0, description="Optional: hold the value for this many ms, then revert to safe_state."
+    )
+
+
 PRIMITIVE_NAMES: tuple[str, ...] = (
     "move_to",
     "dock",
@@ -626,6 +652,7 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "call_program",
     "plan_path",
     "follow_trajectory",
+    "set_output",
 )
 
 PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
@@ -653,4 +680,5 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "call_program": CallProgramArgs,
     "plan_path": PlanPathArgs,
     "follow_trajectory": FollowTrajectoryArgs,
+    "set_output": SetOutputArgs,
 }

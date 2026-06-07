@@ -60,6 +60,7 @@ class MockROSAdapter:
         self._speech_override: SubstrateResult | None = None
         self._listen_override: ListenResult | None = None
         self._call_program_override: ProgramCallResult | None = None
+        self._set_output_override: SubstrateResult | None = None
 
     # ----- Overrides -----
 
@@ -81,6 +82,10 @@ class MockROSAdapter:
 
     def set_manipulation_result(self, result: ManipulationResult) -> None:
         self._manipulation_override = result
+
+    def set_output_result(self, result: SubstrateResult) -> None:
+        """Make the next `set_output_line` return this result (RFC-0017)."""
+        self._set_output_override = result
 
     def set_detection_result(self, result: DetectionResult) -> None:
         self._detection_override = result
@@ -537,3 +542,24 @@ class MockROSAdapter:
             }
         )
         return NavigationResult(success=True)
+
+    # ----- Output-line dispatch (RFC-0017; also satisfies OutputAdapter) -----
+
+    def set_output_line(
+        self,
+        *,
+        output: str,
+        value: bool | float,
+        pulse_ms: float | None = None,
+    ) -> SubstrateResult:
+        self.call_log.append(
+            {
+                "method": "set_output_line",
+                "output": output,
+                "value": value,
+                "pulse_ms": pulse_ms,
+            }
+        )
+        if self._set_output_override is not None:
+            return self._set_output_override
+        return SubstrateResult(success=True)

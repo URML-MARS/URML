@@ -1,0 +1,52 @@
+# Fixture: an industrial cobot cell that drives raw output lines (RFC-0017).
+# A single-arm cell whose end-effector set includes things that are *just a
+# line write*: a digital glue gun (DO) and an analog spray-rate setpoint (AO),
+# plus a digital PLC cycle-done handshake. Exercises `set_output` capability
+# checks: undeclared line, digital non-bool, analog out-of-range.
+
+manifest_version: "0.1"
+robot_id: cobot_cell_outputs
+description: Single-arm cobot cell with digital + analog output lines (RFC-0017).
+
+frames:
+  - name: cell
+    parent: null
+
+declared_locations:
+  - name: work_pose
+    pose: { x: 0.4, y: 0.0, z: 0.15 }
+    frame: cell
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 25.0
+      accepted_classes: [widget]
+      movable: true
+  reachable_workspace_m: 0.85
+
+outputs:
+  named_endpoints:
+    - line_controller
+  lines:
+    - name: glue_gun           # DO-3: digital on/off trigger
+      kind: digital
+      safe_state: false
+    - name: spray_rate         # AO-1: analog setpoint, percent
+      kind: analog
+      range: [0.0, 100.0]
+      safe_state: 0.0
+    - name: cycle_done         # DO-7: PLC handshake line
+      kind: digital
+      safe_state: false

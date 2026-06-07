@@ -38,6 +38,7 @@ from urml_validator.schemas.primitives import (
     ReportArgs,
     ReturnToHomeArgs,
     ScanArgs,
+    SetOutputArgs,
     SpeakArgs,
     SwapToolArgs,
     TakeOffArgs,
@@ -75,6 +76,7 @@ _PRIMITIVE_FIELDS = (
     "call_program",
     "plan_path",
     "follow_trajectory",
+    "set_output",
 )
 
 
@@ -115,6 +117,7 @@ class Step(BaseModel):
     call_program: CallProgramArgs | None = None
     plan_path: PlanPathArgs | None = None
     follow_trajectory: FollowTrajectoryArgs | None = None
+    set_output: SetOutputArgs | None = None
 
     @model_validator(mode="after")
     def _exactly_one_primitive(self) -> Step:

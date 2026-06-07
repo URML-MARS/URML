@@ -79,6 +79,10 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
     # RFC-0019: AUTOSAR ara::com program binding must declare the full id triple.
     CAPABILITY_ARA_COM_BINDING_INCOMPLETE = "capability.ara_com_binding_incomplete"
+    # RFC-0017: digital/analog output actuation (`set_output`).
+    CAPABILITY_OUTPUT_LINE_NOT_DECLARED = "capability.output_line_not_declared"
+    CAPABILITY_OUTPUT_VALUE_TYPE_MISMATCH = "capability.output_value_type_mismatch"
+    CAPABILITY_OUTPUT_VALUE_OUT_OF_RANGE = "capability.output_value_out_of_range"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"

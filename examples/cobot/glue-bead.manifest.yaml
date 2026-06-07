@@ -1,0 +1,68 @@
+# Capability manifest for a small cobot gluing cell (RFC-0017).
+# Exercises `outputs.lines`: a digital glue-gun trigger, an analog glue-flow
+# setpoint, and a digital PLC cycle-done handshake. A single-arm manipulator
+# base moves the tool; the glue gun and flow are driven by `set_output`, not by
+# grasp/release (there is nothing grasped). US origin; the provenance block is
+# compliant under the bundled US-federal default policy, so this validates with
+# policy on as well as with --no-policy.
+
+manifest_version: "0.1"
+robot_id: gluing_cell
+description: Single-arm cobot gluing cell with digital + analog output lines (RFC-0017).
+
+frames:
+  - name: cell
+    parent: null
+
+declared_locations:
+  - name: work_pose
+    pose: { x: 0.40, y: 0.0, z: 0.15 }
+    frame: cell
+    description: Pose over the seam where the bead is laid.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50      # arm-tip linear velocity cap, m/s
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: glue_applicator_mount
+      kind: pneumatic
+      force_min_n: 0.0
+      force_max_n: 5.0
+      accepted_classes: []
+      movable: true
+  reachable_workspace_m: 0.85
+
+outputs:
+  named_endpoints:
+    - line_controller
+  lines:
+    - name: glue_gun        # DO-3: digital on/off trigger
+      kind: digital
+      safe_state: false
+    - name: glue_flow       # AO-1: analog flow setpoint, percent
+      kind: analog
+      range: [0.0, 100.0]
+      safe_state: 0.0
+    - name: cycle_done      # DO-7: PLC cycle-done handshake
+      kind: digital
+      safe_state: false
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: cell_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/cell_controller.cdx.json
+        sha256: "7777777777777777777777777777777777777777777777777777777777777777"

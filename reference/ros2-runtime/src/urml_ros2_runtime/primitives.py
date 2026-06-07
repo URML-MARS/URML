@@ -38,6 +38,7 @@ from urml_validator.schemas.primitives import (
     ReportArgs,
     ReturnToHomeArgs,
     ScanArgs,
+    SetOutputArgs,
     SpeakArgs,
     SwapToolArgs,
     TakeOffArgs,
@@ -53,6 +54,7 @@ from urml_ros2_runtime.substrate.base import (
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    OutputAdapter,
     ProgramCallResult,
     ROSAdapter,
     ScanResult,
@@ -750,6 +752,24 @@ def exec_follow_trajectory(
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
+def exec_set_output(
+    args: SetOutputArgs, adapter: ROSAdapter, bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0017: drive a declared output line to a value (bounded actuation)."""
+    if not isinstance(adapter, OutputAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate has no output lines "
+            "(set_output requires an OutputAdapter, RFC-0017).",
+        )
+    result = adapter.set_output_line(
+        output=args.output,
+        value=args.value,
+        pulse_ms=args.pulse_ms,
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
 # ---------------------------------------------------------------------------
 # Registry — runtime dispatch table
 # ---------------------------------------------------------------------------
@@ -782,6 +802,7 @@ PRIMITIVE_EXECUTORS: dict[
     "call_program": exec_call_program,
     "plan_path": exec_plan_path,
     "follow_trajectory": exec_follow_trajectory,
+    "set_output": exec_set_output,
 }
 
 

@@ -1,0 +1,22 @@
+name: actuation/set_output_undeclared_line_rejected
+description: >
+  RFC-0017 negative: set_output references `weld_tip`, which the manifest does
+  not declare in outputs.lines. There is no line to drive, so the program is
+  rejected at Pass 2 with capability.output_line_not_declared before anything
+  actuates.
+
+manifest: cobot_cell_outputs
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: weld_tip, value: true }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.output_line_not_declared

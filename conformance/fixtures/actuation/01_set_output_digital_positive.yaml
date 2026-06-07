@@ -1,0 +1,29 @@
+name: actuation/set_output_digital_positive
+description: >
+  RFC-0017 happy path: fire the digital glue-gun line (pulsed) then raise the
+  PLC cycle-done handshake. Both are declared digital lines with safe_state
+  false. The runtime dispatches each to a set_output_line call on the
+  MockROSAdapter, which implements the OutputAdapter capability, so the audit
+  shows exactly two set_output_line methods.
+
+manifest: cobot_cell_outputs
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: glue_gun, value: true, pulse_ms: 800 }
+      - set_output: { output: cycle_done, value: true }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - set_output_line
+    - set_output_line

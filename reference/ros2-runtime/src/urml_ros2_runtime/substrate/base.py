@@ -435,3 +435,30 @@ class TrajectoryAdapter(Protocol):
         Used by `follow_trajectory`. The only AV verb that actuates.
         """
         ...
+
+
+@runtime_checkable
+class OutputAdapter(Protocol):
+    """Optional digital/analog output-line surface (RFC-0017).
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only
+    substrates that expose raw output lines (a cobot's DO bank, an MCU's GPIO,
+    an ag spot-sprayer relay, a PLC handshake line) implement it. The runtime
+    checks ``isinstance(adapter, OutputAdapter)`` and returns an unsuccessful
+    result for substrates that do not. `MockROSAdapter` implements it so the
+    hermetic suite can exercise the `set_output` path.
+    """
+
+    def set_output_line(
+        self,
+        *,
+        output: str,
+        value: bool | float,
+        pulse_ms: float | None = None,
+    ) -> SubstrateResult:
+        """Drive a declared output line to a value, optionally pulsed.
+
+        Used by `set_output`. `pulse_ms`, when set, holds the value for that
+        many milliseconds then reverts the line to its declared safe state.
+        """
+        ...
