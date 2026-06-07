@@ -597,6 +597,21 @@ URML's current-generation (2024-2026) VLA / robot-learning vertical — round tw
 | [0453](0453-behavior-1k-outreach.md) | Outreach | BEHAVIOR-1K (`StanfordVL/BEHAVIOR-1K`) integration; Move #38; **Tier B**; 1000-activity embodied-AI benchmark (Stanford Vision Lab) — activity/predicate defs vs URML typed intent; project-specific license (no ask); RFC from the maintainers | Draft | 2026-06-07 |
 | [0454](0454-droid-policy-learning-outreach.md) | Outreach | DROID policy learning (`droid-dataset/droid_policy_learning`) integration; Move #38; **Tier B**; policy-learning + eval for the DROID in-the-wild dataset (Stanford/Berkeley+); MIT; RFC from the maintainers | Draft | 2026-06-07 |
 
+### The robot-description / interop-formats wave (Move #39, RFCs 0455-0462)
+
+URML's description-interop vertical: the communities behind robot-description formats (URDF, SDFormat) and the kinematics/parsing libraries that consume them. Fresh on-thesis angle — URML's *capability manifest* sits alongside a robot's *description* and could derive/cross-check fields from it (reach, DOF, joint limits) while declaring what description omits (payload, graspable classes, safety envelope); the ask is where the description/capability boundary should sit. Surfaces verified 2026-06-07. Cross-checked vs ledgers; **already-engaged excluded** (Drake/mujoco Move #2, pinocchio Move #26 wontfix, robotics-toolbox Move #6, placo Move #27 engaged, gz-sim, K-Scale Move #29). Drafted; posting awaits authorization (ledger [`outreach-move39.yaml`](../../examples/lighthouses/outreach-move39.yaml), bodies [`posts-move39.md`](../../examples/lighthouses/posts-move39.md)). Excluded: bullet3 (Issues disabled), urdfpy (unmaintained → urchin), OpenUSD (CLA/graphics-first; ASF usd-wg better venue), trimesh (off-altitude).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0455](0455-robot-descriptions-outreach.md) | Outreach | robot_descriptions.py (`robot-descriptions/robot_descriptions.py`) integration; Move #39 anchor; imports 185+ open robot descriptions (URDF/MJCF/USD) as Python modules — cross-format aggregator, ideal manifest-derivation vantage; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0456](0456-sdformat-outreach.md) | Outreach | SDFormat (`gazebosim/sdformat`) integration; Move #39; parser + spec for the SDFormat XML description format (Open Robotics); description/capability boundary; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0457](0457-urdfdom-outreach.md) | Outreach | URDF tooling (`ros/urdfdom`) integration; Move #39; core URDF parser (anchor-folds urdfdom_headers/xacro/robot_state_publisher); most-used robot-description format; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0458](0458-idyntree-outreach.md) | Outreach | iDynTree (`gbionics/idyntree`) integration; Move #39; floating-base multibody kinematics/dynamics from URDF+SDF (IIT) — which manifest fields derive from a dynamics model; ties RFC-0010/0384; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0459](0459-urdf-loaders-outreach.md) | Outreach | urdf-loaders (`gkjohnson/urdf-loaders`) integration; Move #39; URDF loaders for THREE.js/Unity (NASA JPL) — visualize declared capabilities + safety envelope over a rendered URDF; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0460](0460-yourdfpy-outreach.md) | Outreach | yourdfpy (`clemense/yourdfpy`) integration; Move #39; **Tier B**; clean Python URDF parser/viz — natural building block for a description→manifest adapter; MIT; RFC from the maintainer | Draft | 2026-06-07 |
+| [0461](0461-orocos-kdl-outreach.md) | Outreach | Orocos KDL (`orocos/orocos_kinematics_dynamics`) integration; Move #39; **Tier B**; classic ROS kinematics/dynamics library — cross-check manifest workspace vs KDL-computed reach; LGPL-2.1 (no ask); RFC from the maintainers | Draft | 2026-06-07 |
+| [0462](0462-urchin-outreach.md) | Outreach | urchin (`fishbotics/urchin`) integration; Move #39; **Tier B**; actively-maintained urdfpy successor (Python URDF + FK) — description→manifest adapter building block; MIT; RFC from the maintainer | Draft | 2026-06-07 |
+
 ## Lifecycle states
 
 Per RFC-0001:

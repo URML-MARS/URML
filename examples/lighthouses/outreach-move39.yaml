@@ -1,0 +1,188 @@
+# Move #39 outreach ledger. One row per target.
+#
+# Move #39: **the robot-description / interop-formats wave.** Civilian / research scope.
+# Robot-description formats (URDF, SDFormat) + the kinematics/parsing libraries that
+# consume them. Fresh on-thesis angle: URML's CAPABILITY MANIFEST sits ALONGSIDE a
+# robot's DESCRIPTION and could derive/cross-check fields from it (reach, DOF, joint
+# limits) while declaring what description omits (payload, graspable classes, safety
+# envelope). The ask: where should the description/capability boundary sit.
+# Surfaces verified 2026-06-07.
+#
+# Shapes, mapped to existing URML surfaces (no new spec):
+#   - Description formats (conceptual peers to the manifest): SDFormat (0456),
+#     URDF tooling/urdfdom (0457, anchor-folds urdfdom_headers/xacro/robot_state_publisher).
+#   - Description aggregators / parsers / kinematics libs (derive/cross-check manifest):
+#     robot_descriptions.py (0455, anchor), iDynTree (0458), urdf-loaders (0459),
+#     yourdfpy (0460, B), Orocos KDL (0461, B), urchin (0462, B).
+#
+# Anchor-plus-fold: URDF tooling (urdfdom anchor; refs urdfdom_headers/xacro/
+# robot_state_publisher). urchin refs sibling yourdfpy.
+#
+# ALREADY ENGAGED / FLAG (excluded, cross-checked vs ledgers): RobotLocomotion/drake
+# (Move #2), google-deepmind/mujoco (Move #2) + mujoco_menagerie (DeepMind),
+# stack-of-tasks/pinocchio (Move #26 wontfix nim65s), petercorke/robotics-toolbox-python
+# (Move #6), Rhoban/placo (Move #27 ENGAGED), gazebosim/gz-sim (OSRF/Gazebo prior),
+# kscalelabs/* (Move #29).
+#
+# EXCLUDED: bulletphysics/bullet3 (Issues disabled), mmatl/urdfpy (unmaintained;
+# successor urchin engaged), PixarAnimationStudios/OpenUSD (CLA + graphics-first;
+# robotics-USD better via Alliance-for-OpenUSD / ASF usd-wg), trimesh (off-altitude
+# geometry infra). DEFER-PRC: none this wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move39.md body under idoco2003
+# (Discussion or Issue per channel), set sent_at / posted_url / last_touch, add a
+# posted comment, refresh outreach.db. No license-ask anywhere (KDL is LGPL-2.1 —
+# state, no change ask). VIBE.md disclosure up front.
+
+- slug: robot-descriptions-py
+  rfc: 455
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "robot-descriptions/robot_descriptions.py (Apache-2.0, ~769 stars, Issues + Discussions enabled, not archived, active — May 2026 v2.0.0). Imports 185+ open robot descriptions (URDF/MJCF/USD) as Python modules. Community org (Stephane Caron lineage). FR (intl)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: FR
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md robot_descriptions.py body as a GitHub Discussion on robot-descriptions/robot_descriptions.py under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor; best channel + exact altitude (cross-format description aggregator). Ask: which manifest fields derive from URDF/MJCF/USD vs declared separately; thin adapter to a URML manifest skeleton."
+  notes: "Anchor. Permissive (Apache-2.0). Discussions on. No license-ask."
+
+- slug: sdformat
+  rfc: 456
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "gazebosim/sdformat (Apache-2.0, ~214 stars, Issues enabled; org uses Discourse for discussions, not archived, active — Oct 2025 SDFormat 16). Parser + spec for SDFormat XML robot/world description. Open Robotics / OSRF. INTL."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: INTL
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md SDFormat body as a GitHub Issue on gazebosim/sdformat under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. SDF-format vertex. Ask: which manifest fields map to SDFormat elements vs outside its scope; description/capability boundary. OSRF-adjacent to prior ROS-core contact (not the hostile nav maintainers); courteous tone."
+  notes: "Permissive (Apache-2.0). Description-format conceptual peer. OSRF-adjacent. No license-ask."
+
+- slug: urdfdom
+  rfc: 457
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "ros/urdfdom (BSD-3-Clause, ~130 stars, Issues enabled, not archived, active rolling). Core C++ URDF parser + data structures; siblings urdfdom_headers / xacro / robot_state_publisher. ROS / Open Robotics. INTL."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: INTL
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md URDF tooling body as a GitHub Issue on ros/urdfdom under idoco2003; reference (do not separately post) urdfdom_headers / xacro / robot_state_publisher; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. URDF-format vertex; anchor-fold the URDF tooling cluster. Ask: which manifest fields derive from URDF vs separate; thin urdfdom->manifest adapter. OSRF-adjacent; courteous tone."
+  notes: "Permissive (BSD-3). URDF conceptual peer. Anchor-folds sibling URDF tooling. No license-ask."
+
+- slug: idyntree
+  rfc: 458
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "gbionics/idyntree (BSD-3-Clause, ~230 stars, Issues enabled, not archived, active — Feb 2026 v15.0.0; formerly robotology/idyntree). Multibody kinematics/dynamics for floating-base robots; parses URDF+SDF. IIT / gBionics spinout. IT (Italy)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: IT
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md iDynTree body as a GitHub Issue on gbionics/idyntree under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Dynamics-from-description vertex; floating-base/humanoid ties RFC-0010/0384. Ask: which manifest fields (reachable workspace, joint/velocity limits, payload) derive from an iDynTree model."
+  notes: "Permissive (BSD-3). Dynamics-from-description vertex. No license-ask."
+
+- slug: urdf-loaders
+  rfc: 459
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "gkjohnson/urdf-loaders (Apache-2.0, ~792 stars, Issues enabled, not archived, active — Apr 2026 v0.12.7). URDF loaders for THREE.js + Unity (web/visual). NASA JPL / Caltech. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md urdf-loaders body as a GitHub Issue on gkjohnson/urdf-loaders under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Web-visualization vertex; surface declared capabilities/safety envelope over a rendered URDF. Ask: which fields read from the loaded URDF vs separate declaration."
+  notes: "Permissive (Apache-2.0). NASA JPL. Web-viz vertex. No license-ask."
+
+- slug: yourdfpy
+  rfc: 460
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "clemense/yourdfpy (MIT, ~286 stars, Issues enabled, not archived, active — Jan 2026 v0.0.60). Clean Python URDF parser + visualizer. Individual (Clemens Eppner). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md yourdfpy body as a GitHub Issue on clemense/yourdfpy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Python-URDF-parser vertex; URML reference tooling is Python -> natural adapter building block. Tier B. Ask: thin yourdfpy->manifest-skeleton adapter; description/capability boundary."
+  notes: "Permissive (MIT). Python-parser vertex. No license-ask."
+
+- slug: orocos-kdl
+  rfc: 461
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "orocos/orocos_kinematics_dynamics (LGPL-2.1-or-later, ~881 stars, Issues enabled, not archived, active — May 2026). Orocos KDL kinematics/dynamics C++ library; builds chains from URDF. Orocos project. INTL (EU)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: INTL
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md Orocos KDL body as a GitHub Issue on orocos/orocos_kinematics_dynamics under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Classic-kinematics-library vertex. Tier B. LGPL-2.1 (state; interoperate above, vendor no code, no license-change ask). Ask: which manifest fields (reach, joint limits, workspace) derive from a KDL chain."
+  notes: "LGPL-2.1-or-later (state, no ask; weak copyleft). Classic-kinematics vertex. No license-ask."
+
+- slug: urchin
+  rfc: 462
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "fishbotics/urchin (MIT, ~78 stars, Issues enabled, not archived; last activity Oct 2024, borderline dormant ~20mo). Actively-maintained successor to urdfpy: Python URDF parser, lazy mesh load, FK. Individual (Adam Fishman). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move39.md urchin body as a GitHub Issue on fishbotics/urchin under idoco2003; reference (do not separately post) sibling yourdfpy; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. urdfpy-successor vertex (engage successor, not the dead urdfpy). Tier B (~20mo). Ask: thin urchin->manifest-skeleton adapter; description/capability boundary."
+  notes: "Permissive (MIT). urdfpy successor. Tier B on recency. No license-ask."
