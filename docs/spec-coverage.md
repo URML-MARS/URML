@@ -116,6 +116,7 @@ it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
 | 22 | `bimanual` | v0.1.0 §3.10 | `BimanualArgs` | `exec_bimanual` | `biped/06_digit_bimanual_lift_positive` | `humanoid/digit-tote-lift` |
 | 23 | `plan_path` | v0.1.0 §3.11 | `PlanPathArgs` | `exec_plan_path` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
 | 24 | `follow_trajectory` | v0.1.0 §3.12 | `FollowTrajectoryArgs` | `exec_follow_trajectory` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
+| 25 | `set_output` | v0.1.0 §3.13 | `SetOutputArgs` | `exec_set_output` | `actuation/01_set_output_digital_positive` | `cobot/glue-bead` |
 
 ## Notes (honest deferrals, not gaps)
 
@@ -280,7 +281,8 @@ All twelve blocks are covered.
 | `manipulation` | v0.1.0 §2.5 | `Manipulation`/`Gripper` | Pass 2 (`grasp`/`release`) | `home/01_red_mug_positive` | `home/red-mug` |
 | `perception` | v0.1.0 §2.6 | `Perception`/`Camera`/`Sensor` | Pass 2 (`detect`/`scan`/…) | `drone/06_measure_positive` | `drone/bridge-survey` |
 | `docking_stations` | v0.1.0 §2.7 | `DockingStation` | Pass 2 (`dock`) | `home/13_dock_positive` | `home/evening-routine` |
-| `outputs` | v0.1.0 §2.8 | `Outputs` | Pass 2 (`report`/`speak`) | `industrial/01_pick_red_positive` | `home/evening-routine` |
+| `outputs` (`named_endpoints`) | v0.1.0 §2.8 | `Outputs` | Pass 2 (`report`/`speak`) | `industrial/01_pick_red_positive` | `home/evening-routine` |
+| `outputs.lines` (RFC-0017) | v0.2.0 §2.8 | `OutputLine` | Pass 2 (`set_output`) | `actuation/01_set_output_digital_positive` | `cobot/glue-bead` |
 | `provenance` | v0.1.0 §2.9 + `policy.md` | `Provenance` | Pass 5 | `home/07_policy_country_denied` | `home/red-mug` |
 | `connectivity` | v0.1.0 §2.10 | `Connectivity`/`DeclaredLink` | Pass 2 + Pass 3 | `drone/10_link_role_undeclared_rejected` | `drone/link-aware-patrol` |
 | `link_loss_policy` (envelope side) | v0.1.0 §2.10 | `LinkLossRule` | Pass 3 | `drone/13_link_loss_rth_positive` | `drone/link-aware-patrol` |

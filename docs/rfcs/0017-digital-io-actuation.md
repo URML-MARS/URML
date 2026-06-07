@@ -1,10 +1,10 @@
 ---
 rfc: 0017
 title: Digital-I/O actuation — driving a named substrate output
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-19
-updated: 2026-05-19
+updated: 2026-06-07
 supersedes: —
 superseded-by: —
 ---
@@ -144,24 +144,55 @@ precedent and the `dock`-dilution it avoided), RFC-0015 (the opaque
 counterexample that motivates keeping this one typed and bounded), and
 RFC-0002 (primitive economy).
 
-## Unresolved questions
+## Resolution (Accepted → Implemented, 2026-06-07)
 
-- Whether `set_output` is core or profile-gated (industrial/research
-  only — recommended).
-- Analog vs. digital in one primitive vs. two.
-- Whether `pulse_ms` belongs in v0.1 or is a follow-up.
+The three open questions are settled as built:
 
-Each is settle-able before Open → Accepted.
+- **Capability-gated, not profile-gated.** `set_output` is enabled by the
+  manifest `outputs.lines[]` declaration, not by a profile — the same model as
+  `call_program` (gated by `programs:`) and `bimanual` (gated by two arms). A
+  manifest that declares no lines cannot call it; no profile flag is needed. The
+  drawback's "home programs cannot use it" goal is met by the manifest gate
+  rather than a profile gate.
+- **Analog and digital in one primitive.** A single `set_output` with a
+  `value: bool | number` carries both; the line's declared `kind` (`digital` |
+  `analog`) drives the type check. Two primitives would duplicate the
+  declared-line lookup for no gain.
+- **`pulse_ms` ships in v0.1.** It is optional and additive (auto-revert to
+  `safe_state`); leaving it out would have forced two-call on/off idioms for the
+  common "fire the tool briefly" case.
 
 ## Implementation note
 
-Draft only — no code lands until the maintainer decides. The
-`urml-cobot-runtime` ships against the frozen Protocol with **no** raw
-I/O exposed (only `grasp`/`release`); the gap is recorded in its
-`SPEC-GAPS.md`, not worked around. If accepted, landing is one
-coordinated change (Layer 1 + Layer 2 + Layer 4 + validator +
-conformance + the UR/Franka/OPC UA/ROS 2 mappings) — multi-layer,
-hence correctly an RFC.
+**Shipped 2026-06-07** as a complete vertical slice, fully additive (every
+existing program/manifest/runtime is unchanged; `manifest_version` stays `0.1`):
+
+- **Layer 1** — `OutputLine` (`name`, `kind`, `range`, `safe_state`) added to
+  the existing `outputs` block as `outputs.lines[]`, with model-level coherence
+  (digital ⇒ bool safe-state + no range; analog ⇒ numeric safe-state within a
+  required range). Spec: `spec/layer-1-hal/v0.2.0.md` §2.8.
+- **Layer 2** — `SetOutputArgs` (`output`, `value`, `pulse_ms`) registered as
+  primitive #25; `Step.set_output` field. Spec: `spec/layer-2-primitives/v0.1.0.md`
+  §3.13.
+- **Validator** — Pass-2 `_check_set_output_caps`: undeclared line
+  (`capability.output_line_not_declared`), digital non-bool / analog-bool
+  (`capability.output_value_type_mismatch`), analog out-of-range
+  (`capability.output_value_out_of_range`).
+- **Runtime** — a separate optional `OutputAdapter` Protocol (`set_output_line`),
+  kept off the frozen `ROSAdapter` (RFC-0014) exactly as RFC-0020's
+  `TrajectoryAdapter` was; `MockROSAdapter` implements it; `exec_set_output`
+  returns `not_supported` for substrates that do not. The UR/Franka/OPC UA
+  mappings (`SetIO`, `setStandardDigitalOut`, boolean-variable write) are the
+  adapter's job.
+- **Conformance** — `cobot_cell_outputs` manifest fixture + five fixtures under
+  `conformance/fixtures/actuation/` (digital positive, analog positive,
+  undeclared-line / out-of-range / type-mismatch negatives).
+- **Example** — `examples/cobot/glue-bead` (set the analog flow setpoint, pulse
+  the digital glue gun, raise the cycle-done handshake), runnable end-to-end on
+  the hermetic mock.
+
+The substrate-neutrality acid test holds: the primitive is "write a named
+declared line," defined with no ROS concept.
 
 ## Self-review (Phase 0)
 

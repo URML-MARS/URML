@@ -1017,6 +1017,7 @@ _PRIMITIVE_NAMES_FROZEN = (
     "swap_tool",
     "plan_path",
     "follow_trajectory",
+    "set_output",
 )
 
 
@@ -1088,6 +1089,8 @@ def _check_capabilities(
         return _check_plan_path_caps(args, manifest, path)
     if name == "follow_trajectory":
         return _check_follow_trajectory_caps(args, manifest, path)
+    if name == "set_output":
+        return _check_set_output_caps(args, manifest, path)
     raise AssertionError(f"unknown primitive {name!r}")
 
 
@@ -1877,6 +1880,80 @@ def _check_follow_trajectory_caps(
                 suggestion="Add a `mobility` block with at least `drive_type` and `max_velocity`.",
             )
         )
+    return out
+
+
+def _check_set_output_caps(
+    args: object, manifest: CapabilityManifest, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0017: `set_output` writes a manifest-declared output line.
+
+    Pass-2 capability checks, all manifest-derived: the line must be declared in
+    `outputs.lines`; a digital line rejects a non-bool value; an analog value
+    must be a number within the line's declared `range`. Bounded by design — the
+    effect is a single typed line write, never an opaque escape hatch.
+    """
+    out: list[ValidationError] = []
+    line = next((ln for ln in manifest.outputs.lines if ln.name == args.output), None)
+    if line is None:
+        declared = [ln.name for ln in manifest.outputs.lines]
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_OUTPUT_LINE_NOT_DECLARED,
+                "set_output",
+                path,
+                f"set_output references undeclared output line {args.output!r}.",
+                field="output",
+                suggestion=(
+                    f"Declare it in manifest.outputs.lines. Declared lines: {sorted(declared)!r}."
+                    if declared
+                    else "Declare an `outputs: { lines: [...] }` block in the manifest."
+                ),
+            )
+        )
+        return out
+    # bool is a subclass of int/float — test it first.
+    value_is_bool = isinstance(args.value, bool)
+    if line.kind == "digital":
+        if not value_is_bool:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_OUTPUT_VALUE_TYPE_MISMATCH,
+                    "set_output",
+                    path,
+                    f"output line {args.output!r} is digital, but set_output passes a "
+                    f"non-boolean value {args.value!r}.",
+                    field="value",
+                    suggestion="Use a boolean value (true/false) for a digital line.",
+                )
+            )
+    else:  # analog
+        if value_is_bool:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_OUTPUT_VALUE_TYPE_MISMATCH,
+                    "set_output",
+                    path,
+                    f"output line {args.output!r} is analog, but set_output passes a "
+                    f"boolean value {args.value!r}.",
+                    field="value",
+                    suggestion="Use a numeric setpoint within the declared range for an analog line.",
+                )
+            )
+        elif line.range is not None:
+            lo, hi = line.range
+            if not (lo <= float(args.value) <= hi):
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_OUTPUT_VALUE_OUT_OF_RANGE,
+                        "set_output",
+                        path,
+                        f"set_output value {args.value!r} is outside the declared range "
+                        f"[{lo}, {hi}] of analog line {args.output!r}.",
+                        field="value",
+                        suggestion=f"Pass a value within [{lo}, {hi}].",
+                    )
+                )
     return out
 
 

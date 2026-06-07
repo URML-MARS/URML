@@ -420,16 +420,71 @@ class DockingStation(BaseModel):
     )
 
 
-class Outputs(BaseModel):
-    """Declared upstream-output channels for `report`.
+class OutputLine(BaseModel):
+    """A declared digital or analog output line for `set_output` (RFC-0017).
 
-    `to: user`, `to: log`, and `to: caller` are universal; custom destinations
-    must be declared here.
+    Models the large class of end-effectors and cell signals that are *just a
+    line write*: a glue dispenser, a vacuum solenoid, a paint trigger, an ag
+    spot-sprayer relay, an MCU GPIO, a "cycle done" PLC handshake. The line is
+    declared here so the validator rejects an undeclared line and refuses a
+    value outside the declared range *before* anything actuates. `safe_state`
+    is the value the line rests at / auto-reverts to after a pulse.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    kind: Literal["digital", "analog"]
+    range: tuple[float, float] | None = Field(
+        None,
+        description="Closed [min, max] for an analog line. Required for `analog`, omitted for `digital`.",
+    )
+    safe_state: bool | float = Field(
+        ...,
+        description="Rest / auto-revert value. bool for a digital line; a number within `range` for analog.",
+    )
+
+    @model_validator(mode="after")
+    def _check_kind_coherence(self) -> "OutputLine":
+        if self.kind == "digital":
+            if self.range is not None:
+                raise ValueError(f"output line {self.name!r}: a digital line must not declare a `range`.")
+            if not isinstance(self.safe_state, bool):
+                raise ValueError(f"output line {self.name!r}: a digital line's `safe_state` must be a boolean.")
+        else:  # analog
+            if self.range is None:
+                raise ValueError(f"output line {self.name!r}: an analog line must declare a `range`.")
+            lo, hi = self.range
+            if lo > hi:
+                raise ValueError(f"output line {self.name!r}: range min {lo} exceeds max {hi}.")
+            if isinstance(self.safe_state, bool) or not (lo <= float(self.safe_state) <= hi):
+                raise ValueError(
+                    f"output line {self.name!r}: analog `safe_state` must be a number within {self.range}."
+                )
+        return self
+
+
+class Outputs(BaseModel):
+    """Declared output channels.
+
+    `named_endpoints` are upstream destinations for `report` (`to: user`,
+    `to: log`, `to: caller` are universal; custom destinations are declared
+    here). `lines` are physical digital/analog output lines driven by
+    `set_output` (RFC-0017).
     """
 
     model_config = ConfigDict(extra="forbid")
 
     named_endpoints: list[Identifier] = Field(default_factory=list)
+    lines: list[OutputLine] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _unique_line_names(self) -> "Outputs":
+        names = [line.name for line in self.lines]
+        dupes = {n for n in names if names.count(n) > 1}
+        if dupes:
+            raise ValueError(f"duplicate output line name(s): {sorted(dupes)!r}.")
+        return self
 
 
 class HBOMRef(BaseModel):

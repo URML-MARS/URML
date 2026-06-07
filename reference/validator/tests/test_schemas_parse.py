@@ -112,6 +112,9 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     # av: plan_path (compute) + follow_trajectory (actuate), the research-grade
     # autonomous-vehicle pair (RFC-0020); gated by the manifest `av` block.
     av_extensions = {"plan_path", "follow_trajectory"}
+    # set_output: digital/analog line actuation (RFC-0017), gated by the
+    # manifest `outputs.lines` declaration rather than by profile.
+    actuation_extensions = {"set_output"}
     expected = (
         core
         | home_extensions
@@ -120,6 +123,7 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
         | manipulation_extensions
         | cross_profile_extensions
         | av_extensions
+        | actuation_extensions
     )
     assert set(PRIMITIVE_NAMES) == expected
     assert set(PRIMITIVE_MODELS.keys()) == expected
