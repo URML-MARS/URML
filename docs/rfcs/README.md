@@ -582,6 +582,21 @@ URML's medical vertical, **research and simulation scope only** — every target
 | [0445](0445-surgicalgym-outreach.md) | Outreach | SurgicalGym (`SamuelSchmidgall/SurgicalGym`) integration; Move #37; **Tier B**; GPU Isaac-Sim surgical RL for da Vinci PSM/ECM + STAR; research/sim only; MIT; RFC from the maintainer | Draft | 2026-06-07 |
 | [0446](0446-raven2-outreach.md) | Outreach | Raven-II (`uw-biorobotics/raven2`) integration; Move #37; **Tier B**; control software for the open-hardware surgical-research robot (UW Biorobotics), dual-arm → RFC-0010; research only; LGPL-3.0 (no ask); RFC from the lab | Draft | 2026-06-07 |
 
+### The VLA / robot-learning round-2 wave (Move #38, RFCs 0447-0454)
+
+URML's current-generation (2024-2026) VLA / robot-learning vertical — round two after the early VLA wave (Move #11). On-thesis: URML wraps a learned policy in a typed intent + a validated safety envelope (decide-then-do applied to learning, ties RFC-0417/0424). Open VLA / policy frameworks and robot-learning sims/benchmarks. Cross-checked against Move #11 to avoid re-touch. Surfaces verified 2026-06-07. **Already engaged (excluded):** openvla (Move #11), octo (Move #11), NVIDIA GR00T (Move #2), diffusion_policy + Gemini Robotics (Move #11); open_x_embodiment held (DeepMind already engaged via Gemini Robotics). **Deferred per RFC-0003:** SpatialVLA, RoboVLMs, TinyVLA (PRC labs). Drafted; posting awaits authorization (ledger [`outreach-move38.yaml`](../../examples/lighthouses/outreach-move38.yaml), bodies [`posts-move38.md`](../../examples/lighthouses/posts-move38.md)). Excluded dormant: home-robot, crossformer, susie, embodied-clip.
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0447](0447-lerobot-outreach.md) | Outreach | LeRobot (`huggingface/lerobot`) integration; Move #38 anchor; most-starred open robot-learning hub (incl. SmolVLA) — wrap a learned policy in a validated envelope; distinct from smolagents (Move #11); Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0448](0448-openpi-outreach.md) | Outreach | openpi (`Physical-Intelligence/openpi`) integration; Move #38; open release of the π0 flow-based VLA — SOTA open generalist policy; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0449](0449-maniskill-outreach.md) | Outreach | ManiSkill (`mani-skill/ManiSkill`) integration; Move #38; GPU-parallel manipulation sim + benchmark (UC San Diego/Hillbot); evaluate validated dispatch at scale; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0450](0450-libero-outreach.md) | Outreach | LIBERO (`Lifelong-Robot-Learning/LIBERO`) integration; Move #38; lifelong robot-learning benchmark + standard VLA eval (UT Austin); MIT; RFC from the maintainers | Draft | 2026-06-07 |
+| [0451](0451-openvla-oft-outreach.md) | Outreach | OpenVLA-OFT (`moojink/openvla-oft`) integration; Move #38; optimized OpenVLA fine-tuning (Stanford) — distinct from the base OpenVLA repo (Move #11); MIT; RFC from the maintainer | Draft | 2026-06-07 |
+| [0452](0452-robocasa-outreach.md) | Outreach | RoboCasa (`robocasa/robocasa`) integration; Move #38; **Tier B**; large-scale everyday-task sim for generalist robots (UT Austin/NVIDIA); MIT; RFC from the maintainers | Draft | 2026-06-07 |
+| [0453](0453-behavior-1k-outreach.md) | Outreach | BEHAVIOR-1K (`StanfordVL/BEHAVIOR-1K`) integration; Move #38; **Tier B**; 1000-activity embodied-AI benchmark (Stanford Vision Lab) — activity/predicate defs vs URML typed intent; project-specific license (no ask); RFC from the maintainers | Draft | 2026-06-07 |
+| [0454](0454-droid-policy-learning-outreach.md) | Outreach | DROID policy learning (`droid-dataset/droid_policy_learning`) integration; Move #38; **Tier B**; policy-learning + eval for the DROID in-the-wild dataset (Stanford/Berkeley+); MIT; RFC from the maintainers | Draft | 2026-06-07 |
+
 ## Lifecycle states
 
 Per RFC-0001:
