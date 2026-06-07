@@ -1,0 +1,204 @@
+# Move #35 outreach ledger. One row per target.
+#
+# Move #35: **the mobile-manipulation / service-robot wave.** Civilian / research scope.
+# INTEGRATED platform stacks (a whole robot's ROS packages) that combine mobile
+# navigation AND manipulation — the cleanest exercise of URML's two core primitive
+# families together ("go to the kitchen and pick up the mug" = move_to + grasp).
+# Distinct from the manipulation-algorithm wave (Move #27) and the warehouse-AMR
+# wave (Move #21). Surfaces verified 2026-06-07 (stars / Issues / license / not
+# archived / activity).
+#
+# Shapes, mapped to existing URML surfaces (no new spec):
+#   - Single-arm mobile manipulators: Stretch (0422, anchor), TIAGo (0423,
+#     org-anchor; folds tiago_simulation), TurtleBot3+OpenMANIPULATOR (0425),
+#     Interbotix LoCoBot (0426, B).
+#   - Learned-policy mobile manipulators (wrap a policy in a validated envelope,
+#     ties RFC-0417): TidyBot++ (0424), TidyBot ROS (0427, B).
+#   - Assistive / service platforms: Care-O-bot (0428, B).
+#   - Dual-arm mobile manipulator (ties RFC-0010 bimanual): PR2 (0429, B).
+#   - Vendor arm of a mobile manipulator: Kinova ros2_kortex (0430, B).
+#
+# Anchor-plus-fold: PAL TIAGo (tiago_robot anchor, ref tiago_simulation).
+#
+# EXCLUDED: fetchrobotics/fetch_ros (CC-BY-NC NonCommercial + defunct), Toyota HSR
+# (restricted/partner-only), TurtleBot4 (base-only, no arm), ros_kortex (ROS 1),
+# Mobile ALOHA / ALOHA (dormant 24-26mo research reference code),
+# b-it-bots/mas_domestic_robotics (GPL-3.0), huggingface/lerobot (ML library, not
+# an integrated platform — VLA-wave altitude).
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move35.md body under idoco2003
+# (all GitHub Issues this wave; no Discussions enabled on these repos), set
+# sent_at / posted_url / last_touch, add a posted comment, refresh outreach.db.
+# No license-ask anywhere (state license). VIBE.md disclosure up front.
+
+- slug: stretch
+  rfc: 422
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "hello-robot/stretch_ros2 (Apache-2.0, ~122 stars, Issues enabled, Discussions OFF, not archived, active — 2026-05-26). ROS 2 stack for the Stretch mobile manipulator (lightweight single-arm in-home/research robot), Hello Robot Inc. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md Stretch body as a GitHub Issue on hello-robot/stretch_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor of the wave. move_to (base) + grasp (arm) = both core URML families in one sentence. Ask: mobile-manipulator manifest (drive, arm reach/DOF, gripper + graspable classes, nav bounds)."
+  notes: "Anchor. Permissive (Apache-2.0). No license-ask."
+
+- slug: tiago
+  rfc: 423
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "pal-robotics/tiago_robot (Apache-2.0, ~68 stars, Issues enabled, not archived, active — 2026-04-24) + pal-robotics/tiago_simulation (Apache-2.0, ~101 stars, active). Description/bringup driver stack for the TIAGo research mobile manipulator, PAL Robotics. ES (Spain)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: ES
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md TIAGo body as a GitHub Issue on pal-robotics/tiago_robot under idoco2003; reference (do not separately post) tiago_simulation; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Standard research mobile manipulator (base + torso + arm). Org-anchor on tiago_robot, ref tiago_simulation. Ask: TIAGo-class manifest."
+  notes: "Permissive (Apache-2.0). Org-anchor courtesy. No license-ask."
+
+- slug: tidybot2
+  rfc: 424
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "jimmyyhwu/tidybot2 (MIT, ~594 stars, Issues enabled, not archived, active — 2025-12-18). TidyBot++: open-source holonomic mobile manipulator for robot learning, Princeton (Jimmy Wu). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md TidyBot++ body as a GitHub Issue on jimmyyhwu/tidybot2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Learned-policy mobile manipulator; wrap a policy in a validated envelope (ties RFC-0417). Ask: holonomic mobile-manipulator manifest."
+  notes: "Permissive (MIT). Robot-learning vertex. No license-ask."
+
+- slug: turtlebot3-manipulation
+  rfc: 425
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "ROBOTIS-GIT/turtlebot3_manipulation (Apache-2.0, ~94 stars, Issues enabled, not archived, active — 2025-06-20). Integrated bringup for TurtleBot3 base + OpenMANIPULATOR arm, ROBOTIS. KR (South Korea)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: KR
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md TurtleBot3 Manipulation body as a GitHub Issue on ROBOTIS-GIT/turtlebot3_manipulation under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Most accessible/taught open mobile manipulator. move_to + grasp classroom example. Ask: TB3 + OpenMANIPULATOR manifest."
+  notes: "Permissive (Apache-2.0). Teaching vertex. No license-ask."
+
+- slug: interbotix-locobot
+  rfc: 426
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "Interbotix/interbotix_ros_rovers (BSD-3-Clause, ~46 stars, Issues enabled, not archived; last activity 2025-02-04, dormant ~16mo). Interbotix LoCoBot rovers (xslocobots = mobile base + arm), Trossen Robotics. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md Interbotix LoCoBot body as a GitHub Issue on Interbotix/interbotix_ros_rovers under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Low-cost open mobile manipulator (base + Interbotix arm). Tier B (dormant ~16mo). Ask: Interbotix mobile-manipulator manifest."
+  notes: "Permissive (BSD-3). Low-cost-platform vertex. No license-ask."
+
+- slug: tidybot-ros
+  rfc: 427
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "roahmlab/tidybot_ros (MIT, ~29 stars, Issues enabled, not archived, active — 2026-03-30). ROS 2 interface + imitation-learning pipeline for the TidyBot++ mobile manipulator, ROAHM Lab (Univ. of Michigan). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md TidyBot ROS body as a GitHub Issue on roahmlab/tidybot_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ROS 2 stack for TidyBot++ (sibling of 0424, different org). URML's runtime targets it directly. Tier B. Ask: holonomic mobile-manipulator manifest in ROS 2."
+  notes: "Permissive (MIT). ROS 2 + university-lab vertex; sibling of tidybot2 (0424). No license-ask."
+
+- slug: care-o-bot
+  rfc: 428
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "ipa320/cob_robots (Apache-2.0, ~67 stars, Issues enabled, not archived; last activity 2024-03, dormant ~28mo). Hardware-config/bringup stack for Care-O-bot, Fraunhofer IPA's long-running service mobile manipulator. DE (Germany)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: DE
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md Care-O-bot body as a GitHub Issue on ipa320/cob_robots under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Original open service mobile manipulator (omni base + torso + arm + head); assistive-task target = URML's purpose. Tier B (dormant ~28mo). Ask: Care-O-bot-class manifest."
+  notes: "Permissive (Apache-2.0). Assistive-service vertex. cob_robots > care-o-bot umbrella. No license-ask."
+
+- slug: pr2
+  rfc: 429
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "PR2/pr2_robot (BSD per-package, ~59 stars, Issues enabled, not archived; last activity 2024-09, dormant ~20mo). Community-maintained bringup/robot stack for PR2, the dual-arm mobile manipulator that defined the 'go fetch the mug' demo. US (PR2 community / OSRF lineage)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md PR2 body as a GitHub Issue on PR2/pr2_robot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Canonical 'fetch the mug' dual-arm platform; exercises RFC-0010 bimanual (arm selector + bimanual). Tier B (dormant ~20mo). Ask: dual-arm mobile-manipulator manifest."
+  notes: "Permissive (BSD). Canonical-reference vertex; live community org (Willow Garage org gone). No license-ask."
+
+- slug: ros2-kortex
+  rfc: 430
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "Kinovarobotics/ros2_kortex (BSD-3-Clause, ~118 stars, Issues enabled, not archived, active — 2026-05-21). ROS 2 driver for the Kinova Gen3 arm (the manipulation half of Kinova's MOVO mobile manipulator). CA (Canada)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: CA
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move35.md ros2_kortex body as a GitHub Issue on Kinovarobotics/ros2_kortex under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Vendor arm driver (Gen3); rides MOVO mobile base for full mobile-manip. Frame the arm-on-base manifest. Tier B (arm-centric repo). Ask: Kinova arm manifest + mobile-base extension."
+  notes: "Permissive (BSD-3). Vendor-arm vertex; arm-centric (not full integrated stack). No license-ask."

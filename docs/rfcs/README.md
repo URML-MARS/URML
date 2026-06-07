@@ -536,6 +536,22 @@ URML's aerial-autonomy vertical, at the application altitude *above* the flight-
 | [0420](0420-cerlab-uav-autonomy-outreach.md) | Outreach | CERLAB UAV Autonomy (`Zhefan-Xu/CERLAB-UAV-Autonomy`) integration; Move #34; **Tier B**; modular UAV autonomy framework (CMU CERLAB); align typed intent per module, perception as `detect` sources; MIT; RFC from the maintainer | Draft | 2026-06-07 |
 | [0421](0421-xtdrone-outreach.md) | Outreach | XTDrone (`robin-shaun/XTDrone`) integration; Move #34; **Tier B**; PX4 + ROS + Gazebo UAV teaching sandbox (Peking Univ; academic) — same PX4 seam URML uses on hardware (ties RFC-0381); MIT; RFC from the maintainer | Draft | 2026-06-07 |
 
+### The mobile-manipulation / service-robot wave (Move #35, RFCs 0422-0430)
+
+URML's integrated-platform vertical: whole-robot stacks that combine mobile navigation *and* manipulation — the cleanest exercise of URML's two core primitive families together ("go to the kitchen and pick up the mug" = `move_to` + `grasp`). Distinct from the manipulation-algorithm wave (Move #27) and the warehouse-AMR wave (Move #21). Civilian/research only. Single-arm mobile manipulators, learned-policy mobile manipulators (wrap a policy in a validated envelope, ties RFC-0417), assistive/service platforms, a dual-arm platform (ties RFC-0010 bimanual), and a vendor arm of a mobile manipulator. All Issue-channel. Surfaces verified 2026-06-07. Drafted; posting awaits authorization (ledger [`outreach-move35.yaml`](../../examples/lighthouses/outreach-move35.yaml), bodies [`posts-move35.md`](../../examples/lighthouses/posts-move35.md)). Excluded: fetch_ros (CC-BY-NC + defunct), Toyota HSR (restricted), TurtleBot4 (base-only), Mobile ALOHA (dormant), mas_domestic_robotics (GPL-3.0), lerobot (ML library, not a platform).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0422](0422-stretch-outreach.md) | Outreach | Hello Robot Stretch (`hello-robot/stretch_ros2`) integration; Move #35 anchor; lightweight single-arm in-home/research mobile manipulator — `move_to` + `grasp` in one sentence; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0423](0423-tiago-outreach.md) | Outreach | PAL TIAGo (`pal-robotics/tiago_robot`) integration; Move #35; widely-used research mobile manipulator (base + torso + arm); org-anchor, folds `tiago_simulation`; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0424](0424-tidybot2-outreach.md) | Outreach | TidyBot++ (`jimmyyhwu/tidybot2`) integration; Move #35; open holonomic mobile manipulator for robot learning (Princeton) — wrap a learned policy in a validated envelope (ties RFC-0417); MIT; RFC from the maintainer | Draft | 2026-06-07 |
+| [0425](0425-turtlebot3-manipulation-outreach.md) | Outreach | TurtleBot3 Manipulation (`ROBOTIS-GIT/turtlebot3_manipulation`) integration; Move #35; TurtleBot3 base + OpenMANIPULATOR — accessible/taught mobile manipulator; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0426](0426-interbotix-locobot-outreach.md) | Outreach | Interbotix LoCoBot (`Interbotix/interbotix_ros_rovers`) integration; Move #35; **Tier B**; low-cost open mobile manipulator (base + arm), Trossen Robotics; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0427](0427-tidybot-ros-outreach.md) | Outreach | TidyBot ROS (`roahmlab/tidybot_ros`) integration; Move #35; **Tier B**; ROS 2 interface + IL pipeline for TidyBot++ (ROAHM Lab, U Michigan); MIT; RFC from the maintainers | Draft | 2026-06-07 |
+| [0428](0428-care-o-bot-outreach.md) | Outreach | Care-O-bot (`ipa320/cob_robots`) integration; Move #35; **Tier B**; original open service mobile manipulator (omni base + torso + arm + head), Fraunhofer IPA; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0429](0429-pr2-outreach.md) | Outreach | PR2 (`PR2/pr2_robot`) integration; Move #35; **Tier B**; canonical dual-arm "fetch the mug" mobile manipulator (community-maintained) — exercises RFC-0010 bimanual; BSD; RFC from the community | Draft | 2026-06-07 |
+| [0430](0430-ros2-kortex-outreach.md) | Outreach | Kinova ros2_kortex (`Kinovarobotics/ros2_kortex`) integration; Move #35; **Tier B**; ROS 2 driver for the Gen3 arm (manipulation half of the MOVO mobile manipulator); BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+
 ## Lifecycle states
 
 Per RFC-0001:
