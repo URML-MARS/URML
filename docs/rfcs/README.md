@@ -552,6 +552,22 @@ URML's integrated-platform vertical: whole-robot stacks that combine mobile navi
 | [0429](0429-pr2-outreach.md) | Outreach | PR2 (`PR2/pr2_robot`) integration; Move #35; **Tier B**; canonical dual-arm "fetch the mug" mobile manipulator (community-maintained) — exercises RFC-0010 bimanual; BSD; RFC from the community | Draft | 2026-06-07 |
 | [0430](0430-ros2-kortex-outreach.md) | Outreach | Kinova ros2_kortex (`Kinovarobotics/ros2_kortex`) integration; Move #35; **Tier B**; ROS 2 driver for the Gen3 arm (manipulation half of the MOVO mobile manipulator); BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
 
+### The industrial / collaborative arm-driver wave (Move #36, RFCs 0431-0439)
+
+URML's industrial-arm vertical: official and community ROS 2 drivers for real industrial / collaborative arms — the integrated-platform altitude for URML's manipulation primitives (`pick_from` / `place_at` / `grasp`, RFC-0013) on factory/cobot hardware. Distinct from the ros2_control framework wave (Move #23) and the manipulation-algorithm wave (Move #27). Civilian/research only. Surfaces verified 2026-06-07. **PRC / PRC-adjacent hardware vendors deferred per RFC-0003** (xArm/UFACTORY, myCobot/Elephant, Flexiv, AUBO, JAKA). Drafted; posting awaits authorization (ledger [`outreach-move36.yaml`](../../examples/lighthouses/outreach-move36.yaml), bodies [`posts-move36.md`](../../examples/lighthouses/posts-move36.md)). Excluded: ROS 1-era drivers (ros-industrial/abb, motoman, fanuc), dormant staubli_experimental, Mecademic (Python API only), Kassow/Neura/Hanwha/Comau (no first-party ROS 2). Kinova ros2_kortex covered in Move #35.
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0431](0431-universal-robots-outreach.md) | Outreach | Universal Robots ROS 2 Driver (`UniversalRobots/Universal_Robots_ROS2_Driver`) integration; Move #36 anchor; official driver for UR CB3/e-Series cobots, most-deployed open vendor arm driver; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0432](0432-franka-outreach.md) | Outreach | Franka ROS 2 (`frankarobotics/franka_ros2`) integration; Move #36; official ROS 2 for Franka research arms, most-used research manipulator; force-aware; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0433](0433-yaskawa-motoros2-outreach.md) | Outreach | Yaskawa motoros2 (`Yaskawa-Global/motoros2`) integration; Move #36; official micro-ROS node for Motoman controllers (major industrial OEM); permissive (REUSE); RFC from the maintainers | Draft | 2026-06-07 |
+| [0434](0434-abb-ros2-outreach.md) | Outreach | ABB ROS 2 driver (`PickNikRobotics/abb_ros2`) integration; Move #36; community ROS 2 driver for ABB arms (the live ROS 2 ABB home, maint. PickNik); Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0435](0435-kuka-iiwa-lbr-stack-outreach.md) | Outreach | KUKA LBR iiwa (`lbr-stack/lbr_fri_ros2_stack`) integration; Move #36; community ROS 2 stack for torque-sensitive iiwa 7/14 + Med over FRI; force-aware; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0436](0436-doosan-outreach.md) | Outreach | Doosan Robotics ROS 2 (`doosan-robotics/doosan-robot2`) integration; Move #36; **Tier B**; official ROS 2 for Doosan cobots; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0437](0437-techman-outreach.md) | Outreach | Techman Robot (`TechmanRobotInc/tmr_ros2`) integration; Move #36; **Tier B**; ROS 2 driver for vision-integrated TM cobots (Taiwan, Omron-affiliated); built-in vision as `detect` source; no license file (no ask); RFC from the maintainers | Draft | 2026-06-07 |
+| [0438](0438-igus-irc-ros-outreach.md) | Outreach | igus iRC_ROS (`CommonplaceRobotics/iRC_ROS`) integration; Move #36; **Tier B**; ROS 2 stack for igus Robot Control incl. the low-cost ReBeL cobot; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
+| [0439](0439-ros-industrial-outreach.md) | Outreach | ROS-Industrial (`ros-industrial/kuka_experimental`) integration; Move #36; **Tier B**; standards-community org-anchor — target standard industrial interfaces, not parallel ones; complements RFC-0038; Apache-2.0; RFC from the consortium | Draft | 2026-06-07 |
+
 ## Lifecycle states
 
 Per RFC-0001:

@@ -1,0 +1,210 @@
+# Move #36 outreach ledger. One row per target.
+#
+# Move #36: **the industrial / collaborative arm-driver wave.** Civilian / research scope.
+# Official + community ROS 2 DRIVERS for real industrial and collaborative robot arms
+# (the vendor's driver/bringup stack for an actual arm). The integrated-platform
+# altitude for URML's manipulation primitives on factory/cobot hardware. Distinct
+# from the ros2_control framework wave (Move #23) and the manipulation-algorithm
+# wave (Move #27). Surfaces verified 2026-06-07 (stars / Issues+Discussions /
+# license / not archived / activity / vendor domicile).
+#
+# Shapes, mapped to existing URML surfaces (no new spec):
+#   - Official vendor ROS 2 drivers: UR (0431, anchor), Franka (0432), Yaskawa
+#     motoros2 (0433), Doosan (0436, B), Techman (0437, B), igus ReBeL (0438, B).
+#   - Community ROS 2 driver stacks: ABB/PickNik (0434), KUKA LBR iiwa lbr-stack
+#     (0435), ROS-Industrial / kuka_experimental (0439, B, org-anchor).
+#   - All map pick_from / place_at / grasp (industrial profile, RFC-0013) onto the
+#     arm's ROS 2 action surface + ros2_control controllers (Move #23).
+#
+# Anchor-plus-fold: ROS-Industrial (kuka_experimental anchor, ref the consortium's
+# other vendor support packages). Complements the prior ROS-Industrial contact (RFC-0038).
+#
+# DEFER-PRC (RFC-0003; PRC / PRC-adjacent hardware vendors — do NOT post this wave):
+#   xArm-Developer/xarm_ros2 (UFACTORY, Shenzhen), elephantrobotics/mycobot_ros2
+#   (Shenzhen), flexivrobotics/flexiv_ros2 (Shanghai HQ, PRC-adjacent),
+#   AuboRobot/aubo_ros2_driver (Beijing), JakaCobot/jaka_ros2 (Shanghai),
+#   Agile Robots/Diana (Munich+Beijing, no repo yet).
+#
+# EXCLUDED: ros-industrial/abb (ROS 1, superseded by PickNik), ros-industrial/
+# motoman + fanuc (ROS 1; motoman superseded by Yaskawa motoros2; FANUC has no
+# official ROS 2), staubli_experimental (dormant 2022), Mecademic (Python API, no
+# ROS 2 driver), Kassow/Neura/Hanwha/Comau (no real first-party ROS 2 driver).
+# Kinova ros2_kortex already engaged (Move #35).
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move36.md body under idoco2003
+# (Discussion or Issue per channel), set sent_at / posted_url / last_touch, add a
+# posted comment, refresh outreach.db. No license-ask anywhere (state license;
+# some repos carry no license file — do NOT add a clarification ask, just omit it).
+# VIBE.md disclosure up front.
+
+- slug: universal-robots
+  rfc: 431
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "UniversalRobots/Universal_Robots_ROS2_Driver (BSD-3-Clause, ~781 stars, Issues + Discussions enabled, not archived, active — 2026-05-31). Official ROS 2 driver for UR CB3 + e-Series cobots; most-starred open vendor arm driver. Universal Robots. DK (Denmark)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: DK
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md UR body as a GitHub Discussion on UniversalRobots/Universal_Robots_ROS2_Driver under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor of the wave. pick_from/place_at/grasp (RFC-0013) onto the UR ROS 2 surface + ros2_control. Ask: UR-class manifest (reach/DOF, payload, joint/speed limits, gripper + graspable classes, workspace)."
+  notes: "Anchor. Permissive (BSD-3). Most-deployed cobot. No license-ask."
+
+- slug: franka
+  rfc: 432
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "frankarobotics/franka_ros2 (Apache-2.0, ~340 stars, Issues enabled, not archived, active — 2026-05-19; canonical owner, frankaemika redirects). Official ROS 2 integration for Franka research robots; most-used research manipulator. Franka Robotics. DE (Germany)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: DE
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md Franka body as a GitHub Issue on frankarobotics/franka_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Research-arm vertex; force-aware. Ask: Franka manifest (reach/DOF, payload, joint/force limits, gripper + graspable classes). Canonical owner is frankarobotics (frankaemika redirects)."
+  notes: "Permissive (Apache-2.0). Founder-action Franka academia (separate) is distinct from this repo engagement. No license-ask."
+
+- slug: yaskawa-motoros2
+  rfc: 433
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "Yaskawa-Global/motoros2 (permissive; REUSE-compliant Apache-2.0/BSD/MIT code + CC-BY-NC-ND docs, ~157 stars, Issues + Discussions enabled, not archived, active — 2026-05-27). Official Yaskawa micro-ROS node for Motoman controllers. Yaskawa. JP (Japan)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: JP
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md Yaskawa motoros2 body as a GitHub Discussion on Yaskawa-Global/motoros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. High-volume industrial OEM, official ROS 2. Ask: Motoman manifest (reach/DOF, payload, joint/speed limits, EOAT + graspable classes, cell bounds). Code permissive; only docs are NC."
+  notes: "Permissive code (REUSE). First-party Yaskawa. No license-ask."
+
+- slug: abb-ros2
+  rfc: 434
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "PickNikRobotics/abb_ros2 (Apache-2.0, ~159 stars, Issues enabled, not archived, active — 2025-07-14). Community ROS 2 driver for ABB industrial robots, maintained by PickNik (ros-industrial/abb_ros2 does not exist). ABB vendor (Sweden/Switzerland); maintainer PickNik. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md ABB body as a GitHub Issue on PickNikRobotics/abb_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Major OEM (ABB), community-maintained ROS 2 (PickNik). Ask: ABB manifest (reach/DOF, payload, joint/speed limits, EOAT + graspable classes, cell bounds). The live ROS 2 ABB home (ros-industrial/abb is ROS 1)."
+  notes: "Permissive (Apache-2.0). Maintainer PickNik (US), vendor ABB. No license-ask."
+
+- slug: kuka-iiwa-lbr-stack
+  rfc: 435
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "lbr-stack/lbr_fri_ros2_stack (Apache-2.0, ~251 stars, Issues enabled, not archived, active — 2026-03-29). Community ROS 2 stack for KUKA LBR iiwa 7/14 + Med 7/14 over the Fast Robot Interface. KUKA vendor; community FRI stack. DE (Germany)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: DE
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md KUKA iiwa lbr-stack body as a GitHub Issue on lbr-stack/lbr_fri_ros2_stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Torque-sensitive cobot (iiwa), research + medical. Ask: iiwa manifest (reach/DOF, payload, joint/force limits, gripper + graspable classes). Force-aware industrial profile."
+  notes: "Permissive (Apache-2.0). Most active KUKA iiwa community stack. No license-ask."
+
+- slug: doosan
+  rfc: 436
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "doosan-robotics/doosan-robot2 (BSD-3-Clause, ~157 stars, Issues enabled, Discussions OFF, not archived, active — 2026-04-23). Official ROS 2 stack for Doosan collaborative arms. Doosan Robotics. KR (South Korea)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: KR
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md Doosan body as a GitHub Issue on doosan-robotics/doosan-robot2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Growing-cobot OEM, official ROS 2. Tier B. Ask: Doosan manifest (reach/DOF, payload, joint/speed limits, gripper + graspable classes)."
+  notes: "Permissive (BSD-3). First-party Doosan. No license-ask."
+
+- slug: techman
+  rfc: 437
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "TechmanRobotInc/tmr_ros2 (no license file present, ~66 stars, Issues enabled, Discussions OFF, not archived, active — 2026-01-02; marked experimental). ROS 2 driver for Techman (TM) collaborative arms with built-in vision. Techman Robot (Omron-affiliated). TW (Taiwan)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: TW
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md Techman body as a GitHub Issue on TechmanRobotInc/tmr_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Vision-integrated cobot (Taiwan, Omron-affiliated). Built-in vision = detect source. Tier B. Ask: TM manifest (reach/DOF, payload, gripper + graspable, integrated-vision detection classes). NO license file — do NOT add a license ask; omit license from the post."
+  notes: "No license file (do not ask). Taiwan (not PRC). Vision-integrated. No license-ask."
+
+- slug: igus-irc-ros
+  rfc: 438
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "CommonplaceRobotics/iRC_ROS (Apache-2.0, ~22 stars, Issues enabled, Discussions OFF, not archived, active — 2025-05-21). ROS 2 stack for igus Robot Control incl. the low-cost igus ReBeL cobot. igus / Commonplace Robotics. DE (Germany)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: DE
+  sector: component-vendor
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md igus iRC_ROS body as a GitHub Issue on CommonplaceRobotics/iRC_ROS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Low-cost cobot (ReBeL). Tier B. Ask: ReBeL manifest (reach/DOF, payload, joint limits, gripper + graspable classes)."
+  notes: "Permissive (Apache-2.0). Low-cost-cobot vertex. No license-ask."
+
+- slug: ros-industrial
+  rfc: 439
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "ros-industrial/kuka_experimental (Apache-2.0, ~336 stars, Issues + Discussions enabled, not archived, active — 2025-05-28). Experimental KUKA packages under the ROS-Industrial consortium (the community that brought industrial robots to ROS). INTL (consortium)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: INTL
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move36.md ROS-Industrial body as a GitHub Discussion on ros-industrial/kuka_experimental under idoco2003; reference (do not separately post) the consortium's other vendor packages; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Standards-community org-anchor; target standard ROS-Industrial interfaces not parallel ones. Complements RFC-0038 prior contact. Tier B. Ask: cross-vendor industrial-arm manifest."
+  notes: "Permissive (Apache-2.0). Org-anchor on kuka_experimental (cleanest channel). Complements RFC-0038. No license-ask."
