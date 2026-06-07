@@ -30,8 +30,8 @@
 
 - slug: aerostack2
   rfc: 412
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/aerostack2/aerostack2/discussions/962"
   channel: github_discussion
   contact: "aerostack2/aerostack2 (BSD-3-Clause, ~351 stars, Issues + Discussions enabled, not archived, active — Jul 2025 release). ROS 2 framework for autonomous multi-aerial-robot systems, CVAR-UPM. ES (Spain)."
   last_touch: "2026-06-07"
@@ -39,18 +39,20 @@
   tier: A
   country: ES
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0412 body to https://github.com/aerostack2/aerostack2/discussions/962 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Aerostack2 body as a GitHub Discussion on aerostack2/aerostack2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor of the wave. URML `aerial` drive type + PX4/ROS 2 runtime onto Aerostack2 behaviors; multi-aerial ties RFC-0286. Ask: aerial manifest (altitude/speed/geofence, payload, single vs multi)."
   notes: "Anchor. Permissive (BSD-3). No license-ask."
 
 - slug: mrs-uav-system
   rfc: 413
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/orgs/ctu-mrs/discussions/236"
   channel: github_discussion
   contact: "ctu-mrs/mrs_uav_system (BSD-3-Clause, ~605 stars, Issues + Discussions enabled, not archived, active — ROS 2 branch live). Full multi-UAV control/estimation/sim platform, CTU Prague Multi-Robot Systems group. CZ (Czechia)."
   last_touch: "2026-06-07"
@@ -58,18 +60,20 @@
   tier: A
   country: CZ
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0413 body to https://github.com/orgs/ctu-mrs/discussions/236 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md MRS UAV System body as a GitHub Discussion on ctu-mrs/mrs_uav_system under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Most complete open aerial-autonomy platform; real outdoor multi-UAV. URML onto the control/tracker surface; ties RFC-0286. Ask: MRS-class UAV manifest."
   notes: "Permissive (BSD-3). Strong real-deployment credibility. No license-ask."
 
 - slug: crazyswarm2
   rfc: 414
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/IMRCLab/crazyswarm2/discussions/864"
   channel: github_discussion
   contact: "IMRCLab/crazyswarm2 (MIT, ~239 stars, Issues + Discussions enabled, not archived, active). ROS 2 stack for flying swarms of Bitcraze Crazyflie nano-quadcopters, TU Berlin IMRC lab. DE (Germany)."
   last_touch: "2026-06-07"
@@ -77,18 +81,20 @@
   tier: A
   country: DE
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0414 body to https://github.com/IMRCLab/crazyswarm2/discussions/864 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Crazyswarm2 body as a GitHub Discussion on IMRCLab/crazyswarm2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Cleanest fleet exercise (many identical nano-quads, one intent). URML fleet (RFC-0286) onto Crazyswarm2. Ask: Crazyflie swarm manifest (arena, altitude, count)."
   notes: "Permissive (MIT). High-value swarm teaching/research demonstrator. No license-ask."
 
 - slug: rotorpy
   rfc: 415
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/spencerfolk/rotorpy/issues/42"
   channel: github_issue
   contact: "spencerfolk/rotorpy (MIT, ~267 stars, Issues enabled, Discussions OFF, not archived, active — Mar 2026 v2.1.2). Python multirotor simulator with realistic aerodynamics for education + research, UPenn. US."
   last_touch: "2026-06-07"
@@ -96,18 +102,20 @@
   tier: A
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0415 body to https://github.com/spencerfolk/rotorpy/issues/42 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md RotorPy body as a GitHub Issue (Discussions off) on spencerfolk/rotorpy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Lightweight hackable Python quad sim = ideal classroom demonstrator. URML `aerial` program onto RotorPy; ties RFC-0381. Ask: simulated multirotor manifest."
   notes: "Permissive (MIT). Teaching surface. No license-ask."
 
 - slug: pegasus-simulator
   rfc: 416
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/orgs/PegasusSimulator/discussions/142"
   channel: github_discussion
   contact: "PegasusSimulator/PegasusSimulator (BSD-3-Clause, ~807 stars, Issues + Discussions enabled, not archived, active — Oct 2025 v5.1.0). NVIDIA Isaac Sim multirotor framework with PX4 integration, IST Lisbon. PT (Portugal)."
   last_touch: "2026-06-07"
@@ -115,18 +123,20 @@
   tier: A
   country: PT
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0416 body to https://github.com/orgs/PegasusSimulator/discussions/142 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Pegasus Simulator body as a GitHub Discussion on PegasusSimulator/PegasusSimulator under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Isaac Sim + PX4 = same PX4 seam URML uses on hardware. URML onto PX4/ROS 2 bridge in Isaac Sim; ties RFC-0381. Ask: Pegasus aerial manifest."
   notes: "Permissive (BSD-3). Sim-to-real demonstrator. No license-ask."
 
 - slug: gym-pybullet-drones
   rfc: 417
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/learnsyslab/gym-pybullet-drones/discussions/312"
   channel: github_discussion
   contact: "learnsyslab/gym-pybullet-drones (MIT, ~2.0k stars, Issues + Discussions enabled, not archived, active — GitHub Spotlight 2026). PyBullet Gymnasium RL environments for quadcopter control, UTIAS / Cambridge (org renamed from utiasDSL). CA (Canada)."
   last_touch: "2026-06-07"
@@ -134,18 +144,20 @@
   tier: A
   country: CA
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0417 body to https://github.com/learnsyslab/gym-pybullet-drones/discussions/312 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md gym-pybullet-drones body as a GitHub Discussion on learnsyslab/gym-pybullet-drones under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Most-starred open drone-RL sandbox; wrap a learned controller in a validated envelope (decide-then-do applied to learning). Ask: learned-controller drone manifest."
   notes: "Permissive (MIT). Canonical owner is learnsyslab (utiasDSL renamed). No license-ask."
 
 - slug: ntnu-arl
   rfc: 418
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/ntnu-arl/unified_autonomy_stack/issues/9"
   channel: github_issue
   contact: "ntnu-arl/unified_autonomy_stack (BSD-3-Clause, ~182 stars, Issues enabled, not archived, active — Jun 2026) + ntnu-arl/aerial_gym_simulator (BSD-3-Clause, ~724 stars, Issues, active). Generalizable robot-autonomy blueprint + Isaac-Gym aerial RL sim, NTNU Autonomous Robots Lab. NO (Norway)."
   last_touch: "2026-06-07"
@@ -153,18 +165,20 @@
   tier: A
   country: "NO"
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0418 body to https://github.com/ntnu-arl/unified_autonomy_stack/issues/9 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md NTNU ARL body as a GitHub Issue on ntnu-arl/unified_autonomy_stack under idoco2003; reference (do not separately post) aerial_gym_simulator; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Org-anchor on the autonomy stack, reference aerial_gym. URML above the planning/behavior layer, or wrapping a policy trained in aerial_gym. Ask: exploration-class aerial manifest."
   notes: "Permissive (BSD-3). Org-anchor courtesy. No license-ask."
 
 - slug: kr-autonomous-flight
   rfc: 419
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/KumarRobotics/kr_autonomous_flight/issues/203"
   channel: github_issue
   contact: "KumarRobotics/kr_autonomous_flight (UPenn academic software license — non-OSI; ~771 stars, Issues enabled, Discussions OFF, not archived, active). Complete GPS-denied autonomous-flight stack, Kumar Lab UPenn. US."
   last_touch: "2026-06-07"
@@ -172,18 +186,20 @@
   tier: B
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0419 body to https://github.com/KumarRobotics/kr_autonomous_flight/issues/203 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md kr_autonomous_flight body as a GitHub Issue (Discussions off) on KumarRobotics/kr_autonomous_flight under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. High-credibility GPS-denied autonomy; URML consumes the estimate (Move #25 posture). Tier B. State the UPenn academic license; URML proposes nothing under it; NO license-change ask."
   notes: "Non-OSI academic license — state plainly, ask nothing. Kumar Lab = strong credibility. No license-ask."
 
 - slug: cerlab-uav-autonomy
   rfc: 420
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/Zhefan-Xu/CERLAB-UAV-Autonomy/issues/35"
   channel: github_issue
   contact: "Zhefan-Xu/CERLAB-UAV-Autonomy (MIT, ~837 stars, Issues enabled, Discussions OFF, not archived; last release Jan 2024). Modular UAV autonomy framework (perception/mapping/planning/control), CMU CERLAB. US."
   last_touch: "2026-06-07"
@@ -191,18 +207,20 @@
   tier: B
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0420 body to https://github.com/Zhefan-Xu/CERLAB-UAV-Autonomy/issues/35 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md CERLAB body as a GitHub Issue (Discussions off) on Zhefan-Xu/CERLAB-UAV-Autonomy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Clean modular ROS autonomy framework; align typed intent per module; perception modules as detect sources. Tier B (last release ~18mo). Ask: modular autonomy UAV manifest."
   notes: "Permissive (MIT). Tier B on recency. No license-ask."
 
 - slug: xtdrone
   rfc: 421
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/robin-shaun/XTDrone/issues/144"
   channel: github_issue
   contact: "robin-shaun/XTDrone (MIT, ~1.7k stars, Issues enabled, Discussions OFF, not archived, active-ish; solo-maintainer). PX4 + ROS + Gazebo UAV simulation/teaching platform, Peking University. CN (China; academic)."
   last_touch: "2026-06-07"
@@ -210,10 +228,12 @@
   tier: B
   country: CN
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0421 body to https://github.com/robin-shaun/XTDrone/issues/144 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md XTDrone body as a GitHub Issue (Discussions off) on robin-shaun/XTDrone under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. PX4 + Gazebo teaching sandbox; same PX4 seam URML uses on hardware; ties RFC-0381. Tier B. Academic CN software (not a hardware vendor — RFC-0003 deferral does not apply). Ask: XTDrone aerial manifest."
   notes: "Permissive (MIT). CN academic, not a hardware vendor. No license-ask."
