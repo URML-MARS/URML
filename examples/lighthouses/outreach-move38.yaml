@@ -35,8 +35,8 @@
 
 - slug: lerobot
   rfc: 447
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/huggingface/lerobot/issues/3734"
   channel: github_issue
   contact: "huggingface/lerobot (Apache-2.0, ~24.7k stars, Issues enabled, not archived, active daily — 2026-06-06). Hugging Face end-to-end robot-learning hub (models incl. SmolVLA, datasets, training/eval). Most-starred open robot-learning project. HQ Paris. FR (multinational FR/US)."
   last_touch: "2026-06-07"
@@ -44,18 +44,20 @@
   tier: A
   country: FR
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0447 body to https://github.com/huggingface/lerobot/issues/3734 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md LeRobot body as a GitHub Issue on huggingface/lerobot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor. Wrap a LeRobot/SmolVLA policy in a validated envelope (decide-then-do applied to learning). Distinct from smolagents (Move #11). Ask: learned-policy robot manifest."
   notes: "Anchor. Permissive (Apache-2.0). Distinct from huggingface/smolagents (Move #11). No license-ask."
 
 - slug: openpi
   rfc: 448
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/Physical-Intelligence/openpi/discussions/966"
   channel: github_discussion
   contact: "Physical-Intelligence/openpi (Apache-2.0, ~12.2k stars, Issues + Discussions enabled, not archived, active — 2026-05-05). Open release of pi0 / pi0-FAST flow-based VLA. Physical Intelligence. US."
   last_touch: "2026-06-07"
@@ -63,18 +65,20 @@
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0448 body to https://github.com/Physical-Intelligence/openpi/discussions/966 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md openpi body as a GitHub Discussion on Physical-Intelligence/openpi under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. State-of-the-art open VLA (pi0). Wrap policy in a validated envelope. Ask: pi0-driven robot manifest."
   notes: "Permissive (Apache-2.0). SOTA open VLA. No license-ask."
 
 - slug: maniskill
   rfc: 449
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/mani-skill/ManiSkill/discussions/1429"
   channel: github_discussion
   contact: "mani-skill/ManiSkill (Apache-2.0, ~3.0k stars, Issues + Discussions enabled, not archived, active — 2026-05-20). GPU-parallel manipulation sim + benchmark. UC San Diego / Hillbot. US."
   last_touch: "2026-06-07"
@@ -82,18 +86,20 @@
   tier: A
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0449 body to https://github.com/mani-skill/ManiSkill/discussions/1429 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md ManiSkill body as a GitHub Discussion on mani-skill/ManiSkill under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. GPU manipulation benchmark; evaluate validated-intent dispatch at scale (ties RFC-0381). Ask: ManiSkill task-robot manifest."
   notes: "Permissive (Apache-2.0). Manipulation-benchmark vertex. No license-ask."
 
 - slug: libero
   rfc: 450
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/Lifelong-Robot-Learning/LIBERO/issues/142"
   channel: github_issue
   contact: "Lifelong-Robot-Learning/LIBERO (MIT, ~1.9k stars, Issues enabled, Discussions OFF, not archived; last commit 2025-03-15). Lifelong robot-learning benchmark; standard VLA eval suite. UT Austin (Yuke Zhu). US."
   last_touch: "2026-06-07"
@@ -101,18 +107,20 @@
   tier: A
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0450 body to https://github.com/Lifelong-Robot-Learning/LIBERO/issues/142 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md LIBERO body as a GitHub Issue on Lifelong-Robot-Learning/LIBERO under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Standard VLA benchmark (OpenVLA/pi0 report on it). Evaluate validated dispatch alongside task success. Ask: LIBERO task-robot manifest."
   notes: "Permissive (MIT). Policy-benchmark vertex. No license-ask."
 
 - slug: openvla-oft
   rfc: 451
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/moojink/openvla-oft/discussions/157"
   channel: github_discussion
   contact: "moojink/openvla-oft (MIT, ~1.2k stars, Issues + Discussions enabled, not archived, active — 2025-09-09). OpenVLA-OFT optimized fine-tuning recipe (speed/success). Stanford (Moo Jin Kim). US."
   last_touch: "2026-06-07"
@@ -120,18 +128,20 @@
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0451 body to https://github.com/moojink/openvla-oft/discussions/157 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md OpenVLA-OFT body as a GitHub Discussion on moojink/openvla-oft under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Distinct from base OpenVLA (Move #11 #338). Wrap an OFT policy in a validated envelope. Ask: OFT-driven robot manifest."
   notes: "Permissive (MIT). Distinct from openvla/openvla (Move #11). No license-ask."
 
 - slug: robocasa
   rfc: 452
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/robocasa/robocasa/issues/200"
   channel: github_issue
   contact: "robocasa/robocasa (MIT — LICENSE file is MIT; GitHub API NOASSERTION false flag; ~1.4k stars, Issues enabled, Discussions OFF, not archived, active — 2026-05-21). Large-scale everyday-task sim for generalist robots. UT Austin / NVIDIA. US."
   last_touch: "2026-06-07"
@@ -139,18 +149,20 @@
   tier: B
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0452 body to https://github.com/robocasa/robocasa/issues/200 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md RoboCasa body as a GitHub Issue on robocasa/robocasa under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Everyday-task generalist-robot sim. Express household intent a learned policy executes (ties RFC-0381). Tier B. Ask: RoboCasa task-robot manifest."
   notes: "Permissive (MIT; API NOASSERTION is a false flag). Everyday-task-sim vertex. No license-ask."
 
 - slug: behavior-1k
   rfc: 453
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/StanfordVL/BEHAVIOR-1K/discussions/2265"
   channel: github_discussion
   contact: "StanfordVL/BEHAVIOR-1K (project-specific license — verify; ~1.5k stars, Issues + Discussions enabled, not archived, active — 2026-06-06). Embodied-AI platform, 1000 household activities. Stanford Vision Lab. US."
   last_touch: "2026-06-07"
@@ -158,18 +170,20 @@
   tier: B
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0453 body to https://github.com/StanfordVL/BEHAVIOR-1K/discussions/2265 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md BEHAVIOR-1K body as a GitHub Discussion on StanfordVL/BEHAVIOR-1K under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. 1000-activity embodied-AI benchmark; activity/predicate defs vs URML typed intent. Tier B. License project-specific — OMIT license from post, do NOT ask. Ask: BEHAVIOR task-robot manifest."
   notes: "License project-specific (omit, do not ask). Everyday-activity-benchmark vertex. No license-ask."
 
 - slug: droid-policy-learning
   rfc: 454
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-07"
+  posted_url: "https://github.com/droid-dataset/droid_policy_learning/issues/34"
   channel: github_issue
   contact: "droid-dataset/droid_policy_learning (MIT, ~287 stars, Issues enabled, Discussions OFF, not archived; last commit 2025-04-22). Policy-learning + eval code for the DROID in-the-wild manipulation dataset. DROID consortium (Stanford/Berkeley+). US."
   last_touch: "2026-06-07"
@@ -177,10 +191,12 @@
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-07"
+      text: "Posted the RFC-0454 body to https://github.com/droid-dataset/droid_policy_learning/issues/34 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md DROID policy learning body as a GitHub Issue on droid-dataset/droid_policy_learning under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Policies trained on a large in-the-wild dataset. Wrap policy in a validated envelope. Tier B. Ask: DROID-class manipulation manifest."
   notes: "Permissive (MIT). In-the-wild-dataset-policy vertex. No license-ask."
