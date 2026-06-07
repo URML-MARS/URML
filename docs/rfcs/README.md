@@ -568,6 +568,20 @@ URML's industrial-arm vertical: official and community ROS 2 drivers for real in
 | [0438](0438-igus-irc-ros-outreach.md) | Outreach | igus iRC_ROS (`CommonplaceRobotics/iRC_ROS`) integration; Move #36; **Tier B**; ROS 2 stack for igus Robot Control incl. the low-cost ReBeL cobot; Apache-2.0; RFC from the maintainers | Draft | 2026-06-07 |
 | [0439](0439-ros-industrial-outreach.md) | Outreach | ROS-Industrial (`ros-industrial/kuka_experimental`) integration; Move #36; **Tier B**; standards-community org-anchor — target standard industrial interfaces, not parallel ones; complements RFC-0038; Apache-2.0; RFC from the consortium | Draft | 2026-06-07 |
 
+### The medical / surgical research-robotics wave (Move #37, RFCs 0440-0446)
+
+URML's medical vertical, **research and simulation scope only** — every target is an explicitly research/sim platform (the da Vinci Research Kit, surgical sims, surgical RL benchmarks); none is a clinical device, and URML makes no clinical claim. The validate-before-actuate framing matches these projects' own "not for clinical use" norm. Surgical sim/challenge envs, a research surgical-robot control stack (dual-arm, ties RFC-0010 bimanual), and surgical RL/IL sims (wrap a learned policy in a validated envelope, ties RFC-0417). Surfaces verified 2026-06-07. The JHU LCSR cluster is anchor-and-folded (challenge + dVRK only; cisst/crtk/SurgicAI referenced). **SurRoL (CUHK / Hong Kong) deferred per RFC-0003.** Drafted; posting awaits authorization (ledger [`outreach-move37.yaml`](../../examples/lighthouses/outreach-move37.yaml), bodies [`posts-move37.md`](../../examples/lighthouses/posts-move37.md)). Excluded: dvrk-ros (archived), clinical products, defense.
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0440](0440-surgical-robotics-challenge-outreach.md) | Outreach | Surgical Robotics Challenge (`surgical-robotics-ai/surgical_robotics_challenge`) integration; Move #37 anchor; AMBF/ROS robot-assisted suturing research sim (JHU+WPI), NL-to-subtask audience; research/sim only; custom permissive license; RFC from the maintainers | Draft | 2026-06-07 |
+| [0441](0441-ambf-outreach.md) | Outreach | AMBF (`WPI-AIM/ambf`) integration; Move #37; real-time soft-body + haptic surgical research sim (WPI AIM); drive via the AMBF ROS interface; research/sim only; custom permissive license; RFC from the maintainers | Draft | 2026-06-07 |
+| [0442](0442-dvrk-outreach.md) | Outreach | da Vinci Research Kit (`jhu-dvrk/sawIntuitiveResearchKit`) integration; Move #37; cisst/SAW stack for the canonical open research surgical platform (JHU-LCSR), dual-arm → RFC-0010 bimanual; research only (not for clinical use); JHU academic license; RFC from the maintainers | Draft | 2026-06-07 |
+| [0443](0443-orbit-surgical-outreach.md) | Outreach | ORBIT-Surgical (`orbit-surgical/orbit-surgical`) integration; Move #37; surgical RL/IL sim on NVIDIA Isaac Lab (U Toronto) — wrap a learned policy in a validated envelope; research/sim only; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-07 |
+| [0444](0444-sofa-env-lapgym-outreach.md) | Outreach | LapGym / sofa_env (`ScheiklP/sofa_env`) integration; Move #37; SOFA-based deformable-tissue laparoscopic RL envs (TU Dresden/Heidelberg); research/sim only; MIT; RFC from the maintainers | Draft | 2026-06-07 |
+| [0445](0445-surgicalgym-outreach.md) | Outreach | SurgicalGym (`SamuelSchmidgall/SurgicalGym`) integration; Move #37; **Tier B**; GPU Isaac-Sim surgical RL for da Vinci PSM/ECM + STAR; research/sim only; MIT; RFC from the maintainer | Draft | 2026-06-07 |
+| [0446](0446-raven2-outreach.md) | Outreach | Raven-II (`uw-biorobotics/raven2`) integration; Move #37; **Tier B**; control software for the open-hardware surgical-research robot (UW Biorobotics), dual-arm → RFC-0010; research only; LGPL-3.0 (no ask); RFC from the lab | Draft | 2026-06-07 |
+
 ## Lifecycle states
 
 Per RFC-0001:

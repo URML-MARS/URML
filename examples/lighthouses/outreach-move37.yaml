@@ -1,0 +1,167 @@
+# Move #37 outreach ledger. One row per target.
+#
+# Move #37: **the medical / surgical RESEARCH-robotics wave.** Research / simulation
+# scope ONLY. Every target is an explicitly research/sim platform (the da Vinci
+# Research Kit, surgical sims, surgical RL benchmarks) — NONE is a clinical device.
+# URML makes no clinical claim and is not for patient use; the framing is a research
+# intent layer + research safety envelope, which matches these projects' own
+# "not for clinical use" norm. Surfaces verified 2026-06-07.
+#
+# Shapes, mapped to existing URML surfaces (no new spec):
+#   - Surgical sim / challenge envs (URML drives via ROS, ties RFC-0381): Surgical
+#     Robotics Challenge (0440, anchor; folds SurgicAI), AMBF (0441).
+#   - Research surgical-robot control stack (dual-arm, ties RFC-0010 bimanual):
+#     dVRK / sawIntuitiveResearchKit (0442; folds cisst + crtk_python_client),
+#     Raven-II (0446, B).
+#   - Surgical RL/IL sims (wrap a learned policy in a validated envelope, ties
+#     RFC-0417): ORBIT-Surgical (0443), LapGym/sofa_env (0444), SurgicalGym (0445, B).
+#
+# Cluster-anchor: the JHU LCSR people (Kazanzides/Munawar) sit behind the challenge,
+# dVRK, cisst, crtk, SurgicAI. Anchored on the challenge (0440) + dVRK (0442) only;
+# cisst/crtk/SurgicAI referenced, not separately posted, to avoid over-touching.
+#
+# DEFER-PRC/HK (RFC-0003): med-air/SurRoL (MED-AIR lab, CUHK — Hong Kong). Best-fit
+# RL target by stars, held per the PRC/HK rule.
+#
+# EXCLUDED: jhu-dvrk/dvrk-ros (archived 2024-09; routed to sawIntuitiveResearchKit),
+# clinical products, anything defense/military.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move37.md body under idoco2003
+# (Discussion or Issue per channel), set sent_at / posted_url / last_touch, add a
+# posted comment, refresh outreach.db. No license-ask anywhere (several carry custom
+# academic / LGPL licenses — state or omit, never ask). VIBE.md disclosure up front.
+# RESEARCH/SIM framing only in every post; no clinical claim.
+
+- slug: surgical-robotics-challenge
+  rfc: 440
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "surgical-robotics-ai/surgical_robotics_challenge (custom permissive academic license, ~109 stars, Issues + Discussions enabled, not archived, very active — 2026-06-05). AMBF/ROS robot-assisted suturing sim behind the AccelNet challenge (JHU + WPI consortium). Research/sim only. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md Surgical Robotics Challenge body as a GitHub Discussion on surgical-robotics-ai/surgical_robotics_challenge under idoco2003; reference (do not separately post) SurgicAI; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor; NL->surgical-subtask-in-sim audience = URML's exact shape. Research/sim framing, NO clinical claim. Ask: research surgical-robot manifest (arms/instruments, reach/DOF, workspace, instrument vocab)."
+  notes: "Anchor. Custom permissive academic license (do not ask). JHU+WPI. Research-only. No license-ask."
+
+- slug: ambf
+  rfc: 441
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "WPI-AIM/ambf (custom permissive academic license, ~215 stars, Issues + Discussions enabled, not archived, active — 2026-05-27). Asynchronous Multi-Body Framework: real-time soft-body + haptic surgical sim (underpins the challenge). WPI AIM Lab. US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md AMBF body as a GitHub Discussion on WPI-AIM/ambf under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Soft-body surgical sim; URML drives via the AMBF ROS interface (ties RFC-0381). Research/sim only. Ask: AMBF-simulated research-robot manifest."
+  notes: "Custom permissive academic license (do not ask). WPI AIM (distinct lab). Research-only. No license-ask."
+
+- slug: dvrk
+  rfc: 442
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "jhu-dvrk/sawIntuitiveResearchKit (JHU custom academic license, ~158 stars, Issues + Discussions enabled, not archived, active — release 2.4.0 2026-01-08). cisst/SAW control stack for the da Vinci Research Kit; de-facto open research surgical platform. JHU-LCSR. US. (dvrk-ros is archived; this is the live door.)"
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md dVRK body as a GitHub Discussion on jhu-dvrk/sawIntuitiveResearchKit under idoco2003; reference (do not separately post) cisst + crtk_python_client; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Canonical research surgical platform; dual-arm = RFC-0010 bimanual (arm selector + bimanual onto PSM/ECM). Research-only (dVRK explicitly not for clinical use). Ask: dVRK manifest (PSM/ECM arms, instruments, reach/DOF, workspace)."
+  notes: "JHU custom academic license (do not ask). Cluster-anchor on sawIntuitiveResearchKit; cisst/crtk referenced. dvrk-ros archived. Research-only. No license-ask."
+
+- slug: orbit-surgical
+  rfc: 443
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "orbit-surgical/orbit-surgical (BSD-3-Clause, ~174 stars, Issues enabled, Discussions OFF, not archived; last commit 2024-12-16). Surgical RL/IL sim on NVIDIA Isaac Lab/Omniverse. University of Toronto (M. Moghani). CA (Canada)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: CA
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md ORBIT-Surgical body as a GitHub Issue on orbit-surgical/orbit-surgical under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Surgical RL on Isaac Lab; wrap a learned policy in a validated envelope (ties RFC-0417). Research/sim only. Ask: simulated surgical-robot manifest. Distinct group (U Toronto)."
+  notes: "Permissive (BSD-3). Surgical-RL vertex. Research-only. No license-ask."
+
+- slug: sofa-env-lapgym
+  rfc: 444
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "ScheiklP/sofa_env (MIT, ~75 stars, Issues enabled, Discussions OFF, not archived, active). SOFA-based RL envs for robot-assisted laparoscopic surgery (LapGym). TU Dresden / Heidelberg (HIDSS4Health). DE (Germany)."
+  last_touch: "2026-06-07"
+  response: none
+  tier: A
+  country: DE
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md LapGym/sofa_env body as a GitHub Issue on ScheiklP/sofa_env under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Deformable-tissue laparoscopic RL sim; URML drives / wraps a learned policy (ties RFC-0417/0381). Research/sim only. Ask: laparoscopic research-robot manifest. Distinct group (TU Dresden/Heidelberg)."
+  notes: "Permissive (MIT). Deformable-tissue laparoscopic vertex. Research-only. No license-ask."
+
+- slug: surgicalgym
+  rfc: 445
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "SamuelSchmidgall/SurgicalGym (MIT, ~102 stars, Issues enabled, Discussions OFF, not archived; last commit 2025-06-20). GPU Isaac-Sim RL for da Vinci PSM/ECM + STAR surgical research robots. Independent researcher (JHU-linked). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md SurgicalGym body as a GitHub Issue on SamuelSchmidgall/SurgicalGym under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. GPU surgical RL sandbox; wrap a learned policy in a validated envelope (ties RFC-0417). Tier B (slowing). Research/sim only. Ask: simulated PSM/ECM/STAR manifest."
+  notes: "Permissive (MIT). GPU-RL vertex. Research-only. No license-ask."
+
+- slug: raven2
+  rfc: 446
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "uw-biorobotics/raven2 (LGPL-3.0, ~59 stars, Issues enabled, Discussions OFF, not archived; last release 2018-05, dormant). Control software for Raven-II, the open-hardware surgical-research robot. UW Biorobotics Lab (Hannaford). US."
+  last_touch: "2026-06-07"
+  response: none
+  tier: B
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-07"
+      text: "When authorized, post the posts-move37.md Raven-II body as a GitHub Issue on uw-biorobotics/raven2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Reference open surgical-robot HARDWARE; dual-arm = RFC-0010 bimanual. Tier B (repo dormant since 2018, but platform is a reference). LGPL-3.0 (state it, no change ask). Research-only. Ask: Raven-II manifest (two arms, instruments, reach/DOF, workspace)."
+  notes: "LGPL-3.0 copyleft (state, no ask). Dormant repo but iconic open surgical hardware. Research-only. No license-ask."
