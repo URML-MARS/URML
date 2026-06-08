@@ -31,6 +31,13 @@ from that target's maintainers. It does not modify URML's normative surface.
 
 ## Summary
 
+> **Maintainer-correction note (2026-06-08):** @ahornung (OctoMap maintainer)
+> engaged and confirmed the license split asked below: the core **`octomap`
+> library is BSD-3-Clause** and only the **`octovis` visualizer is GPL**. URML's
+> mapping targets the BSD core (the map representation and occupancy queries)
+> and does not touch octovis, so there is no GPL entanglement. The open question
+> is resolved.
+
 Move #25 is URML's SLAM and state-estimation wave, round two, extending the
 Move #16 SLAM batch. Most of this wave reaches pose and transform estimators.
 This RFC reaches the **occupancy side** of the same world model:

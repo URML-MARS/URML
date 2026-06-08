@@ -174,7 +174,7 @@
     - date: "2026-06-02"
       text: "After RFC-0337 merges, post the posts-move25.md OctoMap body on OctoMap/octomap under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (ahornung). Update RFC-0337: octomap core is BSD (only octovis GPL); URML maps against the BSD library / occupancy queries."
+  next_action: "RFC-0337 updated 2026-06-08 with a maintainer-correction note (ahornung confirmed: core octomap BSD-3-Clause, only octovis GPL; URML maps the BSD core). Engaged; nothing further owed."
   notes: "Move #25 map representation. URML's geofence/occupancy (Pass 3) + declared_locations check against the occupancy map. Cross-link RFC-0291 (deconfliction), RFC-0290 (frames). BSD core / GPL octovis split. Origin DE (Freiburg, allied). Verified 2026-06-02."
 
 - slug: ceres-solver
@@ -218,7 +218,7 @@
     - date: "2026-06-02"
       text: "After RFC-0339 merges, post the posts-move25.md fuse body on locusrobotics/fuse under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Do NOT re-pitch the warehouse relationship (RFC-0300); keep to the fuse framework."
       status: done
-  next_action: "Engaged (svwilliams). Update RFC-0339: covariance is an opt-in advisory, explicitly NOT safety-rated (per his caution); model fuse as a config-dependent pose-source beside robot_localization. BSD-3-Clause confirmed."
+  next_action: "RFC-0339 updated 2026-06-08 with a maintainer-correction note (BSD-3-Clause confirmed; covariance is opt-in advisory, NOT safety-rated; fuse modeled as a config-dependent pose-source beside robot_localization). Engaged; nothing further owed unless svwilliams re-engages."
   notes: "Move #25 sensor fusion. fuse positions vs robot_localization (RFC-0332) for a URML localization-source declaration. Distinct from RFC-0300 (Locus warehouse, off-GitHub). Origin US. Verified 2026-06-02."
 
 - slug: dlio
