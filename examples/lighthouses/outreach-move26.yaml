@@ -215,19 +215,21 @@
   posted_url: "https://github.com/acados/acados/issues/1840"
   channel: github_issue
   contact: "acados/acados (fast embedded solvers for real-time nonlinear MPC and optimal control; built on CasADi; ~1,362 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-22). License not SPDX-detected by gh (understood BSD-2-Clause; asked). University of Freiburg syscop (Germany, NATO-allied) lineage."
-  last_touch: "2026-06-03"
-  response: none
+  last_touch: "2026-06-08"
+  response: declined
   tier: A
   country: DE
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #1840 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-06-08"
+      text: "FreyJo (Jonathan Frey, acados core dev) replied on #1840 and CLOSED it (2026-06-08): acknowledged translating robot intent into constraints is non-trivial and 'seems to be what your URML project tries to solve', pointed at the Python interface docs (docs.acados.org/python_interface) IF we build an interface, but stated 'I don't think we as acados developers have a strong interest in prompting your agents through acados issues.' Polite reasoned decline + mild AI-flag + explicit no-issue-prompting request. No reply posted (respecting his request)."
   claude_directives:
     - date: "2026-06-03"
       text: "After RFC-0349 merges, post the posts-move26.md acados body on acados/acados under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Declined (FreyJo, wrong-altitude + no-issue-prompting). acados is the low-level NMPC solver below URML's altitude; the one contact point is constraints (URML's declared capability/envelope limits -> hard NMPC constraints), confirmed non-trivial but not the acados devs' interest via their tracker. If a URML->acados interface is ever built, use the Python interface docs and keep it off their issue tracker. Same family as casadi/Trinamic/Sensirion (engage the integrator layer, not the solver)."
   notes: "Move #26 embedded NMPC. URML constraints/limits -> OCP constraints. Built on CasADi (RFC-0348). Cross-link RFC-0319 (control). Origin DE (Freiburg syscop, allied). Verified 2026-06-03."
 
 - slug: teb-local-planner
