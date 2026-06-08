@@ -123,19 +123,21 @@
   posted_url: "https://github.com/ScheiklP/sofa_env/issues/43"
   channel: github_issue
   contact: "ScheiklP/sofa_env (MIT, ~75 stars, Issues enabled, Discussions OFF, not archived, active). SOFA-based RL envs for robot-assisted laparoscopic surgery (LapGym). TU Dresden / Heidelberg (HIDSS4Health). DE (Germany)."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-06-08"
+  response: declined
   tier: A
   country: DE
   sector: medical
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0444 body to https://github.com/ScheiklP/sofa_env/issues/43 under idoco2003 (Move #37 medical/surgical research-robotics wave). Awaiting response."
+    - date: "2026-06-08"
+      text: "ScheiklP/sofa_env#43 was CLOSED with zero maintainer comments (silent comment-less close), found 2026-06-08. Nothing to reply to. Accept silently, no reply, no re-post."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move37.md LapGym/sofa_env body as a GitHub Issue on ScheiklP/sofa_env under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Deformable-tissue laparoscopic RL sim; URML drives / wraps a learned policy (ties RFC-0417/0381). Research/sim only. Ask: laparoscopic research-robot manifest. Distinct group (TU Dresden/Heidelberg)."
+  next_action: "Declined (silent close). sofa_env / LapGym is a surgical-robotics RL sim (research altitude); if re-engaged later, lead with a concrete validated-intent example rather than a cold RFC."
   notes: "Permissive (MIT). Deformable-tissue laparoscopic vertex. Research-only. No license-ask."
 
 - slug: surgicalgym
