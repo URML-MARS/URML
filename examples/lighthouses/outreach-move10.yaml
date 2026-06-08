@@ -60,7 +60,7 @@
   posted_url: "https://github.com/realsenseai/librealsense/issues/15108"
   channel: github_issue
   contact: "realsenseai/librealsense (Apache-2.0, 8788 stars, 521 open issues, Issues + Discussions both enabled, CONTRIBUTING present, last commit 2026-05-27 active). Spun out from Intel to RealSenseAI on 2025-07-11 (independent company, no longer part of Intel — flagged in round-1 engagement). Vendor-org maintainers: Nir Azkiel and team. Engaged maintainer: MartyG-RealSense (RealSense community maintainer, NONE org-association). Cross-platform C++ SDK + Python pyrealsense2 + separate realsense-ros Apache-2.0."
-  last_touch: "2026-06-07"
+  last_touch: "2026-06-08"
   response: engaged
   tier: A
   country: US
@@ -68,8 +68,10 @@
   comments:
     - date: "2026-06-07"
       text: "MartyG-RealSense pinged on #15108 (2026-06-07): 'Do you require further assistance with this case?' (courteous close-out nudge). Replied 2026-06-07 (idoco2003): no further assistance needed, his corrections are pulled into URML's plan (RealSenseAI independence, L515 retired -> D400+D500, no in-SDK face/object detection / RealSense ID for auth); a librealsense adapter would follow his optional-PR path or stay a separate compatible extension; good to close from our side."
+    - date: "2026-06-08"
+      text: "MartyG-RealSense signed off warmly on #15108 (2026-06-08): 'You are very welcome... great to hear I was able to cover all of your questions. Thanks for the update!' Pure courtesy close-out responding to our 'good to close from my side'. No reply needed (a thank-you, not a question); thread concluded amicably, OPEN but nothing owed."
   claude_directives: []
-  next_action: "Engaged (MartyG-RealSense). Case closed from our side; nothing owed. If a librealsense adapter materializes, submit as an optional PR (reviewer assigned) or maintain as a separate compatible extension, per MartyG. RFC-0109 corrections (RealSenseAI naming, D400/D500 scope) already actioned."
+  next_action: "Engaged (MartyG-RealSense), concluded amicably. Nothing owed. If a librealsense adapter materializes, optional PR (reviewer assigned) or a separate compatible extension, per MartyG. RFC-0109 corrections already actioned."
   notes: "First Move #10 RFC, Tier A vendor-style. Flagship reference depth-camera SDK. Origin US (pass — independent RealSenseAI Inc., Santa Clara CA since 2025-07-11). Most-active vendor surface in the optical-perception slice. URML-fit: very high; depth + IMU + tracking in one SDK; existing Layer-1 cameras schema is 2D-image-centric so RealSense's depth + point-cloud output may push the same schema-extension question as RFC-0035 Zivid round. Round-1 maintainer correction 2026-05-28: drop L515 (retired pre-2.52.1) + drop inbuilt face/object/gesture claims (third-party / RealSense ID territory). Round-2 maintainer confirmation 2026-05-28: librealsense PR is optional; URML repo as default adapter home is fine."
 
 - slug: stereolabs-zed

@@ -27,6 +27,14 @@ superseded-by: —
 
 ## Summary
 
+> **Maintainer-correction note (2026-06-08):** @ataffanel (Bitcraze co-founder)
+> stated on the sibling firmware thread (RFC-0181, crazyflie-firmware#1636) that
+> `crazyflie-lib-python` declares **GPLv3**. This RFC's "GPL-2.0" for `cflib`
+> below is corrected to **GPLv3**; the integration stance (no vendoring, compose
+> at the CRTP / `cflib` IPC boundary) is unchanged. Bitcraze's stated bar for a
+> future approach: an external URML-maintained adapter plus a working demo with
+> tests and clear safety limits, raised in a host-side repo.
+
 URML does not yet ship a Crazyflie manifest fixture or adapter. This RFC documents the proposed URML v0.1 capability-manifest mapping for the Crazyflie nano-quadcopter over [`bitcraze/crazyflie-lib-python`](https://github.com/bitcraze/crazyflie-lib-python) (GPL-2.0), and **requests review and feedback from the Bitcraze maintainers**. No spec change.
 
 **This is a Move-18 frame-break RFC.** The Crazyflie is an open, ~27-gram research quadcopter that is a fixture in university swarm and control labs. URML's `multirotor` mobility class already fits it, which makes it the cleanest flight demo in the frame-break wave: one sentence to a hovering nano-drone, over an entirely non-ROS, non-MAVLink stack.

@@ -263,14 +263,16 @@
   posted_url: "https://github.com/bitcraze/crazyflie-firmware/issues/1636"
   channel: github_issue
   contact: "bitcraze/crazyflie-firmware (GPL-3.0, 1.5k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). Bitcraze AB, Sweden."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-08"
+  response: declined
   tier: B
   country: SE
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-08"
+      text: "ataffanel (Arnaud Taffanel, Bitcraze co-founder) replied + closed #1636 (2026-06-08): constructive professional decline. (1) Factual correction: crazyflie-lib-python is GPLv3, not Apache-2.0 as RFC-0181 stated - the Apache-2.0-client-boundary argument is invalid. (2) Nothing actionable in crazyflie-firmware; Bitcraze won't host a bridge or add registry links on a proposal alone. (3) Path forward: an external URML-maintained adapter + a working demo with tests + clear safety limits + corrected licensing, opened as a FOCUSED discussion in the relevant HOST-SIDE repo, not the firmware tracker. Replied 2026-06-08 (idoco2003): acknowledged the GPLv3 correction and the host-side/working-demo path. Corrected RFC-0181 (+ sibling draft RFC-0229) license error."
   claude_directives: []
-  next_action: "Posted as Issue bitcraze/crazyflie-firmware#1636 on 2026-05-28. GPL-3.0 firmware cross-citation framing; Apache-2.0 crazyflie-lib-python client is URML's integration boundary. Light-touch follow-up at 2026-06-25."
+  next_action: "Declined (ataffanel, constructive, clear re-engagement path). To re-engage: build an external URML-maintained Crazyflie adapter on cflib (GPLv3) at the CRTP/IPC boundary with a working demo + tests + safety limits, then open a focused discussion in a HOST-SIDE Bitcraze repo (not crazyflie-firmware). RFC-0181/0229 license corrected to GPLv3. Drone-profile/multirotor fit is real but gated on a working demo, not a cold RFC."
   notes: "Tier B. Origin SE (pass). GPL-3.0 copyleft. URML-fit: high for research-drone class; cross-citation appropriate."
 
 - slug: stm-stm32cube
