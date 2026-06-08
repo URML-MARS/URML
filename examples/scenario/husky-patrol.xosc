@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenSCENARIO>
+  <FileHeader revMajor="1" revMinor="2" date="2026-01-01T00:00:00" description="URML-governed agent under an OpenSCENARIO run (husky_amr_1)" author="URML (urml.dev)" />
+  <ParameterDeclarations />
+  <CatalogLocations />
+  <RoadNetwork>
+    <LogicFile filepath="straight_500m.xodr" />
+  </RoadNetwork>
+  <Entities>
+    <ScenarioObject name="urml_agent">
+      <Vehicle name="husky_amr_1" vehicleCategory="car">
+        <BoundingBox>
+          <Center x="0" y="0" z="0.2" />
+          <Dimensions width="0.67" length="0.99" height="0.39" />
+        </BoundingBox>
+        <Performance maxSpeed="1" maxDeceleration="3.0" maxAcceleration="2.0" />
+        <Axles>
+          <FrontAxle maxSteering="0.5" wheelDiameter="0.33" trackWidth="0.55" positionX="0.33" positionZ="0.165" />
+          <RearAxle maxSteering="0.0" wheelDiameter="0.33" trackWidth="0.55" positionX="0.0" positionZ="0.165" />
+        </Axles>
+        <Properties />
+      </Vehicle>
+    </ScenarioObject>
+  </Entities>
+  <Storyboard>
+    <Init>
+      <Actions>
+        <Private entityRef="urml_agent">
+          <PrivateAction>
+            <TeleportAction>
+              <Position>
+                <WorldPosition x="0" y="0" z="0" h="0" />
+              </Position>
+            </TeleportAction>
+          </PrivateAction>
+          <PrivateAction>
+            <LongitudinalAction>
+              <SpeedAction>
+                <SpeedActionDynamics dynamicsShape="step" value="0" dynamicsDimension="time" />
+                <SpeedActionTarget>
+                  <AbsoluteTargetSpeed value="1" />
+                </SpeedActionTarget>
+              </SpeedAction>
+            </LongitudinalAction>
+          </PrivateAction>
+        </Private>
+      </Actions>
+    </Init>
+    <Story name="urml_navigation_story">
+      <Act name="urml_navigation_act">
+        <ManeuverGroup maximumExecutionCount="1" name="urml_agent_group">
+          <Actors selectTriggeringEntities="false">
+            <EntityRef entityRef="urml_agent" />
+          </Actors>
+          <Maneuver name="urml_navigation">
+            <Event name="goto_waypoint_a" priority="overwrite">
+              <Action name="acquire_waypoint_a">
+                <PrivateAction>
+                  <RoutingAction>
+                    <AcquirePositionAction>
+                      <Position>
+                        <WorldPosition x="4" y="0" z="0" h="0" />
+                      </Position>
+                    </AcquirePositionAction>
+                  </RoutingAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition name="start_goto_waypoint_a" delay="0" conditionEdge="none">
+                    <ByValueCondition>
+                      <SimulationTimeCondition value="0" rule="greaterThan" />
+                    </ByValueCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+            <Event name="goto_waypoint_b" priority="overwrite">
+              <Action name="acquire_waypoint_b">
+                <PrivateAction>
+                  <RoutingAction>
+                    <AcquirePositionAction>
+                      <Position>
+                        <WorldPosition x="4" y="6" z="0" h="0" />
+                      </Position>
+                    </AcquirePositionAction>
+                  </RoutingAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition name="start_goto_waypoint_b" delay="0" conditionEdge="none">
+                    <ByValueCondition>
+                      <StoryboardElementStateCondition storyboardElementType="event" storyboardElementRef="goto_waypoint_a" state="completeState" />
+                    </ByValueCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+            <Event name="goto_charge_point" priority="overwrite">
+              <Action name="acquire_charge_point">
+                <PrivateAction>
+                  <RoutingAction>
+                    <AcquirePositionAction>
+                      <Position>
+                        <WorldPosition x="0" y="0" z="0" h="0" />
+                      </Position>
+                    </AcquirePositionAction>
+                  </RoutingAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition name="start_goto_charge_point" delay="0" conditionEdge="none">
+                    <ByValueCondition>
+                      <StoryboardElementStateCondition storyboardElementType="event" storyboardElementRef="goto_waypoint_b" state="completeState" />
+                    </ByValueCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+          </Maneuver>
+        </ManeuverGroup>
+        <StartTrigger>
+          <ConditionGroup>
+            <Condition name="urml_act_start" delay="0" conditionEdge="none">
+              <ByValueCondition>
+                <SimulationTimeCondition value="0" rule="greaterThan" />
+              </ByValueCondition>
+            </Condition>
+          </ConditionGroup>
+        </StartTrigger>
+      </Act>
+    </Story>
+    <StopTrigger />
+  </Storyboard>
+</OpenSCENARIO>
