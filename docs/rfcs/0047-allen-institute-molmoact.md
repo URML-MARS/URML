@@ -27,6 +27,12 @@ superseded-by: —
 
 ## Summary
 
+> **Maintainer-correction note (2026-06-08):** @jiafeid (Ai2, CONTRIBUTOR)
+> engaged on both #38 and #39 directing URML to **use MolmoAct 2** (the May-2026
+> successor with the two-armed tabletop dataset). The bridge is retargeted to
+> MolmoAct 2 throughout, depending on the published MolmoAct 2 HuggingFace
+> inference surface rather than v1. Acknowledgements posted on both threads.
+
 URML does not yet ship a MolmoAct integration. This RFC proposes the integration shape for a future `urml-molmoact-bridge` reference package that wraps MolmoAct's action output and translates it into URML primitive calls, and proposes URML annotation for Ai2's newly released open-source two-armed tabletop manipulation dataset. No spec change on URML's side. This RFC documents the proposed mapping and requests review and feedback from the Ai2 Embodied AI initiative and the `allenai/molmoact` maintainers.
 
 Move #2 Outreach RFC. Proposal-only: no bridge code or dataset annotation in this PR.

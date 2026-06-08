@@ -31,6 +31,14 @@ from that target's maintainers. It does not modify URML's normative surface.
 
 ## Summary
 
+> **Maintainer-correction note (2026-06-08):** @svwilliams (fuse maintainer)
+> engaged and confirmed two points folded in here. The license is
+> **BSD-3-Clause** (confirmed, not just inferred). And fuse's per-estimate
+> **covariance is an opt-in advisory signal, explicitly NOT safety-rated**, so
+> URML must not treat it as a safety gate. URML therefore models fuse as a
+> config-dependent **pose source** beside robot_localization, and any future
+> covariance-quality threshold stays an advisory hint, never a safety guarantee.
+
 Move #25 is URML's SLAM and state-estimation wave, round two, extending the
 Move #16 SLAM batch. This RFC reaches
 [`locusrobotics/fuse`](https://github.com/locusrobotics/fuse), a graph-based
