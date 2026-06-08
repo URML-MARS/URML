@@ -29,6 +29,18 @@ superseded-by: —
 
 URML does not yet ship a Crazyflie manifest fixture or adapter. This RFC documents the proposed URML v0.1 capability-manifest cross-citation for Bitcraze's Crazyflie nano-quadcopter platform over [`bitcraze/crazyflie-firmware`](https://github.com/bitcraze/crazyflie-firmware) (GPL-3.0), and **requests review and feedback from the bitcraze maintainers**. **GPL-3.0 — cross-citation framing** (URML's Apache-2.0 adapter pattern does not embed GPL-3.0 firmware; URML composes at the protocol / Crazyradio boundary). No spec change.
 
+> **Maintainer-correction note (2026-06-08):** @ataffanel (Arnaud Taffanel,
+> Bitcraze co-founder) corrected a license error and closed the thread.
+> `crazyflie-lib-python` is **GPLv3, not Apache-2.0**, so the "Apache-2.0
+> client-library boundary" argument used below is **withdrawn**. Both the
+> firmware and the host library are GPL; URML's Apache-2.0 adapter composes at
+> the **CRTP protocol / IPC boundary** (no code vendoring), not at an Apache-2.0
+> client surface. Bitcraze will not host a bridge or add registry links on a
+> proposal alone; the path forward is an **external URML-maintained adapter plus
+> a working demo with tests and clear safety limits**, raised in the relevant
+> **host-side** repository, not the firmware tracker. The "Apache-2.0 client"
+> references below are superseded by this note.
+
 ## Motivation
 
 Bitcraze AB (Sweden) makes the Crazyflie — the canonical open-source nano-quadcopter research platform. Used widely in swarm-robotics research, distributed-control experiments, and educational labs. Firmware + Python client + hardware all open-source under GPL-3.0 / Apache-2.0 mix. Repo at [`bitcraze/crazyflie-firmware`](https://github.com/bitcraze/crazyflie-firmware) (GPL-3.0, 1.5k stars, Issues enabled, last commit `2026-05-26` very active, **not archived**).
@@ -59,15 +71,15 @@ URML-fit angle: Crazyflie is the natural research-nano-quadcopter target for URM
 
 - **Vendor org.** [`bitcraze`](https://github.com/bitcraze) — Bitcraze AB, Sweden.
 - **Flagship repo.** [`bitcraze/crazyflie-firmware`](https://github.com/bitcraze/crazyflie-firmware) — GPL-3.0, 1.5k stars, Issues enabled, last commit 2026-05-26 very active, **not archived**.
-- **Companion repo** (Apache-2.0 host-side): `bitcraze/crazyflie-lib-python` — the URML-compatible integration boundary.
+- **Companion repo** (GPLv3 host-side): `bitcraze/crazyflie-lib-python` — reached at the CRTP / IPC boundary, not vendored (corrected per the note above).
 - **Origin.** Bitcraze AB, Malmö, Sweden. Passes US-federal default policy (NATO+EU).
-- **License fit.** GPL-3.0 firmware (cross-citation only); Apache-2.0 client library (adapter-compatible).
+- **License fit.** GPL-3.0 firmware and GPLv3 client library (`crazyflie-lib-python`); neither is Apache-2.0, so URML integrates at the CRTP / IPC boundary with no code vendoring.
 - **Maintainer signal.** Very active surface; vendor-direct commercial entity.
 
 ### Spec / validator / reference-runtime / conformance changes
 
 - Spec / validator: none in this RFC; payload-class + CRTP-substrate + firmware-license-boundary Spec RFCs queued.
-- Reference runtime: future `reference/drone-runtime/CrazyflieAdapter` is a candidate — composes with `crazyflie-lib-python` (Apache-2.0) at the host-side; URML manifest declares the boundary.
+- Reference runtime: future `reference/drone-runtime/CrazyflieAdapter` is a candidate — composes with `crazyflie-lib-python` (GPLv3) at the CRTP / IPC boundary, no code vendoring; URML manifest declares the boundary.
 
 ## Backward compatibility
 
