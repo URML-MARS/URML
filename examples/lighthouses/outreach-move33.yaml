@@ -80,19 +80,21 @@
   posted_url: "https://github.com/Romea/cropcraft/issues/18"
   channel: github_issue
   contact: "Romea/cropcraft (Apache-2.0, ~106 stars, Issues enabled, Discussions OFF, not archived, active). Procedural 3D crop-field world generator for robotics sim (Blender backend, LiDAR/camera ground truth). INTL (France; Romea ag-robotics group)."
-  last_touch: "2026-06-06"
-  response: none
+  last_touch: "2026-06-08"
+  response: engaged
   tier: A
   country: INTL
   sector: simulator
   comments:
     - date: "2026-06-06"
       text: "Posted the RFC-0406 body to https://github.com/Romea/cropcraft/issues/18 under idoco2003 (Move #33 agriculture wave). Awaiting response."
+    - date: "2026-06-08"
+      text: "CyrillePierre replied on #18 (2026-06-08), constructive despite mild skepticism ('I don't particularly see the point, but feel free to develop this layer'). Answered all three questions: (manifest) any robot that moves over UNSTRUCTURED TERRAIN carrying an AGRICULTURAL IMPLEMENT; CropCraft tests POST-GROWTH tasks (weeding, spreading, harvesting); (integration) the broader Romea middleware IS a natural integration point - ROS2 nodes/libraries for ag tasks on real or simulated robots, GNSS path-following; entry point = the Tirrex workspace (github.com/Tirrex-Roboterrium/tirrex_workspace). Replied 2026-06-08 (idoco2003): captured the manifest direction, confirmed Romea/Tirrex as the integration entry point with URML composing above it."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md CropCraft body as a GitHub Issue (Discussions off) on Romea/cropcraft under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Strongest ag-sim by stars+license. URML drives a field robot in a CropCraft world via ROS 2; ties RFC-0381. Romea middleware = org-level integration point."
+  next_action: "Engaged (CyrillePierre, Romea/CropCraft). Manifest direction: unstructured-terrain drive type + a declared agricultural-implement set + a post-growth crop-task vocabulary (weeding/spreading/harvesting). Real integration entry point is the Romea middleware / Tirrex workspace (ROS2 + GNSS path-following) - URML validates intent above it, the Romea nodes execute. Cross-link the sibling Romea thread inrae-romea (move7, RFC-0096, Romea/cropcraft#17, currently none); the Tirrex pointer applies there too. Field-robot example is a candidate build if demand surfaces."
   notes: "Permissive (Apache-2.0). Ask: field-robot manifest (drive, rows, implements, crop vocab, GNSS). No license-ask."
 
 - slug: openweedlocator
