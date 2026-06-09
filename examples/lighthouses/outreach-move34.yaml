@@ -86,11 +86,13 @@
       text: "Posted the RFC-0414 body to https://github.com/IMRCLab/crazyswarm2/discussions/864 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
     - date: "2026-06-08"
       text: "whoenig (Wolfgang Hoenig, IMRCLab, Crazyswarm2 author) replied on discussion #864 (2026-06-08), engaged + constructive: (1) interface - per-UAV velocity and/or position control is supported; the dispatch surface depends on URML's interface shape; (2) capabilities vary per drone (all Crazyflie/Crazyflie-Bolt-based, different capabilities), per operating-area size, and per swarm size. Replied 2026-06-08 (idoco2003): mapped his points onto URML's fleet model - each Crazyflie a roster member with its own manifest (RFC-0286), the operating area an operational-clearance volume the validator deconflicts (RFC-0291), swarm size = roster length; per-UAV velocity/position is the fan-out dispatch surface. Offered a concrete swarm example as the next step."
+    - date: "2026-06-08"
+      text: "Shipped the worked example (PR #365, examples/fleet/crazyswarm2/): validates a 3-Crazyflie fleet program (take off, triangle formation, land, in lockstep) with validate_fleet, then maps each per-UAV primitive onto the real crazyflie_interfaces services (take_off->Takeoff, move_to->GoTo, land->Land; barrier->rendezvous). FIRST worked example to exercise URML's fleet model (RFC-0286 roster + RFC-0291 clearance-volume deconfliction): two drones to the same corner -> fleet.concurrent_shared_workspace, rejected before any command. Pure-stdlib, deterministic, byte-asserted. Posted a follow-up to @whoenig on #864 (2026-06-08) linking it + asking whether the mapping + per-drone capability split match his model."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Crazyswarm2 body as a GitHub Discussion on IMRCLab/crazyswarm2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (whoenig, IMRCLab/Crazyswarm2 author - a major swarm-research figure). His points map directly onto URML's fleet roster (RFC-0286) + operational-clearance volumes (RFC-0291). ACTION candidate: a concrete URML fleet-intent -> Crazyswarm2 swarm example (per-UAV velocity/position fan-out, deconflicted operating volume), the swarm analog of the esmini/kortex worked examples. Distinct from the declined crazyflie-firmware thread (this is the research swarm framework, engaged)."
+  next_action: "Engaged (whoenig, Crazyswarm2 author). Worked swarm example shipped (PR #365) + announced on #864; awaiting his read. Next if he re-engages: a live rclpy dispatcher fanning validated fleet intent to the per-CF service clients (the runtime side). First exercise of URML's fleet model in a worked example; siblings esmini (#357) + kortex (#362)."
   notes: "Permissive (MIT). High-value swarm teaching/research demonstrator. No license-ask."
 
 - slug: rotorpy
