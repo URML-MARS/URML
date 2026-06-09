@@ -1,0 +1,23 @@
+URML -> ros2_kortex dispatch plan
+robot: kinova_cobot_cell_1 (Kinova Gen3 cobot via Kortex.)
+validation: ACCEPTED against kinova-gen3.manifest.yaml
+  (static gate: an inadmissible program is rejected here; no Kortex goal is dispatched)
+
+1. move_to(location=pick_bin)
+   -> MoveIt 2 (kortex_moveit_config) plans to pose {x=0.4, y=-0.3, z=0.1} in frame 'cell',
+      executed via joint_trajectory_controller/follow_joint_trajectory (control_msgs/action/FollowJointTrajectory)
+2. detect(object=widget_red, store_as=target)
+   -> perception: the wrist_rgb camera + a vision pipeline; not a Kortex motion action
+      (URML binds the detected object for the downstream grasp)
+3. grasp(target=$target, force=firm)
+   -> robotiq_gripper_controller/gripper_cmd (control_msgs/action/GripperCommand):
+      command.position=closed, command.max_effort='firm', resolved substrate-side within the gripper's [1, 140] N rating
+4. move_to(location=kitting_tray_red, carrying $target)
+   -> MoveIt 2 (kortex_moveit_config) plans to pose {x=-0.4, y=0.2, z=0.1} in frame 'cell',
+      executed via joint_trajectory_controller/follow_joint_trajectory (control_msgs/action/FollowJointTrajectory)
+5. release(mode=place, at=kitting_tray_red)
+   -> robotiq_gripper_controller/gripper_cmd (control_msgs/action/GripperCommand): command.position=open, command.max_effort=0
+      (the placement pose is reached by the preceding move_to)
+6. move_to(location=home_pose)
+   -> MoveIt 2 (kortex_moveit_config) plans to pose {x=0, y=0, z=0.3} in frame 'cell',
+      executed via joint_trajectory_controller/follow_joint_trajectory (control_msgs/action/FollowJointTrajectory)
