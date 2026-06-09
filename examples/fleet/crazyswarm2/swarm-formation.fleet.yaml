@@ -1,0 +1,62 @@
+# URML v0.1 fleet mission — a three-Crazyflie formation (RFC-0286 / RFC-0291).
+#
+# One coordinated intent over three identical agents:
+#   1. All three take off together.
+#   2. BARRIER  — no one forms up until all three are airborne.
+#   3. In parallel, each flies to its own corner of a triangle formation.
+#   4. BARRIER  — the formation is complete before anyone leaves it.
+#   5. All three land together.
+#
+# What the validator checks before any command goes out (validate_fleet):
+#   - every primitive against ITS member's manifest (take_off/move_to/land need
+#     the multirotor + service_ceiling the Crazyflie declares);
+#   - the three formation corners are checked for deconfliction against each
+#     drone's clearance volume — send two to the same corner and you get
+#     fleet.concurrent_shared_workspace;
+#   - each barrier member must declare `peer_link` -> fleet.barrier_missing_peer_link.
+#
+# Run it hermetically:  python urml_to_crazyswarm2.py
+#
+# Two YAML documents: the roster, then the program.
+
+# --- Document 1: the roster (every member is a Crazyflie) ---
+roster_version: "0.1"
+description: A three-Crazyflie swarm flying a triangle formation.
+shared_frames: [world]   # the common frame the validator deconflicts targets in
+members:
+  - { name: cf1, manifest: crazyflie }
+  - { name: cf2, manifest: crazyflie }
+  - { name: cf3, manifest: crazyflie }
+---
+# --- Document 2: the fleet program ---
+profile: drone
+description: Three Crazyflies take off, form a triangle, and land, in lockstep.
+behavior:
+  type: sequence
+  steps:
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: cf1, body: { take_off: { altitude: 1.0 } } }
+        - { type: "on", member: cf2, body: { take_off: { altitude: 1.0 } } }
+        - { type: "on", member: cf3, body: { take_off: { altitude: 1.0 } } }
+
+    - type: barrier
+      members: [cf1, cf2, cf3]
+
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: cf1, body: { move_to: { location: corner_a } } }
+        - { type: "on", member: cf2, body: { move_to: { location: corner_b } } }
+        - { type: "on", member: cf3, body: { move_to: { location: corner_c } } }
+
+    - type: barrier
+      members: [cf1, cf2, cf3]
+
+    - type: parallel
+      complete_when: all
+      branches:
+        - { type: "on", member: cf1, body: { land: {} } }
+        - { type: "on", member: cf2, body: { land: {} } }
+        - { type: "on", member: cf3, body: { land: {} } }

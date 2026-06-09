@@ -1,0 +1,20 @@
+URML -> Crazyswarm2 dispatch plan
+fleet: cf1, cf2, cf3 (each: Bitcraze Crazyflie nano-quadcopter)
+validate_fleet: ACCEPTED
+  (cross-robot static gate: the formation corners are deconflicted against each drone's
+   clearance volume; no command goes out for a rejected program)
+
+Phase 1 (parallel, all):
+  cf1: take_off(altitude=1.0) -> /cf1/takeoff  (crazyflie_interfaces/srv/Takeoff: height=1.0)
+  cf2: take_off(altitude=1.0) -> /cf2/takeoff  (crazyflie_interfaces/srv/Takeoff: height=1.0)
+  cf3: take_off(altitude=1.0) -> /cf3/takeoff  (crazyflie_interfaces/srv/Takeoff: height=1.0)
+Barrier [cf1, cf2, cf3]: rendezvous; the runtime holds the next phase until all reach completeState
+Phase 2 (parallel, all):
+  cf1: move_to(corner_a) -> /cf1/go_to  (crazyflie_interfaces/srv/GoTo: goal=(1, 0, 1))
+  cf2: move_to(corner_b) -> /cf2/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, 0.87, 1))
+  cf3: move_to(corner_c) -> /cf3/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, -0.87, 1))
+Barrier [cf1, cf2, cf3]: rendezvous; the runtime holds the next phase until all reach completeState
+Phase 3 (parallel, all):
+  cf1: land -> /cf1/land  (crazyflie_interfaces/srv/Land)
+  cf2: land -> /cf2/land  (crazyflie_interfaces/srv/Land)
+  cf3: land -> /cf3/land  (crazyflie_interfaces/srv/Land)

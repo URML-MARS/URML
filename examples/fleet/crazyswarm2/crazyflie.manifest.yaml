@@ -1,0 +1,35 @@
+# A single Crazyflie nano-quadcopter, as a fleet roster member.
+#
+# Every Crazyflie in the swarm uses this manifest (identical agents). The
+# capability shape follows utm_drone (RFC-0291): a multirotor with an
+# operational-clearance volume the validator deconflicts. Scaled down for a
+# nano-quad: low ceiling, small clearance, modest speed. Commanded through
+# Crazyswarm2 / crazyflie_interfaces over CRTP, so the autopilot is `custom`
+# (Crazyflie firmware), not PX4/ArduPilot.
+
+manifest_version: "0.1"
+robot_id: crazyflie
+description: Bitcraze Crazyflie nano-quadcopter, one swarm member.
+
+frames:
+  - name: world
+
+declared_locations:
+  - { name: pad,      pose: { x: 0.0, y: 0.0, z: 0.0 }, frame: world }
+  - { name: corner_a, pose: { x: 1.0, y: 0.0, z: 1.0 }, frame: world }
+  - { name: corner_b, pose: { x: -0.5, y: 0.87, z: 1.0 }, frame: world }
+  - { name: corner_c, pose: { x: -0.5, y: -0.87, z: 1.0 }, frame: world }
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 2.0
+  service_ceiling: 8.0
+  clearance: { radius_m: 0.3, vertical_m: 0.5 }   # nano-quad separation volume
+
+substrate:
+  autopilot_class: custom
+  autopilot_class_note: "Crazyflie firmware (Bitcraze), commanded via Crazyswarm2 / crazyflie_interfaces over CRTP."
+
+connectivity:
+  links:
+    - role: peer_link    # required to participate in a fleet `barrier`
