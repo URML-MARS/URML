@@ -124,19 +124,21 @@
   posted_url: "https://github.com/LCAS/aoc_tomato_farm/issues/5"
   channel: github_issue
   contact: "LCAS/aoc_tomato_farm (Apache-2.0, Issues enabled, ROS 2 Humble, not archived, active). Tomato-glasshouse digital-twin generator + sim from L-CAS / Agri-OpenCore (Univ. Lincoln) — the most active academic agri-robotics ecosystem found (also Qualicrop, GNSS drivers, hunter_with_arm). INTL (UK)."
-  last_touch: "2026-06-06"
-  response: none
+  last_touch: "2026-06-08"
+  response: declined
   tier: A
   country: INTL
   sector: simulator
   comments:
     - date: "2026-06-06"
       text: "Posted the RFC-0408 body to https://github.com/LCAS/aoc_tomato_farm/issues/5 under idoco2003 (Move #33 agriculture wave). Awaiting response."
+    - date: "2026-06-08"
+      text: "marc-hanheide (Marc Hanheide, LCAS) replied + closed #5 (2026-06-08): 'I don't think this is particularly relevant to the work in this repository, but thanks for the link, even though I don't see any immediate need.' Polite decline, no AI-flag, no reply (closed, no need)."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move33.md Agri-OpenCore body as a GitHub Issue on LCAS/aoc_tomato_farm under idoco2003; reference (do not separately post) Qualicrop / hunter_with_arm; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. L-CAS org-anchor (one issue, reference the sibling repos). URML drives the glasshouse digital twin via ROS 2; harvesting ties RFC-0010. Ask: glasshouse/field agri-robot manifest."
+  next_action: "Declined (marc-hanheide, LCAS, no immediate need). Wrong repo-altitude (a specific tomato-farm scenario repo). The agriculture fit is real but routes through the Romea/Tirrex middleware (cropcraft RFC-0406 engaged) or a higher LCAS integration surface, not a scenario repo. No reply, no re-post."
   notes: "Highest-value academic ag ecosystem. Org-anchor courtesy. No license-ask (Apache-2.0)."
 
 - slug: farmbot-ros2

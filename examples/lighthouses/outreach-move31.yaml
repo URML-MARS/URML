@@ -73,7 +73,7 @@
   posted_url: "https://github.com/nasa/cFS/discussions/1046"
   channel: github_discussion
   contact: "nasa/cFS (Apache-2.0, ~1.3k stars, Issues + Discussions enabled, not archived, active — v7.0.1 2026-05-14). NASA Goddard core Flight System: app/software-bus flight-software architecture. US."
-  last_touch: "2026-06-06"
+  last_touch: "2026-06-08"
   response: none
   tier: A
   country: US
@@ -81,11 +81,13 @@
   comments:
     - date: "2026-06-06"
       text: "Posted as a GitHub Discussion (Ideas) under idoco2003: https://github.com/nasa/cFS/discussions/1046. AI-authoring disclosure up front; NO license-ask. Awaiting maintainer reply."
+    - date: "2026-06-08"
+      text: "irowebbn (cFE-familiar community member, NOT a cFS maintainer) replied on discussion #1046 (2026-06-08): could not understand the post ('I have no idea what this LLM is asking about... still don't understand what specifically is being asked... you'll have to be much more clear'). The recurring too-abstract AI-prose comprehension problem. Replied 2026-06-08 (idoco2003) with a short plain-language clarification: one sentence on what URML is + one concrete question (is command ingest via the Software Bus, or app-specific?). Stays none pending whether it lands."
   claude_directives:
     - date: "2026-06-06"
       text: "When authorized, post the posts-move31.md cFS body as a GitHub Discussion on nasa/cFS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Second flight-software substrate binding (sibling of F` 0389); app-command binding via call_program; scheduler timing -> realtime."
+  next_action: "None / clarified (irowebbn confused, non-maintainer). The cFS post was too abstract and drew a comprehension-failure; posted a stripped-down clarification with one concrete SB-command-ingest question. cFS is NASA spacecraft flight software, likely wrong/too-low altitude for URML's robotics-intent framing; do not push. Update only if a maintainer engages on the concrete question."
   notes: "No new primitive. Ask: app/command-code/typed-message binding granularity; cmd/tlm database as the binding source. No license-ask (Apache-2.0)."
 
 - slug: rosa
