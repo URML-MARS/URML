@@ -76,19 +76,21 @@
   posted_url: "https://github.com/IMRCLab/crazyswarm2/discussions/864"
   channel: github_discussion
   contact: "IMRCLab/crazyswarm2 (MIT, ~239 stars, Issues + Discussions enabled, not archived, active). ROS 2 stack for flying swarms of Bitcraze Crazyflie nano-quadcopters, TU Berlin IMRC lab. DE (Germany)."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-06-08"
+  response: engaged
   tier: A
   country: DE
   sector: robot-platform
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0414 body to https://github.com/IMRCLab/crazyswarm2/discussions/864 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
+    - date: "2026-06-08"
+      text: "whoenig (Wolfgang Hoenig, IMRCLab, Crazyswarm2 author) replied on discussion #864 (2026-06-08), engaged + constructive: (1) interface - per-UAV velocity and/or position control is supported; the dispatch surface depends on URML's interface shape; (2) capabilities vary per drone (all Crazyflie/Crazyflie-Bolt-based, different capabilities), per operating-area size, and per swarm size. Replied 2026-06-08 (idoco2003): mapped his points onto URML's fleet model - each Crazyflie a roster member with its own manifest (RFC-0286), the operating area an operational-clearance volume the validator deconflicts (RFC-0291), swarm size = roster length; per-UAV velocity/position is the fan-out dispatch surface. Offered a concrete swarm example as the next step."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Crazyswarm2 body as a GitHub Discussion on IMRCLab/crazyswarm2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Cleanest fleet exercise (many identical nano-quads, one intent). URML fleet (RFC-0286) onto Crazyswarm2. Ask: Crazyflie swarm manifest (arena, altitude, count)."
+  next_action: "Engaged (whoenig, IMRCLab/Crazyswarm2 author - a major swarm-research figure). His points map directly onto URML's fleet roster (RFC-0286) + operational-clearance volumes (RFC-0291). ACTION candidate: a concrete URML fleet-intent -> Crazyswarm2 swarm example (per-UAV velocity/position fan-out, deconflicted operating volume), the swarm analog of the esmini/kortex worked examples. Distinct from the declined crazyflie-firmware thread (this is the research swarm framework, engaged)."
   notes: "Permissive (MIT). High-value swarm teaching/research demonstrator. No license-ask."
 
 - slug: rotorpy
