@@ -29,6 +29,15 @@ superseded-by: —
 
 URML ships `MitsubishiAdapter` (`reference/industrial-arm-runtime/.../adapter.py`) compiling URML programs onto Mitsubishi Electric MELFA arms via `Mitsubishi-Electric-Asia/melfa_ros2_driver` + MoveIt 2. This RFC documents the v0.1 primitive-to-driver mapping and **requests review and feedback from the Mitsubishi-Electric-Asia maintainers**. No spec change.
 
+> **Maintainer-feedback note (2026-06-10):** @hunterzhongME (CONTRIBUTOR, routed
+> in by @offinliu [MEMBER]) gave informal technical feedback on discussion #25,
+> explicitly not as an official Mitsubishi Electric representative. Folded in
+> below: the MELFA-BASIC V invocation path is the **MELFA API for Linux**
+> (host-side, separate from the MoveIt 2 trajectory path); there is **no plan to
+> support the legacy CR1 / CR2 controllers**; and the repo is referenced with
+> neutral wording ("the current public MELFA ROS 2 driver repository is hosted
+> under Mitsubishi-Electric-Asia"), implying no endorsement.
+
 ## Motivation
 
 Mitsubishi Electric is a top-tier industrial-arm vendor in Asia with strong factory-automation / electronics-assembly market share. The `Mitsubishi-Electric-Asia/melfa_ros2_driver` is a **vendor-direct GitHub repo** (not community-only) with Discussions enabled — exactly the kind of high-credibility public engagement venue URML's Move #1 program targets. The MELFA SQ/RV/F-series + the newer FR-series controllers (CR800, CR860) constitute one of the most-deployed Asian industrial arm lines outside the FANUC/Yaskawa duopoly.
@@ -49,8 +58,8 @@ A MELFA cell (RV-2FR / RV-7FRL / FR-series with a 2-finger gripper + wrist RGB) 
 
 ### Compatibility notes
 
-- **Controller line.** `Mitsubishi-Electric-Asia/melfa_ros2_driver` targets the CR800 / CR860 controllers (current FR/F generations). Legacy CR1 / CR2 controllers may not be covered.
-- **MELFA-BASIC V invocation.** Mitsubishi's on-controller programming language is MELFA-BASIC V (BASIC-derived; analog of KUKA's KRL, Yaskawa's INFORM, Stäubli's VAL 3). [RFC-0015](0015-control-program-invocation.md) (`call_program`) is the proposed binding.
+- **Controller line.** `Mitsubishi-Electric-Asia/melfa_ros2_driver` targets the CR800 / CR860 controllers (current FR/F generations). There is no plan to support the legacy CR1 / CR2 controllers (maintainer-confirmed, 2026-06-10).
+- **MELFA-BASIC V invocation.** Mitsubishi's on-controller programming language is MELFA-BASIC V/VI (BASIC-derived; analog of KUKA's KRL, Yaskawa's INFORM, Stäubli's VAL 3). [RFC-0015](0015-control-program-invocation.md) (`call_program`) is the binding, and per maintainer feedback its path is the **MELFA API for Linux** (Mitsubishi's official Linux SDK; manual BFP-A3938), which exposes program start/stop as ROS 2 services (`/melfa_start`, `/melfa_stop`). This is kept **separate from the ROS 2 / MoveIt 2 trajectory path**: `move_to` / `grasp` route through `melfa_ros2_driver` + MoveIt 2, while `call_program` invokes a commissioned MELFA-BASIC routine via the MELFA API for Linux. The validator gates the program name against the manifest's declared `programs:` block before invocation. The SDK is a proprietary, account-gated vendor download, so URML composes above it with no code vendored.
 - **RT Toolbox.** Mitsubishi's PC-side development environment (RT Toolbox3 / RT VisualBox) is the typical authoring path for MELFA-BASIC V; URML's `MitsubishiAdapter` does not depend on RT Toolbox — only the runtime driver path is required.
 - **Origin.** Mitsubishi Electric Corporation, Tokyo, Japan; passes the US-federal default policy without flagging.
 
