@@ -92,14 +92,16 @@
   sent_at: 2026-05-22
   channel: github
   contact: "@Mitsubishi-Electric-Asia"
-  last_touch: 2026-05-22
-  response: none
+  last_touch: 2026-06-10
+  response: acked
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-10"
+      text: "Posted as discussion Mitsubishi-Electric-Asia/melfa_ros2_driver#25 (2026-05-22, Move #1, RFC-0027); the URL was never recorded on this row. First activity 2026-06-10: offinliu (maintainer) routed the thread to @hunterzhongME (acknowledged + delegated internally, no substantive response yet). No reply owed to a bare routing tag; await hunterzhongME."
   claude_directives: []
-  next_action: "wait 14 d; if silent, nudge via RFC-0027 comment"
+  next_action: "Acked (offinliu routed to @hunterzhongME, 2026-06-10). Await hunterzhongME's substantive reply on the RFC-0027 MELFA mapping; nudge only if silent ~2 weeks. Thread: melfa_ros2_driver#25. MELFA arm ties to the industrial-arm-runtime + RFC-0027; engage the manipulation mapping when a maintainer responds."
   notes: ""
 - slug: fanuc
   rfc: 28
