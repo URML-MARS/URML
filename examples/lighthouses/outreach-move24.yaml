@@ -91,19 +91,21 @@
   posted_url: "https://github.com/o3de/o3de/issues/19806"
   channel: github_issue
   contact: "o3de/o3de (Open 3D Engine, Linux Foundation; ~9,257 stars, Issues AND Discussions enabled, not archived, last push 2026-06-01, very active). The ROS 2 Robotics Gem lives in o3de/o3de-extras (folded row below). License Apache-2.0 / MIT dual (asked to confirm in the RFC). Linux Foundation."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-09"
+  response: engaged
   tier: A
   country: INTL
   sector: simulator
   comments:
     - date: "2026-06-02"
       text: "Posted issue #19806 pointing at the RFC (under idoco2003, after RFCs 0322-0331 landed on main via PR #276), AI-authoring disclosure up front. Awaiting maintainer reply."
+    - date: "2026-06-09"
+      text: "byrcolin (O3DE) replied on #19806 (2026-06-09) answering the license-clarification question: O3DE is Apache-2.0 / MIT dual-licensed (linked LICENSE.txt). Light but helpful engagement (answered the one factual ask). Replied 2026-06-09 (idoco2003): confirmed, will record and drop the license question. RFC-0324 updated with a maintainer-correction note. (The license-ask was the avoidable AI-tell; folded the answer in.)"
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0324 merges, post the posts-move24.md O3DE body on o3de/o3de under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. If a maintainer routes to o3de-extras, fork the o3de-extras row to live."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Engaged-light (byrcolin, O3DE). License resolved (Apache-2.0 / MIT). RFC-0324 corrected. O3DE's robotics surface is the ROS 2 Robotics Gem (o3de-extras sibling row); a sim worked example would compose above the Gem like the esmini/Genesis sim engagements. Low follow-up priority unless a maintainer engages on the mapping."
   notes: "Move #24. URML -> O3DE ROS 2 Gem simulated robot; manifest aligns with the imported URDF / spawnable. LF governance (clean, allied). o3de-extras folded. Manifest gap queued (simulator-target class hint). Cross-link RFC-0234 (Webots), RFC-0060 (MuJoCo). Origin INTL (Linux Foundation). Verified 2026-06-02."
 
 - slug: carla

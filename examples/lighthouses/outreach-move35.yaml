@@ -185,19 +185,21 @@
   posted_url: "https://github.com/PR2/pr2_robot/issues/277"
   channel: github_issue
   contact: "PR2/pr2_robot (BSD per-package, ~59 stars, Issues enabled, not archived; last activity 2024-09, dormant ~20mo). Community-maintained bringup/robot stack for PR2, the dual-arm mobile manipulator that defined the 'go fetch the mug' demo. US (PR2 community / OSRF lineage)."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-06-09"
+  response: declined
   tier: B
   country: US
   sector: robot-platform
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0429 body to https://github.com/PR2/pr2_robot/issues/277 under idoco2003 (Move #35 mobile-manipulation wave). Awaiting response."
+    - date: "2026-06-09"
+      text: "PR2/pr2_robot#277 was CLOSED with zero maintainer comments (silent close), found 2026-06-09. Nothing to reply to. PR2 (legacy Willow Garage platform) is largely dormant. Accept silently, no reply, no re-post."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move35.md PR2 body as a GitHub Issue on PR2/pr2_robot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Canonical 'fetch the mug' dual-arm platform; exercises RFC-0010 bimanual (arm selector + bimanual). Tier B (dormant ~20mo). Ask: dual-arm mobile-manipulator manifest."
+  next_action: "Declined (silent close). PR2 is a legacy/dormant platform; wrong target. No reply, no re-post."
   notes: "Permissive (BSD). Canonical-reference vertex; live community org (Willow Garage org gone). No license-ask."
 
 - slug: ros2-kortex

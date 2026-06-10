@@ -32,6 +32,11 @@ normative surface.
 
 ## Summary
 
+> **Maintainer-correction note (2026-06-09):** @byrcolin (O3DE) confirmed the
+> license: O3DE is **Apache-2.0 / MIT dual-licensed** (the GitHub API just did
+> not surface an SPDX id at verification time). The license-clarification
+> question below is answered and withdrawn.
+
 O3DE (Open 3D Engine) is a Linux Foundation governed open 3D engine. Its
 robotics surface is the **ROS 2 Robotics Gem**, which lives in the sibling repo
 [`o3de/o3de-extras`](https://github.com/o3de/o3de-extras) and turns O3DE into a
