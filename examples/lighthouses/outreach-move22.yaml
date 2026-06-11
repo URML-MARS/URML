@@ -204,17 +204,19 @@
 - slug: eclipse-milo
   rfc: 315
   sent_at: "2026-06-02"
-  posted_url: "https://github.com/eclipse-milo/milo/issues/1761"
+  posted_url: "https://github.com/eclipse-milo/milo/discussions/1769"
   channel: github_issue
   contact: "eclipse-milo/milo (EPL-2.0, ~1.4k stars, Issues + Discussions enabled, active, **not archived**). The leading open Java OPC UA stack; Eclipse ecosystem."
-  last_touch: "2026-06-02"
+  last_touch: "2026-06-10"
   response: none
   tier: B
   country: INTL
   sector: protocol-substrate
-  comments: []
+  comments:
+    - date: "2026-06-10"
+      text: "A maintainer CONVERTED issue #1761 to discussion #1769 (eclipse-milo routes Q&A to Discussions, the right venue). Ledger posted_url repointed from issues/1761 to discussions/1769. Discussion is open with zero comments, no substantive maintainer reply yet. No action owed; conversion is housekeeping, mildly positive (moved to the proper channel)."
   claude_directives: []
-  next_action: "Posted as Issue eclipse-milo/milo#1761 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
+  next_action: "Awaiting engagement on discussion #1769 (converted from issue #1761; URL corrected). milo is the Eclipse Java/JVM OPC UA stack (sibling of Cyclone/iceoryx, both engaged); the OPC UA mapping ties to the OPC-F engagement + RFC-0014. Nudge only if silent."
   notes: "Tier B. JVM OPC UA implementation; same mapping as open62541. Lets the OPC UA mapping be validated across C / .NET / Java / Python stacks."
 
 - slug: opcua-asyncio

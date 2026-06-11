@@ -81,19 +81,21 @@
   posted_url: "https://github.com/mani-skill/ManiSkill/discussions/1429"
   channel: github_discussion
   contact: "mani-skill/ManiSkill (Apache-2.0, ~3.0k stars, Issues + Discussions enabled, not archived, active — 2026-05-20). GPU-parallel manipulation sim + benchmark. UC San Diego / Hillbot. US."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-06-10"
+  response: declined
   tier: A
   country: US
   sector: simulator
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0449 body to https://github.com/mani-skill/ManiSkill/discussions/1429 under idoco2003 (Move #38 VLA/robot-learning round-2 wave). Awaiting response."
+    - date: "2026-06-10"
+      text: "StoneT2000 (Stone Tao, ManiSkill lead) closed discussion #1429 (2026-06-10): 'Sorry, I am not really going to respond to a bot. From reading the details here I don't think ManiSkill would benefit from additional hierarchy like this.' AI-skepticism + reasoned no-need decline. Accepted silently, no reply (he won't engage a bot; replying confirms it)."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move38.md ManiSkill body as a GitHub Discussion on mani-skill/ManiSkill under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. GPU manipulation benchmark; evaluate validated-intent dispatch at scale (ties RFC-0381). Ask: ManiSkill task-robot manifest."
+  next_action: "Declined (StoneT2000, AI-skeptic + reasoned no-need). ManiSkill is a manipulation-skill RL sim/benchmark; he reads URML as unnecessary hierarchy above the policy. The learned-policy-as-substrate framing landed better on the training-library side (rl_games engaged); do not re-pitch ManiSkill."
   notes: "Permissive (Apache-2.0). Manipulation-benchmark vertex. No license-ask."
 
 - slug: libero
