@@ -91,11 +91,11 @@
 - slug: copilot-rv
   rfc: 364
   sent_at: "2026-06-04"
-  posted_url: "https://github.com/Copilot-Language/copilot/issues/738"
+  posted_url: "https://github.com/Copilot-Language/copilot/discussions/739"
   channel: github_issue
   contact: "Copilot-Language/copilot (runtime-verification framework: a stream-based hard-real-time language embedded in Haskell that generates hard-real-time C monitors; ~829 stars, Issues enabled, not archived, active, last push 2026-05-08). NASA Langley / Galois lineage (US), aerospace-grade."
-  last_touch: "2026-06-08"
-  response: declined
+  last_touch: "2026-06-10"
+  response: none
   tier: A
   country: US
   sector: framework-skill
@@ -104,11 +104,13 @@
       text: "Posted issue #738 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
     - date: "2026-06-08"
       text: "Copilot-Language/copilot#738 was CLOSED with zero maintainer comments (silent comment-less close), found 2026-06-08. Nothing to reply to. Disappointing given Copilot is the hard-real-time monitor backend RFC-0382 compiles to, but a silent close is a soft pass. Accept silently, no reply, no re-post."
+    - date: "2026-06-10"
+      text: "CORRECTION (2026-06-10, issue->discussion rule sweep): issue #738 was NOT a silent close. A maintainer CONVERTED it to discussion #739 (open, 0 comments, no reply yet). Repointed posted_url issues/738 -> discussions/739 and reset response declined -> none. Copilot (NASA Langley / Galois) is the hard-real-time monitor backend RFC-0382 compiles to - the engagement is alive in Discussions, not declined."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0364 merges, post the posts-move28.md Copilot body on Copilot-Language/copilot under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "Declined (silent close). Copilot (NASA Langley / Galois) remains the documented hard-real-time compile target for RFC-0382 monitorable properties regardless; if a worked Copilot monitor example is ever built, re-engage with running code rather than a cold RFC. The RTAMT (RFC-0362) / Reelay (RFC-0363) / MoonLight (RFC-0371) backends are the live RV conversations."
+  next_action: "Awaiting engagement on discussion #739 (converted from issue #738; URL corrected). Copilot is the documented hard-real-time compile target for RFC-0382 monitorable properties; a worked Copilot-monitor example would re-warm it. Nudge only if silent."
   notes: "Move #28 stream-based RV (hard-real-time C monitors, NASA/Galois). Deployment-grade runtime guard for envelope properties. Ogma (RFC-0365) builds on it. Origin US. Verified 2026-06-04."
 
 - slug: ogma
