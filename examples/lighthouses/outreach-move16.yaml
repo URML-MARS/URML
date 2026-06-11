@@ -318,17 +318,19 @@
 - slug: stella-vslam
   rfc: 211
   sent_at: "2026-05-29"
-  posted_url: "https://github.com/stella-cv/stella_vslam/issues/660"
+  posted_url: "https://github.com/stella-cv/stella_vslam/discussions/661"
   channel: github_issue
   contact: "stella-cv/stella_vslam (Other — license unclear, 1.2k stars, Issues enabled, last commit 2026-05-27, **not archived**). Community fork of archived OpenVSLAM (originally JP-origin)."
-  last_touch: "2026-06-05"
-  response: declined
+  last_touch: "2026-06-10"
+  response: none
   tier: B
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-05"
       text: "Issue #660 was CLOSED with zero maintainer comments (a silent close, no reason given), found 2026-06-05. Nothing to reply to. The post carried the license-clarification ask (the title literally reads 'license clarification'), the known AI-tell anti-pattern, which likely contributed. Per discipline: accept silently, no reply, no re-post."
+    - date: "2026-06-10"
+      text: "CORRECTION (2026-06-10, issue->discussion rule sweep): issue #660 was NOT a silent-close decline. A maintainer CONVERTED it to discussion #661 (open, 0 comments, no reply yet). Repointed posted_url issues/660 -> discussions/661 and reset response declined -> none (awaiting engagement). The earlier license-ask observation (RFC-0211 carried a license-clarification ask) still stands as a posting lesson, but the thread was not declined."
   claude_directives: []
-  next_action: "Declined (silent comment-less close). Do not re-post. Stella VSLAM is OpenVSLAM-lineage visual-SLAM; if it is ever needed, cover it via the ORB-SLAM3 sibling (RFC-0206) or only when concrete user-side demand surfaces. The lineage-declaration field idea (RFC-0211) stands on its own as a possible Spec RFC regardless."
+  next_action: "Awaiting engagement on discussion #661 (converted from issue #660; URL corrected). Stella VSLAM (OpenVSLAM-lineage visual-SLAM). Nudge only if silent; the lineage-declaration idea (RFC-0211) stands on its own."
   notes: "Tier B. Origin community fork (originally JP). License unclear. URML-fit: medium; community-fork posture."
