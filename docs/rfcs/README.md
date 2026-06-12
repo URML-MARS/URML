@@ -631,6 +631,20 @@ URML's observability vertical, at a distinct altitude: URML is not a substrate h
 |---|---|---|---|---|
 | [0469](0469-acyclic-operation-mode.md) | Spec | Optional `acyclic` sub-block on `realtime` (RFC-0016): the asynchronous SDO / mailbox regime declared by a `timeout_ms` + a `requires_goal_check` (default true), distinct from the cyclic-PDO watchdog; validator enforces one coherence rule (`acyclic.timeout_ms >= cyclic_period_ms`, `capability.acyclic_timeout_shorter_than_cycle`); surfaced by the ethercat_driver_ros2 maintainer (RFC-0320, yguel) flagging that PDO vs SDO operation modes change error handling, goal-reached checks, and timeouts completely | Implemented | 2026-06-12 |
 
+### The behavior-tree / FSM / orchestration wave (Move #41, RFCs 0470-0476)
+
+URML's Layer-3 vertical: behavior-tree, finite-state-machine, and task-orchestration engines. URML's composition (sequence/parallel/branch/retry over typed, validated primitives) is conceptually peer to these, so the ask is interop — either a validated URML program *lowers to* a BT/FSM the engine executes, or a BT/FSM leaf/state/skill *dispatches* one validated URML primitive (validate-before-actuate per node). The engine is control flow; URML is the typed, capability-checked intent it carries. Surfaces verified 2026-06-12. (Numbered 0470-0476: 0469 was taken by a parallel-session Spec RFC.) **Deferred:** YASMIN (GPL-3.0, copyleft complicates interop). **Excluded / avoided:** PlanSys2 (engaged Move #26), Nav2/nav2_behavior_tree (Macenski — 2× hostile close), Groot2 (closed), dormant executive_smach, non-robotics JS BT libs. Drafted; posting awaits authorization (ledger [`outreach-move41.yaml`](../../examples/lighthouses/outreach-move41.yaml), bodies [`posts-move41.md`](../../examples/lighthouses/posts-move41.md)).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0470](0470-behaviortree-cpp-outreach.md) | Outreach | BehaviorTree.CPP (`BehaviorTree/BehaviorTree.CPP`) integration; Move #41 anchor; the dominant C++ behavior-tree library (Nav2 runs on it) — URML lowers to a tree, or a leaf dispatches a validated primitive; org-anchor (refs BehaviorTree.ROS2); MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0471](0471-py-trees-outreach.md) | Outreach | py_trees (`splintered-reality/py_trees`) integration; Move #41; leading Python behavior-tree library (idiomatic Python adapter); org-anchor (refs py_trees_ros); BSD-3-Clause; RFC from the maintainer | Draft | 2026-06-12 |
+| [0472](0472-smacc2-outreach.md) | Outreach | SMACC2 (`robosoft-ai/SMACC2`) integration; Move #41; event-driven async ROS 2 state-machine library — URML lowers to states/transitions or a client-behavior dispatches a primitive; Apache-2.0; RFC from the maintainers | Draft | 2026-06-12 |
+| [0473](0473-transitions-outreach.md) | Outreach | transitions (`pytransitions/transitions`) integration; Move #41; **Tier B**; canonical Python FSM (cross-domain) — lower a validated URML program to a transitions HSM; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0474](0474-flexbe-outreach.md) | Outreach | FlexBE (`FlexBE/flexbe_behavior_engine`) integration; Move #41; **Tier B**; operator-in-the-loop hierarchical FSM — validate-before-actuate complements human supervision (verdict in the operator UI); BSD; RFC from the maintainers | Draft | 2026-06-12 |
+| [0475](0475-skiros2-outreach.md) | Outreach | SkiROS2 (`RVMI/skiros2`) integration; Move #41; **Tier B**; skill-based ROS 2 platform — closest peer to URML's typed-primitive posture (skill params + pre/post-conditions ~ primitive + capability/envelope precondition); BSD-style; RFC from the lab | Draft | 2026-06-12 |
+| [0476](0476-rosplan-outreach.md) | Outreach | ROSPlan (`KCL-Planning/ROSPlan`) integration; Move #41; **Tier B**; PDDL task planner (KCL) — ROSPlan plans, URML validates + dispatches each action; primitive precondition ↔ PDDL action precondition; distinct lineage from PlanSys2; BSD-2-Clause; RFC from the maintainers | Draft | 2026-06-12 |
+
 ## Lifecycle states
 
 Per RFC-0001:
