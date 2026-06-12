@@ -48,11 +48,17 @@ as flagged in [RFC-0328](../../docs/rfcs/0328-project-chrono-outreach.md):
    would let a fixture state the fidelity it was validated against.
    Shared with the sibling Move #24 simulation RFCs.
 
-Until those Spec RFCs are decided, the v0.1 evidence payload reports
-what a bare `ChSystem` exposes (system time, contact count, the
-commanded driver inputs). Richer evidence (contact forces, sinkage, tip
-margin) waits on a pinned Chrono::Vehicle scene, the documented
-calibration step in `chrono-integration.yml`.
+Both hints shipped as [RFC-0381](../../docs/rfcs/0381-simulation-fidelity-manifest-hints.md)
+(the optional `validation` block: `terrain_fidelity` +
+`simulator_target_class`). The terramechanics scene
+(`scene: terramechanics`) now reads the `terrain_fidelity: deformable`
+hint and returns richer evidence (sinkage, peak contact force,
+tip-stability margin) over a Chrono SCM deformable-terrain model; the
+bare `ChSystem` evidence (system time, contact count, commanded driver
+inputs) remains the default. The live SCM construction is the documented
+calibration step in `chrono-integration.yml`: its physics getter surface
+is version-sensitive, so each read degrades to an honest `unavailable`
+note rather than crashing, and the pinned version is verified there.
 
 No primitive, manifest field, or behavior-semantic change is made by
 this runtime.

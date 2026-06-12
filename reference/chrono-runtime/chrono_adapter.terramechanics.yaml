@@ -1,0 +1,41 @@
+# Example chrono_adapter.yaml for the terramechanics scene.
+#
+# Deployment-side configuration for ChronoAdapter (NOT a URML artifact: these
+# facts are model- and deployment-specific, so they live here, never in the
+# URML program, manifest, or envelope). Pairs with a manifest that declares
+# `validation.terrain_fidelity: deformable` (RFC-0381); the adapter mirrors that
+# into `terrain_fidelity` below and builds the SCM deformable-terrain scene.
+#
+#   from urml_chrono_runtime import ChronoAdapter, load_chrono_config
+#   cfg = load_chrono_config("chrono_adapter.terramechanics.yaml")
+#   with ChronoAdapter(cfg) as sim:
+#       r = sim.send_navigation_goal(location="ridge_waypoint")
+#       # r.final_pose + a measure() now carry sinkage_m, max_contact_force_n,
+#       # tip_margin_deg over the SCM deformable terrain.
+
+system_type: SMC          # SCM deformable terrain requires the smooth/penalty method
+step_size: 0.001
+steps_per_command: 200
+terrain_fidelity: deformable
+scene: terramechanics
+
+terramechanics:
+  terrain_length_m: 4.0
+  terrain_width_m: 2.0
+  mesh_resolution_m: 0.04
+  rig_mass_kg: 250.0
+  tip_threshold_deg: 35.0    # roll/pitch past which the rig is unstable
+  drawbar_gain_n: 1500.0     # forward force per unit throttle (driver[0])
+  # SCM soil parameters (Bekker-Wong pressure-sinkage + Janosi-Hanamoto shear);
+  # defaults approximate a soft sandy loam.
+  bekker_kphi: 200000.0
+  bekker_kc: 0.0
+  bekker_n: 1.1
+  mohr_cohesion_pa: 0.0
+  mohr_friction_deg: 30.0
+  janosi_shear_m: 0.01
+
+location_to_segment:
+  ridge_waypoint:
+    driver: [0.8]            # throttle; drives the rig forward across the patch
+    steps: 300
