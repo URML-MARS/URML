@@ -48,14 +48,16 @@
   posted_url: "https://github.com/orgs/eclipse-score/discussions/2952"
   channel: github_discussion
   contact: "eclipse-score/score (Apache-2.0, ~94 stars but Eclipse Foundation + BMW/Mercedes-Benz/ETAS/Accenture/Qorix backing; Issues + Discussions enabled, not archived, active — v0.5.5 2026-04-26). The Eclipse Safe Open Vehicle Core: an open, service-oriented, AUTOSAR-Adaptive-aligned SDV core for high-performance ECUs. INTL (Eclipse / European OEMs)."
-  last_touch: "2026-06-06"
-  response: none
+  last_touch: "2026-06-12"
+  response: acked
   tier: A
   country: INTL
   sector: middleware
   comments:
     - date: "2026-06-06"
       text: "Posted as a GitHub Discussion (Ideas category) under idoco2003: org discussion #2952 (https://github.com/orgs/eclipse-score/discussions/2952). Maps RFC-0019 ara::com binding (service/instance/method id triple on a call_program) + RFC-0016 realtime for Execution-Management timing; no new primitive (rides call_program); AI-authoring disclosure up front; NO license-ask (Apache-2.0). Awaiting maintainer reply."
+    - date: "2026-06-12"
+      text: "anmittag (maintainer) routed the discussion to the S-CORE architecture community (@qor-lb @arsibo @AThums) rather than answering directly. acked, not a decline: housekeeping route to the right venue. No reply owed; await the architecture community's read. Ties to URML's RFC-0019 AUTOSAR / ara::com binding — a future URML ara::com / S-CORE binding example is possible but premature."
   claude_directives:
     - date: "2026-06-06"
       text: "Post the posts-move30.md Eclipse S-CORE body as a GitHub Discussion on eclipse-score/score under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
