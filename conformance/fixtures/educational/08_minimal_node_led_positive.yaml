@@ -1,0 +1,21 @@
+name: educational/minimal_node_led_positive
+description: >
+  RFC-0018: a minimal sensor/actuator MCU node (micro:bit-class — one LED output
+  line, one light sensor, no mobility) is a valid, recognised manifest shape, not
+  an under-specified one. The program turns the declared LED line on via RFC-0017
+  set_output. Validator-only acceptance (manifest-shape) fixture — the runtime
+  side rides the OutputAdapter exercised by the actuation suite.
+
+manifest: microbit_minimal_node
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: led, value: true }
+
+expected_validation:
+  accepted: true

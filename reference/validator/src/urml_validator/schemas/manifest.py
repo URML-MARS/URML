@@ -1135,6 +1135,52 @@ class AvProfile(BaseModel):
     mrm: Mrm | None = None
 
 
+class MinimalNode(BaseModel):
+    """A non-mobile sensor/actuator microcontroller node (RFC-0018).
+
+    The honest declaration for the large class of classroom hardware that is
+    not a robot in the mobility/manipulation/perception sense: a fixed micro:bit
+    with an LED + buzzer + light sensor, a breadboard with one servo. Such a node
+    has no honest `mobility`, no manipulator, often no camera — but it does sense
+    and actuate. Rather than fake a `differential` mobility so a fixture
+    validates (silent schema-bending), it declares `minimal_node` and the
+    conformance suite recognises it as a coherent class.
+
+    Declarative only — it introduces no primitive. The actuation verb a minimal
+    node uses is RFC-0017's `set_output` over a declared `outputs.lines[]`;
+    `declared_outputs` names those lines, `declared_sensors` names entries in
+    `perception.sensors` when present. `minimal_node` and `mobility` are mutually
+    exclusive (a thing either drives or declares that it does not).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    class_: Literal["sensor", "actuator", "sensor_actuator"] = Field(..., alias="class")
+    declared_sensors: list[Identifier] = Field(
+        default_factory=list,
+        description="Sensor names; each MUST also appear in `perception.sensors` when that block is present.",
+    )
+    declared_outputs: list[Identifier] = Field(
+        default_factory=list,
+        description="Output-line names the node's `set_output` targets; each MUST be a declared `outputs.lines[]` line.",
+    )
+    has_locomotion: bool = Field(
+        False,
+        description="Explicit: a minimal node does not move. MUST be False; declare `mobility` instead if it does.",
+    )
+
+    @model_validator(mode="after")
+    def _class_matches_declarations(self) -> "MinimalNode":
+        """A `sensor` node declares sensors; an `actuator` node declares outputs;
+        `sensor_actuator` may declare both. (Intra-block coherence; cross-refs to
+        perception/outputs are checked by the validator with capability.* codes.)"""
+        if self.class_ in ("sensor", "sensor_actuator") and not self.declared_sensors:
+            raise ValueError(f"minimal_node class {self.class_!r} requires at least one declared_sensors entry")
+        if self.class_ in ("actuator", "sensor_actuator") and not self.declared_outputs:
+            raise ValueError(f"minimal_node class {self.class_!r} requires at least one declared_outputs entry")
+        return self
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -1185,3 +1231,7 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0020: optional AV-profile declarations (HD map, ODD, MRM).
     av: AvProfile | None = None
+
+    # RFC-0018: optional minimal sensor/actuator MCU-node declaration.
+    # Mutually exclusive with `mobility` (checked in the validator).
+    minimal_node: MinimalNode | None = None

@@ -1,0 +1,19 @@
+# Fixture (negative, RFC-0018): minimal_node.declared_outputs names `buzzer`,
+# which is not a declared outputs.lines[] line. Parses fine, rejected at Pass 2
+# with capability.minimal_node_undeclared_output — the declared output a minimal
+# node points at must be a real RFC-0017 line.
+
+manifest_version: "0.1"
+robot_id: microbit_bad_output
+description: Invalid — minimal_node.declared_outputs references an undeclared line (RFC-0018).
+
+minimal_node:
+  class: actuator
+  declared_outputs: [buzzer]
+  has_locomotion: false
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false

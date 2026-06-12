@@ -1,10 +1,10 @@
 ---
 rfc: 0018
 title: Minimal-MCU capability subset in the manifest
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-19
-updated: 2026-05-19
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -159,13 +159,40 @@ validator-only conformance pattern this would reuse).
 
 ## Implementation note
 
-Draft only — no code lands until the maintainer decides, and not
-before RFC-0017 is decided (ordering constraint above). The
-`urml-embedded-runtime` ships today against the frozen Protocol with a
-genuinely-`differential` buggy manifest (honest, green) and records
-this gap in its `SPEC-GAPS.md` rather than faking a minimal node. If
-accepted, landing is a single Layer-1-only change (schema + spec +
-mutual-exclusion check + one acceptance fixture).
+The ordering constraint is satisfied: RFC-0017 (`set_output`) shipped
+first, so `declared_outputs` has its consumer and the block is fully
+useful rather than half-useful.
+
+### Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as the single Layer-1-only change the note anticipated, fully
+additive (every existing manifest stays valid; `manifest_version` stays
+`0.1`):
+
+- **Schema**: `MinimalNode` (`class` ∈ sensor/actuator/sensor_actuator,
+  `declared_sensors`, `declared_outputs`, `has_locomotion`) +
+  `CapabilityManifest.minimal_node`; an intra-block validator requires a
+  sensor class to declare sensors and an actuator class to declare outputs.
+  Spec: `spec/layer-1-hal/v0.2.0.md` §2.17.
+- **Validator** (`_check_minimal_node`, manifest-static Pass-2): mutual
+  exclusion with `mobility` (`capability.minimal_node_with_mobility`),
+  `has_locomotion` must be false (`..._locomotion_inconsistent`),
+  `declared_outputs` ⊆ `outputs.lines[]` (`..._undeclared_output`),
+  `declared_sensors` ⊆ `perception.sensors` when present
+  (`..._undeclared_sensor`). Per-program enforcement stays deferred
+  (declare-now/enforce-later).
+- **Conformance**: `microbit_minimal_node` (+ `_mobility` / `_bad_output`)
+  manifest fixtures + three `conformance/fixtures/educational/` cases
+  (LED-board acceptance positive; mobility-coexist + undeclared-output
+  negatives).
+- **Example**: `examples/educational/blink-the-led` — a micro:bit-class
+  `minimal_node` that blinks its declared LED via `set_output` (pulse),
+  runnable end-to-end on the hermetic mock.
+- **Tests**: `reference/validator/tests/test_minimal_node.py` (8 cases).
+
+The substrate-neutrality posture holds: `minimal_node` is a capability
+*declaration*, not a primitive; the verb it implies is RFC-0017's
+`set_output`, referenced not duplicated.
 
 ## Self-review (Phase 0)
 

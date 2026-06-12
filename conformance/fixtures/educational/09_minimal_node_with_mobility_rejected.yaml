@@ -1,0 +1,21 @@
+name: educational/minimal_node_with_mobility_rejected
+description: >
+  RFC-0018 negative: a manifest declares both `minimal_node` and `mobility`.
+  A thing either drives or declares it does not; the validator rejects the
+  contradiction at Pass 2 with capability.minimal_node_with_mobility.
+
+manifest: microbit_minimal_node_mobility
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: led, value: true }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.minimal_node_with_mobility

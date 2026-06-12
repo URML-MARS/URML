@@ -1,0 +1,31 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: educational/blink-the-led
+# Source NL: "Blink the LED on for half a second." (see blink-the-led.en.txt)
+#
+# A minimal sensor/actuator MCU node (RFC-0018): the micro:bit-class board has
+# no mobility, no manipulator, no camera — it declares `minimal_node` and acts
+# through a single digital output line. `set_output` (RFC-0017) drives the
+# declared `led` line on, holding it for 500 ms before it auto-reverts to its
+# safe_state (off). This is the RFC-0018 ↔ RFC-0017 pairing: minimal_node is the
+# honest capability declaration; set_output is the verb such a node actually uses.
+# Validatable end-to-end:
+#
+#   urml validate blink-the-led.urml.yaml \
+#     -m blink-the-led.manifest.yaml --profile educational
+#
+# To watch it run on the hermetic mock (which implements the OutputAdapter
+# capability), set_output becomes a set_output_line call in the audit:
+#
+#   urml execute blink-the-led.urml.yaml \
+#     -m blink-the-led.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - set_output:
+        output: led
+        value: true
+        pulse_ms: 500

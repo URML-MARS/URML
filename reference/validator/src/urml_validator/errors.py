@@ -94,6 +94,11 @@ class ErrorCode(StrEnum):
     CAPABILITY_OUTPUT_LINE_NOT_DECLARED = "capability.output_line_not_declared"
     CAPABILITY_OUTPUT_VALUE_TYPE_MISMATCH = "capability.output_value_type_mismatch"
     CAPABILITY_OUTPUT_VALUE_OUT_OF_RANGE = "capability.output_value_out_of_range"
+    # RFC-0018: minimal sensor/actuator MCU-node declaration coherence.
+    CAPABILITY_MINIMAL_NODE_WITH_MOBILITY = "capability.minimal_node_with_mobility"
+    CAPABILITY_MINIMAL_NODE_LOCOMOTION_INCONSISTENT = "capability.minimal_node_locomotion_inconsistent"
+    CAPABILITY_MINIMAL_NODE_UNDECLARED_OUTPUT = "capability.minimal_node_undeclared_output"
+    CAPABILITY_MINIMAL_NODE_UNDECLARED_SENSOR = "capability.minimal_node_undeclared_sensor"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
