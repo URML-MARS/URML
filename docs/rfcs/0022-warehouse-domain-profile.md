@@ -2,9 +2,9 @@
 rfc: 0022
 title: Warehouse domain profile
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-21
-updated: 2026-05-21
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -206,6 +206,17 @@ One PR set, mirroring RFC-0013's precedent. Commit order:
 9. Flip this RFC `Draft → Open → Accepted → Implemented` per RFC-0001 process.
 
 The Phase-0 seven-day Open-to-Accepted comment window is a founder-triggered calendar step tracked separately; it gates the state flip, not the code.
+
+### Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as the sixth domain profile, **zero new primitives / schema / validator code** (the profile is a normative scope boundary + a manifest-interpretation set carried by spec prose and conformance fixtures):
+
+- **Profile spec**: `spec/profiles/warehouse/README.md` (the normative MUST/SHOULD/MUST NOT set: mixed-traffic aisles, multi-agent handoff at declared docks, dynamic-obstacle pause, `people_occupancy_zones` elevated to required).
+- **Fixtures**: `warehouse_cell` manifest + `warehouse_default` / `warehouse_with_occupancy_zone` envelopes (all in `MANIFEST_REGISTRY`), and the eight `conformance/fixtures/warehouse/` cases (pick-from-shelf, AMR aisle obstacle, handoff coordination + undeclared-partner reject, speed-violation reject, occupancy-zone-intrusion reject, multi-step cycle, compliant-BOM) — all green.
+- **`urml init` template**: the `warehouse` manifest + envelope + program in `init_templates.py`.
+- **Example**: `examples/warehouse/pick-to-conveyor` (runnable trio).
+
+The profile reuses existing optional fields (`declared_locations`, `docking_stations`, `outputs`, `mobility.max_velocity`, `perception.sensors`, the envelope's `people_occupancy_zones`) under profile-specific prose constraints; existing primitives (`pick_from`/`place_at`/`move_to`/`wait_for`/`report` + the core twelve) already cover warehouse motion and manipulation. The three open questions (formal `mixed_traffic_max_velocity` schema field, required `connectivity`, the yard profile) remain deferred to follow-ups as written.
 
 ## Self-review (Phase 0)
 
