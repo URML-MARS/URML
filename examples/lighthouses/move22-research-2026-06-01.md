@@ -53,7 +53,7 @@ On-manifesto: "OPC UA Robotics" is a named URML substrate, not yet engaged.
 | Repo | License | Stars | Issues | Archived | Notes |
 |---|---|---|---|---|---|
 | `open62541/open62541` | MPL-2.0 | ~3.1k | yes | no | Lead engineering target; the open C OPC UA stack. |
-| `OPCFoundation/UA-.NETStandard` | **RCL** (members-only friction) | ~2.3k | yes (+Disc) | no | The OPC Foundation reference stack; highest standards-body leverage. |
+| `OPCFoundation/UA-.NETStandard` | MIT | ~2.3k | yes (+Disc) | no | The OPC Foundation reference stack; highest standards-body leverage. |
 | `eclipse-milo/milo` | EPL-2.0 | ~1.4k | yes (+Disc) | no | Java OPC UA; Eclipse, like Cyclone/iceoryx. |
 | `FreeOpcUa/opcua-asyncio` | LGPL-3.0 | ~1.4k | yes (+Disc) | no | Python OPC UA; matches URML's tooling language. |
 
@@ -72,4 +72,4 @@ Excluded / do-not-repitch: Whisper family, Piper/piper1-gpl, Porcupine, openVoic
 
 ## Wave shape
 
-Full wave: 13 Outreach RFCs (0306-0318), all `response: none` until posted. License frictions (EMQX BSL, UA-.NETStandard RCL, LCM/opcua-asyncio LGPL, milo/mosquitto EPL) are stated in-RFC and resolved by the same client/IPC-boundary integration shape URML uses everywhere: URML maps intent to the surface's public interface and never vendors copyleft code.
+Full wave: 13 Outreach RFCs (0306-0318), all `response: none` until posted. License frictions (EMQX BSL, LCM/opcua-asyncio LGPL, milo/mosquitto EPL) are stated in-RFC and resolved by the same client/IPC-boundary integration shape URML uses everywhere: URML maps intent to the surface's public interface and never vendors copyleft code.

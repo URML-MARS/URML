@@ -2,7 +2,7 @@
 rfc: 0314
 title: OPC Foundation UA-.NETStandard (OPC UA reference stack) integration, request for comment from OPC Foundation maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Open
 created: 2026-06-01
 updated: 2026-06-01
 supersedes: —
@@ -33,11 +33,11 @@ UA-.NETStandard is the OPC Foundation's own reference implementation of OPC UA, 
 
 ## Motivation
 
-[`OPCFoundation/UA-.NETStandard`](https://github.com/OPCFoundation/UA-.NETStandard) (OPC Foundation reciprocal community license, "other"; ~2.3k stars, Issues + Discussions enabled, active, **not archived**, verified 2026-06-01) is the canonical reference stack. The OPC Foundation stewards the OPC UA Robotics companion spec, which is the precise surface URML's manifesto names. The highest-leverage OPC UA conversation is with the standards body, alongside the open62541 engineering engagement (RFC-0313).
+[`OPCFoundation/UA-.NETStandard`](https://github.com/OPCFoundation/UA-.NETStandard) (MIT, relicensed from the reciprocal community license in December 2025; ~2.3k stars, Issues + Discussions enabled, active, **not archived**) is the canonical reference stack. The OPC Foundation stewards the OPC UA Robotics companion spec, which is the precise surface URML's manifesto names. The highest-leverage OPC UA conversation is with the standards body, alongside the open62541 engineering engagement (RFC-0313).
 
-### Licensing, stated up front
+### Licensing
 
-The repository carries the **OPC Foundation reciprocal community license** (members-only redistribution terms, not a standard OSI license). URML's relationship is at-arms-length: URML maps intent onto the OPC UA protocol and never vendors or redistributes the reference stack. The license is recorded so the boundary is unambiguous.
+The repository is **MIT** (relicensed from the reciprocal community license in December 2025; the OPC Foundation noted the change directly, see "Maintainer engagement" below). MIT places no friction on the integration. URML's relationship stays at-arms-length on engineering grounds, not licensing ones: URML maps intent onto the OPC UA protocol and never vendors or redistributes the reference stack.
 
 ## Detailed design
 
@@ -63,7 +63,7 @@ Pre-v1.0; additive (RFC document only).
 ## Drawbacks
 
 - Proposal-only.
-- **Reciprocal community license / standards-body cadence**: engagement may be formal and slower; integration stays at the protocol boundary.
+- **Standards-body cadence**: engagement may be formal and slower; integration stays at the protocol boundary.
 
 ## Alternatives considered
 
@@ -87,13 +87,19 @@ For the OPC Foundation maintainers:
 
 Single RFC document. Ledger entry in [`outreach-move22.yaml`](../../examples/lighthouses/outreach-move22.yaml).
 
+## Maintainer engagement
+
+Posted as [`OPCFoundation/UA-.NETStandard#3827`](https://github.com/OPCFoundation/UA-.NETStandard/issues/3827) on 2026-06-02. Maintainer `marcschier` responded positively and proposed a concrete shape: an OPC UA robotics extension library (companion-spec implementation) living in the UA-.NETStandard repo, with URML as the simplified AI-accessible binding aligned on top. The issue was retitled "Robot companion spec libraries to support URML" and kept open for other-maintainer agreement.
+
+On 2026-06-12 the OPC Foundation filed [`URML#292`](https://github.com/URML-MARS/URML/issues/292) correcting the license recorded here: UA-.NETStandard was relicensed RCL to MIT in December 2025. This RFC and the Move #22 ledger were corrected accordingly, and the earlier license caveat is withdrawn.
+
 ## How to respond
 
 `UA-.NETStandard` has Issues and Discussions enabled. URML's planned channel: a single Issue or Discussion pointing to this RFC, with the license/standards-body note up front.
 
 ## Self-review (Phase 0)
 
-- [x] Surface verified 2026-06-01 (OPC Foundation RCL "other", ~2.3k stars, Issues + Discussions, active, isArchived: false).
-- [x] Alternatives (two); drawbacks real (RCL, standards-body cadence); additive; no spec change.
+- [x] Surface verified 2026-06-01 (~2.3k stars, Issues + Discussions, active, isArchived: false); license corrected to MIT 2026-06-12 per the OPC Foundation (#292).
+- [x] Alternatives (two); drawbacks real (standards-body cadence); additive; no spec change.
 - [x] Provenance: OPC Foundation (international standards body, US-incorporated); default policy passes.
 - [x] CLAUDE.md compliance: protocol-boundary engagement, no redistribution; advances the OPC UA Robotics substrate goal; no commercial surface.
