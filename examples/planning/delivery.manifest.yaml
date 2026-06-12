@@ -1,0 +1,58 @@
+# Capability manifest for the ROSPlan / PDDL replan-feedback example.
+#
+# A PDDL domain encodes what the robot can do *symbolically* (action schemas,
+# preconditions, effects) so a planner can search for a plan. This manifest is a
+# different thing: the *physical* robot's declared capabilities and limits, which
+# URML checks (together with a safety envelope) before any action is dispatched.
+# A symbolic PDDL plan can be perfectly valid in the domain and still be
+# inadmissible on the real robot, e.g. it routes through a people-occupancy zone
+# the domain never modeled. That gap is exactly what URML validates.
+
+manifest_version: "0.1"
+robot_id: delivery_bot
+description: A mobile delivery robot whose dispatched PDDL plan URML validates.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - { name: dock,       pose: { x: 3.0, y: 0.0 },  frame: map }   # safe start
+  - { name: shelf,      pose: { x: 2.0, y: 1.5 },  frame: map }   # the mug is here
+  - { name: approach,   pose: { x: 1.5, y: 0.0 },  frame: map }   # safe waypoint
+  - { name: user,       pose: { x: 2.5, y: -1.5 }, frame: map }   # delivery goal
+  - { name: crowd_spot, pose: { x: 0.0, y: 0.0 },  frame: map }   # inside the occupancy zone
+
+declared_events:
+  - user_present
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.5
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary: [mug, cup, small_object]
+
+outputs:
+  named_endpoints: [operator]
