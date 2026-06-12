@@ -1,0 +1,151 @@
+# Move #40 outreach ledger. One row per target.
+#
+# Move #40: **the developer-tooling / observability wave.** Civilian / research scope.
+# Robotics observability / visualization / logging tools. DISTINCT ALTITUDE: URML is
+# not a substrate here, it is a DATA SOURCE — every URML dispatch is validated before
+# it actuates and emits a structured audit record (intent -> validator verdict + pass
+# -> substrate calls). The ask: would the tool ingest/visualize/record that
+# validated-intent stream as a first-class source? (Same shape as the Open MCT
+# telemetry engagement, RFC-0395.) Surfaces verified 2026-06-12.
+#
+# Shapes, mapped to existing URML surfaces (no new spec):
+#   - Viz platforms (audit stream as a data-source/panel): Lichtblick (0463, anchor;
+#     BMW open Foxglove fork), rerun (0464, multimodal timeline), rosboard (0467, B,
+#     glanceable web dashboard).
+#   - Time-series plotting (envelope-margin / verdict series): PlotJuggler (0465).
+#   - On-disk logging format (record the audit trail): foxglove/mcap (0466; refs
+#     foxglove-sdk for live streaming).
+#   - In-RViz spatial markers (draw validated intent + envelope): rviz_visual_tools
+#     (0468, B).
+#
+# Anchor-plus-fold: foxglove (mcap anchor, refs foxglove-sdk). PlotJuggler core
+# (MPL-2.0), NOT the AGPL plotjuggler-ros-plugins.
+#
+# DEFERRED (likely inside the ROS-2-core footprint, RFC-0200 / Move #16 — avoid
+# re-touch): ros2/rosbag2, ros2/rviz, ros-visualization/rqt, ros2/ros2cli,
+# ros2/ros2_tracing. Re-check the core ledger before engaging any ros2-org repo.
+#
+# EXCLUDED: foxglove/studio (ARCHIVED 2024-07, superseded by closed app),
+# cruise-automation/webviz (dead 2022), streetscape.gl (dead 2019), MichaelGrupp/evo
+# (GPL-3.0 + SLAM, Move #25), plotjuggler-ros-plugins (AGPL; folds under PlotJuggler),
+# multimaster_fkie (deprecated), introlab/rtabmap (SLAM, Move #25). DEFER-PRC: none.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the founder
+# authorizes posting. Then post the posts-move40.md body under idoco2003 (Discussion
+# or Issue per channel), set sent_at / posted_url / last_touch, add a posted comment,
+# refresh outreach.db. No license-ask anywhere (all permissive: MPL/Apache/MIT/BSD).
+# VIBE.md disclosure up front.
+
+- slug: lichtblick
+  rfc: 463
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "lichtblick-suite/lichtblick (MPL-2.0, ~950 stars, Issues + Discussions enabled, not archived, active — v1.25.1 May 2026). BMW-led open fork of Foxglove Studio; integrated robotics viz/diagnosis with a panel + data-source plugin model. BMW Group. DE (Germany)."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: DE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md Lichtblick body as a GitHub Discussion on lichtblick-suite/lichtblick under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor; cleanest Open-MCT-analogue (panel/data-source plugin model). Ask: URML validated-intent audit stream as a data source/panel; seam = plugin vs MCAP vs foxglove-protocol."
+  notes: "Anchor. Permissive (MPL-2.0). Foxglove-Studio lineage. No license-ask."
+
+- slug: rerun
+  rfc: 464
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "rerun-io/rerun (Apache-2.0 + MIT, ~10.9k stars, Issues + Discussions enabled, not archived, active — v0.33.0 May 2026). Visualize, query, stream multimodal robotics data on a timeline. Rerun Technologies AB. SE (Sweden)."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: SE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md Rerun body as a GitHub Discussion on rerun-io/rerun under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Multimodal-timeline vertex. Ask: log URML audit stream as Rerun entities; idiomatic shape for intent+verdict+dispatch; a reference logger."
+  notes: "Permissive (Apache+MIT). High-momentum viz tool. No license-ask."
+
+- slug: plotjuggler
+  rfc: 465
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "PlotJuggler/PlotJuggler (MPL-2.0, ~6.0k stars, Issues + Discussions enabled, not archived, active — v3.17.2 May 2026; moved from facontidavide/PlotJuggler to the org). Fast time-series viz with streaming + plugin model. Davide Faconti (community). IT (Italy)."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: IT
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md PlotJuggler body as a GitHub Discussion on PlotJuggler/PlotJuggler under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Time-series-plotting vertex; plot envelope margins (commanded vs declared max) + verdict series. Canonical owner is the org (facontidavide moved). NOT the AGPL plotjuggler-ros-plugins. Ask: streaming plugin vs replay a recorded log."
+  notes: "Permissive (MPL-2.0). Org repo is canonical. No license-ask."
+
+- slug: mcap
+  rfc: 466
+  sent_at: null
+  posted_url: ""
+  channel: github_discussion
+  contact: "foxglove/mcap (MIT, ~970 stars, Issues + Discussions enabled, not archived, active — CLI release Jun 2026). Serialization-agnostic container file format for pub/sub + robotics logging (Lichtblick/Foxglove/ROS 2 record into it). Foxglove Technologies. US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md MCAP body as a GitHub Discussion on foxglove/mcap under idoco2003; reference (do not separately post) foxglove/foxglove-sdk; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. On-disk-logging-format vertex; record URML audit trail as a dedicated MCAP channel (schema = URML's exported JSON Schema). foxglove org-anchor on mcap, ref foxglove-sdk (live streaming). Ask: channel pattern; JSON Schema vs protobuf advertisement."
+  notes: "Permissive (MIT). The portable on-disk format; opens in Lichtblick (0463). foxglove org-anchor. No license-ask."
+
+- slug: rosboard
+  rfc: 467
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "dheera/rosboard (BSD-3-Clause, ~1.1k stars, Issues enabled, Discussions OFF, not archived, active). ROS node serving a web dashboard to visualize topics in-browser (phone/laptop, no install). Dheera Venkatraman (individual). US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md rosboard body as a GitHub Issue on dheera/rosboard under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Lightweight-web-dashboard vertex; a glanceable validated-intent tile (intent/verdict/dispatch). Ask: audit on a ROS topic vs a dedicated rosboard data type."
+  notes: "Permissive (BSD-3). Lowest-friction dashboard. No license-ask."
+
+- slug: rviz-visual-tools
+  rfc: 468
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "PickNikRobotics/rviz_visual_tools (BSD-3-Clause; repo SPDX null but codebase BSD per PickNik convention, ~814 stars, Issues enabled, Discussions OFF, not archived, active — Jan 2026). C++ helper API to publish shapes/meshes/markers to RViz. PickNik Robotics. US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move40.md rviz_visual_tools body as a GitHub Issue on PickNikRobotics/rviz_visual_tools under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. In-RViz spatial-marker vertex; draw validated intent target/envelope (pose, workspace bound, geofence, plan_path trajectory); refused intent in red. Tier B. State BSD (no ask; confirm LICENSE path if it ever matters). Ask: existing markers sufficient vs an intent/envelope helper layer."
+  notes: "BSD-3 (codebase; API SPDX null). Spatial-marker vertex. PickNik (also ABB driver maintainer, Move #36). No license-ask."
