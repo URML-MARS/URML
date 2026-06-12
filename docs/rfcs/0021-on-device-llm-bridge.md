@@ -1,10 +1,10 @@
 ---
 rfc: 0021
 title: On-device LLM bridge — schema-derived GBNF, GGUF model contract, per-model conformance
-author: Ido Yahalomi (ido@jacob-ai.com)
-state: Draft
+author: Ido Yahalomi (greenvh@gmail.com)
+state: Implemented
 created: 2026-05-21
-updated: 2026-05-21
+updated: 2026-06-07
 supersedes: —
 superseded-by: —
 ---
@@ -370,6 +370,39 @@ README pointer; (8) RFC flip `Draft -> Open -> Accepted -> Implemented`.
 The Phase-0 seven-day Open-to-Accepted comment window is a founder-
 triggered calendar step tracked separately; it gates the state flip, not
 the code.
+
+### Shipped (Draft → Implemented, 2026-06-07)
+
+Landed as a complete vertical slice, purely additive (the `LLMProvider`
+Protocol is unchanged; the three existing providers and every runtime are
+untouched):
+
+- **Spec**: Layer-4 §2.3 *Grammar-constrained providers* + §2.4 *On-device
+  model interchange (GGUF)* (`spec/layer-4-nl-grammar/v0.1.0.md`), README
+  pointer to the on-device path + the conformance sub-suite.
+- **Grammar**: `reference/llm-bridge/src/urml_llm_bridge/grammar.py` —
+  `schema_to_gbnf()` (pure, `lru_cache`d, derives a GBNF from the program JSON
+  Schema), with hermetic tests (`test_grammar.py`).
+- **Providers**: `providers/llama_cpp.py` (HTTP to `llama-server`, sends the
+  derived grammar) and `providers/ollama.py` (`/api/generate`, `format: json`),
+  both lazy-importing `httpx` behind opt-in extras (`[llama_cpp]`, `[ollama]`)
+  with injectable clients; tests with injected fakes.
+- **Conformance sub-suite**: `conformance/llm-bridge/` (README + row schema +
+  home utterance fixtures) and `conformance/src/urml_conformance/llm_bridge/`
+  — a dependency-light `loader` (utterance sets + `ResultRow`) and a
+  backend-neutral `scorer.score()` that drives the bridge over an utterance set
+  and tallies structural / semantic pass rates + mean revisions. One committed
+  **hermetic echo-backend row** (`results/2026-06-07/home-echo-double.yaml`)
+  exercises the `(model, backend, profile)` parametrization path; loader +
+  scorer tests are fully hermetic (`urml_llm_bridge` imported lazily, gated by
+  the `[llm-bridge]` extra).
+
+Deliberately a follow-up (kept out of CI so this needs no GGUF artifact):
+populating the published table with **real-model** rows (a `llama_cpp`/`ollama`
+run against a downloaded GGUF + a running server). The harness is the same
+`score()` function; only the provider changes. The provider-neutrality acid
+test holds: `schema_to_gbnf` names no backend, the loader needs no bridge, and
+the scorer scores `echo` today and any backend tomorrow with the same code.
 
 ## Self-review (Phase 0)
 

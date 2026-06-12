@@ -91,25 +91,38 @@ utterances:
 
 This directory is the **data and docs** surface (utterance fixtures,
 results, this README). The Python code that consumes it lives in the
-existing conformance package: `urml_conformance.llm_bridge.loader`
-([`conformance/src/urml_conformance/llm_bridge/`](../src/urml_conformance/llm_bridge/)).
-The split mirrors the existing convention (`conformance/fixtures/` is
-data; `conformance/src/urml_conformance/` is code).
+existing conformance package
+([`conformance/src/urml_conformance/llm_bridge/`](../src/urml_conformance/llm_bridge/)):
+
+- `loader` — pure data (PyYAML + dataclasses, no bridge dependency): load
+  utterance sets and result rows. Docs tooling can read the published table
+  without pulling the bridge.
+- `scorer.score(...)` — the backend-neutral scoring harness: drives the bridge
+  over an utterance set with one `(model, backend)` and returns a `ResultRow`.
+  Lazy-imports `urml_llm_bridge`; install the optional `urml-conformance[llm-bridge]`
+  extra to run it.
+
+The split mirrors the existing convention (`conformance/fixtures/` is data;
+`conformance/src/urml_conformance/` is code).
 
 ## Running
 
-Hermetic (no real LLM; loader tests confirm the on-disk schema is well-formed):
+Hermetic (no real LLM, no GGUF, no server): the loader tests confirm the
+on-disk schema is well-formed, and the scorer test runs `score()` over the
+echo backend, exercising the full `(model, backend, profile)` parametrization
+path. One committed echo row lives under `results/2026-06-07/`.
 
 ```bash
 cd conformance
-pip install -e ".[dev]"
-pytest tests/test_llm_bridge_loader.py
+pip install -e ".[dev,llm-bridge]"
+pytest tests/test_llm_bridge_loader.py tests/test_llm_bridge_scorer.py
 ```
 
-A real-model run requires the relevant backend's server and model file.
-The scoring runner that drives the bridge end-to-end against a real
-provider lands in a follow-up commit; once it exists, the invocation will
-look like:
+A real-model run requires the relevant backend's server and model file. The
+harness is the same `score()` function; pointing it at a real provider instead
+of `EchoProvider` is all that changes. Populating the published table with
+real-model rows is a follow-up project (kept out of CI so this does not require
+a GGUF artifact). The invocation will look like:
 
 ```bash
 # llama.cpp
@@ -122,13 +135,14 @@ ollama pull llama3.2:1b
 urml conformance run --suite llm-bridge --backend ollama --model llama3.2:1b --profile home
 ```
 
-Each invocation will write one row YAML to `results/<date>/`.
+Each invocation writes one row YAML to `results/<date>/`.
 
 ## Status
 
-Phase 0, pre-alpha. The fixture-loader and scoring schema are stable; the
-harness ships in this RFC's PR. Populating the published table with
-measured rows is a follow-up project. Per [Phase-0 honesty rules](../../docs/launch/claims-audit.md),
+Phase 0, pre-alpha. The fixture-loader, the result-row schema, and the
+backend-neutral `score()` harness are stable and ship in this RFC's PR, with
+one committed hermetic echo row. Populating the published table with
+real-model rows is a follow-up project. Per [Phase-0 honesty rules](../../docs/launch/claims-audit.md),
 unmeasured cells stay empty rather than guessed.
 
 ## Related
