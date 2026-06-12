@@ -281,7 +281,7 @@
   posted_url: "https://github.com/STMicroelectronics/STM32CubeF4/issues/203"
   channel: github_issue
   contact: "STMicroelectronics/STM32CubeF4 (Other — mixed license, 1.2k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). STMicroelectronics; HQ Geneva CH (Franco-Italian)."
-  last_touch: "2026-06-04"
+  last_touch: "2026-06-12"
   response: engaged
   tier: B
   country: CH
@@ -291,6 +291,8 @@
       text: "ALABSTM (STMicroelectronics) gave a constructive engaged reply on #203: thanked for the proposal, forwarding the questions to ST experts, will keep us informed. Answered the license question directly - CMSIS Device (cmsis-device-f4) is Apache-2.0, STM32F4 HAL (stm32f4xx-hal-driver) is BSD-3-Clause - by pointing at the repo-root LICENSE.md and the cleaner per-component repos. No AI-skepticism (gentle confirmation that the license-ask was avoidable; LICENSE.md was at the root)."
     - date: "2026-06-04"
       text: "Replied 2026-06-04 (idoco2003): closed the license question (will anchor on the per-component repos, each single-license at root, rather than the mixed firmware bundle), de-prioritized the rest gracefully, flagged the manifest-fields + multi-series-scope questions as the ones we'd most value expert input on. First Tier-1 MCU-vendor (STMicroelectronics) engagement."
+    - date: "2026-06-12"
+      text: "ALABSTM posted an ST internal tracking reference (c18b9cbf9f91c398767372aaa624aba8), confirming the proposal is logged with ST and routed to their experts. No new substantive content; no reply owed (acknowledging a reference number adds noise). Ball is in ST's court until the experts respond on the MCU manifest-field + per-series-vs-umbrella questions."
   claude_directives: []
   next_action: "Engaged (ALABSTM, STMicroelectronics), forwarding to ST experts. License resolved (use per-component repos: cmsis-device-f4 Apache-2.0, stm32f4xx-hal-driver BSD-3-Clause). Await expert feedback on the MCU manifest-field expectations + per-series-vs-umbrella scope; both feed the queued mcu_class Spec RFC. Drop the license-ask from any STM32 follow-up."
   notes: "Tier B. Origin CH/FR/IT (pass, NATO+EU). Mixed license. URML-fit: high for industrial / professional MCU class."
