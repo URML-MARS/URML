@@ -75,6 +75,10 @@ class ErrorCode(StrEnum):
     CAPABILITY_IPC_GENERATION_NOTE_REQUIRED = "capability.ipc_generation_note_required"
     # RFC-0016: realtime timing-block coherence.
     CAPABILITY_WATCHDOG_SHORTER_THAN_CYCLE = "capability.watchdog_shorter_than_cycle"
+    # RFC-0469: acyclic (SDO / mailbox) regime coherence.
+    CAPABILITY_ACYCLIC_TIMEOUT_SHORTER_THAN_CYCLE = (
+        "capability.acyclic_timeout_shorter_than_cycle"
+    )
     # RFC-0020: AV profile — plan_path requires a declared HD map.
     CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
     # RFC-0019: AUTOSAR ara::com program binding must declare the full id triple.

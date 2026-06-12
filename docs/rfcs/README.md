@@ -625,6 +625,12 @@ URML's observability vertical, at a distinct altitude: URML is not a substrate h
 | [0467](0467-rosboard-outreach.md) | Outreach | rosboard (`dheera/rosboard`) integration; Move #40; no-install web ROS dashboard — a glanceable validated-intent tile (intent/verdict/dispatch); BSD-3-Clause; RFC from the maintainer | Draft | 2026-06-12 |
 | [0468](0468-rviz-visual-tools-outreach.md) | Outreach | rviz_visual_tools (`PickNikRobotics/rviz_visual_tools`) integration; Move #40; **Tier B**; RViz marker helper — draw validated intent target/envelope (pose, workspace, geofence, trajectory), refused intent in red; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-12 |
 
+### Engagement-surfaced spec extension
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0469](0469-acyclic-operation-mode.md) | Spec | Optional `acyclic` sub-block on `realtime` (RFC-0016): the asynchronous SDO / mailbox regime declared by a `timeout_ms` + a `requires_goal_check` (default true), distinct from the cyclic-PDO watchdog; validator enforces one coherence rule (`acyclic.timeout_ms >= cyclic_period_ms`, `capability.acyclic_timeout_shorter_than_cycle`); surfaced by the ethercat_driver_ros2 maintainer (RFC-0320, yguel) flagging that PDO vs SDO operation modes change error handling, goal-reached checks, and timeouts completely | Implemented | 2026-06-12 |
+
 ## Lifecycle states
 
 Per RFC-0001:

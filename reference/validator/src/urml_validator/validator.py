@@ -3184,10 +3184,15 @@ def _check_substrate_ipc(manifest: CapabilityManifest) -> list[ValidationError]:
 def _check_realtime(manifest: CapabilityManifest) -> list[ValidationError]:
     """Pass 2 (RFC-0016): realtime timing-block internal coherence.
 
-    The only v0.1 rule is consistency, not real-time enforcement: the watchdog
-    deadline must be at least one control cycle (`watchdog_ms >=
-    cyclic_period_ms`); a watchdog shorter than the period would fault before a
-    single cycle completes. The envelope-dwell Pass-3 rule is deferred.
+    Two v0.1 coherence rules, neither a real-time guarantee:
+
+    - RFC-0016: the watchdog deadline must be at least one control cycle
+      (`watchdog_ms >= cyclic_period_ms`); a watchdog shorter than the period
+      would fault before a single cycle completes.
+    - RFC-0469: when an `acyclic` (SDO / mailbox) regime is declared, its
+      `timeout_ms` must be at least one control cycle. An async command meant to
+      return inside a single cycle is not acyclic traffic; it belongs on the
+      cyclic path. The envelope-dwell Pass-3 rule is deferred.
 
     Optional: a manifest without `realtime` is unaffected.
     """
@@ -3210,6 +3215,25 @@ def _check_realtime(manifest: CapabilityManifest) -> list[ValidationError]:
                 suggestion=(
                     "Set watchdog_ms >= cyclic_period_ms (the watchdog must allow at "
                     "least one cycle). Per RFC-0016."
+                ),
+            )
+        )
+    if rt.acyclic is not None and rt.acyclic.timeout_ms < rt.cyclic_period_ms:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_ACYCLIC_TIMEOUT_SHORTER_THAN_CYCLE,
+                primitive=None,
+                path=["<manifest>", "realtime", "acyclic", "timeout_ms"],
+                field="timeout_ms",
+                message=(
+                    f"realtime.acyclic.timeout_ms ({rt.acyclic.timeout_ms}) is shorter "
+                    f"than realtime.cyclic_period_ms ({rt.cyclic_period_ms}); an acyclic "
+                    "(SDO / mailbox) command that must return inside one control cycle "
+                    "is cyclic traffic, not acyclic."
+                ),
+                suggestion=(
+                    "Set acyclic.timeout_ms >= cyclic_period_ms, or move the command to "
+                    "the cyclic path. Per RFC-0469."
                 ),
             )
         )

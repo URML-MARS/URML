@@ -72,3 +72,67 @@ def test_watchdog_shorter_than_cycle_rejected() -> None:
     result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
     assert not result.accepted
     assert result.has(ErrorCode.CAPABILITY_WATCHDOG_SHORTER_THAN_CYCLE)
+
+
+# --- RFC-0469: the acyclic (SDO / mailbox) regime ---------------------------
+
+
+def test_acyclic_regime_validates() -> None:
+    """A cyclic block with a coherent acyclic sub-block is accepted."""
+    rt = {
+        "cyclic_period_ms": 10.0,
+        "watchdog_ms": 50.0,
+        "guarantee": "soft",
+        "acyclic": {"timeout_ms": 500.0, "requires_goal_check": True},
+    }
+    result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_acyclic_requires_goal_check_defaults_true() -> None:
+    """`requires_goal_check` is optional and defaults to honest (True)."""
+    rt = {
+        "cyclic_period_ms": 10.0,
+        "watchdog_ms": 50.0,
+        "guarantee": "soft",
+        "acyclic": {"timeout_ms": 200.0},
+    }
+    result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_acyclic_timeout_equal_to_cycle_validates() -> None:
+    """A timeout of exactly one cycle is the boundary case and is allowed."""
+    rt = {
+        "cyclic_period_ms": 10.0,
+        "watchdog_ms": 50.0,
+        "guarantee": "hard",
+        "acyclic": {"timeout_ms": 10.0},
+    }
+    result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_acyclic_timeout_shorter_than_cycle_rejected() -> None:
+    """An acyclic command that must return inside one cycle is cyclic traffic."""
+    rt = {
+        "cyclic_period_ms": 10.0,
+        "watchdog_ms": 50.0,
+        "guarantee": "soft",
+        "acyclic": {"timeout_ms": 5.0},
+    }
+    result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_ACYCLIC_TIMEOUT_SHORTER_THAN_CYCLE)
+
+
+def test_acyclic_unknown_field_rejected() -> None:
+    """The acyclic sub-block forbids extra keys (extra='forbid')."""
+    rt = {
+        "cyclic_period_ms": 10.0,
+        "watchdog_ms": 50.0,
+        "guarantee": "soft",
+        "acyclic": {"timeout_ms": 200.0, "bogus": 1},
+    }
+    result = validate(_move_program(), _ground_manifest(realtime=rt), policy=None)
+    assert not result.accepted

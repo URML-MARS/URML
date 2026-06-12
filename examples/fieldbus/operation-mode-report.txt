@@ -1,0 +1,13 @@
+URML fieldbus operation-mode check: one drive, three timing declarations.
+URML declares the regime above the controller; the validator checks coherence.
+drive: ethercat_servo_axis
+
+[VALID] cyclic PDO only (no mailbox path declared)
+   cyclic: 1.0 ms period / 5.0 ms watchdog; acyclic: none declared
+
+[VALID] cyclic PDO + coherent acyclic SDO
+   cyclic: 1.0 ms period / 5.0 ms watchdog; acyclic: 500.0 ms timeout / read-back goal check
+
+[REJECTED] cyclic PDO + SDO timeout shorter than one cycle
+   cyclic: 1.0 ms period / 5.0 ms watchdog; acyclic: 0.5 ms timeout / read-back goal check
+   -> incoherent declaration [capability.acyclic_timeout_shorter_than_cycle]; not commissioned.

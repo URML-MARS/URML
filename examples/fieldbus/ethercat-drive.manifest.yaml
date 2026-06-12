@@ -1,0 +1,55 @@
+# Fixture: a CiA-402 servo drive on EtherCAT, declared at the URML
+# capability-manifest level (Layer 1).
+#
+# The point of this example is the `realtime` block. A fieldbus carries two
+# kinds of traffic, and they are bounded differently:
+#
+#   - cyclic process data (PDO): the drive's position/velocity command rides
+#     the 1 ms control cycle; the answer is immediate, and a watchdog faults
+#     the cell to a safe state if a cycle is missed. -> cyclic_period_ms +
+#     watchdog_ms (RFC-0016).
+#
+#   - acyclic mailbox traffic (SDO): a parameter write or an operation-mode
+#     change goes over the mailbox; its return time is not guaranteed, so a
+#     watchdog is the wrong instrument. It is bounded by a timeout and
+#     confirmed by an explicit read-back. -> realtime.acyclic (RFC-0469).
+#
+# URML stays above the controller: it never touches the ESI, the distributed
+# clock, or the PDO mapping. It declares the regime so the manifest is a
+# faithful description of the drive, and the validator can reject an incoherent
+# timing declaration before anything is commissioned.
+#
+# Surfaced by the ethercat_driver_ros2 engagement (RFC-0320): the maintainer
+# flagged that PDO and SDO operation modes change error handling, goal-reached
+# checks, and timeouts completely.
+
+manifest_version: "0.1"
+robot_id: ethercat_servo_axis
+description: A single CiA-402 servo axis on an EtherCAT bus (PDO + SDO).
+
+frames:
+  - name: machine
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: machine
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+realtime:
+  cyclic_period_ms: 1.0            # PDO control cycle
+  watchdog_ms: 5.0                 # safe-state fault deadline (>= one cycle)
+  requested_packet_interval_ms: 1.0
+  guarantee: soft
+  acyclic:                         # SDO / mailbox regime (RFC-0469)
+    timeout_ms: 500.0              # a parameter write / mode change may take this long
+    requires_goal_check: true      # completion confirmed by read-back, not assumed
