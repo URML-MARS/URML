@@ -38,8 +38,8 @@
 
 - slug: lichtblick
   rfc: 463
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/lichtblick-suite/lichtblick/discussions/1144"
   channel: github_discussion
   contact: "lichtblick-suite/lichtblick (MPL-2.0, ~950 stars, Issues + Discussions enabled, not archived, active — v1.25.1 May 2026). BMW-led open fork of Foxglove Studio; integrated robotics viz/diagnosis with a panel + data-source plugin model. BMW Group. DE (Germany)."
   last_touch: "2026-06-12"
@@ -47,37 +47,43 @@
   tier: A
   country: DE
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0463 body to https://github.com/lichtblick-suite/lichtblick/discussions/1144 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md Lichtblick body as a GitHub Discussion on lichtblick-suite/lichtblick under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor; cleanest Open-MCT-analogue (panel/data-source plugin model). Ask: URML validated-intent audit stream as a data source/panel; seam = plugin vs MCAP vs foxglove-protocol."
   notes: "Anchor. Permissive (MPL-2.0). Foxglove-Studio lineage. No license-ask."
 
 - slug: rerun
   rfc: 464
-  sent_at: null
-  posted_url: ""
-  channel: github_discussion
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/rerun-io/rerun/issues/12815"
+  channel: github_issue
   contact: "rerun-io/rerun (Apache-2.0 + MIT, ~10.9k stars, Issues + Discussions enabled, not archived, active — v0.33.0 May 2026). Visualize, query, stream multimodal robotics data on a timeline. Rerun Technologies AB. SE (Sweden)."
   last_touch: "2026-06-12"
   response: none
   tier: A
   country: SE
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0464 body to https://github.com/rerun-io/rerun/issues/12815 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
+    - date: "2026-06-12"
+      text: "Posted as a GitHub Issue, not a Discussion: the repo's Discussions had no categories available at post time (createDiscussion needs a category id). Channel corrected to github_issue."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md Rerun body as a GitHub Discussion on rerun-io/rerun under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Multimodal-timeline vertex. Ask: log URML audit stream as Rerun entities; idiomatic shape for intent+verdict+dispatch; a reference logger."
   notes: "Permissive (Apache+MIT). High-momentum viz tool. No license-ask."
 
 - slug: plotjuggler
   rfc: 465
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/PlotJuggler/PlotJuggler/discussions/1383"
   channel: github_discussion
   contact: "PlotJuggler/PlotJuggler (MPL-2.0, ~6.0k stars, Issues + Discussions enabled, not archived, active — v3.17.2 May 2026; moved from facontidavide/PlotJuggler to the org). Fast time-series viz with streaming + plugin model. Davide Faconti (community). IT (Italy)."
   last_touch: "2026-06-12"
@@ -85,18 +91,20 @@
   tier: A
   country: IT
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0465 body to https://github.com/PlotJuggler/PlotJuggler/discussions/1383 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md PlotJuggler body as a GitHub Discussion on PlotJuggler/PlotJuggler under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Time-series-plotting vertex; plot envelope margins (commanded vs declared max) + verdict series. Canonical owner is the org (facontidavide moved). NOT the AGPL plotjuggler-ros-plugins. Ask: streaming plugin vs replay a recorded log."
   notes: "Permissive (MPL-2.0). Org repo is canonical. No license-ask."
 
 - slug: mcap
   rfc: 466
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/foxglove/mcap/discussions/1728"
   channel: github_discussion
   contact: "foxglove/mcap (MIT, ~970 stars, Issues + Discussions enabled, not archived, active — CLI release Jun 2026). Serialization-agnostic container file format for pub/sub + robotics logging (Lichtblick/Foxglove/ROS 2 record into it). Foxglove Technologies. US."
   last_touch: "2026-06-12"
@@ -104,18 +112,20 @@
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0466 body to https://github.com/foxglove/mcap/discussions/1728 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md MCAP body as a GitHub Discussion on foxglove/mcap under idoco2003; reference (do not separately post) foxglove/foxglove-sdk; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. On-disk-logging-format vertex; record URML audit trail as a dedicated MCAP channel (schema = URML's exported JSON Schema). foxglove org-anchor on mcap, ref foxglove-sdk (live streaming). Ask: channel pattern; JSON Schema vs protobuf advertisement."
   notes: "Permissive (MIT). The portable on-disk format; opens in Lichtblick (0463). foxglove org-anchor. No license-ask."
 
 - slug: rosboard
   rfc: 467
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/dheera/rosboard/issues/156"
   channel: github_issue
   contact: "dheera/rosboard (BSD-3-Clause, ~1.1k stars, Issues enabled, Discussions OFF, not archived, active). ROS node serving a web dashboard to visualize topics in-browser (phone/laptop, no install). Dheera Venkatraman (individual). US."
   last_touch: "2026-06-12"
@@ -123,18 +133,20 @@
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0467 body to https://github.com/dheera/rosboard/issues/156 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md rosboard body as a GitHub Issue on dheera/rosboard under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Lightweight-web-dashboard vertex; a glanceable validated-intent tile (intent/verdict/dispatch). Ask: audit on a ROS topic vs a dedicated rosboard data type."
   notes: "Permissive (BSD-3). Lowest-friction dashboard. No license-ask."
 
 - slug: rviz-visual-tools
   rfc: 468
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/PickNikRobotics/rviz_visual_tools/issues/296"
   channel: github_issue
   contact: "PickNikRobotics/rviz_visual_tools (BSD-3-Clause; repo SPDX null but codebase BSD per PickNik convention, ~814 stars, Issues enabled, Discussions OFF, not archived, active — Jan 2026). C++ helper API to publish shapes/meshes/markers to RViz. PickNik Robotics. US."
   last_touch: "2026-06-12"
@@ -142,10 +154,12 @@
   tier: B
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0468 body to https://github.com/PickNikRobotics/rviz_visual_tools/issues/296 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md rviz_visual_tools body as a GitHub Issue on PickNikRobotics/rviz_visual_tools under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. In-RViz spatial-marker vertex; draw validated intent target/envelope (pose, workspace bound, geofence, plan_path trajectory); refused intent in red. Tier B. State BSD (no ask; confirm LICENSE path if it ever matters). Ask: existing markers sufficient vs an intent/envelope helper layer."
   notes: "BSD-3 (codebase; API SPDX null). Spatial-marker vertex. PickNik (also ABB driver maintainer, Move #36). No license-ask."
