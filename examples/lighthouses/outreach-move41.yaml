@@ -39,8 +39,8 @@
 
 - slug: behaviortree-cpp
   rfc: 470
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/BehaviorTree/BehaviorTree.CPP/discussions/1151"
   channel: github_discussion
   contact: "BehaviorTree/BehaviorTree.CPP (MIT, ~4.1k stars, Issues + Discussions enabled, not archived, active — v4.9.0 Feb 2026). Dominant C++ behavior-tree library (Nav2 runs on it); sibling BehaviorTree.ROS2 wraps action/service/topic leaf nodes. Davide Faconti / Auryn Robotics. ES (Spain)."
   last_touch: "2026-06-12"
@@ -48,18 +48,20 @@
   tier: A
   country: ES
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0470 body to https://github.com/BehaviorTree/BehaviorTree.CPP/discussions/1151 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md BehaviorTree.CPP body as a GitHub Discussion on BehaviorTree/BehaviorTree.CPP under idoco2003; reference (do not separately post) BehaviorTree.ROS2; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Anchor; the dominant BT lib. Two seams: URML lowers to a tree, or a leaf dispatches a validated primitive. Ask: which seam; does sequence/parallel/branch/retry map onto BT control nodes. NOTE: Faconti also maintains PlotJuggler (Move #40, posted) — different org, same person; keep light."
   notes: "Anchor. Permissive (MIT). BehaviorTree org-anchor (refs BehaviorTree.ROS2). No license-ask."
 
 - slug: py-trees
   rfc: 471
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/splintered-reality/py_trees/discussions/492"
   channel: github_discussion
   contact: "splintered-reality/py_trees (BSD-3-Clause, ~610 stars, Issues + Discussions enabled, not archived, active — v2.4.x Nov 2025); sibling py_trees_ros for ROS 2. Leading Python behavior-tree library. Daniel Stonier (indie, ex-Yujin). KR (Korea-based)."
   last_touch: "2026-06-12"
@@ -67,18 +69,20 @@
   tier: A
   country: KR
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0471 body to https://github.com/splintered-reality/py_trees/discussions/492 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md py_trees body as a GitHub Discussion on splintered-reality/py_trees under idoco2003; reference (do not separately post) py_trees_ros; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Python BT; URML reference tooling is Python -> idiomatic adapter. splintered-reality org-anchor (refs py_trees_ros). Ask: compile-to-composite vs behaviour-dispatches-primitive; mapping onto composites + decorators."
   notes: "Permissive (BSD-3). Python-BT vertex. Low hostile-close risk. No license-ask."
 
 - slug: smacc2
   rfc: 472
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/robosoft-ai/SMACC2/issues/740"
   channel: github_issue
   contact: "robosoft-ai/SMACC2 (Apache-2.0, ~364 stars, Issues enabled, Discussions OFF, not archived, active — v3.1.0 May 2026). Event-driven async behavioral state-machine library for ROS 2 (C++). Robosoft AI / ReelRobotix. US."
   last_touch: "2026-06-12"
@@ -86,18 +90,20 @@
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0472 body to https://github.com/robosoft-ai/SMACC2/issues/740 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md SMACC2 body as a GitHub Issue on robosoft-ai/SMACC2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Event-driven ROS 2 FSM, very active (this month), US + Apache (best license/recency/country profile). Ask: lower-to-state-machine vs client-behavior dispatches a primitive; mapping onto states/orthogonal-lines/transitions."
   notes: "Permissive (Apache-2.0). Standout fresh FSM target. No license-ask."
 
 - slug: transitions
   rfc: 473
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/pytransitions/transitions/discussions/740"
   channel: github_discussion
   contact: "pytransitions/transitions (MIT, ~6.5k stars, Issues + Discussions enabled, not archived, active). Canonical lightweight Python finite-state-machine (hierarchical + async). pytransitions org. DE (Germany-led; general-purpose, not robotics-native)."
   last_touch: "2026-06-12"
@@ -105,18 +111,20 @@
   tier: B
   country: DE
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0473 body to https://github.com/pytransitions/transitions/discussions/740 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md transitions body as a GitHub Discussion on pytransitions/transitions under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. General-purpose Python FSM many robot stacks use; cross-domain lowering target. Tier B (not robotics-native). Ask: URML program -> transitions FSM lowering; HSM covers nested sequence/branch; on_enter dispatch shape."
   notes: "Permissive (MIT). General-FSM vertex (cross-domain). Big audience. No license-ask."
 
 - slug: flexbe
   rfc: 474
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/FlexBE/flexbe_behavior_engine/issues/30"
   channel: github_issue
   contact: "FlexBE/flexbe_behavior_engine (BSD, ~72 stars, Issues enabled, Discussions OFF, not archived, active — Jazzy/Kilted/Rolling CI). Hierarchical FSM engine with operator-in-the-loop supervision. FlexBE org (Schillinger / Conner). DE (Germany/US academic)."
   last_touch: "2026-06-12"
@@ -124,18 +132,20 @@
   tier: B
   country: DE
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0474 body to https://github.com/FlexBE/flexbe_behavior_engine/issues/30 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md FlexBE body as a GitHub Issue on FlexBE/flexbe_behavior_engine under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Operator-in-the-loop FSM; validate-before-actuate complements human supervision (validation verdict in the operator UI). Tier B. Ask: lower-to-FSM vs state dispatches a primitive; surface verdict before a state runs."
   notes: "Permissive (BSD). Operator-in-the-loop vertex. No license-ask."
 
 - slug: skiros2
   rfc: 475
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/RobotLabLTH/SkiROS2/issues/121"
   channel: github_issue
   contact: "RVMI/skiros2 (open, BSD-style LICENSE.md, ~225 stars, Issues enabled, Discussions OFF, not archived, active-ish). Skill-based platform for ROS 2 with planning/reasoning over a world model; skills have parameters + pre/post-conditions. RVMI lab, Aalborg University. DK (Denmark)."
   last_touch: "2026-06-12"
@@ -143,18 +153,22 @@
   tier: B
   country: DK
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0475 body to https://github.com/RobotLabLTH/SkiROS2/issues/121 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
+    - date: "2026-06-12"
+      text: "RVMI/skiros2 redirects to the canonical repo RobotLabLTH/SkiROS2; posted there (issue #121)."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md SkiROS2 body as a GitHub Issue on RVMI/skiros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Closest peer to URML's typed-primitive posture (skill = parameters + pre/post-conditions ~ URML primitive + capability/envelope precondition). Tier B. Ask: primitive<->skill alignment; URML checks as skill preconditions."
   notes: "Open (BSD-style). Skill-platform vertex; closest peer to URML. No license-ask."
 
 - slug: rosplan
   rfc: 476
-  sent_at: null
-  posted_url: ""
+  sent_at: "2026-06-12"
+  posted_url: "https://github.com/KCL-Planning/ROSPlan/issues/330"
   channel: github_issue
   contact: "KCL-Planning/ROSPlan (BSD-2-Clause, ~392 stars, Issues enabled, Discussions OFF, not archived, maintained). Generic PDDL task-planning framework for ROS. King's College London. UK."
   last_touch: "2026-06-12"
@@ -162,10 +176,12 @@
   tier: B
   country: UK
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "Posted the RFC-0476 body to https://github.com/KCL-Planning/ROSPlan/issues/330 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md ROSPlan body as a GitHub Issue on KCL-Planning/ROSPlan under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. PDDL planner: plan -> URML validates + dispatches each action; URML primitive precondition <-> PDDL action precondition. Distinct from PlanSys2 (engaged Move #26; KCL/PDDL lineage). Tier B. Ask: plan-to-primitive lowering; shared capability surface."
   notes: "Permissive (BSD-2). PDDL-planner vertex. Distinct lineage from PlanSys2 (Move #26). No license-ask."
