@@ -73,9 +73,12 @@ demo-run:
 # no asciinema/ffmpeg/node — deterministic and any-OS (unlike the
 # asciinema docs/demos/record-*.sh scripts). The committed asset is the
 # deliverable; CI (test_demo_svg.py) asserts it is in sync and that every
-# line it shows is real `urml` output.
+# line it shows is real `urml` output. Two heroes regenerate in parallel:
+# the home/red-mug one and the legged/Bittle one (RFC-0062 Q6 deliverable
+# for PetoiCamp/OpenCat-Quadruped-Robot#113).
 demo-record:
 	$(PYBIN)/python tools/scripts/gen_demo_svg.py
+	$(PYBIN)/python tools/scripts/gen_bittle_demo_svg.py
 
 # Regenerate the Kawasaki `call_program` hero SVG
 # (docs/assets/kawasaki-as-program-to-motion.svg): the RFC-0015 demo,

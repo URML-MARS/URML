@@ -1,0 +1,87 @@
+# Fixture: Petoi Bittle X via OpenCat (BiBoard ESP32); PetoiCamp, Shenzhen, CN.
+# Companion to bittle-sentence.urml.yaml. Substrate = urml-edu-runtime's
+# PetoiAdapter (zero ROS, native OpenCat skill-library command surface) on a
+# real Bittle; mock adapter for the hermetic hero-demo loop.
+#
+# Authored in response to PetoiCamp/OpenCat-Quadruped-Robot#113 (Dr. Rongzhong
+# Li, Petoi founder, round-1 + round-2 engagement 2026-05-28 / 2026-05-29).
+# A single parametric manifest covers Bittle X / Bittle / Nybble Q with a
+# variant field; the maintainer confirmed "OpenCat/OpenCatEsp32 works for all
+# models, with a one-line modification to the macros line."
+#
+# Provenance origin is CN, so the bundled US-federal default policy
+# (RFC-0004) would reject this manifest under Pass 5. The hero demo path
+# explicitly uses `--no-policy` per the universal-language re-anchor: the
+# language is on stage, compliance is one flag away. Deployment-time
+# acceptance is the operator's policy decision (RFC-0004).
+
+manifest_version: "0.1"
+robot_id: bittle_sentence_demo
+description: "Petoi Bittle X (BiBoard ESP32) on a desk; OpenCat skill library."
+
+frames:
+  - name: floor
+    parent: null
+  - name: chassis
+    parent: floor
+
+# The three locations the program walks through. On a real Bittle X via
+# PetoiAdapter, these resolve to OpenCat tokens via EduConfig:
+#   start_mat   -> EduSkillCall("sendSkillStr", ["kbalance", 0])  (assume balance pose)
+#   waypoint_a  -> EduSkillCall("sendCmdStr",  ["kwkF 5", 0])    (walk forward 5 cycles)
+#   rest_mat    -> EduSkillCall("sendSkillStr", ["ksit", 0])      (sit posture)
+# The mock adapter prints abstract URML primitive calls for the hermetic
+# hero run; the OpenCat token mapping lives in the adapter and in the
+# adapter docstring.
+declared_locations:
+  - name: start_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+    description: "Bittle's starting balance pose."
+  - name: waypoint_a
+    pose: { x: 0.3, y: 0.0 }
+    frame: floor
+    description: "Forward walk goal (~30 cm forward, ~5 OpenCat kwkF cycles)."
+  - name: rest_mat
+    pose: { x: 0.0, y: 0.0 }
+    frame: floor
+    description: "Sit posture (OpenCat ksit token)."
+
+declared_events:
+  - button_pressed
+
+mobility:
+  drive_type: quadruped    # RFC-0009
+  max_velocity: 0.15       # Bittle X walking cap, m/s
+  station_keeping: false   # Bittle does not actively balance
+
+perception:
+  sensors:
+    - name: imu
+      measurement_type: custom    # v0.1 enum escape-hatch for gyro+accel composite
+      range_min: -2.0
+      range_max: 2.0
+      units: g
+    - name: battery
+      measurement_type: voltage
+      range_min: 6.0
+      range_max: 8.4
+      units: volts
+  object_vocabulary: []
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: petoi_bittle_x_biboard
+      role: critical
+      vendor: petoi
+      country_of_origin: CN
+      country_of_final_assembly: CN
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/petoi_bittle_x.cdx.json
+        sha256: "7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e"
+
+outputs:
+  named_endpoints:
+    - classroom_log
