@@ -107,20 +107,35 @@ class ChronoAdapter:
         self._chrono = _require_pychrono()
         self._config = config or ChronoConfig()
         self._system: Any = None
+        self._scene: Any = None  # set when config.scene == "terramechanics"
         self._reports: list[dict[str, Any]] = []
         self._last_evidence: dict[str, Any] | None = None
         self._closed = False
 
     def _sim(self) -> Any:
-        """Lazily build and cache the ``ChSystem``."""
+        """Lazily build and cache the ``ChSystem`` (bare or terramechanics scene)."""
         if self._system is not None:
             return self._system
-        ctor = self._chrono.ChSystemSMC if self._config.system_type == "SMC" else self._chrono.ChSystemNSC
-        self._system = ctor()
+        if self._config.scene == "terramechanics":
+            from urml_chrono_runtime.terramechanics import (
+                TerramechanicsParams,
+                TerramechanicsScene,
+            )
+
+            self._scene = TerramechanicsScene(
+                self._chrono, self._config.terramechanics or TerramechanicsParams()
+            )
+            self._system = self._scene.system
+        else:
+            ctor = self._chrono.ChSystemSMC if self._config.system_type == "SMC" else self._chrono.ChSystemNSC
+            self._system = ctor()
         return self._system
 
-    def _advance(self, steps: int) -> None:
+    def _advance(self, steps: int, driver: list[float] | None = None) -> None:
         system = self._sim()
+        if self._scene is not None:
+            self._scene.advance(self._config.step_size, steps, driver)
+            return
         for _ in range(max(1, steps)):
             system.DoStepDynamics(self._config.step_size)
 
@@ -135,6 +150,9 @@ class ChronoAdapter:
             "terrain_class": self._config.terrain_fidelity,  # RFC-0381 hint, mirrored from the manifest
             "backend": "pychrono",
         }
+        if self._scene is not None:
+            # Richer terramechanics evidence (sinkage, contact force, tip margin).
+            ev.update(self._scene.evidence())
         self._last_evidence = ev
         return ev
 
@@ -175,7 +193,7 @@ class ChronoAdapter:
         else:
             driver = [float(v) for v in (pose or {}).values()]
             steps = self._config.steps_per_command
-        self._advance(steps)
+        self._advance(steps, driver)
         ev = self._evidence(driver, steps)
         # final_pose is a flat dict[str, float]: the commanded driver vector as
         # indexed scalars, plus the headline dynamics evidence the run produced.

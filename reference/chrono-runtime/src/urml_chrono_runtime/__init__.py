@@ -15,10 +15,13 @@ from __future__ import annotations
 
 from urml_chrono_runtime._version import __version__
 from urml_chrono_runtime.adapter import ChronoAdapter, ChronoConfig, load_chrono_config
+from urml_chrono_runtime.terramechanics import TerramechanicsParams, TerramechanicsScene
 
 __all__ = [
     "ChronoAdapter",
     "ChronoConfig",
+    "TerramechanicsParams",
+    "TerramechanicsScene",
     "__version__",
     "load_chrono_config",
 ]

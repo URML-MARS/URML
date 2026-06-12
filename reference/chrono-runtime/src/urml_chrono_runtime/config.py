@@ -27,6 +27,8 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from urml_chrono_runtime.terramechanics import TerramechanicsParams
+
 
 class DriverSegment(BaseModel):
     """A named driver segment: the driver-input vector for one command.
@@ -77,9 +79,22 @@ class ChronoConfig(BaseModel):
         default=None,
         description=(
             "RFC-0381 terrain class this deployment runs over, mirrored from the "
-            "manifest's validation.terrain_fidelity. A future scene-driven build "
-            "selects the terrain model from it; v0.1 records it in the evidence."
+            "manifest's validation.terrain_fidelity. Recorded in the evidence; the "
+            "terramechanics scene reads it as the cue for deformable terrain."
         ),
+    )
+    scene: Literal["bare", "terramechanics"] = Field(
+        default="bare",
+        description=(
+            "Which Chrono scene the adapter builds. 'bare' is a plain ChSystem "
+            "advanced by driver inputs (v0.1). 'terramechanics' builds a rig on "
+            "SCM deformable terrain and returns richer evidence (sinkage, contact "
+            "force, tip margin); pair it with terrain_fidelity: deformable."
+        ),
+    )
+    terramechanics: TerramechanicsParams | None = Field(
+        default=None,
+        description="Soil + rig parameters for the terramechanics scene; defaults used when omitted.",
     )
 
     def resolve_location(self, name: str) -> DriverSegment | None:
