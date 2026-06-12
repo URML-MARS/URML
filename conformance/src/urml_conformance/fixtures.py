@@ -83,6 +83,11 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "provenance_hbom_vendor_of_vendor": _VALIDATOR_FIXTURES
     / "manifests"
     / "provenance_hbom_vendor_of_vendor.yaml",
+    # RFC-0260: Layer-4 NL-infrastructure (language) engine declarations.
+    "language_whisper": _VALIDATOR_FIXTURES / "manifests" / "language_whisper.yaml",
+    "language_vosk": _VALIDATOR_FIXTURES / "manifests" / "language_vosk.yaml",
+    "language_full": _VALIDATOR_FIXTURES / "manifests" / "language_full.yaml",
+    "language_nllb": _VALIDATOR_FIXTURES / "manifests" / "language_nllb.yaml",
     # RFC-0018: minimal sensor/actuator MCU-node declaration.
     "microbit_minimal_node": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node.yaml",
     "microbit_minimal_node_mobility": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_mobility.yaml",

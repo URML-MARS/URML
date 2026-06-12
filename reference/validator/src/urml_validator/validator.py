@@ -231,6 +231,11 @@ def validate(
     errors.extend(_check_whole_body_caps(manifest_model))
     # RFC-0018: minimal sensor/actuator MCU-node declaration coherence.
     errors.extend(_check_minimal_node(manifest_model))
+    # RFC-0260: Layer-4 NL-infrastructure (language block) coherence + advisories.
+    for issue in _check_language_static(manifest_model):
+        (warnings if issue.severity == "warning" else errors).append(issue)
+    for issue in _check_language_primitives(program_model, manifest_model):
+        (warnings if issue.severity == "warning" else errors).append(issue)
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -256,6 +261,10 @@ def validate(
                 warnings.append(issue)
             else:
                 errors.append(issue)
+        # RFC-0260: US-federal origin gate on a declared STT engine, enforced
+        # only under the bundled default policy (the two-layer split: schema
+        # accepts the value, policy refuses the substrate's origin).
+        errors.extend(_check_language_origin_gate(manifest_model, policy_model))
 
     return ValidationResult(
         accepted=not errors,
@@ -1214,6 +1223,162 @@ def _check_minimal_node(manifest: CapabilityManifest) -> list[ValidationError]:
                     )
                 )
     return out
+
+
+# US-federal default policy id (RFC-0004). The vosk origin gate (RFC-0260)
+# fires only when this exact policy is in effect, not under a custom policy.
+_US_FEDERAL_DEFAULT_POLICY_ID = "urml_us_federal_default"
+
+# Declared engine classes that carry a license shape worth a human's attention.
+# Advisory only (warning); URML records the declaration, it does not adjudicate
+# the license. The commercial-eligibility mechanism is a separate RFC (0262/0304).
+_ENGINE_LICENSE_ADVISORIES = {
+    ("tts_engine_class", "piper"): "piper is GPL-3.0; integrate it across a subprocess boundary.",
+    (
+        "translation_engine_class",
+        "nllb",
+    ): "NLLB-200 weights are CC-BY-NC 4.0 (non-commercial); declared for cross-citation, not a URML default.",
+    (
+        "translation_engine_class",
+        "libretranslate",
+    ): "LibreTranslate is AGPL-3.0; integrate it across a network (REST) boundary.",
+}
+
+
+def _check_language_static(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0260: manifest-static `language` checks (advisories + consistency).
+
+    All warnings: a translation block whose `target_languages` is empty (a
+    translation engine that emits no language is incoherent), and license-shape
+    advisories for copyleft / non-commercial engine declarations. Schema-level
+    coherence (`custom` requires a `_note`, closed enums) is enforced by the
+    pydantic model; the origin gate (vosk) is policy-dependent and lives in
+    `_check_language_origin_gate`.
+    """
+    out: list[ValidationError] = []
+    lang = manifest.language
+    if lang is None:
+        return out
+
+    for field, value in (
+        ("stt_engine_class", lang.stt_engine_class),
+        ("tts_engine_class", lang.tts_engine_class),
+        ("translation_engine_class", lang.translation_engine_class),
+    ):
+        advisory = _ENGINE_LICENSE_ADVISORIES.get((field, value))
+        if advisory is not None:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_ENGINE_LICENSE_ADVISORY,
+                    severity="warning",
+                    primitive=None,
+                    path=["<manifest>", "language", field],
+                    field=field,
+                    message=f"language.{field} {value!r}: {advisory}",
+                    detail={"engine_class": value, "field": field},
+                )
+            )
+
+    opts = lang.engine_options
+    if (
+        lang.translation_engine_class is not None
+        and opts is not None
+        and opts.translation is not None
+        and not opts.translation.target_languages
+    ):
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_TRANSLATION_LANGUAGES_INCONSISTENT,
+                severity="warning",
+                primitive=None,
+                path=["<manifest>", "language", "engine_options", "translation"],
+                field="target_languages",
+                message=(
+                    "a translation engine is declared but engine_options.translation."
+                    "target_languages is empty; declare at least one target language."
+                ),
+            )
+        )
+    return out
+
+
+def _check_language_primitives(
+    program: URMLProgram, manifest: CapabilityManifest
+) -> list[ValidationError]:
+    """RFC-0260: a program that uses `listen`/`speak` should declare the engine.
+
+    Soft suggestion (warning): if any active step is `listen` and no
+    `language.stt_engine_class` is declared (same for `speak` <-> tts), the
+    pipeline cannot be reasoned about. Recommended, not required.
+    """
+    out: list[ValidationError] = []
+    lang = manifest.language
+    uses_listen = any(step.primitive_name == "listen" for _, step in walk_program(program))
+    uses_speak = any(step.primitive_name == "speak" for _, step in walk_program(program))
+
+    if uses_listen and (lang is None or lang.stt_engine_class is None):
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_STT_ENGINE_UNDECLARED,
+                severity="warning",
+                primitive="listen",
+                path=["<manifest>", "language", "stt_engine_class"],
+                field="stt_engine_class",
+                message=(
+                    "program uses `listen` but the manifest declares no "
+                    "language.stt_engine_class; the speech-to-text substrate is undeclared."
+                ),
+                suggestion="Declare language.stt_engine_class (e.g. whisper, whisper_cpp).",
+            )
+        )
+    if uses_speak and (lang is None or lang.tts_engine_class is None):
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_TTS_ENGINE_UNDECLARED,
+                severity="warning",
+                primitive="speak",
+                path=["<manifest>", "language", "tts_engine_class"],
+                field="tts_engine_class",
+                message=(
+                    "program uses `speak` but the manifest declares no "
+                    "language.tts_engine_class; the text-to-speech substrate is undeclared."
+                ),
+                suggestion="Declare language.tts_engine_class (e.g. piper, espeak).",
+            )
+        )
+    return out
+
+
+def _check_language_origin_gate(
+    manifest: CapabilityManifest, policy_model: Policy
+) -> list[ValidationError]:
+    """RFC-0260: refuse a Russian-origin STT engine under the US-federal default.
+
+    Two-layer split: the schema accepts `stt_engine_class: vosk`, but the bundled
+    default compliance policy (and only that policy) refuses it on US-federal
+    origin grounds. A custom policy or `--no-policy` accepts it.
+    """
+    lang = manifest.language
+    if (
+        lang is None
+        or lang.stt_engine_class != "vosk"
+        or policy_model.policy_id != _US_FEDERAL_DEFAULT_POLICY_ID
+    ):
+        return []
+    return [
+        ValidationError(
+            code=ErrorCode.POLICY_STT_ENGINE_ORIGIN_DENIED,
+            primitive=None,
+            path=["<manifest>", "language", "stt_engine_class"],
+            field="stt_engine_class",
+            message=(
+                "language.stt_engine_class 'vosk' is Russian-origin and refused under the "
+                "US-federal default compliance policy. Accepted under --no-policy or a custom policy."
+            ),
+            suggestion="Use a non-covered STT engine (e.g. whisper, whisper_cpp), or run without the default policy.",
+            detail={"engine_class": "vosk", "policy_id": policy_model.policy_id},
+        )
+    ]
 
 
 def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:

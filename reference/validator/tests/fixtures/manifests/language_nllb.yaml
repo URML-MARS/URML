@@ -1,0 +1,24 @@
+# Fixture (RFC-0260): an NLLB-200 translation declaration. NLLB weights are
+# CC-BY-NC 4.0, so the validator surfaces a license advisory (warning); the
+# manifest is still accepted (the declaration is cross-citation, not a default).
+# Test-only.
+manifest_version: "0.1"
+robot_id: language_nllb
+description: Multilingual home robot declaring NLLB-200 translation (advisory).
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+language:
+  translation_engine_class: nllb
+  engine_options:
+    translation:
+      source_languages: [en, he]
+      target_languages: [en]
+      offline_capable: false

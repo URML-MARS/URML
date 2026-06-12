@@ -1,0 +1,16 @@
+name: language/vosk_no_policy_positive
+description: >
+  RFC-0260. The Russian-origin Vosk STT engine is a valid schema value and is
+  accepted when no compliance policy is enforced (policy: none).
+manifest: language_vosk
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

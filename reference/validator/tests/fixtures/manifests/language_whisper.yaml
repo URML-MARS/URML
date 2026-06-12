@@ -1,0 +1,22 @@
+# Fixture (RFC-0260): a home robot declaring a Whisper speech-to-text engine.
+# Test-only; engine choice illustrative.
+manifest_version: "0.1"
+robot_id: language_whisper
+description: Home robot with a declared Whisper STT engine.
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+language:
+  stt_engine_class: whisper
+  engine_options:
+    stt:
+      inference_runtime: gpu
+      latency_class: realtime
+      model_size: small

@@ -99,6 +99,14 @@ class ErrorCode(StrEnum):
     CAPABILITY_MINIMAL_NODE_LOCOMOTION_INCONSISTENT = "capability.minimal_node_locomotion_inconsistent"
     CAPABILITY_MINIMAL_NODE_UNDECLARED_OUTPUT = "capability.minimal_node_undeclared_output"
     CAPABILITY_MINIMAL_NODE_UNDECLARED_SENSOR = "capability.minimal_node_undeclared_sensor"
+    # RFC-0260: Layer-4 NL-infrastructure (language block) coherence. The first
+    # three are warnings (a `listen`/`speak` program with no declared engine; an
+    # inconsistent translation language list); the advisory flags a copyleft /
+    # non-commercial engine-license shape worth a human's attention.
+    CAPABILITY_STT_ENGINE_UNDECLARED = "capability.stt_engine_undeclared"
+    CAPABILITY_TTS_ENGINE_UNDECLARED = "capability.tts_engine_undeclared"
+    CAPABILITY_TRANSLATION_LANGUAGES_INCONSISTENT = "capability.translation_languages_inconsistent"
+    CAPABILITY_ENGINE_LICENSE_ADVISORY = "capability.engine_license_advisory"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
@@ -136,6 +144,10 @@ class ErrorCode(StrEnum):
     POLICY_HBOM_MISSING = "policy.hbom_missing"
     POLICY_ATTESTATION_INSUFFICIENT = "policy.attestation_insufficient"
     POLICY_RULE_INVALID = "policy.rule_invalid"
+    # RFC-0260 — US-federal origin gate on a declared STT engine. Fires only
+    # when the bundled default compliance policy is in effect (vosk is
+    # Russian-origin); accepted without `--policy` or under a custom policy.
+    POLICY_STT_ENGINE_ORIGIN_DENIED = "policy.stt_engine_origin_denied"
 
     # RFC-0005 — structured HBOM-content predicates (Pass 5 sub-pass).
     # Emitted when a policy rule reaches into a component's parsed Hardware

@@ -1,0 +1,17 @@
+name: language/vosk_default_policy_rejected
+description: >
+  RFC-0260. Under the bundled US-federal default policy (no `policy:` field),
+  the Russian-origin Vosk STT engine is refused on origin grounds. The two-layer
+  split: the schema accepts the value, the policy refuses the substrate.
+manifest: language_vosk
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: false
+  error_codes: [policy.stt_engine_origin_denied]

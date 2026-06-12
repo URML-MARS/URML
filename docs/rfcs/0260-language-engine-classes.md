@@ -2,9 +2,9 @@
 rfc: 0260
 title: language.stt_engine_class / tts_engine_class / translation_engine_class — declaring Layer-4 NL infrastructure
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -199,6 +199,47 @@ Single atomic PR.
 ## How to respond
 
 Spec RFC. PR thread.
+
+## Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as the single additive Layer-1 block this RFC proposed (every existing
+manifest stays valid; `manifest_version` stays `0.1`). It is the foundation of
+the translation-licensing stack: RFC-0262 (licensing boundary), RFC-0268
+(`deployment.commercial_use`), and RFC-0304 (the permissive-translation
+alternative that serves the engaged NLLB maintainer, RFC-0167) build on the
+`translation_engine_class` enum landed here.
+
+- **Schema** (`manifest.py`): `Language` + `EngineOptions` / `SttOptions` /
+  `TtsOptions` / `TranslationOptions`, and `CapabilityManifest.language`. Closed
+  enums for all three engine classes; a `custom` value requires its `*_note`
+  (intra-block `model_validator`). Spec: `spec/layer-1-hal/v0.2.0.md` §2.18.
+- **Validator**: a Pass-2 `_check_language_static` (license advisories for
+  piper / nllb / libretranslate; empty-translation-target-languages
+  consistency) and `_check_language_primitives` (the `listen`/`speak`
+  engine-undeclared soft suggestion); a Pass-5 `_check_language_origin_gate`
+  (the `vosk` US-federal origin gate, fired only under the bundled default
+  policy). Five new error codes (`policy.stt_engine_origin_denied`,
+  `capability.stt_engine_undeclared`, `capability.tts_engine_undeclared`,
+  `capability.translation_languages_inconsistent`,
+  `capability.engine_license_advisory`).
+- **Conformance**: `conformance/fixtures/language/` (whisper positive; vosk
+  accepted no-policy; vosk rejected under default policy; full-engines positive;
+  nllb positive) + four registered manifests.
+- **Example**: `examples/language/multilingual-greeting` — a home robot that
+  `listen`s and `speak`s, declaring Whisper / eSpeak / OPUS-MT; validates under
+  the default policy and executes on the hermetic mock.
+- **Tests**: `reference/validator/tests/test_language.py` (20 cases).
+
+Two scoping notes. (1) The `vosk` gate is implemented as a manifest-static
+Pass-5 check keyed on the default policy's `policy_id`, rather than as a
+provenance-DSL rule, because the policy DSL operates on `provenance` components,
+not the `language` block; this keeps RFC-0004's DSL unchanged. (2) The RFC's
+conformance test 5 referenced `engine_options.translation.commercial_use_gate`;
+that field belongs to RFC-0262 (not yet built), so the shipped nllb check is a
+license *advisory* (warning) independent of a `commercial_use_gate` field. The
+license-boundary cross-link (check 6) is likewise an advisory pending the
+license-boundary RFC. Per-program enforcement and engine pipelining stay
+deferred (Unresolved §1).
 
 ## Self-review (Phase 0)
 
