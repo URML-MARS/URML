@@ -1,0 +1,54 @@
+# Intents as if produced by a vision-language model from multimodal input
+# (voice + gesture). URML does not interpret these; the model does. URML's job
+# is to VALIDATE each interpreted intent against the capability manifest and the
+# safety envelope before it reaches an actuator. Safe ones dispatch; unsafe ones
+# are rejected at the gate, with a reason.
+
+intents:
+  - label: go_to_kitchen
+    modality: 'voice: "head to the kitchen"'
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: kitchen }
+
+  - label: fetch_the_mug
+    modality: 'voice: "bring me the mug" + pointing toward the kitchen'
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: kitchen }
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: gentle }
+
+  - label: grab_it_too_hard          # UNSAFE: force beyond the gripper rating / envelope cap
+    modality: 'voice: "grab it as hard as you can"'
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: 50.0 }
+
+  - label: walk_into_the_crowd       # UNSAFE: a waypoint inside the people-occupancy zone
+    modality: 'gesture: pointing at the group of people'
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: crowd_spot }
+
+  - label: go_to_hallucinated_place  # UNSAFE: a place the robot's world model does not contain
+    modality: 'voice: "go wait in the garage"'
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: garage }

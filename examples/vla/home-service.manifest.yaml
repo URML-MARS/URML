@@ -1,0 +1,52 @@
+# A home-service robot, the substrate a vision-language model drives through URML.
+# Differential base + a small electric gripper. `crowd_spot` is a declared
+# location that sits inside the safety envelope's people-occupancy zone, so a
+# model-interpreted "go over there" into the crowd is rejected before dispatch.
+
+manifest_version: "0.1"
+robot_id: home_service_bot
+description: Home-service robot driven by a VLM through URML's validated-intent gate.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - { name: kitchen,    pose: { x: 3.2, y: 1.0 }, frame: map }
+  - { name: user,       pose: { x: 0.5, y: 0.5 }, frame: map }
+  - { name: crowd_spot, pose: { x: 0.0, y: 0.0 }, frame: map }   # inside the occupancy zone
+
+declared_events:
+  - user_present
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw_demo
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary: [mug, cup, small_object]
+
+outputs:
+  named_endpoints: [home_log]

@@ -1,0 +1,20 @@
+# Deployment-time safety envelope for the home-service robot.
+# The model can interpret any intent; this envelope is part of what URML checks
+# that intent against before anything actuates.
+
+envelope_version: "0.1"
+deployment_id: home_service_demo
+description: Home-service safety envelope with a people-occupancy zone and a grip-force cap.
+
+max_velocity: 0.4
+max_grip_force_n: 5.0
+
+people_occupancy_zones:
+  - name: living_room_crowd
+    frame: map
+    vertices:
+      - [-1.0, -1.0]
+      - [1.0, -1.0]
+      - [1.0, 1.0]
+      - [-1.0, 1.0]
+    allow_override: false
