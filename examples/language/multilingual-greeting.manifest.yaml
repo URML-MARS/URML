@@ -1,0 +1,45 @@
+# Capability manifest for the multilingual-greeting example (RFC-0260).
+# A home robot that listens and speaks across several languages, declaring the
+# Layer-4 NL engines it composes with. Test/example fixture; values illustrative.
+
+manifest_version: "0.1"
+robot_id: multilingual_greeter
+description: A multilingual home robot declaring its STT / TTS / translation engines.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+
+perception:
+  sensors:
+    - name: mic
+      measurement_type: speech
+
+outputs:
+  named_endpoints: [speech]
+
+language:
+  stt_engine_class: whisper
+  tts_engine_class: espeak
+  translation_engine_class: opus_mt
+  engine_options:
+    stt:
+      inference_runtime: gpu
+      latency_class: realtime
+      model_size: small
+    tts:
+      voice_id: en-us
+      sample_rate_hz: 22050
+    translation:
+      source_languages: [en, he, es, ja, zh]
+      target_languages: [en]
+      offline_capable: true

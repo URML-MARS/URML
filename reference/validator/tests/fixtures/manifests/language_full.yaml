@@ -1,0 +1,33 @@
+# Fixture (RFC-0260): all three engine classes + full engine_options, all
+# permissive/allied (whisper_cpp on-device, espeak TTS, opus_mt translation).
+# Test-only; illustrative.
+manifest_version: "0.1"
+robot_id: language_full
+description: Multilingual home robot, full language-engine declaration.
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+language:
+  stt_engine_class: whisper_cpp
+  tts_engine_class: espeak
+  translation_engine_class: opus_mt
+  engine_options:
+    stt:
+      inference_runtime: embedded
+      quantization_level: int8
+      latency_class: realtime
+      model_size: base
+    tts:
+      voice_id: en-us
+      sample_rate_hz: 22050
+    translation:
+      source_languages: [en, he, es, ja, zh]
+      target_languages: [en]
+      offline_capable: true

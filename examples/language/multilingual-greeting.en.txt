@@ -1,0 +1,27 @@
+Listen for a spoken command, then greet the person back.
+
+This example is about what the manifest declares, not the two lines of program.
+A home robot that listens and speaks composes with three Layer-4 NL substrates:
+a speech-to-text engine, a text-to-speech engine, and (because this robot
+accepts commands in several languages) a translation engine. Before RFC-0260
+URML had nowhere to say which engines a deployment uses, so substrate-neutrality
+at the language layer was rhetorical.
+
+The manifest now declares a `language` block: Whisper for STT, eSpeak for TTS,
+and OPUS-MT for translation, with `engine_options` recording the on-device
+posture and the languages accepted (en, he, es, ja, zh in; en out). The
+validator checks the pipeline is coherent: because the program uses `listen`
+and `speak`, an undeclared engine would draw a warning; an empty translation
+target-language list would too.
+
+Run it:
+
+  urml validate multilingual-greeting.urml.yaml \
+    -m multilingual-greeting.manifest.yaml --profile home
+
+  urml execute multilingual-greeting.urml.yaml \
+    -m multilingual-greeting.manifest.yaml --profile home --no-policy
+
+Swap `stt_engine_class: whisper` for `vosk` and re-run `validate` (default
+policy on): it is refused on US-federal origin grounds. Run the same with
+`--no-policy` and it passes. Compliance is one flag; the language is the same.

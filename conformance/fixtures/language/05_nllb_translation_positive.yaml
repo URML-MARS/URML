@@ -1,0 +1,15 @@
+name: language/nllb_translation_positive
+description: >
+  RFC-0260. An NLLB-200 translation declaration is accepted (the CC-BY-NC
+  license advisory is a warning, not a rejection; the manifest still validates).
+manifest: language_nllb
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

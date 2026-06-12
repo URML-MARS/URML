@@ -1,0 +1,25 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: language/multilingual-greeting (RFC-0260)
+# Source NL: "Listen for a spoken command, then greet the person back."
+#
+# The interesting part is the manifest's `language` block (RFC-0260): which
+# STT / TTS / translation engines this multilingual home robot composes with.
+# listen consumes the declared speech sensor; speak emits to the declared
+# speech endpoint; the declared engine classes keep the Layer-4 pipeline honest.
+#
+#   urml validate multilingual-greeting.urml.yaml \
+#     -m multilingual-greeting.manifest.yaml --profile home
+#   urml execute multilingual-greeting.urml.yaml \
+#     -m multilingual-greeting.manifest.yaml --profile home --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - listen:
+        prompt: "What can I do for you?"
+        store_as: command
+    - speak:
+        utterance: "Happy to help."

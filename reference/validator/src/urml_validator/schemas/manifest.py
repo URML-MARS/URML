@@ -1181,6 +1181,99 @@ class MinimalNode(BaseModel):
         return self
 
 
+class SttOptions(BaseModel):
+    """Speech-to-text engine options (RFC-0260). All optional, deployment hints."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    inference_runtime: Literal["cpu", "gpu", "embedded"] | None = None
+    quantization_level: Literal["fp32", "fp16", "int8", "int4"] | None = None
+    latency_class: Literal["realtime", "batched", "offline"] | None = None
+    model_size: Literal["tiny", "base", "small", "medium", "large"] | None = None
+
+
+class TtsOptions(BaseModel):
+    """Text-to-speech engine options (RFC-0260)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    voice_id: str | None = None
+    sample_rate_hz: int | None = Field(None, gt=0)
+
+
+class TranslationOptions(BaseModel):
+    """Translation engine options (RFC-0260).
+
+    `source_languages` should cover the languages the Layer-4 grammar accepts;
+    `target_languages` is the runtime-side language(s) the pipeline emits.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_languages: list[str] = Field(default_factory=list)
+    target_languages: list[str] = Field(default_factory=list)
+    offline_capable: bool | None = None
+
+
+class EngineOptions(BaseModel):
+    """Per-engine option sub-blocks under `language` (RFC-0260)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    stt: SttOptions | None = None
+    tts: TtsOptions | None = None
+    translation: TranslationOptions | None = None
+
+
+class Language(BaseModel):
+    """Layer-4 natural-language infrastructure declaration (RFC-0260).
+
+    The `listen` and `speak` primitives are substrate-dependent: a deployment
+    composes them with a speech-to-text engine, a text-to-speech engine, and
+    (for multilingual deployments) a translation engine. This block lets a
+    manifest declare which engine class implements each, so the validator can
+    reason about the Layer-4 pipeline rather than treating substrate-neutrality
+    as merely rhetorical. Closed enums with a `custom` escape hatch (which
+    requires a `_note`). Optional and additive; a deployment with no `listen` /
+    `speak` programs need not declare it.
+
+    Engine-class values are origin-neutral at the schema level. A US-federal
+    origin gate (the Russian-origin `vosk` STT engine) is enforced by the
+    validator only when the bundled default compliance policy is in effect, the
+    same two-layer split URML uses elsewhere: the schema validates shape, the
+    policy validates substrate-permissibility.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    stt_engine_class: Literal[
+        "whisper", "faster_whisper", "whisper_cpp", "vosk", "porcupine_handoff", "custom"
+    ] | None = None
+    stt_engine_class_note: str | None = None
+    tts_engine_class: Literal[
+        "openvoice", "piper", "mozilla_tts", "espeak", "custom"
+    ] | None = None
+    tts_engine_class_note: str | None = None
+    translation_engine_class: Literal[
+        "opus_mt", "argos_translate", "marian_nmt", "nllb", "libretranslate", "custom"
+    ] | None = None
+    translation_engine_class_note: str | None = None
+    engine_options: EngineOptions | None = None
+
+    @model_validator(mode="after")
+    def _custom_requires_note(self) -> "Language":
+        """A `custom` engine class must name the engine via its `_note`."""
+        if self.stt_engine_class == "custom" and not self.stt_engine_class_note:
+            raise ValueError("language.stt_engine_class 'custom' requires stt_engine_class_note")
+        if self.tts_engine_class == "custom" and not self.tts_engine_class_note:
+            raise ValueError("language.tts_engine_class 'custom' requires tts_engine_class_note")
+        if self.translation_engine_class == "custom" and not self.translation_engine_class_note:
+            raise ValueError(
+                "language.translation_engine_class 'custom' requires translation_engine_class_note"
+            )
+        return self
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -1235,3 +1328,7 @@ class CapabilityManifest(BaseModel):
     # RFC-0018: optional minimal sensor/actuator MCU-node declaration.
     # Mutually exclusive with `mobility` (checked in the validator).
     minimal_node: MinimalNode | None = None
+
+    # RFC-0260: optional Layer-4 NL-infrastructure engine declarations
+    # (speech-to-text / text-to-speech / translation engine classes).
+    language: Language | None = None
