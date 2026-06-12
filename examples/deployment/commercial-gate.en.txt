@@ -1,0 +1,25 @@
+Drive to the kitchen.
+
+A worked example of RFC-0268's commercial-use gate. This manifest is a
+production deployment (`deployment.commercial_use: true`) that declares NLLB-200
+translation weights, which are CC-BY-NC (non-commercial). RFC-0262 records the
+component's `commercial_use_gate`; RFC-0268 supplies the other half, whether the
+deployment itself is commercial, and closes the loop.
+
+Run it under the default policy:
+
+  urml validate commercial-gate.urml.yaml \
+    -m commercial-gate.manifest.yaml --profile home
+
+Expected: REJECTED with policy.commercial_use_gate_violated. A commercial
+deployment may not ship a non-commercial component.
+
+Now run the same with --no-policy:
+
+  urml execute commercial-gate.urml.yaml \
+    -m commercial-gate.manifest.yaml --profile home --no-policy
+
+It validates (with a soft advisory) and executes. And if the deployment were
+research rather than production, flip `commercial_use` to false: the gate is
+satisfied and it passes under the default policy too. The license names the
+constraint; the deployment posture decides whether it bites.

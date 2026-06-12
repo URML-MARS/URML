@@ -1,0 +1,16 @@
+name: deployment/noncommercial_gated_accepted
+description: >
+  RFC-0268. The same gated component in a research (commercial_use: false)
+  deployment is accepted under the default policy: the CC-BY-NC non-commercial
+  constraint is satisfied.
+manifest: deployment_noncommercial_gated
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

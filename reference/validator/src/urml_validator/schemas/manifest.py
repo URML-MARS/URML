@@ -1368,6 +1368,32 @@ class Licensing(BaseModel):
     policy_required_max_restrictiveness: LicenseId | None = None
 
 
+class Deployment(BaseModel):
+    """Deployment-level metadata, principally the commercial-use posture (RFC-0268).
+
+    Closes RFC-0262's commercial-use-gate loop: a `commercial_use_gate: true`
+    licensing component (NLLB-200's CC-BY-NC weights, an AGPL network surface)
+    is only a *violation* when the deployment itself is commercial. This block
+    declares that. `commercial_use` defaults to **true** (most-restrictive): the
+    cost of accidentally shipping a CC-BY-NC weight in a sold product is higher
+    than the cost of an explicit `commercial_use: false`, so a genuinely
+    non-commercial deployment must say so. `deployment_class` is informational
+    (documents the why); `commercial_use` is the enforced gate.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    commercial_use: bool = Field(
+        True,
+        description="Whether the deployment is commercial. Defaults true (most-restrictive).",
+    )
+    deployment_class: Literal[
+        "research", "education", "hobby", "production", "unspecified"
+    ] | None = None
+    organization: str | None = None
+    declared_at: str | None = None
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -1429,3 +1455,6 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0262: optional per-component license-boundary declarations.
     licensing: Licensing | None = None
+
+    # RFC-0268: optional deployment metadata (commercial-use posture).
+    deployment: Deployment | None = None

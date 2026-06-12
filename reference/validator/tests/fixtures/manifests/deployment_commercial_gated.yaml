@@ -1,0 +1,25 @@
+# Fixture (RFC-0268): a commercial (production) deployment that declares a
+# CC-BY-NC (commercial-use-gated) component. Refused under a compliance policy:
+# a commercial deployment may not ship a non-commercial component. Test-only.
+manifest_version: "0.1"
+robot_id: deployment_commercial_gated
+description: Commercial deployment declaring a CC-BY-NC gated component.
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+deployment:
+  commercial_use: true
+  deployment_class: production
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true

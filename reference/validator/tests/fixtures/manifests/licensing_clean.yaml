@@ -15,6 +15,11 @@ declared_locations:
 mobility:
   drive_type: differential
   max_velocity: 0.46
+# RFC-0268: this deployment composes CC-BY-NC weights (nllb_200 below), so it
+# declares itself non-commercial; the commercial-use gate is therefore satisfied.
+deployment:
+  commercial_use: false
+  deployment_class: research
 licensing:
   components:
     - name: piper

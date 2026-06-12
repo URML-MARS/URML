@@ -1,0 +1,17 @@
+name: deployment/commercial_gated_no_policy_accepted
+description: >
+  RFC-0268. Without a compliance policy the commercial-use gate is a soft
+  advisory, not a rejection: the same commercial+gated manifest validates
+  (with a warning) when run with policy: none.
+manifest: deployment_commercial_gated
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

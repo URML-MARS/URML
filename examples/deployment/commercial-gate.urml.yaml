@@ -1,0 +1,20 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: deployment/commercial-gate (RFC-0268)
+# Source NL: "Drive to the kitchen."
+#
+# The program is incidental. The point is the manifest: a COMMERCIAL deployment
+# (deployment.commercial_use: true) declaring a CC-BY-NC commercial-use-gated
+# component (NLLB-200). Under the default policy this is refused
+# (policy.commercial_use_gate_violated); under --no-policy it is a soft advisory.
+#
+#   urml validate commercial-gate.urml.yaml -m commercial-gate.manifest.yaml --profile home
+#   urml execute  commercial-gate.urml.yaml -m commercial-gate.manifest.yaml --profile home --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: kitchen

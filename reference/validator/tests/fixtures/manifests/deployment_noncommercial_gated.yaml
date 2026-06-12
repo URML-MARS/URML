@@ -1,0 +1,24 @@
+# Fixture (RFC-0268): the same gated component in a research (non-commercial)
+# deployment. Accepted: the CC-BY-NC constraint is satisfied. Test-only.
+manifest_version: "0.1"
+robot_id: deployment_noncommercial_gated
+description: Research deployment declaring a CC-BY-NC gated component (in-bounds).
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+deployment:
+  commercial_use: false
+  deployment_class: research
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true

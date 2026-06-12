@@ -246,6 +246,9 @@ def validate(
         (warnings if issue.severity == "warning" else errors).append(issue)
     # RFC-0262: license-boundary coherence (vendored-copyleft is a hard error).
     errors.extend(_check_licensing(manifest_model))
+    # RFC-0268: deployment_class vs commercial_use consistency (warning).
+    for issue in _check_deployment_consistency(manifest_model):
+        (warnings if issue.severity == "warning" else errors).append(issue)
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -277,6 +280,12 @@ def validate(
         errors.extend(_check_language_origin_gate(manifest_model, policy_model))
         # RFC-0262: refuse a component more restrictive than the declared cap.
         errors.extend(_check_licensing_policy(manifest_model, policy_model))
+
+    # RFC-0268: commercial-use gate. Under a policy a commercial deployment with
+    # a commercial_use_gate component is an error; in default mode it is a soft
+    # advisory. Runs regardless of policy state, so it sits outside the guard.
+    for issue in _check_commercial_gate(manifest_model, policy_model is not None):
+        (warnings if issue.severity == "warning" else errors).append(issue)
 
     return ValidationResult(
         accepted=not errors,
@@ -1455,6 +1464,101 @@ def _check_licensing_policy(
                     ),
                     suggestion=f"Use a component at or below {cap!r}, or raise the declared cap.",
                     detail={"component": comp.name, "license": comp.license, "max": cap},
+                )
+            )
+    return out
+
+
+# Deployment classes whose conventional posture is non-commercial (RFC-0268).
+_NONCOMMERCIAL_CLASSES = frozenset({"research", "education", "hobby"})
+
+
+def _deployment_is_commercial(manifest: CapabilityManifest) -> bool:
+    """Effective commercial posture: true unless explicitly declared false.
+
+    A missing `deployment` block defaults to commercial (most-restrictive); a
+    present block uses its `commercial_use` field (itself defaulting to true).
+    """
+    return manifest.deployment.commercial_use if manifest.deployment is not None else True
+
+
+def _check_deployment_consistency(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0268: a non-commercial-looking class declared commercial draws a warning.
+
+    `deployment_class: research` (or education / hobby) together with
+    `commercial_use: true` is allowed but surfaced, so the deliberate choice is
+    visible rather than a copy-paste slip.
+    """
+    out: list[ValidationError] = []
+    dep = manifest.deployment
+    if dep is None or dep.deployment_class is None:
+        return out
+    if dep.deployment_class in _NONCOMMERCIAL_CLASSES and dep.commercial_use:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_COMMERCIAL_USE_CLASS_INCONSISTENT,
+                severity="warning",
+                primitive=None,
+                path=["<manifest>", "deployment", "commercial_use"],
+                field="commercial_use",
+                message=(
+                    f"deployment_class {dep.deployment_class!r} is conventionally non-commercial "
+                    f"but commercial_use is true; confirm this is deliberate."
+                ),
+                detail={"deployment_class": dep.deployment_class, "commercial_use": True},
+            )
+        )
+    return out
+
+
+def _check_commercial_gate(
+    manifest: CapabilityManifest, policy_active: bool
+) -> list[ValidationError]:
+    """RFC-0268: a commercial deployment may not declare a gated component.
+
+    Closes RFC-0262's loop. When the deployment is commercial (declared, or the
+    most-restrictive default) and a `licensing.components[]` entry sets
+    `commercial_use_gate: true` (NLLB-200 CC-BY-NC weights, an AGPL surface),
+    that is a violation. Under a compliance policy it is an error; in default
+    mode it is a soft advisory naming the component. A `commercial_use: false`
+    deployment satisfies the gate.
+    """
+    out: list[ValidationError] = []
+    if not _deployment_is_commercial(manifest) or manifest.licensing is None:
+        return out
+    for comp in manifest.licensing.components:
+        if not comp.commercial_use_gate:
+            continue
+        if policy_active:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.POLICY_COMMERCIAL_USE_GATE_VIOLATED,
+                    primitive=None,
+                    path=["<manifest>", "licensing", "components", comp.name],
+                    field="commercial_use_gate",
+                    message=(
+                        f"commercial deployment declares component {comp.name!r} with "
+                        f"commercial_use_gate (license {comp.license!r}); a commercial deployment "
+                        f"may not use a non-commercial component."
+                    ),
+                    suggestion="Declare deployment.commercial_use: false (if non-commercial), or replace the gated component.",
+                    detail={"component": comp.name, "license": comp.license},
+                )
+            )
+        else:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_COMMERCIAL_GATE_ADVISORY,
+                    severity="warning",
+                    primitive=None,
+                    path=["<manifest>", "licensing", "components", comp.name],
+                    field="commercial_use_gate",
+                    message=(
+                        f"deployment is commercial (declared or defaulted) and component "
+                        f"{comp.name!r} is commercial-use-gated; under --policy this would fail. "
+                        f"Declare deployment.commercial_use explicitly to resolve."
+                    ),
+                    detail={"component": comp.name, "license": comp.license},
                 )
             )
     return out
