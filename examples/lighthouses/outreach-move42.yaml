@@ -65,19 +65,21 @@
   channel: github_issue
   contact: "rail-berkeley/oculus_reader (Apache-2.0, ~161 stars, Issues enabled, Discussions OFF, not archived, active — 2026-05). Reads Oculus/Quest controller pose + buttons for VR teleop; input front-end for many manipulation rigs. RAIL, UC Berkeley. US."
   last_touch: "2026-06-12"
-  response: none
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0480 body to https://github.com/rail-berkeley/oculus_reader/issues/20 under idoco2003 (Move #42 teleop/data-collection wave). Awaiting response."
+    - date: "2026-06-12"
+      text: "jborbik (maintainer) closed #20 same-day, terse: 'Off-topic. We do not collect demonstrations, data organization is handled by the end-user.' oculus_reader is a narrow VR-controller pose/button reader; it does not own the intent or data layer URML maps to, so the outreach was at the wrong altitude (the controller-to-validated-intent mapping belongs above oculus_reader, in the teleop/data stack that consumes it). Not hostile, no AI-content complaint. Accepted silently, no reply (a terse off-topic close does not invite further contact; replying adds noise). Same wrong-altitude family as the component-API closes (Trinamic/Sensirion/casadi)."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move42.md oculus_reader body as a GitHub Issue on rail-berkeley/oculus_reader under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. VR-input vertex; map a controller action to a validated URML intent (vs raw pose). Ask: thin layer above button events; record typed intent per button."
-  notes: "Permissive (Apache-2.0). VR-input front-end. No license-ask."
+  next_action: "Declined (jborbik, off-topic close). Do not pursue oculus_reader; no reply. The VR-controller-to-validated-intent mapping belongs above the raw reader, in the teleop/data-collection layer that consumes it (revisit there if a consumer engages). No license-ask was made (Apache-2.0)."
+  notes: "Permissive (Apache-2.0). VR-input front-end. No license-ask. Wrong-altitude decline: oculus_reader reads controller state, it does not own intent/data."
 
 - slug: dex-retargeting
   rfc: 481
