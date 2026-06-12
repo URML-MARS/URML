@@ -78,19 +78,21 @@
   posted_url: "https://github.com/ICube-Robotics/ethercat_driver_ros2/issues/224"
   channel: github_issue
   contact: "ICube-Robotics/ethercat_driver_ros2 (a ros2_control SystemInterface for EtherCAT modules; ~308 stars, Issues AND Discussions enabled, not archived, last push 2026-03-06). ICube Laboratory robotics group, University of Strasbourg (FR). License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-12"
+  response: engaged
   tier: A
   country: FR
   sector: substrate-runtime
   comments:
     - date: "2026-06-02"
       text: "Posted issue #224 pointing at RFC-0320 (under idoco2003, after RFC-0320 landed on main via PR #274), AI-authoring disclosure up front. Two questions (mapping boundary with bus wiring at Layer 0; CiA-402 operation mode) + a license question. SOEM (master lib) named as folded into this thread."
+    - date: "2026-06-12"
+      text: "yguel (maintainer) replied constructively: confirmed the 'URML primitive -> controller -> ethercat command interface' boundary is the interesting one, confirmed Apache-2.0 (license question answered), and raised the real distinction: cyclic PDO answers immediately (watchdog applies) but acyclic SDO/mailbox has no guaranteed return time, so error handling / goal-reached / timeout differ completely. Replied that URML already models the cyclic regime (realtime block, RFC-0016) and that the SDO path is the genuine gap. SHIPPED RFC-0469 in response: an optional realtime.acyclic sub-block (timeout_ms + requires_goal_check) + a coherence check + examples/fieldbus/ worked example. Offered to sketch the cyclic-vs-acyclic mapping against a real CiA-402 drive."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0320 merges to main, post the posts-move23.md ethercat_driver_ros2 body on ICube-Robotics/ethercat_driver_ros2 under idoco2003; then set sent_at / posted_url / last_touch and add a posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d. If silent, polite follow-up on issue #224. If reply, bump last_touch and set response per enum; capture the license answer in contact/notes once given."
+  next_action: "Engaged. Reply posted 2026-06-12 + RFC-0469 shipped (realtime.acyclic). Await yguel's read on the acyclic modeling; if he wants the concrete CiA-402 mapping, extend examples/fieldbus/. License resolved (Apache-2.0)."
   notes: "Move #23 fieldbus-substrate, distinct from the anchor (different org, real-time-bus mapping). ros2_control-native, so the RFC-0319 primitive -> controller -> command-interface path carries through; the added concern is the bus (PDO/SDO, distributed clocks) which stays Layer 0 (RFC-0006 line). Grounds the substrate-neutrality claim at the hardest real-time end. SOEM folded (row below). Cross-link RFC-0319 (anchor), RFC-0321 (CANopen peer). Origin FR (ICube / U. Strasbourg), NATO-allied. Verified 2026-06-02."
 
 - slug: ros2-canopen

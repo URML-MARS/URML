@@ -873,6 +873,46 @@ class LearnedPolicy(BaseModel):
     )
 
 
+class AcyclicRegime(BaseModel):
+    """The asynchronous (acyclic) command regime of the substrate (RFC-0469).
+
+    A fieldbus carries two kinds of traffic. Cyclic process data (EtherCAT PDO,
+    a CANopen PDO) runs on the guaranteed cadence the parent `realtime` block
+    describes: the answer is immediate and a watchdog catches a missed cycle.
+    Acyclic mailbox traffic (EtherCAT SDO, a CANopen SDO, an OPC UA method call)
+    has no guaranteed return time, so a watchdog is the wrong instrument. There
+    the honest contract is a *timeout* plus an explicit *goal-reached check*: the
+    command may take an unbounded-but-bounded time, and completion is confirmed
+    by reading back state, not by assuming the next cycle carries the answer.
+
+    This optional sub-block lets a manifest declare that the substrate also
+    exposes an acyclic path and how a command over it is bounded. Like the rest
+    of `realtime`, it is a declaration of the hardware's regime, not a real-time
+    guarantee URML polices; v0.1 enforces only internal coherence.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    timeout_ms: float = Field(
+        ...,
+        gt=0,
+        description=(
+            "Deadline for an acyclic (SDO / mailbox) command before it is "
+            "treated as failed. Unlike a cyclic watchdog this bounds a "
+            "transaction with no guaranteed return time, ms."
+        ),
+    )
+    requires_goal_check: bool = Field(
+        True,
+        description=(
+            "Whether completion of an acyclic command must be confirmed by an "
+            "explicit goal-reached / read-back check rather than assumed. True "
+            "by default: an async mailbox answer is not implied by the next "
+            "control cycle."
+        ),
+    )
+
+
 class Realtime(BaseModel):
     """Cyclic / real-time timing contract of the substrate (RFC-0016).
 
@@ -883,6 +923,10 @@ class Realtime(BaseModel):
     contract URML enforces: `guarantee` states the honesty level, and v0.1
     enforces only internal coherence (watchdog >= one cycle), never a real-time
     guarantee. A future RFC may add an envelope-dwell Pass-3 rule.
+
+    The same substrate often exposes an acyclic mailbox path alongside the
+    cyclic one; `acyclic` (RFC-0469) declares that regime, which is bounded by a
+    timeout and a goal-reached check rather than a cyclic watchdog.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -899,6 +943,13 @@ class Realtime(BaseModel):
         description=(
             "Honest timing regime. Explicit so a manifest cannot imply a "
             "hard-real-time promise URML does not police."
+        ),
+    )
+    acyclic: AcyclicRegime | None = Field(
+        None,
+        description=(
+            "Optional asynchronous (SDO / mailbox) regime declaration (RFC-0469). "
+            "Present when the substrate also serves acyclic commands."
         ),
     )
 
