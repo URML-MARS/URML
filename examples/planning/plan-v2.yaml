@@ -1,0 +1,41 @@
+# Plan v2: the planner's re-plan after consuming URML's replan-feedback. The
+# feedback told the planner that (goto shelf crowd_spot) is inadmissible because
+# crowd_spot lies in the people-occupancy zone, so the planner adds the
+# constraint and routes via the safe `approach` waypoint instead. Every action
+# now validates, so the dispatcher runs the whole plan.
+
+plan_id: v2
+goal: "deliver the mug to the user"
+actions:
+  - action: "(goto dock shelf)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: shelf }
+
+  - action: "(pick mug shelf)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: gentle }
+
+  - action: "(goto shelf approach)"          # safe waypoint, outside the zone
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: approach }
+
+  - action: "(goto approach user)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: user }

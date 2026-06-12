@@ -1,0 +1,22 @@
+# Safety envelope for the replan-feedback example.
+#
+# A people-occupancy zone around the origin and a grip-force cap. The PDDL domain
+# does not model either; the envelope is the deployment-time safety contract URML
+# conjoins with the manifest before dispatch.
+
+envelope_version: "0.1"
+deployment_id: delivery_demo
+description: Delivery safety envelope with a people-occupancy zone and a grip-force cap.
+
+max_velocity: 0.5
+max_grip_force_n: 5.0
+
+people_occupancy_zones:
+  - name: lobby_crowd
+    frame: map
+    vertices:
+      - [-1.0, -1.0]
+      - [1.0, -1.0]
+      - [1.0, 1.0]
+      - [-1.0, 1.0]
+    allow_override: false

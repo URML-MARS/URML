@@ -1,0 +1,28 @@
+URML as the validating dispatcher for a PDDL planner: each grounded action
+is validated against the manifest + envelope before dispatch; an inadmissible
+action halts dispatch and returns structured feedback the planner replans on.
+robot: delivery_bot  |  envelope: delivery_demo
+
+# Plan v1 (planner output) - goal: deliver the mug to the user
+
+[DISPATCH] (goto dock shelf)
+[DISPATCH] (pick mug shelf)
+[HALT]     (goto shelf crowd_spot)
+   rejected at Pass 3 (safety envelope) [envelope.occupancy_zone_intrusion]
+   move_to.location (0.0, 0.0) in frame 'map' enters the declared people-occupancy zone 'lobby_crowd'. Programs that route the robot through people-occupancy zones are rejected by default.
+   -> dispatch halted; 1 action(s) not reached.
+
+# Replan-feedback (returned to the planner)
+
+rejected_action: (goto shelf crowd_spot)
+failing_pass:    Pass 3 (safety envelope)
+codes:           envelope.occupancy_zone_intrusion
+directive:       forbid (goto shelf crowd_spot) and replan; without this constraint the planner returns the same plan.
+
+# Plan v2 (planner re-plan, feedback applied) - goal: deliver the mug to the user
+
+[DISPATCH] (goto dock shelf)
+[DISPATCH] (pick mug shelf)
+[DISPATCH] (goto shelf approach)
+[DISPATCH] (goto approach user)
+-> all actions admissible; full plan dispatched.

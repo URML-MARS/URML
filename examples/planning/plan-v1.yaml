@@ -1,0 +1,43 @@
+# Plan v1: the planner's first output (e.g. a ROSPlan / PDDL plan), lowered to a
+# sequence of grounded actions, each carrying the URML program the dispatcher
+# would execute. The plan is symbolically valid in the PDDL domain. The route
+# from the shelf to the user happens to pass through crowd_spot, which sits
+# inside the safety envelope's people-occupancy zone. The PDDL domain never
+# modeled that zone, so the planner cannot know the action is inadmissible. URML
+# does.
+
+plan_id: v1
+goal: "deliver the mug to the user"
+actions:
+  - action: "(goto dock shelf)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: shelf }
+
+  - action: "(pick mug shelf)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: gentle }
+
+  - action: "(goto shelf crowd_spot)"        # routes through the occupancy zone
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: crowd_spot }
+
+  - action: "(goto crowd_spot user)"
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: user }
