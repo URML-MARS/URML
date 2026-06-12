@@ -1,0 +1,23 @@
+URML intent gate: a vision-language model proposes, URML validates, the robot
+acts only on what passes.
+robot: home_service_bot  |  envelope: home_service_demo
+
+[DISPATCH] go_to_kitchen
+   model interpreted  voice: "head to the kitchen"
+   -> move_to(kitchen); validated, dispatched to the substrate.
+
+[DISPATCH] fetch_the_mug
+   model interpreted  voice: "bring me the mug" + pointing toward the kitchen
+   -> move_to(kitchen) -> detect(mug) -> grasp(force=gentle); validated, dispatched to the substrate.
+
+[REJECTED] grab_it_too_hard
+   model interpreted  voice: "grab it as hard as you can"
+   -> detect(mug) -> grasp(force=50.0); rejected at the gate [capability.missing_gripper, envelope.force_exceeded]. No actuator command sent.
+
+[REJECTED] walk_into_the_crowd
+   model interpreted  gesture: pointing at the group of people
+   -> move_to(crowd_spot); rejected at the gate [envelope.occupancy_zone_intrusion]. No actuator command sent.
+
+[REJECTED] go_to_hallucinated_place
+   model interpreted  voice: "go wait in the garage"
+   -> move_to(garage); rejected at the gate [capability.missing_location]. No actuator command sent.
