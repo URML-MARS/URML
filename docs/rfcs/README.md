@@ -612,6 +612,19 @@ URML's description-interop vertical: the communities behind robot-description fo
 | [0461](0461-orocos-kdl-outreach.md) | Outreach | Orocos KDL (`orocos/orocos_kinematics_dynamics`) integration; Move #39; **Tier B**; classic ROS kinematics/dynamics library — cross-check manifest workspace vs KDL-computed reach; LGPL-2.1 (no ask); RFC from the maintainers | Draft | 2026-06-07 |
 | [0462](0462-urchin-outreach.md) | Outreach | urchin (`fishbotics/urchin`) integration; Move #39; **Tier B**; actively-maintained urdfpy successor (Python URDF + FK) — description→manifest adapter building block; MIT; RFC from the maintainer | Draft | 2026-06-07 |
 
+### The developer-tooling / observability wave (Move #40, RFCs 0463-0468)
+
+URML's observability vertical, at a distinct altitude: URML is not a substrate here, it is a *data source*. Every URML dispatch is validated before it actuates and emits a structured audit record (intent → validator verdict + failing pass → substrate calls); the ask is whether each tool would ingest / visualize / record that validated-intent stream as a first-class source (the same shape as the engaged Open MCT thread, RFC-0395). Viz platforms, time-series plotting, the on-disk logging format, and in-RViz spatial markers. Surfaces verified 2026-06-12. **Deferred** (likely inside the ROS-2-core footprint, RFC-0200): rosbag2, rviz, rqt, ros2cli, ros2_tracing. **Excluded:** archived foxglove/studio, dead webviz/streetscape.gl, GPL evo, AGPL plotjuggler-ros-plugins. Drafted; posting awaits authorization (ledger [`outreach-move40.yaml`](../../examples/lighthouses/outreach-move40.yaml), bodies [`posts-move40.md`](../../examples/lighthouses/posts-move40.md)).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0463](0463-lichtblick-outreach.md) | Outreach | Lichtblick (`lichtblick-suite/lichtblick`) integration; Move #40 anchor; BMW-led open Foxglove-Studio fork — URML's validated-intent audit stream as a data-source panel; MPL-2.0; RFC from the maintainers | Draft | 2026-06-12 |
+| [0464](0464-rerun-outreach.md) | Outreach | Rerun (`rerun-io/rerun`) integration; Move #40; multimodal-timeline viz — log the validated-intent audit stream as Rerun entities; Apache-2.0 + MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0465](0465-plotjuggler-outreach.md) | Outreach | PlotJuggler (`PlotJuggler/PlotJuggler`) integration; Move #40; fast time-series viz — plot verdict + envelope-margin series (commanded vs declared limit); MPL-2.0; RFC from the maintainer | Draft | 2026-06-12 |
+| [0466](0466-mcap-outreach.md) | Outreach | MCAP (`foxglove/mcap`) integration; Move #40; serialization-agnostic logging container — record the audit trail as a dedicated MCAP channel (schema = URML's exported JSON Schema); foxglove org-anchor (refs foxglove-sdk); MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0467](0467-rosboard-outreach.md) | Outreach | rosboard (`dheera/rosboard`) integration; Move #40; no-install web ROS dashboard — a glanceable validated-intent tile (intent/verdict/dispatch); BSD-3-Clause; RFC from the maintainer | Draft | 2026-06-12 |
+| [0468](0468-rviz-visual-tools-outreach.md) | Outreach | rviz_visual_tools (`PickNikRobotics/rviz_visual_tools`) integration; Move #40; **Tier B**; RViz marker helper — draw validated intent target/envelope (pose, workspace, geofence, trajectory), refused intent in red; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-12 |
+
 ## Lifecycle states
 
 Per RFC-0001:
