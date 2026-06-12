@@ -12,8 +12,8 @@
 # Four slices, RFCs 0306-0318. The pitch is constant: URML composes
 # ABOVE each communication surface as the plain-language intent layer;
 # it never embeds, forks, or vendors the transport. License frictions
-# (EMQX BSL, UA-.NETStandard RCL, LCM/opcua-asyncio LGPL, milo/mosquitto
-# EPL) are stated in-RFC and resolved by client/IPC-boundary integration.
+# (EMQX BSL, LCM/opcua-asyncio LGPL, milo/mosquitto EPL) are stated
+# in-RFC and resolved by client/IPC-boundary integration.
 #
 #   Slice 1 - web/teleop/viz bridges: rosbridge_suite, webrtc_ros
 #   Slice 2 - alt transports/messaging: micro-ROS, eCAL, LCM, Mosquitto, EMQX
@@ -184,8 +184,8 @@
   sent_at: "2026-06-02"
   posted_url: "https://github.com/OPCFoundation/UA-.NETStandard/issues/3827"
   channel: github_issue
-  contact: "OPCFoundation/UA-.NETStandard (OPC Foundation reciprocal community license 'other' - members-only friction, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
-  last_touch: "2026-06-03"
+  contact: "OPCFoundation/UA-.NETStandard (MIT, relicensed from RCL Dec 2025, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
+  last_touch: "2026-06-12"
   response: engaged
   tier: A
   country: INTL
@@ -197,9 +197,11 @@
       text: "Follow-up (2026-06-03): marcschier proposed a concrete collaboration shape - an OPC UA robotics extension library (common/client/server) implementing the companion spec IN the UA-.NETStandard repo, with URML as the simplified AI-accessible binding aligned on top; retitled the issue 'Robot companion spec libraries to support URML' and is keeping it open for other-maintainer agreement. Replied endorsing that division of labor (library owns the standard-conformant impl; URML stays the thin front end) and offering to help define the binding/library interface."
     - date: "2026-06-03"
       text: "Showcased the existing OPC UA runtime to marcschier on #3827 (2026-06-03): URML already ships OpcUaAdapter (asyncua, no ROS) mapping intent onto OPC UA method/variable nodes + call_program -> a ControlProgram method node, with the opcua_cell manifest and a pick/place conformance fixture (full suite 124/124). Framed the honest gap (binds to per-deployment-configured NodeIds, not the standard companion-spec nodeset) as exactly what his proposed companion-spec extension library would close, and offered to define the binding/library interface. This is the 'project that uses it' demand he asked for."
+    - date: "2026-06-12"
+      text: "The OPC Foundation (opcfoundation-org) filed URML#292 correcting the license recorded in RFC-0314 and this ledger: UA-.NETStandard was relicensed RCL/GPL -> MIT in December 2025 (verified: commit #3388, 2025-12-04, 'replace RCL/GPL headers with MIT'). Corrected RFC-0314 (Motivation, Licensing section, Drawbacks, self-review; state Draft -> Open) and the Move #22 research note + post bodies; dropped the 'members-only friction' framing everywhere (MIT is a standard permissive OSI license, so there is no license boundary to state). Drafted a thank-you reply on #292 (then close) and a one-line MIT correction on #3827 for the founder to post under idoco2003. A second touch from the standards body on the crown-jewel thread."
   claude_directives: []
   next_action: "Engaged + showcased the working OPC UA runtime (the demand artifact, conformance-verified). Next: if marcschier/the maintainers agree on the companion-spec extension library, co-define its interface so OpcUaAdapter can target the standard MotionDevice nodeset instead of per-deployment config. Crown-jewel standards-body thread; founder may take the collaboration step human (a call)."
-  notes: "Tier A. OPC Foundation RCL recorded; protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
+  notes: "Tier A. MIT (relicensed from RCL Dec 2025); protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
 
 - slug: eclipse-milo
   rfc: 315

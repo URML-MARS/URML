@@ -16,7 +16,7 @@
 
 Copy-paste-ready bodies for the 13 Move #22 targets across four slices (web/teleop bridges, alt transports, OPC UA, dialogue). Bodies follow the [AGENTS.md](../../AGENTS.md) outreach-post-structure rules: concrete hook first, one or two real questions, light ask up front, full RFC linked as optional depth, under a two-minute read, zero em-dashes. The VIBE disclosure line goes last in every body.
 
-Every body frames URML as composing **above** the communication surface, never embedding it. License frictions (EMQX BSL, UA-.NETStandard RCL, LCM/opcua-asyncio LGPL) are stated up front in those bodies.
+Every body frames URML as composing **above** the communication surface, never embedding it. License frictions (EMQX BSL, LCM/opcua-asyncio LGPL) are stated up front in those bodies.
 
 **Posting status:** all DRAFT. Founder posts under `idoco2003` after the RFCs land on `main` (so the write-up links resolve); then record `posted_url` + flip `last_touch` in `outreach-move22.yaml`.
 
@@ -32,7 +32,7 @@ Every body frames URML as composing **above** the communication surface, never e
 | 0311 | Mosquitto | eclipse-mosquitto/mosquitto | Issue |
 | 0312 | EMQX | emqx/emqx | Issue / Discussion (BSL note) |
 | 0313 | open62541 | open62541/open62541 | Issue |
-| 0314 | UA-.NETStandard | OPCFoundation/UA-.NETStandard | Issue / Discussion (RCL note) |
+| 0314 | UA-.NETStandard | OPCFoundation/UA-.NETStandard | Issue / Discussion |
 | 0315 | Eclipse Milo | eclipse-milo/milo | Issue / Discussion |
 | 0316 | opcua-asyncio | FreeOpcUa/opcua-asyncio | Issue / Discussion (LGPL) |
 | 0317 | openWakeWord | dscripka/openWakeWord | Issue / Ideas Discussion |
@@ -236,7 +236,7 @@ Ido Yahalomi (URML, greenvh@gmail.com)
 ```
 Hi OPC Foundation maintainers,
 
-URML (urml.dev) is a small open language (Apache-2.0) for robot intent: English in, a validated primitive out, dispatched after a capability check. URML's design names OPC UA Robotics as a target substrate, and the most useful conversation is with the body that stewards that companion spec. URML would map validated intent onto OPC UA services; it does not embed or redistribute the reference stack (I note the reciprocal community license and keep the relationship at the protocol boundary).
+URML (urml.dev) is a small open language (Apache-2.0) for robot intent: English in, a validated primitive out, dispatched after a capability check. URML's design names OPC UA Robotics as a target substrate, and the most useful conversation is with the body that stewards that companion spec. URML would map validated intent onto OPC UA services; it does not embed or redistribute the reference stack, keeping the relationship at the protocol boundary.
 
 Two questions: is the OPC UA Robotics companion nodeset the right thing for a URML manifest to target, and is the GitHub repo the right channel or should this go to a working group?
 
