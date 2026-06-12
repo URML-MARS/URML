@@ -219,6 +219,8 @@ def validate(
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
     errors.extend(_check_whole_body_caps(manifest_model))
+    # RFC-0018: minimal sensor/actuator MCU-node declaration coherence.
+    errors.extend(_check_minimal_node(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -1122,6 +1124,84 @@ def _location_declared(manifest: CapabilityManifest, name: str) -> bool:
 
 def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(f.name == name for f in manifest.frames)
+
+
+def _check_minimal_node(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0018: minimal sensor/actuator MCU-node declaration coherence.
+
+    Manifest-static checks (no per-program enforcement in v0.1, which is deferred):
+    `minimal_node` and `mobility` are mutually exclusive (a thing either drives or
+    declares it does not); `has_locomotion` must be False; declared outputs must be
+    real `outputs.lines[]` (the RFC-0017 lines a minimal node's `set_output`
+    targets); declared sensors must exist in `perception.sensors` when that block
+    is present.
+    """
+    out: list[ValidationError] = []
+    mn = manifest.minimal_node
+    if mn is None:
+        return out
+
+    if manifest.mobility is not None:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_MINIMAL_NODE_WITH_MOBILITY,
+                primitive=None,
+                path=["<manifest>", "minimal_node"],
+                field="minimal_node",
+                message=(
+                    "manifest declares both `minimal_node` and `mobility`; they are "
+                    "mutually exclusive (a minimal node does not move)."
+                ),
+                suggestion="Remove `mobility` for a minimal node, or remove `minimal_node` if the robot drives.",
+            )
+        )
+    if mn.has_locomotion:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_MINIMAL_NODE_LOCOMOTION_INCONSISTENT,
+                primitive=None,
+                path=["<manifest>", "minimal_node", "has_locomotion"],
+                field="has_locomotion",
+                message="`minimal_node.has_locomotion` must be False; declare a `mobility` block instead if the node moves.",
+                suggestion="Set has_locomotion: false and (if it drives) declare `mobility`.",
+            )
+        )
+    line_names = {ln.name for ln in manifest.outputs.lines}
+    for output in mn.declared_outputs:
+        if output not in line_names:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_MINIMAL_NODE_UNDECLARED_OUTPUT,
+                    primitive=None,
+                    path=["<manifest>", "minimal_node", "declared_outputs"],
+                    field="declared_outputs",
+                    message=(
+                        f"minimal_node.declared_outputs names {output!r}, which is not a "
+                        f"declared `outputs.lines[]` line."
+                    ),
+                    suggestion=f"Declare an output line named {output!r} in outputs.lines (RFC-0017), or fix the name.",
+                    detail={"output": output},
+                )
+            )
+    if manifest.perception is not None:
+        sensor_names = {s.name for s in manifest.perception.sensors}
+        for sensor in mn.declared_sensors:
+            if sensor not in sensor_names:
+                out.append(
+                    ValidationError(
+                        code=ErrorCode.CAPABILITY_MINIMAL_NODE_UNDECLARED_SENSOR,
+                        primitive=None,
+                        path=["<manifest>", "minimal_node", "declared_sensors"],
+                        field="declared_sensors",
+                        message=(
+                            f"minimal_node.declared_sensors names {sensor!r}, which is not in "
+                            f"`perception.sensors`."
+                        ),
+                        suggestion=f"Add a sensor named {sensor!r} to perception.sensors, or fix the name.",
+                        detail={"sensor": sensor},
+                    )
+                )
+    return out
 
 
 def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:

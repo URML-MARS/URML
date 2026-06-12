@@ -75,6 +75,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "autosar_ara_com_incomplete": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com_incomplete.yaml",
     # RFC-0017: digital/analog output-line actuation (`set_output`).
     "cobot_cell_outputs": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell_outputs.yaml",
+    # RFC-0018: minimal sensor/actuator MCU-node declaration.
+    "microbit_minimal_node": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node.yaml",
+    "microbit_minimal_node_mobility": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_mobility.yaml",
+    "microbit_minimal_node_bad_output": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_bad_output.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

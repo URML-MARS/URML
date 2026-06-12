@@ -1,0 +1,22 @@
+name: educational/minimal_node_undeclared_output_rejected
+description: >
+  RFC-0018 negative: minimal_node.declared_outputs names `buzzer`, which is not a
+  declared outputs.lines[] line. The output a minimal node points at must be a
+  real RFC-0017 line; the validator rejects at Pass 2 with
+  capability.minimal_node_undeclared_output.
+
+manifest: microbit_minimal_node_bad_output
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: led, value: true }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.minimal_node_undeclared_output

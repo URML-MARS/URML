@@ -1,0 +1,46 @@
+# Capability manifest for a minimal sensor/actuator MCU node (RFC-0018).
+# A micro:bit-class classroom board: one digital LED output line and one light
+# sensor, no mobility / no manipulator / no camera. It declares `minimal_node`
+# rather than faking a `differential` mobility so a program validates. The
+# actuation verb is RFC-0017's set_output over the declared `led` line; the
+# sensor read is a `measure` over the declared light sensor. US origin; the
+# provenance block is compliant under the bundled US-federal default policy.
+
+manifest_version: "0.1"
+robot_id: classroom_microbit
+description: Fixed micro:bit-class node — one LED, one light sensor (RFC-0018 minimal_node).
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [light]
+  declared_outputs: [led]
+  has_locomotion: false
+
+perception:
+  cameras: []
+  sensors:
+    - name: light
+      measurement_type: custom
+      range_min: 0.0
+      range_max: 1000.0
+      units: lux
+  object_vocabulary: []
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: mcu
+      role: critical
+      vendor: microbit_educational_foundation
+      country_of_origin: GB
+      country_of_final_assembly: GB
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/mcu.cdx.json
+        sha256: "6666666666666666666666666666666666666666666666666666666666666666"

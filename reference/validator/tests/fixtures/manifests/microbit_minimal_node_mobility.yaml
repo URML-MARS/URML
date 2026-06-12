@@ -1,0 +1,23 @@
+# Fixture (negative, RFC-0018): a manifest that declares BOTH `minimal_node`
+# and `mobility`. Parses fine (both optional), but the validator rejects it at
+# Pass 2 with capability.minimal_node_with_mobility — a thing either drives or
+# declares it does not.
+
+manifest_version: "0.1"
+robot_id: microbit_contradiction
+description: Invalid — minimal_node and mobility both declared (RFC-0018 mutual exclusion).
+
+minimal_node:
+  class: actuator
+  declared_outputs: [led]
+  has_locomotion: false
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.5
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false

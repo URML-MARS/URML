@@ -1,0 +1,31 @@
+# Fixture: a minimal sensor/actuator MCU node (RFC-0018).
+# A micro:bit-class board: a digital LED output line and a light sensor, no
+# mobility, no manipulator, no camera. It declares `minimal_node` instead of
+# faking a `differential` mobility so a fixture validates. The actuation verb it
+# uses is RFC-0017's set_output over the declared `led` line.
+
+manifest_version: "0.1"
+robot_id: microbit_led_board
+description: Fixed micro:bit-class node — one LED, one light sensor (RFC-0018 minimal_node).
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [light]
+  declared_outputs: [led]
+  has_locomotion: false
+
+perception:
+  cameras: []
+  sensors:
+    - name: light
+      measurement_type: custom
+      range_min: 0.0
+      range_max: 1000.0
+      units: lux
+  object_vocabulary: []
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false
