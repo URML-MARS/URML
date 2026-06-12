@@ -649,6 +649,19 @@ URML's Layer-3 vertical: behavior-tree, finite-state-machine, and task-orchestra
 | [0475](0475-skiros2-outreach.md) | Outreach | SkiROS2 (`RVMI/skiros2`) integration; Move #41; **Tier B**; skill-based ROS 2 platform — closest peer to URML's typed-primitive posture (skill params + pre/post-conditions ~ primitive + capability/envelope precondition); BSD-style; RFC from the lab | Draft | 2026-06-12 |
 | [0476](0476-rosplan-outreach.md) | Outreach | ROSPlan (`KCL-Planning/ROSPlan`) integration; Move #41; **Tier B**; PDDL task planner (KCL) — ROSPlan plans, URML validates + dispatches each action; primitive precondition ↔ PDDL action precondition; distinct lineage from PlanSys2; BSD-2-Clause; RFC from the maintainers | Draft | 2026-06-12 |
 
+### The teleoperation / data-collection wave (Move #42, RFCs 0479-0484)
+
+URML's teleop / imitation-learning-data vertical — the rigs people use to teleoperate robots and collect demonstrations (pairs with the VLA/learning waves, Moves #11/#38: teleop is *how* that data is collected). Two non-competing seams: a validated **shared-autonomy handoff** the rig hands off to (operator commands a high-level intent → URML validates capability + envelope → dispatch; teleop corrects), and a **typed schema for the demonstrated intent** recorded with the trajectory (a demo labelled with the URML primitive it realizes = structured, manifest-checkable supervision). Surfaces verified 2026-06-12; numbered 0479-0484 (0477/0478 taken by parallel Spec RFCs). **Deferred:** Unitree XR (PRC), BunnyVisionPro (possible HKU). **Excluded:** dormant ALOHA/Mobile-ALOHA, engaged Interbotix, ARISE-Initiative robosuite/deoxys, LGPL frankx/franky, no-license telemoma/droid. Drafted; posting awaits authorization (ledger [`outreach-move42.yaml`](../../examples/lighthouses/outreach-move42.yaml), bodies [`posts-move42.md`](../../examples/lighthouses/posts-move42.md)).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0479](0479-gello-outreach.md) | Outreach | GELLO (`wuphilipp/gello_software`) integration; Move #42 anchor; low-cost leader-arm teleop / demo-collection rig — validated shared-autonomy handoff + typed-intent annotation; MIT; RFC from the maintainer | Draft | 2026-06-12 |
+| [0480](0480-oculus-reader-outreach.md) | Outreach | oculus_reader (`rail-berkeley/oculus_reader`) integration; Move #42; Quest VR input front-end — map a controller action to a validated URML intent; Apache-2.0; RFC from the maintainers | Draft | 2026-06-12 |
+| [0481](0481-dex-retargeting-outreach.md) | Outreach | dex-retargeting (`dexsuite/dex-retargeting`) integration; Move #42; AnyTeleop hand-retargeting layer — wrap a retargeted grasp in a capability/envelope check; ties LEAP/Shadow dexterous-manifest questions; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0482](0482-televison-outreach.md) | Outreach | Open-TeleVision (`OpenTeleVision/TeleVision`) integration; Move #42; immersive VR bimanual/humanoid teleop — validated handoff + typed bimanual demo annotation (ties RFC-0010); Apache-2.0; RFC from the maintainers | Draft | 2026-06-12 |
+| [0483](0483-umi-outreach.md) | Outreach | UMI (`real-stanford/universal_manipulation_interface`) integration; Move #42; handheld in-the-wild data collection — typed manifest-checkable demo labels + deploy-time envelope; same lab as engaged diffusion_policy (ack); MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0484](0484-dexcap-outreach.md) | Outreach | DexCap (`j96w/DexCap`) integration; Move #42; **Tier B**; portable hand-mocap data collection — typed demo labels + deploy-time envelope, dexterous-hand manifest; MIT; RFC from the maintainer | Draft | 2026-06-12 |
+
 ## Lifecycle states
 
 Per RFC-0001:

@@ -1,0 +1,152 @@
+# Move #42 outreach ledger. One row per target.
+#
+# Move #42: **the teleoperation / imitation-learning data-collection wave.** Civilian
+# / research scope. The rigs people use to teleoperate robots and collect
+# demonstrations for training. Pairs with the VLA/learning waves (Moves #11, #38):
+# teleop is HOW that training data is collected. URML fit (two non-competing seams):
+# (a) a validated shared-autonomy / handoff layer the rig hands off to (operator
+# commands a high-level intent -> URML validates capability + envelope -> dispatch;
+# teleop is the correction path), and (b) a typed schema for the demonstrated intent
+# recorded alongside the trajectory (a demo labelled with the URML primitive it
+# realizes = structured, manifest-checkable supervision). Surfaces verified 2026-06-12.
+#
+# Shapes (no new spec):
+#   - Leader-arm / input teleop: GELLO (0479, anchor), oculus_reader (0480, VR input).
+#   - Hand retargeting: dex-retargeting (0481, AnyTeleop; ties LEAP/Shadow dexterous
+#     manifest questions, Move #27).
+#   - Immersive VR teleop: Open-TeleVision (0482; bimanual ties RFC-0010).
+#   - Handheld / portable data collection: UMI (0483; typed labels + deploy-time
+#     envelope), DexCap (0484, B, dormant).
+#
+# Same-org ack: UMI (real-stanford) shares a lab with the engaged diffusion_policy
+# (Move #11) — the post acknowledges that so it does not read as a cold repeat.
+#
+# DEFER-PRC/HK: unitreerobotics/xr_teleoperate (Unitree, Hangzhou — mainland CN);
+# Dingry/BunnyVisionPro (possible HKU co-authorship — verify domicile before any touch).
+#
+# EXCLUDED: ALOHA + Mobile-ALOHA (dormant 24-26mo, AI-close risk on dead repos),
+# Interbotix toolboxes (engaged mobile-manip wave), robosuite/deoxys (ARISE-Initiative
+# same-org as robomimic + wrong altitude), fairo (Meta agent platform, not teleop),
+# frankx/franky (LGPL + Franka control libs, not teleop rigs), telemoma + droid-dataset/
+# droid (NO license file -> not clearly open; droid also same-consortium as the engaged
+# droid_policy_learning).
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the founder
+# authorizes posting. Then post the posts-move42.md body under idoco2003 (all GitHub
+# Issues this wave; none of these repos have Discussions), set sent_at / posted_url /
+# last_touch, add a posted comment, refresh outreach.db. No license-ask anywhere
+# (all permissive: MIT/Apache). VIBE.md disclosure up front.
+
+- slug: gello
+  rfc: 479
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "wuphilipp/gello_software (MIT, ~488 stars, Issues enabled, Discussions OFF, not archived, active — 2026-04). Software for GELLO, a low-cost leader-arm teleop rig; a default way to collect manipulation demos. Philipp Wu, Stanford/UC Berkeley. US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md GELLO body as a GitHub Issue on wuphilipp/gello_software under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor. Two seams: shared-autonomy handoff (operator commands a high-level intent -> URML validates+dispatches; teleop corrects) + typed-intent annotation of demos. Ask: which seam is cleaner first."
+  notes: "Anchor. Permissive (MIT). Default demo-collection rig. No license-ask."
+
+- slug: oculus-reader
+  rfc: 480
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "rail-berkeley/oculus_reader (Apache-2.0, ~161 stars, Issues enabled, Discussions OFF, not archived, active — 2026-05). Reads Oculus/Quest controller pose + buttons for VR teleop; input front-end for many manipulation rigs. RAIL, UC Berkeley. US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md oculus_reader body as a GitHub Issue on rail-berkeley/oculus_reader under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. VR-input vertex; map a controller action to a validated URML intent (vs raw pose). Ask: thin layer above button events; record typed intent per button."
+  notes: "Permissive (Apache-2.0). VR-input front-end. No license-ask."
+
+- slug: dex-retargeting
+  rfc: 481
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "dexsuite/dex-retargeting (MIT, ~1048 stars, Issues enabled, Discussions OFF, not archived, active — 2025-08). Human->robot hand retargeting optimizers (the AnyTeleop origin); used by many VR/vision teleop rigs. dexsuite org / Yuzhe Qin (UCSD-lineage). US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md dex-retargeting body as a GitHub Issue on dexsuite/dex-retargeting under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Hand-retargeting vertex; wrap a retargeted grasp in a validated manipulation intent (capability/envelope before hardware); ties LEAP/Shadow dexterous-manifest questions (Move #27). Ask: dexterous-hand manifest fields."
+  notes: "Permissive (MIT). AnyTeleop retargeting layer. No license-ask."
+
+- slug: televison
+  rfc: 482
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "OpenTeleVision/TeleVision (Apache-2.0 [LICENSE file; GitHub classifier mislabels NOASSERTION], ~1273 stars, Issues enabled, Discussions OFF, not archived; last push 2024-09, ~21mo borderline). Immersive VR teleop with active visual feedback (CoRL 2024); bimanual + humanoid demos. UCSD + MIT (Xuxin Cheng, Xiaolong Wang). US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md Open-TeleVision body as a GitHub Issue on OpenTeleVision/TeleVision under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Immersive-VR-teleop vertex; shared-autonomy handoff + bimanual demo annotation (ties RFC-0010). Borderline recency (~21mo) but clean Apache + US. Ask: handoff vs annotation seam."
+  notes: "Permissive (Apache-2.0; LICENSE file, API mislabels). Bimanual ties RFC-0010. No license-ask."
+
+- slug: umi
+  rfc: 483
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "real-stanford/universal_manipulation_interface (MIT, ~1.4k stars, Issues enabled, Discussions OFF, not archived, active — 2026-05). UMI: handheld-gripper in-the-wild manipulation data collection (no robot in the loop). Stanford (Cheng Chi / Shuran Song). US. SAME LAB as the engaged diffusion_policy (Move #11)."
+  last_touch: "2026-06-12"
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md UMI body as a GitHub Issue on real-stanford/universal_manipulation_interface under idoco2003; acknowledge the prior diffusion_policy (same lab) engagement in the body so it is not a cold repeat; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Handheld-data-collection vertex; typed labels on demos + deploy-time validate-before-actuate envelope. ACK same-lab (diffusion_policy, Move #11). Ask: annotation at collection vs validation wrapper at deployment."
+  notes: "Permissive (MIT). Same lab as engaged diffusion_policy — ack in body. No license-ask."
+
+- slug: dexcap
+  rfc: 484
+  sent_at: null
+  posted_url: ""
+  channel: github_issue
+  contact: "j96w/DexCap (MIT, ~380 stars, Issues enabled, Discussions OFF, not archived; last push 2024-10, dormant ~20mo). Portable hand-motion-capture system for collecting dexterous manipulation demos in the wild (RSS 2024). Jie Wang, Stanford. US."
+  last_touch: "2026-06-12"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move42.md DexCap body as a GitHub Issue on j96w/DexCap under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Portable-hand-mocap vertex; typed labels + deploy-time envelope; dexterous-hand manifest. Tier B (dormant ~20mo, rig is a reference). Ask: manifest fields for the target hand."
+  notes: "Permissive (MIT). Portable-hand-mocap vertex. Dormant repo. No license-ask."
