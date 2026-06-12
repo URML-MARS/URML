@@ -172,16 +172,18 @@
   channel: github_issue
   contact: "KCL-Planning/ROSPlan (BSD-2-Clause, ~392 stars, Issues enabled, Discussions OFF, not archived, maintained). Generic PDDL task-planning framework for ROS. King's College London. UK."
   last_touch: "2026-06-12"
-  response: none
+  response: engaged
   tier: B
   country: UK
   sector: framework-skill
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0476 body to https://github.com/KCL-Planning/ROSPlan/issues/330 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
+    - date: "2026-06-12"
+      text: "gerardcanal (Gerard Canal, KCL maintainer) replied same-day, engaged and constructive: 'sounds interesting, happy to look into URML.' Three questions: (1) how the capability part relates to a PDDL domain (the domain already encodes what the robot can do); (2) is URML a different dispatcher checking action validity (conditions still hold); (3) what happens on validation failure -- feeding it back to the planner would be nice, otherwise the same plan comes back. Looped in @m312z. Replied: PDDL domain is the symbolic model, URML manifest+envelope is the physical-limits + safety admissibility layer; yes URML is a validating dispatcher (halts on first inadmissible action); the rejection is structured (action + failing pass + codes + violated constraint) and is exactly the replan-feedback to feed back. SHIPPED examples/planning/ (PR #393): dispatch a symbolically-valid plan that routes through a people-occupancy zone -> URML halts (envelope.occupancy_zone_intrusion) -> structured replan-feedback -> re-plan dispatches in full. Asked gerardcanal/m312z whether the feedback should be PDDL (a predicate / action removal) vs the structured shape."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md ROSPlan body as a GitHub Issue on KCL-Planning/ROSPlan under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. PDDL planner: plan -> URML validates + dispatches each action; URML primitive precondition <-> PDDL action precondition. Distinct from PlanSys2 (engaged Move #26; KCL/PDDL lineage). Tier B. Ask: plan-to-primitive lowering; shared capability surface."
+  next_action: "Engaged (gerardcanal, KCL). Reply posted 2026-06-12 + examples/planning/ replan-feedback example shipped (PR #393). Await his + @m312z's read on the feedback shape (structured vs PDDL predicate/action-removal); if they want PDDL-shaped feedback, that is the next build. Generalizes to PlanSys2 (engaged Move #26, same KCL/PDDL lineage)."
   notes: "Permissive (BSD-2). PDDL-planner vertex. Distinct lineage from PlanSys2 (Move #26). No license-ask."
