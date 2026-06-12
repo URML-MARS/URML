@@ -1,0 +1,161 @@
+# Move #43 outreach ledger. One row per target.
+#
+# Move #43: **the general-purpose reinforcement-learning / policy-training wave.**
+# Civilian / research scope. The libraries people use to TRAIN policies, one
+# stratum below the VLA / foundation-model layer (Moves #11, #38) and distinct
+# from the legged-specific RL libraries (Move #29: rsl_rl / legged_gym / rl_games).
+# These are general-purpose RL frameworks (PPO/SAC/DQN/...), not robot platforms.
+#
+# URML fit (the same thesis for all six, RFC-0383 LearnedPolicy + RFC-0002
+# decide-then-do): a policy trained in framework X is deployed on a robot. URML
+# carries the policy's training envelope (observation/action spaces + training-
+# domain bounds) as a typed, validatable declaration, and sits between the policy
+# and the hardware as the decide-then-do gate: each proposed action is checked
+# against the robot's declared capabilities + the active safety envelope before
+# dispatch. The policy decides; URML does. Two non-competing seams: (a) envelope
+# EXPORT (a trained policy emits its obs/action spaces + domain bounds as a URML
+# LearnedPolicy envelope) and (b) validated DEPLOYMENT (the gate). This is the
+# same question the legged-RL maintainers were asked in Move #29, generalized.
+#
+# Targets (surfaces verified 2026-06-12; all MIT/Apache, none archived, none
+# already touched, none deferred-country):
+#   - stable-baselines3 (0485, anchor; the canonical RL lib; Issue)
+#   - cleanrl (0486; single-file = ideal worked example; Discussion/Ideas)
+#   - skrl (0487; Isaac Lab / sim2real focus, has a Sim2Real category; Discussion)
+#   - torchrl / pytorch/rl (0488; primitive-first, TensorSpec; Discussion/Ideas)
+#   - mushroom-rl (0489; clean MDPInfo; Issue)
+#   - ray / RLlib (0490; narrow RLlib framing only, not Ray core; Issue)
+#
+# DEFERRED WITH CAUSE (logged, not silently dropped):
+#   - facebookresearch/Pearl: clean + active + high fit, but Meta is already
+#     over-contacted (lerobot, openpi, seamless_communication/NLLB all engaged).
+#     Held to avoid org-fatigue; revisit if a Meta thread is warranted.
+#   - alex-petrenko/sample-factory: single-author, cadence slowing (last push
+#     2026-01); throughput-not-deployment focus. AI-close risk on a quiet repo.
+#   - luchris429/purejaxrl: dormant since 2024-09, single-author research repo.
+#   - google-deepmind/acme: not archived but maintenance-only internal mirror,
+#     ~97 stale open issues; a cold Issue likely goes unread.
+#   - google/dopamine: not archived but quarterly batched-sync only, ~110 stale
+#     open issues; low-yield cold surface.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move43.md body under idoco2003,
+# set sent_at / posted_url / last_touch, add a posted comment, flip the
+# claude_directives status to done, refresh outreach.db. No license-ask anywhere
+# (all permissive: MIT / Apache-2.0). VIBE.md disclosure up front. For the three
+# Discussion targets, query the discussion categories at post time and use Ideas
+# (skrl's Sim2Real category is the natural alternative).
+
+- slug: stable-baselines3
+  rfc: 485
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "DLR-RM/stable-baselines3 (MIT, ~13.4k stars, Issues enabled, Discussions OFF, not archived, very active 2026-06). The canonical reliable-RL-algorithms library (PPO/SAC/TD3/DQN). German Aerospace Center (DLR-RM), Munich. DE."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md stable-baselines3 body as a GitHub Issue on DLR-RM/stable-baselines3 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Anchor. Two seams: envelope export (obs/action spaces + VecNormalize bounds -> URML LearnedPolicy envelope) + validated deployment gate. Ask: which seam is cleaner first."
+  notes: "Anchor. Highest-profile RL lib. Permissive (MIT). Issue-only (no Discussions). No license-ask."
+
+- slug: cleanrl
+  rfc: 486
+  sent_at: ""
+  posted_url: ""
+  channel: github_discussion
+  contact: "vwxyzjn/cleanrl (MIT, ~9.9k stars, Issues + Discussions enabled with an Ideas category, not archived, active 2026-04). Single-file Deep RL implementations. Costa Huang (vwxyzjn), HF/OpenRL-affiliated individual. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md cleanrl body as a GitHub Discussion (Ideas category) on vwxyzjn/cleanrl under idoco2003; query the category id at post time; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Seam: a single-file example that emits a URML LearnedPolicy envelope next to a trained policy (ideal worked example), plus the deployment gate. Discussion/Ideas."
+  notes: "High fit (single-file clarity = ideal envelope worked example). MIT (LICENSE bundles adapted-component licenses; primary is MIT; do NOT re-ask). Discussion target."
+
+- slug: skrl
+  rfc: 487
+  sent_at: ""
+  posted_url: ""
+  channel: github_discussion
+  contact: "Toni-SM/skrl (MIT, ~1.1k stars, Issues + Discussions enabled with Ideas AND Sim2Real categories, not archived, active 2026-05). Modular RL (PyTorch/JAX/Warp) with Isaac Lab / MuJoCo Playground / Gymnasium support. Antonio Serrano-Munoz, Mondragon Unibertsitatea. ES."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md skrl body as a GitHub Discussion on Toni-SM/skrl under idoco2003 (Ideas category; Sim2Real is the natural alternative); query the category id at post time; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Most robotics/sim2real-aligned of the six (dedicated Sim2Real category). Seam: the sim2real envelope (the simulated domain a policy must stay within on the real robot) + the deployment gate."
+  notes: "High fit; explicitly sim2real-focused. Permissive (MIT). Ties the legged-RL envelope question from Move #29. Discussion target."
+
+- slug: torchrl
+  rfc: 488
+  sent_at: ""
+  posted_url: ""
+  channel: github_discussion
+  contact: "pytorch/rl (TorchRL, MIT, ~3.5k stars, Issues + Discussions enabled with an Ideas category, not archived, very active 2026-06). Modular, primitive-first PyTorch RL library; TensorSpec describes obs/action specs. PyTorch project (Linux Foundation / Meta-originated). US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md torchrl body as a GitHub Discussion (Ideas category) on pytorch/rl under idoco2003; query the category id at post time; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. 'Primitive-first' rhymes with URML. Seam: TensorSpec obs/action specs -> URML LearnedPolicy envelope + the deployment gate."
+  notes: "High fit. PyTorch project (not the same as the Meta-research repos already engaged; this is pytorch/rl under the PyTorch org). Permissive (MIT). Discussion target."
+
+- slug: mushroom-rl
+  rfc: 489
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "MushroomRL/mushroom-rl (MIT, ~0.9k stars, Issues enabled, Discussions OFF, not archived, active 2026-06). Python RL library with a clean MDPInfo (obs/action spaces). Academic (TU Darmstadt / IIT lineage). EU (IT/DE)."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IT
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md mushroom-rl body as a GitHub Issue on MushroomRL/mushroom-rl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Seam: MDPInfo spaces + training-domain bounds -> URML LearnedPolicy envelope + the deployment gate."
+  notes: "Medium fit; clean academic RL lib, no flags. Permissive (MIT). Issue-only. No license-ask."
+
+- slug: ray-rllib
+  rfc: 490
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ray-project/ray (Apache-2.0, ~42.8k stars, Issues enabled, Discussions OFF, not archived, very active 2026-06). RLlib is the scalable-RL component of the Ray distributed-compute engine. Originated at UC Berkeley RISELab; stewarded by Anyscale. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-12"
+      text: "When authorized, post the posts-move43.md ray-rllib body as a GitHub Issue on ray-project/ray under idoco2003, scoped EXPLICITLY to RLlib (not Ray core), label appropriately; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Medium fit; frame NARROWLY at RLlib + its deployment story, not Ray's distributed-compute core, or it reads as off-topic noise in a huge monorepo. Seam: RLlib Policy spaces -> envelope + the deployment gate."
+  notes: "Medium fit, huge monorepo -> tight RLlib framing essential. Permissive (Apache-2.0). Issue-only. No license-ask."
