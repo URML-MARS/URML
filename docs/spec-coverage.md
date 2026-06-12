@@ -284,6 +284,7 @@ All twelve blocks are covered.
 | `outputs` (`named_endpoints`) | v0.1.0 §2.8 | `Outputs` | Pass 2 (`report`/`speak`) | `industrial/01_pick_red_positive` | `home/evening-routine` |
 | `outputs.lines` (RFC-0017) | v0.2.0 §2.8 | `OutputLine` | Pass 2 (`set_output`) | `actuation/01_set_output_digital_positive` | `cobot/glue-bead` |
 | `provenance` | v0.1.0 §2.9 + `policy.md` | `Provenance` | Pass 5 | `home/07_policy_country_denied` | `home/red-mug` |
+| HBOM-content predicates (RFC-0005) | `policy.md` Predicates | `RulePredicate.hbom_no_components_from_*` / `hbom.py` | Pass 5 (HBOM sub-pass) | `compliance/02_hbom_cn_chip_rejected` | `compliance/hidden-cn-chip` |
 | `connectivity` | v0.1.0 §2.10 | `Connectivity`/`DeclaredLink` | Pass 2 + Pass 3 | `drone/10_link_role_undeclared_rejected` | `drone/link-aware-patrol` |
 | `link_loss_policy` (envelope side) | v0.1.0 §2.10 | `LinkLossRule` | Pass 3 | `drone/13_link_loss_rth_positive` | `drone/link-aware-patrol` |
 | `minimal_node` (RFC-0018) | v0.2.0 §2.17 | `MinimalNode` | Pass 2 (mobility XOR, output/sensor cross-ref) | `educational/08_minimal_node_led_positive` | `educational/blink-the-led` |

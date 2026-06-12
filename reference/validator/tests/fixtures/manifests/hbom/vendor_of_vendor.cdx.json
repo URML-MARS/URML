@@ -1,0 +1,24 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": { "type": "device", "name": "drive_controller" }
+  },
+  "components": [
+    {
+      "type": "hardware",
+      "name": "integrated_motor_board",
+      "supplier": { "name": "US Integrator Inc", "address": { "country": "US" } },
+      "pedigree": {
+        "ancestors": [
+          {
+            "type": "hardware",
+            "name": "rebadged_rf_die",
+            "supplier": { "name": "Hidden Covered Entity", "address": { "country": "CN" } }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -25,6 +25,7 @@ from urml_conformance.fixtures import (
     AdapterOverrides,
     FixtureCase,
     discover_fixtures,
+    manifest_base_dir,
     resolve_envelope,
     resolve_manifest,
     resolve_policy,
@@ -210,6 +211,7 @@ class ConformanceRunner:
             manifest = resolve_manifest(case.manifest)
             envelope = resolve_envelope(case.envelope) if case.envelope else None
             policy = resolve_policy(case.policy)
+            base_dir = manifest_base_dir(case.manifest)
         except (KeyError, ValueError) as exc:
             return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -222,6 +224,9 @@ class ConformanceRunner:
             envelope,
             profiles=tuple(case.profiles),
             policy=policy,
+            # RFC-0005: resolve a component's relative hbom_ref.uri against the
+            # manifest fixture's own directory for HBOM-content policy rules.
+            manifest_base_dir=base_dir,
         )
         diagnostics.extend(_diag_validation(case, validation))
 

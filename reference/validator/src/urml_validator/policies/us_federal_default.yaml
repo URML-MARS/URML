@@ -92,3 +92,39 @@ rules:
         Self-declared provenance accepted in v0.1 but flagged. v0.2 will
         promote this to an error; deployments should arrange third-party
         attestation now.
+
+# -----------------------------------------------------------------------------
+# RFC-0005 — structured HBOM-content rules (NOT active in v0.1.5).
+#
+# The rules above gate on the manifest's *declared* provenance facts. A board
+# can declare country_of_origin: US and still carry a covered part inside its
+# Hardware Bill of Materials. The rules below read the parsed CycloneDX HBOM a
+# component's hbom_ref points at and walk its pedigree, so a covered part is
+# caught at any depth (NDAA §889 vendor-of-vendor). They are dependency-free
+# (the validator parses the CycloneDX JSON subset with the standard library).
+#
+# Left COMMENTED-OUT on purpose: v0.1's procurement floor is the manifest-
+# declared facts plus an integrity-hashed HBOM-by-reference. Uncomment to
+# enforce the deeper content check; v0.2 may activate it by default after a
+# comment window. Aligns with NIST SP 800-218 / IR 8425 HBOM-content guidance.
+#
+#  - id: critical_hbom_no_covered_country_components
+#    applies_to: { component_role: critical }
+#    deny:
+#      hbom_no_components_from_country: [CN, RU, IR, KP]
+#    on_violation:
+#      code: policy.hbom_component_country_denied
+#      message: >-
+#        A critical component's HBOM declares a part (at some pedigree depth)
+#        from a covered foreign country, even though the manifest's top-level
+#        provenance does not. NDAA Section 889 / FY26 NDAA.
+#
+#  - id: critical_hbom_no_covered_vendor_components
+#    applies_to: { component_role: critical }
+#    deny:
+#      hbom_no_components_from_vendor: [dji, autel, hesai, unitree]
+#    on_violation:
+#      code: policy.hbom_component_vendor_denied
+#      message: >-
+#        A critical component's HBOM declares a part supplied by a vendor named
+#        in the FCC Covered List / American Security Robotics Act.

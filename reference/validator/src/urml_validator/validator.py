@@ -42,6 +42,7 @@ from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from importlib import resources
 from math import hypot
+from pathlib import Path
 from typing import Any, Literal
 
 import yaml
@@ -137,6 +138,8 @@ def validate(
     envelope: dict[str, Any] | SafetyEnvelope | None = None,
     profiles: tuple[str, ...] = (),
     policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+    *,
+    manifest_base_dir: Path | None = None,
 ) -> ValidationResult:
     """Validate a URML program against a manifest and (optionally) an envelope.
 
@@ -153,6 +156,13 @@ def validate(
         policy:     Compliance policy for Pass 5. Pass ``"DEFAULT"`` (the default)
                     to load the bundled US-federal policy; ``None`` to skip Pass 5
                     entirely; or a raw dict / ``Policy`` model to use a specific policy.
+        manifest_base_dir: Directory a component's relative ``hbom_ref.uri`` is
+                    resolved against for RFC-0005 HBOM-content policy rules,
+                    normally the manifest file's own directory. ``None`` (the
+                    default for in-memory callers) disables local-HBOM
+                    resolution; HBOM-content rules then degrade to a
+                    ``policy.hbom_uri_unreachable`` warning. The CLI passes the
+                    manifest file's parent directory automatically.
 
     Returns:
         A `ValidationResult` with `accepted=True` iff no error-severity errors fired.
@@ -236,10 +246,12 @@ def validate(
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
 
-    # ----- Pass 5: compliance policy (RFC-0004) -----
+    # ----- Pass 5: compliance policy (RFC-0004; HBOM-content sub-pass RFC-0005) -----
     policy_model = _resolve_policy(policy, errors)
     if policy_model is not None:
-        for issue in evaluate_policy(manifest_model, policy_model):
+        for issue in evaluate_policy(
+            manifest_model, policy_model, manifest_base_dir=manifest_base_dir
+        ):
             if issue.severity == "warning":
                 warnings.append(issue)
             else:

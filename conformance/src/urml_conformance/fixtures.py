@@ -75,6 +75,14 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "autosar_ara_com_incomplete": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com_incomplete.yaml",
     # RFC-0017: digital/analog output-line actuation (`set_output`).
     "cobot_cell_outputs": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell_outputs.yaml",
+    # RFC-0005: structured HBOM-content provenance variants (US-declared on the
+    # surface; the referenced CycloneDX HBOM is clean / hides a CN part / hides
+    # a CN pedigree ancestor).
+    "provenance_hbom_clean": _VALIDATOR_FIXTURES / "manifests" / "provenance_hbom_clean.yaml",
+    "provenance_hbom_cn_chip": _VALIDATOR_FIXTURES / "manifests" / "provenance_hbom_cn_chip.yaml",
+    "provenance_hbom_vendor_of_vendor": _VALIDATOR_FIXTURES
+    / "manifests"
+    / "provenance_hbom_vendor_of_vendor.yaml",
     # RFC-0018: minimal sensor/actuator MCU-node declaration.
     "microbit_minimal_node": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node.yaml",
     "microbit_minimal_node_mobility": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_mobility.yaml",
@@ -212,6 +220,9 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
 #: bundled US-federal default, or ``policy: none`` to skip Pass 5 entirely.
 POLICY_REGISTRY: dict[str, Path] = {
     "permissive": _VALIDATOR_FIXTURES / "policies" / "permissive.yaml",
+    # RFC-0005: an HBOM-content policy that walks parsed CycloneDX, not just
+    # the manifest-declared provenance facts.
+    "hbom_no_cn_components": _VALIDATOR_FIXTURES / "policies" / "hbom_no_cn_components.yaml",
 }
 
 
@@ -427,6 +438,17 @@ def resolve_manifest(name: str) -> dict[str, Any]:
     if not isinstance(result, dict):
         raise ValueError(f"manifest {name!r} did not parse as a mapping")
     return result
+
+
+def manifest_base_dir(name: str) -> Path | None:
+    """The directory a manifest's relative ``hbom_ref.uri`` resolves against.
+
+    RFC-0005 HBOM-content rules read a component's HBOM file relative to the
+    manifest's own directory. For a registered manifest that is the file's
+    parent dir; an unregistered name yields ``None`` (no local resolution).
+    """
+    entry = MANIFEST_REGISTRY.get(name)
+    return entry.parent if entry is not None else None
 
 
 def resolve_envelope(name: str) -> dict[str, Any]:

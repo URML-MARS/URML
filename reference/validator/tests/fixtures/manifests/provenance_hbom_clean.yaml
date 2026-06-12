@@ -1,0 +1,38 @@
+# Fixture (RFC-0005): the accepted counterpart to provenance_hbom_cn_chip.
+# Same shape, but the referenced HBOM declares only US / CH parts, so the
+# HBOM-content policy passes. Proves the deny rule is not vacuously rejecting.
+#
+# Test-only fixture. Values are illustrative.
+
+manifest_version: "0.1"
+robot_id: provenance_hbom_clean
+description: TurtleBot-class manifest with an all-allied HBOM.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_us_integrator
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.5
+        uri: ./hbom/clean.cdx.json
+        sha256: "ab383cf8f6b5ec1b1a25df88038034eb02edd619153ff369e596fbb41388f5e3"

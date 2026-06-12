@@ -1,0 +1,23 @@
+name: compliance/hbom_clean_accepted
+description: >
+  RFC-0005. A manifest whose critical component references a CycloneDX HBOM
+  declaring only US/CH parts. Under the HBOM-content policy
+  (hbom_no_cn_components), Pass 5 parses the HBOM, finds no covered-country
+  part, and accepts. Proves the deny rule is not vacuously rejecting.
+
+manifest: provenance_hbom_clean
+policy: hbom_no_cn_components
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: true
+
+# Validator-only: the point is the Pass 5 HBOM acceptance, not execution.

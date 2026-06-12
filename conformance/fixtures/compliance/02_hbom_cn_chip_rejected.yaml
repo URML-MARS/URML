@@ -1,0 +1,24 @@
+name: compliance/hbom_cn_chip_rejected
+description: >
+  RFC-0005, motivation #1. The manifest declares country_of_origin: US for
+  its critical component, so a manifest-declared-facts policy would pass it.
+  The referenced CycloneDX HBOM, though, names a CN-supplied part. The
+  HBOM-content policy reads the file and rejects with
+  policy.hbom_component_country_denied. The deeper check the opaque-hash model
+  cannot make.
+
+manifest: provenance_hbom_cn_chip
+policy: hbom_no_cn_components
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: false
+  error_codes: [policy.hbom_component_country_denied]

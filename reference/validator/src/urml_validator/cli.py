@@ -524,6 +524,9 @@ def cmd_validate(args: argparse.Namespace) -> int:
         envelope,
         profiles=tuple(args.profile),
         policy=policy_arg,
+        # RFC-0005: resolve a component's relative hbom_ref.uri against the
+        # manifest file's own directory for HBOM-content policy rules.
+        manifest_base_dir=Path(args.manifest).parent,
     )
 
     if args.as_json:
@@ -622,7 +625,14 @@ def cmd_execute(args: argparse.Namespace) -> int:
     profiles = tuple(args.profile)
 
     # ----- Defense-in-depth validation (surfaced, with the chosen policy) -----
-    result = validate(program, manifest, envelope, profiles=profiles, policy=policy_arg)
+    result = validate(
+        program,
+        manifest,
+        envelope,
+        profiles=profiles,
+        policy=policy_arg,
+        manifest_base_dir=Path(args.manifest).parent,
+    )
     if not result.accepted:
         if args.as_json:
             _emit_json(result)
