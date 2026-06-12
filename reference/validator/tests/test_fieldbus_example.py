@@ -1,11 +1,11 @@
-"""The fieldbus operation-mode example must be deterministic and true.
+"""The fieldbus declaration example must be deterministic and true.
 
 Mirrors the VLA / esmini / ros2_kortex export guards: the generator is
 deterministic, the committed ``operation-mode-report.txt`` matches it, and the
-validator decides correctly (cyclic-only and coherent-acyclic declarations are
-valid, an SDO timeout shorter than one control cycle is rejected). The worked
-example for RFC-0469 (the acyclic operation-mode declaration), surfaced by the
-ethercat_driver_ros2 engagement (RFC-0320).
+validator decides correctly across all three fieldbus blocks surfaced by the
+ethercat_driver_ros2 engagement (RFC-0320): operation mode (RFC-0016 cyclic /
+RFC-0469 acyclic), clock / time synchronization (RFC-0477), and ordered
+bring-up / recovery (RFC-0478).
 """
 
 from __future__ import annotations
@@ -41,13 +41,17 @@ def test_committed_report_matches_generator() -> None:
     )
 
 
-def test_operation_modes_decide_correctly() -> None:
+def test_fieldbus_blocks_decide_correctly() -> None:
     gen = _load_gen()
     report = gen.render_report()
-    # Cyclic-only and coherent-acyclic are valid; the too-short SDO timeout is not.
-    assert report.count("[VALID]") == 2
-    assert report.count("[REJECTED]") == 1
-    assert "capability.acyclic_timeout_shorter_than_cycle" in report
-    # Both regimes are shown distinctly: a cyclic watchdog and an acyclic timeout.
-    assert "watchdog" in report
-    assert "timeout" in report
+    # Four coherent declarations are valid; three incoherent ones are rejected,
+    # one per fieldbus block (operation mode, clock, bring-up ordering).
+    assert report.count("[VALID]") == 4
+    assert report.count("[REJECTED]") == 3
+    assert "capability.acyclic_timeout_shorter_than_cycle" in report  # RFC-0469
+    assert "capability.clock_sync_protocol_required" in report  # RFC-0477
+    assert "capability.bringup_dependency_cycle" in report  # RFC-0478
+    # The three blocks are shown distinctly.
+    assert "Operation mode" in report
+    assert "Clock / time synchronization" in report
+    assert "Ordered bring-up / recovery" in report

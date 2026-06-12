@@ -1,10 +1,12 @@
-# Fieldbus operation modes: cyclic (PDO) vs acyclic (SDO)
+# Fieldbus: operation modes, clock, and bring-up ordering
 
-A fieldbus carries two kinds of traffic, and they are bounded differently. URML
-declares both in the capability manifest's `realtime` block, above the
-controller, so the manifest is a faithful description of the drive and the
-validator can reject an incoherent timing declaration before the cell is
-commissioned.
+A fieldbus carries cyclic and acyclic traffic, runs under a clock that cannot
+always be hidden, and brings its elements up in a dependency-constrained order.
+URML declares all three in the capability manifest, above the controller, so the
+manifest is a faithful description of the drive and the validator can reject an
+incoherent declaration before the cell is commissioned. This example grew out of
+one engagement thread: the maintainer raised the operation-mode distinction
+first, then the clock and ordering questions.
 
 This example comes from the
 [ethercat_driver_ros2 engagement](https://github.com/ICube-Robotics/ethercat_driver_ros2/issues/224)
@@ -43,19 +45,38 @@ timing regime the substrate runs under.
 
 ## What the example shows
 
-[`check_operation_modes.py`](check_operation_modes.py) validates three timing
-declarations over the same drive ([`ethercat-drive.manifest.yaml`](ethercat-drive.manifest.yaml)):
+[`check_operation_modes.py`](check_operation_modes.py) validates the same CiA-402
+drive ([`ethercat-drive.manifest.yaml`](ethercat-drive.manifest.yaml)) across the
+three fieldbus blocks the engagement surfaced:
 
-| Declaration | Result |
-|---|---|
-| cyclic PDO only (no mailbox path) | VALID |
-| cyclic PDO + coherent acyclic SDO (500 ms timeout) | VALID |
-| cyclic PDO + SDO timeout shorter than one cycle | REJECTED — `capability.acyclic_timeout_shorter_than_cycle` |
+| Block | Declaration | Result |
+|---|---|---|
+| Operation mode (RFC-0016 / [0469](../../docs/rfcs/0469-acyclic-operation-mode.md)) | cyclic PDO only | VALID |
+| | cyclic PDO + coherent acyclic SDO (500 ms) | VALID |
+| | cyclic PDO + SDO timeout shorter than one cycle | REJECTED — `capability.acyclic_timeout_shorter_than_cycle` |
+| Clock / time sync ([0477](../../docs/rfcs/0477-substrate-clock-synchronization.md)) | bus clock as reference (EtherCAT DC) | VALID |
+| | master-synced without a sync protocol | REJECTED — `capability.clock_sync_protocol_required` |
+| Bring-up ordering ([0478](../../docs/rfcs/0478-substrate-bringup-ordering.md)) | power_bus → drive_axis_1 → gripper | VALID |
+| | circular bring-up dependency | REJECTED — `capability.bringup_dependency_cycle` |
 
-The rejection is the coherence rule: an acyclic command that must return inside a
-single control cycle is, by definition, cyclic traffic and belongs on the cyclic
-path. This is a declaration check, not a real-time guarantee; URML does not
-police the bus timing itself.
+Each rejection is a coherence rule. An acyclic command that must return inside a
+single control cycle is cyclic traffic, not acyclic. A `master_synced` clock with
+no sync protocol cannot actually be synchronized. A circular bring-up dependency
+can never be satisfied. These are declaration checks, not real-time guarantees;
+URML does not police the bus timing itself.
+
+### The three regimes
+
+- **Operation mode** — cyclic PDO (control period + watchdog) vs acyclic SDO
+  (timeout + read-back goal check). The maintainer's first point: the answer
+  time differs, so the instrument differs.
+- **Clock / time synchronization** — once events outside the bus must be
+  synchronized, the bus clock cannot be hidden. Either the bus clock is the
+  reference (EtherCAT DC, strongest guarantee, hardware-timestamped) or the bus
+  rides a master synced to the user clock (needs a protocol, bounds user drift).
+- **Bring-up / recovery ordering** — a drive cannot init before its power bus; a
+  gripper cannot configure before its drive; recovery order may differ from
+  bring-up. Declared as dependencies, checked acyclic.
 
 ## Run it
 

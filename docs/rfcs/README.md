@@ -625,11 +625,15 @@ URML's observability vertical, at a distinct altitude: URML is not a substrate h
 | [0467](0467-rosboard-outreach.md) | Outreach | rosboard (`dheera/rosboard`) integration; Move #40; no-install web ROS dashboard — a glanceable validated-intent tile (intent/verdict/dispatch); BSD-3-Clause; RFC from the maintainer | Draft | 2026-06-12 |
 | [0468](0468-rviz-visual-tools-outreach.md) | Outreach | rviz_visual_tools (`PickNikRobotics/rviz_visual_tools`) integration; Move #40; **Tier B**; RViz marker helper — draw validated intent target/envelope (pose, workspace, geofence, trajectory), refused intent in red; BSD-3-Clause; RFC from the maintainers | Draft | 2026-06-12 |
 
-### Engagement-surfaced spec extension
+### Engagement-surfaced spec extensions
+
+The fieldbus-substrate thread from the ethercat_driver_ros2 maintainer (RFC-0320, yguel) surfaced three manifest gaps, each shipped as a Spec RFC: the cyclic-vs-acyclic operation mode (0469), the substrate clock / time-synchronization regime (0477), and ordered bring-up / recovery sequences (0478).
 
 | RFC | Kind | Summary | State | Updated |
 |---|---|---|---|---|
 | [0469](0469-acyclic-operation-mode.md) | Spec | Optional `acyclic` sub-block on `realtime` (RFC-0016): the asynchronous SDO / mailbox regime declared by a `timeout_ms` + a `requires_goal_check` (default true), distinct from the cyclic-PDO watchdog; validator enforces one coherence rule (`acyclic.timeout_ms >= cyclic_period_ms`, `capability.acyclic_timeout_shorter_than_cycle`); surfaced by the ethercat_driver_ros2 maintainer (RFC-0320, yguel) flagging that PDO vs SDO operation modes change error handling, goal-reached checks, and timeouts completely | Implemented | 2026-06-12 |
+| [0477](0477-substrate-clock-synchronization.md) | Spec | Optional `substrate.clock` block: the time-synchronization regime (`reference` bus / master_synced + `sync_protocol` + `hardware_timestamping` + `user_clock_max_offset_ms`); complements per-sensor `time_sync_methods` (RFC-0039); validator enforces two coherence rules (`capability.clock_sync_protocol_required`, `capability.clock_offset_not_applicable`); surfaced by yguel (RFC-0320) noting the bus clock cannot be hidden once events outside the bus must be synchronized | Implemented | 2026-06-12 |
+| [0478](0478-substrate-bringup-ordering.md) | Spec | Optional `substrate.bringup` block: ordered bus-element dependencies (`depends_on` for bring-up, `recovery_after` for error recovery); validator enforces unique ids, declared dependencies, and acyclic graphs (`capability.bringup_duplicate_element` / `_dependency_undeclared` / `_dependency_cycle`); surfaced by yguel (RFC-0320) naming ordered init / recovery sequences as the most under-specified area | Implemented | 2026-06-12 |
 
 ### The behavior-tree / FSM / orchestration wave (Move #41, RFCs 0470-0476)
 

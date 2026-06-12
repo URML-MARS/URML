@@ -718,13 +718,125 @@ class IpcSubstrate(BaseModel):
     max_subscribers: int | None = Field(default=None, ge=0)
 
 
+class ClockSync(BaseModel):
+    """Substrate time-synchronization regime (RFC-0477).
+
+    A fieldbus clock cannot always be hidden. The moment a deployment must
+    synchronize events caught *outside* the bus (the reason a ROS 2 backbone
+    exists), the bus and the rest of the system have to share a time reference.
+    There are two honest ways to declare that, surfaced by the
+    ethercat_driver_ros2 maintainer (RFC-0320):
+
+    - `reference: bus` — the bus clock *is* the system time reference. This
+      gives the strongest real-time guarantee, especially when a slave has
+      dedicated timing hardware (IEEE-1588 acceleration, GPS, an atomic clock);
+      declare that with `hardware_timestamping: true`.
+    - `reference: master_synced` — the bus rides the master's clock, which is
+      synchronized to the user / system clock. This requires a sync protocol
+      and puts a bound on the user clock's drift (`user_clock_max_offset_ms`).
+
+    This complements the per-sensor `time_sync_methods` (RFC-0039): that field
+    records how a sensor timestamps; this block records the substrate's clock
+    architecture. Like the rest of `substrate`, it is a declaration of the
+    hardware's regime, not a guarantee URML polices; v0.1 checks only coherence.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    reference: Literal["bus", "master_synced"] = Field(
+        ...,
+        description=(
+            "Who holds the time reference: the bus clock itself, or a master "
+            "clock synchronized to the user / system clock."
+        ),
+    )
+    sync_protocol: Literal[
+        "ieee1588", "gptp", "ethercat_dc", "ptp", "gps", "none"
+    ] | None = Field(
+        default=None,
+        description=(
+            "Time-synchronization mechanism shared between bus and user. "
+            "Required (and not 'none') when reference is 'master_synced'."
+        ),
+    )
+    hardware_timestamping: bool = Field(
+        default=False,
+        description=(
+            "Whether a slave provides dedicated timing hardware (IEEE-1588 "
+            "acceleration, GPS, atomic clock) backing the reference."
+        ),
+    )
+    user_clock_max_offset_ms: float | None = Field(
+        default=None,
+        gt=0,
+        description=(
+            "Bound on the user clock's offset from the reference, ms. Only "
+            "applicable when reference is 'master_synced'."
+        ),
+    )
+    note: str | None = Field(
+        default=None, description="Optional free-text description of the clock topology."
+    )
+
+
+class SubstrateElement(BaseModel):
+    """A substrate element with declared ordering dependencies (RFC-0478).
+
+    The order in which bus elements are brought up, configured, and recovered
+    is load-bearing: a drive cannot init before its power bus, a gripper cannot
+    configure before the arm it hangs off, and error recovery may need a
+    different order than bring-up. `depends_on` declares bring-up order;
+    `recovery_after` declares the (possibly different) error-recovery order.
+    Both are dependency relations; the validator derives no schedule, it only
+    checks the declaration is coherent (every dependency declared, no cycle).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(
+        ...,
+        pattern=r"^[a-z][a-z0-9_]*$",
+        max_length=64,
+        description="snake_case identifier for the element (a drive, a power bus, an I/O coupler).",
+    )
+    depends_on: list[str] = Field(
+        default_factory=list,
+        description="Element ids that must be brought up before this one.",
+    )
+    recovery_after: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Element ids that must be recovered before this one during error "
+            "recovery. Empty means bring-up order applies."
+        ),
+    )
+
+
+class Bringup(BaseModel):
+    """Ordered bring-up / recovery plan for substrate elements (RFC-0478).
+
+    Declares the bus elements and their ordering dependencies so the manifest
+    captures a structural fact URML otherwise loses: the order constraints that
+    a powering architecture and configuration interdependencies impose. The
+    validator checks the dependency graphs are coherent (declared ids, acyclic);
+    it does not execute the sequence.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    elements: list[SubstrateElement] = Field(
+        ..., min_length=1, description="The substrate elements and their ordering dependencies."
+    )
+
+
 class Substrate(BaseModel):
     """Substrate-class declarations beneath URML's runtime.
 
     Added by RFC-0250 (autopilot_class). Extended by RFC-0251 with
     rmw_implementation + rmw_options, and by RFC-0385 with `ipc` (the
-    zero-copy IPC sub-substrate). Future RFCs in the 0252-0285 range will add
-    additional fields (maturity_tier, bridges, etc.).
+    zero-copy IPC sub-substrate), RFC-0477 with `clock` (time synchronization),
+    and RFC-0478 with `bringup` (ordered element bring-up / recovery). Future
+    RFCs in the 0252-0285 range will add additional fields.
 
     Validator rules currently enforced:
     - RFC-0250: drone-class drive_type requires autopilot_class; custom
@@ -735,6 +847,10 @@ class Substrate(BaseModel):
     - RFC-0385: ipc.generation coherence (iceoryx1 needs runtime_name;
       iceoryx2 needs config_path and forbids runtime_name; custom needs
       generation_note).
+    - RFC-0477: clock.reference == 'master_synced' requires a sync_protocol
+      other than 'none'; user_clock_max_offset_ms is only applicable then.
+    - RFC-0478: bringup element ids are unique, every depends_on / recovery_after
+      references a declared element, and both dependency graphs are acyclic.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -776,6 +892,12 @@ class Substrate(BaseModel):
 
     # RFC-0385: optional zero-copy IPC sub-substrate (iceoryx generation).
     ipc: IpcSubstrate | None = None
+
+    # RFC-0477: optional time-synchronization regime of the substrate clock.
+    clock: ClockSync | None = None
+
+    # RFC-0478: optional ordered bring-up / recovery plan for bus elements.
+    bringup: Bringup | None = None
 
 
 class ValidationContext(BaseModel):
