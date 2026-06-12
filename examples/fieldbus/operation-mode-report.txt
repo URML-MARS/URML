@@ -1,6 +1,8 @@
-URML fieldbus operation-mode check: one drive, three timing declarations.
+URML fieldbus declaration check: one CiA-402 EtherCAT drive.
 URML declares the regime above the controller; the validator checks coherence.
 drive: ethercat_servo_axis
+
+# Operation mode (RFC-0016 cyclic / RFC-0469 acyclic)
 
 [VALID] cyclic PDO only (no mailbox path declared)
    cyclic: 1.0 ms period / 5.0 ms watchdog; acyclic: none declared
@@ -11,3 +13,21 @@ drive: ethercat_servo_axis
 [REJECTED] cyclic PDO + SDO timeout shorter than one cycle
    cyclic: 1.0 ms period / 5.0 ms watchdog; acyclic: 0.5 ms timeout / read-back goal check
    -> incoherent declaration [capability.acyclic_timeout_shorter_than_cycle]; not commissioned.
+
+# Clock / time synchronization (RFC-0477)
+
+[VALID] bus clock as reference (EtherCAT DC, hardware-timestamped)
+   reference: bus / ethercat_dc, hardware-timestamped
+
+[REJECTED] master-synced without a sync protocol
+   reference: master_synced / none
+   -> incoherent declaration [capability.clock_sync_protocol_required]; not commissioned.
+
+# Ordered bring-up / recovery (RFC-0478)
+
+[VALID] power_bus -> drive_axis_1 -> gripper
+   power_bus | drive_axis_1(after power_bus) | gripper(after drive_axis_1)
+
+[REJECTED] circular bring-up dependency
+   power_bus(after gripper) | drive_axis_1(after power_bus) | gripper(after drive_axis_1)
+   -> incoherent declaration [capability.bringup_dependency_cycle]; not commissioned.

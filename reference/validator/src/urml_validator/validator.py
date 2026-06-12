@@ -207,6 +207,10 @@ def validate(
     errors.extend(_check_substrate_rmw_options(manifest_model))
     # RFC-0385: substrate.ipc generation coherence.
     errors.extend(_check_substrate_ipc(manifest_model))
+    # RFC-0477: substrate.clock time-synchronization coherence.
+    errors.extend(_check_substrate_clock(manifest_model))
+    # RFC-0478: substrate.bringup ordered-sequence coherence.
+    errors.extend(_check_substrate_bringup(manifest_model))
     # RFC-0016: realtime timing-block coherence.
     errors.extend(_check_realtime(manifest_model))
     # RFC-0019: AUTOSAR ara::com program bindings must declare the full id triple.
@@ -3179,6 +3183,174 @@ def _check_substrate_ipc(manifest: CapabilityManifest) -> list[ValidationError]:
                 )
             )
     return out
+
+
+def _check_substrate_clock(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0477): substrate.clock time-synchronization coherence.
+
+    Two coherence rules, neither a timing guarantee:
+
+    - `master_synced` cannot synchronize the bus to the user clock without a
+      mechanism, so it requires a `sync_protocol` other than `none`.
+    - `user_clock_max_offset_ms` bounds the user clock's drift from the
+      reference; it is meaningless when the bus clock *is* the reference, so it
+      is only applicable when `reference == master_synced`.
+
+    Optional: a manifest without `substrate.clock` is unaffected.
+    """
+    out: list[ValidationError] = []
+    sub = manifest.substrate
+    if sub is None or sub.clock is None:
+        return out
+    clock = sub.clock
+    if clock.reference == "master_synced" and (
+        clock.sync_protocol is None or clock.sync_protocol == "none"
+    ):
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_CLOCK_SYNC_PROTOCOL_REQUIRED,
+                primitive=None,
+                path=["<manifest>", "substrate", "clock", "sync_protocol"],
+                field="sync_protocol",
+                message=(
+                    "substrate.clock.reference is 'master_synced' but no sync_protocol "
+                    "is declared; the bus cannot be synchronized to the user clock "
+                    "without a mechanism."
+                ),
+                suggestion=(
+                    "Declare a sync_protocol (ieee1588 / gptp / ethercat_dc / ptp / gps), "
+                    "or set reference to 'bus'. Per RFC-0477."
+                ),
+            )
+        )
+    if clock.reference == "bus" and clock.user_clock_max_offset_ms is not None:
+        out.append(
+            ValidationError(
+                code=ErrorCode.CAPABILITY_CLOCK_OFFSET_NOT_APPLICABLE,
+                primitive=None,
+                path=["<manifest>", "substrate", "clock", "user_clock_max_offset_ms"],
+                field="user_clock_max_offset_ms",
+                message=(
+                    "substrate.clock.user_clock_max_offset_ms is set but reference is "
+                    "'bus'; the bus clock is the reference, so there is no user-clock "
+                    "offset to bound."
+                ),
+                suggestion=(
+                    "Remove user_clock_max_offset_ms, or set reference to 'master_synced'. "
+                    "Per RFC-0477."
+                ),
+            )
+        )
+    return out
+
+
+def _check_substrate_bringup(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0478): substrate.bringup ordered-sequence coherence.
+
+    The bring-up and recovery dependency declarations must be self-consistent:
+    element ids are unique, every `depends_on` / `recovery_after` references a
+    declared element, and neither dependency graph contains a cycle (a circular
+    bring-up or recovery order can never be satisfied). The validator checks the
+    declaration; it does not execute or schedule the sequence.
+
+    Optional: a manifest without `substrate.bringup` is unaffected.
+    """
+    out: list[ValidationError] = []
+    sub = manifest.substrate
+    if sub is None or sub.bringup is None:
+        return out
+    elements = sub.bringup.elements
+
+    ids: list[str] = [e.id for e in elements]
+    declared = set(ids)
+    seen_ids: set[str] = set()
+    for eid in ids:
+        if eid in seen_ids:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_BRINGUP_DUPLICATE_ELEMENT,
+                    primitive=None,
+                    path=["<manifest>", "substrate", "bringup", "elements"],
+                    field="id",
+                    message=f"substrate.bringup declares element id {eid!r} more than once.",
+                    suggestion="Give each bring-up element a unique id. Per RFC-0478.",
+                    detail={"id": eid},
+                )
+            )
+        seen_ids.add(eid)
+
+    for element in elements:
+        for relation, deps in (
+            ("depends_on", element.depends_on),
+            ("recovery_after", element.recovery_after),
+        ):
+            for dep in deps:
+                if dep not in declared:
+                    out.append(
+                        ValidationError(
+                            code=ErrorCode.CAPABILITY_BRINGUP_DEPENDENCY_UNDECLARED,
+                            primitive=None,
+                            path=["<manifest>", "substrate", "bringup", "elements"],
+                            field=relation,
+                            message=(
+                                f"substrate.bringup element {element.id!r} {relation} "
+                                f"{dep!r}, which is not a declared element."
+                            ),
+                            suggestion=f"Declare an element {dep!r}, or fix the dependency. Per RFC-0478.",
+                            detail={"element": element.id, relation: dep},
+                        )
+                    )
+
+    # Cycle detection on each dependency graph (depends_on, recovery_after).
+    for relation in ("depends_on", "recovery_after"):
+        graph = {
+            e.id: [d for d in getattr(e, relation) if d in declared] for e in elements
+        }
+        cycle = _first_cycle(graph)
+        if cycle:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_BRINGUP_DEPENDENCY_CYCLE,
+                    primitive=None,
+                    path=["<manifest>", "substrate", "bringup", "elements"],
+                    field=relation,
+                    message=(
+                        f"substrate.bringup has a {relation} cycle: {' -> '.join(cycle)}. "
+                        "An ordering dependency cannot be circular."
+                    ),
+                    suggestion=f"Break the {relation} cycle so the order is satisfiable. Per RFC-0478.",
+                    detail={"relation": relation, "cycle": cycle},
+                )
+            )
+    return out
+
+
+def _first_cycle(graph: dict[str, list[str]]) -> list[str]:
+    """Return the first dependency cycle found in a DAG-candidate graph, or []."""
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = dict.fromkeys(graph, WHITE)
+    stack: list[str] = []
+
+    def visit(node: str) -> list[str]:
+        color[node] = GRAY
+        stack.append(node)
+        for nxt in graph.get(node, []):
+            if color.get(nxt, BLACK) == GRAY:
+                return [*stack[stack.index(nxt):], nxt]
+            if color.get(nxt, BLACK) == WHITE:
+                found = visit(nxt)
+                if found:
+                    return found
+        stack.pop()
+        color[node] = BLACK
+        return []
+
+    for start in graph:
+        if color[start] == WHITE:
+            found = visit(start)
+            if found:
+                return found
+    return []
 
 
 def _check_realtime(manifest: CapabilityManifest) -> list[ValidationError]:

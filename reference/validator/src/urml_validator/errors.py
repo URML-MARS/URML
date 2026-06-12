@@ -79,6 +79,13 @@ class ErrorCode(StrEnum):
     CAPABILITY_ACYCLIC_TIMEOUT_SHORTER_THAN_CYCLE = (
         "capability.acyclic_timeout_shorter_than_cycle"
     )
+    # RFC-0477: substrate.clock time-synchronization coherence.
+    CAPABILITY_CLOCK_SYNC_PROTOCOL_REQUIRED = "capability.clock_sync_protocol_required"
+    CAPABILITY_CLOCK_OFFSET_NOT_APPLICABLE = "capability.clock_offset_not_applicable"
+    # RFC-0478: substrate.bringup ordered-sequence coherence.
+    CAPABILITY_BRINGUP_DUPLICATE_ELEMENT = "capability.bringup_duplicate_element"
+    CAPABILITY_BRINGUP_DEPENDENCY_UNDECLARED = "capability.bringup_dependency_undeclared"
+    CAPABILITY_BRINGUP_DEPENDENCY_CYCLE = "capability.bringup_dependency_cycle"
     # RFC-0020: AV profile — plan_path requires a declared HD map.
     CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
     # RFC-0019: AUTOSAR ara::com program binding must declare the full id triple.

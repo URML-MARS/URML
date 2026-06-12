@@ -53,3 +53,26 @@ realtime:
   acyclic:                         # SDO / mailbox regime (RFC-0469)
     timeout_ms: 500.0              # a parameter write / mode change may take this long
     requires_goal_check: true      # completion confirmed by read-back, not assumed
+
+substrate:
+  # The bus clock as the system time reference: EtherCAT distributed clocks (DC).
+  # The strongest real-time guarantee, with the reference slave timestamping in
+  # hardware. The bus clock is the reference, so there is no user-clock offset to
+  # bound (RFC-0477).
+  clock:
+    reference: bus
+    sync_protocol: ethercat_dc
+    hardware_timestamping: true
+
+  # Ordered bring-up / recovery: the drive cannot init before its power bus, and
+  # the gripper cannot configure before the drive it hangs off. Error recovery
+  # follows the same order here (RFC-0478).
+  bringup:
+    elements:
+      - id: power_bus
+      - id: drive_axis_1
+        depends_on: [power_bus]
+        recovery_after: [power_bus]
+      - id: gripper
+        depends_on: [drive_axis_1]
+        recovery_after: [drive_axis_1]
