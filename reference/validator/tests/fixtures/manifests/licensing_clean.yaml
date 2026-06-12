@@ -1,0 +1,32 @@
+# Fixture (RFC-0262): clean license boundaries. Piper (GPL-3.0) across a
+# subprocess boundary, NLLB-200 (CC-BY-NC) by cross-citation, LibreTranslate
+# (AGPL-3.0) over a network REST boundary. All legal integration shapes.
+# Test-only.
+manifest_version: "0.1"
+robot_id: licensing_clean
+description: A deployment composing copyleft/non-commercial substrates at legal boundaries.
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+licensing:
+  components:
+    - name: piper
+      license: gpl_3_0
+      boundary: subprocess
+      commercial_use_gate: false
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true
+    - name: libretranslate
+      license: agpl_3_0
+      boundary: network_rest
+      network_endpoint: https://lt.example.org/
+      secret_reference: env:LIBRETRANSLATE_API_KEY

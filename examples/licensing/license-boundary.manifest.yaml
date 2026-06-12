@@ -1,0 +1,36 @@
+# Capability manifest for the license-boundary example (RFC-0262).
+# Composes copyleft / non-commercial substrates at legal integration
+# boundaries. Test/example fixture; values illustrative.
+
+manifest_version: "0.1"
+robot_id: license_boundary_demo
+description: A home robot composing GPL / AGPL / CC-BY-NC substrates at legal boundaries.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+
+licensing:
+  components:
+    - name: piper
+      license: gpl_3_0
+      boundary: subprocess
+      commercial_use_gate: false
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true
+    - name: libretranslate
+      license: agpl_3_0
+      boundary: network_rest
+      network_endpoint: https://lt.example.org/
+      secret_reference: env:LIBRETRANSLATE_API_KEY

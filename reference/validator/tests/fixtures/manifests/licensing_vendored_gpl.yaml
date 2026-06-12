@@ -1,0 +1,21 @@
+# Fixture (RFC-0262): an illegal boundary. A GPL-3.0 component declared as
+# `vendored` (source pulled into a URML adapter) is a hard error regardless of
+# policy: URML's Apache-2.0 source may not vendor copyleft. Test-only.
+manifest_version: "0.1"
+robot_id: licensing_vendored_gpl
+description: GPL-3.0 declared as vendored (illegal boundary).
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+licensing:
+  components:
+    - name: piper
+      license: gpl_3_0
+      boundary: vendored

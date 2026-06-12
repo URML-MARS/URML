@@ -1274,6 +1274,100 @@ class Language(BaseModel):
         return self
 
 
+# RFC-0262: license-boundary declarations. The canonical SPDX-style license
+# identifiers URML reasons about, and the restrictiveness ordering (least to
+# most) the policy gate uses. CC-BY-NC is most-restrictive (commercial gate);
+# `unknown` is most-restrictive (ambiguity). Shared with RFC-0304.
+LicenseId = Literal[
+    "apache_2_0",
+    "bsd_3_clause",
+    "mit",
+    "mpl_2_0",
+    "epl_2_0",
+    "lgpl_3_0",
+    "gpl_2_0",
+    "gpl_3_0",
+    "agpl_3_0",
+    "cc_by_4_0",
+    "cc_by_nc_4_0",
+    "unknown",
+]
+
+#: Restrictiveness ordering (RFC-0262 §validator behavior 5), least to most.
+LICENSE_RESTRICTIVENESS: tuple[str, ...] = (
+    "apache_2_0",
+    "mit",
+    "bsd_3_clause",
+    "mpl_2_0",
+    "epl_2_0",
+    "lgpl_3_0",
+    "gpl_2_0",
+    "gpl_3_0",
+    "agpl_3_0",
+    "cc_by_4_0",
+    "cc_by_nc_4_0",
+    "unknown",
+)
+
+#: Licenses URML may vendor in-source (Apache-2.0-compatible). Vendoring any
+#: other (a copyleft / non-commercial license) is a hard error; use a
+#: subprocess / network / cross-citation boundary instead.
+VENDORABLE_LICENSES: frozenset[str] = frozenset(
+    {"apache_2_0", "bsd_3_clause", "mit", "mpl_2_0"}
+)
+
+
+class LicenseComponent(BaseModel):
+    """One license-bearing component the deployment composes with (RFC-0262).
+
+    `boundary` is the integration shape: `vendored` (source pulled into a URML
+    adapter, only legal for Apache-2.0-compatible licenses), `subprocess` (a
+    separate process the adapter calls; the boundary insulates URML's Apache-2.0
+    source), `network_rest` (a network service called over HTTP), or
+    `cross_citation` (API / vocabulary reference only, no code reuse).
+    `commercial_use_gate: true` flags a non-commercial component (NLLB-200's
+    CC-BY-NC weights); the gate is declarative until the deployment-commercial
+    flag (RFC-0268) lands.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    license: LicenseId
+    boundary: Literal["vendored", "subprocess", "network_rest", "cross_citation"]
+    commercial_use_gate: bool | None = None
+    network_endpoint: str | None = None
+    secret_reference: str | None = Field(
+        None,
+        description="Opaque audit pointer, e.g. 'env:VAR' or 'vault:path'. Not dereferenced.",
+    )
+
+    @model_validator(mode="after")
+    def _network_rest_requires_endpoint(self) -> "LicenseComponent":
+        if self.boundary == "network_rest" and not self.network_endpoint:
+            raise ValueError(
+                f"licensing component {self.name!r}: boundary 'network_rest' requires network_endpoint"
+            )
+        return self
+
+
+class Licensing(BaseModel):
+    """Per-component license-boundary declaration (RFC-0262).
+
+    Extends URML's federal-procurement narrative from substrate-origin (NDAA
+    889) and provenance to substrate-license-boundary. Optional and additive;
+    a deployment composing only Apache-2.0 / BSD / MIT substrates need not
+    declare it. `policy_required_max_restrictiveness`, when set and a policy is
+    enforced, refuses any component whose license is more restrictive than the
+    cap.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    components: list[LicenseComponent] = Field(default_factory=list)
+    policy_required_max_restrictiveness: LicenseId | None = None
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -1332,3 +1426,6 @@ class CapabilityManifest(BaseModel):
     # RFC-0260: optional Layer-4 NL-infrastructure engine declarations
     # (speech-to-text / text-to-speech / translation engine classes).
     language: Language | None = None
+
+    # RFC-0262: optional per-component license-boundary declarations.
+    licensing: Licensing | None = None

@@ -1,0 +1,22 @@
+# Fixture (RFC-0262): a component more restrictive than the declared cap. The
+# manifest caps restrictiveness at lgpl_3_0 but declares a gpl_3_0 component;
+# refused when a compliance policy is enforced. Test-only.
+manifest_version: "0.1"
+robot_id: licensing_cap_exceeded
+description: A gpl_3_0 component above the declared lgpl_3_0 restrictiveness cap.
+frames:
+  - name: map
+    parent: null
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+licensing:
+  policy_required_max_restrictiveness: lgpl_3_0
+  components:
+    - name: orb_slam3
+      license: gpl_3_0
+      boundary: cross_citation

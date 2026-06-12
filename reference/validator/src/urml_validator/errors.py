@@ -107,6 +107,11 @@ class ErrorCode(StrEnum):
     CAPABILITY_TTS_ENGINE_UNDECLARED = "capability.tts_engine_undeclared"
     CAPABILITY_TRANSLATION_LANGUAGES_INCONSISTENT = "capability.translation_languages_inconsistent"
     CAPABILITY_ENGINE_LICENSE_ADVISORY = "capability.engine_license_advisory"
+    # RFC-0262: a `licensing.components` entry declares `boundary: vendored`
+    # for a non-Apache-2.0-compatible (copyleft / non-commercial) license. A
+    # hard error independent of policy: URML may not vendor such source; use a
+    # subprocess / network / cross-citation boundary instead.
+    CAPABILITY_LICENSE_VENDORED_COPYLEFT = "capability.license_vendored_copyleft"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
@@ -148,6 +153,10 @@ class ErrorCode(StrEnum):
     # when the bundled default compliance policy is in effect (vosk is
     # Russian-origin); accepted without `--policy` or under a custom policy.
     POLICY_STT_ENGINE_ORIGIN_DENIED = "policy.stt_engine_origin_denied"
+    # RFC-0262: a `licensing.components` license is more restrictive than the
+    # manifest's declared `policy_required_max_restrictiveness` cap. Fires only
+    # when a compliance policy is enforced.
+    POLICY_LICENSE_TOO_RESTRICTIVE = "policy.license_too_restrictive"
 
     # RFC-0005 — structured HBOM-content predicates (Pass 5 sub-pass).
     # Emitted when a policy rule reaches into a component's parsed Hardware

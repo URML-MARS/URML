@@ -67,7 +67,15 @@ from urml_validator.monitorable import (
     referenced_signals_custom,
 )
 from urml_validator.schemas.envelope import SafetyEnvelope
-from urml_validator.schemas.manifest import Camera, CapabilityManifest, Frame, Gripper, Sensor
+from urml_validator.schemas.manifest import (
+    LICENSE_RESTRICTIVENESS,
+    VENDORABLE_LICENSES,
+    Camera,
+    CapabilityManifest,
+    Frame,
+    Gripper,
+    Sensor,
+)
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.roster import FleetRoster, FrameAnchor
 from urml_validator.transforms import resolve_to_world, transform_point_between
@@ -236,6 +244,8 @@ def validate(
         (warnings if issue.severity == "warning" else errors).append(issue)
     for issue in _check_language_primitives(program_model, manifest_model):
         (warnings if issue.severity == "warning" else errors).append(issue)
+    # RFC-0262: license-boundary coherence (vendored-copyleft is a hard error).
+    errors.extend(_check_licensing(manifest_model))
 
     # ----- Pass 3: envelope checks -----
     for path, step in walk_program(program_model):
@@ -265,6 +275,8 @@ def validate(
         # only under the bundled default policy (the two-layer split: schema
         # accepts the value, policy refuses the substrate's origin).
         errors.extend(_check_language_origin_gate(manifest_model, policy_model))
+        # RFC-0262: refuse a component more restrictive than the declared cap.
+        errors.extend(_check_licensing_policy(manifest_model, policy_model))
 
     return ValidationResult(
         accepted=not errors,
@@ -1379,6 +1391,73 @@ def _check_language_origin_gate(
             detail={"engine_class": "vosk", "policy_id": policy_model.policy_id},
         )
     ]
+
+
+def _check_licensing(manifest: CapabilityManifest) -> list[ValidationError]:
+    """RFC-0262: license-boundary coherence (manifest-static, policy-independent).
+
+    Vendoring a non-Apache-2.0-compatible (copyleft / non-commercial) license is
+    a hard error: URML's Apache-2.0 source may not pull in such source. The legal
+    integration shapes for those licenses are subprocess, network, or
+    cross-citation. (`network_rest` requiring an endpoint is enforced at parse by
+    the LicenseComponent model.)
+    """
+    out: list[ValidationError] = []
+    if manifest.licensing is None:
+        return out
+    for comp in manifest.licensing.components:
+        if comp.boundary == "vendored" and comp.license not in VENDORABLE_LICENSES:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_LICENSE_VENDORED_COPYLEFT,
+                    primitive=None,
+                    path=["<manifest>", "licensing", "components", comp.name],
+                    field="boundary",
+                    message=(
+                        f"licensing component {comp.name!r} declares boundary 'vendored' for "
+                        f"license {comp.license!r}, which is not Apache-2.0-compatible. URML may "
+                        f"not vendor copyleft / non-commercial source."
+                    ),
+                    suggestion="Use boundary: subprocess, network_rest, or cross_citation for this license.",
+                    detail={"component": comp.name, "license": comp.license},
+                )
+            )
+    return out
+
+
+def _check_licensing_policy(
+    manifest: CapabilityManifest, policy_model: Policy
+) -> list[ValidationError]:
+    """RFC-0262: refuse a component more restrictive than the declared cap.
+
+    When `licensing.policy_required_max_restrictiveness` is set and a compliance
+    policy is enforced, every component's license must be at or below the cap on
+    the restrictiveness ordering. Policy-independent of which policy: any active
+    policy enforces the manifest's own declared cap.
+    """
+    out: list[ValidationError] = []
+    licensing = manifest.licensing
+    if licensing is None or licensing.policy_required_max_restrictiveness is None:
+        return out
+    cap = licensing.policy_required_max_restrictiveness
+    cap_rank = LICENSE_RESTRICTIVENESS.index(cap)
+    for comp in licensing.components:
+        if LICENSE_RESTRICTIVENESS.index(comp.license) > cap_rank:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.POLICY_LICENSE_TOO_RESTRICTIVE,
+                    primitive=None,
+                    path=["<manifest>", "licensing", "components", comp.name],
+                    field="license",
+                    message=(
+                        f"licensing component {comp.name!r} license {comp.license!r} is more "
+                        f"restrictive than the declared policy_required_max_restrictiveness {cap!r}."
+                    ),
+                    suggestion=f"Use a component at or below {cap!r}, or raise the declared cap.",
+                    detail={"component": comp.name, "license": comp.license, "max": cap},
+                )
+            )
+    return out
 
 
 def _check_frame_graph(manifest: CapabilityManifest) -> list[ValidationError]:
