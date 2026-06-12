@@ -181,14 +181,16 @@
   posted_url: "https://github.com/OpenMind/OM1/issues/2587"
   channel: github_issue
   contact: "OpenMind/OM1 (MIT, 2.8k stars, Issues enabled, last commit 2026-05-27 very active, **not archived**). OpenMind humanoid AI runtime flagship; openmind.com; 28 public repos in org; HQ United States. The OpenMind org has been quietly building a mobile-humanoid OS layer."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-12"
+  response: engaged
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-12"
+      text: "TangmereCottage asked how URML coexists with world models / VLMs (voice 'Stop' + flat-hand gesture example). Replied: URML is the typed validated-intent + safety gate around the model, not a competitor (model interprets multimodal input -> URML validates vs manifest+envelope before dispatch); fast reflexes are monitorable properties (RFC-0382, no gate latency); the learned policy is the bounded substrate (RFC-0383). Built and linked a worked example (examples/vla/, PR #374): five model-interpreted intents through validate(), 2 dispatch + 3 reject (over-force, occupancy-zone intrusion, hallucinated location)."
   claude_directives: []
-  next_action: "Posted 2026-05-28 as Issue OpenMind/OM1#2587. Two Spec RFCs queued — OS-layer-substrate declaration + mobile-humanoid mobility class (extends RFC-0009 biped/quadruped). Awaiting first response. Light-touch follow-up at 2026-06-25."
+  next_action: "Engaged. Reply posted 2026-06-12 + examples/vla/ shipped (PR #374). Await TangmereCottage follow-up on the OM1-specific boundary; the OS-layer-substrate + mobile-humanoid mobility-class Spec RFCs remain queued."
   notes: "Tier A. Origin US (pass). Active surface; structurally URML-aligned (open mobile-humanoid OS)."
 
 # ============================================================
