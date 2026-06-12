@@ -661,6 +661,12 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0482](0482-televison-outreach.md) | Outreach | Open-TeleVision (`OpenTeleVision/TeleVision`) integration; Move #42; immersive VR bimanual/humanoid teleop — validated handoff + typed bimanual demo annotation (ties RFC-0010); Apache-2.0; RFC from the maintainers | Draft | 2026-06-12 |
 | [0483](0483-umi-outreach.md) | Outreach | UMI (`real-stanford/universal_manipulation_interface`) integration; Move #42; handheld in-the-wild data collection — typed manifest-checkable demo labels + deploy-time envelope; same lab as engaged diffusion_policy (ack); MIT; RFC from the maintainers | Draft | 2026-06-12 |
 | [0484](0484-dexcap-outreach.md) | Outreach | DexCap (`j96w/DexCap`) integration; Move #42; **Tier B**; portable hand-mocap data collection — typed demo labels + deploy-time envelope, dexterous-hand manifest; MIT; RFC from the maintainer | Draft | 2026-06-12 |
+| [0485](0485-stable-baselines3-outreach.md) | Outreach | Stable-Baselines3 (`DLR-RM/stable-baselines3`) integration; Move #43 anchor; RL/policy-training wave — a trained policy's obs/action spaces + training-domain bounds as a URML LearnedPolicy deployment envelope (RFC-0383), plus the decide-then-do gate; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0486](0486-cleanrl-outreach.md) | Outreach | CleanRL (`vwxyzjn/cleanrl`) integration; Move #43; single-file RL = ideal worked example for emitting a LearnedPolicy envelope next to a trained policy; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0487](0487-skrl-outreach.md) | Outreach | skrl (`Toni-SM/skrl`) integration; Move #43; sim2real focus (Isaac Lab) — the simulated training domain as a typed deployment envelope; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0488](0488-torchrl-outreach.md) | Outreach | TorchRL (`pytorch/rl`) integration; Move #43; primitive-first — TensorSpec obs/action specs map to a LearnedPolicy envelope; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0489](0489-mushroom-rl-outreach.md) | Outreach | MushroomRL (`MushroomRL/mushroom-rl`) integration; Move #43; clean MDPInfo spaces → a LearnedPolicy deployment envelope; MIT; RFC from the maintainers | Draft | 2026-06-12 |
+| [0490](0490-ray-rllib-outreach.md) | Outreach | Ray RLlib (`ray-project/ray`) integration; Move #43; narrow RLlib framing — policy spaces → envelope + validated-deployment gate (not Ray core); Apache-2.0; RFC from the maintainers | Draft | 2026-06-12 |
 
 ## Lifecycle states
 
