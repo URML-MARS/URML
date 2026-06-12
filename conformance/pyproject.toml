@@ -36,6 +36,12 @@ dev = [
   "mypy>=1.10",
   "types-PyYAML>=6.0",
 ]
+# RFC-0021: the LLM-bridge scoring harness (`urml_conformance.llm_bridge.score`)
+# drives the bridge over an utterance set. The loader (data only) needs none of
+# this; only `score` does, and it imports the bridge lazily.
+llm-bridge = [
+  "urml-llm-bridge>=0.1.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/URML-MARS/URML"

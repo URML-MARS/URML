@@ -1,0 +1,17 @@
+# RFC-0021 LLM-bridge conformance row. Hermetic echo backend (exercises
+# the parametrization path); not a real-model measurement. Regenerate via
+# conformance/tests/test_llm_bridge_scorer.py::test_echo_backend_scores_clean.
+row_id: echo-double-echo-home-20260607
+recorded_at: '2026-06-07T00:00:00Z'
+model_id: echo-double
+model_size_b: 0.0
+backend: echo
+profile: home
+n_utterances: 6
+structural_pass_rate: 1.0
+semantic_pass_rate: 1.0
+revision_attempts_mean: 0.0
+hardware_class: ci-hermetic
+notes: 'Hermetic echo-backend row (RFC-0021): the EchoProvider returns canned validator-accepted
+  programs, exercising the (model, backend, profile) parametrization path with no
+  network or GGUF. Not a model measurement; real-model rows are a follow-up.'
