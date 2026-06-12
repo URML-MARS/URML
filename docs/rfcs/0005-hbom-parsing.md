@@ -2,9 +2,9 @@
 rfc: 0005
 title: Structured HBOM Parsing for Pass 5
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -220,6 +220,64 @@ Tests required per phase:
 - Phase A: schema-parse tests for the new predicate fields; engine-skip tests (rule using new fields emits `policy.hbom_parser_missing` warning and skips when the optional is uninstalled).
 - Phase B: per-predicate unit tests using small hand-authored CycloneDX fixtures; integration test against `red-mug.cn-critical.manifest.yaml` extended with a CN-chip HBOM.
 - Phase C: docs-only.
+
+### Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as Phases A through C of the plan above, as an opt-in Pass-5 sub-pass.
+Fully additive: every existing manifest and policy is unaffected, and the
+bundled default policy's behavior is unchanged (the HBOM-content rules ship as
+commented-out templates).
+
+- **Schema** ([`policy.py`](../../reference/validator/src/urml_validator/schemas/policy.py)):
+  two predicate fields on `RulePredicate`, `hbom_no_components_from_country`
+  and `hbom_no_components_from_vendor`. They are deny-only (rejected under
+  `require` at parse time) and may not be mixed with manifest-declared-fact
+  predicates in the same rule (split into two rules). Spec:
+  [`policy.md`](../../spec/layer-1-hal/policy.md) Predicates.
+- **Parser** ([`hbom.py`](../../reference/validator/src/urml_validator/hbom.py)):
+  resolves a component's `hbom_ref` to a local file relative to the manifest's
+  directory, verifies the declared SHA-256, and flattens the CycloneDX document
+  (walking `pedigree.ancestors` / `descendants` / `variants` and nested
+  `components`) into the country/vendor records the predicates need.
+- **Engine** ([`policy_engine.py`](../../reference/validator/src/urml_validator/policy_engine.py)):
+  a per-component HBOM sub-pass with a per-call parse cache. Four error codes
+  (`policy.hbom_component_country_denied`, `policy.hbom_component_vendor_denied`,
+  `policy.hbom_parse_failed`, `policy.hbom_uri_unreachable`). Hash mismatch /
+  malformed / unsupported-format are errors (a broken HBOM cannot silently
+  bypass a content rule); remote or missing uris are warnings (the validator
+  does not fetch). The CLI threads the manifest directory automatically.
+- **Conformance**: three `conformance/fixtures/compliance/` cases (clean
+  accepted, hidden-CN-chip rejected, vendor-of-vendor pedigree-ancestor
+  rejected) + their manifests and an HBOM-content policy.
+- **Example**: [`examples/compliance/hidden-cn-chip`](../../examples/compliance/)
+  — a manifest with clean top-level provenance (`country_of_origin: US`) whose
+  referenced HBOM hides a covered part; rejects under `--policy`, validates
+  under `--no-policy`.
+- **Tests**: [`test_hbom_policy.py`](../../reference/validator/tests/test_hbom_policy.py)
+  (13 cases). Default policy templates added (commented) to
+  `us_federal_default.yaml`.
+
+Two deliberate departures from the Draft design, both noted here for the
+record:
+
+1. **Dependency-free parsing, not `cyclonedx-python-lib`.** The Draft proposed
+   an optional `[hbom]` extra gating a third-party CycloneDX library. The ship
+   parses the CycloneDX JSON subset the predicates need with the standard
+   library instead. This matches URML's hermetic posture (MockROSAdapter,
+   the pure-Python demo hero), keeps the validator installable and runnable on
+   any OS and in air-gapped deployments with no extra wheels, and removes the
+   install-size / security-surface drawback the Draft listed. Consequently the
+   proposed `policy.hbom_parser_missing` warning is not needed and was not
+   shipped. Strict, full-schema CycloneDX validation against the library
+   remains available as a future option (Phase D) if an adopter needs it.
+2. **Two predicates shipped, two deferred.** The well-specified country and
+   vendor deny-lists ship, made recursive over the pedigree so they cover the
+   vendor-of-vendor case the Draft's separate `hbom_pedigree_clean` predicate
+   was meant to address. `hbom_pedigree_clean` and
+   `hbom_attestation_chain_required` (which depend on an attestation-format
+   decision and in-toto, out of scope per the Drawbacks and Unresolved
+   sections) are deferred. SPDX support and remote-fetch (`--allow-hbom-fetch`)
+   are likewise deferred to Phase D.
 
 ## Self-review (Phase 0)
 

@@ -17,9 +17,11 @@ Semantics (normative per RFC-0004):
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from urml_validator.errors import ErrorCode, ValidationError
+from urml_validator.hbom import HBOMComponent, HBOMError, resolve_and_parse
 from urml_validator.schemas.manifest import CapabilityManifest, Provenance, ProvenanceComponent
 from urml_validator.schemas.policy import OnViolation, Policy, PolicyRule, RulePredicate, RuleSelector
 
@@ -31,6 +33,8 @@ from urml_validator.schemas.policy import OnViolation, Policy, PolicyRule, RuleP
 def evaluate_policy(
     manifest: CapabilityManifest,
     policy: Policy,
+    *,
+    manifest_base_dir: Path | None = None,
 ) -> list[ValidationError]:
     """Evaluate a policy against a manifest's provenance.
 
@@ -40,6 +44,12 @@ def evaluate_policy(
     Args:
         manifest: The validated capability manifest.
         policy:   The validated policy.
+        manifest_base_dir: Directory a component's relative ``hbom_ref.uri``
+            is resolved against (RFC-0005), normally the manifest file's own
+            directory. ``None`` disables local-HBOM resolution: HBOM-content
+            rules then degrade to a ``policy.hbom_uri_unreachable`` warning
+            rather than reading a file. Manifest-declared-fact rules
+            (RFC-0004) never need it.
 
     Returns:
         A list of ValidationError instances — one per rule violation.
@@ -48,9 +58,15 @@ def evaluate_policy(
     if manifest.provenance is None:
         return []
 
+    hbom_cache: dict[tuple[str, str | None], list[HBOMComponent] | HBOMError] = {}
+
     out: list[ValidationError] = []
     for rule in policy.rules:
-        out.extend(_evaluate_rule(rule, manifest.provenance, policy.policy_id))
+        out.extend(
+            _evaluate_rule(
+                rule, manifest.provenance, policy.policy_id, manifest_base_dir, hbom_cache
+            )
+        )
     return out
 
 
@@ -63,6 +79,8 @@ def _evaluate_rule(
     rule: PolicyRule,
     provenance: Provenance,
     policy_id: str,
+    base_dir: Path | None,
+    hbom_cache: dict,
 ) -> list[ValidationError]:
     """Evaluate one rule. Returns one ValidationError per matched violation."""
     selector = rule.applies_to
@@ -72,9 +90,19 @@ def _evaluate_rule(
 
     # Component-scoped rule: pick the components this rule applies to.
     targets = _select_components(selector, provenance.components)
+    predicate = rule.require or rule.deny
+    is_hbom = predicate is not None and predicate.uses_hbom_content()
+
     out: list[ValidationError] = []
     for component in targets:
-        out.extend(_evaluate_component_rule(rule, component, provenance, policy_id))
+        if is_hbom:
+            out.extend(
+                _evaluate_hbom_component_rule(
+                    rule, component, provenance, policy_id, base_dir, hbom_cache
+                )
+            )
+        else:
+            out.extend(_evaluate_component_rule(rule, component, provenance, policy_id))
     return out
 
 
@@ -185,6 +213,152 @@ def _check_component_predicate(
                 violations.append(("hbom_ref", actual_present, predicate.hbom_ref_present))
 
     return violations
+
+
+# =============================================================================
+# HBOM-content rule evaluation (RFC-0005)
+# =============================================================================
+
+
+def _evaluate_hbom_component_rule(
+    rule: PolicyRule,
+    component: ProvenanceComponent,
+    provenance: Provenance,
+    policy_id: str,
+    base_dir: Path | None,
+    hbom_cache: dict,
+) -> list[ValidationError]:
+    """Evaluate a deny rule whose predicate reaches into the component's HBOM.
+
+    HBOM-content rules apply only to a component that declares an
+    ``hbom_ref`` (a component with no HBOM is not subject to content checks;
+    use ``hbom_ref_present`` to require one). Resolution failures surface as
+    their own ``policy.hbom_*`` diagnostics — a hash mismatch or malformed
+    document is an error so it cannot silently bypass the check; a remote or
+    missing uri is a warning, since the validator does not fetch.
+    """
+    if component.hbom_ref is None:
+        return []
+
+    predicate = rule.deny  # schema guarantees HBOM predicates are deny-only.
+    assert predicate is not None
+
+    components = _resolve_hbom(component, base_dir, hbom_cache)
+    if isinstance(components, HBOMError):
+        return [_hbom_resolution_error(rule, component, policy_id, components)]
+
+    match = _first_hbom_match(components, predicate)
+    if match is None:
+        return []
+
+    offending_field, hit, denied_values = match
+    detail: dict[str, Any] = {
+        "rule_id": rule.id,
+        "policy_id": policy_id,
+        "component_id": component.id,
+        "component_role": component.role,
+        "offending_field": offending_field,
+        "hbom_component": hit.name,
+        "hbom_component_vendor": hit.vendor,
+        "hbom_component_country": hit.country,
+        "pedigree_depth": hit.pedigree_depth,
+        "denied_values": list(denied_values),
+        "attestation_level": provenance.manifest_attestation,
+        "remediation_hint": "swap_component",
+    }
+    code = _resolve_code(rule.on_violation)
+    if rule.on_violation.message is None and code == rule.on_violation.code:
+        # Author chose a default; compose a precise message naming the part.
+        where = "" if hit.pedigree_depth == 0 else f" (pedigree depth {hit.pedigree_depth})"
+        message = (
+            f"Policy rule {rule.id!r}: component {component.id!r} HBOM contains part "
+            f"{hit.name!r}{where} with {offending_field} "
+            f"{(hit.country if offending_field == 'country' else hit.vendor)!r} "
+            f"in the deny-list {list(denied_values)!r}."
+        )
+    else:
+        message = rule.on_violation.message or _default_message(rule, component, offending_field, False)
+    return [
+        ValidationError(
+            code=code,
+            severity=rule.on_violation.severity,
+            message=message,
+            path=["<manifest>", "provenance", "components", component.id, "hbom_ref"],
+            field=offending_field,
+            detail=detail,
+        )
+    ]
+
+
+def _resolve_hbom(
+    component: ProvenanceComponent,
+    base_dir: Path | None,
+    hbom_cache: dict,
+) -> list[HBOMComponent] | HBOMError:
+    """Resolve + parse a component's HBOM, memoised per (uri, sha256)."""
+    ref = component.hbom_ref
+    key = (ref.uri, ref.sha256)
+    if key in hbom_cache:
+        return hbom_cache[key]
+    try:
+        result: list[HBOMComponent] | HBOMError = resolve_and_parse(ref, base_dir)
+    except HBOMError as exc:
+        result = exc
+    hbom_cache[key] = result
+    return result
+
+
+def _first_hbom_match(
+    components: list[HBOMComponent],
+    predicate: RulePredicate,
+) -> tuple[str, HBOMComponent, list[str]] | None:
+    """Return the first (field, component, denied_values) a deny-list catches.
+
+    Country is checked before vendor (declaration order), and components in
+    pedigree pre-order, so the result is deterministic.
+    """
+    deny_countries = predicate.hbom_no_components_from_country
+    deny_vendors = predicate.hbom_no_components_from_vendor
+    for comp in components:
+        if deny_countries and comp.country in deny_countries:
+            return ("country", comp, deny_countries)
+        if deny_vendors and comp.vendor in deny_vendors:
+            return ("vendor", comp, deny_vendors)
+    return None
+
+
+def _hbom_resolution_error(
+    rule: PolicyRule,
+    component: ProvenanceComponent,
+    policy_id: str,
+    err: HBOMError,
+) -> ValidationError:
+    """Turn an HBOMError into a ValidationError with the right severity.
+
+    Parse failures (hash mismatch, malformed, unsupported format) are errors:
+    a broken HBOM must not silently pass a content rule. Unreachable uris
+    (remote, or absent local file) are warnings: the validator does not fetch,
+    so it reports "could not check" rather than failing the deployment.
+    """
+    severity = "error" if err.code == ErrorCode.POLICY_HBOM_PARSE_FAILED else "warning"
+    detail = {
+        "rule_id": rule.id,
+        "policy_id": policy_id,
+        "component_id": component.id,
+        "component_role": component.role,
+        **err.detail,
+    }
+    return ValidationError(
+        code=err.code,
+        severity=severity,
+        message=(
+            f"Policy rule {rule.id!r}: component {component.id!r} HBOM could not be "
+            f"checked ({err.detail.get('reason', err.code.value)})."
+        ),
+        path=["<manifest>", "provenance", "components", component.id, "hbom_ref"],
+        field="hbom_ref",
+        detail=detail,
+    )
 
 
 # =============================================================================

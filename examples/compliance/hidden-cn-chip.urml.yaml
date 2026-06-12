@@ -1,0 +1,25 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: compliance/hidden-cn-chip (RFC-0005)
+# Source NL: "Drive to the kitchen." (see hidden-cn-chip.en.txt)
+#
+# A deliberately ordinary program. The interesting part is the manifest +
+# policy: the manifest declares US provenance, but the referenced CycloneDX
+# HBOM hides a covered-country part, and the HBOM-content policy (RFC-0005)
+# rejects on it. Run:
+#
+#   urml validate hidden-cn-chip.urml.yaml -m hidden-cn-chip.manifest.yaml \
+#     --policy hidden-cn-chip.policy.yaml --profile home
+#
+# -> REJECTED: policy.hbom_component_country_denied (wireless_module, CN)
+#
+# With --no-policy (or an all-allied HBOM) the same program validates and
+# executes on the hermetic mock.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: kitchen

@@ -1,0 +1,27 @@
+Drive to the kitchen.
+
+The point of this example is not the sentence. It is what the validator
+catches before the robot moves.
+
+This robot's manifest looks clean: its one critical component, the drive
+controller, declares country_of_origin: US. A compliance check that reads only
+the manifest's declared facts (URML's Pass 5, RFC-0004) would pass it.
+
+But the drive controller's Hardware Bill of Materials, referenced by hbom_ref
+and pinned by SHA-256, tells a different story. Inside it is a wireless module
+supplied from a covered foreign country. RFC-0005 adds an opt-in HBOM-content
+policy that parses the CycloneDX file and walks its pedigree, so the covered
+part is caught even though the top-level provenance hides it.
+
+Run it (the policy reads the HBOM relative to the manifest's own directory):
+
+  urml validate hidden-cn-chip.urml.yaml \
+    -m hidden-cn-chip.manifest.yaml \
+    --policy hidden-cn-chip.policy.yaml --profile home
+
+Expected: validation REJECTS with policy.hbom_component_country_denied,
+naming the offending part (wireless_module, CN) inside the HBOM.
+
+Swap the hbom_ref to an all-allied HBOM, or run with --no-policy, and the
+same sentence validates and executes. Compliance is one flag; the language is
+the same underneath.

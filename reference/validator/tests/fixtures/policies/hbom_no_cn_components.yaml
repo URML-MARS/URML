@@ -1,0 +1,21 @@
+# RFC-0005 test policy: a critical component's HBOM may not contain a part
+# from a covered foreign country, at any pedigree depth. This is the deeper
+# check the manifest-declared-facts policy (RFC-0004) cannot make: a board can
+# declare country_of_origin: US and still carry a covered chip inside.
+#
+# Test-only. Country list is illustrative, not a legal determination.
+
+policy_version: "0.1"
+policy_id: hbom_no_cn_components
+description: Reject critical components whose HBOM declares a covered-country part.
+issued_by: urml-conformance
+
+rules:
+  - id: critical_hbom_no_covered_country
+    applies_to: { component_role: critical }
+    deny:
+      hbom_no_components_from_country: [CN, RU, IR, KP]
+    on_violation:
+      code: policy.hbom_component_country_denied
+      message: A critical component's HBOM declares a part from a covered foreign country.
+      severity: error

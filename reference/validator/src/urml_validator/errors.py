@@ -137,6 +137,24 @@ class ErrorCode(StrEnum):
     POLICY_ATTESTATION_INSUFFICIENT = "policy.attestation_insufficient"
     POLICY_RULE_INVALID = "policy.rule_invalid"
 
+    # RFC-0005 — structured HBOM-content predicates (Pass 5 sub-pass).
+    # Emitted when a policy rule reaches into a component's parsed Hardware
+    # Bill of Materials rather than the manifest-declared provenance facts.
+    # The country/vendor predicates walk the full CycloneDX pedigree, so a
+    # covered part hidden in an ancestor or variant is caught at any depth.
+    POLICY_HBOM_COMPONENT_COUNTRY_DENIED = "policy.hbom_component_country_denied"
+    POLICY_HBOM_COMPONENT_VENDOR_DENIED = "policy.hbom_component_vendor_denied"
+    # The HBOM file exists but could not be read as the declared format, or its
+    # SHA-256 did not match the manifest's declared hash (a tampered or stale
+    # HBOM). The default-policy templates treat it as an error so a broken HBOM
+    # cannot silently bypass content rules.
+    POLICY_HBOM_PARSE_FAILED = "policy.hbom_parse_failed"
+    # The HBOM uri is remote (a scheme the validator does not fetch in v0.2) or
+    # the local file is absent. Warning by default: the validator does not phone
+    # home, so a remote or air-gapped HBOM degrades to "could not check" rather
+    # than a hard failure.
+    POLICY_HBOM_URI_UNREACHABLE = "policy.hbom_uri_unreachable"
+
     # Fleet — multi-robot coherence (RFC-0286). Fired only by `validate_fleet`;
     # a single-robot program with no roster never produces these.
     # An `on:` / `barrier:` node names a member not declared in the roster, or a

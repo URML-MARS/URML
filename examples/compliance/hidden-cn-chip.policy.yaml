@@ -1,0 +1,20 @@
+# Example HBOM-content policy (RFC-0005). Reject a critical component whose
+# HBOM declares a part from a covered foreign country, at any pedigree depth.
+# Illustrative, not legal advice (see CORE_COMMITMENT.md).
+
+policy_version: "0.1"
+policy_id: hidden_cn_chip_demo_policy
+description: Demo policy that reads the parsed HBOM, not just declared facts.
+issued_by: urml_examples
+
+rules:
+  - id: critical_hbom_no_covered_country
+    applies_to: { component_role: critical }
+    deny:
+      hbom_no_components_from_country: [CN, RU, IR, KP]
+    on_violation:
+      code: policy.hbom_component_country_denied
+      message: >-
+        A critical component's HBOM declares a part from a covered foreign
+        country (NDAA Section 889 / FY26 NDAA), even though the manifest's
+        top-level provenance is clean.

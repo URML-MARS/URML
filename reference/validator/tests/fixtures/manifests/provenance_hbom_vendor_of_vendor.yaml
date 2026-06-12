@@ -1,0 +1,40 @@
+# Fixture (RFC-0005): the vendor-of-vendor case (motivation #2). The HBOM's
+# top-level part is a US integrator's board, but its CycloneDX pedigree names
+# a CN-supplied ancestor die. The country deny-list walks the pedigree, so the
+# covered part is caught at depth 1 even though the integrator owns the
+# top-level part number (NDAA §889 vendor-of-vendor).
+#
+# Test-only fixture. Values are illustrative.
+
+manifest_version: "0.1"
+robot_id: provenance_hbom_vendor_of_vendor
+description: Manifest whose HBOM hides a covered part one pedigree level down.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_us_integrator
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.5
+        uri: ./hbom/vendor_of_vendor.cdx.json
+        sha256: "7c7cf21ce0a31af0668f28660719960eed12093002f660e32e0c185c5aef8070"

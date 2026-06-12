@@ -114,6 +114,19 @@ A predicate is the set-membership assertion the rule makes about its selected ta
 
 Empty lists are allowed and are intentional no-ops for that dimension.
 
+### HBOM-content predicates (RFC-0005)
+
+The fields above gate on the manifest's *declared* provenance facts. A board can declare `country_of_origin: US` and still carry a covered part inside its Hardware Bill of Materials. The HBOM-content predicates read the parsed CycloneDX document a component's `hbom_ref` points at, and walk its `pedigree` (ancestors, descendants, variants) so a covered part is caught at any depth (the NDAA §889 vendor-of-vendor case).
+
+| Field | Type | Meaning |
+|---|---|---|
+| `hbom_no_components_from_country` | list of strings | Reject if any component in the target's HBOM, at any pedigree depth, declares a supplier or manufacturer country in this list. ISO 3166-1 alpha-2. |
+| `hbom_no_components_from_vendor` | list of strings | Reject if any component in the target's HBOM, at any pedigree depth, declares a supplier or manufacturer name in this list. |
+
+These predicates are **deny-only**: the field name already carries the polarity, so a match in the parsed HBOM is the violation. They are rejected under `require` at parse time. A single rule's predicate asserts over manifest-declared facts *or* over parsed HBOM content, never both; mixing the two is rejected at parse time (split into two rules) so the two evaluation paths stay separable and auditable.
+
+The HBOM file is resolved relative to the manifest's own directory (the `urml` CLI passes it automatically); a remote `uri` is reported `policy.hbom_uri_unreachable` (a warning, since the validator does not fetch) and a hash mismatch or malformed document is `policy.hbom_parse_failed` (an error, so a broken HBOM cannot silently bypass the check). Parsing is dependency-free: the validator reads the CycloneDX JSON subset the predicates need with the standard library, so HBOM-content rules run on any OS and in air-gapped deployments with no extra wheels. Per-program enforcement of "a program may only use primitives the declared HBOM supports" is out of scope; these predicates are deployment-static provenance gates.
+
 ## Evaluation semantics
 
 For each rule in document order:

@@ -1,0 +1,42 @@
+# Fixture (RFC-0005): a manifest whose surface provenance is clean — the
+# critical component declares country_of_origin: US — but whose referenced
+# HBOM reveals a part supplied from CN. The manifest-declared-facts policy
+# (RFC-0004) sees only "US" and would pass; the HBOM-content policy reads the
+# CycloneDX file and rejects. This is motivation #1 of RFC-0005: a covered
+# chip substituted downstream of the declared top-level provenance.
+#
+# Test-only fixture. Vendor / country values are illustrative; no claim about
+# any real organization is made.
+
+manifest_version: "0.1"
+robot_id: provenance_hbom_cn_chip
+description: TurtleBot-class manifest, US-declared but with a CN part in its HBOM.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: drive_controller
+      role: critical
+      vendor: example_us_integrator
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.5
+        uri: ./hbom/cn_chip.cdx.json
+        sha256: "95873e0edf7f58c310d7811304cb3deb1d2cd82d9213fb76a106ad2543112683"

@@ -21,7 +21,7 @@ DSL design constraints (normative per RFC-0004):
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -63,10 +63,20 @@ class RulePredicate(BaseModel):
 
     Empty lists are allowed (a rule with `country_of_origin_in: []` is a
     no-op for that dimension — useful as a deliberate placeholder).
+
+    A predicate may assert over *manifest-declared* facts (the original
+    five fields) or over *parsed HBOM content* (the ``hbom_*`` fields added
+    by RFC-0005), but not both in one rule. Mixing the two is rejected at
+    parse time so the two evaluation paths stay separable and auditable;
+    split the intent into two rules. The HBOM-content predicates reach into
+    the CycloneDX document a component's ``hbom_ref`` points at and walk its
+    pedigree, so a covered part hidden behind an integrator's own part number
+    (NDAA §889 vendor-of-vendor) is caught at any depth.
     """
 
     model_config = ConfigDict(extra="forbid")
 
+    # --- manifest-declared facts (RFC-0004) ---
     country_of_origin_in: list[str] | None = None
     country_of_final_assembly_in: list[str] | None = None
     vendor_in: list[str] | None = None
@@ -74,6 +84,53 @@ class RulePredicate(BaseModel):
     manifest_attestation_in: list[
         Literal["self_declared", "third_party_audited", "cryptographically_signed"]
     ] | None = None
+
+    # --- parsed HBOM content (RFC-0005) ---
+    hbom_no_components_from_country: list[str] | None = Field(
+        None,
+        description=(
+            "Reject if any component in the target's HBOM (at any pedigree depth) "
+            "declares a supplier/manufacturer country in this list. ISO 3166-1 alpha-2."
+        ),
+    )
+    hbom_no_components_from_vendor: list[str] | None = Field(
+        None,
+        description=(
+            "Reject if any component in the target's HBOM (at any pedigree depth) "
+            "declares a supplier/manufacturer name in this list."
+        ),
+    )
+
+    # The manifest-declared fields and the parsed-HBOM-content fields are the
+    # two predicate families. Keeping them un-mixed per rule is what lets the
+    # engine evaluate HBOM rules in a separate, file-touching sub-pass without
+    # entangling them with the in-memory manifest checks.
+    _MANIFEST_FIELDS: ClassVar[tuple[str, ...]] = (
+        "country_of_origin_in",
+        "country_of_final_assembly_in",
+        "vendor_in",
+        "hbom_ref_present",
+        "manifest_attestation_in",
+    )
+    _HBOM_FIELDS: ClassVar[tuple[str, ...]] = (
+        "hbom_no_components_from_country",
+        "hbom_no_components_from_vendor",
+    )
+
+    @model_validator(mode="after")
+    def _no_mix_manifest_and_hbom(self) -> "RulePredicate":
+        has_manifest = any(getattr(self, f) is not None for f in self._MANIFEST_FIELDS)
+        has_hbom = any(getattr(self, f) is not None for f in self._HBOM_FIELDS)
+        if has_manifest and has_hbom:
+            raise ValueError(
+                "A policy rule predicate may assert over manifest-declared facts "
+                "or over parsed HBOM content, not both. Split into two rules."
+            )
+        return self
+
+    def uses_hbom_content(self) -> bool:
+        """True if this predicate asserts over parsed HBOM content (RFC-0005)."""
+        return any(getattr(self, f) is not None for f in self._HBOM_FIELDS)
 
 
 class OnViolation(BaseModel):
@@ -105,6 +162,12 @@ class PolicyRule(BaseModel):
     """One rule in a policy file.
 
     Exactly one of `require` or `deny` must be set.
+
+    HBOM-content predicates (RFC-0005) are deny-only. Their field names
+    already carry the polarity (``hbom_no_components_from_country``), and a
+    match in the parsed HBOM is the violation, so wrapping them in ``require``
+    would be a confusing double negation. They are rejected under ``require``
+    at parse time.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -122,6 +185,11 @@ class PolicyRule(BaseModel):
         if self.require is not None and self.deny is not None:
             raise ValueError(
                 f"PolicyRule {self.id!r}: `require` and `deny` are mutually exclusive."
+            )
+        if self.require is not None and self.require.uses_hbom_content():
+            raise ValueError(
+                f"PolicyRule {self.id!r}: HBOM-content predicates "
+                f"(hbom_no_components_from_*) are deny-only; place them under `deny`."
             )
         return self
 

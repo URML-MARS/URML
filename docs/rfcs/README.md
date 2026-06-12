@@ -108,7 +108,7 @@ The `docs/rfcs/` dir now holds two distinct kinds of document, marked by the
 | [0002](0002-initial-primitive-vocabulary.md) | Spec | Initial Layer-2 primitive vocabulary | Implemented | 2026-05-17 |
 | [0003](0003-us-alignment.md) | Spec | Strategic realignment — URML aligns with US federal robotics regulation | Accepted | 2026-05-13 |
 | [0004](0004-compliance-policy.md) | Spec | Compliance policy enforcement | Accepted | 2026-05-13 |
-| [0005](0005-hbom-parsing.md) | Spec | Structured HBOM parsing for Pass 5 | Draft | 2026-05-13 |
+| [0005](0005-hbom-parsing.md) | Spec | Structured HBOM parsing for Pass 5 (opt-in CycloneDX content predicates; deny-list by country/vendor, pedigree-walked) | Implemented | 2026-06-12 |
 | [0006](0006-connectivity-and-link-loss.md) | Spec | Connectivity as an abstract capability and link-loss as a validated safety contract | Implemented | 2026-05-16 |
 | [0007](0007-manufacturer-go-to-market.md) | Spec | Manufacturer go-to-market: URML as an opportunity and a channel for robot OEMs and component makers | Implemented | 2026-05-16 |
 | [0008](0008-community-discussions.md) | Spec | Community Discussions: a public Q&A and feedback channel brought forward into Phase 0 | Implemented | 2026-05-16 |
