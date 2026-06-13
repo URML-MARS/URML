@@ -1,0 +1,21 @@
+URML intermediary node for quadruped_ros2_control: validate base intent, emit Twist.
+The whole-body internals stay private; URML gates the public base-velocity interface.
+base: quadruped_base  |  drive_type: omnidirectional
+
+[DISPATCH] cruise_forward
+   -> Twist(linear.x=1.0, angular.z=0.0); sent to the controller.
+
+[DISPATCH] spot_turn
+   -> Twist(linear.x=0.0, angular.z=0.8); sent to the controller.
+
+[REJECTED] drive_too_fast
+   -> refused at the base manifest [max_velocity (2.5 > 1.5)]. No Twist sent.
+
+[REJECTED] spin_too_hard
+   -> refused at the base manifest [max_angular_velocity (1.8 > 1.0)]. No Twist sent.
+
+[REJECTED] climb_too_steep
+   -> refused at the base manifest [max_traversable_slope_deg (40.0 > 25.0)]. No Twist sent.
+
+[REJECTED] overloaded
+   -> refused at the base manifest [max_payload (20.0 > 10.0)]. No Twist sent.

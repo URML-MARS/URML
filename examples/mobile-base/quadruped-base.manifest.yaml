@@ -1,0 +1,35 @@
+# Capability manifest for a quadruped exposed as an omnidirectional mobile base.
+#
+# From the quadruped_ros2_control engagement (legubiao): the stack abstracts the
+# quadruped as an omnidirectional base at the controller's public interface.
+# Upper layers send Twist velocity commands; all whole-body internals (leg
+# actuation, CoM/stability, MPC/RL motion generation) are encapsulated inside the
+# controller and not exposed. So the URML manifest for THIS stack is base-level,
+# not whole-body (RFC-0384 would be the wrong altitude here): the bounds an
+# upper-layer intent must respect are linear/angular velocity, acceleration, the
+# terrain it can cross, and payload. These are the RFC-0518 base-mobility bounds.
+
+manifest_version: "0.1"
+robot_id: quadruped_base
+description: A quadruped presented as an omnidirectional velocity-controlled base.
+
+frames:
+  - name: odom
+    parent: null
+  - name: base_link
+    parent: odom
+
+mobility:
+  drive_type: omnidirectional
+  max_velocity: 1.5              # m/s   (linear)
+  max_angular_velocity: 1.0      # rad/s (yaw)
+  max_linear_acceleration: 2.0   # m/s^2
+  max_angular_acceleration: 3.0  # rad/s^2
+  max_traversable_slope_deg: 25.0
+  max_obstacle_height_m: 0.15
+  max_payload: 10.0              # kg
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
