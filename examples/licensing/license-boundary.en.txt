@@ -1,0 +1,28 @@
+Drive to the kitchen.
+
+As with the compliance example, the sentence is not the point. This robot's
+manifest composes with three substrates whose licenses are not Apache-2.0, and
+the interesting question is how URML records the integration boundary that
+makes each composition legal.
+
+The manifest declares a `licensing` block (RFC-0262): Piper text-to-speech
+(GPL-3.0) across a subprocess boundary, NLLB-200 translation weights (CC-BY-NC,
+non-commercial) by cross-citation only, and LibreTranslate (AGPL-3.0) over a
+network REST boundary with its endpoint and an opaque secret reference. None of
+these are vendored, because URML's Apache-2.0 source may not pull copyleft
+source in. The validator enforces exactly that: declare any of them as
+`boundary: vendored` and validation rejects with
+`capability.license_vendored_copyleft`.
+
+Run it:
+
+  urml validate license-boundary.urml.yaml \
+    -m license-boundary.manifest.yaml --profile home
+
+  urml execute license-boundary.urml.yaml \
+    -m license-boundary.manifest.yaml --profile home --no-policy
+
+Add `policy_required_max_restrictiveness: lgpl_3_0` to the manifest's licensing
+block and re-run validate under the default policy: the GPL-3.0 and CC-BY-NC
+components are now refused for exceeding the declared cap. The boundary is the
+license isolation; the cap is the procurement gate.

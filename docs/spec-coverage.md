@@ -289,6 +289,7 @@ All twelve blocks are covered.
 | `link_loss_policy` (envelope side) | v0.1.0 §2.10 | `LinkLossRule` | Pass 3 | `drone/13_link_loss_rth_positive` | `drone/link-aware-patrol` |
 | `minimal_node` (RFC-0018) | v0.2.0 §2.17 | `MinimalNode` | Pass 2 (mobility XOR, output/sensor cross-ref) | `educational/08_minimal_node_led_positive` | `educational/blink-the-led` |
 | `language` (RFC-0260) | v0.2.0 §2.18 | `Language` / `EngineOptions` | Pass 2 (engine advisories, listen/speak suggestion) + Pass 5 (vosk origin gate) | `language/03_vosk_default_policy_rejected` | `language/multilingual-greeting` |
+| `licensing` (RFC-0262) | v0.2.0 §2.19 | `Licensing` / `LicenseComponent` | Pass 2 (vendored-copyleft hard error) + Pass 5 (restrictiveness cap) | `licensing/02_vendored_gpl_rejected` | `licensing/license-boundary` |
 
 ## Notes (honest deferrals, not gaps)
 

@@ -2,9 +2,9 @@
 rfc: 0262
 title: licensing.boundary / model_license / commercial_use_gate — declaring license constraints in the Layer-1 manifest
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -196,6 +196,41 @@ Single atomic PR.
 ## How to respond
 
 Spec RFC. PR thread.
+
+## Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as the single additive Layer-1 block proposed (every existing manifest
+stays valid; `manifest_version` stays `0.1`). Second piece of the
+translation-licensing stack after RFC-0260: it supplies the `commercial_use_gate`
+field RFC-0260 referenced and the `LicenseId` enum / restrictiveness ordering
+RFC-0304 needs.
+
+- **Schema** (`manifest.py`): `Licensing` + `LicenseComponent`, plus the shared
+  `LicenseId` literal, `LICENSE_RESTRICTIVENESS` ordering, and
+  `VENDORABLE_LICENSES` set; `CapabilityManifest.licensing`. `network_rest`
+  requires `network_endpoint` (intra-block). Spec: `spec/layer-1-hal/v0.2.0.md`
+  §2.19.
+- **Validator**: Pass-2 `_check_licensing` (the vendored-copyleft hard error,
+  policy-independent) and Pass-5 `_check_licensing_policy` (the
+  `policy_required_max_restrictiveness` cap, fired under any active policy).
+  Two new error codes (`capability.license_vendored_copyleft`,
+  `policy.license_too_restrictive`).
+- **Conformance**: `conformance/fixtures/licensing/` (clean boundaries positive;
+  vendored-gpl rejected; restrictiveness-cap rejected) + three registered
+  manifests.
+- **Example**: `examples/licensing/license-boundary` — a home robot composing
+  Piper (GPL-3.0 subprocess), NLLB-200 (CC-BY-NC cross-citation), and
+  LibreTranslate (AGPL-3.0 network_rest); validates and runs on the mock.
+- **Tests**: `reference/validator/tests/test_licensing.py` (19 cases).
+
+Scoping notes. (1) The `commercial_use_gate` field is shipped as **declarative
+only** — its automatic enforcement depends on the deployment-commercial flag
+(RFC-0268, the next stack piece), so the gate is recorded but not enforced yet
+(Unresolved §1). (2) The default-policy `licensing_max_restrictiveness` field
+(§Default-policy file extension) is left unset / unimplemented for v0.1 as the
+RFC specifies; the cap is enforced via the manifest's own
+`policy_required_max_restrictiveness`. (3) Per-component policy exceptions and
+provenance-aggregation stay deferred (Unresolved §2, §3).
 
 ## Self-review (Phase 0)
 

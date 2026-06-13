@@ -1,0 +1,17 @@
+name: licensing/clean_boundaries_positive
+description: >
+  RFC-0262. Copyleft / non-commercial substrates declared at legal integration
+  boundaries (Piper GPL-3.0 subprocess, NLLB-200 CC-BY-NC cross-citation,
+  LibreTranslate AGPL-3.0 network_rest) validate. The boundary is what makes
+  the composition legal, not the license name.
+manifest: licensing_clean
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

@@ -1,0 +1,19 @@
+name: licensing/vendored_gpl_rejected
+description: >
+  RFC-0262. A GPL-3.0 component declared as `vendored` (source pulled into a
+  URML adapter) is a hard error, independent of any policy: URML's Apache-2.0
+  source may not vendor copyleft. The legal shapes are subprocess / network /
+  cross-citation.
+manifest: licensing_vendored_gpl
+policy: none
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: false
+  error_codes: [capability.license_vendored_copyleft]

@@ -1,0 +1,21 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: licensing/license-boundary (RFC-0262)
+# Source NL: "Drive to the kitchen."
+#
+# The point is the manifest's `licensing` block: how URML records the
+# integration boundary (subprocess / network_rest / cross_citation) that makes
+# composing a GPL / AGPL / CC-BY-NC substrate legal beside Apache-2.0 source.
+#
+#   urml validate license-boundary.urml.yaml \
+#     -m license-boundary.manifest.yaml --profile home
+#   urml execute license-boundary.urml.yaml \
+#     -m license-boundary.manifest.yaml --profile home --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: kitchen
