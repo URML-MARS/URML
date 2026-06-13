@@ -64,6 +64,7 @@ def render() -> None:
     waves = data.funnel_by_wave()
     sector_counts = data.outreach_per_sector()
     wave_counts = data.outreach_per_wave()
+    topic_counts = data.outreach_per_topic(limit=40)
 
     with ui.column().classes("w-full max-w-screen-2xl mx-auto p-6 gap-6"):
         ui.label("URML outreach dashboard").classes("text-h4 font-medium")
@@ -118,6 +119,23 @@ def render() -> None:
                     ui.label("No waves yet.").classes("text-grey-7 italic")
                 else:
                     _render_outreach_per_wave(wave_counts)
+
+        # GitHub Topics card (full-width below the sector / wave row)
+        with ui.card().classes("w-full"):
+            ui.label("Outreach by GitHub repo topic").classes("text-h6 mb-1")
+            ui.label(
+                "Topics from each target repo's GitHub About panel. "
+                "Top 40 topics, sorted by outreach count. "
+                "Built by tools/scripts/refresh_repo_topics.py."
+            ).classes("text-grey-7 text-sm mb-2")
+            if not topic_counts:
+                ui.label(
+                    "No repo topics yet. Run "
+                    "`python tools/scripts/refresh_repo_topics.py` "
+                    "to populate the repo_topics table."
+                ).classes("text-grey-7 italic")
+            else:
+                _render_outreach_per_topic(topic_counts)
 
         ui.separator()
 
@@ -530,6 +548,53 @@ def _render_outreach_per_wave(rows: list[dict]) -> None:
                 "axisLine": {"show": False},
             },
             "series": [{"name": "total", "type": "bar", "data": bars, "barWidth": "60%"}],
+        }
+    ).style(f"height: {height_px}px").classes("w-full")
+
+
+def _render_outreach_per_topic(rows: list[dict]) -> None:
+    """Horizontal bar chart: count per GitHub Topic."""
+    names = [r["topic"] for r in rows]
+    bars = [
+        {
+            "value": r["total"],
+            "name": r["topic"],
+            "engaged": r.get("engaged", 0),
+            "blockers": r.get("blockers", 0),
+            "itemStyle": {"color": "#26a69a", "borderRadius": [0, 6, 6, 0]},
+            "label": {
+                "show": True,
+                "position": "right",
+                "formatter": str(r["total"]),
+                "fontSize": 11,
+                "fontWeight": "bold",
+            },
+        }
+        for r in rows
+    ]
+    height_px = max(360, 22 * len(rows) + 60)
+    ui.echart(
+        {
+            "tooltip": {
+                "trigger": "item",
+                "formatter": (
+                    "<b>{b}</b><br/>"
+                    "outreach count: <b>{c}</b><br/>"
+                    "engaged: {@engaged}<br/>"
+                    "blockers: {@blockers}"
+                ),
+            },
+            "grid": {"left": 180, "right": 60, "top": 10, "bottom": 20},
+            "xAxis": {"type": "value", "splitLine": {"lineStyle": {"color": "#eee"}}},
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "inverse": True,
+                "axisLabel": {"color": "#333", "fontSize": 11},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+            },
+            "series": [{"name": "outreach", "type": "bar", "data": bars, "barWidth": "60%"}],
         }
     ).style(f"height: {height_px}px").classes("w-full")
 
