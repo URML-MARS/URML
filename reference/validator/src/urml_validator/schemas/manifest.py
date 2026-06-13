@@ -97,7 +97,7 @@ class Mobility(BaseModel):
         "quadruped",  # RFC-0009: four-legged platforms (Spot, ANYmal, Vision 60)
         "biped",  # RFC-0009: bipedal/humanoid locomotion (Digit, Optimus, Apollo, NEO)
     ]
-    max_velocity: float = Field(..., ge=0, description="Maximum velocity in m/s.")
+    max_velocity: float = Field(..., ge=0, description="Maximum (linear) velocity in m/s.")
     max_payload: float | None = Field(None, ge=0, description="Maximum payload in kg.")
     station_keeping: bool = Field(
         False,
@@ -108,6 +108,32 @@ class Mobility(BaseModel):
     )
     service_ceiling: float | None = Field(
         None, ge=0, description="Maximum altitude (m). Required for aerial profiles."
+    )
+    # RFC-0518: base-level motion bounds for a velocity-controlled mobile base.
+    # Surfaced by the quadruped_ros2_control engagement: a quadruped exposed as an
+    # omnidirectional base validates intent at the base-velocity level, since the
+    # whole-body internals (legs, CoM, MPC/RL) are not exposed at the public
+    # interface. All optional and additive; a runtime or an intermediary node
+    # validates incoming base intent against these before emitting Twist.
+    max_angular_velocity: float | None = Field(
+        None, ge=0, description="Maximum angular (yaw) velocity in rad/s."
+    )
+    max_linear_acceleration: float | None = Field(
+        None, ge=0, description="Maximum linear acceleration in m/s^2."
+    )
+    max_angular_acceleration: float | None = Field(
+        None, ge=0, description="Maximum angular acceleration in rad/s^2."
+    )
+    max_traversable_slope_deg: float | None = Field(
+        None,
+        gt=0,
+        le=90,
+        description="Maximum traversable ground slope in degrees, (0, 90]. Not for aerial drives.",
+    )
+    max_obstacle_height_m: float | None = Field(
+        None,
+        ge=0,
+        description="Maximum surmountable obstacle / step height in metres. Not for aerial drives.",
     )
     clearance: OperationalClearance | None = Field(
         None,

@@ -56,6 +56,8 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_SPEECH_INPUT = "capability.missing_speech_input"
     CAPABILITY_DRIVE_TYPE_NOT_AERIAL = "capability.drive_type_not_aerial"
     CAPABILITY_MISSING_SERVICE_CEILING = "capability.missing_service_ceiling"
+    # RFC-0518: base-level mobility bounds coherence.
+    CAPABILITY_TERRAIN_BOUND_NOT_APPLICABLE = "capability.terrain_bound_not_applicable"
     CAPABILITY_MISSING_HOME_LOCATION = "capability.missing_home_location"
     # RFC-0006: a required abstract link role is absent from manifest.connectivity.
     CAPABILITY_MISSING_LINK_ROLE = "capability.missing_link_role"

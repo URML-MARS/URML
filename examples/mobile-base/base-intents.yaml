@@ -1,0 +1,48 @@
+# Base-motion intents arriving at the intermediary URML node, before it emits a
+# Twist to the existing controller. Each is validated against the base manifest's
+# declared bounds. A real upper layer (a planner, an LLM, a teleop stack) would
+# produce these; here they are a fixed set that mixes admissible and inadmissible
+# requests, one per bound, so the node's behaviour is exercised end to end.
+
+intents:
+  - label: cruise_forward
+    linear_velocity: 1.0       # m/s
+    angular_velocity: 0.0      # rad/s
+    linear_acceleration: 1.0   # m/s^2
+    terrain_slope_deg: 5.0
+    payload_kg: 3.0
+
+  - label: spot_turn
+    linear_velocity: 0.0
+    angular_velocity: 0.8
+    linear_acceleration: 1.0
+    terrain_slope_deg: 0.0
+    payload_kg: 3.0
+
+  - label: drive_too_fast        # exceeds max_velocity (1.5)
+    linear_velocity: 2.5
+    angular_velocity: 0.0
+    linear_acceleration: 1.0
+    terrain_slope_deg: 0.0
+    payload_kg: 3.0
+
+  - label: spin_too_hard         # exceeds max_angular_velocity (1.0)
+    linear_velocity: 0.0
+    angular_velocity: 1.8
+    linear_acceleration: 1.0
+    terrain_slope_deg: 0.0
+    payload_kg: 3.0
+
+  - label: climb_too_steep       # exceeds max_traversable_slope_deg (25)
+    linear_velocity: 0.5
+    angular_velocity: 0.0
+    linear_acceleration: 1.0
+    terrain_slope_deg: 40.0
+    payload_kg: 3.0
+
+  - label: overloaded            # exceeds max_payload (10)
+    linear_velocity: 0.5
+    angular_velocity: 0.0
+    linear_acceleration: 1.0
+    terrain_slope_deg: 0.0
+    payload_kg: 20.0

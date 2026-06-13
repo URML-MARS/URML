@@ -237,6 +237,8 @@ def validate(
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
     errors.extend(_check_whole_body_caps(manifest_model))
+    # RFC-0518: base-level mobility-bounds coherence.
+    errors.extend(_check_base_mobility_bounds(manifest_model))
     # RFC-0018: minimal sensor/actuator MCU-node declaration coherence.
     errors.extend(_check_minimal_node(manifest_model))
     # RFC-0260: Layer-4 NL-infrastructure (language block) coherence + advisories.
@@ -2670,6 +2672,44 @@ def _check_listen_caps(
 
 
 _AERIAL_DRIVE_TYPES = {"multirotor", "fixed_wing", "vtol"}
+
+
+def _check_base_mobility_bounds(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0518): base-level mobility-bounds coherence.
+
+    The base bounds (angular velocity, accelerations, traversable slope, obstacle
+    height) are declarations a velocity-controlled-base runtime or an intermediary
+    node validates incoming intent against before emitting a command; field
+    validity (non-negative, slope in (0, 90]) is enforced by the schema. The one
+    cross-field coherence rule: terrain bounds are meaningless for an aerial
+    drive, which does not traverse ground, so declaring `max_traversable_slope_deg`
+    or `max_obstacle_height_m` on a multirotor / fixed_wing / vtol is incoherent.
+
+    Optional: a manifest without these fields is unaffected.
+    """
+    out: list[ValidationError] = []
+    mob = manifest.mobility
+    if mob is None or mob.drive_type not in _AERIAL_DRIVE_TYPES:
+        return out
+    for field in ("max_traversable_slope_deg", "max_obstacle_height_m"):
+        if getattr(mob, field) is not None:
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_TERRAIN_BOUND_NOT_APPLICABLE,
+                    primitive=None,
+                    path=["<manifest>", "mobility", field],
+                    field=field,
+                    message=(
+                        f"mobility.{field} is declared but drive_type is "
+                        f"{mob.drive_type!r} (aerial); an aerial platform does not "
+                        "traverse ground terrain."
+                    ),
+                    suggestion=(
+                        "Remove the terrain bound, or set a ground drive_type. Per RFC-0518."
+                    ),
+                )
+            )
+    return out
 
 
 def _check_aerial_caps(
