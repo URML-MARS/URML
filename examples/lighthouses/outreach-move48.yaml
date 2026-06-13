@@ -1,0 +1,289 @@
+# Move #48 outreach ledger. One row per target.
+#
+# Move #48: **the domain / standards / conceptual-peer wave** — lane 5 (final)
+# of the 2026-06-13 free-GitHub candidate search. Domain verticals not deeply
+# mined + standards bodies + conceptual language peers. 13 RFCs (0529-0541).
+# Mixed framing per target (no single thesis): URML as the intent layer above a
+# domain platform/fleet, a conceptual peer to another robot/planning language,
+# or a complementary standard. Outreach = request-for-comment; no ask to adopt.
+#
+# Targets / framing:
+#   - osgar (0529, anchor, CZ): underground/SubT heterogeneous fleet -> URML
+#     fleet roster (RFC-0286) + deconfliction (RFC-0291).
+#   - moos-ivp (0530, US): marine IvP-Helm behavior arbitration -> conceptual
+#     PEER (URML intent above the helm).
+#   - project11 (0531, US): ASV backseat-driver mission framework -> URML
+#     mission spec above the mission manager.
+#   - bsk_rl (0532, US): spacecraft RL planning/scheduling -> task intent +
+#     LearnedPolicy envelope (RFC-0383). Space.
+#   - PX4-Space-Systems (0533, SE): PX4 free-flyer fork -> reuses URML's PX4
+#     substrate mapping. Space.
+#   - feldfreund (0534, DE): autonomous weeding -> NL field-task front door. Ag.
+#   - OpenExo (0535, US): open exoskeleton (MCU substrate) -> envelope-bounded
+#     assistance declaration; RESEARCH scope, no clinical claim.
+#   - CleanIt (0536, NO): Rust vacuum autonomy -> service-robot NL front door.
+#   - roomi (0537, US): cleaning + dual-arm -> mobile manipulation + bimanual
+#     (RFC-0010).
+#   - openamr (0538, CY/EU): SME intralogistics AMR (+ Open-RMF) -> warehouse
+#     profile (RFC-0022) + fleet validation (RFC-0286/0291).
+#   - unified-planning (0539, EU): AIPlan4EU planning library -> closest
+#     conceptual LANGUAGE PEER (intent <-> planning problem).
+#   - mtconnect/cppagent (0540, US): manufacturing-interop STANDARDS body ->
+#     equipment-state fact a robot intent conditions on (complements OPC UA).
+#   - auto-apms (0541, DE): BT/skill deliberation DSL -> Layer-3 interop peer
+#     (Move #41 framing). Completes the wave + the candidate slate.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move48.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (moos-ivp / OpenExo: state the repo's actual license, never ask). VIBE.md
+# disclosure up front. OpenExo framing is RESEARCH-scope, no clinical claim.
+# Funnel 518 -> 531 on posting (exhausts the 54-candidate slate).
+
+- slug: osgar
+  rfc: 529
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "robotika/osgar (MIT, ~14 stars, Issues enabled, not archived, very active 2026-06). Open framework for a heterogeneous wheeled/tracked/flying fleet (DARPA SubT underground). Team Robotika, CZ."
+  last_touch: ""
+  response: none
+  tier: B
+  country: CZ
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md osgar body as a GitHub Issue on robotika/osgar under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ANCHOR. Heterogeneous SubT fleet -> URML fleet roster (RFC-0286) + cross-robot deconfliction (RFC-0291). Underground/mining domain."
+  notes: "Tier B (low stars but very active). MIT. Anchor; multi-substrate fleet."
+
+- slug: moos-ivp
+  rfc: 530
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "moos-ivp/moos-ivp (license Other - verify from repo, likely GPL-family; ~70 stars, Issues enabled, not archived, active 2026-06). MOOS middleware + IvP Helm behavior arbitration for marine robots. MIT (the university), US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md moos-ivp body as a GitHub Issue on moos-ivp/moos-ivp under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Marine IvP-Helm behavior arbitration -> conceptual PEER (URML declares validated intent above the helm). Verify license from repo at post time; state, never ask; no code reuse."
+  notes: "Tier A. License Other (verify). Behavior-arbitration conceptual peer; marine."
+
+- slug: project11
+  rfc: 531
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "CCOMJHC/project11 (BSD-2-Clause, ~26 stars, Issues enabled, not archived, active 2025-08). ROS backseat-driver framework for Autonomous Surface Vehicles (ROS 2 Jazzy). UNH Center for Coastal & Ocean Mapping, US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md project11 body as a GitHub Issue on CCOMJHC/project11 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ASV backseat-driver mission framework -> URML mission spec above the mission manager (clean backseat-driver boundary)."
+  notes: "Tier B. BSD-2. ASV mission framework; marine."
+
+- slug: bsk-rl
+  rfc: 532
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "AVSLab/bsk_rl (MIT, ~116 stars, Issues enabled, not archived, very active 2026-06). RL environments + tools for spacecraft autonomy (planning/scheduling) on Basilisk. CU Boulder Autonomous Vehicle Systems Lab, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md bsk-rl body as a GitHub Issue on AVSLab/bsk_rl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Spacecraft RL planning/scheduling -> task intent + constraint envelope; trained policy -> LearnedPolicy envelope (RFC-0383). Space."
+  notes: "Tier A. MIT. Spacecraft autonomy RL; ties RFC-0383."
+
+- slug: px4-space-systems
+  rfc: 533
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "DISCOWER/PX4-Space-Systems (BSD-3-Clause, ~15 stars, Issues enabled, not archived, active 2025-09). PX4 fork for space free-flyers (ATMOS air-bearing testbed; PX4 + ROS 2). KTH Space Robotics Lab, SE."
+  last_touch: ""
+  response: none
+  tier: B
+  country: SE
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md px4-space-systems body as a GitHub Issue on DISCOWER/PX4-Space-Systems under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. PX4 free-flyer fork -> reuses URML's existing PX4 substrate mapping (PX4Adapter) in a microgravity domain. Space."
+  notes: "Tier B. BSD-3. PX4 space fork; reuses the PX4 substrate seam."
+
+- slug: feldfreund
+  rfc: 534
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "zauberzeug/feldfreund_devkit_ros (MIT, ~11 stars, Issues enabled, not archived, active 2026-02). ROS 2 control for the Feldfreund autonomous field-weeding platform. Zauberzeug GmbH, DE."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: agriculture
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md feldfreund body as a GitHub Issue on zauberzeug/feldfreund_devkit_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Autonomous weeding -> NL field-task front door (mobility + tool + field-boundary geofence RFC-0291). Agriculture; real vendor with code."
+  notes: "Tier B. MIT. Field-weeding platform; agriculture."
+
+- slug: openexo
+  rfc: 535
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "naubiomech/OpenExo (license Other - verify from repo; ~305 stars, Issues + Discussions enabled, not archived, very active 2026-06). First comprehensive open modular exoskeleton framework (Science Robotics 2025); Teensy/Arduino MCU substrate. NAU Biomechatronics, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: medical
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md openexo body as a GitHub Issue on naubiomech/OpenExo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Open exoskeleton -> envelope-bounded assistance declaration + MCU substrate (RFC-0017/0018). RESEARCH scope, NO clinical claim. Verify license from repo (Other); state, never ask."
+  notes: "Tier A. License Other (verify). Assistive/exoskeleton research; MCU substrate; no clinical claim."
+
+- slug: cleanit
+  rfc: 536
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Sollimann/CleanIt (MIT, ~312 stars, Issues enabled, not archived, active 2025-11). Open autonomy software in Rust + gRPC for Roomba-series vacuums. Kristoffer Solberg Rakstad (individual), NO."
+  last_touch: ""
+  response: none
+  tier: B
+  country: NO
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md cleanit body as a GitHub Issue on Sollimann/CleanIt under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Rust vacuum autonomy -> service-robot NL front door above gRPC autonomy. Rust aligns with URML infra-language preference."
+  notes: "Tier B. MIT. Service/cleaning robot (Rust)."
+
+- slug: roomi
+  rfc: 537
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jadechoghari/roomi (Apache-2.0, ~262 stars, Issues enabled, not archived, active 2025-07). Open autonomous cleaning/housekeeping robot (mobile base + dual arms + multi-camera; HW/firmware/sim). Jade Choghari (individual, HF/LeRobot), US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md roomi body as a GitHub Issue on jadechoghari/roomi under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Cleaning robot, mobile base + dual arms -> mobile manipulation + bimanual (RFC-0010); Apache-2.0 enables a RoomiAdapter."
+  notes: "Tier B. Apache-2.0. Service + dual-arm manipulation; ties RFC-0010."
+
+- slug: openamr
+  rfc: 538
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "openAMRobot/openamr (MIT, ~58 stars, Issues + Discussions enabled, not archived, active 2026-05). Affordable modular AMR for SME intralogistics (ROS-based, integrates Open-RMF). OpenAMRobot / Botshare, Cyprus (EU)."
+  last_touch: ""
+  response: none
+  tier: B
+  country: CY
+  sector: delivery
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md openamr body as a GitHub Issue on openAMRobot/openamr under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. SME intralogistics AMR (+ Open-RMF) -> warehouse profile (RFC-0022) + fleet validation as RMF complement (RFC-0286/0291). Open-platform altitude (not a closed vendor)."
+  notes: "Tier B. MIT. Open intralogistics AMR; warehouse profile + RMF complement."
+
+- slug: unified-planning
+  rfc: 539
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "aiplan4eu/unified-planning (Apache-2.0, ~305 stars, Issues + Discussions enabled, not archived, active 2026-06). Unified Planning Library: one declarative API over many planners (PDDL/ANML/HDDL). AIPlan4EU EU Horizon consortium, EU."
+  last_touch: ""
+  response: none
+  tier: A
+  country: EU
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md unified-planning body as a GitHub Issue on aiplan4eu/unified-planning under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Closest conceptual LANGUAGE PEER: URML intent <-> Unified Planning problem (compile to / lower back); URML adds physical-capability + envelope validation a planning formalism lacks."
+  notes: "Tier A. Apache-2.0. Closest language peer of the slate; declarative planning."
+
+- slug: mtconnect-cppagent
+  rfc: 540
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "mtconnect/cppagent (Apache-2.0, ~178 stars, Issues + Discussions enabled, not archived, active 2026-06). Reference C++ agent for MTConnect (US manufacturing interoperability standard). MTConnect Institute (AMT-affiliated), US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md mtconnect-cppagent body as a GitHub Issue on mtconnect/cppagent under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Manufacturing-interop STANDARDS body -> equipment state a URML robot intent conditions on (complements OPC UA Move #22 without re-touch). Standards-to-standards."
+  notes: "Tier A. Apache-2.0. MTConnect standards body; shop-floor interop complement."
+
+- slug: auto-apms
+  rfc: 541
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "AutoAPMS/auto-apms (Apache-2.0, ~96 stars, Issues + Discussions enabled, not archived, very active 2026-06). Framework for robot behaviors via behavior trees in ROS 2 (skill-based BT + deliberation). DE."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move48.md auto-apms body as a GitHub Issue on AutoAPMS/auto-apms under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. COMPLETES wave + slate. BT/skill DSL -> Layer-3 interop peer (lower-to-tree OR skill-dispatches-a-validated-primitive; Move #41); skill declarations -> manifest."
+  notes: "Tier B. Apache-2.0. BT/skill DSL; Layer-3 interop peer. Completes the candidate slate."
