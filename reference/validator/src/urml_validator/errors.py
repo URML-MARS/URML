@@ -112,6 +112,12 @@ class ErrorCode(StrEnum):
     # hard error independent of policy: URML may not vendor such source; use a
     # subprocess / network / cross-citation boundary instead.
     CAPABILITY_LICENSE_VENDORED_COPYLEFT = "capability.license_vendored_copyleft"
+    # RFC-0268: deployment commercial-use posture vs a gated component.
+    # The class-inconsistency and default-mode advisory are warnings; the gate
+    # violation (commercial deployment + a commercial_use_gate component, under
+    # policy) is the enforced error.
+    CAPABILITY_COMMERCIAL_USE_CLASS_INCONSISTENT = "capability.commercial_use_class_inconsistent"
+    CAPABILITY_COMMERCIAL_GATE_ADVISORY = "capability.commercial_gate_advisory"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
@@ -157,6 +163,10 @@ class ErrorCode(StrEnum):
     # manifest's declared `policy_required_max_restrictiveness` cap. Fires only
     # when a compliance policy is enforced.
     POLICY_LICENSE_TOO_RESTRICTIVE = "policy.license_too_restrictive"
+    # RFC-0268: a commercial deployment (deployment.commercial_use true, or the
+    # most-restrictive default) declares a licensing component with
+    # commercial_use_gate true. Fires only under a compliance policy.
+    POLICY_COMMERCIAL_USE_GATE_VIOLATED = "policy.commercial_use_gate_violated"
 
     # RFC-0005 — structured HBOM-content predicates (Pass 5 sub-pass).
     # Emitted when a policy rule reaches into a component's parsed Hardware

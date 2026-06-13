@@ -87,6 +87,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "licensing_clean": _VALIDATOR_FIXTURES / "manifests" / "licensing_clean.yaml",
     "licensing_vendored_gpl": _VALIDATOR_FIXTURES / "manifests" / "licensing_vendored_gpl.yaml",
     "licensing_cap_exceeded": _VALIDATOR_FIXTURES / "manifests" / "licensing_cap_exceeded.yaml",
+    # RFC-0268: deployment commercial-use posture.
+    "deployment_commercial_gated": _VALIDATOR_FIXTURES / "manifests" / "deployment_commercial_gated.yaml",
+    "deployment_noncommercial_gated": _VALIDATOR_FIXTURES / "manifests" / "deployment_noncommercial_gated.yaml",
     # RFC-0260: Layer-4 NL-infrastructure (language) engine declarations.
     "language_whisper": _VALIDATOR_FIXTURES / "manifests" / "language_whisper.yaml",
     "language_vosk": _VALIDATOR_FIXTURES / "manifests" / "language_vosk.yaml",

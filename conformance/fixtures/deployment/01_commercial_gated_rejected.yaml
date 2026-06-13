@@ -1,0 +1,18 @@
+name: deployment/commercial_gated_rejected
+description: >
+  RFC-0268. A commercial (production) deployment declaring a CC-BY-NC
+  commercial-use-gated component is refused under the bundled default policy:
+  a commercial deployment may not ship a non-commercial component. Closes the
+  RFC-0262 commercial-use-gate loop.
+manifest: deployment_commercial_gated
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: false
+  error_codes: [policy.commercial_use_gate_violated]

@@ -2,9 +2,9 @@
 rfc: 0268
 title: deployment.commercial_use — closing the commercial-use-gate enforcement loop
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-06-12
 supersedes: —
 superseded-by: —
 ---
@@ -169,6 +169,43 @@ Single atomic PR.
 ## How to respond
 
 Spec RFC. PR thread.
+
+## Shipped (Draft → Implemented, 2026-06-12)
+
+Landed as the single additive top-level block proposed (every existing manifest
+stays valid; `manifest_version` stays `0.1`). Third piece of the
+translation-licensing stack: it closes RFC-0262's commercial-use-gate loop and
+is the last prerequisite before RFC-0304.
+
+- **Schema** (`manifest.py`, spec §2.20): `Deployment` (`commercial_use`
+  defaulting to **true**, `deployment_class`, `organization`, `declared_at`) +
+  `CapabilityManifest.deployment`.
+- **Validator**: a Pass-5 commercial-use gate (`_check_commercial_gate`) — a
+  commercial deployment (declared or the most-restrictive default) with a
+  `licensing.components[].commercial_use_gate` component is an error under a
+  policy (`policy.commercial_use_gate_violated`) and a soft advisory in default
+  mode (`capability.commercial_gate_advisory`); plus a Pass-2 class-consistency
+  warning (`capability.commercial_use_class_inconsistent`).
+- **Conformance**: `conformance/fixtures/deployment/` (commercial+gated
+  rejected under policy; non-commercial+gated accepted; commercial+gated
+  accepted-with-advisory under no policy) + two registered manifests.
+- **Example**: `examples/deployment/commercial-gate` — a production deployment
+  declaring CC-BY-NC NLLB weights, refused under the default policy and a soft
+  advisory under `--no-policy`.
+- **Tests**: `reference/validator/tests/test_deployment.py` (15 cases).
+
+Because RFC-0262's `commercial_use_gate` is now enforced, the RFC-0262
+`licensing_clean` conformance manifest and the `licensing/license-boundary`
+example were updated to declare `deployment.commercial_use: false` (a deployment
+composing CC-BY-NC weights is, honestly, non-commercial), which is exactly the
+migration this RFC's backward-compatibility section anticipated.
+
+Scoping: the default-policy `require_commercial_use_declaration` field is left
+unset / unimplemented for v0.1 as specified; the most-restrictive default
+(missing block ⇒ commercial) is in force. Per-program-run and federal-class
+declarations stay deferred (Unresolved §1, §2). With this, the
+translation-licensing stack's prerequisites for RFC-0304 (the permissive-
+translation alternative serving the engaged NLLB maintainer) are all in place.
 
 ## Self-review (Phase 0)
 

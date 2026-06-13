@@ -19,6 +19,13 @@ mobility:
   drive_type: differential
   max_velocity: 0.46
 
+# RFC-0268: a research/demo deployment, so the CC-BY-NC NLLB weights below are
+# in-bounds. A commercial deployment (the default) would be refused the gated
+# component under --policy.
+deployment:
+  commercial_use: false
+  deployment_class: research
+
 licensing:
   components:
     - name: piper

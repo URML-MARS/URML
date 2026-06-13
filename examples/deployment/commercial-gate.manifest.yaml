@@ -1,0 +1,33 @@
+# Capability manifest for the commercial-gate example (RFC-0268).
+# A production (commercial) deployment that declares a CC-BY-NC component;
+# refused under the default policy. Flip commercial_use to false (research) and
+# it passes. Test/example fixture; values illustrative.
+
+manifest_version: "0.1"
+robot_id: commercial_gate_demo
+description: A commercial deployment declaring a non-commercial (CC-BY-NC) component.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+
+deployment:
+  commercial_use: true
+  deployment_class: production
+  organization: example_robotics_inc
+
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true
