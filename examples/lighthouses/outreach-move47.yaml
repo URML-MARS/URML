@@ -28,209 +28,231 @@
 
 - slug: nerfstudio
   rfc: 518
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/nerfstudio-project/nerfstudio/issues/3766"
   channel: github_issue
   contact: "nerfstudio-project/nerfstudio (Apache-2.0, ~11.7k stars) + nerfstudio-project/gsplat (Apache-2.0, ~5.2k stars); both Issues enabled, not archived, active. NeRF studio + CUDA gaussian-splatting. UC Berkeley collaborative, US. Org-anchor: ONE RFC for both."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0518 body to https://github.com/nerfstudio-project/nerfstudio/issues/3766 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md nerfstudio body as ONE GitHub Issue on nerfstudio-project/nerfstudio (referencing gsplat) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. ANCHOR + org-fold (nerfstudio + gsplat). Reconstruction -> a declared map URML consumes (frames RFC-0290 + geofence/occupancy RFC-0291). Ask: consumer relationship; clean export."
   notes: "Anchor. Apache-2.0. Reconstruction (NeRF/splat); URML consumes as the declared map. Folds gsplat."
 
 - slug: colmap
   rfc: 519
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/colmap/colmap/issues/4452"
   channel: github_issue
   contact: "colmap/colmap (BSD, ~11.9k stars, Issues enabled, not archived, active 2026-06). Structure-from-Motion + Multi-View Stereo. ETH Zurich + UNC Chapel Hill. INTL (CH/US)."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: INTL
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0519 body to https://github.com/colmap/colmap/issues/4452 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md colmap body as a GitHub Issue on colmap/colmap under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. SfM/MVS poses + reconstruction -> declared geometry URML consumes (RFC-0290/0291)."
   notes: "BSD. SfM/MVS; reconstruction URML consumes as declared geometry."
 
 - slug: open3d
   rfc: 520
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/isl-org/Open3D/issues/7514"
   channel: github_issue
   contact: "isl-org/Open3D (MIT-style, ~13.7k stars, Issues + Discussions enabled, not archived, active 2026-06). Modern 3D data processing (point clouds, meshes, registration). Intel Intelligent Systems Lab, US."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0520 body to https://github.com/isl-org/Open3D/issues/7514 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md open3d body as a GitHub Issue on isl-org/Open3D under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. 3D products (point clouds/meshes/occupancy) feed the declared world URML validates against (RFC-0290/0291)."
   notes: "MIT-style. 3D data processing; URML consumes its geometry."
 
 - slug: pcl
   rfc: 521
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/PointCloudLibrary/pcl/issues/6449"
   channel: github_issue
   contact: "PointCloudLibrary/pcl (BSD, ~11k stars, Issues enabled, not archived, active 2026-06). Canonical point-cloud processing library for robotics. Community/intl."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: INTL
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0521 body to https://github.com/PointCloudLibrary/pcl/issues/6449 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md pcl body as a GitHub Issue on PointCloudLibrary/pcl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Processed point clouds (segmented obstacles/occupancy) feed the declared world URML validates against (RFC-0291)."
   notes: "BSD. Canonical point-cloud library; URML consumes its output."
 
 - slug: pdal
   rfc: 522
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/PDAL/PDAL/issues/5045"
   channel: github_issue
   contact: "PDAL/PDAL (BSD, ~1.4k stars, Issues enabled, not archived, active 2026-06). Point Data Abstraction Library ('GDAL for point clouds'). Hobu Inc. lineage, US."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: B
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0522 body to https://github.com/PDAL/PDAL/issues/5045 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md pdal body as a GitHub Issue on PDAL/PDAL under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Ingested/tiled site point data -> declared site URML consumes (robotics-over-prior-map framing). RFC asks if that framing fits PDAL's (geospatial) audience."
   notes: "Tier B. BSD. Point-data ingest; robotics-over-prior-map framing."
 
 - slug: openvdb
   rfc: 523
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/AcademySoftwareFoundation/openvdb/issues/2236"
   channel: github_issue
   contact: "AcademySoftwareFoundation/openvdb (Apache-2.0, ~3.3k stars, Issues + Discussions enabled, not archived, active 2026-06). Sparse-volume data structure + tools. Academy Software Foundation (Linux Foundation), US."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0523 body to https://github.com/AcademySoftwareFoundation/openvdb/issues/2236 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md openvdb body as a GitHub Issue on AcademySoftwareFoundation/openvdb under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Sparse-volume occupancy/distance-field -> the declared occupancy URML's envelope checks against (RFC-0291). RFC asks if robotics-occupancy fits OpenVDB's (VFX) audience. Foundation-home altitude."
   notes: "Apache-2.0. ASF/LF sparse-volume; robotics occupancy framing."
 
 - slug: mola
   rfc: 524
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/MOLAorg/mola/issues/154"
   channel: github_issue
   contact: "MOLAorg/mola (GPL-3.0 core / BSD foundations, ~945 stars, Issues enabled, not archived, active 2026-06). Modular LiDAR-inertial SLAM. University of Almeria (Jose-Luis Blanco-Claraco), ES."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: ES
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0524 body to https://github.com/MOLAorg/mola/issues/154 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md mola body as a GitHub Issue on MOLAorg/mola under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. LiDAR-inertial SLAM -> pose estimate + map URML consumes (RFC-0290/0291). License: GPL-3.0 core (dual-licensed); state, never ask; no code reuse proposed."
   notes: "GPL-3.0 dual. LiDAR-inertial SLAM; URML consumes the estimate."
 
 - slug: mrpt
   rfc: 525
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/MRPT/mrpt/issues/1367"
   channel: github_issue
   contact: "MRPT/mrpt (BSD-3-Clause, ~2.1k stars, Issues + Discussions enabled, not archived, active 2026-06). Mobile Robot Programming Toolkit (mapping/localization/sensor-fusion). ES."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: ES
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0525 body to https://github.com/MRPT/mrpt/issues/1367 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md mrpt body as a GitHub Issue on MRPT/mrpt under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Localization + occupancy/metric maps URML consumes (RFC-0290/0291)."
   notes: "BSD-3. Mapping/localization/sensor-fusion toolkit; URML consumes the estimate."
 
 - slug: symforce
   rfc: 526
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/symforce-org/symforce/issues/464"
   channel: github_issue
   contact: "symforce-org/symforce (Apache-2.0, ~1.6k stars, Issues + Discussions enabled, not archived, active 2026-06). Symbolic computation + codegen + nonlinear optimization (factor-graph engine). Skydio-originated, US."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0526 body to https://github.com/symforce-org/symforce/issues/464 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md symforce body as a GitHub Issue on symforce-org/symforce under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. Factor-graph/optimization engine behind state estimators -> URML consumes the estimate. RFC asks if optimization-lib is the right altitude vs a SLAM/estimator wrapping it."
   notes: "Apache-2.0. Factor-graph/optimization; URML consumes the estimate. Asks the altitude question."
 
 - slug: patchwork-plusplus
   rfc: 527
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/url-kaist/patchwork-plusplus/issues/102"
   channel: github_issue
   contact: "url-kaist/patchwork-plusplus (BSD-2-Clause, ~1k stars, Issues enabled, not archived, active 2026-05). Fast robust ground segmentation for 3D LiDAR. KAIST Urban Robotics Lab, KR."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: B
   country: KR
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0527 body to https://github.com/url-kaist/patchwork-plusplus/issues/102 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md patchwork-plusplus body as a GitHub Issue on url-kaist/patchwork-plusplus under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. LiDAR ground segmentation -> feeds the occupancy URML validates against (RFC-0291). RFC asks if a segmentation step is the right altitude vs a mapping layer."
   notes: "Tier B. BSD-2. Ground segmentation (perception pre-processing); indirect consumer. Asks the altitude question."
 
 - slug: okvis2
   rfc: 528
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/ethz-mrl/okvis2/issues/25"
   channel: github_issue
   contact: "ethz-mrl/okvis2 (BSD-3-Clause, ~210 stars, Issues enabled, not archived, active 2026-06). Open Keyframe-based Visual-Inertial SLAM v2 (real-time VIO). ETH Zurich Robotics & Perception Group, CH."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: B
   country: CH
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0528 body to https://github.com/ethz-mrl/okvis2/issues/25 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md okvis2 body as a GitHub Issue on ethz-mrl/okvis2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
-      status: pending
+      status: done
   next_action: "Await founder authorization. COMPLETES wave. VIO pose estimate URML consumes (RFC-0290 + envelope)."
   notes: "Tier B. BSD-3. Visual-inertial SLAM; URML consumes the VIO estimate."
