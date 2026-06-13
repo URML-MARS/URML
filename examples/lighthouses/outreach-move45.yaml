@@ -1,0 +1,204 @@
+# Move #45 outreach ledger. One row per target.
+#
+# Move #45: **the middleware / control / drivers wave** — lane 2 of the
+# 2026-06-13 free-GitHub candidate search. Distinct from Move #44 (platforms,
+# URML sits ABOVE a whole robot): these are targets URML *composes with* — a
+# controller or planner it hands a validated goal to, a transport/fieldbus
+# beneath Layer-1, or a Layer-3 interop peer. Outreach = request-for-comment
+# describing the layering / a capability-manifest mapping; no ask to adopt.
+#
+# 9 RFCs (0501-0509). Per-target seam:
+#   - RobotRaconteur (0501, anchor): a comms framework/transport URML dispatches
+#     validated intent over (decide-then-do; URML validates, RR transports).
+#   - mc_rtc (0502) + bipedal-locomotion-framework (0503): real-time whole-body /
+#     locomotion controllers URML hands a validated whole_body goal to (RFC-0384/0010).
+#   - hpp-core (0504): a motion planner — URML declares goal+constraints, validates,
+#     consumes the trajectory (RFC-0020; Move #26 framing). LAAS-CNRS ecosystem
+#     soft-overlap (Pinocchio touched Move #26); distinct org/repo.
+#   - ros2_ros_bt_py (0505): Layer-3 BT interop peer (lower-to-tree OR leaf-dispatches
+#     -a-validated-primitive; Move #41 framing).
+#   - libcyphal (0506) + KickCAT (0507): low-level transport / EtherCAT fieldbus
+#     BENEATH Layer-1 HAL (RFC-0319 seam, one layer lower). Protocol altitude — the
+#     RFCs explicitly ask whether this is the right altitude vs the integrator level.
+#   - husarion_ugv_ros (0508): a concrete UGV driver stack — move_to front door +
+#     a HusarionAdapter (vendor-platform mapping).
+#   - fcl (0509): the geometric collision/clearance query URML's safety envelope
+#     declares against (RFC-0291); "URML declares clearances, fcl checks them."
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move45.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (state the license if relevant — KickCAT CeCILL-C — never ask). VIBE.md
+# disclosure up front. Funnel 490 -> 499 on posting.
+
+- slug: robotraconteur
+  rfc: 501
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "robotraconteur/robotraconteur (Apache-2.0, ~78 stars, Issues enabled, not archived, active 2026-05). Communication framework for robotics + IoT (augmented-object protocol, many language bindings). Wason Technology LLC, New York, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: middleware
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md robotraconteur body as a GitHub Issue on robotraconteur/robotraconteur under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ANCHOR. URML validates intent, dispatches over RobotRaconteur (transport); advertised service members -> manifest. Ask: sensible composition; manifest-from-services."
+  notes: "Anchor. Apache-2.0. Comms framework / transport URML composes over."
+
+- slug: mc-rtc
+  rfc: 502
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jrl-umi3218/mc_rtc (BSD-2-Clause, ~183 stars, Issues enabled, not archived, active 2026-06). Real-time whole-body QP + FSM control interface for sim and real robots. JRL (Japan-France joint lab), JP."
+  last_touch: ""
+  response: none
+  tier: A
+  country: JP
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md mc-rtc body as a GitHub Issue on jrl-umi3218/mc_rtc under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Whole-body QP/FSM controller -> URML hands a validated whole_body goal (RFC-0384/0010); URML decides, mc_rtc does. Ask: manifest fit; validated-goal layer."
+  notes: "BSD-2. Real-time whole-body controller; URML sits above as the typed gate."
+
+- slug: bipedal-locomotion-framework
+  rfc: 503
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "gbionics/bipedal-locomotion-framework (BSD-3-Clause, ~220 stars, Issues enabled, not archived, active 2026-06; transferred from ami-iit, IIT lineage). Libraries for bipedal locomotion on humanoids (MPC + WBC). IT."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IT
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md bipedal-locomotion-framework body as a GitHub Issue on gbionics/bipedal-locomotion-framework under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Bipedal MPC/WBC -> URML hands a validated whole_body locomotion goal (RFC-0384). Canonical path is now gbionics/ (ex ami-iit) — verify at post time."
+  notes: "BSD-3. IIT lineage; repo moved ami-iit -> gbionics. Locomotion controller."
+
+- slug: hpp-core
+  rfc: 504
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "humanoid-path-planner/hpp-core (BSD-2-Clause, ~43 stars, Issues enabled, not archived, active 2026-06). Core of the Humanoid Path Planner framework. LAAS-CNRS, Toulouse, FR."
+  last_touch: ""
+  response: none
+  tier: B
+  country: FR
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md hpp-core body as a GitHub Issue on humanoid-path-planner/hpp-core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Motion planner -> URML declares goal+constraints, validates, consumes trajectory (RFC-0020; Move #26). SOFT-OVERLAP: LAAS-CNRS ecosystem (Pinocchio touched Move #26 wontfix); distinct org/repo/team."
+  notes: "Tier B. BSD-2. Planner; declare-goal/consume-trajectory split. LAAS soft-overlap."
+
+- slug: ros2-ros-bt-py
+  rfc: 505
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "fzi-forschungszentrum-informatik/ros2_ros_bt_py (BSD-3-Clause, ~110 stars, Issues enabled, not archived, active 2026-05). Behavior-tree library + Vue3 web GUI for ROS 2 (alternative to SMACH/FlexBE). FZI, Karlsruhe, DE."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md ros2-ros-bt-py body as a GitHub Issue on fzi-forschungszentrum-informatik/ros2_ros_bt_py under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Layer-3 BT interop (Move #41 framing): lower URML composition to a tree OR a BT leaf dispatches a validated URML primitive. Ask: which direction; static cap/envelope check."
+  notes: "BSD-3. BT framework; Layer-3 interop peer."
+
+- slug: libcyphal
+  rfc: 506
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "OpenCyphal-Garage/libcyphal (MIT, ~320 stars, Issues enabled, not archived, active 2025-12). Portable C++ reference impl of the Cyphal protocol stack (CAN/UAVCAN successor) for embedded + Linux. OpenCyphal (Zubax-origin), EE/intl."
+  last_touch: ""
+  response: none
+  tier: A
+  country: INTL
+  sector: protocol-substrate
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md libcyphal body as a GitHub Issue on OpenCyphal-Garage/libcyphal under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Low-level transport BENEATH Layer-1; validated URML actuation rides Cyphal; DSDL types -> manifest. RFC explicitly asks if protocol is the right altitude vs integrator."
+  notes: "MIT. Cyphal transport/HAL beneath Layer-1. Protocol altitude — RFC asks the altitude question."
+
+- slug: kickcat
+  rfc: 507
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "leducp/KickCAT (CeCILL-C, ~150 stars, Issues enabled, not archived, active 2026-06). Open C++ EtherCAT master/slave stack. Philippe Leduc (individual), FR."
+  last_touch: ""
+  response: none
+  tier: B
+  country: FR
+  sector: protocol-substrate
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md kickcat body as a GitHub Issue on leducp/KickCAT under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. EtherCAT fieldbus master BENEATH Layer-1 HAL (RFC-0319 one layer lower). RFC asks if fieldbus is the right altitude vs ros2_control/integrator. License CeCILL-C: state, never ask."
+  notes: "Tier B. CeCILL-C. EtherCAT master; lower-altitude fieldbus (asks the altitude question)."
+
+- slug: husarion-ugv-ros
+  rfc: 508
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "husarion/husarion_ugv_ros (Apache-2.0, ~80 stars, Issues enabled, not archived, active 2026-06). ROS 2 packages for Husarion Panther/Lynx mobile robots (platform HAL + drivers). Husarion, Krakow, PL."
+  last_touch: ""
+  response: none
+  tier: A
+  country: PL
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md husarion-ugv-ros body as a GitHub Issue on husarion/husarion_ugv_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Concrete UGV driver stack -> move_to NL front door + a HusarionAdapter against published ROS 2 packages (vendor-platform mapping)."
+  notes: "Apache-2.0. Panther/Lynx UGV driver layer; vendor-platform mapping."
+
+- slug: fcl
+  rfc: 509
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "flexible-collision-library/fcl (BSD-3-Clause, ~1.7k stars, Issues enabled, not archived, active 2026-06). Flexible Collision Library (collision/distance queries; Willow Garage/OSRF heritage). Community/OSRF lineage, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move45.md fcl body as a GitHub Issue on flexible-collision-library/fcl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. COMPLETES wave. Geometric collision/clearance query URML's safety envelope declares against (RFC-0291): 'URML declares clearances, fcl checks them.' RFC asks if collision-lib is the right altitude vs a planner/MoveIt layer."
+  notes: "BSD-3. Collision/distance library; downstream of URML's declared clearances. Indirect altitude — RFC asks the altitude question."
