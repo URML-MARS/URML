@@ -1,0 +1,59 @@
+# Capability manifest for the commercial-translation-fork example (RFC-0304).
+# A commercial multilingual robot keeping NLLB breadth via a permissive
+# open-LLM alternative. Test/example fixture; values illustrative.
+
+manifest_version: "0.1"
+robot_id: commercial_translation_fork_demo
+description: A commercial deployment keeping NLLB breadth via a permissive open-LLM fork.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+
+perception:
+  sensors:
+    - name: mic
+      measurement_type: speech
+
+outputs:
+  named_endpoints: [speech]
+
+deployment:
+  commercial_use: true
+  deployment_class: production
+  organization: example_robotics_inc
+
+language:
+  stt_engine_class: whisper
+  tts_engine_class: espeak
+  translation_engine_class: nllb
+  engine_options:
+    translation:
+      source_languages: [en, he, es, ja, zh]
+      target_languages: [en]
+  translation_alternatives:
+    - engine_class: open_llm
+      engine_class_note: "Qwen3.5-Instruct, Apache-2.0"
+      commercial_eligible: true
+      source_languages: [en, he, es, ja, zh]
+      target_languages: [en]
+
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true
+    - name: qwen
+      license: apache_2_0
+      boundary: cross_citation
+      commercial_use_gate: false

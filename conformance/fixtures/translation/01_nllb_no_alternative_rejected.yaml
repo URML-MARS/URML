@@ -1,0 +1,17 @@
+name: translation/nllb_no_alternative_rejected
+description: >
+  RFC-0304 / RFC-0268. A commercial deployment whose primary translation
+  substrate is NLLB-200 (CC-BY-NC) with no commercial-eligible alternative is
+  refused under the default policy. The commercial dead-end RFC-0304 opens.
+manifest: translation_nllb_no_alt
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: false
+  error_codes: [policy.commercial_use_gate_violated]

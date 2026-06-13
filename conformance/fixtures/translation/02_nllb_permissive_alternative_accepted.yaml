@@ -1,0 +1,17 @@
+name: translation/nllb_permissive_alternative_accepted
+description: >
+  RFC-0304. The same commercial deployment, now declaring a commercial-eligible
+  permissive open-LLM (Qwen) translation alternative, validates: NLLB for
+  breadth, the permissive LLM for the commercial path. The fork RFC-0304 opens,
+  per the NLLB-200 maintainer's guidance on RFC-0167.
+manifest: translation_nllb_permissive_alt
+profiles: [home]
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+expected_validation:
+  accepted: true

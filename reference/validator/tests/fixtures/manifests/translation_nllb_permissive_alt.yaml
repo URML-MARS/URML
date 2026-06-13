@@ -1,0 +1,25 @@
+# Fixture (RFC-0304): the same commercial deployment, now declaring a
+# commercial-eligible permissive open-LLM translation alternative (Qwen). The
+# gate is SATISFIED: NLLB for breadth, the permissive LLM for the commercial
+# path. The fork RFC-0304 opens, per the NLLB maintainer's RFC-0167 guidance.
+manifest_version: "0.1"
+robot_id: translation_nllb_permissive_alt
+description: Commercial deployment, gated NLLB primary + commercial-eligible open_llm alternative.
+frames: [{ name: map, parent: null }]
+declared_locations: [{ name: kitchen, pose: { x: 3.2, y: 1.0 }, frame: map }]
+mobility: { drive_type: differential, max_velocity: 0.46 }
+deployment: { commercial_use: true, deployment_class: production }
+language:
+  translation_engine_class: nllb
+  translation_alternatives:
+    - engine_class: open_llm
+      engine_class_note: "Qwen3.5-Instruct, Apache-2.0"
+      commercial_eligible: true
+      source_languages: [en, he, es, ja, zh]
+      target_languages: [en]
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true

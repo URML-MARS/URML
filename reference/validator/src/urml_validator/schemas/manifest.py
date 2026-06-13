@@ -1225,6 +1225,40 @@ class EngineOptions(BaseModel):
     translation: TranslationOptions | None = None
 
 
+class TranslationAlternative(BaseModel):
+    """A commercial-eligible fallback translation substrate (RFC-0304).
+
+    Declared alongside a license-gated primary (NLLB-200's CC-BY-NC weights) so
+    a commercial deployment has a validated path instead of a dead end. The
+    canonical alternative is `open_llm`: a permissive-license open LLM (the Qwen
+    and Gemma families translate hundreds of languages), the path the NLLB-200
+    maintainer recommended on RFC-0167. `commercial_eligible` asserts the named
+    substrate's license permits commercial deployment; like RFC-0268's flag it
+    is a declaration, not a proof (the deployer owns its truth, paired with a
+    permissive `licensing.components[]` entry).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    engine_class: Literal[
+        "opus_mt", "argos_translate", "marian_nmt", "nllb", "libretranslate", "open_llm", "custom"
+    ]
+    engine_class_note: str | None = None
+    commercial_eligible: bool
+    source_languages: list[str] = Field(default_factory=list)
+    target_languages: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _open_llm_or_custom_requires_note(self) -> "TranslationAlternative":
+        """`open_llm` / `custom` must name the specific model + license via the note."""
+        if self.engine_class in ("open_llm", "custom") and not self.engine_class_note:
+            raise ValueError(
+                f"translation_alternatives engine_class {self.engine_class!r} requires engine_class_note "
+                f"(name the model + license, e.g. 'Qwen3.5-Instruct, Apache-2.0')"
+            )
+        return self
+
+
 class Language(BaseModel):
     """Layer-4 natural-language infrastructure declaration (RFC-0260).
 
@@ -1255,21 +1289,33 @@ class Language(BaseModel):
     ] | None = None
     tts_engine_class_note: str | None = None
     translation_engine_class: Literal[
-        "opus_mt", "argos_translate", "marian_nmt", "nllb", "libretranslate", "custom"
+        "opus_mt", "argos_translate", "marian_nmt", "nllb", "libretranslate", "open_llm", "custom"
     ] | None = None
     translation_engine_class_note: str | None = None
     engine_options: EngineOptions | None = None
+    # RFC-0304: commercial-eligible fallback substrates declared alongside a
+    # license-gated primary, so a commercial deployment has a validated path.
+    translation_alternatives: list[TranslationAlternative] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _custom_requires_note(self) -> "Language":
-        """A `custom` engine class must name the engine via its `_note`."""
+        """A `custom` engine class must name the engine via its `_note`.
+
+        `translation_engine_class: open_llm` (RFC-0304) likewise requires a note:
+        the value names a license posture, not a specific model, so the note must
+        name the model (e.g. 'Qwen3.5-Instruct, Apache-2.0').
+        """
         if self.stt_engine_class == "custom" and not self.stt_engine_class_note:
             raise ValueError("language.stt_engine_class 'custom' requires stt_engine_class_note")
         if self.tts_engine_class == "custom" and not self.tts_engine_class_note:
             raise ValueError("language.tts_engine_class 'custom' requires tts_engine_class_note")
-        if self.translation_engine_class == "custom" and not self.translation_engine_class_note:
+        if (
+            self.translation_engine_class in ("custom", "open_llm")
+            and not self.translation_engine_class_note
+        ):
             raise ValueError(
-                "language.translation_engine_class 'custom' requires translation_engine_class_note"
+                f"language.translation_engine_class {self.translation_engine_class!r} requires "
+                f"translation_engine_class_note"
             )
         return self
 
