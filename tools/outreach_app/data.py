@@ -168,6 +168,106 @@ def funnel_by_wave(db_path: Path | None = None) -> list[dict]:
         return [dict(r) for r in cur.fetchall()]
 
 
+# ---------------------------------------------------------------------------
+# Outreach-intensity charts (sector + wave theme)
+# ---------------------------------------------------------------------------
+
+import re as _re
+from functools import lru_cache as _lru_cache
+
+LEDGER_DIR = REPO_ROOT / "examples" / "lighthouses"
+
+_THEME_PATTERNS = [
+    # Newer format: `# Move #N (this file): **<theme>**`
+    _re.compile(r"^#\s*Move\s*#(\d+)\s*\(this file\)\s*:\s*\*\*([^*]+)\*\*"),
+    # Older format: `# Move #N outreach ledger — one row per <theme>.`
+    _re.compile(
+        r"^#\s*Move\s*#(\d+)\s*outreach\s*ledger\s*[—\-]\s*one row per\s+(.+?)\s*\.?\s*$"
+    ),
+]
+
+
+@_lru_cache(maxsize=1)
+def wave_themes() -> dict[int, str]:
+    """Return `{move_num: theme}` extracted from each ledger YAML's header.
+
+    Themes come straight from the YAML comments the maintainer authored;
+    Moves without a parseable header line are silently absent from the
+    map and the UI will fall back to "Move N" with no theme suffix.
+    Tries the newer `**bold**` pattern first, then the older en-dash form.
+    """
+    themes: dict[int, str] = {}
+    if not LEDGER_DIR.is_dir():
+        return themes
+    for path in sorted(LEDGER_DIR.glob("outreach*.yaml")):
+        try:
+            with path.open(encoding="utf-8") as f:
+                for line in f:
+                    if not line.startswith("#"):
+                        break  # past the header comment block
+                    for pat in _THEME_PATTERNS:
+                        m = pat.match(line)
+                        if m:
+                            num = int(m.group(1))
+                            if num not in themes:
+                                # Strip 'target' / 'target.' tails from older format
+                                theme = m.group(2).rstrip(" .")
+                                theme = _re.sub(r"\s+targets?$", "", theme)
+                                themes[num] = theme
+                            break
+        except (OSError, UnicodeDecodeError):
+            continue
+    return themes
+
+
+def outreach_per_sector(db_path: Path | None = None) -> list[dict]:
+    """One row per sector with the counts the charts need. Sorted desc.
+
+    Distinct from `sector_distribution` in that it returns a clean
+    `{sector, total, engaged, blockers, posted}` shape without grouping
+    by additional filters — the bar chart wants the global breakdown,
+    not the filtered one.
+    """
+    with _connect(db_path) as conn:
+        cur = conn.execute(
+            """SELECT
+                sector,
+                COUNT(*) AS total,
+                SUM(CASE WHEN sent_at != '' THEN 1 ELSE 0 END) AS posted,
+                SUM(CASE WHEN response = 'engaged' THEN 1 ELSE 0 END) AS engaged,
+                SUM(CASE WHEN response IN ('wontfix','declined') THEN 1 ELSE 0 END) AS blockers
+                FROM targets
+                WHERE sector IS NOT NULL AND sector != ''
+                GROUP BY sector
+                ORDER BY total DESC"""
+        )
+        return [dict(r) for r in cur.fetchall()]
+
+
+def outreach_per_wave(db_path: Path | None = None) -> list[dict]:
+    """One row per Move with `{move_num, theme, total, engaged, blockers}`.
+
+    Wave themes are pulled from the YAML headers via `wave_themes()`;
+    Moves without a parsed theme get `theme = ""` and the UI shows just
+    the Move number.
+    """
+    themes = wave_themes()
+    with _connect(db_path) as conn:
+        cur = conn.execute(
+            """SELECT move_num,
+                      total,
+                      engaged,
+                      (wontfix + declined) AS blockers,
+                      posted
+               FROM waves
+               ORDER BY move_num"""
+        )
+        rows = [dict(r) for r in cur.fetchall()]
+    for r in rows:
+        r["theme"] = themes.get(r["move_num"], "")
+    return rows
+
+
 def list_targets(
     filters: Filters | None = None,
     limit: int | None = None,

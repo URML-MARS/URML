@@ -62,6 +62,8 @@ def render() -> None:
     funnel = data.funnel_stage_counts()
     sectors = data.sector_distribution()
     waves = data.funnel_by_wave()
+    sector_counts = data.outreach_per_sector()
+    wave_counts = data.outreach_per_wave()
 
     with ui.column().classes("w-full max-w-screen-2xl mx-auto p-6 gap-6"):
         ui.label("URML outreach dashboard").classes("text-h4 font-medium")
@@ -90,6 +92,32 @@ def render() -> None:
                 ui.label("No targets yet.").classes("text-grey-7 italic")
             else:
                 _render_conversion_funnel(funnel)
+
+        ui.separator()
+
+        # Outreach intensity row: per-sector bar chart + per-wave bar chart
+        with ui.row().classes("w-full gap-4 items-stretch flex-wrap"):
+            with ui.card().classes("flex-grow min-w-[420px]"):
+                ui.label("Outreach by sector").classes("text-h6 mb-1")
+                ui.label(
+                    "How many outreaches were made in each sector. "
+                    "Sorted by count; engaged + blocker counts shown on hover."
+                ).classes("text-grey-7 text-sm mb-2")
+                if not sector_counts:
+                    ui.label("No sectors yet.").classes("text-grey-7 italic")
+                else:
+                    _render_outreach_per_sector(sector_counts)
+
+            with ui.card().classes("flex-grow min-w-[420px]"):
+                ui.label("Outreach by wave").classes("text-h6 mb-1")
+                ui.label(
+                    "Targets per Move with the topic theme from each ledger's "
+                    "header comment."
+                ).classes("text-grey-7 text-sm mb-2")
+                if not wave_counts:
+                    ui.label("No waves yet.").classes("text-grey-7 italic")
+                else:
+                    _render_outreach_per_wave(wave_counts)
 
         ui.separator()
 
@@ -388,6 +416,143 @@ def _render_conversion_funnel(funnel: dict) -> None:
             ],
         },
     ).style("height: 280px").classes("w-full mt-4")
+
+
+def _render_outreach_per_sector(rows: list[dict]) -> None:
+    """Horizontal bar chart: count per sector, sorted desc.
+
+    Bar color comes from SECTOR_META so it matches the rest of the app.
+    Tooltip shows engagement + blocker counts.
+    """
+    names = []
+    bars = []
+    for r in rows:
+        sector = r["sector"]
+        label, _icon, color = SECTOR_META.get(sector, (sector, "circle", "grey-6"))
+        names.append(label)
+        bars.append({
+            "value": r["total"],
+            "name": label,
+            "engaged": r.get("engaged", 0),
+            "blockers": r.get("blockers", 0),
+            "itemStyle": {
+                "color": _FUNNEL_HEX.get(color, _hex_from_qcolor(color)),
+                "borderRadius": [0, 6, 6, 0],
+            },
+            "label": {
+                "show": True,
+                "position": "right",
+                "formatter": str(r["total"]),
+                "fontSize": 12,
+                "fontWeight": "bold",
+            },
+        })
+
+    height_px = max(280, 28 * len(rows) + 60)
+    ui.echart(
+        {
+            "tooltip": {
+                "trigger": "item",
+                "formatter": (
+                    "{b}<br/>"
+                    "total: <b>{c}</b><br/>"
+                    "engaged: {@engaged}<br/>"
+                    "blockers: {@blockers}"
+                ),
+            },
+            "grid": {"left": 140, "right": 60, "top": 10, "bottom": 20},
+            "xAxis": {"type": "value", "splitLine": {"lineStyle": {"color": "#eee"}}},
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "inverse": True,
+                "axisLabel": {"color": "#333", "fontSize": 12},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+            },
+            "series": [{"name": "total", "type": "bar", "data": bars, "barWidth": "55%"}],
+        }
+    ).style(f"height: {height_px}px").classes("w-full")
+
+
+def _render_outreach_per_wave(rows: list[dict]) -> None:
+    """Horizontal bar chart: count per Move with theme as label.
+
+    Sorted by move_num (chronological). Each bar's y-axis label is
+    "Move N — theme" (or just "Move N" when no theme was parseable).
+    """
+    names = []
+    bars = []
+    for r in rows:
+        theme = (r.get("theme") or "").strip()
+        if theme:
+            # Truncate long themes so the axis label stays readable
+            short = theme if len(theme) <= 42 else theme[:41] + "…"
+            label = f"Move {r['move_num']} · {short}"
+        else:
+            label = f"Move {r['move_num']}"
+        names.append(label)
+        bars.append({
+            "value": r["total"],
+            "engaged": r.get("engaged", 0),
+            "blockers": r.get("blockers", 0),
+            "theme": theme or "(no theme)",
+            "itemStyle": {"color": "#5e72e4", "borderRadius": [0, 6, 6, 0]},
+            "label": {
+                "show": True,
+                "position": "right",
+                "formatter": str(r["total"]),
+                "fontSize": 11,
+                "fontWeight": "bold",
+            },
+        })
+
+    height_px = max(360, 22 * len(rows) + 60)
+    ui.echart(
+        {
+            "tooltip": {
+                "trigger": "item",
+                "formatter": (
+                    "{b}<br/>"
+                    "topic: {@theme}<br/>"
+                    "total: <b>{c}</b><br/>"
+                    "engaged: {@engaged}<br/>"
+                    "blockers: {@blockers}"
+                ),
+            },
+            "grid": {"left": 280, "right": 60, "top": 10, "bottom": 20},
+            "xAxis": {"type": "value", "splitLine": {"lineStyle": {"color": "#eee"}}},
+            "yAxis": {
+                "type": "category",
+                "data": names,
+                "axisLabel": {"color": "#333", "fontSize": 11},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+            },
+            "series": [{"name": "total", "type": "bar", "data": bars, "barWidth": "60%"}],
+        }
+    ).style(f"height: {height_px}px").classes("w-full")
+
+
+def _hex_from_qcolor(qcolor: str) -> str:
+    """Best-effort fallback when a sector color isn't in _FUNNEL_HEX."""
+    return {
+        "indigo-6": "#3949ab",
+        "deep-purple-6": "#5e35b1",
+        "blue-6": "#1e88e5",
+        "light-blue-7": "#0288d1",
+        "cyan-7": "#0097a7",
+        "teal-6": "#00897b",
+        "green-7": "#388e3c",
+        "orange-7": "#f57c00",
+        "amber-7": "#ffa000",
+        "brown-6": "#6d4c41",
+        "blue-grey-6": "#546e7a",
+        "lime-7": "#afb42b",
+        "red-6": "#e53935",
+        "light-green-7": "#689f38",
+        "pink-6": "#d81b60",
+    }.get(qcolor, "#888")
 
 
 def _render_sector_list(sectors: list[dict]) -> None:
