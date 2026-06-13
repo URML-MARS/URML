@@ -157,17 +157,19 @@
   posted_url: "https://github.com/ray-project/ray/issues/64064"
   channel: github_issue
   contact: "ray-project/ray (Apache-2.0, ~42.8k stars, Issues enabled, Discussions OFF, not archived, very active 2026-06). RLlib is the scalable-RL component of the Ray distributed-compute engine. Originated at UC Berkeley RISELab; stewarded by Anyscale. US."
-  last_touch: "2026-06-12"
-  response: none
+  last_touch: "2026-06-13"
+  response: acked
   tier: A
   country: US
   sector: ai-language
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0490 body to https://github.com/ray-project/ray/issues/64064 under idoco2003 (Move #43 RL/policy-training wave). Awaiting response."
+    - date: "2026-06-13"
+      text: "nh-atuan replied positively: 'I'd like to take a look at this RFC and explore how it relates to RLlib policy deployment and serving patterns. I'll review the proposal and share my findings here.' Intent to engage, no substantive content yet -> acked (not engaged; do not inflate). No reply owed; replying to 'I'll review' adds noise on a 42.8k-star monorepo. Await his findings, then it becomes engaged. Seam if he bites: RLlib Policy / action+observation spaces -> URML learned-policy training envelope (RFC-0383) + the validated deployment gate."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move43.md ray-rllib body as a GitHub Issue on ray-project/ray under idoco2003, scoped EXPLICITLY to RLlib (not Ray core), label appropriately; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Medium fit; frame NARROWLY at RLlib + its deployment story, not Ray's distributed-compute core, or it reads as off-topic noise in a huge monorepo. Seam: RLlib Policy spaces -> envelope + the deployment gate."
+  next_action: "Acked (nh-atuan, will review + share findings). No reply owed; await his findings, then bump to engaged. If he engages, the seam is RLlib Policy spaces -> URML learned-policy training envelope (RFC-0383) + the deployment gate (mirrors the rsl_rl/rl_games 'policy exports its envelope' threads). Keep framing NARROW to RLlib, not Ray core."
   notes: "Medium fit, huge monorepo -> tight RLlib framing essential. Permissive (Apache-2.0). Issue-only. No license-ask."
