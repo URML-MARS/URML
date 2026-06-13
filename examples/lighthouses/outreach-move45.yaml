@@ -102,19 +102,21 @@
   channel: github_issue
   contact: "humanoid-path-planner/hpp-core (BSD-2-Clause, ~43 stars, Issues enabled, not archived, active 2026-06). Core of the Humanoid Path Planner framework. LAAS-CNRS, Toulouse, FR."
   last_touch: "2026-06-13"
-  response: none
+  response: declined
   tier: B
   country: FR
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0504 body to https://github.com/humanoid-path-planner/hpp-core/issues/440 under idoco2003 (Move #45 middleware/control/drivers wave). Awaiting response."
+    - date: "2026-06-13"
+      text: "nim65s (INRIA/LAAS) answered tersely and closed #440. Q1 (does the declare-goal+constraints / consume-trajectory split fit how a caller drives hpp-core?): 'that is a possibility, yes.' Q2 (could a URML capability manifest be a useful, validatable source for the planning constraints?): 'no.' Reasoned decline, NOT hostile this time (he engaged with the questions, no AI-prose complaint). His 'no' is actually consistent with URML's own positioning: the manifest is capability/admissibility, not a planner's constraint model (the same thing URML told ROSPlan/gerardcanal). The pitch over-reached by floating the manifest as a planning-constraint source. declined; no reply (he closed it and is repeatedly low-patience on LAAS repos). LESSON: pitch URML to planners as the consume-trajectory + validate-admissibility layer, never as a source of planning constraints."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move45.md hpp-core body as a GitHub Issue on humanoid-path-planner/hpp-core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Motion planner -> URML declares goal+constraints, validates, consumes trajectory (RFC-0020; Move #26). SOFT-OVERLAP: LAAS-CNRS ecosystem (Pinocchio touched Move #26 wontfix); distinct org/repo/team."
-  notes: "Tier B. BSD-2. Planner; declare-goal/consume-trajectory split. LAAS soft-overlap."
+  next_action: "Declined (nim65s closed #440: split is possible, manifest-as-constraint-source is 'no'). No reply. nim65s (INRIA/LAAS) has now declined THREE URML threads: Pinocchio #2901 (wontfix, AI-prose), Crocoddyl #1505 (wontfix), hpp-core #440 (reasoned). Stop pitching nim65s / LAAS-CNRS motion-planning + dynamics repos. Future planner pitches: lead with consume-trajectory + validate-admissibility, drop any manifest-as-planning-constraint framing."
+  notes: "Tier B. BSD-2. Planner; declare-goal/consume-trajectory split. LAAS soft-overlap -> now a hard avoid (nim65s 3x declined). Decline is reasoned + positioning-consistent, not hostile."
 
 - slug: ros2-ros-bt-py
   rfc: 505
