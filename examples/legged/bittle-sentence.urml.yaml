@@ -1,0 +1,48 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: legged/bittle-sentence
+# Source NL: "Walk forward to the waypoint, then sit on the rest mat."
+#            (see bittle-sentence.en.txt)
+#
+# The Bittle hero demo for RFC-0062 (PetoiCamp/OpenCat-Quadruped-Robot#113,
+# Dr. Rongzhong Li, round-1 + round-2 engagement 2026-05-28 / 2026-05-29).
+# Q6 of the original RFC — "Open to a URML conformance line on OpenCat's
+# README or release notes?" — was gated on URML shipping a working demo
+# link. This file IS that demo's URML program.
+#
+# Core vocabulary only — `move_to` against three declared locations — so it
+# runs hermetically against the mock and adapter-agnostically against the
+# edu-runtime's PetoiAdapter on a real Bittle X. The OpenCat-token mapping
+# lives in the adapter's EduConfig: `start_mat` -> `kbalance`, `waypoint_a`
+# -> `kwkF 5` (walk forward 5 cycles), `rest_mat` -> `ksit`.
+#
+# Profile `educational` is RFC-0011's classroom flywheel: URML scales DOWN
+# to a $299 desktop quadruped without forking the spec. Pass `--no-policy`
+# at validate / execute time because the companion manifest carries
+# `country_of_origin: CN` (Petoi is Shenzhen), which the bundled US-federal
+# default policy (RFC-0004) would reject under Pass 5. Per the
+# universal-language re-anchor (CLAUDE.md 2026-05-16): demos use
+# --no-policy; the language is on stage with compliance one flag away.
+#
+# Validatable end-to-end via the companion manifest:
+#
+#   urml validate bittle-sentence.urml.yaml \
+#     -m bittle-sentence.manifest.yaml --profile educational --no-policy
+#
+# Watch it run on the hermetic mock:
+#
+#   urml execute bittle-sentence.urml.yaml \
+#     -m bittle-sentence.manifest.yaml --profile educational --no-policy
+#
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: start_mat
+    - move_to:
+        location: waypoint_a
+    - move_to:
+        location: rest_mat
