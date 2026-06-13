@@ -244,6 +244,50 @@ def outreach_per_sector(db_path: Path | None = None) -> list[dict]:
         return [dict(r) for r in cur.fetchall()]
 
 
+def outreach_per_topic(
+    limit: int = 40,
+    db_path: Path | None = None,
+) -> list[dict]:
+    """Return `{topic, total, engaged, blockers}` rows from the
+    `repo_topics` + `target_repos` tables, joined to `targets`.
+
+    Topics are the GitHub Topics maintainers assign on each repo's About
+    panel; the source script is `tools/scripts/refresh_repo_topics.py`.
+    Returns an empty list when the topics tables haven't been built yet,
+    so the UI can render an honest "Run refresh_repo_topics.py first"
+    empty-state.
+    """
+    with _connect(db_path) as conn:
+        # Detect whether the topics tables have been built.
+        has_tables = bool(
+            conn.execute(
+                "SELECT 1 FROM sqlite_master "
+                "WHERE type='table' AND name='repo_topics' LIMIT 1"
+            ).fetchone()
+        ) and bool(
+            conn.execute(
+                "SELECT 1 FROM sqlite_master "
+                "WHERE type='table' AND name='target_repos' LIMIT 1"
+            ).fetchone()
+        )
+        if not has_tables:
+            return []
+        cur = conn.execute(
+            f"""SELECT
+                rt.topic                                          AS topic,
+                COUNT(DISTINCT t.wave || ':' || t.slug)           AS total,
+                SUM(CASE WHEN t.response = 'engaged' THEN 1 ELSE 0 END) AS engaged,
+                SUM(CASE WHEN t.response IN ('wontfix','declined') THEN 1 ELSE 0 END) AS blockers
+                FROM repo_topics rt
+                JOIN target_repos tr ON tr.repo_path = rt.repo_path
+                JOIN targets t ON t.wave = tr.wave AND t.slug = tr.slug
+                GROUP BY rt.topic
+                ORDER BY total DESC, topic ASC
+                LIMIT {int(limit)}"""
+        )
+        return [dict(r) for r in cur.fetchall()]
+
+
 def outreach_per_wave(db_path: Path | None = None) -> list[dict]:
     """One row per Move with `{move_num, theme, total, engaged, blockers}`.
 
