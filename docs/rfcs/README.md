@@ -722,6 +722,13 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0539](0539-unified-planning-outreach.md) | Outreach | AIPlan4EU Unified Planning (`aiplan4eu/unified-planning`) integration; Move #48; **closest conceptual language peer** — URML intent ↔ planning problem; Apache-2.0; RFC from the maintainers | Draft | 2026-06-13 |
 | [0540](0540-mtconnect-cppagent-outreach.md) | Outreach | MTConnect (`mtconnect/cppagent`) integration; Move #48; manufacturing-interop **standards body** — equipment state a robot intent conditions on (complements OPC UA); Apache-2.0; RFC from the maintainers | Draft | 2026-06-13 |
 | [0541](0541-auto-apms-outreach.md) | Outreach | AutoAPMS (`AutoAPMS/auto-apms`) integration; Move #48, **completes the wave + the candidate slate**; BT/skill DSL → Layer-3 interop peer (Move #41 framing); Apache-2.0; RFC from the maintainers | Draft | 2026-06-13 |
+| [0542](0542-buzz-outreach.md) | Outreach | Buzz (`buzz-lang/Buzz`) integration; Move #49 **anchor** (swarm/multi-robot/alt-framework wave); swarm programming **language peer** — Buzz coordinates the swarm, URML validates the per-robot intent; no manifest ask; MIT; RFC from the maintainers | Draft | 2026-06-13 |
+| [0543](0543-scafi-outreach.md) | Outreach | ScaFi (`scafi/scafi`) integration; Move #49; Scala aggregate-computing **language peer** — aggregate behavior + per-device validated intent; Apache-2.0; RFC from the maintainers | Draft | 2026-06-13 |
+| [0544](0544-protelis-outreach.md) | Outreach | Protelis (`Protelis/Protelis`) integration; Move #49; field-calculus aggregate **language peer** (cross-citation only); GPL-3.0; RFC from the maintainers | Draft | 2026-06-13 |
+| [0545](0545-scrimmage-outreach.md) | Outreach | SCRIMMAGE (`gtri/scrimmage`) integration; Move #49; multi-agent simulator → scenario maps onto URML fleet roster + deconfliction (RFC-0286/0291); LGPL-3.0; RFC from the maintainers | Draft | 2026-06-13 |
+| [0546](0546-lsts-outreach.md) | Outreach | LSTS toolchain (`LSTS/dune` + `LSTS/neptus`, folded) integration; Move #49; non-ROS UV stack → DUNE substrate + Neptus fleet C2 (RFC-0286/0291); EUPL-1.1 **non-commercial**, no code reuse; RFC from the maintainers | Draft | 2026-06-13 |
+| [0547](0547-openrtm-aist-outreach.md) | Outreach | OpenRTM-aist (`OpenRTM/OpenRTM-aist`) integration; Move #49; OMG RTC middleware → **alternate non-ROS substrate**, RTC ports toward a manifest; LGPL-2.1; RFC from the maintainers | Draft | 2026-06-13 |
+| [0548](0548-robocomp-outreach.md) | Outreach | RoboComp (`robocomp/robocomp`) integration; Move #49, **completes the wave**; component framework → alternate non-ROS substrate (cross-citation only); GPL-3.0; RFC from the maintainers | Draft | 2026-06-13 |
 
 ## Lifecycle states
 

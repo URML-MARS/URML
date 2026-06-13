@@ -1,0 +1,149 @@
+# Move #49 outreach ledger. One row per target.
+#
+# Move #49: **the swarm / multi-robot / alternative-framework wave** — lane A
+# of the 2026-06-13 second candidate slate. Swarm/aggregate-computing LANGUAGE
+# peers + multi-agent runtimes + non-ROS frameworks. 7 RFCs (0542-0548);
+# LSTS DUNE + Neptus folded into one org-anchor row (0546). Three framings:
+#   - language-to-language PEER (no manifest ask): Buzz/scafi/Protelis express
+#     swarm/aggregate collective behavior; URML validates the per-robot intent
+#     + addresses many via the fleet roster (RFC-0286/0291).
+#   - multi-agent runtime -> URML fleet (RFC-0286/0291): SCRIMMAGE scenario,
+#     LSTS fleet C2.
+#   - alternate non-ROS substrate: OpenRTM-aist (RTC middleware), RoboComp;
+#     also LSTS DUNE (onboard runtime).
+# Outreach = request-for-comment; no ask to adopt, host, or maintain anything.
+#
+# Targets / framing:
+#   - buzz (0542, anchor, US/CA): swarm programming LANGUAGE -> clearest
+#     language-to-language peer; no manifest ask.
+#   - scafi (0543, IT): Scala aggregate computing -> aggregate-language peer.
+#   - protelis (0544, IT/US): field-calculus aggregate language -> language
+#     peer (GPL-3.0, cross-citation only).
+#   - scrimmage (0545, US): multi-agent simulator -> scenario maps onto URML
+#     roster + deconfliction (RFC-0286/0291).
+#   - lsts (0546, PT, anchor-fold DUNE+Neptus): non-ROS UV stack -> DUNE
+#     substrate + Neptus fleet C2 (EUPL-1.1 NON-COMMERCIAL, no code reuse).
+#   - openrtm-aist (0547, JP/AIST): OMG RTC middleware -> alternate non-ROS
+#     substrate; RTC ports toward a manifest.
+#   - robocomp (0548, ES): component framework -> alternate non-ROS substrate
+#     (GPL-3.0, cross-citation only). Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move49.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (state the repo's actual license, never ask; GPL/LGPL/EUPL-NC: cross-citation
+# only, no code reuse). VIBE.md disclosure up front. Funnel 532 -> 539 on
+# posting (7 targets, LSTS counts as one).
+
+- slug: buzz
+  rfc: 542
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "buzz-lang/Buzz (MIT, ~317 stars, Issues enabled, not archived, active. Swarm programming language. NESTLab @ WPI + Polytechnique Montreal."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md buzz body as a GitHub Issue on buzz-lang/Buzz under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Language-to-language peer framing, no manifest ask. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: scafi
+  rfc: 543
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "scafi/scafi (Apache-2.0, ~36 stars, Issues enabled, not archived, active. Scala aggregate-computing framework. University of Bologna."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IT
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md scafi body as a GitHub Issue on scafi/scafi under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Aggregate-language peer framing, no manifest ask. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: protelis
+  rfc: 544
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Protelis/Protelis (GPL-3.0-or-later, ~22 stars, Issues enabled, not archived, active. Java field-calculus aggregate-programming language. University of Bologna / Raytheon BBN lineage."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IT
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md protelis body as a GitHub Issue on Protelis/Protelis under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Field-calculus language peer; GPL-3.0 cross-citation only, no code reuse, state license never ask. VIBE.md disclosure up front."
+
+- slug: scrimmage
+  rfc: 545
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "gtri/scrimmage (LGPL-3.0, ~178 stars, Issues enabled, not archived, active. Multi-agent robotics simulator for large heterogeneous scenarios. Georgia Tech Research Institute."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md scrimmage body as a GitHub Issue on gtri/scrimmage under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Scenario -> URML roster + deconfliction (RFC-0286/0291). LGPL-3.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: lsts
+  rfc: 546
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "LSTS/dune (+ LSTS/neptus, folded). Modified EUPL-1.1 (non-commercial). DUNE ~133 stars, Neptus ~91; both Issues enabled, not archived, active. Non-ROS networked-UV stack: DUNE onboard runtime + Neptus fleet C2. University of Porto, PT."
+  last_touch: ""
+  response: none
+  tier: A
+  country: PT
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md lsts body as a single GitHub Issue on LSTS/dune (referencing Neptus) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. DUNE substrate + Neptus fleet C2 (RFC-0286/0291). Modified EUPL-1.1 NON-COMMERCIAL: state it, no code reuse, never ask. VIBE.md disclosure up front."
+
+- slug: openrtm-aist
+  rfc: 547
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "OpenRTM/OpenRTM-aist (LGPL-2.1, ~25 stars, Issues enabled, not archived, active. RT-Middleware; OMG Robotic Technology Component (RTC) standard implementation. AIST, Japan."
+  last_touch: ""
+  response: none
+  tier: A
+  country: JP
+  sector: middleware
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md openrtm-aist body as a GitHub Issue on OpenRTM/OpenRTM-aist under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Alternate non-ROS substrate; RTC ports toward a manifest. LGPL-2.1: state it, never ask. VIBE.md disclosure up front."
+
+- slug: robocomp
+  rfc: 548
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "robocomp/robocomp (GPL-3.0, ~128 stars, Issues enabled, not archived, active. Open robotics component framework. University of Extremadura, ES."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move49.md robocomp body as a GitHub Issue on robocomp/robocomp under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Alternate non-ROS substrate; component interfaces toward a manifest. GPL-3.0 cross-citation only, no code reuse, state license never ask. VIBE.md disclosure up front. Completes Move #49."
