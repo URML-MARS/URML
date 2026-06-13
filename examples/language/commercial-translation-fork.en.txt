@@ -1,0 +1,24 @@
+Listen for a command in any language, then confirm.
+
+This example is the payoff of the translation-licensing stack. NLLB-200 covers
+200 languages, more than any open model, but its weights are CC-BY-NC: a
+commercial deployment cannot use them. Before RFC-0304 a commercial robot that
+wanted that breadth hit a dead end at validation.
+
+This manifest is a commercial (production) deployment. It declares NLLB as the
+primary translation engine for breadth, and a commercial-eligible alternative:
+a permissive open LLM (Qwen, Apache-2.0), the path the NLLB-200 maintainer
+recommended. The validator turns RFC-0268's hard failure into a fork: it
+accepts the manifest and records (informationally) that the commercial
+deployment must use the declared permissive alternative.
+
+Run it under the default policy:
+
+  urml validate commercial-translation-fork.urml.yaml \
+    -m commercial-translation-fork.manifest.yaml --profile home
+
+Expected: PASSES, with capability.commercial_gate_satisfied_by_alternative
+naming Qwen. Delete the translation_alternatives block and re-run: the same
+commercial deployment is now refused (policy.commercial_use_gate_violated),
+because the dead end is back. The license names the constraint; the declared
+alternative is the way through.

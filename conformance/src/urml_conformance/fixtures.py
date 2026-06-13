@@ -83,6 +83,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "provenance_hbom_vendor_of_vendor": _VALIDATOR_FIXTURES
     / "manifests"
     / "provenance_hbom_vendor_of_vendor.yaml",
+    # RFC-0304: commercial-eligible translation alternatives.
+    "translation_nllb_no_alt": _VALIDATOR_FIXTURES / "manifests" / "translation_nllb_no_alt.yaml",
+    "translation_nllb_permissive_alt": _VALIDATOR_FIXTURES / "manifests" / "translation_nllb_permissive_alt.yaml",
+    "translation_open_llm_primary": _VALIDATOR_FIXTURES / "manifests" / "translation_open_llm_primary.yaml",
     # RFC-0262: license-boundary declarations.
     "licensing_clean": _VALIDATOR_FIXTURES / "manifests" / "licensing_clean.yaml",
     "licensing_vendored_gpl": _VALIDATOR_FIXTURES / "manifests" / "licensing_vendored_gpl.yaml",

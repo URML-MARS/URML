@@ -1,0 +1,18 @@
+# Fixture (RFC-0304 / RFC-0268): a COMMERCIAL deployment whose primary
+# translation substrate is NLLB-200 (CC-BY-NC) with no permissive alternative.
+# Refused under policy: the commercial dead-end RFC-0304 exists to open. Test-only.
+manifest_version: "0.1"
+robot_id: translation_nllb_no_alt
+description: Commercial deployment, gated NLLB primary, no commercial-eligible alternative.
+frames: [{ name: map, parent: null }]
+declared_locations: [{ name: kitchen, pose: { x: 3.2, y: 1.0 }, frame: map }]
+mobility: { drive_type: differential, max_velocity: 0.46 }
+deployment: { commercial_use: true, deployment_class: production }
+language:
+  translation_engine_class: nllb
+licensing:
+  components:
+    - name: nllb_200
+      license: cc_by_nc_4_0
+      boundary: cross_citation
+      commercial_use_gate: true

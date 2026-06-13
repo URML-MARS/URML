@@ -1511,6 +1511,38 @@ def _check_deployment_consistency(manifest: CapabilityManifest) -> list[Validati
     return out
 
 
+def _permissive_translation_alternative(manifest: CapabilityManifest):
+    """RFC-0304: the first declared commercial-eligible translation alternative, if any.
+
+    Returns the `TranslationAlternative` a commercial deployment may fall back to
+    (Qwen / Gemma open LLM, a permissive opus_mt, ...), or None. The
+    `commercial_eligible` flag is a declaration (RFC-0268 stance); the deployer
+    pairs it with a permissive `licensing.components[]` entry.
+    """
+    lang = manifest.language
+    if lang is None:
+        return None
+    for alt in lang.translation_alternatives:
+        if alt.commercial_eligible:
+            return alt
+    return None
+
+
+def _is_translation_substrate(comp, manifest: CapabilityManifest) -> bool:
+    """RFC-0304: is this gated component the (CC-BY-NC) translation substrate?
+
+    Scoped to the case RFC-0304 is built around: a declared translation engine
+    whose weights are CC-BY-NC (NLLB-200). A permissive translation alternative
+    excuses this gate; it does not excuse an unrelated gated component.
+    """
+    lang = manifest.language
+    return (
+        lang is not None
+        and lang.translation_engine_class is not None
+        and comp.license == "cc_by_nc_4_0"
+    )
+
+
 def _check_commercial_gate(
     manifest: CapabilityManifest, policy_active: bool
 ) -> list[ValidationError]:
@@ -1522,12 +1554,48 @@ def _check_commercial_gate(
     that is a violation. Under a compliance policy it is an error; in default
     mode it is a soft advisory naming the component. A `commercial_use: false`
     deployment satisfies the gate.
+
+    RFC-0304: a gated *translation* substrate (a CC-BY-NC translation engine,
+    the NLLB case) is excused when the deployment declares a commercial-eligible
+    `language.translation_alternatives` entry. The hard failure becomes a fork:
+    the validator records (informational) that the commercial deployment must
+    use the declared permissive alternative, instead of refusing the manifest.
     """
     out: list[ValidationError] = []
     if not _deployment_is_commercial(manifest) or manifest.licensing is None:
         return out
+
+    # RFC-0304: a declared commercial-eligible translation alternative satisfies
+    # the gate for a CC-BY-NC translation substrate (the NLLB-plus-permissive-LLM
+    # path the NLLB maintainer recommended on RFC-0167).
+    permissive_alt = _permissive_translation_alternative(manifest)
+
     for comp in manifest.licensing.components:
         if not comp.commercial_use_gate:
+            continue
+        if permissive_alt is not None and _is_translation_substrate(comp, manifest):
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_COMMERCIAL_GATE_SATISFIED_BY_ALTERNATIVE,
+                    severity="warning",
+                    primitive=None,
+                    path=["<manifest>", "language", "translation_alternatives"],
+                    field="commercial_eligible",
+                    message=(
+                        f"commercial deployment's gated translation substrate {comp.name!r} "
+                        f"({comp.license!r}) is satisfied by the declared commercial-eligible "
+                        f"alternative {permissive_alt.engine_class!r}"
+                        + (f" ({permissive_alt.engine_class_note})" if permissive_alt.engine_class_note else "")
+                        + "; the commercial deployment must use that alternative."
+                    ),
+                    detail={
+                        "gated_component": comp.name,
+                        "gated_license": comp.license,
+                        "alternative_engine_class": permissive_alt.engine_class,
+                        "alternative_note": permissive_alt.engine_class_note,
+                    },
+                )
+            )
             continue
         if policy_active:
             out.append(

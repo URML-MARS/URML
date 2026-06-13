@@ -2,9 +2,9 @@
 rfc: 0304
 title: language.translation_alternatives — declaring a commercial-eligible permissive translation substrate
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-06-01
-updated: 2026-06-01
+updated: 2026-06-13
 supersedes: —
 superseded-by: —
 ---
@@ -170,6 +170,49 @@ Single atomic PR, sequenced after (or batched with) RFC-0260 / RFC-0262 / RFC-02
 ## How to respond
 
 Spec RFC. PR thread.
+
+## Shipped (Draft → Implemented, 2026-06-13)
+
+Landed as the additive `language` extension proposed, on top of its three
+now-merged prerequisites (RFC-0260 the `language` block + enum, RFC-0262 the
+`commercial_use_gate` field, RFC-0268 the `deployment.commercial_use` flag and
+the gate it enforces). It **closes the loop with the NLLB-200 maintainer**
+(RFC-0167, @avidale): the commercial dead end becomes the permissive-open-LLM
+fork he recommended.
+
+- **Schema** (`manifest.py`): `TranslationAlternative` (`engine_class` incl the
+  new `open_llm`, `engine_class_note`, required `commercial_eligible`,
+  source/target languages); `Language.translation_alternatives`; `open_llm`
+  added to `translation_engine_class`; `open_llm` / `custom` require a note (as
+  primary or alternative). Spec: `spec/layer-1-hal/v0.2.0.md` §2.18.
+- **Validator**: the commercial-gate **fork** is implemented inside RFC-0268's
+  `_check_commercial_gate`. When a commercial deployment's gated CC-BY-NC
+  translation substrate would trip the gate and a `commercial_eligible: true`
+  alternative is declared, the validator accepts and emits
+  `capability.commercial_gate_satisfied_by_alternative` (informational, naming
+  the alternative) instead of `policy.commercial_use_gate_violated`. Scoped to
+  the translation substrate (a CC-BY-NC license + a declared translation
+  engine); an unrelated gated component is not excused.
+- **Conformance**: `conformance/fixtures/translation/` (nllb-no-alternative
+  rejected; nllb-plus-permissive-alternative accepted; open_llm-primary
+  accepted) + three manifests.
+- **Example**: `examples/language/commercial-translation-fork` — a commercial
+  deployment keeping NLLB's 200-language breadth via a declared Qwen
+  alternative; validates under the default policy (delete the alternatives
+  block and it is refused).
+- **Tests**: `reference/validator/tests/test_translation_alternatives.py` (11
+  cases).
+
+Scoping notes. (1) The RFC's self-consistency cross-check (rule 4: an
+alternative declaring `commercial_eligible: true` while its matching
+`licensing.components[]` entry is gated) is **deferred**: the schema does not
+model an explicit alternative ↔ licensing-component name link, so the
+contradiction cannot be checked precisely without inventing one. The
+`commercial_eligible` flag follows RFC-0268's declaration-not-proof stance.
+(2) Ordered fallback chains and per-language routing stay future work
+(Unresolved §1, §2). The "translation substrate" the fork excuses is identified
+by the canonical signature (a declared translation engine + a `cc_by_nc_4_0`
+licensing component, the NLLB case).
 
 ## Self-review (Phase 0)
 

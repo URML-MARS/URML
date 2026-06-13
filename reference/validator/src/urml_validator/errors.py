@@ -118,6 +118,11 @@ class ErrorCode(StrEnum):
     # policy) is the enforced error.
     CAPABILITY_COMMERCIAL_USE_CLASS_INCONSISTENT = "capability.commercial_use_class_inconsistent"
     CAPABILITY_COMMERCIAL_GATE_ADVISORY = "capability.commercial_gate_advisory"
+    # RFC-0304: a commercial deployment's gated translation substrate is excused
+    # because a commercial-eligible translation_alternatives entry is declared.
+    # Informational (warning): the gate is satisfied, not violated; the message
+    # names the permissive alternative the commercial deployment must use.
+    CAPABILITY_COMMERCIAL_GATE_SATISFIED_BY_ALTERNATIVE = "capability.commercial_gate_satisfied_by_alternative"
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"

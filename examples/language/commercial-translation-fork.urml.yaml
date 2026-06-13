@@ -1,0 +1,25 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: language/commercial-translation-fork (RFC-0304)
+# Source NL: "Listen for a command in any language, then confirm."
+#
+# The payoff of the translation-licensing stack: a COMMERCIAL deployment keeps
+# NLLB-200's 200-language breadth (CC-BY-NC) by declaring a commercial-eligible
+# permissive open-LLM alternative (Qwen). RFC-0268's hard commercial-use-gate
+# failure becomes a fork (RFC-0304).
+#
+#   urml validate commercial-translation-fork.urml.yaml \
+#     -m commercial-translation-fork.manifest.yaml --profile home
+#   urml execute  commercial-translation-fork.urml.yaml \
+#     -m commercial-translation-fork.manifest.yaml --profile home --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - listen:
+        prompt: "What can I do for you?"
+        store_as: command
+    - speak:
+        utterance: "Understood."
