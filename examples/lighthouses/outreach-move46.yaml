@@ -1,0 +1,178 @@
+# Move #46 outreach ledger. One row per target.
+#
+# Move #46: **the AI / robot-learning wave** — lane 3 of the 2026-06-13 free-
+# GitHub candidate search. The RFC-0383 LearnedPolicy thesis: a trained policy
+# (or the benchmark/eval it was measured in) declares the capability envelope
+# it was trained/evaluated in, so URML validates that a deployment stays inside
+# it; and URML wraps a learned policy in typed intent + a validated envelope
+# (decide-then-do). One stratum below this lane is the general-purpose RL-
+# framework wave (Move #43); above it the VLA/foundation-model waves (Moves
+# #11/#38). Outreach = request-for-comment; no ask to adopt.
+#
+# 8 RFCs (0510-0517). Sub-types:
+#   - Learning frameworks: RoboHive (0510, anchor), robo-gym (0514, real-hw envs).
+#   - Eval / benchmarks: SimplerEnv (0511), CALVIN (0512, language-conditioned =
+#     URML's headline seam), RoboEval (0513, bimanual ties RFC-0010),
+#     openrlbenchmark (0517, RL metrics; one layer from deployment).
+#   - Inference runtimes (perception/policy executes; URML gates above):
+#     roboflow/inference (0515, edge CV), executorch (0516, on-device PyTorch).
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move46.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (roboflow core Apache-2.0; bundled model dirs carry own licenses, untouched).
+# VIBE.md disclosure up front. Funnel 499 -> 507 on posting. NOTE: Meta repos
+# avoided (over-contacted); Webots dropped (already touched RFC-0234).
+
+- slug: robohive
+  rfc: 510
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "vikashplus/robohive (Apache-2.0, ~630 stars, Issues + Discussions enabled, not archived, active 2026-06). Unified robot-learning framework (envs + teleop + policy training). Vikash Kumar (ex-FAIR/CMU/UW), US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md robohive body as a GitHub Issue on vikashplus/robohive under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ANCHOR. Unified learning framework -> envelope export (RFC-0383) + validated-deployment gate. Ask: export spaces+domain as LearnedPolicy; gate between policy and robot."
+  notes: "Anchor. Apache-2.0. Unified robot-learning framework."
+
+- slug: simplerenv
+  rfc: 511
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "simpler-env/SimplerEnv (MIT, ~1.1k stars, Issues enabled, not archived, active). Sim envs to reproduce real-robot manipulation policy evals (RT-1/Octo; Google Robot + WidowX/Bridge). UCSD/Stanford/Berkeley/Google, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md simplerenv body as a GitHub Issue on simpler-env/SimplerEnv under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Eval harness -> the eval setup (embodiment + spaces + task dist) as a LearnedPolicy envelope (RFC-0383); validate deployment matches the eval setup."
+  notes: "MIT. Eval/benchmark harness; envelope-from-eval-setup framing."
+
+- slug: calvin
+  rfc: 512
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "mees/calvin (MIT, ~940 stars, Issues enabled, not archived, active 2025-09). Benchmark for language-conditioned long-horizon manipulation policy learning. University of Freiburg, DE."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md calvin body as a GitHub Issue on mees/calvin under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Language-conditioned = URML's headline NL->typed-intent seam; long-horizon task = URML composition; CALVIN policy -> learned-task envelope (RFC-0383). Strong thematic fit."
+  notes: "MIT. Language-conditioned manipulation benchmark; closest to URML's NL seam."
+
+- slug: roboeval
+  rfc: 513
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Robo-Eval/RoboEval (Apache-2.0, ~60 stars, Issues enabled, not archived, fresh/active 2026-06). Structured bimanual-manipulation eval benchmark, 3000+ demos. Univ. of Washington + Allen Institute for AI, US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md roboeval body as a GitHub Issue on Robo-Eval/RoboEval under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Per-skill bimanual diagnostics -> URML manipulation.arms + bimanual primitive (RFC-0010); scored policy -> LearnedPolicy envelope (RFC-0383)."
+  notes: "Tier B. Apache-2.0. Bimanual eval; fresh repo. Ties RFC-0010."
+
+- slug: robo-gym
+  rfc: 514
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jr-robotics/robo-gym (MIT, ~480 stars, Issues + Discussions enabled, not archived, active 2025-07). Toolkit for distributed deep RL on real + simulated robots (UR, MiR envs). JOANNEUM RESEARCH, AT."
+  last_touch: ""
+  response: none
+  tier: A
+  country: AT
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md robo-gym body as a GitHub Issue on jr-robotics/robo-gym under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Distributed RL on real+sim robots -> env-to-envelope (RFC-0383) + the sim-to-real validated-deployment gate (real UR/MiR make the boundary concrete)."
+  notes: "MIT. Distributed RL incl. real hardware; concrete sim-to-real deployment boundary."
+
+- slug: roboflow-inference
+  rfc: 515
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "roboflow/inference (Apache-2.0 core, ~2.3k stars, Issues enabled, not archived, active 2026-06). Turn any computer/edge device into a CV inference server (detection/segmentation/VLM). Roboflow, US. (Model subdirs carry own licenses.)"
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: perception
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md roboflow-inference body as a GitHub Issue on roboflow/inference under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Edge CV inference -> the perception-to-action handoff URML gates (perception result conditions a typed intent, action validated before dispatch); served classes -> perception manifest."
+  notes: "Apache-2.0 core. Edge perception inference; perception-to-action gate framing. No license-ask (core Apache; model dirs untouched)."
+
+- slug: executorch
+  rfc: 516
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "pytorch/executorch (BSD, ~4.7k stars, Issues + Discussions enabled, not archived, very active 2026-06). On-device PyTorch inference for mobile/embedded/edge. PyTorch Foundation (Linux Foundation), US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md executorch body as a GitHub Issue on pytorch/executorch under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. On-device inference runtime -> ExecuTorch runs the policy, URML validates the action before dispatch; LearnedPolicy envelope travels with the on-device model (RFC-0383). RFC asks the altitude question."
+  notes: "BSD. PyTorch Foundation on-device inference; URML gates above the runtime. Ties RFC-0021 / MCU-substrate edge work."
+
+- slug: openrlbenchmark
+  rfc: 517
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "openrlbenchmark/openrlbenchmark (MIT, ~260 stars, Issues enabled, not archived, active 2026-03). Tooling to track/compare RL experiment metrics across libraries. Community/independent (CleanRL-adjacent), US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move46.md openrlbenchmark body as a GitHub Issue on openrlbenchmark/openrlbenchmark under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. COMPLETES wave. RL run metadata (env/spaces/domain) -> a LearnedPolicy deployment envelope (RFC-0383); shared 'policy defined by its declared setup' discipline. One layer from deployment (lighter touch)."
+  notes: "Tier B. MIT. RL metrics tooling; tracks runs from the Move #43 RL libs (cleanrl etc.). Lightest-touch / most-removed-from-deployment of the wave."
