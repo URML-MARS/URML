@@ -28,122 +28,133 @@
 #   - robocomp (0548, ES): component framework -> alternate non-ROS substrate
 #     (GPL-3.0, cross-citation only). Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move49.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (state the repo's actual license, never ask; GPL/LGPL/EUPL-NC: cross-citation
-# only, no code reuse). VIBE.md disclosure up front. Funnel 532 -> 539 on
-# posting (7 targets, LSTS counts as one).
+# POSTED 2026-06-13 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (each repo's actual license stated, never asked; GPL/LGPL/EUPL-NC:
+# cross-citation only, no code reuse). VIBE.md disclosure up front. Funnel
+# 532 -> 539. All rows response: none, awaiting maintainer reply.
 
 - slug: buzz
   rfc: 542
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/buzz-lang/Buzz/issues/120"
   channel: github_issue
   contact: "buzz-lang/Buzz (MIT, ~317 stars, Issues enabled, not archived, active. Swarm programming language. NESTLab @ WPI + Polytechnique Montreal."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0542 body (Move #49 anchor) to https://github.com/buzz-lang/Buzz/issues/120 under idoco2003. Language-to-language peer framing, no manifest ask. Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md buzz body as a GitHub Issue on buzz-lang/Buzz under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Language-to-language peer framing, no manifest ask. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as buzz-lang/Buzz#120 on 2026-06-13 under idoco2003."
 
 - slug: scafi
   rfc: 543
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/scafi/scafi/issues/576"
   channel: github_issue
   contact: "scafi/scafi (Apache-2.0, ~36 stars, Issues enabled, not archived, active. Scala aggregate-computing framework. University of Bologna."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: IT
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0543 body to https://github.com/scafi/scafi/issues/576 under idoco2003. Aggregate-language peer framing, no manifest ask. Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md scafi body as a GitHub Issue on scafi/scafi under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Aggregate-language peer framing, no manifest ask. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as scafi/scafi#576 on 2026-06-13 under idoco2003."
 
 - slug: protelis
   rfc: 544
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/Protelis/Protelis/issues/2288"
   channel: github_issue
   contact: "Protelis/Protelis (GPL-3.0-or-later, ~22 stars, Issues enabled, not archived, active. Java field-calculus aggregate-programming language. University of Bologna / Raytheon BBN lineage."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: IT
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0544 body to https://github.com/Protelis/Protelis/issues/2288 under idoco2003. Field-calculus language peer; GPL-3.0 cross-citation only. Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md protelis body as a GitHub Issue on Protelis/Protelis under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Field-calculus language peer; GPL-3.0 cross-citation only, no code reuse, state license never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as Protelis/Protelis#2288 on 2026-06-13 under idoco2003."
 
 - slug: scrimmage
   rfc: 545
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/gtri/scrimmage/issues/645"
   channel: github_issue
   contact: "gtri/scrimmage (LGPL-3.0, ~178 stars, Issues enabled, not archived, active. Multi-agent robotics simulator for large heterogeneous scenarios. Georgia Tech Research Institute."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0545 body to https://github.com/gtri/scrimmage/issues/645 under idoco2003. Scenario -> URML roster + deconfliction (RFC-0286/0291). Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md scrimmage body as a GitHub Issue on gtri/scrimmage under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Scenario -> URML roster + deconfliction (RFC-0286/0291). LGPL-3.0: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as gtri/scrimmage#645 on 2026-06-13 under idoco2003."
 
 - slug: lsts
   rfc: 546
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/LSTS/dune/issues/292"
   channel: github_issue
   contact: "LSTS/dune (+ LSTS/neptus, folded). Modified EUPL-1.1 (non-commercial). DUNE ~133 stars, Neptus ~91; both Issues enabled, not archived, active. Non-ROS networked-UV stack: DUNE onboard runtime + Neptus fleet C2. University of Porto, PT."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: PT
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0546 body (folded DUNE+Neptus) to https://github.com/LSTS/dune/issues/292 under idoco2003. DUNE substrate + Neptus fleet C2; modified EUPL-1.1 non-commercial, no code reuse. Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md lsts body as a single GitHub Issue on LSTS/dune (referencing Neptus) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. DUNE substrate + Neptus fleet C2 (RFC-0286/0291). Modified EUPL-1.1 NON-COMMERCIAL: state it, no code reuse, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as LSTS/dune#292 on 2026-06-13 under idoco2003 (references Neptus)."
 
 - slug: openrtm-aist
   rfc: 547
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/OpenRTM/OpenRTM-aist/issues/1227"
   channel: github_issue
   contact: "OpenRTM/OpenRTM-aist (LGPL-2.1, ~25 stars, Issues enabled, not archived, active. RT-Middleware; OMG Robotic Technology Component (RTC) standard implementation. AIST, Japan."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: JP
   sector: middleware
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0547 body to https://github.com/OpenRTM/OpenRTM-aist/issues/1227 under idoco2003. Alternate non-ROS substrate; RTC ports toward a manifest. Awaiting response."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md openrtm-aist body as a GitHub Issue on OpenRTM/OpenRTM-aist under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Alternate non-ROS substrate; RTC ports toward a manifest. LGPL-2.1: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as OpenRTM/OpenRTM-aist#1227 on 2026-06-13 under idoco2003."
 
 - slug: robocomp
   rfc: 548
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/robocomp/robocomp/issues/395"
   channel: github_issue
   contact: "robocomp/robocomp (GPL-3.0, ~128 stars, Issues enabled, not archived, active. Open robotics component framework. University of Extremadura, ES."
-  last_touch: ""
+  last_touch: "2026-06-13"
   response: none
   tier: A
   country: ES
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "Posted the RFC-0548 body to https://github.com/robocomp/robocomp/issues/395 under idoco2003. Alternate non-ROS substrate; component interfaces toward a manifest; GPL-3.0 cross-citation only. Awaiting response. Completes Move #49."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move49.md robocomp body as a GitHub Issue on robocomp/robocomp under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Alternate non-ROS substrate; component interfaces toward a manifest. GPL-3.0 cross-citation only, no code reuse, state license never ask. VIBE.md disclosure up front. Completes Move #49."
+      text: "DONE — posted as robocomp/robocomp#395 on 2026-06-13 under idoco2003."
