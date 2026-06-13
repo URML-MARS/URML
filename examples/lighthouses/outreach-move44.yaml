@@ -1,0 +1,225 @@
+# Move #44 outreach ledger. One row per target.
+#
+# Move #44: **the open robot-platforms wave** — the highest-fit lane of the
+# 2026-06-13 free-GitHub candidate search (the /goal: 50 new candidates). Open
+# robot platforms and hardware SDKs where URML sits ABOVE the platform's own
+# control stack as the validated NL -> typed-intent gate: an intent becomes a
+# typed primitive, validated against the platform's declared capability manifest
+# + a safety envelope, then dispatched to the platform's existing API / ROS 2
+# stack (the decide-then-do split). Outreach = request-for-comment proposing a
+# capability-manifest mapping + optional adapter; no ask to adopt.
+#
+# 10 RFCs (0491-0500) for 12 candidate platforms (Source Robotics's two arms,
+# PAROL6 + Faze4, are folded into one org-anchor RFC per the no-carpet-bomb
+# rule). DROPPED at draft time: ihmcrobotics/ihmc-open-robotics-software — no
+# LICENSE file (unlicensed repo; its whole-body angle is covered by upkie /
+# the-bimo / zeroth-bot here). Surfaces re-verified 2026-06-13 (none archived,
+# all Issues enabled).
+#
+# Per-target URML hooks: openarm (anchor) + Source Robotics arms -> manipulation
+# (RFC-0010 bimanual / RFC-0013 pick-place); upkie / BotBrain / the-bimo /
+# zeroth-bot / quadruped / hexapod -> whole_body legged structure (RFC-0384) +
+# legged drive_type; the-bimo / zeroth-bot also -> LearnedPolicy sim2real
+# envelope (RFC-0383); linorobot2 / magician -> the move_to / pick-place NL
+# front door above a ROS 2 stack; magician at the educational tier (RFC-0011).
+#
+# SOFT FLAG: upkie's lead maintainer's solver libs (pink/mink) were touched in
+# Move #27; the upkie platform/org itself is net-new, so this is a distinct
+# platform RFC (conscious call).
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post the posts-move44.md bodies under
+# idoco2003 (all GitHub Issues), set sent_at / posted_url / last_touch, add a
+# posted comment, flip claude_directives to done, refresh outreach.db. No
+# license-ask anywhere (verify the LICENSE and state it if needed; never ask).
+# VIBE.md disclosure up front. Funnel 480 -> 490 on posting.
+
+- slug: openarm
+  rfc: 491
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "enactic/openarm (Apache-2.0, ~2.6k stars, Issues enabled, not archived, very active 2026-06). Fully open bimanual/single arm for contact-rich physical-AI research. Enactic, Inc. JP."
+  last_touch: ""
+  response: none
+  tier: A
+  country: JP
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md openarm body as a GitHub Issue on enactic/openarm under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. ANCHOR. Bimanual arm -> RFC-0010 manipulation.arms + bimanual primitive; single-arm = one declared arm. Ask: does the dual-arm manifest mapping fit; is a validated-intent gate above the SDK interesting."
+  notes: "Anchor, highest-fit platform. Apache-2.0. Strongest pick of the lane."
+
+- slug: upkie
+  rfc: 492
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "upkie/upkie (Apache-2.0, ~370 stars, Issues enabled, not archived, active 2026-06). Open-HW/SW wheeled-biped balancing robot (Python/C++ on RPi). Inria/Paris lineage, FR."
+  last_touch: ""
+  response: none
+  tier: A
+  country: FR
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md upkie body as a GitHub Issue on upkie/upkie under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Wheeled-biped -> mobility + whole_body balance envelope (RFC-0384). SOFT-FLAG: maintainer's pink/mink touched Move #27; platform/org is net-new (distinct RFC)."
+  notes: "Apache-2.0. Wheeled-biped balancing platform."
+
+- slug: linorobot2
+  rfc: 493
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "linorobot/linorobot2 (Apache-2.0, ~910 stars, Issues enabled, not archived, active 2026-04). Open ROS 2 stack for 2WD/4WD/Mecanum autonomous mobile bases. SG."
+  last_touch: ""
+  response: none
+  tier: A
+  country: SG
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md linorobot2 body as a GitHub Issue on linorobot/linorobot2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Mobile base -> the move_to NL front door above ROS 2 nav; mobility manifest + named locations. The headline 'one English sentence moves a robot' path."
+  notes: "Apache-2.0. Build-your-own mobile base; strong headline-path fit."
+
+- slug: botbrain
+  rfc: 494
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "botbotrobotics/BotBrain (MIT, ~220 stars, Issues enabled, not archived, active 2026-06). Modular open 'brain' for legged robots: teleop, nav, mapping on ROS 2. BotBot Robotics, BR."
+  last_touch: ""
+  response: none
+  tier: A
+  country: BR
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md botbrain body as a GitHub Issue on botbotrobotics/BotBrain under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Legged-robot brain runtime -> URML validated-intent layer above its nav/teleop; legged drive_type + whole_body (RFC-0384)."
+  notes: "MIT. Robot-brain runtime; URML sits above as the typed gate."
+
+- slug: source-robotics
+  rfc: 495
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Source-Robotics/PAROL-commander-software (GPL-3.0 commander, ~67 stars) + Source-Robotics/Faze4-Robotic-arm (CERN-OHL-S, ~860 stars); both Issues enabled, not archived, active. Open desktop 6-axis arms (PAROL6 cobot + Faze4). HR (Croatia). Org-anchor: ONE RFC for both."
+  last_touch: ""
+  response: none
+  tier: A
+  country: HR
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md source-robotics body as ONE GitHub Issue on Source-Robotics/PAROL-commander-software (referencing Faze4) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Desktop arms -> manipulation pick_from/place_at/grasp vs reach/payload (RFC-0013). ANCHOR-AND-FOLD: one post for the org's two arms (no carpet-bombing). No code reuse proposed (GPL/CERN-OHL); manifest mapping only."
+  notes: "Org covers PAROL6 (GPL-3.0) + Faze4 (CERN-OHL-S). RFC-only outreach, so license is no blocker; state it, never ask."
+
+- slug: the-bimo-project
+  rfc: 496
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "mekion/the-bimo-project (Apache-2.0, ~155 stars, Issues enabled, not archived, active 2026-06). Open bipedal platform: 3D-printable, Python API, Isaac Lab sim2real. ES."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md the-bimo-project body as a GitHub Issue on mekion/the-bimo-project under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Biped -> whole_body (RFC-0384) + Python-API validated-intent gate; Isaac Lab sim2real -> LearnedPolicy training envelope (RFC-0383). Two seams."
+  notes: "Apache-2.0. Biped with clean Python API + sim2real; ties both RFC-0384 and RFC-0383."
+
+- slug: zeroth-bot
+  rfc: 497
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "zeroth-robotics/zeroth-bot (MIT, ~790 stars, Issues enabled, not archived, active). Low-cost open 3D-printed humanoid for sim-to-real + RL. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md zeroth-bot body as a GitHub Issue on zeroth-robotics/zeroth-bot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. 3D-printed humanoid, RL/sim2real -> whole_body (RFC-0384) + LearnedPolicy envelope (RFC-0383). Two seams."
+  notes: "MIT. Low-cost open humanoid; RL/sim2real fit."
+
+- slug: quadruped-ros2-control
+  rfc: 498
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "legubiao/quadruped_ros2_control (Apache-2.0, ~525 stars, Issues enabled, not archived, active 2026-02). ros2_control implementations for quadrupeds incl. sim2real. Maintainer domiciled SG (not CN)."
+  last_touch: ""
+  response: none
+  tier: A
+  country: SG
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md quadruped-ros2-control body as a GitHub Issue on legubiao/quadruped_ros2_control under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Quadruped on ros2_control -> legged drive_type + whole_body (RFC-0384); concrete instance of the RFC-0319 ros2_control HAL seam. Verify maintainer domicile (SG, not CN) holds at post time."
+  notes: "Apache-2.0. Quadruped ros2_control; ties the already-engaged ros2_control seam to a concrete legged platform."
+
+- slug: hexapod-robot-simulator
+  rfc: 499
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "mithi/hexapod-robot-simulator (MIT, ~870 stars, Issues enabled, not archived, active 2026-01). First-principles hexapod kinematics/control (web sim; maintainer's hexapod-irl carries to real hardware). Mithi Sevilla, SG."
+  last_touch: ""
+  response: none
+  tier: B
+  country: SG
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md hexapod-robot-simulator body as a GitHub Issue on mithi/hexapod-robot-simulator under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Hexapod kinematics -> whole_body six-leg structure (RFC-0384) + legged drive_type; gait/pose intent. Note: primarily a sim, maintainer also ships hexapod-irl for real hardware."
+  notes: "Tier B. MIT. Hexapod kinematics; sim + real-hardware fork."
+
+- slug: magician-ros2
+  rfc: 500
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jkaniuka/magician_ros2 (MIT, ~61 stars, Issues enabled, not archived, active 2024). ROS 2 control stack for the Dobot Magician educational manipulator. Jan Kaniuka, PL."
+  last_touch: ""
+  response: none
+  tier: B
+  country: PL
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move44.md magician-ros2 body as a GitHub Issue on jkaniuka/magician_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      status: pending
+  next_action: "Await founder authorization. Educational Dobot Magician arm -> educational profile (RFC-0011) + pick_from/place_at NL front door above ROS 2. The 'one English sentence moves a classroom arm' path."
+  notes: "Tier B. MIT. Educational-tier arm; smallest in the wave but on the edu flywheel."
