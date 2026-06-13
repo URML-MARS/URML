@@ -127,20 +127,22 @@
   posted_url: "https://github.com/FlexBE/flexbe_behavior_engine/issues/30"
   channel: github_issue
   contact: "FlexBE/flexbe_behavior_engine (BSD, ~72 stars, Issues enabled, Discussions OFF, not archived, active — Jazzy/Kilted/Rolling CI). Hierarchical FSM engine with operator-in-the-loop supervision. FlexBE org (Schillinger / Conner). DE (Germany/US academic)."
-  last_touch: "2026-06-12"
-  response: none
+  last_touch: "2026-06-13"
+  response: engaged
   tier: B
   country: DE
   sector: framework-skill
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0474 body to https://github.com/FlexBE/flexbe_behavior_engine/issues/30 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
+    - date: "2026-06-13"
+      text: "David Conner (Associate Professor, Christopher Newport University; directs CHRISLab; FlexBE co-maintainer lineage; DARPA Robotics Challenge Team ViGIR PI) reached back VIA LINKEDIN (the GitHub issue #30 itself still has no comment - engagement is off-platform). His research is literally 'specify system capabilities and compose behavioral control systems for robots' = URML Layer 1 + Layer 3; CHRISLab runs ROS 2 with Turtlebot/Hebi/Kinova/UR3e/drones (direct URML manifest targets). He asked to move to email (david.conner@cnu.edu / robotics@cnu.edu) and asked: (0) is there a white paper/presentation? (1) what FlexBE has, (2) what we sent, (3) collaboration options. RESPONSE PREPARED: a white-paper overview (content delivered for the founder's designed PDF) + a Gmail draft created under greenvh@gmail.com (To: david.conner@cnu.edu, Cc: robotics@cnu.edu) answering all three + putting four collaboration options on the table (FlexBE<->URML worked example / student project on CHRISLab hardware / co-authored workshop paper / teaching use), with grant funding as soft context (not a direct ask). IP-safe framing throughout: integrate/evaluate/teach the EXISTING open standard, upstream code under DCO Apache-2.0, co-authorship not co-invention, URML name + URML-Certified mark reserved; any future grant must keep URML governance independent (legal review flagged). Highest-value academic engagement to date."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md FlexBE body as a GitHub Issue on FlexBE/flexbe_behavior_engine under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Operator-in-the-loop FSM; validate-before-actuate complements human supervision (validation verdict in the operator UI). Tier B. Ask: lower-to-FSM vs state dispatches a primitive; surface verdict before a state runs."
-  notes: "Permissive (BSD). Operator-in-the-loop vertex. No license-ask."
+  next_action: "Engaged (David Conner, CNU/CHRISLab) via LinkedIn->email. Founder to attach the PDF white paper to the greenvh@gmail.com draft and send. Await his pick of seam (URML lowers to a FlexBE state machine vs a FlexBE state dispatches a validated URML primitive) + which collaboration option. Do NOT post on GitHub #30 (he moved it to email). If he picks the worked example, build the FlexBE<->URML integration (needs real ROS 2 FlexBE). Cross-link: same operator-in-the-loop / FSM family; PlanSys2 + ROSPlan are the PDDL-planner cousins (engaged)."
+  notes: "Permissive (BSD). Operator-in-the-loop vertex. No license-ask. Highest-aligned academic inbound: research = URML L1+L3 verbatim; CHRISLab hardware = direct manifest targets. Engagement off-GitHub (LinkedIn/email); GitHub #30 has no comment."
 
 - slug: skiros2
   rfc: 475
