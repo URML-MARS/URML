@@ -175,14 +175,16 @@
   - "https://github.com/anthropics/skills/issues/1189"
   channel: github_discussion_and_issue
   contact: "modelcontextprotocol/specification (David Soria Parra, Justin Spahr-Summers @Anthropic) + anthropics/skills"
-  last_touch: 2026-05-23
+  last_touch: 2026-06-13
   response: none
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-13"
+      text: "modelcontextprotocol/modelcontextprotocol#2780 was closed 2026-06-13 with zero comments, no answer chosen, in the 'Ideas - General' category: a silent triage close on a high-volume (8k-star) firehose repo, not a substantive decline. The sibling thread anthropics/skills#1189 is separate and unchanged. No reply (nothing to respond to). Row stays `none`; if a robot-intent MCP server is ever revisited there, a narrower concrete pitch or the SEP process is the path. MCP-as-server stays a valid integration vector regardless of this triage close."
   claude_directives: []
-  next_action: "wait 14 d (until 2026-06-06); two parallel threads to watch (modelcontextprotocol/modelcontextprotocol#2780 and anthropics/skills#1189); if either gets substantive signal, advance that surface first; if both silent, polite follow-up on whichever has more engagement; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "MCP discussion #2780 silent-triage-closed 2026-06-13 (0 comments). Watch anthropics/skills#1189 (no signal). Don't repost to MCP without a narrower, concrete framing or the SEP route. Row stays none until a substantive signal on either thread."
   notes: "Move #2 RFC; proposal-only (two complementary integration vectors: URML as MCP server with urml_translate / urml_validate / urml_execute tools, AND URML as Agent Skill teaching Claude the URML grammar). Verified surface 2026-05-23: modelcontextprotocol/specification at spec version 2025-11-25, both Discussions and Issues enabled, /seps directory for spec evolution, 8.2k+ stars, created by David Soria Parra and Justin Spahr-Summers. anthropics/skills 139k+ stars, 626 open PRs, 246 open Issues, very active, Apache-2.0 for example skills (mixed for HF-document skills). Open standards documented at modelcontextprotocol.io and agentskills.io. Provider-neutrality preserved: URML's reference/llm-bridge/ stays multi-provider first-class per the Core Commitment."
 - slug: anymal
   rfc: 49
