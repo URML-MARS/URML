@@ -220,3 +220,23 @@
       status: done
   next_action: "Await founder authorization. COMPLETES wave. Geometric collision/clearance query URML's safety envelope declares against (RFC-0291): 'URML declares clearances, fcl checks them.' RFC asks if collision-lib is the right altitude vs a planner/MoveIt layer."
   notes: "BSD-3. Collision/distance library; downstream of URML's declared clearances. Indirect altitude — RFC asks the altitude question."
+
+- slug: legubiao-quadruped-ros2-control
+  rfc: 518
+  sent_at: "2026-06-13"
+  posted_url: "https://github.com/legubiao/quadruped_ros2_control/issues/65"
+  channel: github_issue
+  contact: "legubiao/quadruped_ros2_control (open ROS 2 control stack for quadrupeds; exposes the quadruped as an omnidirectional velocity-controlled base, with leg actuation / CoM-stability / MPC-RL motion generation encapsulated internally and not exposed at the public interface). Maintainer legubiao. Origin uncertain (individual OSS dev); community open-source, not a vendor."
+  last_touch: "2026-06-13"
+  response: engaged
+  tier: B
+  country: INTL
+  sector: substrate-runtime
+  comments:
+    - date: "2026-06-13"
+      text: "Ad-hoc founder-posted outreach (no wave Outreach RFC); tracked here retroactively. legubiao (maintainer) gave a substantive, constructive reply. The stack abstracts the quadruped as an omnidirectional base at the public interface (upper layers send Twist; leg actuation / CoM / MPC-RL are internal, not exposed). (1) The whole_body CoM/support-polygon manifest (RFC-0384) is the WRONG altitude here since those internals are not exposed; the right manifest is base-level bounds: max linear+angular velocity, acceleration limits, terrain (slope, obstacle height), payload. (2) The validated-intent layer has practical utility: controllers lack unified declarative capability validation, so invalid velocity commands fail silently or destabilise; lowest-effort integration is an intermediary URML node that validates intent against the base manifest then emits Twist, with NO core ros2_control change. 'Open to further discussion.'"
+    - date: "2026-06-13"
+      text: "SHIPPED RFC-0518 in response: base-level mobility bounds (max_angular_velocity, max_linear_acceleration, max_angular_acceleration, max_traversable_slope_deg, max_obstacle_height_m) on the manifest, exactly the boundaries he named, plus a terrain-not-applicable-to-aerial coherence check. Built examples/mobile-base/ = the intermediary node he proposed (validate base intent -> emit Twist, byte-asserted). PR #417. Replied with both links + asked whether the bound set matches what the controllers expose (jerk? per-axis velocity? footprint?) and whether the intermediary-node shape is the right seam."
+  claude_directives: []
+  next_action: "Engaged (legubiao). Reply posted 2026-06-13 + RFC-0518 + examples/mobile-base/ shipped (PR #417). Await his read on bound-set completeness + the node seam; if confirmed, next build is a real mobile-runtime intermediary node (validate -> Twist) against the live stack. This engagement validated that whole_body (RFC-0384) is the wrong altitude for base-exposed platforms; base-level bounds are the seam."
+  notes: "Ad-hoc founder post (no Outreach RFC; rfc field points to the Spec RFC it produced, 0518). Open ros2_control quadruped stack. sector substrate-runtime. Produced RFC-0518, the engagement-surfaced base-mobility-bounds spec extension. Community OSS (not a vendor) -> no PRC-vendor deferral; origin uncertain, marked INTL."

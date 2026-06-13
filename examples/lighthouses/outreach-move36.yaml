@@ -128,19 +128,21 @@
   posted_url: "https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/388"
   channel: github_issue
   contact: "lbr-stack/lbr_fri_ros2_stack (Apache-2.0, ~251 stars, Issues enabled, not archived, active — 2026-03-29). Community ROS 2 stack for KUKA LBR iiwa 7/14 + Med 7/14 over the Fast Robot Interface. KUKA vendor; community FRI stack. DE (Germany)."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-06-13"
+  response: acked
   tier: A
   country: DE
   sector: substrate-runtime
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0435 body to https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/388 under idoco2003 (Move #36 industrial arm-driver wave). Awaiting response."
+    - date: "2026-06-13"
+      text: "mhubii (Martin Huber, maintainer) closed #388 with: 'sorry, I am not sure what this is about. Please feel free to drop me a mail in this regard if necessary.' A didn't-land soft close, not hostile and no AI-content complaint: the post did not communicate. He left an email door open. Founder chose to send a short, plain, human re-pitch by email (the iiwa stack is a good torque-sensitive manifest target). No GitHub reply (he closed it and moved it to email). acked, not declined, while the clarifying email is outstanding; if no email reply, -> declined."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move36.md KUKA iiwa lbr-stack body as a GitHub Issue on lbr-stack/lbr_fri_ros2_stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Torque-sensitive cobot (iiwa), research + medical. Ask: iiwa manifest (reach/DOF, payload, joint/force limits, gripper + graspable classes). Force-aware industrial profile."
+  next_action: "Acked (mhubii closed #388 confused, offered email). Founder to send the drafted clarifying email (greenvh@gmail.com) once mhubii's address is obtained (his GitHub profile / lbr-stack docs; not in the thread). Re-pitch: a validated-intent layer ABOVE the FRI stack (declare iiwa reach/DOF/payload/joint+force limits, validate before dispatch). If he engages by email -> engaged; if silent -> declined. Keep it one-breath clear; the GitHub post was too dense."
   notes: "Permissive (Apache-2.0). Most active KUKA iiwa community stack. No license-ask."
 
 - slug: doosan
