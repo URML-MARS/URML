@@ -1,0 +1,202 @@
+# Move #53 outreach ledger. One row per target.
+#
+# Move #53: **the motor-control / RTOS substrate wave** — lane C of the
+# 2026-06-13 second candidate slate, the LAST lane (exhausts the slate). 10
+# RFCs (0576-0585). This lane is altitude-sensitive: URML sits well above an
+# RTOS, so the RTOS targets are framed honestly and narrowly as the MCU
+# substrate tier (RFC-0018 minimal_node), and the wave LEADS with integrator
+# firmware (betaflight/inav/FluidNC) where the altitude is clean. Outreach =
+# request-for-comment; no ask to adopt, host, or maintain anything.
+#
+# Per-target structural variation applied (founder's "human attitude" note,
+# 2026-06-14): the posted bodies use different openings, question counts, and
+# ordering rather than a single skeleton.
+#
+# Targets / framing:
+#   - betaflight (0576, anchor): FC firmware -> declare flight intent + bounds,
+#     validate, dispatch; clean altitude. GPL-3.0 cross-citation.
+#   - inav (0577): nav-focused FC firmware -> declared mission intent
+#     (waypoints/RTH/geofence-as-envelope). GPL-3.0 cross-citation.
+#   - fluidnc (0578): ESP32 CNC firmware -> job intent + machine-limits
+#     envelope. Non-standard license, no code reuse.
+#   - tock (0579): capability-secure RTOS -> capability-model RESONANCE
+#     (manifest <-> OS grants); strongest RTOS fit. Dual Apache/MIT (NOASSERTION).
+#   - freertos (0580): canonical RTOS -> honest narrow seam, minimal_node
+#     executor as an RTOS task (RFC-0018). MIT.
+#   - nuttx (0581): POSIX RTOS -> minimal_node host; concrete PX4-on-NuttX path.
+#     Apache-2.0.
+#   - riot (0582): IoT RTOS -> networked actuator node + fleet roster
+#     (RFC-0286). LGPL-2.1 cross-citation.
+#   - contiki-ng (0583): low-power IoT OS -> MOST EXPLORATORY, honest thin seam
+#     (sensing-centric); posted with that stated. BSD-3.
+#   - embassy (0584): Rust async embedded -> minimal_node Rust executor;
+#     type-system alignment. Apache/MIT.
+#   - rtic (0585): real-time Rust -> RFC-0016 cyclic-timing RESONANCE (declared
+#     timing <-> RTIC task set). Completes the wave + slate. Apache/MIT.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move53.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (state each repo's actual license, never ask; GPL/LGPL/non-standard -> no
+# code reuse). VIBE.md disclosure up front. Funnel 566 -> 576 on posting.
+
+- slug: betaflight
+  rfc: 576
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "betaflight/betaflight (GPL-3.0, ~11079 stars, Issues enabled, not archived, active 2026-06. Multirotor flight-controller firmware. International community."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md betaflight body (Move #53 anchor) as a GitHub Issue on betaflight/betaflight under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare flight intent + bounds, validate, dispatch. GPL-3.0 cross-citation only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: inav
+  rfc: 577
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "iNavFlight/inav (GPL-3.0, ~4114 stars, Issues enabled, not archived, active 2026-06. Navigation-focused flight-controller firmware (waypoints/RTH/GPS). International community."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md inav body as a GitHub Issue on iNavFlight/inav under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declared mission intent; geofence-as-envelope (RFC-0020). GPL-3.0 cross-citation only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: fluidnc
+  rfc: 578
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "bdring/FluidNC (non-standard license [GPL-family, unrecognized by GitHub], ~2431 stars, Issues enabled, not archived, active 2026-06. ESP32 CNC motion-control firmware. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md fluidnc body as a GitHub Issue on bdring/FluidNC under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Job intent + machine-limits envelope. License non-standard/unrecognized: state that, no code reuse, never ask. VIBE.md disclosure up front."
+
+- slug: tock
+  rfc: 579
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "tock/tock (dual Apache-2.0/MIT [GitHub: NOASSERTION], ~6346 stars, Issues enabled, not archived, active 2026-06. Capability-secure embedded OS for MCUs. US (Stanford/Michigan lineage)."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md tock body as a GitHub Issue on tock/tock under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Capability-model resonance (manifest <-> OS grants); strongest RTOS fit. Dual Apache/MIT: state it, no code reuse, never ask. VIBE.md disclosure up front."
+
+- slug: freertos
+  rfc: 580
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "FreeRTOS/FreeRTOS (MIT, ~7470 stars, Issues enabled, not archived, active 2026-06. Most widely deployed MCU RTOS. AWS, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md freertos body as a GitHub Issue on FreeRTOS/FreeRTOS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. HONEST narrow seam: minimal_node executor as an RTOS task (RFC-0018); URML sits far above, no upward dependency. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: nuttx
+  rfc: 581
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "apache/nuttx (Apache-2.0, ~3898 stars, Issues enabled, not archived, active 2026-06. POSIX-compatible RTOS; the OS under PX4. Apache Software Foundation."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md nuttx body as a GitHub Issue on apache/nuttx under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. POSIX eases the minimal_node executor; concrete PX4-on-NuttX path. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: riot
+  rfc: 582
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "RIOT-OS/RIOT (LGPL-2.1, ~5743 stars, Issues enabled, not archived, active 2026-06. IoT operating system for low-power networked nodes. DE/FR."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md riot body as a GitHub Issue on RIOT-OS/RIOT under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Networked actuator node + fleet roster (RFC-0286). LGPL-2.1 cross-citation only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: contiki-ng
+  rfc: 583
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "contiki-ng/contiki-ng (BSD-3-Clause, ~1498 stars, Issues enabled, not archived, active 2026-06. Low-power IoT OS, sensing/networking-centric. SE lineage."
+  last_touch: ""
+  response: none
+  tier: B
+  country: SE
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md contiki-ng body as a GitHub Issue on contiki-ng/contiki-ng under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. MOST EXPLORATORY: honest thin seam (sensing-centric), posted with that stated. BSD-3: state it, never ask. VIBE.md disclosure up front."
+
+- slug: embassy
+  rfc: 584
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "embassy-rs/embassy (Apache-2.0/MIT, ~9399 stars, Issues enabled, not archived, active 2026-06. Modern async embedded framework for Rust. ES/intl."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md embassy body as a GitHub Issue on embassy-rs/embassy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. minimal_node Rust executor; type-system alignment. Apache/MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: rtic
+  rfc: 585
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "rtic-rs/rtic (Apache-2.0/MIT, ~2339 stars, Issues enabled, not archived, active 2026-06. Real-time concurrency framework for embedded Rust. EU/intl."
+  last_touch: ""
+  response: none
+  tier: B
+  country: EU
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move53.md rtic body as a GitHub Issue on rtic-rs/rtic under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. RFC-0016 cyclic-timing resonance (declared timing <-> RTIC task set). Apache/MIT: state it, never ask. VIBE.md disclosure up front. Completes Move #53 + the second candidate slate."
