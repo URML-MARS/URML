@@ -1,0 +1,187 @@
+# Move #50 outreach ledger. One row per target.
+#
+# Move #50: **the HRI / conversational / robot-data wave** — lane E of the
+# 2026-06-13 second candidate slate. The most thesis-aligned lane: NL->robot
+# dialogue bridges are direct conceptual peers to URML's Layer-4 reason for
+# being. 9 RFCs (0549-0557), two sub-clusters:
+#   - conversational / NL->robot PEERS: ROSGPT (anchor), DialoStack, retico-core,
+#     Furhat skills, USC-ICT vhtoolkit. URML = the typed, validatable intent
+#     representation between language understanding and actuation (the five-pass
+#     validation gate an LLM->ROS bridge needs somewhere).
+#   - robot-data / audit-trail-as-data-source (Move #40 framing): ReductStore,
+#     Forge, ARES, rosbag2_composable_recorder. URML's validated-intent audit
+#     record = a typed time-series / annotation channel over robot episodes.
+# Outreach = request-for-comment; no ask to adopt, host, or maintain anything.
+#
+# Targets / framing:
+#   - rosgpt (0549, anchor, SA): canonical NL->ROS via LLM (449 stars) ->
+#     conceptual PEER + the missing typed-validation gate. No license file:
+#     no licensing discussion, pure conceptual peer.
+#   - dialostack (0550, ES): LLM dialogue->ROS2 -> validated target of the
+#     dialogue layer.
+#   - retico-core (0551, US): incremental spoken dialogue -> validated commit
+#     after intent recognition.
+#   - furhat (0552, SE): social-robot skill SDK -> lighter touch; URML only at
+#     the physical-action seam (honest "does a skill drive a physical robot?").
+#   - vhtoolkit (0553, US): virtual humans -> conceptual-peer on embodied-agent
+#     intent; research-scope, custom USC license, no code reuse.
+#   - reductstore (0554, DE): robotics time-series store -> audit trail as a
+#     first-class time series.
+#   - forge (0555, US): RLDS/LeRobot/rosbag converter -> intent records as a
+#     dataset annotation channel.
+#   - ares (0556, US): robot-episode ingest/annotate (a16z) -> closest intent
+#     data peer; structured intent+verdict annotation.
+#   - rosbag2-composable-recorder (0557, US): composable rosbag2 recorder ->
+#     intent record as a companion channel to a bag. Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move50.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (state each repo's actual license, never ask; rosgpt has none -> say nothing;
+# vhtoolkit custom USC -> no code reuse). VIBE.md disclosure up front. Funnel
+# 539 -> 548 on posting.
+
+- slug: rosgpt
+  rfc: 549
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "aniskoubaa/rosgpt (NO license file, ~449 stars, Issues enabled, not archived, last push 2025-04. Canonical NL->ROS via LLM. Anis Koubaa, Prince Sultan University, SA."
+  last_touch: ""
+  response: none
+  tier: A
+  country: SA
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md rosgpt body (Move #50 anchor) as a GitHub Issue on aniskoubaa/rosgpt under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Pure conceptual-peer framing, NO licensing discussion (no license file), no manifest ask. VIBE.md disclosure up front. AI-close risk (high-visibility solo-academic) accepted for leverage."
+
+- slug: dialostack
+  rfc: 550
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "aquintan4/DialoStack (MIT, ~4 stars, Issues enabled, not archived, active 2026-06. LLM dialogue -> ROS2. ES."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md dialostack body as a GitHub Issue on aquintan4/DialoStack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML = validated target of the dialogue layer. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: retico-core
+  rfc: 551
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "retico-team/retico-core (Apache-2.0, ~12 stars, Issues enabled, not archived, active 2026-05. Incremental spoken dialogue framework."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md retico-core body as a GitHub Issue on retico-team/retico-core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML = validated commit after incremental intent recognition. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: furhat
+  rfc: 552
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "FurhatRobotics/example-skills (MIT, ~32 stars, Issues enabled, not archived, active 2025-11. Social conversational robot skill SDK. SE."
+  last_touch: ""
+  response: none
+  tier: B
+  country: SE
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md furhat body as a GitHub Issue on FurhatRobotics/example-skills under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Lighter touch; URML only at the physical-action seam, honest 'does a skill drive a physical robot?'. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: vhtoolkit
+  rfc: 553
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "USC-ICT/vhtoolkit (custom USC license, ~9 stars, Issues enabled, not archived, active 2026-05. Virtual Human Toolkit; embodied conversational virtual humans. US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: conceptual-peer
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md vhtoolkit body as a GitHub Issue on USC-ICT/vhtoolkit under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Conceptual-peer on embodied-agent intent; research-scope, custom USC license, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: reductstore
+  rfc: 554
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "reductstore/reductstore (Apache-2.0, ~353 stars, Issues enabled, not archived, active 2026-06. Time-series database for unstructured robotics/edge data. DE/US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md reductstore body as a GitHub Issue on reductstore/reductstore under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Audit trail as a first-class time series (Move #40 framing). Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: forge
+  rfc: 555
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "arpitg1304/forge (MIT, ~137 stars, Issues enabled, not archived, active 2026-06. RLDS/LeRobot/rosbag robot-learning data converter. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md forge body as a GitHub Issue on arpitg1304/forge under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Intent records as a dataset annotation channel. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: ares
+  rfc: 556
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jacobphillips99/ares (Apache-2.0, ~70 stars, Issues enabled, not archived, last push 2025-05. Robot-episode data ingest/annotate/analyze. a16z, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md ares body as a GitHub Issue on jacobphillips99/ares under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Closest robot-data intent peer; structured intent+verdict annotation. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: rosbag2-composable-recorder
+  rfc: 557
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "berndpfrommer/rosbag2_composable_recorder (Apache-2.0, ~19 stars, Issues enabled, not archived, active 2026-04. Composable rosbag2 recorder for ROS 2. US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-13"
+      text: "When authorized, post the posts-move50.md rosbag2-composable-recorder body as a GitHub Issue on berndpfrommer/rosbag2_composable_recorder under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Intent record as a companion channel to a bag. Apache-2.0: state it, never ask. VIBE.md disclosure up front. Completes Move #50."
