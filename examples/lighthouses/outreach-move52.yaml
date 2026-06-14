@@ -32,169 +32,187 @@
 #   - create3-docs (0575, US): iRobot Create 3 edu robot (ROS 2) -> English
 #     front door over the ROS 2 action set. Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move52.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (state each repo's actual license, never ask; GPL/non-standard -> no code
-# reuse). VIBE.md disclosure up front. Funnel 556 -> 566 on posting.
+# POSTED 2026-06-14 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (each repo's actual license stated, never asked; GPL/non-standard ->
+# no code reuse). VIBE.md disclosure up front. Funnel 556 -> 566. All rows
+# response: none, awaiting maintainer reply.
 
 - slug: ftc-robotcontroller
   rfc: 566
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/2071"
   channel: github_issue
   contact: "FIRST-Tech-Challenge/FtcRobotController (BSD-3-Clause-Clear, ~1231 stars, Issues enabled, not archived, active 2026-01. Official FIRST Tech Challenge robot-controller SDK. FIRST, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0566 body (Move #52 anchor) to https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/2071 under idoco2003. Typed intent + English layer above an op-mode (RFC-0011). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md ftc-robotcontroller body (Move #52 anchor) as a GitHub Issue on FIRST-Tech-Challenge/FtcRobotController under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed intent + English layer above an op-mode (RFC-0011). BSD-3-Clause-Clear: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as FIRST-Tech-Challenge/FtcRobotController#2071 on 2026-06-14 under idoco2003."
 
 - slug: pathplanner
   rfc: 567
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/mjansen4857/pathplanner/issues/1174"
   channel: github_issue
   contact: "mjansen4857/pathplanner (MIT, ~487 stars, Issues enabled, not archived, active 2026-06. Path planning + following for FRC. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0567 body to https://github.com/mjansen4857/pathplanner/issues/1174 under idoco2003. Declare/validate/consume the path (RFC-0020). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md pathplanner body as a GitHub Issue on mjansen4857/pathplanner under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare/validate/consume the path (RFC-0020). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as mjansen4857/pathplanner#1174 on 2026-06-14 under idoco2003."
 
 - slug: photonvision
   rfc: 568
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/PhotonVision/photonvision/issues/2514"
   channel: github_issue
   contact: "PhotonVision/photonvision (GPL-3.0, ~418 stars, Issues enabled, not archived, active 2026-06. Vision processing / pose estimation for FRC and FTC. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0568 body to https://github.com/PhotonVision/photonvision/issues/2514 under idoco2003. Consume the estimate (Move #25); GPL-3.0 cross-citation only. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md photonvision body as a GitHub Issue on PhotonVision/photonvision under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume the estimate (Move #25). GPL-3.0 cross-citation only, no code reuse, state never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as PhotonVision/photonvision#2514 on 2026-06-14 under idoco2003."
 
 - slug: choreo
   rfc: 569
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/SleipnirGroup/Choreo/issues/1493"
   channel: github_issue
   contact: "SleipnirGroup/Choreo (BSD-3-Clause, ~188 stars, Issues enabled, not archived, active 2026-06. FRC trajectory optimization tool. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0569 body to https://github.com/SleipnirGroup/Choreo/issues/1493 under idoco2003. Consume the optimized trajectory (RFC-0020). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md choreo body as a GitHub Issue on SleipnirGroup/Choreo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume the optimized trajectory (RFC-0020). BSD-3-Clause: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as SleipnirGroup/Choreo#1493 on 2026-06-14 under idoco2003."
 
 - slug: road-runner
   rfc: 570
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/acmerobotics/road-runner/issues/136"
   channel: github_issue
   contact: "acmerobotics/road-runner (MIT, ~264 stars, Issues enabled, not archived, last push 2025-11. Motion planning library for FTC. ACME Robotics, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0570 body to https://github.com/acmerobotics/road-runner/issues/136 under idoco2003. Declare/validate/consume the trajectory (RFC-0020). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md road-runner body as a GitHub Issue on acmerobotics/road-runner under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare/validate/consume the trajectory (RFC-0020). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as acmerobotics/road-runner#136 on 2026-06-14 under idoco2003."
 
 - slug: libwallaby
   rfc: 571
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/kipr/libwallaby/issues/210"
   channel: github_issue
   contact: "kipr/libwallaby (GPL-3.0, ~21 stars, Issues enabled, not archived, active 2026-03. Robot-control library for KIPR Wombat/Wallaby (Botball). KIPR, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0571 body to https://github.com/kipr/libwallaby/issues/210 under idoco2003. Typed intent + English layer; GPL-3.0 cross-citation only. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md libwallaby body as a GitHub Issue on kipr/libwallaby under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed intent + English layer. GPL-3.0 cross-citation only, no code reuse, state never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as kipr/libwallaby#210 on 2026-06-14 under idoco2003."
 
 - slug: gopigo3
   rfc: 572
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/DexterInd/GoPiGo3/issues/375"
   channel: github_issue
   contact: "DexterInd/GoPiGo3 (non-standard license, ~108 stars, Issues enabled, not archived, active 2026-05. Driver/API for the GoPiGo3 Raspberry Pi educational robot. Dexter Industries / Modular Robotics, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0572 body to https://github.com/DexterInd/GoPiGo3/issues/375 under idoco2003. English-to-validated-intent front door; non-standard license, no code reuse. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md gopigo3 body as a GitHub Issue on DexterInd/GoPiGo3 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. English-to-validated-intent front door for a beginner robot. License is non-standard/unrecognized by GitHub: state that, no code reuse, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
 
 - slug: blockly
   rfc: 573
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/RaspberryPiFoundation/blockly/issues/9989"
   channel: github_issue
   contact: "RaspberryPiFoundation/blockly (Apache-2.0, ~13431 stars, Issues enabled, not archived, active 2026-06. Block-based visual programming toolkit fork. Raspberry Pi Foundation, UK."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: UK
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0573 body to https://github.com/RaspberryPiFoundation/blockly/issues/9989 under idoco2003. Language peer; could a block palette emit URML; conceptual, no integration ask. Large active repo -> watch for fast close. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md blockly body as a GitHub Issue on RaspberryPiFoundation/blockly under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Language peer; could a block palette emit URML; conceptual, no integration ask. Apache-2.0: state it, never ask. VIBE.md disclosure up front. Large active repo -> watch for fast close."
+      text: "DONE — posted as RaspberryPiFoundation/blockly#9989 on 2026-06-14 under idoco2003."
 
 - slug: tank-royale
   rfc: 574
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/robocode-dev/tank-royale/issues/217"
   channel: github_issue
   contact: "robocode-dev/tank-royale (Apache-2.0, ~249 stars, Issues enabled, not archived, active 2026-05. Modern Robocode successor; programming game. EU/DK."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: DK
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0574 body to https://github.com/robocode-dev/tank-royale/issues/217 under idoco2003. Lighter conceptual note; declarative intent as a teaching on-ramp. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md tank-royale body as a GitHub Issue on robocode-dev/tank-royale under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Lighter conceptual note; declarative intent as a teaching on-ramp. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as robocode-dev/tank-royale#217 on 2026-06-14 under idoco2003."
 
 - slug: create3-docs
   rfc: 575
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/iRobotEducation/create3_docs/issues/656"
   channel: github_issue
   contact: "iRobotEducation/create3_docs (BSD-3-Clause, ~50 stars, Issues enabled, not archived, last push 2025-12. Docs/resources for the iRobot Create 3 educational robot (ROS 2). iRobot Education, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0575 body to https://github.com/iRobotEducation/create3_docs/issues/656 under idoco2003. English front door over the ROS 2 action set. Awaiting response. Completes Move #52."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move52.md create3-docs body as a GitHub Issue on iRobotEducation/create3_docs under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. English front door over the ROS 2 action set. BSD-3-Clause: state it, never ask. VIBE.md disclosure up front. Completes Move #52."
+      text: "DONE — posted as iRobotEducation/create3_docs#656 on 2026-06-14 under idoco2003."
