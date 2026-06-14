@@ -1,0 +1,68 @@
+# Capability manifest for an INAV-class aircraft.
+#
+# From the iNavFlight/inav engagement (sensei-hacker): URML lets a human or LLM
+# state a mission goal plus constraints (geofence, limits), checks the aircraft
+# can fly it, and compiles the result into an INAV waypoint mission. This
+# manifest declares what the aircraft can do; the envelope declares where it is
+# allowed to fly; the validator checks a mission against both before it is
+# compiled to INAV.
+#
+# Note (sensei-hacker's point): physical limits like minimum turn radius and
+# capabilities like INAV's return-to-home are exactly what a capability check
+# should leverage. RTH maps to URML's return_to_home primitive (below).
+# Minimum turn radius is a fixed-wing kinodynamic limit URML does not yet
+# declare; it is the natural next manifest field (parallel to RFC-0518's
+# base-mobility bounds) and is called out in the README as the open design
+# question, not invented here.
+
+manifest_version: "0.1"
+robot_id: inav_aircraft
+description: An INAV-class multirotor that flies declared, validated missions.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing / return-to-home position.
+  - name: water_tower
+    pose: { x: 40.0, y: 30.0, z: 25.0 }
+    frame: agl
+    description: The landmark to fly to, on this side of the road.
+  - name: across_road
+    pose: { x: 40.0, y: 90.0, z: 25.0 }
+    frame: agl
+    description: A point on the FAR side of the road (outside the geofence).
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+substrate:
+  autopilot_class: custom     # INAV is not in the px4/ardupilot/pixhawk enum (RFC-0250)
+  autopilot_class_note: "INAV flight-controller firmware (waypoint-mission autopilot)."
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true       # supports hover
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  cameras: []
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary: []
+
+outputs:
+  named_endpoints: [operator]

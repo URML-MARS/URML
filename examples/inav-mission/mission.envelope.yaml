@@ -1,0 +1,24 @@
+# Safety envelope for the INAV mission example.
+#
+# "Don't cross the road" is a geofence: the operating area is the field on this
+# side of the road (which runs along y = 60). The validator (Pass 3) checks that
+# every waypoint stays inside this polygon and under the altitude band, before
+# any mission is compiled to INAV. water_tower (y=30) is inside; across_road
+# (y=90) is on the far side and is rejected.
+
+envelope_version: "0.1"
+deployment_id: inav_field_demo
+description: INAV mission envelope with a geofence (road boundary) and an altitude cap.
+
+max_altitude: 100.0
+
+geofences:
+  - name: operating_area
+    frame: agl
+    vertices:
+      - [-10.0, -10.0]
+      - [80.0, -10.0]
+      - [80.0, 60.0]    # the road runs along y = 60
+      - [-10.0, 60.0]
+    min_altitude: 0.0
+    max_altitude: 100.0

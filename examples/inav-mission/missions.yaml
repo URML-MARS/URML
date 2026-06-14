@@ -1,0 +1,29 @@
+# Two missions, stated as URML intent. The first is "fly over to the water tower,
+# then come back and land. Don't go past the road" (sensei-hacker's example).
+# The second deliberately routes to a point across the road, to show the geofence
+# catch before anything is compiled to INAV.
+
+missions:
+  - label: water_tower_and_back
+    program:
+      profile: drone
+      behavior:
+        type: sequence
+        on_error: abort_and_report
+        steps:
+          - take_off: { altitude: 25.0 }
+          - move_to: { location: water_tower }
+          - return_to_home: {}
+          - land: {}
+
+  - label: across_the_road        # routes past the road -> geofence violation
+    program:
+      profile: drone
+      behavior:
+        type: sequence
+        on_error: abort_and_report
+        steps:
+          - take_off: { altitude: 25.0 }
+          - move_to: { location: across_road }
+          - return_to_home: {}
+          - land: {}

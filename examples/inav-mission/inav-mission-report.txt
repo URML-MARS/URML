@@ -1,0 +1,12 @@
+URML mission -> validate -> compile to an INAV waypoint mission.
+Geofence ('don't cross the road') is enforced before any waypoint is emitted.
+aircraft: inav_aircraft  |  envelope: inav_field_demo
+
+[COMPILED] water_tower_and_back
+  launch     climb to 25.0 m AGL
+  WP1  WAYPOINT  x=40.0 y=30.0 alt=25.0
+  WP2  RTH
+  WP3  LAND
+
+[REJECTED] across_the_road
+   refused at validation [envelope.geofence_violation]; nothing compiled to INAV.
