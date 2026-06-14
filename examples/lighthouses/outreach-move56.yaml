@@ -1,0 +1,117 @@
+# Move #56 outreach ledger. One row per target.
+#
+# Move #56: **the service-robotics wave** — lane D of the 2026-06-14 third
+# candidate slate. A THIN lane: service-robot vendors are overwhelmingly
+# proprietary or PRC (Pudu/Keenon/Bear/Serve/Starship closed; excluded), so the
+# clean open surface clusters in cleaning robots + one hospitality SDK + one
+# fleet-management framework. 5 RFCs (0600-0604). FOLDED the Valetudo
+# ecosystem satellites (rand256/valetudo RE fork, zvldz/vacuum firmware builder)
+# into the Valetudo anchor (0600); DROPPED ut-amrl/robofleet (stale 2023) and
+# awesome-vacuum (a list, not a stack); SKIP dorita980 (touched Move #8). No
+# padding. Framing: URML = typed validated cleaning/movement intent checked
+# against a per-model capability manifest, dispatched over the local API; for
+# the fleet target, the multi-robot roster (RFC-0286). Outreach =
+# request-for-comment; no ask to adopt/host/maintain.
+#
+# Targets / framing:
+#   - valetudo (0600, anchor, DE): cloud-free cleaning-robot firmware, local
+#     REST+MQTT -> RobotVacuumAdapter; per-model capabilities = manifest.
+#     Apache. Ecosystem (RE fork, firmware builders) = same approach extends.
+#   - python-miio (0601, FI): Xiaomi miIO/MIoT library incl vacuums -> concrete
+#     dispatch substrate; feature flags toward a manifest. GPL-3.0 cross-cite.
+#   - robotemi (0602, IL): temi hospitality robot SDK -> validated movement
+#     intent (go-to/patrol); saved locations = manifest. NO license: say so.
+#   - transitive (0603, US/CA): web robot-fleet management framework -> the
+#     validated intent a fleet dashboard dispatches; fleet roster (RFC-0286).
+#     Apache.
+#   - congatudo (0604, ES): Cecotec Conga cloud-free local control (Valetudo-
+#     style) -> same cleaning-intent seam, different vendor; one manifest shape
+#     across vendor families. Apache. Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move56.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (Apache stated; python-miio GPL cross-cite; temi no-license: stated, not
+# asked). VIBE.md disclosure up front; per-target body variation. Funnel
+# 589 -> 594 on posting.
+
+- slug: valetudo
+  rfc: 600
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "Hypfer/Valetudo (Apache-2.0, ~9221 stars, Issues enabled, not archived, active 2026-06. Cloud-free firmware / local control plane (REST+MQTT) for many consumer/commercial cleaning robots. DE."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DE
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move56.md valetudo body (Move #56 anchor) as a GitHub Issue on Hypfer/Valetudo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. RobotVacuumAdapter; per-model capabilities = manifest. Apache: state it, never ask. VIBE.md disclosure up front."
+
+- slug: python-miio
+  rfc: 601
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "rytilahti/python-miio (GPL-3.0, ~4240 stars, Issues enabled, not archived, active 2025-08. Canonical Python library for the Xiaomi miIO/MIoT protocol incl. robot vacuums. FI."
+  last_touch: ""
+  response: none
+  tier: A
+  country: FI
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move56.md python-miio body as a GitHub Issue on rytilahti/python-miio under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Concrete dispatch substrate for the vacuum subset; feature flags toward a manifest. GPL-3.0 cross-cite only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: robotemi
+  rfc: 602
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "robotemi/sdk (NO license file, ~245 stars, Issues enabled, not archived, active 2026-06. Official SDK for the temi Android-based hospitality/personal robot (navigate/follow/patrol/interactive). IL/US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IL
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move56.md robotemi body as a GitHub Issue on robotemi/sdk under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated movement intent (go-to/patrol); saved locations = manifest. NO license file: state that, no ask, no code reuse. VIBE.md disclosure up front."
+
+- slug: transitive
+  rfc: 603
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "transitiverobotics/transitive (Apache-2.0, ~141 stars, Issues enabled, not archived, active 2026-06. Open full-stack framework for web-based robot fleet management / mission control. US/CA."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move56.md transitive body as a GitHub Issue on transitiverobotics/transitive under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. The validated intent a fleet dashboard dispatches; fleet roster (RFC-0286/0291). Apache: state it, never ask. VIBE.md disclosure up front."
+
+- slug: congatudo
+  rfc: 604
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "congatudo/Congatudo (Apache-2.0, ~109 stars, Issues enabled, not archived, active 2026-06. Cloud-free local control plane for Cecotec Conga cleaning robots (Valetudo-style). ES."
+  last_touch: ""
+  response: none
+  tier: B
+  country: ES
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move56.md congatudo body as a GitHub Issue on congatudo/Congatudo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Same cleaning-intent seam, different vendor; one manifest shape across vendor families. Apache: state it, never ask. VIBE.md disclosure up front. Completes Move #56."
