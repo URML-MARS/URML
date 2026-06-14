@@ -57,6 +57,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as aniskoubaa/rosgpt#14 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: dialostack
   rfc: 550
@@ -75,6 +76,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as aquintan4/DialoStack#1 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: retico-core
   rfc: 551
@@ -93,6 +95,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as retico-team/retico-core#20 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: furhat
   rfc: 552
@@ -111,6 +114,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as FurhatRobotics/example-skills#55 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: vhtoolkit
   rfc: 553
@@ -129,6 +133,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as USC-ICT/vhtoolkit#1 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: reductstore
   rfc: 554
@@ -147,6 +152,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as reductstore/reductstore#1434 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: forge
   rfc: 555
@@ -165,6 +171,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as arpitg1304/forge#27 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: ares
   rfc: 556
@@ -183,6 +190,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as jacobphillips99/ares#2 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: rosbag2-composable-recorder
   rfc: 557
@@ -203,5 +211,6 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as berndpfrommer/rosbag2_composable_recorder#10 on 2026-06-14 under idoco2003."
+      status: done
   next_action: "Declined (silent COMPLETED close, 0 comments; verified not a discussion conversion). No reply, do not pursue. Narrow rosbag2 recorder utility -> wrong altitude for the companion-channel pitch."
   notes: "Apache-2.0. Composable rosbag2 recorder (small personal utility). Silent close; tangential fit."
