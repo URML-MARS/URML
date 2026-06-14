@@ -50,6 +50,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: python-miio
   rfc: 601
@@ -68,6 +69,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: robotemi
   rfc: 602
@@ -86,6 +88,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: transitive
   rfc: 603
@@ -104,6 +107,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: congatudo
   rfc: 604
@@ -122,3 +126,4 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
