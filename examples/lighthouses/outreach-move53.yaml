@@ -66,17 +66,20 @@
   channel: github_issue
   contact: "iNavFlight/inav (GPL-3.0, ~4114 stars, Issues enabled, not archived, active 2026-06. Navigation-focused flight-controller firmware (waypoints/RTH/GPS). International community."
   last_touch: "2026-06-14"
-  response: none
+  response: engaged
   tier: A
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0577 body to https://github.com/iNavFlight/inav/issues/11651 under idoco2003. Declared mission intent; geofence-as-envelope (RFC-0020); GPL-3.0 cross-citation. Awaiting response."
+    - date: "2026-06-14"
+      text: "sensei-hacker (MEMBER) gave the strongest fit yet: restated URML accurately ('a bridge language... state your goal + constraints like geofencing... checks the robot has the capabilities... compiles the URML into an INAV mission') and said 'that might be a good fit.' Added two concrete points: physical limits like minimum turn radius (INAV settings) should feed the capability check, and INAV's sophisticated return-to-home (with obstacle avoidance) is a capability to leverage. SHIPPED examples/inav-mission/ (PR #452): state 'fly to the water tower and back, don't cross the road' -> validate vs manifest+geofence -> compile to an INAV waypoint mission (move_to->WAYPOINT, return_to_home->RTH, land->LAND); across-the-road leg rejected at the geofence before compile. Replied confirming his read, mapping RTH to return_to_home, and flagging min turn radius as the next aerial-kinodynamic manifest field (parallel to RFC-0518) to design against a real INAV setup; asked what INAV exposes for turn radius + whether the .mission/CLI wp list is the right compile target."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as iNavFlight/inav#11651 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Engaged (sensei-hacker, strongest fit). Reply + examples/inav-mission/ shipped (PR #452). Await his answer on INAV turn-radius exposure + mission-format target. If he confirms, next builds: (1) a Spec RFC for an aerial-kinodynamic manifest field (min turn radius), validator rejects too-tight leg geometry; (2) extend the example to emit a real INAV .mission file. GPL-3.0 -> cross-citation only, no code reuse."
 
 - slug: fluidnc
   rfc: 578
@@ -85,17 +88,20 @@
   channel: github_issue
   contact: "bdring/FluidNC (non-standard license [GPL-family, unrecognized by GitHub], ~2431 stars, Issues enabled, not archived, active 2026-06. ESP32 CNC motion-control firmware. US."
   last_touch: "2026-06-14"
-  response: none
+  response: acked
   tier: A
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0578 body to https://github.com/bdring/FluidNC/issues/1747 under idoco2003. Job intent + machine-limits envelope; non-standard license, no code reuse. Awaiting response."
+    - date: "2026-06-14"
+      text: "MitchBradley (COLLABORATOR) gave a sharp, constructive no-fit (OPEN, not hostile, no AI-flag): CNC users generate GCode via CAM programs that already pre-validate against a machine model + a controller-specific post-processor, and FluidNC has a 'check mode' dry-run against machine boundaries (soft limits) -- so pre-validation is already covered for the CNC use case. He noted those don't apply to autonomous robots with dynamic real-time motion, but that doesn't match 'job'; and it's unclear how 'robot intent' meshes with a pre-validated job unless 'robot' means cartesian/CNC robot, which doesn't match URML's 'robot operating systems' framing. A genuine domain mismatch: FluidNC is CNC/GCode, URML targets autonomous-robot intent (ROS-class). acked (substantive response; leaning no-fit). Graceful concession reply drafted for the founder (concede the domain mismatch; CAM+check-mode already cover it; thank him). Fit-check note: CNC/GCode controllers are a different domain, not the autonomous-robot-intent surface."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as bdring/FluidNC#1747 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Acked (MitchBradley, constructive domain-mismatch). Founder to post the drafted graceful concession (FluidNC's CAM + check-mode already cover pre-validation; URML targets autonomous-robot/ROS intent, not CNC GCode jobs; thanks). Then -> declined. Do not pursue CNC/GCode controllers (wrong domain)."
 
 - slug: tock
   rfc: 579
@@ -104,17 +110,20 @@
   channel: github_issue
   contact: "tock/tock (dual Apache-2.0/MIT [GitHub: NOASSERTION], ~6346 stars, Issues enabled, not archived, active 2026-06. Capability-secure embedded OS for MCUs. US (Stanford/Michigan lineage)."
   last_touch: "2026-06-14"
-  response: none
+  response: declined
   tier: A
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0579 body to https://github.com/tock/tock/issues/4879 under idoco2003. Capability-model resonance (manifest <-> OS grants); strongest RTOS fit. Awaiting response."
+    - date: "2026-06-14"
+      text: "brghena (CONTRIBUTOR) HOSTILE-closed #4879 COMPLETED as AI spam: 'This post seems to be nonsense, and the author is spamming various embedded OS repos with similar AI-generated nonsense (links URML PR #438). I'm going to close this. If there's actual human intelligence in here, reword without all the fluff and we'd be happy to discuss.' AI-content hostile close (OVOS/LibreTranslate/QGC/RIOT family) + an explicit 'spamming embedded OS repos' callout (he found our PR #438). tock is an embedded MCU OS -- same wrong-altitude family as RIOT/contiki. declined; no reply. Reinforces the fit-check rule HARD: embedded OSes are the wrong altitude AND the RTOS wave is drawing spam complaints."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as tock/tock#4879 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (brghena, hostile AI-spam close + 'spamming embedded OS repos'). No reply. Embedded OS = wrong altitude (RIOT/tock/contiki). STRONG fit-check signal: drop RTOS/embedded-OS targets pre-post; the move53 RTOS sub-wave is net-negative on goodwill."
 
 - slug: freertos
   rfc: 580

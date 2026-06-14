@@ -63,8 +63,8 @@
   posted_url: "https://github.com/rerun-io/rerun/issues/12815"
   channel: github_issue
   contact: "rerun-io/rerun (Apache-2.0 + MIT, ~10.9k stars, Issues + Discussions enabled, not archived, active — v0.33.0 May 2026). Visualize, query, stream multimodal robotics data on a timeline. Rerun Technologies AB. SE (Sweden)."
-  last_touch: "2026-06-12"
-  response: none
+  last_touch: "2026-06-14"
+  response: acked
   tier: A
   country: SE
   sector: framework-skill
@@ -73,11 +73,13 @@
       text: "Posted the RFC-0464 body to https://github.com/rerun-io/rerun/issues/12815 under idoco2003 (Move #40 developer-tooling/observability wave). Awaiting response."
     - date: "2026-06-12"
       text: "Posted as a GitHub Issue, not a Discussion: the repo's Discussions had no categories available at post time (createDiscussion needs a category id). Channel corrected to github_issue."
+    - date: "2026-06-14"
+      text: "Huaian666 (a community USER, authorAssociation NONE -- not a Rerun maintainer) +1'd it: 'second this. been wanting it for months. currently patching around it with a script.' A demand signal (validates the audit-stream-on-a-timeline idea, same Move #40 framing as the engaged ReductStore), but NO maintainer response yet. Replied with a light ack + linked examples/audit-store/ (the validated-intent record shape, which maps onto a Rerun timeline as one entry per dispatch). acked (community interest; awaiting a Rerun maintainer). If a maintainer engages, a Rerun-specific example (intent/verdict as timeline entities) is the build."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move40.md Rerun body as a GitHub Discussion on rerun-io/rerun under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Multimodal-timeline vertex. Ask: log URML audit stream as Rerun entities; idiomatic shape for intent+verdict+dispatch; a reference logger."
+  next_action: "Acked (community +1 from Huaian666; no maintainer reply). Replied with a light ack + audit-store link. Await a Rerun maintainer; if one engages, build a Rerun-timeline example (validated-intent entities). Same audit-stream fit as ReductStore (engaged)."
   notes: "Permissive (Apache+MIT). High-momentum viz tool. No license-ask."
 
 - slug: plotjuggler

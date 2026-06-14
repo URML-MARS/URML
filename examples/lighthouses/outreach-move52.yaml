@@ -106,11 +106,13 @@
   channel: github_issue
   contact: "SleipnirGroup/Choreo (BSD-3-Clause, ~188 stars, Issues enabled, not archived, active 2026-06. FRC trajectory optimization tool. US."
   last_touch: "2026-06-14"
-  response: engaged
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
+    - date: "2026-06-14"
+      text: "FINAL 2026-06-14: shueja closed #1493 NOT_PLANNED after the reframe. He CONCEDED the technical point ('theoretically, whatever action orchestration layer you have could consume and use TrajoptLib trajectories, and you could write something that checks if the trajectory is safe to run') -- so the reframe was correct on the merits -- but declined on scope + AI fatigue: 'I'm not going to spend more effort talking to Claude acting on your behalf... I don't see the URML project bringing value to the FRC/FTC space, and we're not interested in supporting use cases outside those users.' engaged -> declined. The decline is SCOPE (FRC/FTC only) + AI-content fatigue, not a technical refutation (he agreed it's possible). No reply (he closed it and won't engage with 'Claude on your behalf'). Lesson: the reframe was right but didn't convert -- the real objection was audience scope, not the misframing."
     - date: "2026-06-14"
       text: "Posted the RFC-0569 body to https://github.com/SleipnirGroup/Choreo/issues/1493 under idoco2003. Consume the optimized trajectory (RFC-0020). Awaiting response."
     - date: "2026-06-14"
@@ -121,7 +123,7 @@
     - date: "2026-06-14"
       text: "DONE — posted as SleipnirGroup/Choreo#1493 on 2026-06-14 under idoco2003."
       status: done
-  next_action: "Engaged (shueja, OPEN thread). Reframe reply posted 2026-06-14 (URML wraps the offline optimizer: type its inputs, validate its outputs vs the robot; NOT a runtime query). Await whether the reframe lands. If he bites, the concrete artifact is a worked example: a URML declaration -> TrajoptLib path params, + validate the returned trajectory vs an FRC robot manifest (RFC-0518 kinodynamic limits). Lesson reinforced: lead planners/optimizers with consume-trajectory + validate-admissibility, never move_to (it reads as runtime querying)."
+  next_action: "Declined (shueja closed NOT_PLANNED: conceded the reframe is technically possible but declined on FRC/FTC-only scope + AI fatigue). No reply, do not pursue Choreo/TrajoptLib. Lesson: the consume-trajectory reframe was correct (he agreed) but scope/AI-fatigue was the real blocker, not the technical misframing."
 
 - slug: road-runner
   rfc: 570
@@ -168,17 +170,20 @@
   channel: github_issue
   contact: "DexterInd/GoPiGo3 (non-standard license, ~108 stars, Issues enabled, not archived, active 2026-05. Driver/API for the GoPiGo3 Raspberry Pi educational robot. Dexter Industries / Modular Robotics, US."
   last_touch: "2026-06-14"
-  response: none
+  response: declined
   tier: B
   country: US
   sector: robot-platform
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0572 body to https://github.com/DexterInd/GoPiGo3/issues/375 under idoco2003. English-to-validated-intent front door; non-standard license, no code reuse. Awaiting response."
+    - date: "2026-06-14"
+      text: "slowrunner (a long-time GoPiGo3 enthusiast running two robots since 2018/2020, NOT the vendor) replied on #375 pointing to his detailed opinion on URML discussion #448. His verdict, thoughtful and credible: (1) No -- the GoPiGo3 user base learns basic concepts via Blockly/Python, not NLU-to-action, so an English front door doesn't fit the market; (2) No -- the GoPiGo3 doesn't have capabilities that map onto a URML manifest. Constructive community-expert no-fit (not hostile, no AI-flag). Posted a gracious human thank-you on discussion #448 accepting his assessment (referenced Carl & Dave). declined (community-expert no-fit; vendor never weighed in). Fit-check note: beginner-ed Blockly/Python robots are low NL/manifest surface."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (slowrunner, constructive community-expert no-fit on discussion #448). Thanked him graciously on #448. No further pursuit. Beginner-education Blockly/Python robot = low NL/manifest fit."
 
 - slug: blockly
   rfc: 573
