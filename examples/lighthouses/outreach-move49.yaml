@@ -50,6 +50,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as buzz-lang/Buzz#120 on 2026-06-13 under idoco2003."
+      status: done
 
 - slug: scafi
   rfc: 543
@@ -68,6 +69,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as scafi/scafi#576 on 2026-06-13 under idoco2003."
+      status: done
 
 - slug: protelis
   rfc: 544
@@ -86,6 +88,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as Protelis/Protelis#2288 on 2026-06-13 under idoco2003."
+      status: done
 
 - slug: scrimmage
   rfc: 545
@@ -104,6 +107,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as gtri/scrimmage#645 on 2026-06-13 under idoco2003."
+      status: done
 
 - slug: lsts
   rfc: 546
@@ -122,6 +126,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as LSTS/dune#292 on 2026-06-13 under idoco2003 (references Neptus)."
+      status: done
 
 - slug: openrtm-aist
   rfc: 547
@@ -140,6 +145,7 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as OpenRTM/OpenRTM-aist#1227 on 2026-06-13 under idoco2003."
+      status: done
 
 - slug: robocomp
   rfc: 548
@@ -158,3 +164,4 @@
   claude_directives:
     - date: "2026-06-13"
       text: "DONE — posted as robocomp/robocomp#395 on 2026-06-13 under idoco2003."
+      status: done
