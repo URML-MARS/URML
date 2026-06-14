@@ -57,6 +57,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as betaflight/betaflight#15333 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: inav
   rfc: 577
@@ -75,6 +76,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as iNavFlight/inav#11651 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: fluidnc
   rfc: 578
@@ -93,6 +95,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as bdring/FluidNC#1747 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: tock
   rfc: 579
@@ -111,6 +114,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as tock/tock#4879 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: freertos
   rfc: 580
@@ -129,6 +133,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as FreeRTOS/FreeRTOS#1411 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: nuttx
   rfc: 581
@@ -147,6 +152,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as apache/nuttx#19135 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: riot
   rfc: 582
@@ -165,6 +171,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as RIOT-OS/RIOT#22378 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: contiki-ng
   rfc: 583
@@ -183,6 +190,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as contiki-ng/contiki-ng#3157 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: embassy
   rfc: 584
@@ -201,6 +209,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as embassy-rs/embassy#6341 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: rtic
   rfc: 585
@@ -219,3 +228,4 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as rtic-rs/rtic#1188 on 2026-06-14 under idoco2003."
+      status: done
