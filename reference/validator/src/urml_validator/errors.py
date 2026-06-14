@@ -38,6 +38,10 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_GRIPPER = "capability.missing_gripper"
     CAPABILITY_ARM_NOT_DECLARED = "capability.arm_not_declared"
     CAPABILITY_BIMANUAL_REQUIRES_TWO_ARMS = "capability.bimanual_requires_two_arms"
+    # RFC-0586: a grasp_type was requested but no addressed gripper is dexterous.
+    CAPABILITY_GRASP_TYPE_REQUIRES_DEXTEROUS = "capability.grasp_type_requires_dexterous"
+    # RFC-0586: a dexterous hand was addressed but does not declare the grasp_type.
+    CAPABILITY_GRASP_TYPE_NOT_DECLARED = "capability.grasp_type_not_declared"
     CAPABILITY_MISSING_CAMERA = "capability.missing_camera"
     CAPABILITY_MISSING_SENSOR = "capability.missing_sensor"
     CAPABILITY_MISSING_FRAME = "capability.missing_frame"

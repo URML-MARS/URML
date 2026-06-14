@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from urml_validator.schemas.common import (
     Duration,
     Force,
+    GraspType,
     Identifier,
     LocationOrPose,
     Pose,
@@ -166,6 +167,11 @@ class GraspArgs(BaseModel):
     """Which arm performs the grasp (RFC-0010). `any` (default) preserves
     pre-RFC-0010 single-arm behavior; `left`/`right` or a manifest-declared
     arm name select a specific arm on a multi-arm manipulator."""
+    grasp_type: GraspType | None = None
+    """Which grasp strategy a dexterous (multi-fingered) hand should use
+    (RFC-0586). `None` (default) preserves pre-RFC-0586 behavior and works on
+    any gripper. When set, the addressing gripper must be `dexterous` and must
+    declare this grasp_type in its `dexterity.grasp_types`."""
 
 
 # ---------------------------------------------------------------------------

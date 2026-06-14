@@ -1,0 +1,25 @@
+name: manipulation/grasp_type_not_declared_rejected
+description: >
+  RFC-0586 negative: a grasp requests grasp_type `hook` on the dexterous
+  leap_hand_cell, which declares power / precision / pinch / tripod but not
+  hook. The hand is dexterous, so the requires-dexterous check passes, but the
+  requested strategy is not in its declared set, so Pass 2 rejects with
+  capability.grasp_type_not_declared. Proves the grasp_type is checked against
+  the hand's declared strategies, not accepted blindly.
+
+manifest: leap_hand_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: connector, store_as: the_connector }
+      - grasp: { target: $the_connector, force: gentle, grasp_type: hook }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.grasp_type_not_declared
