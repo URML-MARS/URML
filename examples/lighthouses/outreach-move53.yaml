@@ -161,7 +161,7 @@
   channel: github_issue
   contact: "RIOT-OS/RIOT (LGPL-2.1, ~5743 stars, Issues enabled, not archived, active 2026-06. IoT operating system for low-power networked nodes. DE/FR."
   last_touch: "2026-06-14"
-  response: none
+  response: acked
   tier: B
   country: DE
   sector: substrate-runtime
@@ -169,7 +169,7 @@
     - date: "2026-06-14"
       text: "Posted the RFC-0582 body to https://github.com/RIOT-OS/RIOT/issues/22378 under idoco2003. Networked actuator node + fleet roster (RFC-0286); LGPL-2.1 cross-citation. Awaiting response."
     - date: "2026-06-14"
-      text: "REPLY 2026-06-14: @crasbe (CONTRIBUTOR) pushed back as AI-content: 'no idea what the AI is talking about', asked for human-only correspondence stating the use and why existing RIOT protocols don't suffice. Thread OPEN. Altitude was already flagged thin. Needs a human-only reply (no AI footer) or a polite withdrawal; founder decision. Left response: none (no positive movement)."
+      text: "REPLY 2026-06-14: @crasbe (CONTRIBUTOR) pushed back as AI-content: 'no idea what the AI is talking about', asked for HUMAN-only correspondence stating the concrete use and why existing RIOT network protocols don't suffice. Thread OPEN. RIOT is an embedded RTOS for low-power nodes -- genuinely below URML's altitude (URML fleet addressing is application-layer above the OS), so the pitch was wrong-altitude. acked (responded, wants human clarification; no positive movement). FOUNDER DECISION: send a short human-only reply that either gives the concrete use plainly OR concedes URML sits above RIOT and withdraws gracefully; or let it lapse. Part of the 2026-06-14 batch (3 maintainers flagged templated-AI / wrong-fit) -- see the targeting note."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as RIOT-OS/RIOT#22378 on 2026-06-14 under idoco2003."
