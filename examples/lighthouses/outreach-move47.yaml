@@ -116,19 +116,21 @@
   posted_url: "https://github.com/PDAL/PDAL/issues/5045"
   channel: github_issue
   contact: "PDAL/PDAL (BSD, ~1.4k stars, Issues enabled, not archived, active 2026-06). Point Data Abstraction Library ('GDAL for point clouds'). Hobu Inc. lineage, US."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-14"
+  response: declined
   tier: B
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0522 body to https://github.com/PDAL/PDAL/issues/5045 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
+    - date: "2026-06-14"
+      text: "hobu (PDAL maintainer) closed #5045 COMPLETED with one line: 'This looks like automated-agent chum. If this is real, a real person needs to write it up.' AI-template rejection (no engagement with the substance). Wrong audience: PDAL is a geospatial point-data library, not a robotics consumer; the robotics-over-prior-map framing did not land. declined; no reply (accept silently; replying with more AI prose proves his point)."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md pdal body as a GitHub Issue on PDAL/PDAL under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Ingested/tiled site point data -> declared site URML consumes (robotics-over-prior-map framing). RFC asks if that framing fits PDAL's (geospatial) audience."
+  next_action: "Declined (hobu, 'automated-agent chum'). No reply. Wrong audience (geospatial point-data lib, not a robotics consumer). Part of the 2026-06-14 batch where 3 maintainers flagged templated AI / wrong-fit -- see the targeting note."
   notes: "Tier B. BSD. Point-data ingest; robotics-over-prior-map framing."
 
 - slug: openvdb

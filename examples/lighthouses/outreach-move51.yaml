@@ -43,13 +43,15 @@
   channel: github_issue
   contact: "commaai/opendbc (MIT, ~3200 stars, Issues enabled, not archived, active 2026-06. Vehicle CAN read/actuate definitions across many cars. comma.ai, US."
   last_touch: "2026-06-14"
-  response: none
+  response: declined
   tier: A
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0558 body (Move #51 anchor) to https://github.com/commaai/opendbc/issues/3463 under idoco2003. Layer-1 actuation-HAL seam; URML validated-intent above the HAL. comma.ai-lineage AI-close risk accepted. Awaiting response."
+    - date: "2026-06-14"
+      text: "2026-06-14: silently closed (completed), no comment (comma.ai-lineage fast non-code close, anticipated). Recording as declined."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as commaai/opendbc#3463 on 2026-06-14 under idoco2003."

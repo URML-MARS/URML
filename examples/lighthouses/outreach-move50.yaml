@@ -66,13 +66,17 @@
   channel: github_issue
   contact: "aquintan4/DialoStack (MIT, ~4 stars, Issues enabled, not archived, active 2026-06. LLM dialogue -> ROS2. ES."
   last_touch: "2026-06-14"
-  response: none
+  response: declined
   tier: A
   country: ES
   sector: ai-language
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0550 body to https://github.com/aquintan4/DialoStack/issues/1 under idoco2003. URML = validated target of the dialogue layer. Awaiting response."
+    - date: "2026-06-14"
+      text: "REPLY 2026-06-14: @aquintan4 (OWNER) closed completed with a constructive boundary: DialoStack is a dialogue MANAGER that ends at resolved intent (filled frame / explanation / quiz); it emits no executable physical actions, so URML's validate-then-dispatch handoff has no surface. Correct altitude read; constructive decline, not hostile."
+    - date: "2026-06-14"
+      text: "Important methodology critique in the same reply (load-bearing, not just this thread): 'this is a templated, AI-generated RFC filed near-verbatim across several robotics repos. If it is going out at scale, it should at least be checked against each project's README first. The mismatch here is clear from the first paragraph, and a pitch that doesn't fit the problem costs goodwill rather than earning comment.' He also noted the connection, if any, runs the OTHER way: a multi-turn dialogue manager is a front-end URML's Layer 4 would CONSUME, not the reverse. No reply (he closed it; replying with more AI prose proves the point). Part of the 2026-06-14 batch where 3 maintainers (aquintan4, hobu/PDAL, crasbe/RIOT) flagged templated-AI / wrong-fit on the same day -- escalated to the founder as a targeting-quality signal."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as aquintan4/DialoStack#1 on 2026-06-14 under idoco2003."
@@ -151,6 +155,8 @@
       text: "Posted the RFC-0554 body to https://github.com/reductstore/reductstore/issues/1434 under idoco2003. Audit trail as a first-class time series (Move #40 framing). Awaiting response."
     - date: "2026-06-14"
       text: "atimin (Alexey Timin, ReductStore founder) gave a friendly green light (OPEN thread): 'yes, you can use ReductStore for storing audit messages.' Converted the green light into a concrete artifact: SHIPPED examples/audit-store/ (PR #439) -- every validated URML dispatch (dispatched OR refused) becomes one audit record (ts + robot_id + intent + primitives + verdict + failing_pass + codes), mapped to a ReductStore entry-per-robot with verdict/intent labels; README has the live reduct-py write. Replied with the link + asked the idiomatic ReductStore layout question (labels vs separate entries, bucket-per-robot vs entry-per-robot, retention). Clean fit: URML's audit stream is exactly the unstructured robotics time series ReductStore is built for (Move #40 audit-as-data-source framing)."
+    - date: "2026-06-14"
+      text: "atimin (MEMBER) replied a 2nd time, substantive: 'Your approach is correct.' Concrete ReductStore guidance: nested entry structure -> store in ONE bucket and use entry paths for logical grouping; access-control / replication / lifecycle policies are per-bucket, so many buckets only when you need separate access/policies; for high event rates, BATCH writes before writing (docs: reduct.store/docs/next/guides/data-ingestion#batching-data). Validates the audit-trail-as-time-series framing AND the example's single-bucket + entry-per-robot layout. Posted a short human thank-you (idoco2003) acknowledging the single-bucket/entry-path/batching guidance. Best engagement of the 2026-06-14 batch; genuinely clean fit + receptive founder -> good listed-integration candidate."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as reductstore/reductstore#1434 on 2026-06-14 under idoco2003."
@@ -211,6 +217,8 @@
       text: "Posted the RFC-0557 body to https://github.com/berndpfrommer/rosbag2_composable_recorder/issues/10 under idoco2003. Intent record as a companion channel to a bag. Awaiting response. Completes Move #50."
     - date: "2026-06-14"
       text: "berndpfrommer (maintainer) closed #10 as COMPLETED with ZERO comments, same day. Verified NOT a conversion: discussions are disabled on the repo and the timeline shows a plain ClosedEvent (no ConvertedToDiscussion), so this is a genuine silent close, not the issue->discussion trap. No hostility, no AI-flag (no comment at all). Narrow recording-utility repo; the companion-channel pitch was tangential to its scope. declined; no reply (he silently closed it, nothing to respond to; replying adds noise)."
+    - date: "2026-06-14"
+      text: "2026-06-14: silently closed (completed), no comment. Recording as declined."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as berndpfrommer/rosbag2_composable_recorder#10 on 2026-06-14 under idoco2003."

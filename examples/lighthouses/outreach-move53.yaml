@@ -168,6 +168,8 @@
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0582 body to https://github.com/RIOT-OS/RIOT/issues/22378 under idoco2003. Networked actuator node + fleet roster (RFC-0286); LGPL-2.1 cross-citation. Awaiting response."
+    - date: "2026-06-14"
+      text: "REPLY 2026-06-14: @crasbe (CONTRIBUTOR) pushed back as AI-content: 'no idea what the AI is talking about', asked for human-only correspondence stating the use and why existing RIOT protocols don't suffice. Thread OPEN. Altitude was already flagged thin. Needs a human-only reply (no AI footer) or a polite withdrawal; founder decision. Left response: none (no positive movement)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as RIOT-OS/RIOT#22378 on 2026-06-14 under idoco2003."
