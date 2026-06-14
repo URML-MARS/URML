@@ -1,0 +1,167 @@
+# Move #51 outreach ledger. One row per target.
+#
+# Move #51: **the AV / ADAS / off-road wave** — lane D of the 2026-06-13 second
+# candidate slate. A vehicle/AV vertical URML had not mined. 8 RFCs (0558-0565);
+# f1tenth_system + f1tenth_gym folded into one (0560). Unifying framing
+# (RFC-0020): URML declares the goal + constraints, validates admissibility
+# against the vehicle's capabilities and a safety envelope (the operating
+# design domain), and CONSUMES the planned trajectory. URML does not plan or
+# drive; it declares and validates. opendbc is the exception/anchor: a vehicle
+# actuation HAL (Layer-1 seam). Outreach = request-for-comment; no ask to
+# adopt, host, or maintain anything.
+#
+# Targets / framing:
+#   - opendbc (0558, anchor, US): vehicle CAN actuation -> Layer-1 HAL seam;
+#     URML the validated-intent layer above the actuation HAL. LEAD here, not
+#     openpilot (the openpilot tracker is hostile to non-code).
+#   - sunnypilot (0559, US): openpilot fork ADAS (friendlier venue) -> safety
+#     envelope = operational design domain (ODD) check before a maneuver.
+#   - f1tenth (0560, US/UPenn, fold system+gym): 1/10 racing platform ->
+#     declare goal+constraints, validate, consume trajectory; same intent on
+#     car and gym; educational (RFC-0011).
+#   - race_stack (0561, CH/ETH): full racing stack -> URML declares+validates,
+#     race_stack plans+drives (Move #26 framing).
+#   - nature-stack (0562, US): off-road autonomy -> typed off-road ODD;
+#     consume the planned path.
+#   - easynavigation (0563, ES): Nav2 ALTERNATIVE nav framework (explicitly
+#     NOT Macenski) -> typed front door to navigation.
+#   - agopengps (0564, US): ag guidance/auto-steer -> agriculture vertical;
+#     NL field-operation front door + validate against implement.
+#   - gemstack (0565, US/UIUC): educational full-stack AV -> typed intent+ODD
+#     teaching companion. Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move51.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (state each repo's actual license, never ask). VIBE.md disclosure up front.
+# opendbc/sunnypilot are comma.ai-lineage: moderate AI-close risk, accepted.
+# Funnel 548 -> 556 on posting.
+
+- slug: opendbc
+  rfc: 558
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "commaai/opendbc (MIT, ~3200 stars, Issues enabled, not archived, active 2026-06. Vehicle CAN read/actuate definitions across many cars. comma.ai, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: substrate-runtime
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md opendbc body (Move #51 anchor) as a GitHub Issue on commaai/opendbc under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Layer-1 actuation-HAL seam framing; URML validated-intent above the HAL. MIT: state it, never ask. VIBE.md disclosure up front. comma.ai-lineage AI-close risk accepted for leverage."
+
+- slug: sunnypilot
+  rfc: 559
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "sunnypilot/sunnypilot (MIT, ~1981 stars, Issues enabled, not archived, active 2026-06. Driver-assistance system, openpilot fork. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md sunnypilot body as a GitHub Issue on sunnypilot/sunnypilot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Safety envelope = ODD check before a maneuver. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: f1tenth
+  rfc: 560
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "f1tenth/f1tenth_system (+ f1tenth/f1tenth_gym, folded). MIT. system ~119 stars, gym ~242; both Issues enabled, not archived, active 2026-05. 1/10-scale autonomous racing platform + sim. University of Pennsylvania, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md f1tenth body as a single GitHub Issue on f1tenth/f1tenth_system (referencing the gym) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare goal+constraints, validate, consume trajectory (RFC-0020); same intent car+gym; educational (RFC-0011). MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: race-stack
+  rfc: 561
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ForzaETH/race_stack (MIT, ~166 stars, Issues enabled, not archived, active 2026-05. Full autonomous-racing software stack. ETH Zurich, CH."
+  last_touch: ""
+  response: none
+  tier: A
+  country: CH
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md race-stack body as a GitHub Issue on ForzaETH/race_stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML declares+validates, race_stack plans+drives (Move #26). MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: nature-stack
+  rfc: 562
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "CGoodin/nature-stack (BSD-3-Clause, ~38 stars, Issues enabled, not archived, active 2026-06. NATURE off-road autonomous-navigation stack. Mississippi State University, US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md nature-stack body as a GitHub Issue on CGoodin/nature-stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed off-road ODD; consume the planned path (RFC-0020). BSD-3-Clause: state it, never ask. VIBE.md disclosure up front."
+
+- slug: easynavigation
+  rfc: 563
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "EasyNavigation/EasyNavigation (Apache-2.0, ~97 stars, Issues enabled, not archived, active 2026-05. Modular mobile-robot navigation framework; Nav2 alternative (explicitly NOT Macenski). ES."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md easynavigation body as a GitHub Issue on EasyNavigation/EasyNavigation under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed front door to navigation (RFC-0020). NOT a Macenski repo. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: agopengps
+  rfc: 564
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "AgOpenGPS-Official/AgOpenGPS (Apache-2.0, ~908 stars, Issues enabled, not archived, active 2026-06. Open agricultural guidance + auto-steer. US/intl, large community."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: agriculture
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md agopengps body as a GitHub Issue on AgOpenGPS-Official/AgOpenGPS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Agriculture vertical; NL field-operation front door + validate against implement (RFC-0020). Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+
+- slug: gemstack
+  rfc: 565
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "krishauser/GEMstack (MIT, ~34 stars, Issues enabled, not archived, last push 2025-05. Educational full-stack autonomous-driving framework. University of Illinois, US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: education-toolchain
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move51.md gemstack body as a GitHub Issue on krishauser/GEMstack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed intent+ODD teaching companion (RFC-0011/0020). MIT: state it, never ask. VIBE.md disclosure up front. Completes Move #51."
