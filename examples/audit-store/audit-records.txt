@@ -1,0 +1,24 @@
+URML validated-intent audit records as a time series.
+Each validated dispatch -> one audit record; refused intents are recorded too.
+robot: delivery_bot  |  envelope: delivery_demo
+
+# Audit log
+
+[DISPATCHED] go_to_shelf  primitives=move_to
+[DISPATCHED] fetch_the_mug  primitives=move_to,detect,grasp
+[REFUSED]   grab_too_hard  primitives=detect,grasp  Pass 2 (capability)  codes=capability.missing_gripper,envelope.force_exceeded
+[REFUSED]   into_the_crowd  primitives=move_to  Pass 3 (safety envelope)  codes=envelope.occupancy_zone_intrusion
+[REFUSED]   go_to_garage  primitives=move_to  Pass 2 (capability)  codes=capability.missing_location
+
+# ReductStore write plan  (bucket=urml_audit, entry=delivery_bot)
+
+ts=1700000000000000  labels={"intent":"go_to_shelf","verdict":"dispatched"}
+   body={"codes":[],"failing_pass":null,"intent":"go_to_shelf","primitives":["move_to"],"robot_id":"delivery_bot","ts":1700000000000000,"verdict":"dispatched"}
+ts=1700000001000000  labels={"intent":"fetch_the_mug","verdict":"dispatched"}
+   body={"codes":[],"failing_pass":null,"intent":"fetch_the_mug","primitives":["move_to","detect","grasp"],"robot_id":"delivery_bot","ts":1700000001000000,"verdict":"dispatched"}
+ts=1700000002000000  labels={"intent":"grab_too_hard","verdict":"refused"}
+   body={"codes":["capability.missing_gripper","envelope.force_exceeded"],"failing_pass":"Pass 2 (capability)","intent":"grab_too_hard","primitives":["detect","grasp"],"robot_id":"delivery_bot","ts":1700000002000000,"verdict":"refused"}
+ts=1700000003000000  labels={"intent":"into_the_crowd","verdict":"refused"}
+   body={"codes":["envelope.occupancy_zone_intrusion"],"failing_pass":"Pass 3 (safety envelope)","intent":"into_the_crowd","primitives":["move_to"],"robot_id":"delivery_bot","ts":1700000003000000,"verdict":"refused"}
+ts=1700000004000000  labels={"intent":"go_to_garage","verdict":"refused"}
+   body={"codes":["capability.missing_location"],"failing_pass":"Pass 2 (capability)","intent":"go_to_garage","primitives":["move_to"],"robot_id":"delivery_bot","ts":1700000004000000,"verdict":"refused"}

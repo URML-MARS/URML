@@ -1,0 +1,46 @@
+# Capability manifest for the audit-store example.
+#
+# A small mobile delivery robot. The point of this example is not the manifest
+# itself but the audit record each validated dispatch produces; this manifest
+# just gives the validator something concrete to accept and reject against.
+
+manifest_version: "0.1"
+robot_id: delivery_bot
+description: A mobile delivery robot whose validated-intent audit records are stored as a time series.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - { name: shelf, pose: { x: 2.0, y: 1.5 }, frame: map }
+  - { name: user,  pose: { x: 2.5, y: -1.5 }, frame: map }
+  - { name: crowd_spot, pose: { x: 0.0, y: 0.0 }, frame: map }   # inside the occupancy zone
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.5
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup, small_object]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary: [mug, cup, small_object]
+
+outputs:
+  named_endpoints: [operator]
