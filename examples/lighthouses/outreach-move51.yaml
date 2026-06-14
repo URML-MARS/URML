@@ -12,7 +12,7 @@
 #
 # Targets / framing:
 #   - opendbc (0558, anchor, US): vehicle CAN actuation -> Layer-1 HAL seam;
-#     URML the validated-intent layer above the actuation HAL. LEAD here, not
+#     URML the validated-intent layer above the actuation HAL. LED here, not
 #     openpilot (the openpilot tracker is hostile to non-code).
 #   - sunnypilot (0559, US): openpilot fork ADAS (friendlier venue) -> safety
 #     envelope = operational design domain (ODD) check before a maneuver.
@@ -30,138 +30,152 @@
 #   - gemstack (0565, US/UIUC): educational full-stack AV -> typed intent+ODD
 #     teaching companion. Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move51.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (state each repo's actual license, never ask). VIBE.md disclosure up front.
-# opendbc/sunnypilot are comma.ai-lineage: moderate AI-close risk, accepted.
-# Funnel 548 -> 556 on posting.
+# POSTED 2026-06-14 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (each repo's actual license stated, never asked). VIBE.md disclosure
+# up front. opendbc/sunnypilot are comma.ai-lineage: moderate AI-close risk,
+# accepted. Funnel 548 -> 556. All rows response: none, awaiting maintainer
+# reply.
 
 - slug: opendbc
   rfc: 558
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/commaai/opendbc/issues/3463"
   channel: github_issue
   contact: "commaai/opendbc (MIT, ~3200 stars, Issues enabled, not archived, active 2026-06. Vehicle CAN read/actuate definitions across many cars. comma.ai, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0558 body (Move #51 anchor) to https://github.com/commaai/opendbc/issues/3463 under idoco2003. Layer-1 actuation-HAL seam; URML validated-intent above the HAL. comma.ai-lineage AI-close risk accepted. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md opendbc body (Move #51 anchor) as a GitHub Issue on commaai/opendbc under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Layer-1 actuation-HAL seam framing; URML validated-intent above the HAL. MIT: state it, never ask. VIBE.md disclosure up front. comma.ai-lineage AI-close risk accepted for leverage."
+      text: "DONE — posted as commaai/opendbc#3463 on 2026-06-14 under idoco2003."
 
 - slug: sunnypilot
   rfc: 559
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/sunnypilot/sunnypilot/issues/1865"
   channel: github_issue
   contact: "sunnypilot/sunnypilot (MIT, ~1981 stars, Issues enabled, not archived, active 2026-06. Driver-assistance system, openpilot fork. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0559 body to https://github.com/sunnypilot/sunnypilot/issues/1865 under idoco2003. Safety envelope = ODD check before a maneuver. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md sunnypilot body as a GitHub Issue on sunnypilot/sunnypilot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Safety envelope = ODD check before a maneuver. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as sunnypilot/sunnypilot#1865 on 2026-06-14 under idoco2003."
 
 - slug: f1tenth
   rfc: 560
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/f1tenth/f1tenth_system/issues/34"
   channel: github_issue
   contact: "f1tenth/f1tenth_system (+ f1tenth/f1tenth_gym, folded). MIT. system ~119 stars, gym ~242; both Issues enabled, not archived, active 2026-05. 1/10-scale autonomous racing platform + sim. University of Pennsylvania, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0560 body (folded system+gym) to https://github.com/f1tenth/f1tenth_system/issues/34 under idoco2003. Declare goal+constraints, validate, consume trajectory; same intent car+gym. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md f1tenth body as a single GitHub Issue on f1tenth/f1tenth_system (referencing the gym) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare goal+constraints, validate, consume trajectory (RFC-0020); same intent car+gym; educational (RFC-0011). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as f1tenth/f1tenth_system#34 on 2026-06-14 under idoco2003 (references the gym)."
 
 - slug: race-stack
   rfc: 561
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/ForzaETH/race_stack/issues/39"
   channel: github_issue
   contact: "ForzaETH/race_stack (MIT, ~166 stars, Issues enabled, not archived, active 2026-05. Full autonomous-racing software stack. ETH Zurich, CH."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: CH
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0561 body to https://github.com/ForzaETH/race_stack/issues/39 under idoco2003. URML declares+validates, race_stack plans+drives (Move #26). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md race-stack body as a GitHub Issue on ForzaETH/race_stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML declares+validates, race_stack plans+drives (Move #26). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as ForzaETH/race_stack#39 on 2026-06-14 under idoco2003."
 
 - slug: nature-stack
   rfc: 562
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/CGoodin/nature-stack/issues/23"
   channel: github_issue
   contact: "CGoodin/nature-stack (BSD-3-Clause, ~38 stars, Issues enabled, not archived, active 2026-06. NATURE off-road autonomous-navigation stack. Mississippi State University, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0562 body to https://github.com/CGoodin/nature-stack/issues/23 under idoco2003. Typed off-road ODD; consume the planned path. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md nature-stack body as a GitHub Issue on CGoodin/nature-stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed off-road ODD; consume the planned path (RFC-0020). BSD-3-Clause: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as CGoodin/nature-stack#23 on 2026-06-14 under idoco2003."
 
 - slug: easynavigation
   rfc: 563
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/EasyNavigation/EasyNavigation/issues/103"
   channel: github_issue
   contact: "EasyNavigation/EasyNavigation (Apache-2.0, ~97 stars, Issues enabled, not archived, active 2026-05. Modular mobile-robot navigation framework; Nav2 alternative (explicitly NOT Macenski). ES."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: ES
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0563 body to https://github.com/EasyNavigation/EasyNavigation/issues/103 under idoco2003. Typed front door to navigation; NOT a Macenski repo. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md easynavigation body as a GitHub Issue on EasyNavigation/EasyNavigation under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed front door to navigation (RFC-0020). NOT a Macenski repo. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as EasyNavigation/EasyNavigation#103 on 2026-06-14 under idoco2003."
 
 - slug: agopengps
   rfc: 564
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/AgOpenGPS-Official/AgOpenGPS/issues/1210"
   channel: github_issue
   contact: "AgOpenGPS-Official/AgOpenGPS (Apache-2.0, ~908 stars, Issues enabled, not archived, active 2026-06. Open agricultural guidance + auto-steer. US/intl, large community."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: agriculture
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0564 body to https://github.com/AgOpenGPS-Official/AgOpenGPS/issues/1210 under idoco2003. Agriculture vertical; NL field-operation front door + validate against implement. Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md agopengps body as a GitHub Issue on AgOpenGPS-Official/AgOpenGPS under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Agriculture vertical; NL field-operation front door + validate against implement (RFC-0020). Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted as AgOpenGPS-Official/AgOpenGPS#1210 on 2026-06-14 under idoco2003."
 
 - slug: gemstack
   rfc: 565
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/krishauser/GEMstack/issues/240"
   channel: github_issue
   contact: "krishauser/GEMstack (MIT, ~34 stars, Issues enabled, not archived, last push 2025-05. Educational full-stack autonomous-driving framework. University of Illinois, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0565 body to https://github.com/krishauser/GEMstack/issues/240 under idoco2003. Typed intent+ODD teaching companion (RFC-0011/0020). Awaiting response. Completes Move #51."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move51.md gemstack body as a GitHub Issue on krishauser/GEMstack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed intent+ODD teaching companion (RFC-0011/0020). MIT: state it, never ask. VIBE.md disclosure up front. Completes Move #51."
+      text: "DONE — posted as krishauser/GEMstack#240 on 2026-06-14 under idoco2003."
