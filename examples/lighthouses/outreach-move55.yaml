@@ -27,73 +27,79 @@
 #     construction-site envs -> validated-intent gate over a trained policy
 #     (RFC-0383); off-road ODD. Apache. Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move55.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (MIT/Apache stated; UNav-Sim non-standard: stated, not asked). VIBE.md
-# disclosure up front; per-target body variation. Funnel 585 -> 589 on posting.
+# POSTED 2026-06-14 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (MIT/Apache stated; UNav-Sim non-standard: stated, not asked).
+# VIBE.md disclosure up front; per-target body variation. Funnel 585 -> 589.
+# All rows response: none, awaiting maintainer reply.
 
 - slug: aerial-autonomy-stack
   rfc: 596
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/JacopoPan/aerial-autonomy-stack/issues/88"
   channel: github_issue
   contact: "JacopoPan/aerial-autonomy-stack (MIT, ~464 stars, Issues enabled, not archived, active 2026-06. Framework to sim+deploy perception PX4/ArduPilot drones & swarms, ROS 2. Italy/EU (individual, ex-UTIAS)."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: IT
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0596 body to https://github.com/JacopoPan/aerial-autonomy-stack/issues/88 under idoco2003 (Move #55 inspection wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move55.md aerial-autonomy-stack body (Move #55 anchor) as a GitHub Issue on JacopoPan/aerial-autonomy-stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Mission intent + envelope, consume trajectory (RFC-0020); swarm = fleet (RFC-0286). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: unav-sim
   rfc: 597
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/open-airlab/UNav-Sim/issues/18"
   channel: github_issue
   contact: "open-airlab/UNav-Sim (NON-STANDARD license [GitHub: NOASSERTION], ~313 stars, Issues enabled, not archived, active 2025-05. Underwater robotics sim w/ NMPC + trained planner for pipe-following inspection (BlueROV2 Heavy). Aalborg University, Denmark."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: DK
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0597 body to https://github.com/open-airlab/UNav-Sim/issues/18 under idoco2003 (Move #55 inspection wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move55.md unav-sim body as a GitHub Issue on open-airlab/UNav-Sim under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated inspection intent + trained-planner envelope (RFC-0383). License non-standard/unrecognized: state that, no ask, no code reuse. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: bluerov2-cn
   rfc: 598
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/CentraleNantesROV/bluerov2/issues/8"
   channel: github_issue
   contact: "CentraleNantesROV/bluerov2 (Apache-2.0, ~42 stars, Issues enabled, not archived, active 2026-01. ROS 2 description/control/sim for BlueROV2 subsea inspection. Centrale Nantes, France. DISTINCT from touched BlueRobotics BlueOS/ArduSub (Move #32)."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: FR
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0598 body to https://github.com/CentraleNantesROV/bluerov2/issues/8 under idoco2003 (Move #55 inspection wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move55.md bluerov2-cn body as a GitHub Issue on CentraleNantesROV/bluerov2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Marine drive type, consume; second BlueROV2 path (URML BlueROV adapter targets BlueRobotics stack). Apache: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: roboterrain
   rfc: 599
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/jackvice/RoboTerrain/issues/4"
   channel: github_issue
   contact: "jackvice/RoboTerrain (Apache-2.0, ~37 stars, Issues enabled, not archived, active 2026-05. ROS 2 + Gazebo off-road RL framework; envs incl. industrial inspection & construction sites (Husky/rover/Leo). US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: simulator
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0599 body to https://github.com/jackvice/RoboTerrain/issues/4 under idoco2003 (Move #55 inspection wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move55.md roboterrain body as a GitHub Issue on jackvice/RoboTerrain under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated-intent gate over a trained policy (RFC-0383); off-road ODD. Apache: state it, never ask. VIBE.md disclosure up front. Completes Move #55."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
