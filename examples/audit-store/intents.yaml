@@ -1,0 +1,48 @@
+# A short stream of intents arriving at the robot. Each one is validated; whether
+# it dispatches or is refused, the validator's verdict becomes one audit record
+# written to the time series. A refused intent is as important to record as a
+# dispatched one.
+
+intents:
+  - label: go_to_shelf
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: shelf }
+
+  - label: fetch_the_mug
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: shelf }
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: gentle }
+
+  - label: grab_too_hard            # over the gripper / envelope force cap
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: 50.0 }
+
+  - label: into_the_crowd           # routes into the people-occupancy zone
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: crowd_spot }
+
+  - label: go_to_garage             # a place the manifest does not declare
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: garage }

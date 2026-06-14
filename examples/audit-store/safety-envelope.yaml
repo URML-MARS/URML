@@ -1,0 +1,21 @@
+# Safety envelope for the audit-store example: a people-occupancy zone + a
+# grip-force cap. The validator conjoins this with the manifest; rejections it
+# produces become audit records too (a refused intent is exactly the kind of
+# event an audit time series should capture).
+
+envelope_version: "0.1"
+deployment_id: delivery_demo
+description: Delivery safety envelope with a people-occupancy zone and a grip-force cap.
+
+max_velocity: 0.5
+max_grip_force_n: 5.0
+
+people_occupancy_zones:
+  - name: lobby_crowd
+    frame: map
+    vertices:
+      - [-1.0, -1.0]
+      - [1.0, -1.0]
+      - [1.0, 1.0]
+      - [-1.0, 1.0]
+    allow_override: false
