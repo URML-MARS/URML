@@ -43,7 +43,7 @@
   posted_url: "https://github.com/RobotWebTools/rosbridge_suite/discussions/1284"
   channel: github_discussion
   contact: "RobotWebTools/rosbridge_suite (BSD-3-Clause, ~1.2k stars, Issues + Discussions enabled, active, **not archived**). The canonical websocket bridge to ROS; URML validated intent rides over it as a rosbridge JSON producer."
-  last_touch: "2026-06-13"
+  last_touch: "2026-06-14"
   response: acked
   tier: A
   country: US
@@ -51,10 +51,12 @@
   comments:
     - date: "2026-06-02"
       text: "CORRECTION (2026-06-13): the prior reading was wrong. Issue #1283 was not a hostile locked wontfix -- it was CONVERTED to Discussion #1284 (issue shows 'closed COMPLETED', the conversion signature; see the issue->discussion-conversion rule). On the discussion (NOT locked), bjsowa (MEMBER) replied friendlily on 2026-06-02: 'first time I've heard about URML and I'm not that much into LLMs. Could you explain what you're asking in simpler terms? Preferably in your own (human) words.' A genuine, non-hostile clarification request, not a decline."
+    - date: "2026-06-14"
+      text: "Founder posted the short plain-human reply on discussion #1284 (his own voice, non-LLM, per bjsowa's explicit ask): URML is a small open language for what a robot should do + a safety/possibility check; rosbridge is how those commands reach ROS; the question is just whether URML producing rosbridge messages like any other client makes sense; offered a concrete example. Awaiting bjsowa. Stays acked until he re-engages."
     - date: "2026-06-13"
       text: "Repointed posted_url issues/1283 -> discussions/1284; channel issue -> discussion. The clarification request sat unanswered 11 days and the discussion was closed 2026-06-13 (not locked, so a comment is still possible). bjsowa explicitly asked for plain HUMAN, non-LLM words, so the reply is a founder-action: a short, jargon-free, human-voiced explanation (drafted, handed to the founder) that may revive the thread. response wontfix -> acked (friendly clarification ask; recovery reply pending)."
   claude_directives: []
-  next_action: "Acked (bjsowa, friendly 'explain in human words'). Founder to post a SHORT PLAIN HUMAN reply on discussion #1284 (closed but not locked) -- non-LLM voice, his explicit request; may reopen the thread. If he re-engages -> engaged. Lead with the simplest framing (URML produces rosbridge messages like any client, sanity-checking usage), offer a concrete example. Do NOT post AI prose here."
+  next_action: "Acked. Founder posted the plain-human reply on discussion #1284 (2026-06-14); awaiting bjsowa. If he re-engages -> engaged; if silent, leave it (a recovered, friendly thread, not a decline). Keep any further replies plain + human (non-LLM), per his explicit ask."
   notes: "Tier A. Lead web/teleop target. URML as a validated producer of rosbridge ops. Was misclassified wontfix; actually a converted discussion with a genuine human-words request. Surfaces a queued websocket/bridge transport-declaration Spec RFC."
 
 - slug: webrtc-ros
