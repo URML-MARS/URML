@@ -54,6 +54,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as FIRST-Tech-Challenge/FtcRobotController#2071 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: pathplanner
   rfc: 567
@@ -62,16 +63,20 @@
   channel: github_issue
   contact: "mjansen4857/pathplanner (MIT, ~487 stars, Issues enabled, not archived, active 2026-06. Path planning + following for FRC. US."
   last_touch: "2026-06-14"
-  response: none
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0567 body to https://github.com/mjansen4857/pathplanner/issues/1174 under idoco2003. Declare/validate/consume the path (RFC-0020). Awaiting response."
+    - date: "2026-06-14"
+      text: "mjansen4857 (maintainer) closed #1174 as NOT_PLANNED with zero comments, same day. NOT_PLANNED rules out an issue->discussion conversion (those close COMPLETED), so this is a genuine silent decline, not the conversion trap. No hostility, no AI-flag (no comment). FRC PathPlanner is a focused FIRST-Robotics-Competition path tool (WPILib ecosystem); out of scope for a general intent layer. declined; no reply (silent not-planned close, nothing to respond to)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as mjansen4857/pathplanner#1174 on 2026-06-14 under idoco2003."
+      status: done
+  next_action: "Declined (silent NOT_PLANNED close; verified not a conversion). No reply, do not pursue. FRC/WPILib competition tool -> narrow scope; the planner-pitch framing was right (consume-trajectory + validate-admissibility) but this maintainer wasn't interested."
 
 - slug: photonvision
   rfc: 568
@@ -90,6 +95,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as PhotonVision/photonvision#2514 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: choreo
   rfc: 569
@@ -108,6 +114,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as SleipnirGroup/Choreo#1493 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: road-runner
   rfc: 570
@@ -126,6 +133,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as acmerobotics/road-runner#136 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: libwallaby
   rfc: 571
@@ -144,6 +152,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as kipr/libwallaby#210 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: gopigo3
   rfc: 572
@@ -162,6 +171,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: blockly
   rfc: 573
@@ -180,6 +190,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as RaspberryPiFoundation/blockly#9989 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: tank-royale
   rfc: 574
@@ -198,6 +209,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as robocode-dev/tank-royale#217 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: create3-docs
   rfc: 575
@@ -216,3 +228,4 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as iRobotEducation/create3_docs#656 on 2026-06-14 under idoco2003."
+      status: done

@@ -53,6 +53,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as commaai/opendbc#3463 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: sunnypilot
   rfc: 559
@@ -71,6 +72,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as sunnypilot/sunnypilot#1865 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: f1tenth
   rfc: 560
@@ -89,6 +91,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as f1tenth/f1tenth_system#34 on 2026-06-14 under idoco2003 (references the gym)."
+      status: done
 
 - slug: race-stack
   rfc: 561
@@ -107,6 +110,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as ForzaETH/race_stack#39 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: nature-stack
   rfc: 562
@@ -125,6 +129,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as CGoodin/nature-stack#23 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: easynavigation
   rfc: 563
@@ -143,6 +148,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as EasyNavigation/EasyNavigation#103 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: agopengps
   rfc: 564
@@ -161,6 +167,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as AgOpenGPS-Official/AgOpenGPS#1210 on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: gemstack
   rfc: 565
@@ -179,3 +186,4 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as krishauser/GEMstack#240 on 2026-06-14 under idoco2003."
+      status: done
