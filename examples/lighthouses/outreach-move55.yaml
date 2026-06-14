@@ -49,6 +49,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: unav-sim
   rfc: 597
@@ -67,6 +68,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: bluerov2-cn
   rfc: 598
@@ -85,6 +87,7 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
 
 - slug: roboterrain
   rfc: 599
@@ -103,3 +106,4 @@
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
