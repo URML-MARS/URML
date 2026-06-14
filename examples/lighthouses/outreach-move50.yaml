@@ -34,154 +34,170 @@
 #   - rosbag2-composable-recorder (0557, US): composable rosbag2 recorder ->
 #     intent record as a companion channel to a bag. Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move50.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (state each repo's actual license, never ask; rosgpt has none -> say nothing;
-# vhtoolkit custom USC -> no code reuse). VIBE.md disclosure up front. Funnel
-# 539 -> 548 on posting.
+# POSTED 2026-06-14 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (each repo's actual license stated, never asked; rosgpt has no
+# license file -> said nothing; vhtoolkit custom USC -> no code reuse).
+# VIBE.md disclosure up front. Funnel 539 -> 548. All rows response: none,
+# awaiting maintainer reply.
 
 - slug: rosgpt
   rfc: 549
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/aniskoubaa/rosgpt/issues/14"
   channel: github_issue
   contact: "aniskoubaa/rosgpt (NO license file, ~449 stars, Issues enabled, not archived, last push 2025-04. Canonical NL->ROS via LLM. Anis Koubaa, Prince Sultan University, SA."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: SA
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0549 body (Move #50 anchor) to https://github.com/aniskoubaa/rosgpt/issues/14 under idoco2003. Pure conceptual-peer framing, no licensing discussion (no license file), no manifest ask. AI-close risk accepted for leverage. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md rosgpt body (Move #50 anchor) as a GitHub Issue on aniskoubaa/rosgpt under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Pure conceptual-peer framing, NO licensing discussion (no license file), no manifest ask. VIBE.md disclosure up front. AI-close risk (high-visibility solo-academic) accepted for leverage."
+    - date: "2026-06-14"
+      text: "DONE — posted as aniskoubaa/rosgpt#14 on 2026-06-14 under idoco2003."
 
 - slug: dialostack
   rfc: 550
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/aquintan4/DialoStack/issues/1"
   channel: github_issue
   contact: "aquintan4/DialoStack (MIT, ~4 stars, Issues enabled, not archived, active 2026-06. LLM dialogue -> ROS2. ES."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: ES
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0550 body to https://github.com/aquintan4/DialoStack/issues/1 under idoco2003. URML = validated target of the dialogue layer. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md dialostack body as a GitHub Issue on aquintan4/DialoStack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML = validated target of the dialogue layer. MIT: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as aquintan4/DialoStack#1 on 2026-06-14 under idoco2003."
 
 - slug: retico-core
   rfc: 551
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/retico-team/retico-core/issues/20"
   channel: github_issue
   contact: "retico-team/retico-core (Apache-2.0, ~12 stars, Issues enabled, not archived, active 2026-05. Incremental spoken dialogue framework."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0551 body to https://github.com/retico-team/retico-core/issues/20 under idoco2003. URML = validated commit after incremental intent recognition. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md retico-core body as a GitHub Issue on retico-team/retico-core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML = validated commit after incremental intent recognition. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as retico-team/retico-core#20 on 2026-06-14 under idoco2003."
 
 - slug: furhat
   rfc: 552
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/FurhatRobotics/example-skills/issues/55"
   channel: github_issue
   contact: "FurhatRobotics/example-skills (MIT, ~32 stars, Issues enabled, not archived, active 2025-11. Social conversational robot skill SDK. SE."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: SE
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0552 body to https://github.com/FurhatRobotics/example-skills/issues/55 under idoco2003. Lighter touch; URML only at the physical-action seam. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md furhat body as a GitHub Issue on FurhatRobotics/example-skills under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Lighter touch; URML only at the physical-action seam, honest 'does a skill drive a physical robot?'. MIT: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as FurhatRobotics/example-skills#55 on 2026-06-14 under idoco2003."
 
 - slug: vhtoolkit
   rfc: 553
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/USC-ICT/vhtoolkit/issues/1"
   channel: github_issue
   contact: "USC-ICT/vhtoolkit (custom USC license, ~9 stars, Issues enabled, not archived, active 2026-05. Virtual Human Toolkit; embodied conversational virtual humans. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0553 body to https://github.com/USC-ICT/vhtoolkit/issues/1 under idoco2003. Conceptual-peer on embodied-agent intent; research-scope, custom USC license, no code reuse. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md vhtoolkit body as a GitHub Issue on USC-ICT/vhtoolkit under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Conceptual-peer on embodied-agent intent; research-scope, custom USC license, no code reuse, state never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as USC-ICT/vhtoolkit#1 on 2026-06-14 under idoco2003."
 
 - slug: reductstore
   rfc: 554
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/reductstore/reductstore/issues/1434"
   channel: github_issue
   contact: "reductstore/reductstore (Apache-2.0, ~353 stars, Issues enabled, not archived, active 2026-06. Time-series database for unstructured robotics/edge data. DE/US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: DE
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0554 body to https://github.com/reductstore/reductstore/issues/1434 under idoco2003. Audit trail as a first-class time series (Move #40 framing). Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md reductstore body as a GitHub Issue on reductstore/reductstore under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Audit trail as a first-class time series (Move #40 framing). Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as reductstore/reductstore#1434 on 2026-06-14 under idoco2003."
 
 - slug: forge
   rfc: 555
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/arpitg1304/forge/issues/27"
   channel: github_issue
   contact: "arpitg1304/forge (MIT, ~137 stars, Issues enabled, not archived, active 2026-06. RLDS/LeRobot/rosbag robot-learning data converter. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0555 body to https://github.com/arpitg1304/forge/issues/27 under idoco2003. Intent records as a dataset annotation channel. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md forge body as a GitHub Issue on arpitg1304/forge under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Intent records as a dataset annotation channel. MIT: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as arpitg1304/forge#27 on 2026-06-14 under idoco2003."
 
 - slug: ares
   rfc: 556
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/jacobphillips99/ares/issues/2"
   channel: github_issue
   contact: "jacobphillips99/ares (Apache-2.0, ~70 stars, Issues enabled, not archived, last push 2025-05. Robot-episode data ingest/annotate/analyze. a16z, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0556 body to https://github.com/jacobphillips99/ares/issues/2 under idoco2003. Closest robot-data intent peer; structured intent+verdict annotation. Awaiting response."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md ares body as a GitHub Issue on jacobphillips99/ares under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Closest robot-data intent peer; structured intent+verdict annotation. Apache-2.0: state it, never ask. VIBE.md disclosure up front."
+    - date: "2026-06-14"
+      text: "DONE — posted as jacobphillips99/ares#2 on 2026-06-14 under idoco2003."
 
 - slug: rosbag2-composable-recorder
   rfc: 557
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/berndpfrommer/rosbag2_composable_recorder/issues/10"
   channel: github_issue
   contact: "berndpfrommer/rosbag2_composable_recorder (Apache-2.0, ~19 stars, Issues enabled, not archived, active 2026-04. Composable rosbag2 recorder for ROS 2. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0557 body to https://github.com/berndpfrommer/rosbag2_composable_recorder/issues/10 under idoco2003. Intent record as a companion channel to a bag. Awaiting response. Completes Move #50."
   claude_directives:
-    - date: "2026-06-13"
-      text: "When authorized, post the posts-move50.md rosbag2-composable-recorder body as a GitHub Issue on berndpfrommer/rosbag2_composable_recorder under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Intent record as a companion channel to a bag. Apache-2.0: state it, never ask. VIBE.md disclosure up front. Completes Move #50."
+    - date: "2026-06-14"
+      text: "DONE — posted as berndpfrommer/rosbag2_composable_recorder#10 on 2026-06-14 under idoco2003."
