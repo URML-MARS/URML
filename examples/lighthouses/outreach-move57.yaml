@@ -1,0 +1,115 @@
+# Move #57 outreach ledger. One row per target.
+#
+# Move #57: **the soft-robotics / assistive wave** — lane E of the 2026-06-14
+# third candidate slate. 5 RFCs (0605-0609); gym-softrobot folded into
+# PyElastica (0606). DROPPED two of the slate's "strong" picks for staleness
+# (the 18-month freshness bar, consistent with the Move #55 excavator drop):
+# StanfordASL/soft-robot-control (MIT, on-altitude, but pushed 2024-10 = ~20mo)
+# and chai3d/chai3d (NOASSERTION, haptics-adjacent, pushed 2024-08 = ~22mo).
+# No padding. Framing: URML declares the soft-robot/assistive subtask goal +
+# operating envelope and CONSUMES the computed control / decoded intent; it does
+# not model FEM, simulate, train, or decode EMG. Research-scope for assistive
+# (no clinical claim). Outreach = request-for-comment; no ask to adopt/host/
+# maintain.
+#
+# Targets / framing:
+#   - softrobots (0605, anchor, FR/INRIA): SOFA soft-robot FEM + inverse control
+#     -> declare goal + envelope, consume the computed actuation. LGPL cross-cite.
+#   - pyelastica (0606, US/UIUC, fold gym-softrobot): Cosserat soft sim + RL env
+#     -> declared control goal above sim/training; trained policy declares its
+#     envelope (RFC-0383). MIT.
+#   - libemg (0607, CA/UNB): myoelectric control library -> URML consumes a
+#     DECODED EMG intent, validates the action vs the assistive device.
+#     RESEARCH-scope, no clinical claim. MIT.
+#   - bottango (0608, US): animatronics animation tool + REST API -> portable
+#     typed-intent layer over per-effector control. BSD-3.
+#   - o80 (0609, DE/MPI-IS): real-time PAM (pneumatic-muscle) control interface
+#     -> declare goal + envelope, dispatch to the real-time loop. BSD-3.
+#     Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move57.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (MIT/BSD stated; SoftRobots LGPL cross-cite, no code reuse). VIBE.md
+# disclosure up front; per-target body variation. Funnel 594 -> 599 on posting.
+
+- slug: softrobots
+  rfc: 605
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "SofaDefrost/SoftRobots (LGPL-3.0, ~137 stars, Issues enabled, not archived, active 2026-06. SOFA plugin: FEM modeling + inverse control of pneumatic/cable soft robots. INRIA Defrost, France."
+  last_touch: ""
+  response: none
+  tier: A
+  country: FR
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move57.md softrobots body (Move #57 anchor) as a GitHub Issue on SofaDefrost/SoftRobots under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare goal + envelope, consume the computed actuation (RFC-0020). LGPL-3.0 cross-cite only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: pyelastica
+  rfc: 606
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "GazzolaLab/PyElastica (MIT, ~343 stars, Issues enabled, not archived, active 2026-03. Cosserat-rod sim for soft/slender/muscular structures. + skim0119/gym-softrobot (MIT, ~44 stars, active 2025-07) RL env, folded. UIUC, US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move57.md pyelastica body as a single GitHub Issue on GazzolaLab/PyElastica (referencing gym-softrobot) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declared control goal above sim/training; trained policy declares its envelope (RFC-0383). MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: libemg
+  rfc: 607
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "LibEMG/libemg (MIT, ~73 stars, Issues enabled, not archived, active 2026-05. Open myoelectric-control library (EMG acquisition->features->classifier->online). University of New Brunswick, Canada."
+  last_touch: ""
+  response: none
+  tier: A
+  country: CA
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move57.md libemg body as a GitHub Issue on LibEMG/libemg under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. URML consumes a DECODED EMG intent, validates the action vs the device. RESEARCH-scope, NO clinical claim. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: bottango
+  rfc: 608
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "EvanBottango/Bottango (BSD-3-Clause, ~57 stars, Issues enabled, not archived, active 2026-06. Animation tool for animatronics/performance robots; REST API + open drivers. US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move57.md bottango body as a GitHub Issue on EvanBottango/Bottango under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Portable typed-intent layer over per-effector animatronics control. BSD-3: state it, never ask. VIBE.md disclosure up front."
+
+- slug: o80
+  rfc: 609
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "intelligent-soft-robots/o80 (BSD-3-Clause, ~10 stars, Issues enabled, not archived, active 2025-11. Real-time control interface for pneumatic-artificial-muscle (PAM) soft robots. Max Planck Institute for Intelligent Systems, Germany."
+  last_touch: ""
+  response: none
+  tier: B
+  country: DE
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move57.md o80 body as a GitHub Issue on intelligent-soft-robots/o80 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Declare goal + envelope, dispatch to the real-time PAM loop. BSD-3: state it, never ask. VIBE.md disclosure up front. Completes Move #57 (and the third candidate slate's Lane E)."
