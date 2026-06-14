@@ -88,7 +88,12 @@ All twenty-four primitives are fully covered. Fixture column cites one
 representative fixture; most primitives have several (positive and negative).
 The `arm` selector on `grasp`/`release` (RFC-0010) rides their existing rows;
 it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
-`biped/08_arm_not_declared_rejected`).
+`biped/08_arm_not_declared_rejected`). The `grasp_type` selector on `grasp`
+(RFC-0586, for a `dexterous` gripper) likewise rides the `grasp` row; its
+fixtures are under `manipulation/` (`01_dexterous_precision_grasp_positive`,
+`02_grasp_type_requires_dexterous_rejected`,
+`03_grasp_type_not_declared_rejected`,
+`04_dexterous_grasp_no_type_positive`).
 
 | # | Primitive | Spec | Schema | Impl (ros2) | Conformance (representative) | Example |
 |---|---|---|---|---|---|---|

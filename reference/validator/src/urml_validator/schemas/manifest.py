@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from urml_validator.schemas.common import Identifier, Pose, Transform
+from urml_validator.schemas.common import GraspType, Identifier, Pose, Transform
 from urml_validator.schemas.connectivity import Connectivity
 
 
@@ -144,17 +144,65 @@ class Mobility(BaseModel):
     )
 
 
+class Dexterity(BaseModel):
+    """A dexterous (multi-fingered) hand's articulation (RFC-0586).
+
+    Present only on a `Gripper` whose `kind` is `dexterous`. Declares the
+    hand's actuated degrees of freedom, finger count, and the closed set of
+    grasp strategies it supports, so that a `grasp(grasp_type: ...)` can be
+    validated against what the hand can actually do. `supports_in_hand_
+    manipulation` records whether the hand can reorient an object in-hand; it
+    is declarative in v0.1 (no in-hand primitive ships in RFC-0586).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    dof: int = Field(..., ge=2, description="Total actuated degrees of freedom across the hand.")
+    finger_count: int = Field(..., ge=2, description="Number of independently actuated fingers.")
+    grasp_types: list[GraspType] = Field(
+        ...,
+        min_length=1,
+        description="Grasp strategies this hand supports; a grasp_type must be one of these.",
+    )
+    supports_in_hand_manipulation: bool = False
+
+
 class Gripper(BaseModel):
-    """A gripper declared in the manifest's manipulation block."""
+    """A gripper declared in the manifest's manipulation block.
+
+    A `dexterous` gripper (RFC-0586) is a multi-fingered hand and carries a
+    `dexterity` block; every other kind is a single-DoF end effector and must
+    not carry one.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     name: Identifier
-    kind: Literal["pneumatic", "servo_electric", "vacuum", "magnetic", "compliant"]
+    kind: Literal[
+        "pneumatic", "servo_electric", "vacuum", "magnetic", "compliant", "dexterous"
+    ]
     force_min_n: float = Field(..., ge=0)
     force_max_n: float = Field(..., gt=0)
     accepted_classes: list[Identifier] = Field(default_factory=list)
     movable: bool = True
+    dexterity: Dexterity | None = Field(
+        None,
+        description="Articulation of a multi-fingered hand; required iff kind is `dexterous` (RFC-0586).",
+    )
+
+    @model_validator(mode="after")
+    def _dexterity_matches_kind(self) -> Gripper:
+        if self.kind == "dexterous" and self.dexterity is None:
+            raise ValueError(
+                f"gripper {self.name!r} has kind 'dexterous' but no `dexterity` block; "
+                "declare dof, finger_count, and grasp_types (RFC-0586)."
+            )
+        if self.kind != "dexterous" and self.dexterity is not None:
+            raise ValueError(
+                f"gripper {self.name!r} declares a `dexterity` block but kind is "
+                f"{self.kind!r}; `dexterity` is only valid on a `dexterous` gripper (RFC-0586)."
+            )
+        return self
 
 
 class Arm(BaseModel):

@@ -1997,6 +1997,22 @@ def _check_arm_addressable(
     ]
 
 
+def _grippers_for_arm(arm: str, manip: Any) -> list[Gripper]:
+    """RFC-0586: the gripper(s) an addressed `grasp` could resolve to.
+
+    A named arm (including `left`/`right` when declared in `manipulation.arms`)
+    resolves to that arm's bound gripper. `any`, or any arm that is not a
+    declared arm name, falls back to all declared grippers (mirroring the
+    existing force check's "any declared gripper" semantics).
+    """
+    by_name = {g.name: g for g in manip.grippers}
+    for a in manip.arms:
+        if a.name == arm:
+            g = by_name.get(a.gripper_ref)
+            return [g] if g is not None else []
+    return list(manip.grippers)
+
+
 def _check_grasp_caps(
     args: GraspArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
@@ -2026,6 +2042,37 @@ def _check_grasp_caps(
                     f"{[(g.name, g.force_min_n, g.force_max_n) for g in manifest.manipulation.grippers]!r}.",
                     field="force",
                     suggestion="Pick a softer/firmer level, or declare a gripper covering the requested range.",
+                )
+            )
+    if args.grasp_type is not None:
+        candidates = _grippers_for_arm(args.arm, manifest.manipulation)
+        dexterous = [g for g in candidates if g.kind == "dexterous" and g.dexterity is not None]
+        if not dexterous:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_GRASP_TYPE_REQUIRES_DEXTEROUS,
+                    "grasp",
+                    path,
+                    f"grasp_type {args.grasp_type!r} requires a dexterous (multi-fingered) hand, "
+                    f"but no addressed gripper is dexterous "
+                    f"(candidates: {[g.name for g in candidates]!r}).",
+                    field="grasp_type",
+                    suggestion="Drop grasp_type for a non-dexterous gripper, or declare a "
+                    "`dexterous` gripper with a `dexterity` block.",
+                )
+            )
+        elif not any(args.grasp_type in g.dexterity.grasp_types for g in dexterous):
+            declared = sorted({t for g in dexterous for t in g.dexterity.grasp_types})
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_GRASP_TYPE_NOT_DECLARED,
+                    "grasp",
+                    path,
+                    f"grasp_type {args.grasp_type!r} is not declared by the addressed dexterous "
+                    f"hand(s); declared grasp_types: {declared!r}.",
+                    field="grasp_type",
+                    suggestion="Use one of the declared grasp_types, or add this one to the "
+                    "hand's dexterity.grasp_types.",
                 )
             )
     out += _check_arm_addressable(args.arm, manifest, "grasp", path)

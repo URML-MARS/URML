@@ -150,3 +150,21 @@ class Force(BaseModel):
 
     level: Literal["gentle", "firm"] | None = None
     newtons: float | None = None
+
+
+# Grasp strategies a multi-fingered (dexterous) hand can be asked to perform
+# (RFC-0586). Shared between the manifest (a dexterous gripper declares which
+# of these it supports) and the `grasp` primitive (an optional `grasp_type`
+# selects one, validated against the addressed gripper's declared set). The
+# set is the common grasp taxonomy; `custom` is the escape hatch for a hand
+# whose strategy does not map onto a standard name.
+GraspType = Literal[
+    "power",
+    "precision",
+    "lateral",
+    "tripod",
+    "pinch",
+    "spherical",
+    "hook",
+    "custom",
+]

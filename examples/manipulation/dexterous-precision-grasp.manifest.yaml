@@ -1,0 +1,88 @@
+# Manifest for the manipulation/dexterous-precision-grasp example (RFC-0586).
+# A single research arm carrying a LEAP-Hand-style 16-DoF, 4-finger dexterous
+# hand, declared as a `dexterous` gripper with a `dexterity` block listing the
+# grasp strategies it supports. US provenance, so the bundled US-federal
+# default policy (RFC-0004) accepts it; the language path also runs under
+# --no-policy.
+
+manifest_version: "0.1"
+robot_id: dexterous_cell_demo
+description: Single research arm with a 16-DoF dexterous hand for fine manipulation.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: parts_tray
+    pose: { x: 0.45, y: -0.25, z: 0.10 }
+    frame: cell
+    description: Source tray for small parts.
+  - name: assembly_fixture
+    pose: { x: -0.35, y: 0.20, z: 0.12 }
+    frame: cell
+    description: Destination fixture for fine assembly.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: leap_hand
+      kind: dexterous
+      force_min_n: 0.5
+      force_max_n: 20.0
+      accepted_classes: [small_part, peg, connector]
+      movable: true
+      dexterity:
+        dof: 16
+        finger_count: 4
+        grasp_types: [power, precision, pinch, tripod]
+        supports_in_hand_manipulation: true
+  reachable_workspace_m: 0.80
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - small_part
+    - peg
+    - connector
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: dexterous_hand_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US

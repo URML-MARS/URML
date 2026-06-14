@@ -766,6 +766,7 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0583](0583-contiki-ng-outreach.md) | Outreach | Contiki-NG (`contiki-ng/contiki-ng`) integration; Move #53, **Tier B**; low-power IoT OS → **explicitly thin seam** (sensing-first), posted with that stated; BSD-3; RFC from the maintainers | Draft | 2026-06-14 |
 | [0584](0584-embassy-outreach.md) | Outreach | Embassy (`embassy-rs/embassy`) integration; Move #53; async embedded Rust → minimal_node Rust executor, type-system alignment (RFC-0018); Apache/MIT; RFC from the maintainers | Draft | 2026-06-14 |
 | [0585](0585-rtic-outreach.md) | Outreach | RTIC (`rtic-rs/rtic`) integration; Move #53, **completes the wave + the candidate slate**; real-time Rust → cyclic-timing resonance (RFC-0016 ↔ RTIC task set); Apache/MIT; RFC from the maintainers | Draft | 2026-06-14 |
+| [0586](0586-dexterous-hand-declaration.md) | Spec | Dexterous (multi-fingered) hand declaration: optional `dexterous` gripper kind + `dexterity` block (dof/finger_count/grasp_types) and an optional `grasp_type` on `grasp`, validated against the addressed hand (`capability.grasp_type_requires_dexterous` / `_not_declared`); no new primitive; threads `grasp_type` into the manipulation goal + audit; surfaced by the LEAP Hand / Shadow Robot engagement (RFC-0357) | Implemented | 2026-06-14 |
 
 ## Lifecycle states
 

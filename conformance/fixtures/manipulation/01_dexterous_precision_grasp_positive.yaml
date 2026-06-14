@@ -1,0 +1,23 @@
+name: manipulation/dexterous_precision_grasp_positive
+description: >
+  RFC-0586 positive: a grasp selects grasp_type `precision` on a dexterous
+  (16-DoF, 4-finger) hand that declares precision among its grasp_types. The
+  leap_hand_cell manifest declares the hand `dexterous` with a `dexterity`
+  block; the grasp_type resolves against it and validates. Proves the
+  grasp_type selector is honored when the addressed hand supports it.
+
+manifest: leap_hand_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: peg, store_as: the_peg }
+      - grasp: { target: $the_peg, force: gentle, grasp_type: precision }
+
+expected_validation:
+  accepted: true
+  error_codes: []

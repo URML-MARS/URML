@@ -1,0 +1,24 @@
+name: manipulation/grasp_type_requires_dexterous_rejected
+description: >
+  RFC-0586 negative: a grasp_type is requested on a manifest whose only
+  gripper is a single-DoF servo_electric gripper. The cobot_cell declares no
+  dexterous hand, so the grasp_type cannot resolve and Pass 2 rejects with
+  capability.grasp_type_requires_dexterous. Proves grasp_type is gated on a
+  declared dexterous hand rather than silently ignored.
+
+manifest: cobot_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: widget_red, store_as: part }
+      - grasp: { target: $part, force: firm, grasp_type: precision }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.grasp_type_requires_dexterous

@@ -1,0 +1,23 @@
+name: manipulation/dexterous_grasp_no_type_positive
+description: >
+  RFC-0586 backward-compatibility positive: a grasp with no grasp_type on the
+  dexterous leap_hand_cell. A dexterous hand still works as an ordinary
+  gripper, so omitting grasp_type (the default) validates with no new check.
+  Proves RFC-0586 is additive: a dexterous hand does not force grasp_type, and
+  pre-RFC-0586 programs are unaffected.
+
+manifest: leap_hand_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: small_part, store_as: the_part }
+      - grasp: { target: $the_part, force: gentle }
+
+expected_validation:
+  accepted: true
+  error_codes: []

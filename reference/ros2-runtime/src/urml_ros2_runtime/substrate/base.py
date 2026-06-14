@@ -228,6 +228,7 @@ class ROSAdapter(Protocol):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
     ) -> ManipulationResult:
         """Grasp or release. Used by `grasp`, `release`.
 
@@ -235,6 +236,10 @@ class ROSAdapter(Protocol):
         attributes, etc.) the runtime got from a prior `detect`. `release_at`
         may be either a resolved object dict or a literal named-location
         string, depending on whether the URML used `$ref` or a name.
+
+        `grasp_type` (RFC-0586) is the dexterous-hand grasp strategy selected by
+        the intent, or `None` for an ordinary gripper; the runtime records it in
+        the audit and a dexterous substrate may map it to a hand preset.
         """
         ...
 

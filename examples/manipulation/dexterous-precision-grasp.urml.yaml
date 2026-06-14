@@ -1,0 +1,34 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: manipulation/dexterous-precision-grasp
+# Source NL: "Find the connector and pick it up with a precision grip, then
+#             place it on the assembly fixture." (see the .en.txt)
+#
+# Dexterous (multi-fingered) hand manipulation (RFC-0586). The cell carries a
+# 16-DoF, 4-finger hand declared as a `dexterous` gripper. This program
+# detects a connector, grasps it with `grasp_type: precision` (validated
+# against the hand's declared grasp_types), then places it on the assembly
+# fixture. `grasp_type` is the only new surface; everything else is ordinary
+# detect / grasp / release. Validatable end-to-end via the companion manifest:
+#
+#   urml validate dexterous-precision-grasp.urml.yaml \
+#     -m dexterous-precision-grasp.manifest.yaml --profile industrial
+#
+# The manifest carries a compliant US provenance block, so it also passes
+# Pass 5; pass `--no-policy` to exercise the language path alone.
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: connector
+        store_as: the_connector
+    - grasp:
+        target: $the_connector
+        force: gentle
+        grasp_type: precision
+    - release:
+        mode: place
+        at: assembly_fixture
