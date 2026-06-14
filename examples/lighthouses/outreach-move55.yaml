@@ -1,0 +1,99 @@
+# Move #55 outreach ledger. One row per target.
+#
+# Move #55: **the inspection-robotics wave** — lane B of the 2026-06-14 third
+# candidate slate. A THIN lane: terrestrial pipe/bridge/construction-machine
+# open source is mostly stale/academic, so the clean surface is aerial +
+# underwater + off-road. 4 RFCs (0596-0599). DROPPED the MathWorks
+# autonomous-excavator (BSD-3, on-altitude but pushed 2024-07 = ~23mo, past the
+# 18-month freshness bar) and the ODM/WebODM photogrammetry pair (AGPL,
+# data-processing not control = the geospatial wrong-audience profile that got
+# PDAL hostile-closed as "automated-agent chum", RFC-0522). No padding.
+# Framing (RFC-0020): URML declares the inspection goal + operating envelope,
+# validates against the platform's capabilities, and CONSUMES the planned
+# trajectory; for the trained-policy targets, RFC-0383 (a policy declares its
+# envelope). Outreach = request-for-comment; no ask to adopt/host/maintain.
+#
+# Targets / framing:
+#   - aerial-autonomy-stack (0596, anchor, IT/EU): PX4/ROS2 perception drone +
+#     swarm -> mission intent + envelope, validate, consume trajectory; swarm =
+#     fleet roster (RFC-0286). MIT.
+#   - unav-sim (0597, DK/Aalborg): underwater pipe-following inspection sim
+#     (BlueROV2 Heavy, NMPC + trained planner) -> validated inspection intent +
+#     trained-planner envelope (RFC-0383). NON-STANDARD license: state, no ask.
+#   - bluerov2-cn (0598, FR/Centrale Nantes): BlueROV2 ROS2 control/sim for
+#     subsea inspection -> marine drive type, consume; DISTINCT from the touched
+#     BlueRobotics BlueOS/ArduSub ecosystem (Move #32). Apache.
+#   - roboterrain (0599, US): ROS2+Gazebo off-road RL framework w/ inspection/
+#     construction-site envs -> validated-intent gate over a trained policy
+#     (RFC-0383); off-road ODD. Apache. Completes the wave.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move55.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (MIT/Apache stated; UNav-Sim non-standard: stated, not asked). VIBE.md
+# disclosure up front; per-target body variation. Funnel 585 -> 589 on posting.
+
+- slug: aerial-autonomy-stack
+  rfc: 596
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "JacopoPan/aerial-autonomy-stack (MIT, ~464 stars, Issues enabled, not archived, active 2026-06. Framework to sim+deploy perception PX4/ArduPilot drones & swarms, ROS 2. Italy/EU (individual, ex-UTIAS)."
+  last_touch: ""
+  response: none
+  tier: A
+  country: IT
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move55.md aerial-autonomy-stack body (Move #55 anchor) as a GitHub Issue on JacopoPan/aerial-autonomy-stack under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Mission intent + envelope, consume trajectory (RFC-0020); swarm = fleet (RFC-0286). MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: unav-sim
+  rfc: 597
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "open-airlab/UNav-Sim (NON-STANDARD license [GitHub: NOASSERTION], ~313 stars, Issues enabled, not archived, active 2025-05. Underwater robotics sim w/ NMPC + trained planner for pipe-following inspection (BlueROV2 Heavy). Aalborg University, Denmark."
+  last_touch: ""
+  response: none
+  tier: A
+  country: DK
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move55.md unav-sim body as a GitHub Issue on open-airlab/UNav-Sim under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated inspection intent + trained-planner envelope (RFC-0383). License non-standard/unrecognized: state that, no ask, no code reuse. VIBE.md disclosure up front."
+
+- slug: bluerov2-cn
+  rfc: 598
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "CentraleNantesROV/bluerov2 (Apache-2.0, ~42 stars, Issues enabled, not archived, active 2026-01. ROS 2 description/control/sim for BlueROV2 subsea inspection. Centrale Nantes, France. DISTINCT from touched BlueRobotics BlueOS/ArduSub (Move #32)."
+  last_touch: ""
+  response: none
+  tier: B
+  country: FR
+  sector: robot-platform
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move55.md bluerov2-cn body as a GitHub Issue on CentraleNantesROV/bluerov2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Marine drive type, consume; second BlueROV2 path (URML BlueROV adapter targets BlueRobotics stack). Apache: state it, never ask. VIBE.md disclosure up front."
+
+- slug: roboterrain
+  rfc: 599
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "jackvice/RoboTerrain (Apache-2.0, ~37 stars, Issues enabled, not archived, active 2026-05. ROS 2 + Gazebo off-road RL framework; envs incl. industrial inspection & construction sites (Husky/rover/Leo). US."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: simulator
+  comments: []
+  claude_directives:
+    - date: "2026-06-14"
+      text: "When authorized, post the posts-move55.md roboterrain body as a GitHub Issue on jackvice/RoboTerrain under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated-intent gate over a trained policy (RFC-0383); off-road ODD. Apache: state it, never ask. VIBE.md disclosure up front. Completes Move #55."
