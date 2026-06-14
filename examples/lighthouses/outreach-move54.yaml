@@ -40,153 +40,169 @@
 #     to non-Python instruments) -> neutral typed action at that boundary.
 #     NO license file: state that, no ask, no code reuse. Completes the wave.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move54.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (MIT/BSD: state, never ask; nimsos no-license: say so, no ask). VIBE.md
-# disclosure up front; per-target body variation. Funnel 576 -> 585 on posting.
+# POSTED 2026-06-14 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (MIT/BSD stated; nimsos no-license: stated, not asked). VIBE.md
+# disclosure up front; per-target body variation. Funnel 576 -> 585. All rows
+# response: none, awaiting maintainer reply.
 
 - slug: pylabrobot
   rfc: 587
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/PyLabRobot/pylabrobot/issues/1091"
   channel: github_issue
   contact: "PyLabRobot/pylabrobot (MIT, ~468 stars, Issues enabled, not archived, active 2026-06. Hardware-agnostic Python SDK for liquid handlers / plate readers / pumps. US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0587 body to https://github.com/PyLabRobot/pylabrobot/issues/1091 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md pylabrobot body (Move #54 anchor) as a GitHub Issue on PyLabRobot/pylabrobot under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Deck/labware model = lab capability manifest. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: ad-sdl
   rfc: 588
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/AD-SDL/MADSci/issues/348"
   channel: github_issue
   contact: "AD-SDL/MADSci (+ AD-SDL/wei, folded). MIT. MADSci ~59 stars, WEI ~9; both Issues enabled, not archived, active (MADSci 2026-06, WEI 2025-05). Workcell orchestration for autonomous labs. Argonne National Laboratory, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0588 body to https://github.com/AD-SDL/MADSci/issues/348 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md ad-sdl body as a single GitHub Issue on AD-SDL/MADSci (referencing WEI) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Per-node validated step + workcell-as-roster (RFC-0286). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: aquarium
   rfc: 589
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/aquariumbio/aquarium/issues/747"
   channel: github_issue
   contact: "aquariumbio/aquarium (MIT, ~68 stars, Issues enabled, not archived, active 2025-12. Laboratory operating system: typed unit-operation protocols + sample/inventory tracking. University of Washington BIOFAB, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0589 body to https://github.com/aquariumbio/aquarium/issues/747 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md aquarium body as a GitHub Issue on aquariumbio/aquarium under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Typed-operation peer (typed unit ops <-> typed primitives). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: bluesky
   rfc: 590
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/bluesky/bluesky/issues/2027"
   channel: github_issue
   contact: "bluesky/bluesky (BSD-3-Clause, ~228 stars, Issues enabled, not archived, active 2026-06. Experiment-specification + run-engine library; declarative plans dispatched to instruments. Brookhaven NSLS-II, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0590 body to https://github.com/bluesky/bluesky/issues/2027 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md bluesky body as a GitHub Issue on bluesky/bluesky under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Two declare-then-execute loops; pre-dispatch validation pass. BSD-3: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: alabos
   rfc: 591
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/CederGroupHub/alabos/issues/102"
   channel: github_issue
   contact: "CederGroupHub/alabos (MIT, ~52 stars, Issues enabled, not archived, active 2026-02. Task/device orchestration OS for the A-Lab autonomous materials lab. Lawrence Berkeley National Laboratory, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0591 body to https://github.com/CederGroupHub/alabos/issues/102 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md alabos body as a GitHub Issue on CederGroupHub/alabos under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Per-task validated step + device-defs-toward-manifest. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: pyhamilton
   rfc: 592
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/dgretton/pyhamilton/issues/35"
   channel: github_issue
   contact: "dgretton/pyhamilton (MIT, ~184 stars, Issues enabled, not archived, active 2026-05. Python interface for Hamilton liquid-handling robots. MIT Media Lab lineage, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0592 body to https://github.com/dgretton/pyhamilton/issues/35 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md pyhamilton body as a GitHub Issue on dgretton/pyhamilton under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Concrete substrate; deck config = manifest. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: pycro-manager
   rfc: 593
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/micro-manager/pycro-manager/issues/815"
   channel: github_issue
   contact: "micro-manager/pycro-manager (BSD-3-Clause, ~184 stars, Issues enabled, not archived, active 2026-03. Python layer over Micro-Manager for microscope acquisition automation. UCSF / UW, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: A
   country: US
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0593 body to https://github.com/micro-manager/pycro-manager/issues/815 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md pycro-manager body as a GitHub Issue on micro-manager/pycro-manager under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Validated acquisition instruction; scope config = manifest. BSD-3: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: self-driving-lab-demo
   rfc: 594
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/sparks-baird/self-driving-lab-demo/issues/273"
   channel: github_issue
   contact: "sparks-baird/self-driving-lab-demo (MIT, ~82 stars, Issues enabled, not archived, active 2025-11. Accessible teaching framework for self-driving laboratories (closed-loop optimize/actuate/measure). University of Utah, US."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: US
   sector: education-toolchain
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0594 body to https://github.com/sparks-baird/self-driving-lab-demo/issues/273 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md self-driving-lab-demo body as a GitHub Issue on sparks-baird/self-driving-lab-demo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Make the validated-intent step visible; NL on-ramp (RFC-0011). MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
 
 - slug: nimsos
   rfc: 595
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-14"
+  posted_url: "https://github.com/nimsos-dev/nimsos/issues/6"
   channel: github_issue
   contact: "nimsos-dev/nimsos (NO license file, ~21 stars, Issues enabled, not archived, active 2025-09. NIMS-OS: AI-driven autonomous materials experiments incl. file-exchange to non-Python instruments. National Institute for Materials Science, Japan."
-  last_touch: ""
+  last_touch: "2026-06-14"
   response: none
   tier: B
   country: JP
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-06-14"
+      text: "Posted the RFC-0595 body to https://github.com/nimsos-dev/nimsos/issues/6 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
   claude_directives:
     - date: "2026-06-14"
-      text: "When authorized, post the posts-move54.md nimsos body as a GitHub Issue on nimsos-dev/nimsos under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Neutral typed action at the file-exchange boundary. NO license file: state that, no ask, no code reuse. VIBE.md disclosure up front. Completes Move #54."
+      text: "DONE — posted on 2026-06-14 under idoco2003."
