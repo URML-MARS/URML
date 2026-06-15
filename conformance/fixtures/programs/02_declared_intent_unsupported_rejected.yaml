@@ -1,0 +1,24 @@
+name: programs/declared_intent_unsupported_rejected
+description: >
+  RFC-0616 negative: an opaque program declares intent to `grasp`, but the
+  manifest declares no `manipulation` capability to support it. Pass 2 rejects
+  with capability.declared_intent_unsupported. Proves a declared intent is
+  checked against the manifest's real capabilities, not accepted on faith, so a
+  program cannot claim to do something the robot has no capability for.
+
+manifest: declared_intent_unsupported
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - call_program:
+          name: fetch_routine
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.declared_intent_unsupported

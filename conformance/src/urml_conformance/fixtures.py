@@ -73,6 +73,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0019: AUTOSAR ara::com program-binding fixtures.
     "autosar_ara_com": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com.yaml",
     "autosar_ara_com_incomplete": _VALIDATOR_FIXTURES / "manifests" / "autosar_ara_com_incomplete.yaml",
+    # RFC-0616: declared-intent for opaque programs (best-effort, attested).
+    "declared_intent_cell": _VALIDATOR_FIXTURES / "manifests" / "declared_intent_cell.yaml",
+    "declared_intent_unsupported": _VALIDATOR_FIXTURES / "manifests" / "declared_intent_unsupported.yaml",
+    "declared_intent_unknown": _VALIDATOR_FIXTURES / "manifests" / "declared_intent_unknown.yaml",
     # RFC-0017: digital/analog output-line actuation (`set_output`).
     "cobot_cell_outputs": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell_outputs.yaml",
     # RFC-0005: structured HBOM-content provenance variants (US-declared on the

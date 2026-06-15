@@ -1,0 +1,32 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: industrial/declared-intent-cycle
+# Source NL: "Once the safety door is closed, run the commissioned
+#             pick-and-place cycle." (see the .en.txt)
+#
+# Declared intent for an opaque program (RFC-0616). The cell exposes a
+# commissioned AS-language program `pick_place_cycle` whose body is opaque to
+# URML (it cannot be statically verified -- a general program is the halting
+# problem). The manifest's program carries a best-effort, ASSERTED
+# `declared_intent` listing the primitives it exercises (move_to, grasp,
+# place_at) plus a peak force; the validator checks that declaration as a CLAIM
+# against the cell's capabilities, and flags the asserted attestation with a
+# best-effort advisory (capability.declared_intent_asserted, a warning).
+# Validate end-to-end via the companion manifest:
+#
+#   urml validate declared-intent-cycle.urml.yaml \
+#     -m declared-intent-cycle.manifest.yaml --profile industrial
+#
+# The manifest carries a compliant JP/allied provenance block, so it also
+# passes Pass 5 (the declared-intent advisory is a warning, not a rejection);
+# pass `--no-policy` to exercise the language path alone.
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait_for:
+        condition: { event: safety_door_closed }
+    - call_program:
+        name: pick_place_cycle

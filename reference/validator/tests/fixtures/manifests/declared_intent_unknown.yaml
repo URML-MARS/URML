@@ -1,0 +1,53 @@
+# Fixture: a declared_intent that names a primitive outside the URML vocabulary
+# (RFC-0616 negative). The program claims to `teleport`, which is not a
+# primitive, so the claim is rejected at Pass 2 with
+# capability.declared_intent_primitive_unknown. JP/allied provenance, so the
+# only error is the declared-intent one.
+
+manifest_version: "0.1"
+robot_id: declared_intent_unknown_1
+description: Mobile base whose program declares a primitive that does not exist (RFC-0616).
+
+frames:
+  - name: site
+    parent: null
+
+declared_locations:
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: true
+
+perception:
+  cameras: []
+  sensors:
+    - name: bumper
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 10.0
+      units: N
+  object_vocabulary: []
+
+programs:
+  - name: vendor_blob
+    description: Opaque vendor routine.
+    declared_intent:
+      primitives: [move_to, teleport]
+      attestation: asserted
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: base_controller
+      role: critical
+      vendor: kawasaki
+      country_of_origin: JP
+      country_of_final_assembly: JP
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/base.cdx.json
+        sha256: "1919191919191919191919191919191919191919191919191919191919191919"

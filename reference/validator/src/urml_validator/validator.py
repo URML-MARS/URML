@@ -233,6 +233,9 @@ def validate(
     errors.extend(_check_realtime(manifest_model))
     # RFC-0019: AUTOSAR ara::com program bindings must declare the full id triple.
     errors.extend(_check_program_bindings(manifest_model))
+    # RFC-0616: a program's declared_intent is validated as a best-effort claim.
+    for issue in _check_declared_intent(manifest_model):
+        (warnings if issue.severity == "warning" else errors).append(issue)
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
     # RFC-0615: declared-areas + object-detection coherence.
@@ -4112,6 +4115,132 @@ def _check_program_bindings(manifest: CapabilityManifest) -> list[ValidationErro
                     ),
                     suggestion="Declare service_id, instance_id, and method_id on the "
                     "ara_com binding. Per RFC-0019.",
+                )
+            )
+    return out
+
+
+# RFC-0616: which manifest capability block a declared-intent primitive needs.
+# A primitive absent from this map carries no capability requirement (e.g. wait,
+# report). The check is coarse, capability-presence only, by design: a
+# declaration is a claim, not the per-argument validation a real step gets.
+_DECLARED_INTENT_REQUIRES: dict[str, str] = {
+    "move_to": "mobility",
+    "dock": "mobility",
+    "hover": "mobility",
+    "take_off": "mobility",
+    "land": "mobility",
+    "return_to_home": "mobility",
+    "plan_path": "mobility",
+    "follow_trajectory": "mobility",
+    "grasp": "manipulation",
+    "release": "manipulation",
+    "bimanual": "manipulation",
+    "pick_from": "manipulation",
+    "place_at": "manipulation",
+    "swap_tool": "manipulation",
+    "detect": "perception",
+    "scan": "perception",
+    "measure": "perception",
+    "capture": "perception",
+    "listen": "perception",
+    "set_output": "outputs",
+    "speak": "outputs",
+}
+
+
+def _check_declared_intent(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0616): validate a program's `declared_intent` as a claim.
+
+    A `call_program` body is opaque, and a general program cannot be statically
+    verified (the halting problem). When a program opts in to a `declared_intent`
+    (suggested by the bluesky maintainers, RFC-0590), URML checks the declaration
+    against the manifest: every claimed primitive must be in the vocabulary and
+    its capability must be present, and a claimed peak force must fit a declared
+    gripper. The declaration is validated as a *claim*, not a proof of the body;
+    an `asserted` (hand-maintained) intent additionally raises a warning so a
+    reader knows the check covered the declaration, not the opaque program.
+    """
+    out: list[ValidationError] = []
+    gripper_max = max(
+        (g.force_max_n for g in manifest.manipulation.grippers),
+        default=None,
+    ) if manifest.manipulation else None
+
+    for i, program in enumerate(manifest.programs):
+        di = program.declared_intent
+        if di is None:
+            continue
+        path = ["<manifest>", "programs", str(i), "declared_intent"]
+        for prim in di.primitives:
+            if prim not in _PRIMITIVE_NAMES_FROZEN:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_DECLARED_INTENT_PRIMITIVE_UNKNOWN,
+                        None,
+                        path,
+                        f"program {program.name!r} declares intent to use {prim!r}, "
+                        f"which is not a URML primitive.",
+                        field="primitives",
+                        suggestion="Use a primitive from the URML vocabulary, or drop it "
+                        "from declared_intent.",
+                    )
+                )
+                continue
+            required = _DECLARED_INTENT_REQUIRES.get(prim)
+            if required is not None and not getattr(manifest, required, None):
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_DECLARED_INTENT_UNSUPPORTED,
+                        None,
+                        path,
+                        f"program {program.name!r} declares intent to use {prim!r}, "
+                        f"but the manifest declares no `{required}` capability to support it.",
+                        field="primitives",
+                        suggestion=f"Declare a `{required}` block, or remove {prim!r} from "
+                        "declared_intent if the program does not actually use it.",
+                    )
+                )
+        if di.max_force_n is not None:
+            if gripper_max is None:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_DECLARED_INTENT_UNSUPPORTED,
+                        None,
+                        path,
+                        f"program {program.name!r} declares a peak force of {di.max_force_n} N "
+                        "but the manifest declares no gripper.",
+                        field="max_force_n",
+                        suggestion="Declare a manipulation gripper, or drop max_force_n.",
+                    )
+                )
+            elif di.max_force_n > gripper_max:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_DECLARED_INTENT_UNSUPPORTED,
+                        None,
+                        path,
+                        f"program {program.name!r} declares a peak force of {di.max_force_n} N, "
+                        f"above the strongest declared gripper ({gripper_max} N).",
+                        field="max_force_n",
+                        suggestion="Lower max_force_n, or declare a gripper that covers it.",
+                    )
+                )
+        if di.attestation == "asserted":
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_DECLARED_INTENT_ASSERTED,
+                    primitive=None,
+                    path=path,
+                    field="attestation",
+                    message=(
+                        f"program {program.name!r} declared_intent is a best-effort assertion "
+                        "(attestation: asserted): validated as a claim against the manifest, not "
+                        "a proof that the opaque program body matches it."
+                    ),
+                    suggestion="Promote to attestation: verified only if the substrate can prove "
+                    "the body matches the declaration.",
+                    severity="warning",
                 )
             )
     return out
