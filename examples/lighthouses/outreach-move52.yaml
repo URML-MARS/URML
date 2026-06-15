@@ -105,7 +105,7 @@
   posted_url: "https://github.com/SleipnirGroup/Choreo/issues/1493"
   channel: github_issue
   contact: "SleipnirGroup/Choreo (BSD-3-Clause, ~188 stars, Issues enabled, not archived, active 2026-06. FRC trajectory optimization tool. US."
-  last_touch: "2026-06-14"
+  last_touch: "2026-06-15"
   response: declined
   tier: A
   country: US
@@ -119,6 +119,8 @@
       text: "shueja (maintainer) replied substantively (thread OPEN, not closed), engaged-but-skeptical: (a) target TrajoptLib (the backend lib) not Choreo (the app); (b) TrajoptLib is an OFFLINE once-per-run optimizer, not real-time, and 'move from A through B,C to D' not a move_to; runtime regeneration would stall the robot; a robot not starting at A makes feedback violate the pregenerated constraints; concluded 'I don't really see TrajoptLib fitting well as something URML can query.' His objection is to a RUNTIME-QUERY model URML never proposed. Replied with the reframe: URML sits AROUND the offline run (consume-trajectory RFC-0020), not inside it; two offline seams = typed/validated declaration of goal+waypoints+kinodynamic limits (RFC-0518) feeding TrajoptLib's once-per-run params, and validation of the pregenerated trajectory vs the robot's manifest+envelope before execution. That output check directly targets his 'robot not at A' failure mode (catch the mismatch statically vs as runtime instability). Led with consume-trajectory, dropped move_to; agreed TrajoptLib is the right layer."
     - date: "2026-06-14"
       text: "REPLY 2026-06-14: @shueja (COLLABORATOR) engaged substantively: redirect Choreo->TrajoptLib (the backend); notes TrajoptLib is a PREGENERATED (not real-time) trajectory optimizer and worries runtime regeneration would stall. CLARIFY OPPORTUNITY: RFC-0020 follow_trajectory CONSUMES a pregenerated trajectory (exactly TrajoptLib's output), does not ask for runtime regen -> directly answers the concern. Human-voiced reply owed (founder)."
+    - date: "2026-06-15"
+      text: "UPDATE 2026-06-15: @shueja CLOSED the thread after our (human-voiced) reply: Im not going to spend more effort talking to Claude acting on your behalf... I dont see the URML project bringing value to the FRC/FTC space... Closing this now. Reclassified engaged -> declined. Third AI-pushback in the 2026-06-15 sweep (with chfritz 604 AI spam + tacaswell human-only). No further reply (more proves the point)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as SleipnirGroup/Choreo#1493 on 2026-06-14 under idoco2003."
