@@ -50,6 +50,7 @@
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
+      status: done
 
 - slug: yolo_ros
   rfc: 611
@@ -68,6 +69,7 @@
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
+      status: done
 
 - slug: kenning
   rfc: 612
@@ -86,6 +88,7 @@
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
+      status: done
 
 - slug: hailo_tappas_ros2
   rfc: 613
@@ -104,6 +107,7 @@
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
+      status: done
 
 - slug: opencv_zoo
   rfc: 614
@@ -122,3 +126,4 @@
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
+      status: done

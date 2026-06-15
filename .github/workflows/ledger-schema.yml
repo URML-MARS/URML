@@ -1,0 +1,35 @@
+# Ledger schema gate.
+#
+# Runs the outreach-ledger schema-v2 test on every PR that touches the ledger
+# files (or the test itself). This is the guard CLAUDE.md refers to: it keeps a
+# non-conformant ledger row (a missing claude_directive `status`, an unquoted
+# YAML-boolean country like `NO`, a malformed comment) from landing on main.
+# The test needs only pyyaml + pytest, so the job is fast and dependency-light.
+#
+# Why this exists: reconcile waves were repeatedly merging ledger rows with
+# directives missing the required `status` field; with no PR check and --admin
+# merges, they landed red and had to be patched after the fact. This blocks that
+# at the PR.
+
+name: ledger-schema
+
+on:
+  pull_request:
+    paths:
+      - 'examples/lighthouses/outreach*.yaml'
+      - 'conformance/tests/test_outreach_ledger_schema_v2.py'
+  workflow_dispatch:
+
+jobs:
+  ledger-schema:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test deps
+        run: python -m pip install --quiet pyyaml "pytest>=8"
+      - name: Run the outreach-ledger schema test
+        run: python -m pytest conformance/tests/test_outreach_ledger_schema_v2.py -q

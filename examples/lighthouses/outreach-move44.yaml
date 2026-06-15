@@ -82,19 +82,21 @@
   posted_url: "https://github.com/linorobot/linorobot2/issues/223"
   channel: github_issue
   contact: "linorobot/linorobot2 (Apache-2.0, ~910 stars, Issues enabled, not archived, active 2026-04). Open ROS 2 stack for 2WD/4WD/Mecanum autonomous mobile bases. SG."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-15"
+  response: engaged
   tier: A
   country: SG
   sector: robot-platform
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0493 body to https://github.com/linorobot/linorobot2/issues/223 under idoco2003 (Move #44 open robot-platforms wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "PaulBouchier (COLLABORATOR) ran it by the Dallas Personal Robotics Group and relayed substantive multi-reviewer feedback (closed COMPLETED but rich and constructive, founder wants it taken seriously). Paul: the validatable-language-for-safety idea is worthy, but (1) risks being an 'expert system' redundant with a VLA, (2) the vocabulary for real use seems huge (bring the blue cup, slice the apple), what's there is a toy, (3) the pitch over-relies on 'federally-mandated standards' -- tone it down, it won't sell the idea. KV (harsh): it's a layer that has to exist (map high-level commands to capabilities) but VLAs do it internally and the English-level verb list seems unnecessary; standards aren't built 'build it and they will come.' HR: missing parts -- how to define objects, rooms, etc., and how objects are detected -- belongs now; nice idea, wants it useful. Paul's 2nd note is the clean positioning: URML sits ABOVE Nav2 (Nav2 owns locations/x-y/velocity limits/path); URML is at the intent + guardrail + policy level ('here is a request an AI asked for, is it allowable and possible, how do I translate it into compliant actions'). The level the issue asked at (Nav2) and URML's level differ."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move44.md linorobot2 body as a GitHub Issue on linorobot/linorobot2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Mobile base -> the move_to NL front door above ROS 2 nav; mobility manifest + named locations. The headline 'one English sentence moves a robot' path."
+  next_action: "Engaged (PaulBouchier + DPRG, constructive). Ordered project follow-ups from this feedback: (1) OBJECTS/ROOMS/DETECTION GAP (HR): the manifest declares locations but has no clean way to declare objects, rooms, or how perception detects them -- a real candidate Spec RFC (URML declares the object/place vocabulary + which sensor detects what; it does NOT do detection). (2) OUTREACH/DOCS POSITIONING: tone down 'federally-mandated standards' in the pitch (Paul + the founder agree) -- lead with the language/safety-gate value, compliance is one flag. (3) VLA-COMPLEMENT FRAMING: reuse Paul's articulation (URML above Nav2, at intent/guardrail/policy level; not an expert system that replicates the VLA) as the standard answer to 'isn't this redundant with VLA'. (4) Vocabulary-scale: the 'compose from few primitives' answer, articulated. Reply to Paul owed (gracious, take points in, no federal-compliance defense)."
   notes: "Apache-2.0. Build-your-own mobile base; strong headline-path fit."
 
 - slug: botbrain

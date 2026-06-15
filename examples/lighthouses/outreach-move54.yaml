@@ -51,18 +51,21 @@
   posted_url: "https://github.com/PyLabRobot/pylabrobot/issues/1091"
   channel: github_issue
   contact: "PyLabRobot/pylabrobot (MIT, ~468 stars, Issues enabled, not archived, active 2026-06. Hardware-agnostic Python SDK for liquid handlers / plate readers / pumps. US."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0587 body to https://github.com/PyLabRobot/pylabrobot/issues/1091 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "Closed COMPLETED with zero comments. Verified NOT a conversion (discussions disabled, timeline is a plain ClosedEvent). Silent decline. The 'is a deck/labware model a capability manifest?' question got no engagement. declined; no reply. Lab-automation (liquid handlers / plate readers) is a plausible-but-untested domain; nothing to act on without a maintainer signal."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (silent COMPLETED close; verified not a conversion). No reply. Lab-automation deck/labware-as-manifest is an interesting question but drew no engagement; revisit only if a lab-automation maintainer surfaces interest."
 
 - slug: ad-sdl
   rfc: 588
@@ -108,14 +111,16 @@
   posted_url: "https://github.com/bluesky/bluesky/issues/2027"
   channel: github_issue
   contact: "bluesky/bluesky (BSD-3-Clause, ~228 stars, Issues enabled, not archived, active 2026-06. Experiment-specification + run-engine library; declarative plans dispatched to instruments. Brookhaven NSLS-II, US."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: acked
   tier: A
   country: US
   sector: conceptual-peer
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0590 body to https://github.com/bluesky/bluesky/issues/2027 under idoco2003 (Move #54 lab-automation wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "tacaswell (CONTRIBUTOR) replied substantively (OPEN), with a sharp and correct conceptual correction + a human-only request: bluesky plans are NOT declarative -- they are generator coroutines with full-duplex channels to the RunEngine, running arbitrary Python that reacts to prior results, so you cannot statically know what a plan will do (introspecting before running is the halting problem). Their `Protocols` are the closest thing to a capability manifest; they already wrap the generator to warn on non-yield and could extend it for an opt-in, best-effort, by-hand intent report, but never a guaranteed upfront check. 'Strongly prefer human-only correspondence, I suspect the LLMs have made significant conceptual mistakes.' Genuine domain mismatch: bluesky is imperative experiment orchestration (beamline science), not declarative autonomous-robot intent, so URML's validate-before-run model does not map. acked; a graceful human-only concession drafted for the founder (concede the coroutine point, agree static validation doesn't fit an imperative plan, thank him)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
