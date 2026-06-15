@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>urml_flexbe_behaviors</name>
+  <version>0.1.0</version>
+  <description>
+    FlexBE behaviors for URML — the URML Turtle Patrol HFSM that gates a
+    validated URML program behind an operator approval, demonstrating the
+    URML validate-before-actuate seam under FlexBE collaborative autonomy.
+    Part of the URML FlexBE worked example (RFC-0474).
+  </description>
+  <maintainer email="greenvh@gmail.com">URML Maintainers</maintainer>
+  <license>Apache-2.0</license>
+  <url type="website">https://urml.dev</url>
+
+  <exec_depend>flexbe_core</exec_depend>
+  <exec_depend>flexbe_states</exec_depend>
+  <exec_depend>urml_flexbe_states</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+    <flexbe_behaviors />
+  </export>
+</package>

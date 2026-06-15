@@ -1,0 +1,32 @@
+# ExecuteURML — run a URML program (or a natural-language sentence) through
+# URML's validate-before-actuate pipeline, served as a ROS 2 action.
+#
+# A behavior engine (FlexBE, BehaviorTree.CPP, a custom orchestrator) sends a
+# goal; the URML action server validates it against the robot's capability
+# manifest + safety envelope, refuses with a verdict if it does not hold, and
+# otherwise executes it against the substrate adapter (Nav2 / MoveIt 2 / ...).
+#
+# Exactly one of `program_yaml` / `sentence` drives the run: a program is
+# executed as-is; a sentence is translated to URML first (requires an LLM
+# provider configured on the server). YAML payloads are passed as strings so
+# this interface needs no URML-specific message types.
+
+# --- Goal ---
+string program_yaml        # a URML program (YAML/JSON). Empty if using `sentence`.
+string sentence            # natural-language request. Empty if using `program_yaml`.
+string manifest_yaml       # the robot's capability manifest (YAML/JSON). Required.
+string envelope_yaml       # optional safety envelope (YAML/JSON). Empty for none.
+string[] profiles          # active URML profiles (e.g. ["home"]).
+bool no_policy             # skip the compliance policy pass (hero-demo path).
+---
+# --- Result ---
+bool success               # true iff every step executed successfully.
+bool refused               # true iff validation rejected the program (no actuation).
+string reason              # rendered verdict on refusal, or last-step reason.
+int32 steps_executed       # number of primitives actually dispatched.
+string audit_log_json      # the runtime audit trail, JSON-encoded.
+string bindings_json       # final variable bindings, JSON-encoded.
+---
+# --- Feedback ---
+string phase               # "translating" | "validating" | "executing" | "done".
+string detail              # short human-readable status for the operator UI.

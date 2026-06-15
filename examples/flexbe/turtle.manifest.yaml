@@ -1,0 +1,42 @@
+# Capability manifest for the URML <-> FlexBE worked example (RFC-0474).
+#
+# A turtlesim "robot": a 2D differential mobile base with three declared
+# locations. Navigation-only, so it runs hermetically against MockROSAdapter
+# and adapter-agnostically against the ROS 2 runtime driving turtlesim. All
+# parts are US-origin (Open Robotics), so it is also clean under the bundled
+# US-federal default policy; the example uses --no-policy for the hero path.
+
+manifest_version: "0.1"
+robot_id: turtlesim_1
+description: A turtlesim 2D mobile base for the URML FlexBE worked example.
+
+frames:
+  - name: site
+    parent: null
+  - name: base_link
+    parent: site
+
+declared_locations:
+  - name: waypoint_a
+    pose: { x: 8.0, y: 3.0, z: 0.0 }
+    frame: site
+  - name: waypoint_b
+    pose: { x: 3.0, y: 8.0, z: 0.0 }
+    frame: site
+  - name: home
+    pose: { x: 5.5, y: 5.5, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: false
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: turtlesim_base
+      role: critical
+      vendor: open_robotics
+      country_of_origin: US
+      country_of_final_assembly: US
