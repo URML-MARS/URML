@@ -173,14 +173,18 @@
   posted_url: "https://github.com/open62541/open62541/issues/8077"
   channel: github_issue
   contact: "open62541/open62541 (MPL-2.0, ~3.1k stars, Issues enabled, active, **not archived**). The leading open C/C++ OPC UA stack; clean permissive license."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-06-15"
+  response: engaged
   tier: A
   country: DE
   sector: protocol-substrate
-  comments: []
+  comments:
+    - date: "2026-06-02"
+      text: "Posted as Issue open62541/open62541#8077 on 2026-06-02 under idoco2003."
+    - date: "2026-06-15"
+      text: "jpfr (MEMBER) engaged constructively (issue OPEN/REOPENED) despite a mild 'AI didn't read' jab: asked a real question -- 'What is a grain in this context?' -- and handed us the modeling answer: 'OPC UA is like object-orientation in Python or Java, only you can interact with the objects over the network. That should give you good guidance for how to model operations.' Replied (human, no AI footer): clarified 'grain' = the level a URML operation maps to (one primitive -> one OPC UA method vs finer); accepted his OO framing (robot/device = object, each URML operation = a method called over the network, typed args = method inputs), which fixes the grain at one-operation-to-one-method and maps onto how URML already models a call (RFC-0015 call_program / RFC-0019 ara_com binding); offered to sketch a worked URML-program -> OPC UA object+methods mapping. Confirms the on-manifesto OPC UA Robotics fit; this engagement would shape a URML OPC UA runtime."
   claude_directives: []
-  next_action: "Posted as Issue open62541/open62541#8077 on 2026-06-02 under idoco2003. Awaiting first response; light-touch follow-up ~2026-06-30."
+  next_action: "Engaged (jpfr, open62541). Replied accepting the object-orientation modeling (URML op -> OPC UA method on an object; grain = one-to-one). Await his read; if he bites, build the worked URML-program -> OPC UA object/methods mapping (ties RFC-0015/0019 + the opcua-runtime). On-manifesto substrate. MPL-2.0, no license-ask."
   notes: "Tier A. On-manifesto (OPC UA Robotics is a named substrate). Validated intent -> OPC UA method call / variable write. No URML OPC UA runtime yet; this engagement would shape one."
 
 - slug: ua-dotnet-standard
