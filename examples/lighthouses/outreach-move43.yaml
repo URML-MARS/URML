@@ -136,19 +136,21 @@
   posted_url: "https://github.com/MushroomRL/mushroom-rl/issues/167"
   channel: github_issue
   contact: "MushroomRL/mushroom-rl (MIT, ~0.9k stars, Issues enabled, Discussions OFF, not archived, active 2026-06). Python RL library with a clean MDPInfo (obs/action spaces). Academic (TU Darmstadt / IIT lineage). EU (IT/DE)."
-  last_touch: "2026-06-12"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: IT
   sector: ai-language
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0489 body to https://github.com/MushroomRL/mushroom-rl/issues/167 under idoco2003 (Move #43 RL/policy-training wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "davide-tateo90 (COLLABORATOR) closed COMPLETED: 'This looks like AI slop, so I will close the issue.' AI-content hostile close (OVOS/LibreTranslate/QGC/RIOT/tock family). declined; no reply. RL-library altitude: MDPInfo-as-deployment-envelope drew no engagement, just the AI-slop dismissal."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move43.md mushroom-rl body as a GitHub Issue on MushroomRL/mushroom-rl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Seam: MDPInfo spaces + training-domain bounds -> URML LearnedPolicy envelope + the deployment gate."
+  next_action: "Declined (davide-tateo90, AI-slop close). No reply. Another AI-content hostile close; RL-library MDPInfo angle did not land."
   notes: "Medium fit; clean academic RL lib, no flags. Permissive (MIT). Issue-only. No license-ask."
 
 - slug: ray-rllib

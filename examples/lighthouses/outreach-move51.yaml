@@ -101,18 +101,21 @@
   posted_url: "https://github.com/ForzaETH/race_stack/issues/39"
   channel: github_issue
   contact: "ForzaETH/race_stack (MIT, ~166 stars, Issues enabled, not archived, active 2026-05. Full autonomous-racing software stack. ETH Zurich, CH."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: CH
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0561 body to https://github.com/ForzaETH/race_stack/issues/39 under idoco2003. URML declares+validates, race_stack plans+drives (Move #26). Awaiting response."
+    - date: "2026-06-15"
+      text: "niciBume (CONTRIBUTOR) closed COMPLETED, friendly and constructive: they have already built such a structure (ForzaETH/LLMxRobot), but it's a proof of concept aimed at general autonomous driving, and racing has clear objectives where an LLM/intent layer just adds overhead. 'I wish you all the best on URML, sounds interesting!' Replied graciously, agreeing the fit (if any) is the general-driving case, not the race line; thanked him + noted LLMxRobot is neat. declined (constructive, not hostile). Useful peer pointer: ForzaETH/LLMxRobot is an existing LLM-to-robot bridge."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as ForzaETH/race_stack#39 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (niciBume, constructive: racing's objectives are too clear for an intent layer to add value; they have LLMxRobot). Replied graciously. No pursuit. Peer reference: ForzaETH/LLMxRobot."
 
 - slug: nature-stack
   rfc: 562

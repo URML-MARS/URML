@@ -168,19 +168,21 @@
   posted_url: "https://github.com/leducp/KickCAT/issues/410"
   channel: github_issue
   contact: "leducp/KickCAT (CeCILL-C, ~150 stars, Issues enabled, not archived, active 2026-06). Open C++ EtherCAT master/slave stack. Philippe Leduc (individual), FR."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-15"
+  response: engaged
   tier: B
   country: FR
   sector: protocol-substrate
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0507 body to https://github.com/leducp/KickCAT/issues/410 under idoco2003 (Move #45 middleware/control/drivers wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "leducp (OWNER) replied with excellent, generous insights ('Nice project!'). Confirmed the exact layering URML uses: 'URML validates actuation intent above, a controller plays it, and KickCAT carries it to the drives over EtherCAT'; integrator / ros2_control is the controller layer, possibly with a functional-safety process. Technical grounding: EtherCAT motors use DS402 (units are drive-dependent not SI; you handle the state machine, which KickCAT helps with but sits on top of raw EtherCAT); position mode plays an open-loop trajectory, complex control needs torque mode + closing the loop; no standard way to talk to sensors, so write a HAL that sequences the bus and may fuse data (IMU = accel+gyro). Replied: confirmed URML stays above the controller (never touches DS402 / units / position-vs-torque), and noted a separate EtherCAT thread already pushed us to model cyclic vs acyclic operation modes in the manifest (RFC-0469 + the fieldbus example), so this validates the altitude. Independent OWNER confirmation of the 'URML above the controller, fieldbus below' altitude -- the same conclusion as the ethercat_driver_ros2 engagement, from a different EtherCAT-master author."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move45.md kickcat body as a GitHub Issue on leducp/KickCAT under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. EtherCAT fieldbus master BENEATH Layer-1 HAL (RFC-0319 one layer lower). RFC asks if fieldbus is the right altitude vs ros2_control/integrator. License CeCILL-C: state, never ask."
+  next_action: "Engaged (leducp, OWNER). Independent confirmation of the URML-above-controller / fieldbus-below altitude + DS402/torque/HAL grounding. The fieldbus example (RFC-0469/0477/0478) already embodies it. No build owed; if it deepens, a KickCAT-flavored variant of the fieldbus example (DS402 operation modes) is the natural artifact. CeCILL-C: state, never ask."
   notes: "Tier B. CeCILL-C. EtherCAT master; lower-altitude fieldbus (asks the altitude question)."
 
 - slug: husarion-ugv-ros
