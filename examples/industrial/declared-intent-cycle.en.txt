@@ -1,0 +1,1 @@
+Once the safety door is closed, run the commissioned pick-and-place cycle.

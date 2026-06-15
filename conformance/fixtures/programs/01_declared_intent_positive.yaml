@@ -1,0 +1,26 @@
+name: programs/declared_intent_positive
+description: >
+  RFC-0616 positive: an opaque commissioned program (pick_place_cycle) carries a
+  declared_intent listing the primitives it exercises (move_to, grasp, place_at)
+  with attestation: asserted. mobility + manipulation are declared, so the claim
+  is supported and the manifest is accepted. The asserted attestation raises a
+  best-effort advisory warning (capability.declared_intent_asserted), which does
+  not reject. Proves the declaration is validated as a checkable claim against
+  the manifest, and that a best-effort claim is honestly flagged as such.
+
+manifest: declared_intent_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait_for:
+          condition: { event: safety_door_closed }
+      - call_program:
+          name: pick_place_cycle
+
+expected_validation:
+  accepted: true

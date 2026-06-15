@@ -709,6 +709,41 @@ class AraComBinding(BaseModel):
     method_id: int | None = Field(None, ge=0, description="AUTOSAR method id within the service.")
 
 
+class DeclaredIntent(BaseModel):
+    """A best-effort, attested declaration of what an opaque program intends to do (RFC-0616).
+
+    A `call_program` body is opaque to URML, and a sufficiently general program
+    (a coroutine-style plan that runs arbitrary code, a learned-policy rollout)
+    cannot be statically verified: deciding what it will do is the halting
+    problem. The honest middle ground, suggested by the bluesky maintainers
+    (RFC-0590), is to let such a program OPT IN to declaring, best-effort, the
+    primitives it will exercise, and validate that declaration as a *claim*
+    against the manifest, not as a proof of the body.
+
+    `attestation` records the strength of the claim: `asserted` (the default)
+    means hand-maintained and made-correct-by-hand, validated as a claim and
+    flagged as such (`capability.declared_intent_asserted`); `verified` means
+    the substrate can prove the body matches the declaration. This mirrors the
+    provenance attestation ladder: a checkable claim is worth more than nothing
+    and less than a proof.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    primitives: list[Identifier] = Field(
+        ...,
+        min_length=1,
+        description="URML primitives the opaque program claims to exercise; validated against the vocabulary and the manifest's capabilities.",
+    )
+    attestation: Literal["asserted", "verified"] = "asserted"
+    max_force_n: float | None = Field(
+        None,
+        gt=0,
+        description="Optional claimed peak grasp force; checked against the strongest declared gripper.",
+    )
+    note: str | None = None
+
+
 class Program(BaseModel):
     """A substrate-defined program/method the robot exposes by name.
 
@@ -721,7 +756,10 @@ class Program(BaseModel):
     program, an OPC UA method node, a commissioned PLC job).
 
     A program MAY carry an optional substrate `binding` (RFC-0019) pinning it to
-    a concrete substrate operation (currently `ara_com` for AUTOSAR Adaptive).
+    a concrete substrate operation (currently `ara_com` for AUTOSAR Adaptive),
+    and an optional `declared_intent` (RFC-0616): a best-effort, attested
+    declaration of the primitives the opaque body exercises, validated as a
+    claim against the manifest.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -735,6 +773,10 @@ class Program(BaseModel):
     binding: AraComBinding | None = Field(
         default=None,
         description="Optional substrate binding (RFC-0019), e.g. an AUTOSAR ara::com id triple.",
+    )
+    declared_intent: DeclaredIntent | None = Field(
+        default=None,
+        description="Optional best-effort declaration of the primitives the opaque program exercises (RFC-0616).",
     )
 
 

@@ -100,6 +100,12 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_HD_MAP = "capability.missing_hd_map"
     # RFC-0019: AUTOSAR ara::com program binding must declare the full id triple.
     CAPABILITY_ARA_COM_BINDING_INCOMPLETE = "capability.ara_com_binding_incomplete"
+    # RFC-0616: a program's declared_intent names a primitive that is not in the vocabulary.
+    CAPABILITY_DECLARED_INTENT_PRIMITIVE_UNKNOWN = "capability.declared_intent_primitive_unknown"
+    # RFC-0616: a program's declared_intent claims a primitive/force the manifest cannot support.
+    CAPABILITY_DECLARED_INTENT_UNSUPPORTED = "capability.declared_intent_unsupported"
+    # RFC-0616: declared_intent was validated as a best-effort claim (attestation: asserted), not a proof.
+    CAPABILITY_DECLARED_INTENT_ASSERTED = "capability.declared_intent_asserted"
     # RFC-0017: digital/analog output actuation (`set_output`).
     CAPABILITY_OUTPUT_LINE_NOT_DECLARED = "capability.output_line_not_declared"
     CAPABILITY_OUTPUT_VALUE_TYPE_MISMATCH = "capability.output_value_type_mismatch"

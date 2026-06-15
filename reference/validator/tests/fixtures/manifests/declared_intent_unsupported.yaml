@@ -1,0 +1,56 @@
+# Fixture: a declared_intent that claims a primitive the manifest cannot support
+# (RFC-0616 negative). The program claims to grasp, but the manifest declares no
+# `manipulation` block, so the claim is rejected at Pass 2 with
+# capability.declared_intent_unsupported. JP/allied provenance, so the only
+# error is the declared-intent one, not policy.
+
+manifest_version: "0.1"
+robot_id: declared_intent_unsupported_1
+description: Mobile base whose program over-claims a grasp it has no manipulation to support (RFC-0616).
+
+frames:
+  - name: site
+    parent: null
+
+declared_locations:
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: aisle_a
+    pose: { x: 5.0, y: 0.0, z: 0.0 }
+    frame: site
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: true
+
+perception:
+  cameras: []
+  sensors:
+    - name: bumper
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 10.0
+      units: N
+  object_vocabulary: []
+
+programs:
+  - name: fetch_routine
+    description: Opaque vendor routine.
+    declared_intent:
+      primitives: [move_to, grasp]
+      attestation: asserted
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: base_controller
+      role: critical
+      vendor: kawasaki
+      country_of_origin: JP
+      country_of_final_assembly: JP
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/base.cdx.json
+        sha256: "1717171717171717171717171717171717171717171717171717171717171717"
