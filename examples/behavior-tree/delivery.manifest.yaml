@@ -1,0 +1,44 @@
+# Manifest for the AutoAPMS / behavior-tree lowering example.
+#
+# From the AutoAPMS engagement (robin-mueller): lowering a URML intent onto a
+# behavior tree, validated first, then reusing AutoAPMS's execution layer via a
+# build-handler plugin. This manifest gives the validator something concrete to
+# accept and reject before any tree is emitted.
+
+manifest_version: "0.1"
+robot_id: delivery_bot
+description: A mobile manipulator whose validated URML program lowers to a behavior tree.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - { name: shelf, pose: { x: 2.0, y: 1.0, z: 0.0 }, frame: map }
+  - { name: user,  pose: { x: 0.5, y: 0.5, z: 0.0 }, frame: map }
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.6
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+  sensors: []
+  object_vocabulary: [mug, cup]
+
+outputs:
+  named_endpoints: [operator]

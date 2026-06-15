@@ -1,0 +1,17 @@
+URML program -> validate -> lower to an AutoAPMS behavior tree.
+An inadmissible program is refused before any tree is emitted.
+robot: delivery_bot
+
+[LOWERED]  fetch_the_mug
+<root BTCPP_format="4">
+  <BehaviorTree ID="fetch_the_mug">
+    <Sequence>
+      <Action ID="move_to" location="shelf"/>
+      <Action ID="detect" object="mug"/>
+      <Action ID="grasp" force="gentle"/>
+      <Action ID="move_to" location="user"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
+
+[REFUSED]  fetch_from_garage  ->  [capability.missing_location]; not lowered.

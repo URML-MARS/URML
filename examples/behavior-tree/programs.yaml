@@ -1,0 +1,26 @@
+# Two URML programs. The first is admissible and lowers to a behavior tree.
+# The second names an undeclared location and is refused before any tree is
+# emitted, so an invalid intent never becomes an executable BT.
+
+programs:
+  - label: fetch_the_mug
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        on_error: abort_and_report
+        steps:
+          - move_to: { location: shelf }
+          - detect: { object: mug, store_as: m }
+          - grasp: { target: $m, force: gentle }
+          - move_to: { location: user }
+
+  - label: fetch_from_garage          # garage is not a declared location
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        on_error: abort_and_report
+        steps:
+          - move_to: { location: garage }
+          - move_to: { location: user }
