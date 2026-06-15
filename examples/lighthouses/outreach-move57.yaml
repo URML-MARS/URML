@@ -58,17 +58,20 @@
   channel: github_issue
   contact: "GazzolaLab/PyElastica (MIT, ~343 stars, Issues enabled, not archived, active 2026-03. Cosserat-rod sim for soft/slender/muscular structures. + skim0119/gym-softrobot (MIT, ~44 stars, active 2025-07) RL env, folded. UIUC, US."
   last_touch: "2026-06-15"
-  response: none
+  response: wontfix
   tier: A
   country: US
   sector: simulator
   comments:
     - date: "2026-06-15"
       text: "Posted the RFC-0606 body to https://github.com/GazzolaLab/PyElastica/issues/531 under idoco2003 (Move #57 soft-robotics/assistive wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "skim0119 (maintainer) closed the issue as NOT_PLANNED the same day, no comment (silent close, not hostile, no AI-flag; not converted to a discussion). PyElastica is a Cosserat-rod physics simulator, not a robot-intent consumer with an action surface -- wrong altitude (a sim library, like the component-API/physics-sim no-fits). wontfix. Accept silently: no reply, no edit to the posted issue."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-15 under idoco2003."
       status: done
+  next_action: "Wontfix (skim0119 closed NOT_PLANNED, silent). Wrong altitude: PyElastica is a physics simulator URML would consume at most as a substrate, not an intent partner. Accept silently; no reply. Do not pursue physics-sim libraries as intent partners."
 
 - slug: libemg
   rfc: 607
