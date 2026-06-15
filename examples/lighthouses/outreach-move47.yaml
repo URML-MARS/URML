@@ -53,19 +53,21 @@
   posted_url: "https://github.com/colmap/colmap/issues/4452"
   channel: github_issue
   contact: "colmap/colmap (BSD, ~11.9k stars, Issues enabled, not archived, active 2026-06). Structure-from-Motion + Multi-View Stereo. ETH Zurich + UNC Chapel Hill. INTL (CH/US)."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-15"
+  response: acked
   tier: A
   country: INTL
   sector: perception
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0519 body to https://github.com/colmap/colmap/issues/4452 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "tsattler (Torsten Sattler, COLMAP maintainer) gave a substantive but disengaged answer (OPEN, not hostile, no AI-flag): (1) whether 'a COLMAP reconstruction is the declared geometry URML validates against' is sensible -> 'should be answered on URML's side' (URML is the consumer); (2) clean output (poses, bounds) for a manifest/envelope -> 'application dependent', sometimes clean, sometimes needs post-processing; (3) pushed back mildly on jargon ('I don't know what a cleaner first seam is'). Correct read: COLMAP is a consumer-only relationship (URML reads its output); the maintainer punts the modeling to URML and expresses no integration interest. acked. Fit note: SfM/MVS is upstream geometry URML consumes, not an integration partner with an action surface; no build."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md colmap body as a GitHub Issue on colmap/colmap under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. SfM/MVS poses + reconstruction -> declared geometry URML consumes (RFC-0290/0291)."
+  next_action: "Acked (tsattler, substantive-but-disengaged; consumer-only relationship). Optional brief human thanks (concede it's URML-side; the output URML consumes is camera poses + model bounds, with app-dependent post-processing; drop the 'seam' jargon). No integration interest from them; no build. Do not press."
   notes: "BSD. SfM/MVS; reconstruction URML consumes as declared geometry."
 
 - slug: open3d

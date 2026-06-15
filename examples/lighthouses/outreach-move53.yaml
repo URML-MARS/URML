@@ -93,8 +93,8 @@
   posted_url: "https://github.com/bdring/FluidNC/issues/1747"
   channel: github_issue
   contact: "bdring/FluidNC (non-standard license [GPL-family, unrecognized by GitHub], ~2431 stars, Issues enabled, not archived, active 2026-06. ESP32 CNC motion-control firmware. US."
-  last_touch: "2026-06-14"
-  response: acked
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: US
   sector: substrate-runtime
@@ -103,11 +103,13 @@
       text: "Posted the RFC-0578 body to https://github.com/bdring/FluidNC/issues/1747 under idoco2003. Job intent + machine-limits envelope; non-standard license, no code reuse. Awaiting response."
     - date: "2026-06-14"
       text: "MitchBradley (COLLABORATOR) gave a sharp, constructive no-fit (OPEN, not hostile, no AI-flag): CNC users generate GCode via CAM programs that already pre-validate against a machine model + a controller-specific post-processor, and FluidNC has a 'check mode' dry-run against machine boundaries (soft limits) -- so pre-validation is already covered for the CNC use case. He noted those don't apply to autonomous robots with dynamic real-time motion, but that doesn't match 'job'; and it's unclear how 'robot intent' meshes with a pre-validated job unless 'robot' means cartesian/CNC robot, which doesn't match URML's 'robot operating systems' framing. A genuine domain mismatch: FluidNC is CNC/GCode, URML targets autonomous-robot intent (ROS-class). acked (substantive response; leaning no-fit). Graceful concession reply drafted for the founder (concede the domain mismatch; CAM+check-mode already cover it; thank him). Fit-check note: CNC/GCode controllers are a different domain, not the autonomous-robot-intent surface."
+    - date: "2026-06-15"
+      text: "bdring (Bart Dring, project owner) seconded MitchBradley ('I agree with Mitch') and added: for standardized formats, URDF is probably more useful than URML; in hindsight FluidNC's config format (motors-focused, not joints/linkages) would have been better closer to URDF. Two maintainers (owner + collaborator) now concur on the domain mismatch -- a clean, constructive decline. -> declined. Accept gracefully; the optional concession reply still applies. Do not pursue FluidNC or other CNC/GCode controllers (confirmed wrong domain)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as bdring/FluidNC#1747 on 2026-06-14 under idoco2003."
       status: done
-  next_action: "Acked (MitchBradley, constructive domain-mismatch). Founder to post the drafted graceful concession (FluidNC's CAM + check-mode already cover pre-validation; URML targets autonomous-robot/ROS intent, not CNC GCode jobs; thanks). Then -> declined. Do not pursue CNC/GCode controllers (wrong domain)."
+  next_action: "Declined (MitchBradley + bdring, constructive domain-mismatch confirmed by the project owner). Optional: post the drafted graceful one-line concession (CAM + check-mode already cover pre-validation; URML targets autonomous-robot/ROS intent, not CNC GCode jobs; thanks for the URDF pointer). No AI-defense, no argument. Do not pursue CNC/GCode controllers."
 
 - slug: tock
   rfc: 579
