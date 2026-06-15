@@ -142,6 +142,8 @@ class ErrorCode(StrEnum):
     # RFC-0383: learned-policy training-envelope coherence.
     CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH = "capability.learned_policy_terrain_mismatch"
     CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING = "capability.learned_policy_exceeds_training"
+    # RFC-0617: a named learned policy `governs` a domain the manifest has no capability for.
+    CAPABILITY_LEARNED_POLICY_GOVERNS_UNSUPPORTED = "capability.learned_policy_governs_unsupported"
 
     # RFC-0384: whole-body kinematic structure + stability limits.
     CAPABILITY_WHOLE_BODY_INCONSISTENT = "capability.whole_body_inconsistent"

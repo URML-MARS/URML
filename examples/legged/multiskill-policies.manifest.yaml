@@ -1,0 +1,93 @@
+# Manifest for the legged/multiskill-policies example (RFC-0617). A quadruped
+# that runs two trained controllers, declared as named, per-domain learned
+# policies: a locomotion policy (velocity envelope) and a grasping policy
+# (payload envelope). Each is validated independently against the deployment's
+# ceilings, scoped to the quantities it declares. US provenance, so the bundled
+# US-federal default policy accepts it.
+
+manifest_version: "0.1"
+robot_id: multiskill_quadruped_1
+description: Quadruped with separate trained locomotion and grasping policies (RFC-0617).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: parts_area
+    pose: { x: 4.0, y: 1.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 1.2
+  max_payload: 4.0
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: gripper
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 40.0
+      accepted_classes: [peg]
+      movable: true
+  reachable_workspace_m: 0.7
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - peg
+
+learned_policies:
+  - name: locomotion
+    governs: locomotion
+    policy_ref: registry://quad-loco-v4
+    command_ranges:
+      - { quantity: linear_velocity_x, min: -1.5, max: 1.5, unit: m_per_s }
+      - { quantity: yaw_rate, min: -1.0, max: 1.0, unit: rad_per_s }
+    terrain_classes: [rigid, deformable]
+    enforcement: reject
+  - name: grasping
+    governs: manipulation
+    policy_ref: registry://quad-grasp-v2
+    payload_range: { min: 0.0, max: 4.0, unit: kg }
+    enforcement: reject
+
+outputs:
+  named_endpoints:
+    - mission_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: compute
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/compute.cdx.json
+        sha256: "6262626262626262626262626262626262626262626262626262626262626262"

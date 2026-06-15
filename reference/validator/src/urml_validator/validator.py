@@ -3611,25 +3611,73 @@ def _min_non_none(*values: float | None) -> float | None:
     return min(present) if present else None
 
 
+# RFC-0617: which manifest capability a `governs` domain needs.
+_GOVERNS_REQUIRES: dict[str, str] = {
+    "locomotion": "mobility",
+    "navigation": "mobility",
+    "whole_body": "mobility",
+    "manipulation": "manipulation",
+    # "all" governs everything and requires nothing specific.
+}
+
+
 def _check_learned_policy(
     manifest: CapabilityManifest,
     envelope: SafetyEnvelope | None,
 ) -> list[ValidationError]:
-    """Pass 2/3 (RFC-0383): a deployment must stay inside a learned policy's training envelope.
+    """Pass 2/3 (RFC-0383 + RFC-0617): a deployment must stay inside each learned policy's training envelope.
 
-    When the manifest declares ``learned_policy``, the validator checks that the
-    deployment's admissible ceiling (the strictest of the mechanical ``mobility``
-    limit and the safety-envelope cap) does not exceed what the policy was
-    trained for, and that the declared terrain is within the trained terrain
-    classes. Severity follows ``enforcement`` (``reject`` -> error, ``warn`` ->
-    warning). The validator does not load or run the policy; ``policy_ref`` is
-    opaque. Per-primitive intent-to-command inference is a documented follow-on.
+    The single top-level ``learned_policy`` (RFC-0383) and every entry of
+    ``learned_policies`` (RFC-0617, a multi-skill robot's named, per-domain
+    policies) are each checked: the deployment's admissible ceiling (the
+    strictest of the mechanical ``mobility`` limit and the safety-envelope cap)
+    must not exceed what the policy was trained for on the quantities it
+    declares, and the declared terrain must be within its trained classes. A
+    named policy that ``governs`` a domain the manifest has no capability for is
+    flagged. Each policy is scoped by its own ``command_ranges``, so a
+    velocity-only locomotion policy and a manipulation policy do not interfere.
+    Severity follows each policy's ``enforcement``. The validator does not load
+    or run a policy; ``policy_ref`` is opaque.
     """
     out: list[ValidationError] = []
-    lp = manifest.learned_policy
-    if lp is None:
-        return out
+    policies: list[tuple[Any, list[str]]] = []
+    if manifest.learned_policy is not None:
+        policies.append((manifest.learned_policy, ["<manifest>", "learned_policy"]))
+    for i, lp in enumerate(manifest.learned_policies):
+        label = lp.name if lp.name is not None else str(i)
+        policies.append((lp, ["<manifest>", "learned_policies", label]))
+    for lp, base in policies:
+        out += _check_one_learned_policy(lp, base, manifest, envelope)
+    return out
+
+
+def _check_one_learned_policy(
+    lp: Any,
+    base: list[str],
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+) -> list[ValidationError]:
+    out: list[ValidationError] = []
     severity: Literal["error", "warning"] = "error" if lp.enforcement == "reject" else "warning"
+
+    # RFC-0617: a governs-domain must have its capability declared.
+    if lp.governs is not None:
+        required = _GOVERNS_REQUIRES.get(lp.governs)
+        if required is not None and not getattr(manifest, required, None):
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_LEARNED_POLICY_GOVERNS_UNSUPPORTED,
+                    severity=severity,
+                    primitive=None,
+                    path=base + ["governs"],
+                    field="governs",
+                    message=(
+                        f"learned policy governs {lp.governs!r} but the manifest declares no "
+                        f"`{required}` capability."
+                    ),
+                    suggestion=f"Declare a `{required}` block, or correct the policy's governs. Per RFC-0617.",
+                )
+            )
 
     # Terrain coherence: the validated terrain must be one the policy trained on.
     vc = manifest.validation
@@ -3640,7 +3688,7 @@ def _check_learned_policy(
                     code=ErrorCode.CAPABILITY_LEARNED_POLICY_TERRAIN_MISMATCH,
                     severity=severity,
                     primitive=None,
-                    path=["<manifest>", "learned_policy", "terrain_classes"],
+                    path=base + ["terrain_classes"],
                     field="terrain_classes",
                     message=(
                         f"deployment terrain_fidelity {vc.terrain_fidelity!r} is not among the "
@@ -3648,13 +3696,15 @@ def _check_learned_policy(
                     ),
                     suggestion=(
                         "Run the policy only on terrain it was trained for, or widen "
-                        "learned_policy.terrain_classes. Per RFC-0383."
+                        "terrain_classes. Per RFC-0383."
                     ),
                 )
             )
 
-    # Velocity ceiling vs the trained command range.
-    trained_velocity = [cr.max for cr in lp.command_ranges if cr.quantity in ("linear_velocity_x", "linear_velocity_y")]
+    # Velocity ceiling vs the trained command range (scopes the policy to velocity).
+    trained_velocity = [
+        cr.max for cr in lp.command_ranges if cr.quantity in ("linear_velocity_x", "linear_velocity_y")
+    ]
     if trained_velocity:
         trained_max = max(trained_velocity)
         mob_v = manifest.mobility.max_velocity if manifest.mobility is not None else None
@@ -3664,6 +3714,7 @@ def _check_learned_policy(
             out.append(
                 _learned_policy_exceeds(
                     severity,
+                    base,
                     "velocity",
                     f"the admissible velocity ceiling {ceiling} (strictest of mobility/envelope) "
                     f"exceeds the policy's trained max {trained_max} m/s.",
@@ -3679,6 +3730,7 @@ def _check_learned_policy(
             out.append(
                 _learned_policy_exceeds(
                     severity,
+                    base,
                     "payload",
                     f"the admissible payload ceiling {ceiling_p} kg (strictest of mobility/envelope) "
                     f"exceeds the policy's trained max {lp.payload_range.max} kg.",
@@ -3689,6 +3741,7 @@ def _check_learned_policy(
 
 def _learned_policy_exceeds(
     severity: Literal["error", "warning"],
+    base: list[str],
     quantity: str,
     detail: str,
 ) -> ValidationError:
@@ -3696,9 +3749,9 @@ def _learned_policy_exceeds(
         code=ErrorCode.CAPABILITY_LEARNED_POLICY_EXCEEDS_TRAINING,
         severity=severity,
         primitive=None,
-        path=["<manifest>", "learned_policy", "command_ranges"],
+        path=base + ["command_ranges"],
         field=quantity,
-        message=f"learned_policy training envelope exceeded: {detail}",
+        message=f"learned-policy training envelope exceeded: {detail}",
         suggestion=(
             "Tighten the mechanical limit or the safety-envelope cap to the trained range, "
             "or retrain/redeclare the policy for the wider range. Per RFC-0383."
