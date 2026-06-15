@@ -235,6 +235,8 @@ def validate(
     errors.extend(_check_program_bindings(manifest_model))
     # RFC-0290: the frame graph must be acyclic with declared parents.
     errors.extend(_check_frame_graph(manifest_model))
+    # RFC-0615: declared-areas + object-detection coherence.
+    errors.extend(_check_world_model(manifest_model))
     # RFC-0384: whole-body kinematic structure + stability consistency.
     errors.extend(_check_whole_body_caps(manifest_model))
     # RFC-0518: base-level mobility-bounds coherence.
@@ -1163,11 +1165,79 @@ def _err(
 
 
 def _location_declared(manifest: CapabilityManifest, name: str) -> bool:
-    return any(loc.name == name for loc in manifest.declared_locations)
+    # RFC-0615: a primitive may target a declared point location OR a named area.
+    if any(loc.name == name for loc in manifest.declared_locations):
+        return True
+    return any(a.name == name for a in (manifest.declared_areas or []))
 
 
 def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(f.name == name for f in manifest.frames)
+
+
+def _check_world_model(manifest: CapabilityManifest) -> list[ValidationError]:
+    """Pass 2 (RFC-0615): declared-areas and object-detection coherence.
+
+    Areas (rooms / zones) and object-detection responsibility are declarations,
+    not a world model. The only rules are self-consistency: an area's frame must
+    be a declared frame, and an object-detection entry must name a class that is
+    in `object_vocabulary` and a sensor that is a declared camera or sensor. URML
+    does not map areas or perform detection; it declares the finite set the robot
+    is configured for.
+    """
+    out: list[ValidationError] = []
+    for area in manifest.declared_areas or []:
+        if not _frame_declared(manifest, area.frame):
+            out.append(
+                ValidationError(
+                    code=ErrorCode.CAPABILITY_AREA_FRAME_UNDECLARED,
+                    primitive=None,
+                    path=["<manifest>", "declared_areas"],
+                    field="frame",
+                    message=(
+                        f"declared_areas area {area.name!r} references frame "
+                        f"{area.frame!r}, which is not a declared frame."
+                    ),
+                    suggestion=f"Declare a frame named {area.frame!r}, or fix the area's frame. Per RFC-0615.",
+                    detail={"area": area.name, "frame": area.frame},
+                )
+            )
+    perception = manifest.perception
+    if perception is not None and perception.object_detection:
+        vocab = set(perception.object_vocabulary)
+        sensor_names = {c.name for c in perception.cameras} | {s.name for s in perception.sensors}
+        for od in perception.object_detection:
+            if od.object_class not in vocab:
+                out.append(
+                    ValidationError(
+                        code=ErrorCode.CAPABILITY_DETECTOR_UNKNOWN_OBJECT_CLASS,
+                        primitive=None,
+                        path=["<manifest>", "perception", "object_detection"],
+                        field="object_class",
+                        message=(
+                            f"object_detection names class {od.object_class!r}, which is "
+                            "not in perception.object_vocabulary."
+                        ),
+                        suggestion=f"Add {od.object_class!r} to object_vocabulary, or fix the detector. Per RFC-0615.",
+                        detail={"object_class": od.object_class},
+                    )
+                )
+            if od.sensor not in sensor_names:
+                out.append(
+                    ValidationError(
+                        code=ErrorCode.CAPABILITY_DETECTOR_UNKNOWN_SENSOR,
+                        primitive=None,
+                        path=["<manifest>", "perception", "object_detection"],
+                        field="sensor",
+                        message=(
+                            f"object_detection for {od.object_class!r} names sensor "
+                            f"{od.sensor!r}, which is not a declared camera or sensor."
+                        ),
+                        suggestion=f"Name a declared camera or sensor, or add {od.sensor!r}. Per RFC-0615.",
+                        detail={"object_class": od.object_class, "sensor": od.sensor},
+                    )
+                )
+    return out
 
 
 def _check_minimal_node(manifest: CapabilityManifest) -> list[ValidationError]:

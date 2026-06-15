@@ -1,0 +1,16 @@
+URML checks intent against the declared world model (rooms + objects).
+robot: home_bot
+known rooms: kitchen, living_room
+known objects: mug, cup
+
+[ACCEPT] fetch_mug_from_kitchen
+   move_to(kitchen) -> detect(mug) -> grasp
+
+[ACCEPT] go_to_living_room
+   move_to(living_room)
+
+[REFUSE] go_to_garage
+   move_to(garage)  ->  [capability.missing_location]
+
+[REFUSE] fetch_a_banana
+   detect(banana) -> grasp  ->  [capability.missing_object_class]

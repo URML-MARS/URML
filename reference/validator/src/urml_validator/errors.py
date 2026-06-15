@@ -50,6 +50,10 @@ class ErrorCode(StrEnum):
     CAPABILITY_FRAME_CYCLE = "capability.frame_cycle"
     CAPABILITY_MISSING_LOCATION = "capability.missing_location"
     CAPABILITY_MISSING_OBJECT_CLASS = "capability.missing_object_class"
+    # RFC-0615: object-detection responsibility + area coherence.
+    CAPABILITY_DETECTOR_UNKNOWN_OBJECT_CLASS = "capability.detector_unknown_object_class"
+    CAPABILITY_DETECTOR_UNKNOWN_SENSOR = "capability.detector_unknown_sensor"
+    CAPABILITY_AREA_FRAME_UNDECLARED = "capability.area_frame_undeclared"
     CAPABILITY_MISSING_DOCKING_STATION = "capability.missing_docking_station"
     CAPABILITY_MISSING_DOCKING_SERVICE = "capability.missing_docking_service"
     CAPABILITY_MISSING_EVENT = "capability.missing_event"

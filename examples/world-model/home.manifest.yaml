@@ -1,0 +1,73 @@
+# Capability manifest showing the RFC-0615 world-model declarations: named rooms
+# (declared_areas) and object-detection responsibility (which sensor detects
+# which object class).
+#
+# This is the gap the linorobot2 / Dallas Personal Robotics Group feedback named:
+# "how to define objects, rooms... it doesn't define how objects will be
+# detected." URML's answer is declaration, not a world model. It declares the
+# FINITE set this robot is configured for (the rooms it knows, the object classes
+# it can recognize, and the sensor responsible for each). It does not enumerate
+# every object, model attributes, map the rooms, or perform detection. A VLA
+# proposes "fetch the mug from the kitchen"; URML checks the mug is a class this
+# robot can detect and the kitchen is a room it knows, before anything actuates.
+
+manifest_version: "0.1"
+robot_id: home_bot
+description: A home robot that knows a few rooms and a few object classes.
+
+frames:
+  - name: map
+    parent: null
+
+declared_locations:
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: map
+
+# RFC-0615: named regions you can be "in", distinct from point locations.
+declared_areas:
+  - name: kitchen
+    frame: map
+    polygon:
+      - { x: 2.0, y: 0.0 }
+      - { x: 5.0, y: 0.0 }
+      - { x: 5.0, y: 3.0 }
+      - { x: 2.0, y: 3.0 }
+  - name: living_room
+    frame: map
+    polygon:
+      - { x: -4.0, y: 0.0 }
+      - { x: -1.0, y: 0.0 }
+      - { x: -1.0, y: 3.0 }
+      - { x: -4.0, y: 3.0 }
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.6
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 5.0
+      accepted_classes: [mug, cup]
+      movable: true
+  reachable_workspace_m: 0.35
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: true
+  sensors: []
+  object_vocabulary: [mug, cup]
+  # RFC-0615: which sensor is responsible for detecting each class.
+  object_detection:
+    - { object_class: mug, sensor: head_rgb }
+    - { object_class: cup, sensor: head_rgb }
+
+outputs:
+  named_endpoints: [operator]
