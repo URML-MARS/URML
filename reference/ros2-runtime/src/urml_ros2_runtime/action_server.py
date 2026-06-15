@@ -155,8 +155,8 @@ def execute_request(
         emit("translating", "translating natural language to URML")
         # Lazy import: the bridge package is an optional dependency of the
         # action server, only needed for the NL path.
-        from urml_llm_bridge import Bridge
-        from urml_llm_bridge.errors import BridgeError
+        from urml_llm_bridge import Bridge  # type: ignore[import-not-found,unused-ignore]
+        from urml_llm_bridge.errors import BridgeError  # type: ignore[import-not-found,unused-ignore]
 
         bridge = Bridge(
             provider=provider,
@@ -242,7 +242,7 @@ def main(args: list[str] | None = None) -> None:
     from urml_ros2_runtime.substrate.adapter_config import AdapterConfig
     from urml_ros2_runtime.substrate.mock import MockROSAdapter
 
-    class URMLActionServerNode(Node):  # type: ignore[misc,valid-type]
+    class URMLActionServerNode(Node):  # type: ignore[misc]
         """ROS 2 node serving the ``ExecuteURML`` action."""
 
         def __init__(self) -> None:
