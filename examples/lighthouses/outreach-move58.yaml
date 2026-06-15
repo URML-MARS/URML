@@ -1,0 +1,116 @@
+# Move #58 outreach ledger. One row per target.
+#
+# Move #58: **the edge-AI / on-robot-inference wave** — lane C of the
+# 2026-06-14 third candidate slate, the LAST lane (exhausts the slate). 5 RFCs
+# (0610-0614); automatika emos folded into embodied-agents (0610). HELD BACK
+# the big-org / robotics-incidental targets the slate surfaced (microsoft/
+# onnxruntime 20.8k*, apache/tvm 13.5k*, sony/nnabla) -- general ML infra where
+# robotics is incidental + giant maintainer teams = spam / wrong-audience risk
+# (cf. the PDAL geospatial close). Founder can greenlight those big-name shots
+# deliberately later. DROPPED bentoml (serving altitude generic). No padding.
+# Framing: URML CONSUMES the inference output (it does not run inference) and
+# GATES the action it informs (the five-pass validation seam between a model's
+# proposed action and actuation); for deployed/trained models, RFC-0383 (the
+# artifact/policy declares its envelope). Outreach = request-for-comment.
+#
+# Targets / framing:
+#   - embodied-agents (0610, anchor, GB/EU, fold emos): ROS2 local LLM/VLM/VLA
+#     -> ros2_control/MoveIt Servo -> URML the validated gate between proposed
+#     action and actuation; a VLA could emit URML. STRONGEST fit. MIT.
+#   - yolo_ros (0611, ES): maintained ROS2 YOLO -> consume detections (Move #25);
+#     classes toward object vocabulary. GPL-3.0 cross-cite.
+#   - kenning (0612, PL/Antmicro): edge-AI deploy/optimize w/ ROS2 CV nodes ->
+#     gate the action; deployed artifact carries an envelope (RFC-0383). Apache.
+#   - hailo_tappas_ros2 (0613, US/indiv): Hailo NPU on-edge inference -> consume
+#     the estimate; clean separation matters on a fixed accelerator pipeline.
+#     Apache.
+#   - opencv_zoo (0614, US/intl): edge OpenCV-DNN model zoo -> consume a zoo
+#     model's estimate (Move #25); robotics SUBSET only, not the whole project.
+#     Apache. Completes the wave + the third candidate slate.
+#
+# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
+# founder authorizes posting. Then post posts-move58.md under idoco2003 (all
+# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
+# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
+# (MIT/Apache stated; yolo_ros GPL cross-cite, no code reuse). VIBE.md
+# disclosure up front; per-target body variation. Funnel 599 -> 604 on posting.
+
+- slug: embodied-agents
+  rfc: 610
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "automatika-robotics/embodied-agents (MIT, ~61 stars, Issues enabled, not archived, active 2026-06. ROS 2 framework running local LLM/VLM/VLA on robots; maps model output -> ros2_control/MoveIt Servo. + automatika-robotics/emos (MIT, ~63 stars, active 2026-06) Embodied OS, folded. UK/EU."
+  last_touch: ""
+  response: none
+  tier: A
+  country: GB
+  sector: ai-language
+  comments: []
+  claude_directives:
+    - date: "2026-06-15"
+      text: "When authorized, post the posts-move58.md embodied-agents body (Move #58 anchor) as a single GitHub Issue on automatika-robotics/embodied-agents (referencing emos) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. The validated gate between a model's proposed action and actuation; a VLA could emit URML. MIT: state it, never ask. VIBE.md disclosure up front."
+
+- slug: yolo_ros
+  rfc: 611
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "mgonzs13/yolo_ros (GPL-3.0, ~1070 stars, Issues enabled, not archived, active 2026-05. Maintained ROS 2 YOLO inference wrapper (ONNX/TensorRT, RGB-D 3D detections). University of Leon, Spain."
+  last_touch: ""
+  response: none
+  tier: A
+  country: ES
+  sector: perception
+  comments: []
+  claude_directives:
+    - date: "2026-06-15"
+      text: "When authorized, post the posts-move58.md yolo_ros body as a GitHub Issue on mgonzs13/yolo_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume detections (Move #25); classes toward object vocabulary. GPL-3.0 cross-cite only, no code reuse, state never ask. VIBE.md disclosure up front."
+
+- slug: kenning
+  rfc: 612
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "antmicro/kenning (Apache-2.0, ~139 stars, Issues enabled, not archived, active 2026-06. Edge-AI deployment/optimization framework with ROS 2 CV node support (ONNX/TFLite/TVM). Antmicro, Poland."
+  last_touch: ""
+  response: none
+  tier: A
+  country: PL
+  sector: framework-skill
+  comments: []
+  claude_directives:
+    - date: "2026-06-15"
+      text: "When authorized, post the posts-move58.md kenning body as a GitHub Issue on antmicro/kenning under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Gate the action downstream of a deployed model; artifact carries an envelope (RFC-0383). Apache: state it, never ask. VIBE.md disclosure up front."
+
+- slug: hailo_tappas_ros2
+  rfc: 613
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "kyrikakis/hailo_tappas_ros2 (Apache-2.0, ~34 stars, Issues enabled, not archived, active 2025-04. Hailo NPU + ROS 2 on-edge inference; publishes detections/faces to topics. Individual."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives:
+    - date: "2026-06-15"
+      text: "When authorized, post the posts-move58.md hailo_tappas_ros2 body as a GitHub Issue on kyrikakis/hailo_tappas_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume the estimate; clean separation on a fixed NPU pipeline. Apache: state it, never ask. VIBE.md disclosure up front."
+
+- slug: opencv_zoo
+  rfc: 614
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "opencv/opencv_zoo (Apache-2.0, ~958 stars, Issues enabled, not archived, active 2026-05. Edge-deployable model zoo for OpenCV DNN (detection/seg/pose). OpenCV, US/intl."
+  last_touch: ""
+  response: none
+  tier: B
+  country: US
+  sector: perception
+  comments: []
+  claude_directives:
+    - date: "2026-06-15"
+      text: "When authorized, post the posts-move58.md opencv_zoo body as a GitHub Issue on opencv/opencv_zoo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume a zoo model's estimate (Move #25); robotics SUBSET only, not the whole project (frame tightly). Apache: state it, never ask. VIBE.md disclosure up front. Completes Move #58 + the third candidate slate."
