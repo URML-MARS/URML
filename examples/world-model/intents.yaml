@@ -1,0 +1,39 @@
+# Intents a model might produce, checked against the robot's declared world model.
+# Two are admissible (a known room, a known object detected by a declared sensor);
+# two name things this robot was never declared to know, and are refused.
+
+intents:
+  - label: fetch_mug_from_kitchen
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: kitchen }       # a declared area (room)
+          - detect: { object: mug, store_as: m } # mug is in vocabulary, detected by head_rgb
+          - grasp: { target: $m, force: gentle }
+
+  - label: go_to_living_room
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: living_room }   # another declared area
+
+  - label: go_to_garage                          # garage is not a declared room
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - move_to: { location: garage }
+
+  - label: fetch_a_banana                        # banana is not in the object vocabulary
+    program:
+      profile: home
+      behavior:
+        type: sequence
+        steps:
+          - detect: { object: banana, store_as: b }
+          - grasp: { target: $b, force: gentle }

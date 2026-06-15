@@ -275,6 +275,26 @@ class Point2(BaseModel):
     y: float
 
 
+class Area(BaseModel):
+    """A named region of the robot's world model: a room or zone (RFC-0615).
+
+    Unlike a `DeclaredLocation` (a single point pose), an Area is a 2-D region
+    the robot knows by name, defined by a polygon in a declared frame. A
+    primitive that targets a place (`move_to`, `pick_from`, ...) may name an
+    Area as well as a point location; the validator resolves the name against
+    both. URML declares the named regions this robot knows; it does not map,
+    survey, or detect them. The set is the finite list a deployment configures,
+    not a world database.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    frame: Identifier
+    polygon: list[Point2] = Field(..., min_length=3, description="Region boundary (>= 3 vertices).")
+    description: str | None = None
+
+
 class Point3(BaseModel):
     """A 3-D point (metres) in the robot's body frame (RFC-0384).
 
@@ -461,6 +481,22 @@ class Sensor(BaseModel):
     )
 
 
+class ObjectDetector(BaseModel):
+    """Declares which sensor detects a given object class (RFC-0615).
+
+    URML does not perform detection. This declares responsibility: that a named
+    object class in `object_vocabulary` is detectable by a named declared camera
+    or sensor. It answers "how is this object found" at the capability level
+    (which sensor is responsible), not at the algorithm level. Optional and
+    additive; absence means the vocabulary is declared without naming a detector.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    object_class: Identifier
+    sensor: Identifier
+
+
 class Perception(BaseModel):
     """Perception capabilities declared by the robot.
 
@@ -473,6 +509,13 @@ class Perception(BaseModel):
     cameras: list[Camera] = Field(default_factory=list)
     sensors: list[Sensor] = Field(default_factory=list)
     object_vocabulary: list[Identifier] = Field(default_factory=list)
+    object_detection: list[ObjectDetector] = Field(
+        default_factory=list,
+        description=(
+            "Optional (RFC-0615): which declared sensor detects which declared "
+            "object class. Declares detection responsibility, not the algorithm."
+        ),
+    )
 
 
 class DockingStation(BaseModel):
@@ -1529,6 +1572,13 @@ class CapabilityManifest(BaseModel):
 
     frames: list[Frame] = Field(default_factory=list)
     declared_locations: list[DeclaredLocation] = Field(default_factory=list)
+    declared_areas: list[Area] = Field(
+        default_factory=list,
+        description=(
+            "Optional (RFC-0615): named regions (rooms / zones) the robot knows. "
+            "A primitive may target an area by name as well as a point location."
+        ),
+    )
     declared_events: list[Identifier] = Field(default_factory=list)
 
     mobility: Mobility | None = None
