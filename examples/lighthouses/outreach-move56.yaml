@@ -96,18 +96,21 @@
   posted_url: "https://github.com/transitiverobotics/transitive/issues/172"
   channel: github_issue
   contact: "transitiverobotics/transitive (Apache-2.0, ~141 stars, Issues enabled, not archived, active 2026-06. Open full-stack framework for web-based robot fleet management / mission control. US/CA."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0603 body to https://github.com/transitiverobotics/transitive/issues/172 under idoco2003 (Move #56 service-robotics wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "chfritz (CONTRIBUTOR) HOSTILE-closed #172 NOT_PLANNED: 'Seriously? Spamming Github projects with 604(!) AI generated spam tickets?' (linked our docs/rfcs). AI-spam accusation counting the ~604 RFC docs as 'tickets'. At the founder's direction, posted a polite-but-firm human pushback (NOT silent this time): not spam (real project: spec + reference runtimes + validator + tests), the RFCs are design/outreach notes in OUR repo not tickets on theirs, several maintainers have engaged constructively (aggregate, no names per confidentiality), offered to close it ourselves if not a fit, asked him to keep it civil. declined. The 604 count is a real signal the outreach volume + RFC-per-target practice now reads as spam to onlookers -- reinforces the pre-post fit-check rule."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (chfritz hostile AI-spam close). Polite firm pushback posted (founder-directed). Do not pursue. NOTE: '604 AI spam tickets' is the loudest external read yet that the volume + per-target-RFC practice looks like spam; weigh against the volume directive."
 
 - slug: congatudo
   rfc: 604
