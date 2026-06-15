@@ -39,14 +39,16 @@
   posted_url: "https://github.com/Hypfer/Valetudo/issues/2523"
   channel: github_issue
   contact: "Hypfer/Valetudo (Apache-2.0, ~9221 stars, Issues enabled, not archived, active 2026-06. Cloud-free firmware / local control plane (REST+MQTT) for many consumer/commercial cleaning robots. DE."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: A
   country: DE
   sector: robot-platform
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0600 body to https://github.com/Hypfer/Valetudo/issues/2523 under idoco2003 (Move #56 service-robotics wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "2026-06-15: @Hypfer DELETED the issue entirely (HTTP 410). Strongest form of rejection. posted_url now dead. Recording as declined; no reply, no repost."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
@@ -106,6 +108,8 @@
       text: "Posted the RFC-0603 body to https://github.com/transitiverobotics/transitive/issues/172 under idoco2003 (Move #56 service-robotics wave). Awaiting response."
     - date: "2026-06-15"
       text: "chfritz (CONTRIBUTOR) HOSTILE-closed #172 NOT_PLANNED: 'Seriously? Spamming Github projects with 604(!) AI generated spam tickets?' (linked our docs/rfcs). AI-spam accusation counting the ~604 RFC docs as 'tickets'. At the founder's direction, posted a polite-but-firm human pushback (NOT silent this time): not spam (real project: spec + reference runtimes + validator + tests), the RFCs are design/outreach notes in OUR repo not tickets on theirs, several maintainers have engaged constructively (aggregate, no names per confidentiality), offered to close it ourselves if not a fit, asked him to keep it civil. declined. The 604 count is a real signal the outreach volume + RFC-per-target practice now reads as spam to onlookers -- reinforces the pre-post fit-check rule."
+    - date: "2026-06-15"
+      text: "REPLY 2026-06-14: @chfritz (CONTRIBUTOR, Transitive founder) closed not_planned, HOSTILE: 'Seriously? Spamming Github projects with 604(!) AI generated spam tickets?' linking the URML RFC dir. FIRST maintainer to count the whole corpus and call the campaign spam -- a volume-play reputational signal, escalated to the founder. Accept silently, no reply (more AI prose proves the point)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
