@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>urml_flexbe_states</name>
+  <version>0.1.0</version>
+  <description>
+    FlexBE states for URML — ExecuteUrmlState dispatches a validated URML
+    program (or a natural-language sentence) through the ExecuteURML ROS 2
+    action, surfacing URML's validate-before-actuate verdict to the
+    operator-in-the-loop engine. Part of the URML FlexBE worked example
+    (RFC-0474).
+  </description>
+  <maintainer email="greenvh@gmail.com">URML Maintainers</maintainer>
+  <license>Apache-2.0</license>
+  <url type="website">https://urml.dev</url>
+
+  <exec_depend>flexbe_core</exec_depend>
+  <exec_depend>urml_ros2_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

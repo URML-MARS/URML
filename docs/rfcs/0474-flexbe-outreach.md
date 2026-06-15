@@ -4,7 +4,7 @@ title: FlexBE integration — request for comment
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Draft
 created: 2026-06-12
-updated: 2026-06-12
+updated: 2026-06-15
 supersedes: —
 superseded-by: —
 ---
@@ -57,3 +57,22 @@ URML's Layer-3 behavior composition (RFC-0002) and its validate-before-actuate a
 ## Implementation note
 
 Outreach only. The post is a GitHub Issue on `FlexBE/flexbe_behavior_engine` (Discussions not enabled) under the maintainer's identity, AI-assisted-authoring disclosure (VIBE.md) up front, no license-ask (BSD). Tracked in `examples/lighthouses/outreach-move41.yaml`.
+
+## Engagement log
+
+**2026-06-13 — engaged (off-platform).** David Conner (Associate Professor, Christopher Newport University; directs CHRISLab; FlexBE lineage; DARPA Robotics Challenge Team ViGIR PI) reached back via LinkedIn, then email. His research is capability-based synthesis of HFSM controllers, which maps onto URML's Layer-1 capability manifest and Layer-3 behavior composition; CHRISLab runs ROS 2 on Turtlebot / Kinova / UR3e / drones, all direct URML manifest targets.
+
+**2026-06-15 — seam chosen, worked example shipped.** Conner replied pointing to his FlexBE + behavior-tree paper ([arxiv 2203.05389](https://arxiv.org/abs/2203.05389)), where FlexBE invoked a ROS 2 action server that managed BT invocation, and to his latest paper, *Capability-based Robot Controller Synthesis* (GR(1)/Slugs/FlexBE). He proposed the concrete seam: give FlexBE **a ROS 2 action interface to URML**, then write FlexBE states that call it, demonstrated against `flexbe_turtlesim_demo`. This is **the second seam above** (a FlexBE state dispatches a validated URML program), and it is what URML built in response.
+
+The capabilities framing aligns directly: in Conner et al. each "capability" is a state with pre/post-conditions and an outcome; a validated URML primitive is exactly such a capability, with the manifest + safety envelope as its precondition and the validation verdict as the admissibility gate an operator approves.
+
+## Shipped: the `ExecuteURML` ROS 2 action
+
+URML now exposes itself as a ROS 2 action so any behavior engine can drive it through validate-before-actuate. The worked example lives under [`examples/flexbe/`](../../examples/flexbe/).
+
+- **Interface** — `urml_ros2_msgs/action/ExecuteURML.action`. Goal: a validated URML `program_yaml` **or** a natural-language `sentence`, plus `manifest_yaml`, optional `envelope_yaml`, `profiles`, `no_policy`. Result: `success`, `refused`, `reason`, `steps_executed`, `audit_log_json`, `bindings_json`. Feedback: `phase` + `detail`.
+- **Server** — `urml_ros2_runtime.action_server`. The rclpy-free core `execute_request()` runs the CLI's `translate? -> validate -> execute` flow against any substrate adapter; the `URMLActionServerNode` rclpy shell serves it. Validation always runs before actuation; a rejected program returns `refused` with the verdict and nothing actuates.
+- **FlexBE side** — `urml_flexbe_states.ExecuteUrmlState` calls the action and maps the result to `done` / `failed` / `refused`, surfacing the verdict to the operator; the `URML Turtle Patrol` behavior gates it behind an operator approval (collaborative autonomy), mirroring Fig. 5 of Conner et al.
+- **Hermetic proof** — `reference/ros2-runtime/tests/test_action_server.py` and the `flexbe/turtle_sequence_positive` conformance fixture run the URML side with no ROS 2. The live FlexBE + turtlesim run is the gated, fail-loud `flexbe-integration` workflow.
+
+Still outreach in spirit: no spec change, no new primitive. URML exposing a ROS 2 action and shipping FlexBE glue is a reference-runtime + example artifact, the same shape as the engagement-driven adapters (Marty, Petoi).

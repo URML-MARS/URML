@@ -1,0 +1,31 @@
+# URML v0.1 — the program the FlexBE worked example runs.
+#
+# Scenario: flexbe/turtle-patrol
+# Source NL: "Patrol the two waypoints, then come home." (see turtle-patrol.en.txt)
+#
+# Navigation-only patrol on the turtlesim mobile base (turtle.manifest.yaml,
+# mobility.drive_type: differential). Core vocabulary only, so it validates and
+# executes hermetically against the mock and adapter-agnostically against the
+# ROS 2 runtime driving turtlesim. Uses the `home` profile (wheeled navigation
+# needs no new profile). Validate / execute it directly:
+#
+#   urml validate examples/flexbe/turtle-patrol.urml.yaml \
+#     -m examples/flexbe/turtle.manifest.yaml --profile home --no-policy
+#
+#   urml execute examples/flexbe/turtle-patrol.urml.yaml \
+#     -m examples/flexbe/turtle.manifest.yaml --profile home --no-policy --adapter mock
+#
+# Under FlexBE, ExecuteUrmlState sends this same program to the ExecuteURML
+# action; the operator approves it before it actuates.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: waypoint_a
+    - move_to:
+        location: waypoint_b
+    - move_to:
+        location: home

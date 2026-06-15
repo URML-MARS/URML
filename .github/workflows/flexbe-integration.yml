@@ -1,0 +1,94 @@
+# Gated FlexBE-integration workflow (RFC-0474).
+#
+# Gated to manual dispatch + weekly cron (never per-push; the hermetic unit
+# suite already gates every PR with the action-server core tests + the
+# flexbe/turtle conformance fixture).
+#
+#   flexbe-smoke         — the hermetic URML side: the action-server core
+#   (execute_request) tests + the flexbe/turtle conformance fixture, run with
+#   MockROSAdapter + EchoProvider. No ROS 2, no FlexBE, no turtlesim. This is
+#   the part that is actually CI-safe, and it also runs on every PR via the
+#   normal ros2-integration / conformance jobs; it is repeated here so the
+#   FlexBE lane has a self-contained green signal.
+#
+#   flexbe-turtlesim-e2e — the real end-to-end: build the urml_ros2_msgs +
+#   urml_flexbe_states + urml_flexbe_behaviors packages with colcon under a
+#   real ROS 2 distro, launch turtlesim + the URML ExecuteURML action server +
+#   FlexBE, and drive the URML Turtle Patrol behavior. Heavy, best-effort.
+#
+# HONESTY NOTE: the turtlesim-e2e below was authored without a live ROS 2 +
+# FlexBE host. The URML side (action-server core + conformance fixture) is
+# exercised hermetically on every PR; the FlexBE-driven run needs a real ROS 2
+# install, the FlexBE behavior engine, and turtlesim. The job fails loudly
+# until wired on a self-hosted ROS 2 runner — exactly the
+# edu-board-e2e / cobot-controller-e2e convention.
+
+name: flexbe-integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 20:00 UTC (staggered after edu 18:00, cobot 15:00, marine 12:00).
+    - cron: '0 20 * * 1'
+
+jobs:
+  flexbe-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv
+
+      - name: Install URML packages
+        run: |
+          python3 -m venv /tmp/ci-venv
+          . /tmp/ci-venv/bin/activate
+          pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/llm-bridge \
+            -e conformance \
+            "pytest>=8"
+
+      - name: Hermetic action-server core + turtle conformance fixture
+        run: |
+          . /tmp/ci-venv/bin/activate
+          python -m pytest reference/ros2-runtime/tests/test_action_server.py -v
+          python -m pytest conformance/tests/test_conformance_suite.py \
+            -k "turtle" -v
+
+  flexbe-turtlesim-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder for the live FlexBE + turtlesim run
+        run: |
+          # Wiring (calibration step) on a ROS 2 host (Jazzy / Kilted / Rolling):
+          #   1. pip install -e reference/validator reference/ros2-runtime \
+          #        reference/llm-bridge   (into the ROS 2 Python environment)
+          #   2. cd examples/flexbe/ros2_ws && colcon build && source install/setup.bash
+          #   3. apt install ros-$ROS_DISTRO-flexbe-behavior-engine \
+          #        ros-$ROS_DISTRO-flexbe-app ros-$ROS_DISTRO-turtlesim
+          #   4. ros2 launch urml_flexbe_behaviors urml_flexbe_turtlesim.launch.py \
+          #        adapter:=ros2
+          #   5. ros2 launch flexbe_app flexbe_full.launch.py, load "URML Turtle
+          #      Patrol", approve the plan, assert the turtle completes the patrol.
+          # Fails loudly until pinned on a self-hosted ROS 2 + FlexBE runner
+          # rather than green-washing.
+          echo "A real ROS 2 + FlexBE + turtlesim host is the documented calibration step."
+          exit 1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flexbe-turtlesim-e2e-diagnostics
+          path: examples/flexbe/ros2_ws/log
+          retention-days: 14
