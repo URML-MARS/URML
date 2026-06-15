@@ -28,89 +28,97 @@
 #     model's estimate (Move #25); robotics SUBSET only, not the whole project.
 #     Apache. Completes the wave + the third candidate slate.
 #
-# DRAFTED, NOT POSTED: empty sent_at / posted_url, response: none, until the
-# founder authorizes posting. Then post posts-move58.md under idoco2003 (all
-# GitHub Issues), set sent_at / posted_url / last_touch, add a posted comment,
-# flip claude_directives to done, refresh outreach.db. No license-ask anywhere
-# (MIT/Apache stated; yolo_ros GPL cross-cite, no code reuse). VIBE.md
-# disclosure up front; per-target body variation. Funnel 599 -> 604 on posting.
+# POSTED 2026-06-15 under idoco2003 (all GitHub Issues). No license-ask
+# anywhere (MIT/Apache stated; yolo_ros GPL cross-cite, no code reuse). VIBE.md
+# disclosure up front; per-target body variation. Funnel 599 -> 604. All rows
+# response: none, awaiting maintainer reply. Completes the third candidate slate.
 
 - slug: embodied-agents
   rfc: 610
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-15"
+  posted_url: "https://github.com/automatika-robotics/embodied-agents/issues/33"
   channel: github_issue
   contact: "automatika-robotics/embodied-agents (MIT, ~61 stars, Issues enabled, not archived, active 2026-06. ROS 2 framework running local LLM/VLM/VLA on robots; maps model output -> ros2_control/MoveIt Servo. + automatika-robotics/emos (MIT, ~63 stars, active 2026-06) Embodied OS, folded. UK/EU."
-  last_touch: ""
+  last_touch: "2026-06-15"
   response: none
   tier: A
   country: GB
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-15"
+      text: "Posted the RFC-0610 body to https://github.com/automatika-robotics/embodied-agents/issues/33 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
   claude_directives:
     - date: "2026-06-15"
-      text: "When authorized, post the posts-move58.md embodied-agents body (Move #58 anchor) as a single GitHub Issue on automatika-robotics/embodied-agents (referencing emos) under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. The validated gate between a model's proposed action and actuation; a VLA could emit URML. MIT: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-15 under idoco2003."
 
 - slug: yolo_ros
   rfc: 611
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-15"
+  posted_url: "https://github.com/mgonzs13/yolo_ros/issues/116"
   channel: github_issue
   contact: "mgonzs13/yolo_ros (GPL-3.0, ~1070 stars, Issues enabled, not archived, active 2026-05. Maintained ROS 2 YOLO inference wrapper (ONNX/TensorRT, RGB-D 3D detections). University of Leon, Spain."
-  last_touch: ""
+  last_touch: "2026-06-15"
   response: none
   tier: A
   country: ES
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-15"
+      text: "Posted the RFC-0611 body to https://github.com/mgonzs13/yolo_ros/issues/116 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
   claude_directives:
     - date: "2026-06-15"
-      text: "When authorized, post the posts-move58.md yolo_ros body as a GitHub Issue on mgonzs13/yolo_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume detections (Move #25); classes toward object vocabulary. GPL-3.0 cross-cite only, no code reuse, state never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-15 under idoco2003."
 
 - slug: kenning
   rfc: 612
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-15"
+  posted_url: "https://github.com/antmicro/kenning/issues/8"
   channel: github_issue
   contact: "antmicro/kenning (Apache-2.0, ~139 stars, Issues enabled, not archived, active 2026-06. Edge-AI deployment/optimization framework with ROS 2 CV node support (ONNX/TFLite/TVM). Antmicro, Poland."
-  last_touch: ""
+  last_touch: "2026-06-15"
   response: none
   tier: A
   country: PL
   sector: framework-skill
-  comments: []
+  comments:
+    - date: "2026-06-15"
+      text: "Posted the RFC-0612 body to https://github.com/antmicro/kenning/issues/8 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
   claude_directives:
     - date: "2026-06-15"
-      text: "When authorized, post the posts-move58.md kenning body as a GitHub Issue on antmicro/kenning under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Gate the action downstream of a deployed model; artifact carries an envelope (RFC-0383). Apache: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-15 under idoco2003."
 
 - slug: hailo_tappas_ros2
   rfc: 613
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-15"
+  posted_url: "https://github.com/kyrikakis/hailo_tappas_ros2/issues/26"
   channel: github_issue
   contact: "kyrikakis/hailo_tappas_ros2 (Apache-2.0, ~34 stars, Issues enabled, not archived, active 2025-04. Hailo NPU + ROS 2 on-edge inference; publishes detections/faces to topics. Individual."
-  last_touch: ""
+  last_touch: "2026-06-15"
   response: none
   tier: B
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-15"
+      text: "Posted the RFC-0613 body to https://github.com/kyrikakis/hailo_tappas_ros2/issues/26 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
   claude_directives:
     - date: "2026-06-15"
-      text: "When authorized, post the posts-move58.md hailo_tappas_ros2 body as a GitHub Issue on kyrikakis/hailo_tappas_ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume the estimate; clean separation on a fixed NPU pipeline. Apache: state it, never ask. VIBE.md disclosure up front."
+      text: "DONE — posted on 2026-06-15 under idoco2003."
 
 - slug: opencv_zoo
   rfc: 614
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-15"
+  posted_url: "https://github.com/opencv/opencv_zoo/issues/312"
   channel: github_issue
   contact: "opencv/opencv_zoo (Apache-2.0, ~958 stars, Issues enabled, not archived, active 2026-05. Edge-deployable model zoo for OpenCV DNN (detection/seg/pose). OpenCV, US/intl."
-  last_touch: ""
+  last_touch: "2026-06-15"
   response: none
   tier: B
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-15"
+      text: "Posted the RFC-0614 body to https://github.com/opencv/opencv_zoo/issues/312 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
   claude_directives:
     - date: "2026-06-15"
-      text: "When authorized, post the posts-move58.md opencv_zoo body as a GitHub Issue on opencv/opencv_zoo under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; flip this directive to done; refresh outreach.db. Consume a zoo model's estimate (Move #25); robotics SUBSET only, not the whole project (frame tightly). Apache: state it, never ask. VIBE.md disclosure up front. Completes Move #58 + the third candidate slate."
+      text: "DONE — posted on 2026-06-15 under idoco2003."
