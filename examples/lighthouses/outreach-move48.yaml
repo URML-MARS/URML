@@ -301,17 +301,19 @@
   posted_url: "https://github.com/AutoAPMS/auto-apms/issues/22"
   channel: github_issue
   contact: "AutoAPMS/auto-apms (Apache-2.0, ~96 stars, Issues + Discussions enabled, not archived, very active 2026-06). Framework for robot behaviors via behavior trees in ROS 2 (skill-based BT + deliberation). DE."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-15"
+  response: engaged
   tier: B
   country: DE
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0541 body to https://github.com/AutoAPMS/auto-apms/issues/22 under idoco2003 (Move #48 domain/standards/conceptual-peer wave). Awaiting response."
+    - date: "2026-06-15"
+      text: "robin-mueller (MEMBER) engaged with a concrete integration architecture: lowering a URML intent onto a behavior tree 'seems very elegant', done via a build-handler plugin in a new auto_apms_urml compatibility package that validates and/or translates URML into the BT representation, reusing AutoAPMS's execution layer. Also wants AutoAPMS skills / BT nodes as intent primitives (unsure of the compat shape). 'Happy to exchange ideas.' SHIPPED examples/behavior-tree/ (PR #470): the validate-then-lower core -- a URML program validated against the manifest, then lowered to BehaviorTree.CPP v4 XML (sequence -> Sequence, primitive -> Action leaf); inadmissible program refused before lowering. Replied embracing the build handler + linking the example, and proposed a registry for the skills-as-primitives half (a URML primitive maps to a named AutoAPMS skill/node, declared in the manifest so validation knows it's available). Strongest new BT-fit (ROSPlan/FlexBE family)."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move48.md auto-apms body as a GitHub Issue on AutoAPMS/auto-apms under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. COMPLETES wave + slate. BT/skill DSL -> Layer-3 interop peer (lower-to-tree OR skill-dispatches-a-validated-primitive; Move #41); skill declarations -> manifest."
+  next_action: "Engaged (robin-mueller, MEMBER, concrete build-handler proposal). examples/behavior-tree/ shipped (PR #470). Await his read on the lowering + the skills-as-primitives registry idea. If he commits: (1) help shape the auto_apms_urml build handler, (2) a skill-registry manifest concept (URML primitive -> named AutoAPMS skill/node). Apache-2.0, no license-ask. Behavior-tree Layer-3 interop (ties Move #41 ROSPlan/FlexBE)."
   notes: "Tier B. Apache-2.0. BT/skill DSL; Layer-3 interop peer. Completes the candidate slate."
