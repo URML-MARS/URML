@@ -44,6 +44,12 @@ dev = [
   "types-PyYAML>=6.0",
 ]
 
+[project.scripts]
+# Spin the URML ExecuteURML ROS 2 action server (requires a sourced ROS 2
+# environment + the urml_ros2_msgs action package built via colcon). The
+# pure core, execute_request(), is importable and testable without rclpy.
+urml-ros2-action-server = "urml_ros2_runtime.action_server:main"
+
 [project.urls]
 Homepage = "https://github.com/URML-MARS/URML"
 Repository = "https://github.com/URML-MARS/URML"
