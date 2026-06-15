@@ -27,34 +27,24 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-05-20, on `main`** (commit `a19daee`). This is the post-Track-I
-refresh — three new PRs (#102 / #103 / #104) added eight compliant-part fixtures,
-five ROS-Industrial arm-brand adapters, and three zero-ROS cobot-brand adapters
-since the post-A-G audit. No new runtime packages and no new RFCs in this batch
-(parts and brands rode the existing frozen Protocol; the spec-gap loop produced
-nothing inexpressible). The figures below were re-measured from scratch via
-per-package `PYTHONPATH` + `--junit-xml` (pytest's terminal summary truncates in
-some shells; the xml is the reliable count).
-
-**Partial re-measurement 2026-05-22, on `main`** (commit `661c2e2`), reflecting
-RFC-0021 (on-device LLM bridge, +llm-bridge tests), RFC-0022 (warehouse, +8
-conformance fixtures), the 16 lighthouse RFCs 0023–0038 (per-vendor industrial
-fixtures, +4), and this PR's outreach-ledger test (+4 conformance). Rows
-marked `*` were re-run on a non-CI host via
+**Measured 2026-06-15, on `main`** (commit `b22a585`), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
-(invoke with `make audit`); rows without `*` carry the 2026-05-20 number
-because the host did not have the package's optional extras / CI environment
-to remeasure honestly — `make audit` flags them as "not measurable in this
-env" and the script does not auto-edit. Re-run in CI / a fully-installed venv
-to refresh the rest.
+(invoke with `make audit`) on a fully-installed host — every row re-measured
+from scratch, no carried-forward numbers. This is the v0.2.0 surface: the
+multi-robot fleet slice (RFC-0286/0290/0291), the manifest-expansion RFCs
+(whole_body RFC-0384, learned_policy RFC-0383, validation RFC-0381,
+substrate ipc/clock/bringup RFC-0385/0477/0478, realtime RFC-0016, digital-I/O
+RFC-0017, AV RFC-0020, the translation-licensing stack RFC-0260/0262/0268/0304),
+and the large conformance growth they brought. The prior 2026-05-20 / 2026-05-22
+measurements (244 validator, 765 total, 101 fixtures) are in git history.
 
 | Suite | Result |
 |---|---|
-| validator | **244 passed** * |
-| llm-bridge | **108 passed** * |
-| ros2-runtime | **115 passed, 4 skipped** * |
-| px4-runtime | **54 passed, 4 skipped** * |
-| conformance | **123 passed** * |
+| validator | **625 passed** |
+| llm-bridge | **115 passed** |
+| ros2-runtime | **130 passed, 4 skipped** |
+| px4-runtime | **54 passed, 4 skipped** |
+| conformance | **548 passed** |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **5 passed** |
@@ -64,10 +54,10 @@ to refresh the rest.
 | cobot-runtime | **11 passed, 2 skipped** (8 brand adapters parameterized) |
 | mujoco-runtime | **5 passed, 3 skipped** |
 | embedded-runtime | **4 passed, 3 skipped** |
-| edu-runtime | **6 passed, 2 skipped** (3 platform adapters parameterized) |
+| edu-runtime | **14 passed, 2 skipped** (4 platform adapters parameterized) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
-| **Total** | **765 passed + 28 gated-skipped** |
+| **Total** | **1601 passed + 28 gated-skipped** |
 
 The 28 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -79,43 +69,45 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **101** YAML cases under `conformance/fixtures/` (live
-count 2026-05-22) — biped 5, drone 14, educational 4, home 18, industrial 44,
-marine 1, mobile 2, quadruped 4, research 1, warehouse 8. Auto-discovered; all
-pass hermetically against `MockROSAdapter`. Warehouse fixtures were added
-2026-05-21 by [RFC-0022](../rfcs/0022-warehouse-domain-profile.md) (+8, no new
-primitives); the industrial bucket grew 40 → 44 with the lighthouse RFCs
-0023–0038's per-vendor positive fixtures (Yaskawa / UR / KUKA / Stäubli /
-etc.).
+Conformance fixtures: **175** YAML cases under `conformance/fixtures/` (live
+count 2026-06-15) — actuation 5, av 4, biped 12, compliance 3, deployment 3,
+drone 16, educational 10, fleet 14, home 28, industrial 49, language 5,
+licensing 3, manipulation 4, marine 1, mobile 2, quadruped 4, research 1,
+translation 3, warehouse 8. Auto-discovered; all pass hermetically against
+`MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `fleet`
+(RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
+`actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
+0268/0304), `compliance`/`deployment` (policy).
 
-**Spec vs Outreach RFCs (post-Move-#1).** The `docs/rfcs/` dir now mixes two
-kinds. RFCs 0001–0022 are **Spec RFCs** (Layer-N changes, primitives, policy
-mechanism, profiles) that change URML's normative surface. RFCs 0023–0038 are
-**Outreach RFCs** — per-vendor request-for-comment documents that explicitly
-propose zero spec change ("No spec change is proposed here"), and live in the
-RFC dir for ergonomic discoverability (one place to find "URML's pitch to
-vendor X"). The Kind column in [`docs/rfcs/README.md`](../rfcs/README.md)
-makes the distinction explicit. The shipped surface above is the Spec RFCs'
-result; Outreach RFCs added per-vendor manifest fixtures and the lighthouse
-demo runner, not new primitives or schema. The outreach state itself is
-tracked in [`examples/lighthouses/outreach.yaml`](../../examples/lighthouses/outreach.yaml).
+**Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
+by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
+(41 as of 2026-06-15: 5 Accepted, 35 Implemented, 1 Open) change URML's
+normative surface — Layer-N schemas, primitives, the policy mechanism, profiles.
+**Outreach RFCs** (the large remainder of the ~609 total docs) are per-target
+request-for-comment documents that explicitly propose zero spec change ("No spec
+change is proposed here") and live in the RFC dir for discoverability. The
+shipped surface above is the Spec RFCs' result; Outreach RFCs add per-target
+manifest fixtures, not new primitives or schema. Several Spec RFCs were
+*surfaced by* outreach (e.g. RFC-0039 from Ouster, RFC-0304 from NLLB,
+RFC-0385 from iceoryx). Outreach state is tracked in the
+[`examples/lighthouses/`](../../examples/lighthouses/) ledgers.
 
 ## Per-row backing
 
-**Five-pass static validator — 242 unit tests.**
+**Five-pass static validator — 625 unit tests.**
 `reference/validator/src/urml_validator/validator.py` (`validate()` runs Pass
 1–5); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
 people-occupancy; Pass 4 cross-primitive type check. Evidence: validator suite
-242 passed.
+625 passed.
 
-**20 primitives — validator + reference-runtime executors for all 20.** The 12
-core plus 8 profile-extensions (home `speak`/`listen`, drone `take_off`/`land`/
-`return_to_home`, industrial `pick_from`/`place_at`/`swap_tool`, RFC-0013).
-Still exactly 20: tracks A–G added **no** primitive. RFC-0015 (`call_program`),
-RFC-0017 (`set_output`), and RFC-0020's proposed `plan_path`/`follow_trajectory`
-are **Draft proposals**, surfaced honestly by the runtime spec-gap loops, not
-shipped. Evidence: `PRIMITIVE_MODELS` has 20 entries; industrial-primitive e2e
-tests; `industrial/04–08` + `industrial/24` conformance fixtures.
+**24 primitives — validator + reference-runtime executors for all 24.** The 12
+core plus profile/extension verbs: home `speak`/`listen`; drone `take_off`/
+`land`/`return_to_home`; industrial `pick_from`/`place_at`/`swap_tool`
+(RFC-0013); `bimanual` (RFC-0010); `set_output` (RFC-0017); and the `av`
+pair `plan_path`/`follow_trajectory` (RFC-0020) — all Implemented. `PRIMITIVE_MODELS`
+has **25** entries; the 25th, `call_program` (RFC-0015), is **Open**, not
+shipped, so the shipped count is **24**. Evidence: industrial- and av-primitive
+e2e tests; `industrial/`, `av/`, `manipulation/` conformance fixtures.
 
 **Compliance enforcement — `--no-policy` opt-out.**
 `reference/validator/src/urml_validator/policy.py` + bundled default policy
@@ -131,10 +123,10 @@ ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
 `turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
 suite.
 
-**LLM bridge — 77 unit tests.**
+**LLM bridge — 115 unit tests.**
 `reference/llm-bridge/` — provider-agnostic (anthropic, openai, echo);
-revision loop with `BridgePolicyViolation` short-circuit. Evidence: llm-bridge
-77 passed.
+revision loop with `BridgePolicyViolation` short-circuit; single-robot +
+roster-aware fleet assembly (RFC-0286). Evidence: llm-bridge 115 passed.
 
 **Conformance suite — 97 fixtures, `urml conformance run`, and a normative
 runtime contract.** `conformance/fixtures/**/*.yaml` = 97 cases (89 pre-RFC-0022 + 8
