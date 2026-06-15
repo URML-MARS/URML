@@ -235,7 +235,7 @@
   posted_url: "https://github.com/Denys88/rl_games/issues/352"
   channel: github_issue
   contact: "Denys88/rl_games (fast, high-throughput RL library widely used to train Isaac Gym / Isaac Lab locomotion and manipulation policies; ~1,350 stars, Issues enabled, not archived, active, last push 2026-05-25). Denys Makoviichuk and contributors (open-source; INTL)."
-  last_touch: "2026-06-06"
+  last_touch: "2026-06-15"
   response: engaged
   tier: A
   country: INTL
@@ -249,6 +249,8 @@
       text: "Replied 2026-06-06 (idoco2003): agreed the boundary; noted RFC-0383 just landed the manifest side (learned_policy block) so the passthrough has something concrete to carry; COMMITTED to send the small PR adding the optional capability_manifest: passthrough (training YAML -> checkpoint dict, schema-agnostic), with the env-side derivation as a separate conversation."
     - date: "2026-06-06"
       text: "Built + submitted the invited PR: Denys88/rl_games#353 (2026-06-06), adding an optional top-level capability_manifest: passthrough stored verbatim in the checkpoint dict (A2C/PPO + SAC), via a small schema-agnostic torch_ext.add_capability_manifest helper, +64 lines with tests (present/absent/None). Opt-in, no behavior change for existing runs. Carries the RFC-0383 learned_policy block so a manifest travels with the trained policy. Authored under greenvh@gmail.com, DCO signed, VIBE disclosure in the PR body. Awaiting Denys's review."
+    - date: "2026-06-15"
+      text: "Announced RFC-0617 (multiple named, per-domain learned policies) at issuecomment-4710792001, human-voiced under idoco2003, founder-authorized. Built directly on @Denys88s engaged thread: the manifest side now carries multiple named per-domain policy envelopes, which is what his offered capability_manifest checkpoint passthrough would transport. Reaffirmed the planned small PR for the passthrough. Response stays engaged."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0380 merges, post the posts-move29.md rl_games body on Denys88/rl_games under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
