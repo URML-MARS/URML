@@ -112,6 +112,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     # RFC-0009: legged/quadruped manifests.
     "spot_quadruped": _VALIDATOR_FIXTURES / "manifests" / "spot_quadruped.yaml",
     "unitree_quadruped_denied": _VALIDATOR_FIXTURES / "manifests" / "unitree_quadruped_denied.yaml",
+    # RFC-0474: turtlesim mobile base for the URML <-> FlexBE worked example.
+    "turtlesim_mobile": _VALIDATOR_FIXTURES / "manifests" / "turtlesim_mobile.yaml",
     # Clearpath AMR + declared-parts (Robotiq/RealSense compliant; Hesai denied).
     "clearpath_husky": _VALIDATOR_FIXTURES / "manifests" / "clearpath_husky.yaml",
     "hesai_lidar_denied": _VALIDATOR_FIXTURES / "manifests" / "hesai_lidar_denied.yaml",

@@ -1,0 +1,39 @@
+name: flexbe/turtle_sequence_positive
+description: >
+  The URML side of the URML <-> FlexBE worked example (RFC-0474). A
+  navigation-only patrol on the turtlesim mobile base
+  (turtlesim_mobile, mobility.drive_type: differential). This is the
+  exact program ExecuteUrmlState dispatches through the ExecuteURML ROS 2
+  action; this fixture proves it validates and executes hermetically
+  against MockROSAdapter, with zero ROS 2 / FlexBE installed, on any host
+  including Windows CI. The live FlexBE + turtlesim run is the gated,
+  fail-loud flexbe-integration workflow. Authored in response to David
+  Conner's (CHRISLab, CNU) engaged reply on RFC-0474, mirroring URML's
+  practice of shipping a conformance fixture per engaged integration.
+  The manifest is US-clean with a declared HBOM, so it validates and
+  executes under the bundled US-federal default policy (no --no-policy
+  flag needed).
+
+manifest: turtlesim_mobile
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: waypoint_a }
+      - move_to: { location: waypoint_b }
+      - move_to: { location: home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - send_navigation_goal
+    - send_navigation_goal

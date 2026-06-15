@@ -52,6 +52,10 @@ provenance:
       vendor: open_robotics
       country_of_origin: US
       country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/turtlesim_base.cdx.json
+        sha256: "5555555555555555555555555555555555555555555555555555555555555555"
 """
 
 TURTLE_PROGRAM = """
