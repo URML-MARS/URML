@@ -1,0 +1,35 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: legged/multiskill-policies
+# Source NL: "Find the peg, pick it up, and carry it to the dock."
+#            (see the .en.txt)
+#
+# Multiple named learned policies (RFC-0617). This quadruped runs two trained
+# controllers: a locomotion policy and a manipulation (grasping) policy. The
+# manifest declares each under `learned_policies` with its own `governs` domain
+# and training envelope, and the validator checks the deployment against each
+# one independently, scoped to the command quantities that policy declares (so
+# the locomotion policy's velocity envelope and the manipulation policy's
+# payload envelope do not interfere). This is the multi-skill generalization of
+# RFC-0383's single `learned_policy`. Validate end-to-end via the manifest:
+#
+#   urml validate multiskill-policies.urml.yaml \
+#     -m multiskill-policies.manifest.yaml --profile home
+#
+# The manifest carries a compliant US provenance block, so it also passes
+# Pass 5; pass `--no-policy` to exercise the language path alone.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: peg
+        store_as: the_peg
+    - grasp:
+        target: $the_peg
+        force: gentle
+    - move_to:
+        location: dock
+        carrying: $the_peg

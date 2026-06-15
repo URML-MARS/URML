@@ -1138,6 +1138,14 @@ class LearnedPolicy(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    name: Identifier | None = Field(
+        default=None,
+        description="Policy name. Optional for the single top-level `learned_policy`; required and unique for each entry of `learned_policies` (RFC-0617).",
+    )
+    governs: Literal["locomotion", "navigation", "manipulation", "whole_body", "all"] | None = Field(
+        default=None,
+        description="The skill domain this policy controls (RFC-0617); a coherence check requires the matching manifest capability. Documentation when omitted.",
+    )
     policy_ref: str | None = Field(
         default=None,
         description="Opaque handle to the policy artifact (URI / registry id / path). Documentation, not parsed.",
@@ -1648,6 +1656,9 @@ class CapabilityManifest(BaseModel):
     # RFC-0383: optional learned-controller training envelope.
     learned_policy: LearnedPolicy | None = None
 
+    # RFC-0617: multiple named, per-domain learned policies for a multi-skill robot.
+    learned_policies: list[LearnedPolicy] = Field(default_factory=list)
+
     # RFC-0384: optional whole-body kinematic structure + stability limits.
     whole_body: WholeBody | None = None
 
@@ -1670,3 +1681,18 @@ class CapabilityManifest(BaseModel):
 
     # RFC-0268: optional deployment metadata (commercial-use posture).
     deployment: Deployment | None = None
+
+    @model_validator(mode="after")
+    def _learned_policies_named_and_unique(self) -> CapabilityManifest:
+        """RFC-0617: each `learned_policies` entry must carry a unique name."""
+        seen: set[str] = set()
+        for i, lp in enumerate(self.learned_policies):
+            if lp.name is None:
+                raise ValueError(
+                    f"learned_policies[{i}] must declare a `name` "
+                    "(the single top-level learned_policy may stay unnamed)."
+                )
+            if lp.name in seen:
+                raise ValueError(f"duplicate learned_policies name {lp.name!r}.")
+            seen.add(lp.name)
+        return self
