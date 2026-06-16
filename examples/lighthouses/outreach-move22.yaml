@@ -173,7 +173,7 @@
   posted_url: "https://github.com/open62541/open62541/issues/8077"
   channel: github_issue
   contact: "open62541/open62541 (MPL-2.0, ~3.1k stars, Issues enabled, active, **not archived**). The leading open C/C++ OPC UA stack; clean permissive license."
-  last_touch: "2026-06-15"
+  last_touch: "2026-06-16"
   response: engaged
   tier: A
   country: DE
@@ -184,9 +184,11 @@
     - date: "2026-06-15"
       text: "jpfr (MEMBER) engaged constructively (issue OPEN/REOPENED) despite a mild 'AI didn't read' jab: asked a real question -- 'What is a grain in this context?' -- and handed us the modeling answer: 'OPC UA is like object-orientation in Python or Java, only you can interact with the objects over the network. That should give you good guidance for how to model operations.' Replied (human, no AI footer): clarified 'grain' = the level a URML operation maps to (one primitive -> one OPC UA method vs finer); accepted his OO framing (robot/device = object, each URML operation = a method called over the network, typed args = method inputs), which fixes the grain at one-operation-to-one-method and maps onto how URML already models a call (RFC-0015 call_program / RFC-0019 ara_com binding); offered to sketch a worked URML-program -> OPC UA object+methods mapping. Confirms the on-manifesto OPC UA Robotics fit; this engagement would shape a URML OPC UA runtime."
     - date: "2026-06-16"
-      text: "Built the worked mapping jpfr's framing implied: examples/opcua/ (intent_to_methods.py + opcua-cell.manifest.yaml + opcua_adapter.yaml). It validates a pick-and-place program (the gate), lowers each operation to exactly one OPC UA method on the ObjectsNode, then executes through the real OpcUaAdapter against an embedded fake server, printing the call log (seven operations, seven method calls, one each). Byte-asserted in reference/validator/tests/test_opcua_example.py; hermetic (no live server, no [opcua] extra). Drafted a short human note for the founder to post on #8077 pointing jpfr at the demo as the one-to-one grain made concrete. Not yet posted (founder posts in his own words)."
+      text: "Built the worked mapping jpfr's framing implied: examples/opcua/ (intent_to_methods.py + opcua-cell.manifest.yaml + opcua_adapter.yaml). It validates a pick-and-place program (the gate), lowers each operation to exactly one OPC UA method on the ObjectsNode, then executes through the real OpcUaAdapter against an embedded fake server, printing the call log (seven operations, seven method calls, one each). Byte-asserted in reference/validator/tests/test_opcua_example.py; hermetic (no live server, no [opcua] extra)."
+    - date: "2026-06-16"
+      text: "Posted the human note on #8077 (issuecomment-4719055300, idoco2003): pointed jpfr at examples/opcua/ as his one-to-one grain made concrete, and asked whether the mapping matches how he'd expect a client to drive a cell. Await his read; no re-ping beyond this."
   claude_directives: []
-  next_action: "Engaged (jpfr, open62541). Worked example shipped (examples/opcua/, the one-operation-to-one-method grain made concrete and executed against OpcUaAdapter, byte-asserted). Human note drafted for the founder to post on #8077; then await jpfr's read. No re-ping beyond that single note."
+  next_action: "Engaged (jpfr, open62541). Worked example shipped (examples/opcua/) and the human note posted on #8077 (2026-06-16). Await jpfr's read; no further touch unless he replies."
   notes: "Tier A. On-manifesto (OPC UA Robotics is a named substrate). Validated intent -> OPC UA method call / variable write. No URML OPC UA runtime yet; this engagement would shape one."
 
 - slug: ua-dotnet-standard
@@ -195,7 +197,7 @@
   posted_url: "https://github.com/OPCFoundation/UA-.NETStandard/issues/3827"
   channel: github_issue
   contact: "OPCFoundation/UA-.NETStandard (MIT, relicensed from RCL Dec 2025, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
-  last_touch: "2026-06-12"
+  last_touch: "2026-06-16"
   response: engaged
   tier: A
   country: INTL
@@ -210,7 +212,9 @@
     - date: "2026-06-12"
       text: "The OPC Foundation (opcfoundation-org) filed URML#292 correcting the license recorded in RFC-0314 and this ledger: UA-.NETStandard was relicensed RCL/GPL -> MIT in December 2025 (verified: commit #3388, 2025-12-04, 'replace RCL/GPL headers with MIT'). Corrected RFC-0314 (Motivation, Licensing section, Drawbacks, self-review; state Draft -> Open) and the Move #22 research note + post bodies; dropped the 'members-only friction' framing everywhere (MIT is a standard permissive OSI license, so there is no license boundary to state). Posted a thank-you reply on #292 (issue closed completed) and a one-line MIT correction on #3827, both under idoco2003. A second touch from the standards body on the crown-jewel thread."
     - date: "2026-06-16"
-      text: "Built examples/opcua/ as the shared demand artifact for the binding collaboration marcschier proposed: a validated URML program lowered to one OPC UA method per operation, executed against the real OpcUaAdapter and byte-asserted (reference/validator/tests/test_opcua_example.py). It is a concrete reference point for the binding/library interface (URML stays the thin front end; his companion-spec extension library owns the standard-conformant impl). Drafted a short human note for the founder to post on #3827 pointing at the demo and offering to take the binding-interface step to a call. Not yet posted (founder posts in his own words)."
+      text: "Built examples/opcua/ as the shared demand artifact for the binding collaboration marcschier proposed: a validated URML program lowered to one OPC UA method per operation, executed against the real OpcUaAdapter and byte-asserted (reference/validator/tests/test_opcua_example.py). It is a concrete reference point for the binding/library interface (URML stays the thin front end; his companion-spec extension library owns the standard-conformant impl)."
+    - date: "2026-06-16"
+      text: "Posted the human note on #3827 (issuecomment-4719056269, idoco2003): pointed marcschier at examples/opcua/ as the 'project that uses it', restated the division of labor, and offered to define the binding interface together or take it to a call. Await his (or the maintainers') read on the extension-library step."
   claude_directives: []
   next_action: "Engaged + showcased the working OPC UA runtime; now a worked example (examples/opcua/) makes the 'project that uses it' demand concrete. Next: if marcschier/the maintainers agree on the companion-spec extension library, co-define its interface so OpcUaAdapter can target the standard MotionDevice nodeset instead of per-deployment config. Human note drafted for the founder; he may take the collaboration step to a call. Crown-jewel standards-body thread."
   notes: "Tier A. MIT (relicensed from RCL Dec 2025); protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
