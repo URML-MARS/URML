@@ -94,7 +94,7 @@
   posted_url: "https://github.com/Toni-SM/skrl/discussions/447"
   channel: github_discussion
   contact: "Toni-SM/skrl (MIT, ~1.1k stars, Issues + Discussions enabled with Ideas AND Sim2Real categories, not archived, active 2026-05). Modular RL (PyTorch/JAX/Warp) with Isaac Lab / MuJoCo Playground / Gymnasium support. Antonio Serrano-Munoz, Mondragon Unibertsitatea. ES."
-  last_touch: "2026-06-12"
+  last_touch: "2026-06-16"
   response: none
   tier: A
   country: ES
@@ -102,6 +102,8 @@
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0487 body to https://github.com/Toni-SM/skrl/discussions/447 under idoco2003 (Move #43 RL/policy-training wave). Awaiting response."
+    - date: "2026-06-16"
+      text: "PR FILED 2026-06-16: contribution-first escalation of the cold RFC-0487 issue (which was response:none). Opened https://github.com/Toni-SM/skrl/pull/448 -- an optional opaque `checkpoint_metadata` carried in grouped checkpoints (the rl_games pattern), additive, no config-schema change, 3 tests green via a real PPO agent. Awaiting maintainer review; response stays none."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move43.md skrl body as a GitHub Discussion on Toni-SM/skrl under idoco2003 (Ideas category; Sim2Real is the natural alternative); query the category id at post time; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
