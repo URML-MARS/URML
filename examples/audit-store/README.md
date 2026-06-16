@@ -65,6 +65,32 @@ Labels let you later query the series by outcome, for example "every refused
 intent in the last hour" or "all `envelope.*` rejections for this robot", which
 is exactly the audit question a time-series store answers well.
 
+The ReductStore founder confirmed this layout on the
+[engagement thread](https://github.com/reductstore/reductstore/issues/1434):
+one bucket with entry paths for logical grouping (a separate bucket only earns
+its keep when you need separate access, replication, or lifecycle policies), and
+when the dispatch rate is high, batch the records before writing rather than
+writing one at a time:
+
+```python
+# High event rate: batch records per entry before writing.
+# https://www.reduct.store/docs/next/guides/data-ingestion#batching-data
+from collections import defaultdict
+
+by_robot = defaultdict(list)
+for r in records:
+    by_robot[r["robot_id"]].append(r)
+
+for robot_id, batch in by_robot.items():
+    async with bucket.batch(robot_id) as writer:
+        for r in batch:
+            writer.add(
+                timestamp=r["ts"],
+                data=json.dumps(r).encode(),
+                labels={"verdict": r["verdict"], "intent": r["intent"]},
+            )
+```
+
 ## Run it
 
 ```bash

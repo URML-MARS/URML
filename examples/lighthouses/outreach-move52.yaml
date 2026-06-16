@@ -171,8 +171,8 @@
   posted_url: "https://github.com/DexterInd/GoPiGo3/issues/375"
   channel: github_issue
   contact: "DexterInd/GoPiGo3 (non-standard license, ~108 stars, Issues enabled, not archived, active 2026-05. Driver/API for the GoPiGo3 Raspberry Pi educational robot. Dexter Industries / Modular Robotics, US."
-  last_touch: "2026-06-14"
-  response: declined
+  last_touch: "2026-06-16"
+  response: engaged
   tier: B
   country: US
   sector: robot-platform
@@ -183,11 +183,16 @@
       text: "slowrunner (a long-time GoPiGo3 enthusiast running two robots since 2018/2020, NOT the vendor) replied on #375 pointing to his detailed opinion on URML discussion #448. His verdict, thoughtful and credible: (1) No -- the GoPiGo3 user base learns basic concepts via Blockly/Python, not NLU-to-action, so an English front door doesn't fit the market; (2) No -- the GoPiGo3 doesn't have capabilities that map onto a URML manifest. Constructive community-expert no-fit (not hostile, no AI-flag). Posted a gracious human thank-you on discussion #448 accepting his assessment (referenced Carl & Dave). declined (community-expert no-fit; vendor never weighed in). Fit-check note: beginner-ed Blockly/Python robots are low NL/manifest surface."
     - date: "2026-06-15"
       text: "jharris1993 (CONTRIBUTOR, another GoPiGo community regular) added that this is more appropriately a Dexter forums (forum.dexterindustries.com) topic than a GitHub issue. A venue redirect, not new substance; consistent with the already-recorded no-fit. No further action: stays declined, no reply (the assessment is concluded and on our discussion #448). If GoPiGo is ever revisited, the Dexter forum is the venue."
+    - date: "2026-06-16"
+      text: "CleoQc (MEMBER, the actual GoPiGo maintainer) commented on #375: 'Hi there. I'm the maintainer for GoPiGo. Let's talk, I'm interested to learn more.' This is the VENDOR weighing in, and it cuts against the community-enthusiast no-fit: slowrunner and jharris1993 are users, not the maintainer, and we publicly conceded 'not a fit' on discussion #448 based on slowrunner's audience argument. CleoQc's interest is genuine maintainer engagement, so the honest state is engaged. UNRESOLVED FORK for the founder: re-engage CleoQc (education is in URML's canonical scope; the maintainer outranks an enthusiast's read) vs honor the #448 no-fit concession (consistency; both threads are public and the enthusiasts may see a reversal). A warm, honest reply is drafted (acknowledge the community pushback, briefly say what URML is, ask which angle interests her) but NOT posted, pending the founder's call. No GitHub reply posted yet."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
       status: done
-  next_action: "Declined (slowrunner, constructive community-expert no-fit on discussion #448). Thanked him graciously on #448. No further pursuit. Beginner-education Blockly/Python robot = low NL/manifest fit."
+    - date: "2026-06-16"
+      text: "Founder decision pending: whether to re-engage CleoQc (GoPiGo maintainer interested) despite the public #448 no-fit concession. Hold the drafted reply until the founder decides."
+      status: pending
+  next_action: "Engaged (CleoQc, GoPiGo MAINTAINER, said 'let's talk, interested to learn more' on #375), which contradicts the earlier community-enthusiast no-fit we conceded on discussion #448. Founder decision pending on whether to re-engage; a warm honest reply is drafted, not posted. If pursued, lead with the educational angle (in URML scope) and let her steer; if not, leave it gracefully (maintainer interest noted, no reversal)."
 
 - slug: blockly
   rfc: 573
