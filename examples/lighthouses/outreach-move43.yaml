@@ -52,7 +52,7 @@
   posted_url: "https://github.com/DLR-RM/stable-baselines3/issues/2259"
   channel: github_issue
   contact: "DLR-RM/stable-baselines3 (MIT, ~13.4k stars, Issues enabled, Discussions OFF, not archived, very active 2026-06). The canonical reliable-RL-algorithms library (PPO/SAC/TD3/DQN). German Aerospace Center (DLR-RM), Munich. DE."
-  last_touch: "2026-06-12"
+  last_touch: "2026-06-16"
   response: none
   tier: A
   country: DE
@@ -60,6 +60,8 @@
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0485 body to https://github.com/DLR-RM/stable-baselines3/issues/2259 under idoco2003 (Move #43 RL/policy-training wave). Awaiting response."
+    - date: "2026-06-16"
+      text: "FEATURE ISSUE FILED 2026-06-16 (contribution-first escalation of the cold RFC-0485 issue #2259): opened https://github.com/DLR-RM/stable-baselines3/issues/2263 -- a generic, non-URML feature request to carry optional user metadata verbatim in the saved model zip (the rl_games/skrl pattern), following SB3 CONTRIBUTING which requires an issue BEFORE a feature PR. Implementation designed + offered, NOT pre-built (their issue-first is for design discussion). On maintainer greenlight: build the PR. Response stays none."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move43.md stable-baselines3 body as a GitHub Issue on DLR-RM/stable-baselines3 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
