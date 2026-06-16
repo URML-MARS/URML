@@ -1,0 +1,37 @@
+# Deployment-side OPC UA node mapping for the opcua_cell_a1 cell.
+#
+# This file is NOT part of the URML program, manifest, or envelope. It records
+# which OPC UA method node on the server's ObjectsNode each URML operation calls,
+# for this one deployment. A different cell with the same manifest ships a
+# different opcua_adapter.yaml. (Same principle as the PX4 runtime's
+# location_to_pose and the marine runtime's location_to_waypoint.)
+#
+# The modeling follows the OPC UA Robotics framing jpfr gave on open62541#8077:
+# the cell is an object, each URML operation is one method called on it over the
+# network, and the typed args are the method inputs.
+
+endpoint_url: "opc.tcp://127.0.0.1:4840/urml/"
+objects_node: "i=85"   # the ObjectsNode the cell's methods hang off
+
+# move_to <location>  ->  one MoveTo method, location name as the arg.
+location_to_method:
+  home_pose:        { method: "ns=2;s=MoveTo", args: ["home_pose"] }
+  pick_bin:         { method: "ns=2;s=MoveTo", args: ["pick_bin"] }
+  kitting_tray_red: { method: "ns=2;s=MoveTo", args: ["kitting_tray_red"] }
+
+# station services (RFC-0013 swap_tool rides send_docking_goal).
+service_to_method:
+  swap_tool: { method: "ns=2;s=SwapTool", args: ["wide"] }
+  park:      { method: "ns=2;s=Park" }
+
+# grasp / release.
+manipulation_methods:
+  grasp:   { method: "ns=2;s=Grip" }
+  release: { method: "ns=2;s=Release" }
+
+# variable node read by measure / polled by wait_for.
+measurement_node: "ns=2;s=Force"
+
+# RFC-0015 call_program -> an OPC UA ControlProgram method node, by name.
+program_to_method:
+  pick_place_cycle: { method: "ns=2;s=PickPlaceCycle" }

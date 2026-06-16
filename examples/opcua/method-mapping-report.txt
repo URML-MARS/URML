@@ -1,0 +1,34 @@
+URML intent to OPC UA: one program, validated, lowered to method calls.
+Modeling (jpfr, open62541#8077): the cell is an object; each URML
+operation is one method called on it; typed args are the method inputs.
+cell: opcua_cell_a1   substrate: urml-opcua-runtime (zero ROS)
+
+# 1. Validate the program against the manifest (validate before actuate)
+
+[VALID] RFC-0013 pick-and-place: wait_for door, pick_from a red widget,
+        place_at the red tray, report. Nothing is called until this passes.
+
+# 2. Lower each operation to one OPC UA method on the ObjectsNode (i=85)
+
+  move_to home_pose              ->  ns=2;s=MoveTo('home_pose')
+  move_to pick_bin               ->  ns=2;s=MoveTo('pick_bin')
+  grasp                          ->  ns=2;s=Grip()
+  move_to kitting_tray_red       ->  ns=2;s=MoveTo('kitting_tray_red')
+  release                        ->  ns=2;s=Release()
+  swap_tool (station service)    ->  ns=2;s=SwapTool('wide')
+  call_program pick_place_cycle  ->  ns=2;s=PickPlaceCycle()
+
+# 3. Execute against an embedded fake ObjectsNode (no live server)
+
+all 7 operations succeeded: True
+7 URML operations issued 7 method calls on i=85, one each:
+  ns=2;s=MoveTo('home_pose')
+  ns=2;s=MoveTo('pick_bin')
+  ns=2;s=Grip()
+  ns=2;s=MoveTo('kitting_tray_red')
+  ns=2;s=Release()
+  ns=2;s=SwapTool('wide')
+  ns=2;s=PickPlaceCycle()
+
+The grain holds: one URML operation, one OPC UA method on the object.
+Node ids are deployment config; the URML program and manifest never name them.
