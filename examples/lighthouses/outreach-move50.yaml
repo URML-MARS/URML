@@ -169,7 +169,7 @@
   posted_url: "https://github.com/arpitg1304/forge/issues/27"
   channel: github_issue
   contact: "arpitg1304/forge (MIT, ~137 stars, Issues enabled, not archived, active 2026-06. RLDS/LeRobot/rosbag robot-learning data converter. US."
-  last_touch: "2026-06-14"
+  last_touch: "2026-06-16"
   response: none
   tier: A
   country: US
@@ -177,6 +177,8 @@
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0555 body to https://github.com/arpitg1304/forge/issues/27 under idoco2003. Intent records as a dataset annotation channel. Awaiting response."
+    - date: "2026-06-16"
+      text: "PR FILED 2026-06-16: contribution-first escalation of the cold RFC-0555 issue (response:none). Opened https://github.com/arpitg1304/forge/pull/28 -- carries Episode.metadata into the RLDS writer's episode_metadata/metadata_json (was dropped on conversion); RLDS-only, lerobot-v3 left out as a schema-extension. 6 RLDS tests pass (2 new + 4 existing). Awaiting review; response stays none."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as arpitg1304/forge#27 on 2026-06-14 under idoco2003."
