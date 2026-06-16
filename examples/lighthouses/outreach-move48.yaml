@@ -238,19 +238,21 @@
   posted_url: "https://github.com/openAMRobot/openamr/issues/19"
   channel: github_issue
   contact: "openAMRobot/openamr (MIT, ~58 stars, Issues + Discussions enabled, not archived, active 2026-05). Affordable modular AMR for SME intralogistics (ROS-based, integrates Open-RMF). OpenAMRobot / Botshare, Cyprus (EU)."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-06-16"
+  response: engaged
   tier: B
   country: CY
   sector: delivery
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0538 body to https://github.com/openAMRobot/openamr/issues/19 under idoco2003 (Move #48 domain/standards/conceptual-peer wave). Awaiting response."
+    - date: "2026-06-16"
+      text: "BotshareAI (CONTRIBUTOR) replied warmly: the mapping 'generally makes sense, particularly for transport and intralogistics workflows where OpenAMRobot integrates ROS2 and Open-RMF'; they see value in higher-level task descriptions and validation before execution. Current focus is robot dev / teleoperation / data collection / Physical AI, but they will follow URML, and looped in @rajindulkar22 to check it plus 'Open-RMF integration with our UI'. Replied (idoco2003): thanked them, agreed Open-RMF is the natural fleet-orchestration fit for AMR deployments, offered specifics when timing is right. rajindulkar22 (NONE) then acknowledged: 'will review the information... and determine the appropriate next steps.' Engaged, warm, multi-person; no reply owed to the ack (ball in their court). The fit is the warehouse profile (RFC-0022) + fleet validation as an Open-RMF complement (RFC-0286/0291)."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move48.md openamr body as a GitHub Issue on openAMRobot/openamr under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. SME intralogistics AMR (+ Open-RMF) -> warehouse profile (RFC-0022) + fleet validation as RMF complement (RFC-0286/0291). Open-platform altitude (not a closed vendor)."
+  next_action: "Engaged (BotshareAI + rajindulkar22, warm). No reply owed (they're reviewing). Await their next step; the natural fit is URML over Open-RMF (fleet orchestration) for SME intralogistics -- warehouse profile (RFC-0022) + fleet validation as an RMF complement (RFC-0286/0291). If they pick it up, an Open-RMF + URML fleet example is the candidate build. Open platform (not a closed vendor)."
   notes: "Tier B. MIT. Open intralogistics AMR; warehouse profile + RMF complement."
 
 - slug: unified-planning
