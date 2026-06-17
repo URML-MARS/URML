@@ -233,18 +233,23 @@
   posted_url: "https://github.com/robocode-dev/tank-royale/issues/217"
   channel: github_issue
   contact: "robocode-dev/tank-royale (Apache-2.0, ~249 stars, Issues enabled, not archived, active 2026-05. Modern Robocode successor; programming game. EU/DK."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-15"
+  response: declined
   tier: B
   country: DK
   sector: education-toolchain
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0574 body to https://github.com/robocode-dev/tank-royale/issues/217 under idoco2003. Lighter conceptual note; declarative intent as a teaching on-ramp. Awaiting response."
+    - date: "2026-06-15"
+      text: "flemming-n-larsen (Flemming N. Larsen, the solo maintainer) replied with a polite, firm DECLINE (NOT positive engagement, despite the friendly opener). Three points: (1) Tank Royale ALREADY has a declarative validated-intent layer at its core -- every turn a bot sends a BotIntent (target speed, turn rates, gun turn rate, firepower) and the server validates and clamps each value against the bot's capabilities (max speed, turn-rate limits, gun heat) before applying it, so 'declare what the bot wants, validated against capabilities' is the existing protocol at the per-turn physics level; (2) a higher-level goal layer (attack/evade) is a different thing, closer to BTs/GOAP, reasonable pedagogically but doesn't map onto the event-driven reactive API, and anyone is free to prototype it on top of the Bot API; (3) 'For the project itself this is out of scope. Tank Royale is maintained solo... good luck with URML.' Constructive, no AI-flag. Note: a drift-report tool mischaracterized this as positive 'replied substantively' by quoting only the opening thank-you line; the real state is a constructive decline."
+    - date: "2026-06-15"
+      text: "Replied (idoco2003, 2026-06-15T23:26Z) graciously: thanked Flemming, acknowledged the BotIntent per-turn validated-intent layer as a useful distinction I hadn't dug into, accepted that a higher-level goal layer is out of scope, wished him well. No further pursuit."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as robocode-dev/tank-royale#217 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Declined (Flemming N. Larsen, solo maintainer, constructive out-of-scope). Replied graciously; no pursuit. Nugget worth keeping: Tank Royale's BotIntent is a real-world example of per-turn declare-and-clamp-against-capabilities, the same validate-before-actuate idea URML applies at the goal level -- useful as prior art / framing, not a re-engagement."
 
 - slug: create3-docs
   rfc: 575
