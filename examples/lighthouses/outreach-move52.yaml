@@ -191,6 +191,8 @@
       text: "CleoQc replied with strong, specific interest, on BOTH threads. On #375: 'What's catching my interest is the natural language approach. We want to bring robotics to as many kids as possible... We created Bloxter back in 2017 so kids who can't type fast enough to maintain their interest can still do robotics... Coding is no longer the only path... even professional developers are moving to AI based solutions. It sounds awesome that we could bring this to kids.' On discussion #448, overriding the enthusiast no-fit directly: 'GoPiGo3 could totally be a fit. It has to evolve, like we all did with LLMs. Let's talk.' The education/kids natural-language angle is the strongest fit URML has surfaced; URML's value here is exactly the validate-before-actuate safety check on a kid's plain-English command (classroom-critical). Fully flips the earlier no-fit: the maintainer, who owns the education mission, wants it."
     - date: "2026-06-16"
       text: "Founder: 'This one is a great one. Let's meet him.' Posted a meeting-proposal reply to CleoQc on #375 (issuecomment-4722214511, idoco2003, signed 'Thanks, Ido'): connected URML to the kids/Bloxter mission (plain words in, safety+capability check before the robot moves, classroom-critical), and proposed a short call, asking her to send a couple of times or email greenvh@gmail.com to coordinate. FOUNDER-ACTION: take the call + pick the slot (assistant did not commit the founder's calendar). First outreach target to reach the let's-meet stage on the education/NL angle."
+    - date: "2026-06-17"
+      text: "Conversation expanded off GitHub. CleoQc emailed the founder ('Email sent.' on #375) -> greenvh@gmail.com, FOUNDER-ACTION to reply + schedule. jharris1993 asked to move to the Dexter forums for a broader audience, and slowrunner created the topic 'Discuss a standardized robot language for GoPiGo3' (forum.dexterindustries.com/t/discuss-a-standardized-robot-language-for-gopigo3/10858). Posted a short ack on #375 (idoco2003, issuecomment-4731799529): thanked for the forum topic, said we'll join there, and confirmed receipt of CleoQc's email. FOUNDER-ACTION: (a) reply to CleoQc's email + schedule the call; (b) join the Dexter forum thread (needs a forum account); a forum intro post is drafted for the founder to post."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
@@ -200,8 +202,11 @@
       status: done
     - date: "2026-06-16"
       text: "CleoQc named the education/kids natural-language angle and said let's talk; founder said 'let's meet him'. Meeting-proposal reply posted on #375 (issuecomment-4722214511). FOUNDER-ACTION: take the call + pick the slot (coordinated via greenvh@gmail.com; assistant did not commit the calendar). Await CleoQc's times."
+      status: done
+    - date: "2026-06-17"
+      text: "CleoQc emailed (greenvh@gmail.com) and the discussion moved to the Dexter forum (topic 10858). FOUNDER-ACTION: (a) reply to CleoQc's email + schedule the call; (b) post a forum intro on the Dexter forum (account needed) -- a draft is prepared for the founder. GitHub ack posted (issuecomment-4731799529)."
       status: pending
-  next_action: "Engaged, MEETING being arranged (CleoQc, GoPiGo MAINTAINER). She wants the natural-language angle to bring robotics to more kids (built Bloxter in 2017 for the same goal); URML's validate-before-actuate safety check on a kid's plain-English command is the classroom fit. Meeting-proposal reply posted on #375 (2026-06-16); awaiting her availability. FOUNDER-ACTION: take the call (coordinate via greenvh@gmail.com). Highest-momentum education engagement to date."
+  next_action: "Engaged, MEETING being arranged (CleoQc, GoPiGo MAINTAINER), now on email + the Dexter forum. She wants the natural-language angle to bring robotics to more kids (built Bloxter in 2017); URML's validate-before-actuate check on a kid's plain-English command is the classroom fit. FOUNDER-ACTION: reply to CleoQc's email + schedule the call (greenvh@gmail.com), and post the prepared forum intro on forum topic 10858. Highest-momentum education engagement to date."
 
 - slug: blockly
   rfc: 573
