@@ -186,19 +186,23 @@
   posted_url: "https://github.com/learnsyslab/safe-control-gym/issues/211"
   channel: github_issue
   contact: "learnsyslab/safe-control-gym (benchmark suite for safe control and safe RL with constraints; CBF/MPC/RL controllers on quadrotor and cartpole; ~885 stars, Issues enabled, not archived, active, last push 2026-04-29). Learning Systems and Robotics Lab (formerly UTIAS / University of Toronto, Canada, NATO-allied)."
-  last_touch: "2026-06-04"
-  response: none
+  last_touch: "2026-06-17"
+  response: declined
   tier: A
   country: CA
   sector: framework-skill
   comments:
     - date: "2026-06-04"
       text: "Posted issue #211 pointing at the RFC (under idoco2003, after RFCs 0362-0371 landed on main via PR #300), AI-authoring disclosure up front, NO license-ask, with the static-validation-meets-runtime-verification framing (URML envelope = declared properties; the monitor/tool enforces or tests at runtime). Awaiting maintainer reply."
+    - date: "2026-06-16"
+      text: "Federico-PizarroBejarano (COLLABORATOR) replied constructively and closed: 'URML seems very interesting. I think for the purposes of our gym it is too high-level to be useful (this is mostly a low-level control gym, we mostly operate on static trajectories in empty environments, so there is no real need for intent). Definitely I can see using control benchmarks to inform a safety envelope for URML. Good luck with URML.' Polite no-fit (no AI-flag) with a genuinely useful nugget: the relationship runs the other way -- safe-control-gym's control benchmarks could inform URML safety envelopes, not URML wrapping the gym."
+    - date: "2026-06-17"
+      text: "Replied (idoco2003, issuecomment-4731799040) accepting the read: URML sits above where the gym operates; the useful link is their control benchmarks informing a URML safety envelope (where a controller's real limits become the bounds a higher-level intent must respect), not URML wrapping the gym. Thanked him. declined (constructive)."
   claude_directives:
     - date: "2026-06-04"
       text: "After RFC-0368 merges, post the posts-move28.md safe-control-gym body on learnsyslab/safe-control-gym under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Declined (Federico, constructive no-fit; URML too high-level for a low-level control gym). No pursuit. Carry forward the nugget for the safety/envelope workstream: control benchmarks (CBF/MPC limits) can inform URML safety envelopes (the link runs gym -> envelope, not URML -> gym). Relates to RFC-0319 (control) and the Move-28 safety/envelope queue."
   notes: "Move #28 safe-control benchmark. URML intent-level limits <-> control-level constraints (CBF/MPC). Cross-link RFC-0319 (control). Origin CA (U Toronto / LSY lab, allied). Verified 2026-06-04."
 
 - slug: omnisafe

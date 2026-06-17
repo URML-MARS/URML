@@ -78,14 +78,16 @@
   posted_url: "https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/8"
   channel: github_issue
   contact: "eclipse-sdv-blueprints/blueprints-website (EPL-2.0, issues enabled, last push 2026-05-05). Eclipse Foundation Software-Defined Vehicle Working Group; automotive + commercial-vehicle + aerospace blueprints. 2026 hackfests Esslingen + Friedrichshafen."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-17"
+  response: acked
   tier: A
   country: INTL
   sector: governance-body
-  comments: []
+  comments:
+    - date: "2026-06-17"
+      text: "nacidai (CONTRIBUTOR) redirected the question to the Eclipse SDV community channels and regular open online meetings (eclipsesdv.org/get-involved) and closed the issue. A venue redirect, not a substantive engagement (parallels the Klipper Discourse redirect). Replied (idoco2003, issuecomment-4731799285) accepting the redirect and saying we'll bring it to the SDV community channels / a meeting. acked."
   claude_directives: []
-  next_action: "Posted 2026-05-29 to https://github.com/eclipse-sdv-blueprints/blueprints-website/issues/8. Body uses the post-Nav2 tight format (one concrete question on aerospace-blueprint related-art scope). Weakest-fit of the wave per the assistant's fit assessment (cross-citation ask); founder chose to post all five for funnel reach. Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "Acked (nacidai): venue redirect to Eclipse SDV community channels + open online meetings (eclipsesdv.org/get-involved), issue closed. FOUNDER-ACTION if pursued: join an SDV community call to raise the aerospace-blueprint related-art question there. Low priority (cross-citation ask was the weakest-fit of the Move-17 wave)."
   notes: "Class 1 / Sub-wave A. Origin Eclipse Foundation Brussels AISBL. EPL-2.0 adapter-boundary friendly. Foundation-home score: high (cross-WG, not direct host)."
 
 - slug: elisa-tech-wg-automotive

@@ -91,14 +91,18 @@
   posted_url: "https://github.com/mavlink/MAVSDK/issues/2889"
   channel: github_issue
   contact: "mavlink/MAVSDK (BSD-3-Clause, 881 stars, Issues enabled, last commit 2026-05-26, **not archived**). Dronecode Foundation. High-level MAVLink SDK enabling cross-vendor vehicle control abstraction."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-06-17"
+  response: engaged
   tier: A
   country: INTL
   sector: substrate-runtime
-  comments: []
+  comments:
+    - date: "2026-06-16"
+      text: "julianoes (COLLABORATOR, MAVSDK maintainer) answered the RFC questions substantively: substrate name 'mavsdk' is good; versions are semver vX.Y.Z; plugins = whatever is in a release; Offboard mode gives offboard control but MavlinkDirect gives deeper access (all of MAVLink); asked back 'what is a manifest field shape?' (main language C++ + auto-generated C headers as of v4); 'MAVSDK-maintained? Depends... I have not signed up to maintain anything'; 'We will consider it' on a listing; 'What else?'. Genuine engaged technical Q&A from the maintainer."
+    - date: "2026-06-17"
+      text: "Replied (idoco2003, issuecomment-4731798793): explained the manifest field shape (a short declared YAML of substrate name + version, plugins present, control entry point Offboard or MavlinkDirect, frames + limits; nothing generated, nothing in his code), made explicit that URML maintains the mapping (no burden on him; optional listing later, no obligation), and accepted the MavlinkDirect pointer as the richer mapping target than Offboard. Promoted none -> engaged."
   claude_directives: []
-  next_action: "posted 2026-05-29 to https://github.com/mavlink/MAVSDK/issues/2889 (MAVSDK Issue). Move-16 substrate-spine wave (16 engageable RFCs). Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "Engaged (julianoes, MAVSDK maintainer). He answered all questions + said 'we will consider' a listing; replied clarifying the manifest shape, the no-maintenance-burden, and that URML will map against MavlinkDirect. On-manifesto drone SDK substrate (sibling to MAVLink RFC-0197 / PX4). Await his read; if he stays engaged, a worked MAVSDK manifest-mapping example (MavlinkDirect entry) is the build, mirroring examples/opcua/."
   notes: "Tier A. Origin Dronecode Foundation. BSD-3-Clause clean fit. URML-fit: very high; SDK boundary is the natural adapter entry."
 
 - slug: dronecan-libcanard
