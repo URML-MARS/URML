@@ -160,18 +160,24 @@
   posted_url: "https://github.com/apache/nuttx/issues/19135"
   channel: github_issue
   contact: "apache/nuttx (Apache-2.0, ~3898 stars, Issues enabled, not archived, active 2026-06. POSIX-compatible RTOS; the OS under PX4. Apache Software Foundation."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-17"
+  response: acked
   tier: A
   country: US
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0581 body to https://github.com/apache/nuttx/issues/19135 under idoco2003. POSIX eases minimal_node executor; concrete PX4-on-NuttX path. Awaiting response."
+    - date: "2026-06-17"
+      text: "linguini1 (CONTRIBUTOR) replied skeptically and flagged AI: 'Human-only correspondence requested! What exactly is your question here? Your first question seems like one you have to answer yourself. The second question I dont understand.' Not hostile, but a puzzled near-no on an RTOS target (the wrong-altitude family that converts worst -- RIOT/contiki/FreeRTOS/tock all low-fit). Surfaced 2026-06-17 by a listening sweep (the row had drifted, still response: none). Owes a SHORT human-only reply; the only real hook is the PX4-on-NuttX path, and on reflection that belongs in PX4-land, not as a NuttX-specific ask."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as apache/nuttx#19135 on 2026-06-14 under idoco2003."
       status: done
+    - date: "2026-06-17"
+      text: "FOUNDER-ACTION: post a short human-only reply on #19135 (linguini1 asked for a human and found the questions unclear). A graceful, low-ask reply is drafted: concede the vague questions, state that URML only touches NuttX via PX4 and that belongs in PX4-land, so there is no NuttX-specific ask. Effectively a clean bow-out unless he sees a NuttX angle. Founder posts (human-only)."
+      status: pending
+  next_action: "Acked (linguini1, skeptical + human-only flag) on an RTOS (wrong-altitude). Owes a short human-only reply; drafted as a graceful clarify-and-bow-out (URML touches NuttX only via PX4, which belongs in PX4-land). Founder posts. Likely terminal at declined once acknowledged; do not pursue NuttX as a standalone substrate."
 
 - slug: riot
   rfc: 582
