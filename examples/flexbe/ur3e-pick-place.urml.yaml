@@ -1,0 +1,49 @@
+# URML v0.1 — the program the FlexBE UR-3e worked example runs.
+#
+# Scenario: flexbe/ur3e-pick-place
+# Source NL: "Once the safety door is closed, pick the red widget from the bin,
+#             place it on the red tray, and go home." (see ur3e-pick-place.en.txt)
+#
+# Industrial-profile pick-and-place on a Universal Robots UR-3e cell
+# (ur3e.manifest.yaml). Uses the industrial profile's own verbs — pick_from and
+# place_at (RFC-0013) — gated behind the safety-door interlock. It validates and
+# executes hermetically against the mock and, under the real stack, drives the
+# arm through the ExecuteURML action that David Conner's flexbe_ur_demo states
+# call (flexbe_universal_robots + flexbe_moveit2 + ur_robot_driver).
+#
+#   urml validate examples/flexbe/ur3e-pick-place.urml.yaml \
+#     -m examples/flexbe/ur3e.manifest.yaml --profile industrial
+#
+#   urml execute examples/flexbe/ur3e-pick-place.urml.yaml \
+#     -m examples/flexbe/ur3e.manifest.yaml --profile industrial --adapter mock
+#
+# Under FlexBE, ExecuteUrmlState sends this same program to the ExecuteURML
+# action; the operator approves it before MoveIt 2 plans anything.
+
+profile: industrial
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait_for:
+        condition:
+          event: safety_door_closed
+    - pick_from:
+        source: pick_bin
+        object: widget_red
+        attributes:
+          color: red
+        force: firm
+        store_as: red_widget
+    - place_at:
+        target: kitting_tray_red
+        held: $red_widget
+        mode: place
+    - move_to:
+        location: home_pose
+    - report:
+        to: line_controller
+        facts:
+          cycle: pick_red_to_tray
+          result: ok
+        status: success

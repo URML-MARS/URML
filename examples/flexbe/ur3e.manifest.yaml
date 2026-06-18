@@ -1,0 +1,104 @@
+# Capability manifest for the URML <-> FlexBE UR-3e worked example (RFC-0474).
+#
+# A Universal Robots e-Series arm cell (UR3e class) with a single gripper and a
+# pick bin / kitting tray / home pose. This mirrors the setup David Conner
+# (CHRISLab, Christopher Newport University) pointed at: CNURobotics/flexbe_ur_demo,
+# a UR-3e driven through flexbe_universal_robots + flexbe_moveit2 + the UR ROS 2
+# driver. URML validates a pick-and-place program against this manifest and the
+# safety envelope before MoveIt 2 plans anything.
+#
+# It is a content-mirror of the registered `ur_cell` conformance manifest
+# (reference/validator/tests/fixtures/manifests/ur_cell.yaml), the same way
+# turtle.manifest.yaml mirrors turtlesim_mobile.yaml. The conformance fixture
+# (conformance/fixtures/flexbe/02_ur3e_pick_place_positive.yaml) references
+# `ur_cell` so the two stay in lockstep.
+#
+# Universal Robots is Danish (Teradyne-US parent); allied, not on the bundled
+# us_federal_default denylist, so the default policy ACCEPTS it. Run hermetically:
+#
+#   urml validate examples/flexbe/ur3e-pick-place.urml.yaml \
+#     -m examples/flexbe/ur3e.manifest.yaml --profile industrial
+#
+#   urml execute examples/flexbe/ur3e-pick-place.urml.yaml \
+#     -m examples/flexbe/ur3e.manifest.yaml --profile industrial --adapter mock
+
+manifest_version: "0.1"
+robot_id: ur3e_cell_1
+description: A Universal Robots UR-3e e-Series arm cell for the URML FlexBE worked example (mirrors CNURobotics/flexbe_ur_demo).
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: pick_bin
+    pose: { x: 0.4, y: -0.3, z: 0.10 }
+    frame: cell
+  - name: kitting_tray_red
+    pose: { x: -0.4, y: 0.2, z: 0.10 }
+    frame: cell
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: robotiq_2f85
+      kind: servo_electric
+      force_min_n: 1.0
+      force_max_n: 235.0
+      accepted_classes: [widget, widget_red, widget_blue, small_part]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 50.0
+      units: N
+  object_vocabulary:
+    - widget
+    - widget_red
+    - widget_blue
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: ur_controller
+      role: critical
+      vendor: universal_robots
+      country_of_origin: DK
+      country_of_final_assembly: DK
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/ur_controller.cdx.json
+        sha256: "2424242424242424242424242424242424242424242424242424242424242424"

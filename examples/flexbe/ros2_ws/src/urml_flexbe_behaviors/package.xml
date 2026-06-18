@@ -4,10 +4,11 @@
   <name>urml_flexbe_behaviors</name>
   <version>0.1.0</version>
   <description>
-    FlexBE behaviors for URML — the URML Turtle Patrol HFSM that gates a
-    validated URML program behind an operator approval, demonstrating the
-    URML validate-before-actuate seam under FlexBE collaborative autonomy.
-    Part of the URML FlexBE worked example (RFC-0474).
+    FlexBE behaviors for URML — the URML Turtle Patrol HFSM (turtlesim) and the
+    URML UR-3e Pick-Place HFSM (a Universal Robots arm, mirroring
+    CNURobotics/flexbe_ur_demo), each gating a validated URML program behind an
+    operator approval to demonstrate the URML validate-before-actuate seam under
+    FlexBE collaborative autonomy. Part of the URML FlexBE worked example (RFC-0474).
   </description>
   <maintainer email="greenvh@gmail.com">URML Maintainers</maintainer>
   <license>Apache-2.0</license>

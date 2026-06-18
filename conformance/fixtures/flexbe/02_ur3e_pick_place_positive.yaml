@@ -1,0 +1,72 @@
+name: flexbe/ur3e_pick_place_positive
+description: >
+  The URML side of the URML <-> FlexBE UR-3e worked example (RFC-0474). An
+  industrial-profile pick-and-place on a Universal Robots e-Series cell
+  (`ur_cell`): wait for the safety door, `pick_from` the bin, `place_at` the
+  red tray, return home, report. This is the exact program ExecuteUrmlState
+  dispatches through the ExecuteURML ROS 2 action in the UR-3e behavior; this
+  fixture proves it validates and executes hermetically against MockROSAdapter,
+  with zero ROS 2 / MoveIt 2 / FlexBE installed, on any host including Windows
+  CI. The live flexbe_universal_robots + flexbe_moveit2 run is the gated,
+  fail-loud integration path. Authored in response to David Conner's (CHRISLab,
+  CNU) pointer to CNURobotics/flexbe_ur_demo as the easiest hardware seam to
+  collaborate on. `ur_cell` is a Danish-origin (Universal Robots) manifest,
+  allied and not on the denylist, so it validates under the bundled US-federal
+  default policy (no policy override needed).
+
+manifest: ur_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - wait_for:
+          condition: { event: safety_door_closed }
+      - pick_from:
+          source: pick_bin
+          object: widget_red
+          attributes: { color: red }
+          force: firm
+          store_as: red_widget
+      - place_at:
+          target: kitting_tray_red
+          held: $red_widget
+          mode: place
+      - move_to:
+          location: home_pose
+      - report:
+          to: line_controller
+          facts: { cycle: pick_red_to_tray, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: widget_red
+      pose: { x: 0.4, y: -0.3, z: 0.10 }
+      frame: cell
+      attributes: { color: red }
+      confidence: 0.93
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 5
+  audit_methods:
+    - wait_for_condition
+    - send_navigation_goal      # pick_from: navigate to source
+    - query_detection           # pick_from: detect
+    - send_manipulation_goal    # pick_from: grasp
+    - send_navigation_goal      # place_at: navigate to target (carrying)
+    - send_manipulation_goal    # place_at: release
+    - send_navigation_goal      # move_to: return home
+    - emit_report
+  bindings_contains:
+    red_widget:
+      class: widget_red

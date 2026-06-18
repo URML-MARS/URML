@@ -19,7 +19,7 @@ setup(
     zip_safe=True,
     maintainer="URML Maintainers",
     maintainer_email="greenvh@gmail.com",
-    description="FlexBE behaviors for URML (URML Turtle Patrol).",
+    description="FlexBE behaviors for URML (URML Turtle Patrol; URML UR-3e Pick-Place).",
     license="Apache-2.0",
     tests_require=["pytest"],
 )
