@@ -171,7 +171,7 @@
   posted_url: "https://github.com/DexterInd/GoPiGo3/issues/375"
   channel: github_issue
   contact: "DexterInd/GoPiGo3 (non-standard license, ~108 stars, Issues enabled, not archived, active 2026-05. Driver/API for the GoPiGo3 Raspberry Pi educational robot. Dexter Industries / Modular Robotics, US."
-  last_touch: "2026-06-16"
+  last_touch: "2026-06-18"
   response: engaged
   tier: B
   country: US
@@ -193,6 +193,8 @@
       text: "Founder: 'This one is a great one. Let's meet him.' Posted a meeting-proposal reply to CleoQc on #375 (issuecomment-4722214511, idoco2003, signed 'Thanks, Ido'): connected URML to the kids/Bloxter mission (plain words in, safety+capability check before the robot moves, classroom-critical), and proposed a short call, asking her to send a couple of times or email greenvh@gmail.com to coordinate. FOUNDER-ACTION: take the call + pick the slot (assistant did not commit the founder's calendar). First outreach target to reach the let's-meet stage on the education/NL angle."
     - date: "2026-06-17"
       text: "Conversation expanded off GitHub. CleoQc emailed the founder ('Email sent.' on #375) -> greenvh@gmail.com, FOUNDER-ACTION to reply + schedule. jharris1993 asked to move to the Dexter forums for a broader audience, and slowrunner created the topic 'Discuss a standardized robot language for GoPiGo3' (forum.dexterindustries.com/t/discuss-a-standardized-robot-language-for-gopigo3/10858). Posted a short ack on #375 (idoco2003, issuecomment-4731799529): thanked for the forum topic, said we'll join there, and confirmed receipt of CleoQc's email. FOUNDER-ACTION: (a) reply to CleoQc's email + schedule the call; (b) join the Dexter forum thread (needs a forum account); a forum intro post is drafted for the founder to post."
+    - date: "2026-06-18"
+      text: "slowrunner continued from his user (NOT maintainer) POV: a detailed skeptical analysis as forum post #4 on topic 10858 (GoPiGo3 has no fixed frame to anchor declared_locations; building toward a URML compliance mark would be non-useful complexity for this platform), plus a discussion #448 comment pointing to it and re-asking 'What would be the benefits to the GoPiGo3 user given the simplicity and limitations of the GoPiGo3 platform?' Posted a candid human answer on #448 (idoco2003, discussioncomment-17356116): conceded his points (dead-reckoning drift, no fixed frame, compliance mark = non-useful complexity), reframed the only benefit as pedagogical and additive to Blockly/Python (the validate-and-explain-before-actuating teaching loop, the angle CleoQc raised), and addressed the frame point with the LEGO SPIKE driving-base precedent (a local floor/mat frame with waypoints as offsets, not a global localized frame). Deliberately did not get pulled into an extended forum defense against a skeptical user; the maintainer (CleoQc) thread + meeting stays the priority. No em-dashes (AI-tell discipline)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as DexterInd/GoPiGo3#375 on 2026-06-14 under idoco2003."
@@ -206,7 +208,7 @@
     - date: "2026-06-17"
       text: "CleoQc emailed (greenvh@gmail.com) and the discussion moved to the Dexter forum (topic 10858). FOUNDER-ACTION: (a) reply to CleoQc's email + schedule the call; (b) post a forum intro on the Dexter forum (account needed) -- a draft is prepared for the founder. GitHub ack posted (issuecomment-4731799529)."
       status: pending
-  next_action: "Engaged, MEETING being arranged (CleoQc, GoPiGo MAINTAINER), now on email + the Dexter forum. She wants the natural-language angle to bring robotics to more kids (built Bloxter in 2017); URML's validate-before-actuate check on a kid's plain-English command is the classroom fit. FOUNDER-ACTION: reply to CleoQc's email + schedule the call (greenvh@gmail.com), and post the prepared forum intro on forum topic 10858. Highest-momentum education engagement to date."
+  next_action: "Engaged, MEETING being arranged (CleoQc, GoPiGo MAINTAINER), now on email + the Dexter forum; the maintainer thread is the priority. She wants the natural-language angle to bring robotics to more kids (built Bloxter in 2017); URML's validate-before-actuate check on a kid's plain-English command is the classroom fit. Answered slowrunner's benefits question on #448 (2026-06-18, discussioncomment-17356116), conceding the platform limits and reframing the value as the pedagogical validate-and-explain loop. FOUNDER-ACTION: reply to CleoQc's email + schedule the call (greenvh@gmail.com), and post the prepared forum intro on forum topic 10858 (account needed). Highest-momentum education engagement to date."
 
 - slug: blockly
   rfc: 573
