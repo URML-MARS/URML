@@ -170,6 +170,8 @@
       text: "Posted the RFC-0581 body to https://github.com/apache/nuttx/issues/19135 under idoco2003. POSIX eases minimal_node executor; concrete PX4-on-NuttX path. Awaiting response."
     - date: "2026-06-17"
       text: "linguini1 (CONTRIBUTOR) replied skeptically and flagged AI: 'Human-only correspondence requested! What exactly is your question here? Your first question seems like one you have to answer yourself. The second question I dont understand.' Not hostile, but a puzzled near-no on an RTOS target (the wrong-altitude family that converts worst -- RIOT/contiki/FreeRTOS/tock all low-fit). Surfaced 2026-06-17 by a listening sweep (the row had drifted, still response: none). Owes a SHORT human-only reply; the only real hook is the PX4-on-NuttX path, and on reflection that belongs in PX4-land, not as a NuttX-specific ask."
+    - date: "2026-06-18"
+      text: "After the bow-out, linguini1 added a parting scold: 'You should really avoid having bots open issues automatically. It's something maintainers have to deal with more and more and is just a massive time sink for spam.' An AI/bot-spam complaint (the OVOS/QGC/LibreTranslate/Sensirion pattern). Accepted silently, NO reply (the thread is closed and we already withdrew). Signal: another cold-volume-outreach goodwill cost; reinforces the volume-spam concern."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as apache/nuttx#19135 on 2026-06-14 under idoco2003."
