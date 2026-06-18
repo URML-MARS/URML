@@ -1,0 +1,34 @@
+{
+  "profile": "industrial",
+  "behavior": {
+    "type": "sequence",
+    "on_error": "abort_and_report",
+    "steps": [
+      { "wait_for": { "condition": { "event": "safety_door_closed" } } },
+      {
+        "pick_from": {
+          "source": "pick_bin",
+          "object": "widget_red",
+          "attributes": { "color": "red" },
+          "force": "firm",
+          "store_as": "red_widget"
+        }
+      },
+      {
+        "place_at": {
+          "target": "kitting_tray_red",
+          "held": "$red_widget",
+          "mode": "place"
+        }
+      },
+      { "move_to": { "location": "home_pose" } },
+      {
+        "report": {
+          "to": "line_controller",
+          "facts": { "cycle": "pick_red_to_tray", "result": "ok" },
+          "status": "success"
+        }
+      }
+    ]
+  }
+}

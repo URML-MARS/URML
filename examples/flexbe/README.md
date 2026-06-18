@@ -39,7 +39,9 @@ FlexBE HFSM (operator approves)
 | URML action server (node + rclpy-free core) | [`reference/ros2-runtime/.../action_server.py`](../../reference/ros2-runtime/src/urml_ros2_runtime/action_server.py) |
 | `ExecuteUrmlState` FlexBE state | [`ros2_ws/src/urml_flexbe_states/`](ros2_ws/src/urml_flexbe_states/) |
 | `URML Turtle Patrol` behavior + launch | [`ros2_ws/src/urml_flexbe_behaviors/`](ros2_ws/src/urml_flexbe_behaviors/) |
-| The URML program / manifest | [`turtle-patrol.urml.yaml`](turtle-patrol.urml.yaml), [`turtle.manifest.yaml`](turtle.manifest.yaml) |
+| `URML UR-3e Pick-Place` behavior + launch | [`ros2_ws/src/urml_flexbe_behaviors/`](ros2_ws/src/urml_flexbe_behaviors/) |
+| The turtlesim program / manifest | [`turtle-patrol.urml.yaml`](turtle-patrol.urml.yaml), [`turtle.manifest.yaml`](turtle.manifest.yaml) |
+| The UR-3e program / manifest | [`ur3e-pick-place.urml.yaml`](ur3e-pick-place.urml.yaml), [`ur3e.manifest.yaml`](ur3e.manifest.yaml) |
 
 ## Run the URML side hermetically (no ROS 2 needed)
 
@@ -92,6 +94,54 @@ to the URML action server, which validates it (you see the verdict), then drives
 the turtle through the patrol. Change a waypoint in
 [`turtle.manifest.yaml`](turtle.manifest.yaml) to an undeclared location and the
 server returns `refused` with the validator's reason instead of moving.
+
+## A second robot: the UR-3e arm (`CNURobotics/flexbe_ur_demo`)
+
+The same seam carries from a 2D turtle to a real arm with no change to the
+state, the action, or the runtime — only the manifest and the program change.
+The UR-3e variant targets the setup David Conner (CHRISLab) pointed at,
+[`CNURobotics/flexbe_ur_demo`](https://github.com/CNURobotics/flexbe_ur_demo):
+a Universal Robots UR-3e driven through `flexbe_universal_robots`,
+`flexbe_moveit2`, and the UR ROS 2 driver.
+
+The program is an industrial-profile pick-and-place written with the profile's
+own verbs (`pick_from` / `place_at`, [RFC-0013](../../docs/rfcs/0013-industrial-layer2-primitives.md)),
+gated behind the safety-door interlock. URML checks the gripper's force ceiling,
+the declared object vocabulary, the named stations, and the interlock against
+the cell's [manifest](ur3e.manifest.yaml) *before* MoveIt 2 plans a motion.
+
+Run the URML side hermetically (no ROS 2, no MoveIt 2 needed):
+
+```bash
+urml validate examples/flexbe/ur3e-pick-place.urml.yaml \
+  -m examples/flexbe/ur3e.manifest.yaml --profile industrial
+
+urml execute examples/flexbe/ur3e-pick-place.urml.yaml \
+  -m examples/flexbe/ur3e.manifest.yaml --profile industrial --adapter mock
+```
+
+Under the real stack, bring up the arm, the URML action server, and FlexBE in
+three sourced terminals:
+
+```bash
+# 1. The UR-3e (mock hardware shown; swap for bringup_arm_hardware.launch.py).
+ros2 launch chris_ur3e_bringup bringup_arm_mock.launch.py
+
+# 2. The URML action server (adapter:=ros2 drives MoveIt 2 / the UR driver).
+ros2 launch urml_flexbe_behaviors urml_flexbe_ur3e.launch.py adapter:=ros2
+
+# 3. FlexBE itself.
+ros2 launch flexbe_app flexbe_full.launch.py
+```
+
+Load the `URML UR-3e Pick-Place` behavior in the FlexBE UI and approve the plan.
+`ExecuteUrmlState` sends the program to the URML action server, which validates
+it (you see the verdict), then drives the arm through the pick-and-place. Set
+`grasp`/`pick_from` force above the gripper's declared `force_max_n`, or name an
+object outside the manifest's `object_vocabulary`, and the server returns
+`refused` with the validator's reason instead of moving. The CHRISLab "ducks in
+a row" task is the same program with `duck` added to `object_vocabulary` and the
+duck stations added to `declared_locations`.
 
 ## Why this shape
 
