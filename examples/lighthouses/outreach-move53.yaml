@@ -160,8 +160,8 @@
   posted_url: "https://github.com/apache/nuttx/issues/19135"
   channel: github_issue
   contact: "apache/nuttx (Apache-2.0, ~3898 stars, Issues enabled, not archived, active 2026-06. POSIX-compatible RTOS; the OS under PX4. Apache Software Foundation."
-  last_touch: "2026-06-17"
-  response: acked
+  last_touch: "2026-06-18"
+  response: declined
   tier: A
   country: US
   sector: substrate-runtime
@@ -176,8 +176,11 @@
       status: done
     - date: "2026-06-17"
       text: "FOUNDER-ACTION: post a short human-only reply on #19135 (linguini1 asked for a human and found the questions unclear). A graceful, low-ask reply is drafted: concede the vague questions, state that URML only touches NuttX via PX4 and that belongs in PX4-land, so there is no NuttX-specific ask. Effectively a clean bow-out unless he sees a NuttX angle. Founder posts (human-only)."
-      status: pending
-  next_action: "Acked (linguini1, skeptical + human-only flag) on an RTOS (wrong-altitude). Owes a short human-only reply; drafted as a graceful clarify-and-bow-out (URML touches NuttX only via PX4, which belongs in PX4-land). Founder posts. Likely terminal at declined once acknowledged; do not pursue NuttX as a standalone substrate."
+      status: done
+    - date: "2026-06-18"
+      text: "Posted the human-only bow-out reply on #19135 (idoco2003, issuecomment-4738311430): conceded the questions, stated URML touches NuttX only via PX4 and that belongs in PX4-land, so no NuttX-specific ask. Confirms the wrong-altitude read; closed gracefully."
+      status: done
+  next_action: "Declined (graceful, self-withdrawn). NuttX is an RTOS, wrong altitude; URML touches it only via PX4. Bow-out reply posted on #19135 (2026-06-18). No pursuit; do not re-pitch NuttX or sibling RTOSes (RIOT/contiki/FreeRTOS/tock) as standalone substrates."
 
 - slug: riot
   rfc: 582
