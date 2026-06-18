@@ -58,18 +58,23 @@
   posted_url: "https://github.com/mgonzs13/yolo_ros/issues/116"
   channel: github_issue
   contact: "mgonzs13/yolo_ros (GPL-3.0, ~1070 stars, Issues enabled, not archived, active 2026-05. Maintained ROS 2 YOLO inference wrapper (ONNX/TensorRT, RGB-D 3D detections). University of Leon, Spain."
-  last_touch: "2026-06-15"
-  response: none
+  last_touch: "2026-06-18"
+  response: engaged
   tier: A
   country: ES
   sector: perception
   comments:
     - date: "2026-06-15"
       text: "Posted the RFC-0611 body to https://github.com/mgonzs13/yolo_ros/issues/116 under idoco2003 (Move #58 edge-AI wave). Awaiting response."
+    - date: "2026-06-18"
+      text: "mgonzs13 (OWNER) replied positively: thanks + kind words; transparent that he is not a licensing expert so cannot confirm the GPL-3.0/Apache-2.0 boundary; and confirmed the detection classes yolo_ros serves (COCO classes from the underlying YOLO model) 'should map cleanly toward a URML object vocabulary.' Genuine OWNER engagement confirming the core fit."
+    - date: "2026-06-18"
+      text: "Replied (idoco2003, issuecomment-4745262340): dropped the license question (will read it off the repo; it was the avoidable AI-tell), and confirmed the mapping concretely -- URML declares an object_vocabulary + a detector entry (object_class + sensor) in the manifest (RFC-0615), so a yolo_ros detection becomes a fact an intent conditions on, and COCO classes drop straight into that vocabulary. Promoted none -> engaged."
   claude_directives:
     - date: "2026-06-15"
       text: "DONE — posted on 2026-06-15 under idoco2003."
       status: done
+  next_action: "Engaged (mgonzs13, OWNER) confirming the COCO-classes -> URML object_vocabulary mapping. No reply owed. If he stays engaged, the build is a worked example consuming a yolo_ros detection as a manifest object_detection fact an intent conditions on (RFC-0615 object_detection + object_vocabulary). Drop the license-ask permanently here (GPL-3.0 stated on repo). Perception consumer, clean fit."
 
 - slug: kenning
   rfc: 612
