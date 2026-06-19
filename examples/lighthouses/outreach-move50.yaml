@@ -171,8 +171,8 @@
   posted_url: "https://github.com/arpitg1304/forge/issues/27"
   channel: github_issue
   contact: "arpitg1304/forge (MIT, ~137 stars, Issues enabled, not archived, active 2026-06. RLDS/LeRobot/rosbag robot-learning data converter. US."
-  last_touch: "2026-06-16"
-  response: none
+  last_touch: "2026-06-19"
+  response: engaged
   tier: A
   country: US
   sector: framework-skill
@@ -181,12 +181,13 @@
       text: "Posted the RFC-0555 body to https://github.com/arpitg1304/forge/issues/27 under idoco2003. Intent records as a dataset annotation channel. Awaiting response."
     - date: "2026-06-16"
       text: "PR FILED 2026-06-16: contribution-first escalation of the cold RFC-0555 issue (response:none). Opened https://github.com/arpitg1304/forge/pull/28 -- carries Episode.metadata into the RLDS writer's episode_metadata/metadata_json (was dropped on conversion); RLDS-only, lerobot-v3 left out as a schema-extension. 6 RLDS tests pass (2 new + 4 existing). Awaiting review; response stays none."
+    - date: "2026-06-19"
+      text: "PR #28 MERGED by arpitg1304 (the OWNER) at 2026-06-19T02:22Z, silent accept (no comment). URML's code is now upstream in forge. This is the contribution-first escalation working: a cold RFC issue (response:none) converted to engaged via an accepted code contribution, the strongest engagement form. Issue #27 (the RFC) is still OPEN, no comment. The PR offered to also carry metadata into the lerobot-v3 writer 'if you'd want it' -- a natural next contribution if the maintainer signals interest."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as arpitg1304/forge#27 on 2026-06-14 under idoco2003."
       status: done
-
-- slug: ares
+  next_action: "Engaged via MERGED PR #28 (arpitg1304, owner) -- URML's RLDS-metadata fix is upstream in forge. First cold-target conversion via the contribution-first play. Optional: a short human thanks on #28, and offer the lerobot-v3 metadata follow-up if he signals interest. Do not re-pitch the RFC issue #27; the code spoke."
   rfc: 556
   sent_at: "2026-06-14"
   posted_url: "https://github.com/jacobphillips99/ares/issues/2"
