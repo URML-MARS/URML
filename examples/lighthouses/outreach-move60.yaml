@@ -1,0 +1,160 @@
+# Move #60 outreach ledger. One row per target.
+#
+# Move #60: **robotic end-effectors at the grasp-envelope seam** -- a second
+# fresh disciplined cold wave (after Move #59), a different lane: grippers and
+# multi-fingered hands. Sourced 2026-06-21; the densest of three lanes searched
+# (end-effectors / animatronics / camera-moco). The end-effector lane has the
+# tightest URML fit in the whole corpus: a force/aperture envelope gating a
+# grasp IS the safety-envelope seam, and it lands directly on RFC-0586 (the
+# `dexterous` gripper kind + `grasp_type`) and the grasp primitive.
+#
+# 6 net-new, high-fit, non-PRC, licensed, active targets. Two groups:
+#
+#   Dexterous multi-fingered hands (map onto RFC-0586 dexterity declaration):
+#   - aero-hand-open (0624, anchor, US TetherIA, Apache-2.0 SDK): tendon-driven
+#     multi-DoF hand + Python SDK + ESP32 + ROS2. Strongest (756 stars). The
+#     hardware/CAD is CC-BY-NC-SA; URML relates to the Apache-2.0 SDK.
+#   - orca_core (0625, CH ETH Zurich SRL, MIT): 17-DoF tendon hand control core.
+#   - BiDexHand (0626, US, MIT): 16-DoF cable-driven hand w/ fingertip FORCE
+#     sensing -> static grasp-force envelope COMPLEMENTS runtime sensing (Move
+#     #28 framing).
+#
+#   Parallel grippers (the base single-DoF gripper case, aperture + force):
+#   - robotiq_hande_driver (0627, PL AGH Krakow, Apache-2.0): ros2_control driver
+#     for the Robotiq Hand-E.
+#   - onrobot-ros2 (0628, HU Obuda U., MIT): RG2/RG6 controller, Isaac Sim +
+#     hardware -> one manifest validates sim and real (declare-once-validate-
+#     everywhere).
+#   - ros2_RobotiqGripper (0629, GB Cranfield, Apache-2.0): service-level Robotiq
+#     2F interface on UR arms -> combined arm-plus-gripper manifest. Completes
+#     the wave.
+#
+# No license-ask anywhere (every target has a LICENSE; permissive stated plainly).
+# VIBE.md disclosure up front; per-target body variation; em-dash-free titles.
+# DRAFTED 2026-06-21, NOT YET POSTED (sent_at / posted_url empty, all rows
+# response: none). Funnel 609 -> 615 when posted.
+#
+# DROPPED for cause during sourcing (do not re-source): PickNikRobotics/
+# ros2_robotiq_gripper (PickNik org already engaged 2x, RFC-0434/0468 -- one-org
+# discipline); tonydle/OnRobot_ROS2_Driver (origin unconfirmed; ABC-iRobotics
+# covers OnRobot); iotdesignshop/dexhand_gesture_controller (pushed 2024-05,
+# ~25mo stale); NMMI/ROS-SoftHand (2021, dead); SAKErobotics/EZGripper (NO
+# license file + 2022 stale); DH Robotics ecosystem (PRC); HEBI (engaged
+# RFC-0070), Pollen/Reachy (RFC-0240), LEAP/Shadow/dexterous (Move #27, RFC-0586)
+# all already touched. The OTHER two lanes searched are BANKED for a future wave:
+# animatronics/expressive (Sesame Robot, Blossom/Cornell, InMoov_ROS2) +
+# camera-moco (obs-ptz, storm32bgc) -- thin but real, ~5 durable targets.
+
+- slug: aero-hand-open
+  rfc: 624
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "TetherIA/aero-hand-open (Apache-2.0 firmware/SDK, CC-BY-NC-SA on hardware/CAD; ~756 stars, Issues enabled, not archived, active 2026-06. Tendon-driven multi-DoF robot hand: Python SDK + ESP32 firmware + ROS 2. TetherIA, Santa Clara CA, US."
+  last_touch: "2026-06-21"
+  response: none
+  tier: A
+  country: US
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0624 (Move #60 anchor, dexterous-hand group). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md aero-hand body as a GitHub Issue on TetherIA/aero-hand-open under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (Apache-2.0 SDK stated; CAD is CC-BY-NC-SA, URML relates to the SDK)."
+      status: pending
+
+- slug: orca-hand-core
+  rfc: 625
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "orcahand/orca_core (MIT, ~531 stars, Issues enabled, not archived, active 2026-06. Python control core for the 17-DoF ORCA tendon-driven dexterous hand: joint-space commands, calibration, tensioning. ETH Zurich Soft Robotics Lab, Switzerland."
+  last_touch: "2026-06-21"
+  response: none
+  tier: A
+  country: CH
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0625 (Move #60 dexterous-hand group). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md orca-hand body as a GitHub Issue on orcahand/orca_core under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (MIT stated)."
+      status: pending
+
+- slug: bidexhand
+  rfc: 626
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "wengmister/BiDexHand (MIT, ~236 stars, Issues enabled, not archived, active 2025-11. 16-DoF cable-driven dexterous hand with ROS 2 control (PID/Cartesian/shadowing) + fingertip force sensing. Northwestern-affiliated individual, US."
+  last_touch: "2026-06-21"
+  response: none
+  tier: B
+  country: US
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0626 (Move #60 dexterous-hand group; fingertip force -> static envelope complements runtime sensing). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md bidexhand body as a GitHub Issue on wengmister/BiDexHand under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (MIT stated). Framing: static grasp-force envelope complements their fingertip force sensing."
+      status: pending
+
+- slug: robotiq-hande-driver
+  rfc: 627
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "AGH-CEAI/robotiq_hande_driver (Apache-2.0, ~20 stars, Issues enabled, not archived, active 2025-11. ros2_control driver for the Robotiq Hand-E parallel gripper (fake / serial-Modbus / UR tool-comm backends). AGH University of Krakow, Poland."
+  last_touch: "2026-06-21"
+  response: none
+  tier: B
+  country: PL
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0627 (Move #60 parallel-gripper group; the base aperture+force case). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md robotiq-hande body as a GitHub Issue on AGH-CEAI/robotiq_hande_driver under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (Apache-2.0 stated)."
+      status: pending
+
+- slug: onrobot-ros2
+  rfc: 628
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "ABC-iRobotics/onrobot-ros2 (MIT, ~14 stars, Issues enabled, not archived, active 2025-07. ROS 2 controller for OnRobot RG2/RG6 parallel grippers incl. Isaac Sim support. Obuda University, Budapest, Hungary."
+  last_touch: "2026-06-21"
+  response: none
+  tier: B
+  country: HU
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0628 (Move #60 parallel-gripper group; sim + hardware on one manifest). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md onrobot body as a GitHub Issue on ABC-iRobotics/onrobot-ros2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (MIT stated)."
+      status: pending
+
+- slug: ros2-robotiqgripper-ifra
+  rfc: 629
+  sent_at: ""
+  posted_url: ""
+  channel: github_issue
+  contact: "IFRA-Cranfield/ros2_RobotiqGripper (Apache-2.0, ~8 stars, Issues enabled, not archived, active 2026-05. ROS 2 service interface to open/close Robotiq 2F grippers on Universal Robots arms, reports opening ratio. Cranfield University, UK."
+  last_touch: "2026-06-21"
+  response: none
+  tier: B
+  country: GB
+  sector: component-vendor
+  comments:
+    - date: "2026-06-21"
+      text: "Drafted RFC-0629 (Move #60, completes the wave; combined arm-plus-gripper manifest). Not yet posted."
+  claude_directives:
+    - date: "2026-06-21"
+      text: "When authorized, post the posts-move60.md ros2-robotiqgripper body as a GitHub Issue on IFRA-Cranfield/ros2_RobotiqGripper under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (Apache-2.0 stated)."
+      status: pending
