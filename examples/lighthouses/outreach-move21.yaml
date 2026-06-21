@@ -80,16 +80,20 @@
   posted_url: "https://github.com/openTCS/opentcs/issues/262"
   channel: github_issue
   contact: "openTCS/opentcs (Fraunhofer IML; Issues enabled, not archived, ~510 stars, last push 2026-05-26). Open Transportation Control System: dispatches transport orders to and routes AGV/AMR fleets; has a VDA5050 comm-adapter (opentcs-commadapter-vda5050). License not SPDX-detected by gh; asked as an RFC question."
-  last_touch: 2026-06-01
-  response: none
+  last_touch: "2026-06-20"
+  response: engaged
   tier: A
   country: DE
   sector: middleware
   comments:
     - date: "2026-06-01"
       text: "Posted issue #262 pointing at RFC-0299, with the AI-authoring disclosure up front (under idoco2003, after RFC-0299 landed on main via PR #258). Four questions: kernel-API integration surface, named-location-to-model binding, current license (for license_alignment), URML->openTCS->VDA5050 as the recommended open stack."
+    - date: "2026-06-20"
+      text: "swltr (MEMBER, openTCS maintainer) answered all four substantively and constructively: (1) the kernel API is the right interface, recommends the WEB API over Java RMI as it is open to non-Java clients; (2) no special name mapping needed -- openTCS points/locations are name-identified too, so if URML's declared location names match the openTCS model names the transport order needs no mapping layer; (3) licenses: MIT (code) + CC-BY-4.0 (assets), with parts CC0-1.0 / Apache-2.0 / OFL-1.1, REUSE-tagged per file; (4) confirmed URML's framing (openTCS as the abstraction layer owning dispatching/routing/traffic management) makes sense, not aware of open alternatives. Strong on-manifesto fleet/transport-control engagement."
+    - date: "2026-06-20"
+      text: "Replied (idoco2003, issuecomment-4762907329): confirmed the web API as the target (non-Java, substrate-neutral), accepted the matching-names-no-mapping path, closed the license question (clear), and restated the division of labor (URML declares + validates the transport intent; openTCS owns dispatching/routing/traffic). Promoted none -> engaged."
   claude_directives: []
-  next_action: "wait 14-30 d. If silent, polite follow-up on issue #262. If reply, bump last_touch and set response per enum; capture the license answer in the contact/notes once given."
+  next_action: "Engaged (swltr, openTCS maintainer). Web API is the integration target; matching declared-location names to openTCS point/location names removes the mapping layer. If it deepens, the build is a worked URML -> openTCS transport-order example over the web API (mirrors examples/opcua), composing into the VDA5050 path (RFC-0297). License clear (MIT code / CC-BY-4.0 assets); no license-ask. On-manifesto interop core."
   notes: "Move #21 interop core. URML composes above: URML intent -> openTCS transport orders (kernel API) -> VDA5050 (or vendor) comm-adapter -> vehicle = a fully open, offline fleet-control stack. Pre-dispatch static validation (RFC-0286/0291) complements openTCS runtime routing. Java kernel -> Python bridge boundary noted. License is an open question. Cross-link RFC-0297 (VDA5050 path), RFC-0298, RFC-0053. Origin DE (Fraunhofer, allied). Verified 2026-06-01."
 
 - slug: locus-robotics
