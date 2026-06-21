@@ -56,12 +56,14 @@ The output is long — it includes the full URML JSON Schema. Scroll up to see t
 5. **Examples**: 1–4 few-shot pairs (NL request + URML program) selected for the active profile.
 6. **URML program JSON Schema**: the structured-output contract.
 
+The instruction header and the profile line are plain text; the other four parts each begin with a `=== ... ===` marker, so a `===` count returns four. (A fifth `=== Revision required ===` marker appears only during the translate-retry loop, never in `emit-prompt` output.)
+
 If you have `jq` installed, you can pipe to a file and grep through it:
 
 ```bash
 urml emit-prompt --manifest manifest.yaml --envelope envelope.yaml --profile home --out prompt.txt
 wc -l prompt.txt
-grep -c "===" prompt.txt    # five section headers
+grep -c "===" prompt.txt    # four "===" section headers (manifest, envelope, examples, schema)
 ```
 
 This is *everything* the LLM sees. If a translation goes wrong later, this is the first thing to inspect.

@@ -36,11 +36,14 @@ URML is a **specification** and a set of **reference implementations**, not a ro
 URML v0.1.0 ships on PyPI. Install the validator and the hermetic mock runtime, scaffold a starter project, validate it. About 30 seconds; no API key, no robot.
 
 ```bash
+python3 -m venv .venv && . .venv/bin/activate   # recommended; required on PEP 668 systems (Ubuntu 26.04, Debian 12+)
 pip install urml-validator urml-ros2-runtime urml-llm-bridge
 urml init my-robot --profile home && cd my-robot
 urml validate program.urml.yaml \
     --manifest manifest.yaml --envelope envelope.yaml --profile home
 ```
+
+Newer distributions mark the system Python as externally managed ([PEP 668](https://peps.python.org/pep-0668/)), so a bare `pip install` errors out. The virtualenv above keeps the install self-contained; `pipx install urml-validator` is an alternative if you prefer.
 
 <p align="center">
   <a href="docs/demos/sentence-to-motion.md"><img src="docs/assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program becomes an executed step-by-step trace, on a hermetic mock — no API key, no robot." width="760"></a>
