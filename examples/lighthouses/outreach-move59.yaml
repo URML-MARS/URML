@@ -114,17 +114,20 @@
   channel: github_issue
   contact: "ClemensElflein/open_mower_ros (GPL-3.0, ~700 stars, Issues enabled, not archived, active 2026-06 daily. Software for OpenMower, an open RTK-GPS autonomous lawn mower: coverage planner + local nav + motor control. Clemens Elflein, Germany."
   last_touch: "2026-06-21"
-  response: none
+  response: wontfix
   tier: A
   country: DE
   sector: robot-platform
   comments:
     - date: "2026-06-21"
       text: "Posted the RFC body to https://github.com/ClemensElflein/open_mower_ros/issues/313 under idoco2003 (Move #59, actuation-altitude consumer wave). Awaiting response."
+    - date: "2026-06-21"
+      text: "Maintainer (ClemensElflein) closed #313 NOT_PLANNED with zero comments (silent close; no discussion conversion -- repo discussions checked). A silent decline, same day as posting. Accepted silently, no reply (nothing to engage with). wontfix."
   claude_directives:
     - date: "2026-06-21"
       text: "DONE -- posted on 2026-06-21 under idoco2003. (orig: post the posts-move59.md open-mower body as a GitHub Issue on ClemensElflein/open_mower_ros under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (GPL-3.0 stated, cross-citation only)."
       status: done
+  next_action: "wontfix (silent NOT_PLANNED close, same day). No pursuit, no reply. A single-maintainer hobby-robot platform that closed without engaging; do not re-pitch."
 
 - slug: roverrobotics-ros2
   rfc: 622
