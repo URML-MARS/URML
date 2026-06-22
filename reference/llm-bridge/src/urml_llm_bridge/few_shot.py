@@ -11,6 +11,8 @@ one.
 - `home_few_shots()` — examples for the home profile.
 - `industrial_few_shots()` — examples for the industrial profile.
 - `drone_few_shots()` — examples for the drone profile.
+- `educational_few_shots()` — examples for the educational profile
+  (RFC-0630 relative motion: `drive` / `turn`).
 - `few_shots_for(profiles)` — pick the right examples for an active
   profile set. Falls back to the home set if no profiles are declared.
 - `default_few_shots()` — backwards-compatible alias for the home set,
@@ -458,6 +460,87 @@ def fleet_few_shots() -> list[FewShot]:
 
 
 # ===========================================================================
+# Educational profile examples (RFC-0630 relative motion: drive / turn)
+# ===========================================================================
+#
+# Frameless classroom buggies (a GoPiGo3, a LEGO driving base) have no global
+# frame, so they move relatively: `turn { angle }` rotates in place (signed
+# degrees, + counterclockwise / left), `drive { distance, arc? }` translates a
+# signed distance in metres (+ forward) along the heading, with an optional arc
+# (degrees) for a curved path. Layer 4 normalizes human units to metres
+# (12 inches -> 0.3048) before emission. Combined motion is an ordered sequence
+# (turn, then drive), not one step.
+
+
+_EDU_TURN_THEN_DRIVE: dict[str, Any] = {
+    "profile": "educational",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"turn": {"angle": 90}},
+            {"drive": {"distance": 0.5}},
+        ],
+    },
+}
+
+
+_EDU_SQUARE: dict[str, Any] = {
+    "profile": "educational",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"drive": {"distance": 1.0}},
+            {"turn": {"angle": -90}},
+            {"drive": {"distance": 1.0}},
+            {"turn": {"angle": -90}},
+            {"drive": {"distance": 1.0}},
+            {"turn": {"angle": -90}},
+            {"drive": {"distance": 1.0}},
+        ],
+    },
+}
+
+
+_EDU_ARC: dict[str, Any] = {
+    "profile": "educational",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"drive": {"distance": 0.5, "arc": 45}},
+        ],
+    },
+}
+
+
+def educational_few_shots() -> list[FewShot]:
+    """Return the educational-profile few-shot example set (RFC-0630 relative motion)."""
+    return [
+        FewShot(
+            user="Turn left 90 degrees, then drive forward half a meter.",
+            program=_EDU_TURN_THEN_DRIVE,
+            note="Relative motion on a frameless buggy. `turn` is signed degrees "
+            "(+ counterclockwise / left); `drive` is signed metres along the heading. "
+            "Combined motion is an ordered sequence (turn, then drive), not one step.",
+        ),
+        FewShot(
+            user="Drive a one-meter square, turning right at each corner.",
+            program=_EDU_SQUARE,
+            note="Four sides, three corners. A right turn is a negative angle "
+            "(-90 = clockwise); + is counterclockwise.",
+        ),
+        FewShot(
+            user="Curve forward to the left over half a meter.",
+            program=_EDU_ARC,
+            note="`drive.arc` (signed degrees swept over the distance) makes the "
+            "drive a circular arc instead of a straight line.",
+        ),
+    ]
+
+
+# ===========================================================================
 # Profile selector
 # ===========================================================================
 
@@ -469,6 +552,7 @@ _PROFILE_FACTORIES: dict[str, object] = {
     "home": home_few_shots,
     "industrial": industrial_few_shots,
     "drone": drone_few_shots,
+    "educational": educational_few_shots,
     "fleet": fleet_few_shots,
 }
 
