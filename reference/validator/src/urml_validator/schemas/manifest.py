@@ -109,6 +109,19 @@ class Mobility(BaseModel):
     service_ceiling: float | None = Field(
         None, ge=0, description="Maximum altitude (m). Required for aerial profiles."
     )
+    # RFC-0630: relative (odometric) motion for frameless robots. Required by the
+    # `drive` / `turn` primitives. `max_relative_distance` optionally bounds a
+    # single `drive` (|distance|, metres).
+    supports_relative_motion: bool = Field(
+        False,
+        description=(
+            "Whether the robot can execute odometric drive/turn-by-amount commands "
+            "(wheel encoders or equivalent dead reckoning). Required by `drive` / `turn`."
+        ),
+    )
+    max_relative_distance: float | None = Field(
+        None, gt=0, description="Optional bound on a single `drive` distance magnitude (m)."
+    )
     # RFC-0518: base-level motion bounds for a velocity-controlled mobile base.
     # Surfaced by the quadruped_ros2_control engagement: a quadruped exposed as an
     # omnidirectional base validates intent at the base-velocity level, since the

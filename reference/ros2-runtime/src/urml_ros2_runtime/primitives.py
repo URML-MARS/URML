@@ -24,6 +24,7 @@ from urml_validator.schemas.primitives import (
     CaptureArgs,
     DetectArgs,
     DockArgs,
+    DriveArgs,
     FollowTrajectoryArgs,
     GraspArgs,
     HoverArgs,
@@ -42,6 +43,7 @@ from urml_validator.schemas.primitives import (
     SpeakArgs,
     SwapToolArgs,
     TakeOffArgs,
+    TurnArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -56,6 +58,7 @@ from urml_ros2_runtime.substrate.base import (
     NavigationResult,
     OutputAdapter,
     ProgramCallResult,
+    RelativeMotionAdapter,
     ROSAdapter,
     ScanResult,
     SubstrateResult,
@@ -209,6 +212,39 @@ def exec_move_to(
         carrying=carrying_resolved,
         speed=speed_value,
     )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_drive(
+    args: DriveArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0630: drive a signed distance (optional arc) on a frameless robot."""
+    if not isinstance(adapter, RelativeMotionAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate has no relative motion "
+            "(drive requires a RelativeMotionAdapter, RFC-0630).",
+        )
+    speed_value: float | None = None
+    if isinstance(args.speed, (int, float)):
+        speed_value = float(args.speed)
+    elif args.speed is not None:
+        speed_value = float(getattr(args.speed, "value", 0.0)) or None
+    result = adapter.drive_by(distance=args.distance, arc=args.arc, speed=speed_value)
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_turn(
+    args: TurnArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0630: rotate in place by a signed angle on a frameless robot."""
+    if not isinstance(adapter, RelativeMotionAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate has no relative motion "
+            "(turn requires a RelativeMotionAdapter, RFC-0630).",
+        )
+    result = adapter.turn_by(angle=args.angle)
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
@@ -781,6 +817,8 @@ PRIMITIVE_EXECUTORS: dict[
     str, Callable[[Any, ROSAdapter, dict[str, Any]], PrimitiveOutcome]
 ] = {
     "move_to": exec_move_to,
+    "drive": exec_drive,
+    "turn": exec_turn,
     "dock": exec_dock,
     "hover": exec_hover,
     "wait": exec_wait,

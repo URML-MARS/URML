@@ -53,6 +53,42 @@ class MoveToArgs(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# 1b. drive / turn  (RFC-0630: relative motion for frameless robots)
+# ---------------------------------------------------------------------------
+
+
+class DriveArgs(BaseModel):
+    """Drive a signed distance along the current heading (RFC-0630).
+
+    Relative (odometric) motion for frameless robots. With the optional `arc`
+    (signed degrees swept over the distance) it follows a circular arc instead of
+    a straight line. Requires `mobility.supports_relative_motion` and the
+    `educational` profile; the validator enforces both.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    distance: float = Field(..., description="Signed metres along the current heading (+ forward, - back).")
+    arc: float | None = Field(
+        None,
+        description="Optional signed degrees swept over the drive, making it a circular arc (+ counterclockwise).",
+    )
+    speed: Speed | float | None = None
+
+
+class TurnArgs(BaseModel):
+    """Rotate in place by a signed angle in degrees (RFC-0630).
+
+    Relative (odometric) motion for frameless robots. Requires
+    `mobility.supports_relative_motion` and the `educational` profile.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    angle: float = Field(..., description="Signed degrees to rotate in place (+ counterclockwise / left).")
+
+
+# ---------------------------------------------------------------------------
 # 2. dock
 # ---------------------------------------------------------------------------
 

@@ -81,6 +81,10 @@ class ErrorCode(StrEnum):
     # RFC-0385: substrate.ipc generation coherence.
     CAPABILITY_IPC_RUNTIME_NAME_REQUIRED = "capability.ipc_runtime_name_required"
     CAPABILITY_IPC_CONFIG_PATH_REQUIRED = "capability.ipc_config_path_required"
+    # RFC-0630: relative-motion primitives (drive / turn) for frameless robots.
+    CAPABILITY_RELATIVE_MOTION_UNSUPPORTED = "capability.relative_motion_unsupported"
+    CAPABILITY_RELATIVE_DISTANCE_EXCEEDED = "capability.relative_distance_exceeded"
+    CAPABILITY_RELATIVE_MOTION_REQUIRES_EDUCATIONAL = "capability.relative_motion_requires_educational"
     CAPABILITY_IPC_RUNTIME_NAME_NOT_APPLICABLE = "capability.ipc_runtime_name_not_applicable"
     CAPABILITY_IPC_GENERATION_NOTE_REQUIRED = "capability.ipc_generation_note_required"
     # RFC-0016: realtime timing-block coherence.

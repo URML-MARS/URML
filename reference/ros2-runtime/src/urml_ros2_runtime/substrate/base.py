@@ -443,6 +443,41 @@ class TrajectoryAdapter(Protocol):
 
 
 @runtime_checkable
+class RelativeMotionAdapter(Protocol):
+    """Optional relative-motion capability (RFC-0630): odometric drive / turn.
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only
+    frameless, encoder / dead-reckoning robots (educational buggies like the
+    GoPiGo3) implement it. The runtime checks
+    ``isinstance(adapter, RelativeMotionAdapter)`` and returns an unsuccessful
+    result for substrates that do not, exactly as a substrate lacking any other
+    capability does. `MockROSAdapter` implements it so the hermetic suite can
+    exercise the path.
+    """
+
+    def drive_by(
+        self,
+        *,
+        distance: float,
+        arc: float | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        """Drive a signed distance (m) along the current heading.
+
+        Used by `drive`. With `arc` (signed degrees swept over the distance) the
+        motion follows a circular arc instead of a straight line.
+        """
+        ...
+
+    def turn_by(self, *, angle: float) -> NavigationResult:
+        """Rotate in place by a signed angle (degrees, + counterclockwise).
+
+        Used by `turn`.
+        """
+        ...
+
+
+@runtime_checkable
 class OutputAdapter(Protocol):
     """Optional digital/analog output-line surface (RFC-0017).
 

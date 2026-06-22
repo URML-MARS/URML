@@ -85,6 +85,7 @@ from urml_validator.schemas.primitives import (
     CaptureArgs,
     DetectArgs,
     DockArgs,
+    DriveArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
@@ -100,6 +101,7 @@ from urml_validator.schemas.primitives import (
     SpeakArgs,
     SwapToolArgs,
     TakeOffArgs,
+    TurnArgs,
     WaitForArgs,
 )
 from urml_validator.schemas.program import URMLProgram
@@ -216,7 +218,7 @@ def validate(
 
     # ----- Pass 2: capability checks -----
     for path, step in walk_program(program_model):
-        errors.extend(_check_capabilities(step, manifest_model, path))
+        errors.extend(_check_capabilities(step, manifest_model, path, profiles))
     # RFC-0006: connectivity is a whole-program capability check.
     errors.extend(_check_connectivity_caps(manifest_model, envelope_model))
     # RFC-0250: substrate.autopilot_class is required for drone manifests.
@@ -930,7 +932,7 @@ def validate_fleet(
             errors.append(_fleet_undeclared_member_error(path, member, declared))
             continue
         manifest = members[effective]
-        for cap_err in _check_capabilities(step, manifest, path):
+        for cap_err in _check_capabilities(step, manifest, path, profiles):
             errors.append(_rekey_capability_to_member(cap_err, effective))
         env = envelopes.get(effective)
         for env_err in _check_envelope(step, manifest, env, path):
@@ -1089,15 +1091,68 @@ def _guess_primitive_from_path(loc: list[str]) -> str | None:
 # =============================================================================
 
 
+def _check_relative_motion_caps(
+    verb: str,
+    args: DriveArgs | TurnArgs,
+    manifest: CapabilityManifest,
+    path: list[str],
+    profiles: tuple[str, ...],
+) -> list[ValidationError]:
+    """RFC-0630: `drive` / `turn` need the educational profile + relative-motion capability."""
+    out: list[ValidationError] = []
+    if "educational" not in profiles:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_RELATIVE_MOTION_REQUIRES_EDUCATIONAL,
+                verb,
+                path,
+                f"`{verb}` is gated to the `educational` profile (RFC-0630).",
+                suggestion="Add `educational` to the program's profiles, or use `move_to` a declared location.",
+            )
+        )
+    mobility = manifest.mobility
+    if mobility is None or not mobility.supports_relative_motion:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_RELATIVE_MOTION_UNSUPPORTED,
+                verb,
+                path,
+                f"`{verb}` requires the manifest to declare `mobility.supports_relative_motion: true`.",
+                suggestion="Set `mobility.supports_relative_motion: true` for an encoder / dead-reckoning robot.",
+            )
+        )
+        return out
+    if (
+        verb == "drive"
+        and isinstance(args, DriveArgs)
+        and mobility.max_relative_distance is not None
+        and abs(args.distance) > mobility.max_relative_distance
+    ):
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_RELATIVE_DISTANCE_EXCEEDED,
+                verb,
+                path,
+                f"drive distance {args.distance} m exceeds "
+                f"mobility.max_relative_distance {mobility.max_relative_distance} m.",
+                field="distance",
+            )
+        )
+    return out
+
+
 def _check_capabilities(
     step: Step,
     manifest: CapabilityManifest,
     path: list[str],
+    profiles: tuple[str, ...] = (),
 ) -> list[ValidationError]:
     name = step.primitive_name
     args = getattr(step, name)
     if name == "move_to":
         return _check_move_to_caps(args, manifest, path)
+    if name == "drive" or name == "turn":
+        return _check_relative_motion_caps(name, args, manifest, path, profiles)
     if name == "dock":
         return _check_dock_caps(args, manifest, path)
     if name == "hover":

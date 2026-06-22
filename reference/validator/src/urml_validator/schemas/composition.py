@@ -25,6 +25,7 @@ from urml_validator.schemas.primitives import (
     DetectArgs,
     DockArgs,
     FollowTrajectoryArgs,
+    DriveArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
@@ -42,6 +43,7 @@ from urml_validator.schemas.primitives import (
     SpeakArgs,
     SwapToolArgs,
     TakeOffArgs,
+    TurnArgs,
     WaitArgs,
     WaitForArgs,
 )
@@ -53,6 +55,8 @@ from urml_validator.schemas.primitives import (
 
 _PRIMITIVE_FIELDS = (
     "move_to",
+    "drive",
+    "turn",
     "dock",
     "hover",
     "wait",
@@ -94,6 +98,8 @@ class Step(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     move_to: MoveToArgs | None = None
+    drive: DriveArgs | None = None
+    turn: TurnArgs | None = None
     dock: DockArgs | None = None
     hover: HoverArgs | None = None
     wait: WaitArgs | None = None
