@@ -1,8 +1,8 @@
 ---
 rfc: 0630
-title: A relative-motion primitive for frameless robots (move_by)
+title: Relative-motion primitives for frameless robots (drive, turn)
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Accepted
 created: 2026-06-22
 updated: 2026-06-22
 supersedes: —
@@ -23,11 +23,10 @@ superseded-by: —
 
 ---
 
-# RFC-0630: A relative-motion primitive for frameless robots (`move_by`)
+# RFC-0630: Relative-motion primitives for frameless robots (`drive`, `turn`)
 
-**Kind: Spec.** Proposes a new Layer-2 primitive. Adding a primitive is a one-way
-door, so this RFC exists to scope the decision, not to land code. No
-implementation ships until it is accepted.
+**Kind: Spec.** Adds two new Layer-2 primitives. Adding a primitive is a one-way
+door; the design below was settled with the maintainer (see Resolved decisions).
 
 ## Summary
 
@@ -41,13 +40,14 @@ workaround is to pre-declare every destination as a named waypoint, which cannot
 express a parametric utterance like "drive forward a foot" and is awkward to
 author.
 
-This RFC proposes one new Layer-2 primitive, `move_by`, for relative (odometric)
-motion: an optional signed `distance` along the current heading and an optional
-signed `turn` angle, gated behind a new `mobility.supports_relative_motion`
-capability so the validator still refuses motion a robot cannot perform.
+This RFC adds two new Layer-2 primitives, `drive` and `turn`, for relative
+(odometric) motion, gated behind a new `mobility.supports_relative_motion`
+capability so the validator still refuses motion a robot cannot perform, and
+gated to the `educational` profile to start.
 
-**State: Draft.** This is a design proposal with open questions for the
-maintainer (see the end). Nothing is implemented yet.
+**State: Accepted.** The design was settled with the maintainer; see Resolved
+decisions. Implementation follows (schema, validator, runtime, conformance,
+worked example).
 
 ## Motivation
 
@@ -98,33 +98,39 @@ shape, which is what this RFC asks the maintainer to settle.
 
 ## Proposal
 
-### The primitive
+### The primitives
 
-Add one Layer-2 primitive, `move_by`:
+Add two Layer-2 primitives, `turn` and `drive`.
 
 ```yaml
-- move_by:
-    distance: 0.30        # signed metres along the current heading (+forward, -back). optional.
-    turn: 90              # signed degrees (+counterclockwise / left). optional.
+- turn:
+    angle: 90             # signed degrees (+ counterclockwise / left). required.
+- drive:
+    distance: 0.30        # signed metres along the current heading (+ forward, - back). required.
+    arc: 30               # optional signed degrees swept over the drive (turns it into a circular arc)
     speed: { value: 0.2, units: m_per_s }   # optional; reuses the existing Speed type
 ```
 
+`turn` rotates in place by a signed `angle` in degrees (`+` counterclockwise).
+
+`drive` translates by a signed `distance` in metres along the current heading.
+With the optional `arc` field (signed degrees swept over the distance) it follows
+a circular arc instead of a straight line; this is the simultaneous
+translation-plus-rotation case. Omit `arc` for a straight line.
+
 Rules:
 
-- At least one of `distance` or `turn` is required (a `move_by` with neither is
-  rejected at validation).
-- `distance` is in metres. Layer 4 normalizes human units ("12 inches", "a
-  foot", "30 cm") to metres before emission.
-- `turn` is in degrees, signed, `+` counterclockwise. Degrees because the human
-  intent is "90 degrees", and the natural-language layer should not have to teach
-  a small model radians. (See open question 2.)
-- When both are present, the rotation applies first, then the translation
-  (face-then-go). This is the natural reading of "turn left 90 then drive forward
-  a foot" and keeps the step unambiguous. Simultaneous arc motion is out of scope
-  (open question 4).
-
-`move_by` requires `mobility`, like the other motion primitives, and additionally
-requires that the robot declares relative-motion capability (below).
+- Two single-purpose verbs, not one combined verb. A step holds exactly one of
+  `turn` / `drive`.
+- `distance` is in metres; Layer 4 normalizes human units ("12 inches", "a foot",
+  "30 cm") to metres before emission.
+- `angle` and `arc` are in degrees, signed, `+` counterclockwise.
+- **Combined motion is an ordered sequence.** "Turn left 90, then drive forward a
+  foot" compiles to `[turn, drive]`, and the canonical execution order is
+  turn-then-drive (face, then go). True simultaneous arc motion is expressed by
+  `drive.arc`, not by combining two steps.
+- Both verbs require `mobility`, like the other motion primitives, plus the
+  relative-motion capability and the `educational` profile (below).
 
 ### The capability gate (manifest)
 
@@ -143,9 +149,11 @@ Angular and acceleration bounds already exist from RFC-0518
 (`max_angular_velocity`, `max_linear_acceleration`, `max_angular_acceleration`)
 and apply here unchanged.
 
-The validator (Pass 2, capability) rejects `move_by` when
-`supports_relative_motion` is false or `mobility` is absent, and rejects a
-`distance` exceeding `max_relative_distance` when that bound is declared.
+The validator (Pass 2, capability) rejects `drive` / `turn` when
+`supports_relative_motion` is false or `mobility` is absent, rejects a `distance`
+whose magnitude exceeds `max_relative_distance` when that bound is declared, and
+rejects either verb when `educational` is not among the program's profiles (the
+profile gate from decision 5).
 
 ### Honesty: dead reckoning drifts
 
@@ -181,40 +189,45 @@ The runtime owns the closed-loop control; URML declares and validates the intent
 This is the single most common motion model in beginner robotics, which is
 exactly URML's educational audience.
 
-## Implementation plan (only after acceptance)
+## Implementation plan
 
-1. `MoveByArgs` schema (`distance`/`turn`/`speed`, at-least-one validator), added
-   to the `Step` union and `_PRIMITIVE_FIELDS`.
+1. `TurnArgs` (`angle`) and `DriveArgs` (`distance`, optional `arc`, optional
+   `speed`) schemas, added to the `Step` union and `_PRIMITIVE_FIELDS`.
 2. `Mobility.supports_relative_motion` and `max_relative_distance` fields.
-3. Validator Pass-2 capability checks (capability present; distance within
-   bound), with clear error codes (`capability.relative_motion_unsupported`,
-   `capability.relative_distance_exceeded`).
-4. Reference runtime mapping in an educational/ground runtime (extend the
-   edu-runtime), plus a frameless example manifest.
-5. Conformance fixtures: positive (a relative-motion-capable buggy drives and
-   turns) and negative (a robot without the capability has `move_by` rejected).
-6. A runnable worked example (a frameless classroom buggy: announce, then drive
-   and turn).
+3. Validator Pass-2 checks (capability present; `educational` profile present;
+   `|distance|` within bound), with clear error codes
+   (`capability.relative_motion_unsupported`, `capability.relative_distance_exceeded`,
+   `profile.relative_motion_requires_educational`).
+4. Reference runtime mapping (a `send_relative_motion` adapter Protocol method,
+   implemented in MockROSAdapter and at least one runtime; a clear
+   not-supported sentinel elsewhere), plus a frameless example manifest.
+5. Conformance fixtures: positive (a relative-motion-capable educational buggy
+   drives, turns, and arcs) and negative (a robot without the capability, and a
+   non-educational profile, both rejected).
+6. A runnable worked example (a frameless classroom buggy: announce, then turn
+   and drive).
 7. Layer-4 grammar note: unit normalization (inches/cm/feet to metres; degree
    sign convention) and a few-shot for the bridge.
 
-## Open questions (for the maintainer)
+## Resolved decisions
 
-1. **One primitive or two.** `move_by` carrying both `distance` and `turn`
-   (recommended, fewer primitives) versus two verbs `drive` and `turn` (cleaner
-   single-purpose semantics, two one-way doors). The RFC recommends one.
-2. **Angle units.** Degrees (human-natural, matches the utterance) versus radians
-   (SI, matches `max_angular_velocity` in rad/s). The RFC proposes degrees in the
-   program with runtime conversion; flagging because it is a one-way door.
-3. **Combined-step order.** Turn-then-drive when both fields are present
-   (recommended), versus disallowing both in one step and forcing a sequence.
-4. **Arc motion.** Keep simultaneous translation+rotation out of scope
-   (recommended), or design for it now.
-5. **Profile gating.** Ship `move_by` general to ground robots, or gate it to the
-   educational profile first and widen later.
-6. **Envelope for frameless robots.** Confirm the per-move-bounds-plus-onboard-
-   obstacle story is the right safety model when there is no global frame to
-   geofence.
+Settled with the maintainer 2026-06-22:
+
+1. **Two verbs**, `drive` and `turn`, each single-purpose (not one combined
+   `move_by`).
+2. **Degrees** for `angle` and `arc` (human-natural; the natural-language layer
+   does not have to teach a small model radians). The runtime converts to its
+   native unit.
+3. **Combined motion is an ordered sequence.** Turn-then-drive is the canonical
+   order when the two are sequenced; a step holds one verb.
+4. **Arc motion is in scope**, expressed by the optional `drive.arc` field
+   (simultaneous translation plus rotation along a circular arc).
+5. **Gated to the `educational` profile first.** `drive` / `turn` are valid only
+   when `educational` is among the program's profiles; widening to general ground
+   robots is a later RFC once the verbs are proven.
+6. **Frameless envelope confirmed.** Per-move bounds (`max_relative_distance`, the
+   RFC-0518 velocity/acceleration limits) plus onboard obstacle/occupancy checks
+   are the safety model; there is no global geofence for a frameless robot.
 
 ## Strategic note
 
