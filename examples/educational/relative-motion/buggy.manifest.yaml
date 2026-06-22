@@ -1,0 +1,20 @@
+# A frameless educational buggy: two motors, wheel encoders, a local floor frame.
+# Dead reckoning, no global localization. Declares relative-motion capability
+# (RFC-0630), so `drive` / `turn` are admissible. Modeled on the GoPiGo3 from
+# Discussion #497.
+
+manifest_version: "0.1"
+robot_id: classroom_buggy
+description: Two-motor wheel-encoder classroom buggy with dead-reckoning relative motion.
+
+frames:
+  - name: floor
+    parent: null
+  - name: base_link
+    parent: floor
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.30
+  supports_relative_motion: true
+  max_relative_distance: 2.0

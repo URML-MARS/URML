@@ -1,0 +1,15 @@
+URML relative motion on a frameless educational buggy (RFC-0630).
+`drive` / `turn` are gated by the educational profile and the
+mobility.supports_relative_motion capability; the validator refuses misuse.
+robot: classroom_buggy   drive_type: differential
+
+[VALID] educational buggy drives a square (turn 90 + drive 0.5 m, one arc side)
+
+[REJECTED] same program, but the educational profile is not active
+   -> capability.relative_motion_requires_educational
+
+[REJECTED] a robot that does not declare supports_relative_motion
+   -> capability.relative_motion_unsupported
+
+[REJECTED] a single drive of 5.0 m past the 2.0 m bound
+   -> capability.relative_distance_exceeded

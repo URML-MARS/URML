@@ -627,3 +627,38 @@ def test_custom_detection_payload_flows_to_bindings(home_manifest: dict[str, Any
     result = runtime.execute(program, home_manifest, profiles=("home",))
     assert result.success
     assert result.bindings["the_mug"]["attributes"]["tag"] == "ceramic-A1"
+
+
+def test_relative_motion_drive_turn_execute() -> None:
+    """RFC-0630: `drive` / `turn` dispatch to the RelativeMotionAdapter on a buggy."""
+    manifest = {
+        "manifest_version": "0.1",
+        "robot_id": "buggy",
+        "frames": [{"name": "floor", "parent": None}],
+        "mobility": {
+            "drive_type": "differential",
+            "max_velocity": 0.3,
+            "supports_relative_motion": True,
+            "max_relative_distance": 2.0,
+        },
+    }
+    program = {
+        "profile": ["educational"],
+        "behavior": {
+            "type": "sequence",
+            "on_error": "abort_and_report",
+            "steps": [
+                {"turn": {"angle": 90}},
+                {"drive": {"distance": 0.5}},
+                {"drive": {"distance": 0.5, "arc": 30}},
+            ],
+        },
+    }
+    adapter = MockROSAdapter()
+    result = URMLRuntime(adapter).execute(program, manifest, None, profiles=("educational",))
+    assert result.success is True, result.audit_log
+    assert result.steps_executed == 3
+    methods = [e["method"] for e in result.audit_log]
+    assert methods == ["turn_by", "drive_by", "drive_by"]
+    arc_call = [e for e in result.audit_log if e["method"] == "drive_by"][1]
+    assert arc_call["arc"] == 30

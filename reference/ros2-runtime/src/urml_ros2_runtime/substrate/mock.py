@@ -565,3 +565,21 @@ class MockROSAdapter:
         if self._set_output_override is not None:
             return self._set_output_override
         return SubstrateResult(success=True)
+
+    # ---- RelativeMotionAdapter (RFC-0630) ----
+
+    def drive_by(
+        self,
+        *,
+        distance: float,
+        arc: float | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        self.call_log.append(
+            {"method": "drive_by", "distance": distance, "arc": arc, "speed": speed}
+        )
+        return NavigationResult(success=True)
+
+    def turn_by(self, *, angle: float) -> NavigationResult:
+        self.call_log.append({"method": "turn_by", "angle": angle})
+        return NavigationResult(success=True)
