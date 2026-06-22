@@ -24,6 +24,7 @@ from urml_llm_bridge import (
     FewShot,
     default_few_shots,
     drone_few_shots,
+    educational_few_shots,
     few_shots_for,
     home_few_shots,
     industrial_few_shots,
@@ -35,6 +36,7 @@ VALIDATOR_FIXTURES = REPO_ROOT / "reference" / "validator" / "tests" / "fixtures
 HOME_MANIFEST_PATH = VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home.yaml"
 INDUSTRIAL_MANIFEST_PATH = VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml"
 DRONE_MANIFEST_PATH = VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml"
+EDUCATIONAL_MANIFEST_PATH = VALIDATOR_FIXTURES / "manifests" / "educational_buggy.yaml"
 HOME_ENVELOPE_PATH = VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml"
 DRONE_ENVELOPE_PATH = VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml"
 
@@ -60,6 +62,11 @@ def drone_manifest() -> dict:
 
 
 @pytest.fixture
+def educational_manifest() -> dict:
+    return _load(EDUCATIONAL_MANIFEST_PATH)
+
+
+@pytest.fixture
 def home_envelope() -> dict:
     return _load(HOME_ENVELOPE_PATH)
 
@@ -80,6 +87,16 @@ def test_every_home_example_validates(example: FewShot, home_manifest: dict, hom
     result = validate(example.program, home_manifest, home_envelope, profiles=("home",))
     assert result.accepted, (
         f"home few-shot {example.user!r} failed validation: "
+        f"{[e.render() for e in result.errors]}"
+    )
+
+
+@pytest.mark.parametrize("example", educational_few_shots(), ids=lambda ex: ex.user[:40])
+def test_every_educational_example_validates(example: FewShot, educational_manifest: dict) -> None:
+    """Every educational-profile few-shot (RFC-0630 drive/turn) must validate against the buggy manifest."""
+    result = validate(example.program, educational_manifest, profiles=("educational",))
+    assert result.accepted, (
+        f"educational few-shot {example.user!r} failed validation: "
         f"{[e.render() for e in result.errors]}"
     )
 

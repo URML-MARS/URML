@@ -1,0 +1,17 @@
+# Frameless educational buggy: two motors, wheel encoders, dead reckoning.
+# Declares relative-motion capability (RFC-0630) so `drive` / `turn` validate.
+# The canonical manifest the educational-profile few-shots validate against.
+
+manifest_version: "0.1"
+robot_id: classroom_buggy
+description: Two-motor wheel-encoder classroom buggy with dead-reckoning relative motion.
+
+frames:
+  - name: floor
+    parent: null
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.30
+  supports_relative_motion: true
+  max_relative_distance: 5.0
