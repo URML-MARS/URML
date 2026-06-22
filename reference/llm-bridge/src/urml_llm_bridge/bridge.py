@@ -184,6 +184,7 @@ class Bridge:
                     "revision cannot fix hardware provenance",
                     last_result=result,
                     attempts=attempt_idx + 1,
+                    raw_completions=raw_completions,
                 )
 
             # Not accepted: prepare for next attempt if any budget remains.
@@ -201,6 +202,7 @@ class Bridge:
             f"validator rejected the LLM's emission in all {attempts_total} attempt(s)",
             last_result=last_result,
             attempts=attempts_total,
+            raw_completions=raw_completions,
         )
 
 
@@ -294,6 +296,7 @@ class FleetBridge:
                     "revision cannot fix hardware provenance",
                     last_result=result,
                     attempts=attempt_idx + 1,
+                    raw_completions=raw_completions,
                 )
 
             if attempt_idx + 1 >= attempts_total:
@@ -308,6 +311,7 @@ class FleetBridge:
             f"validator rejected the LLM's emission in all {attempts_total} attempt(s)",
             last_result=last_result,
             attempts=attempts_total,
+            raw_completions=raw_completions,
         )
 
 

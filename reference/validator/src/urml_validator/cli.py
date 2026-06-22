@@ -354,6 +354,15 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="Write the accepted program to PATH instead of stdout.",
     )
+    p_translate.add_argument(
+        "--save-rejected",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="On failure, write the model's final rejected emission to PATH, with a "
+        "DO-NOT-EXECUTE header. Useful for debugging why a model (often a small local "
+        "LLM) never produced a valid program. The file is never executable URML.",
+    )
     p_translate.set_defaults(func=cmd_translate)
 
     # ---- urml emit-prompt ----
@@ -905,6 +914,32 @@ def cmd_schema(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _save_rejected_emission(
+    path: Path | None,
+    raw_completions: list[str],
+    attempts: int,
+) -> None:
+    """Write the model's final rejected emission to ``path`` for debugging.
+
+    No-op when ``path`` is None or there is nothing to save. The file carries a
+    clear DO-NOT-EXECUTE banner: a rejected emission is, by definition, not a
+    validated URML program and must never be run. It exists only to debug why a
+    model (often a small local LLM) failed to produce a valid program.
+    """
+    if path is None or not raw_completions:
+        return
+    last = raw_completions[-1]
+    banner = (
+        "# DO NOT EXECUTE - NOT VALID URML\n"
+        f"# The validator rejected this in all {attempts} attempt(s); it is the model's\n"
+        "# final raw emission, kept only for debugging the model's output.\n"
+        "# It is not a validated URML program and must not be run.\n\n"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(banner + last + ("" if last.endswith("\n") else "\n"), encoding="utf-8")
+    print(f"wrote rejected emission to {path} (DO NOT EXECUTE)", file=sys.stderr)
+
+
 def cmd_translate(args: argparse.Namespace) -> int:
     """Implement the `urml translate` subcommand.
 
@@ -971,6 +1006,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         last = exc.last_result
         for issue in getattr(last, "errors", []) or []:
             _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        _save_rejected_emission(args.save_rejected, exc.raw_completions, exc.attempts)
         return 1
     except BridgeRevisionExhausted as exc:
         print(
@@ -980,6 +1016,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         last = exc.last_result
         for issue in getattr(last, "errors", []) or []:
             _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        _save_rejected_emission(args.save_rejected, exc.raw_completions, exc.attempts)
         return 1
 
     # ----- Emit accepted program -----

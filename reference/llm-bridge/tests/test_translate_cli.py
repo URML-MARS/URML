@@ -193,6 +193,60 @@ def test_translate_revision_exhausted(
     assert "capability.missing_location" in captured.err
 
 
+def test_translate_save_rejected_writes_emission(
+    tmp_path: Path,
+    manifest_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """On failure, --save-rejected writes the model's final rejected emission
+    with a DO-NOT-EXECUTE banner."""
+    bad_program = json.loads(json.dumps(RED_MUG_PROGRAM))
+    bad_program["behavior"]["steps"][0]["move_to"]["location"] = "the_moon"
+    response_file = tmp_path / "bad.json"
+    response_file.write_text(json.dumps(bad_program), encoding="utf-8")
+    rejected_path = tmp_path / "rejected.txt"
+    rc = main([
+        "translate",
+        "Bring me the red mug.",
+        "--manifest", str(manifest_path),
+        "--provider", "echo",
+        "--echo-response-file", str(response_file),
+        "--max-revisions", "0",
+        "--save-rejected", str(rejected_path),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert rejected_path.is_file()
+    text = rejected_path.read_text(encoding="utf-8")
+    assert "DO NOT EXECUTE" in text
+    # The actual rejected emission is preserved verbatim after the banner.
+    assert "the_moon" in text
+    assert "wrote rejected emission" in captured.err
+
+
+def test_translate_save_rejected_absent_on_success(
+    tmp_path: Path,
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--save-rejected writes nothing when the translation succeeds."""
+    rejected_path = tmp_path / "rejected.txt"
+    rc = main([
+        "translate",
+        "Bring me the red mug from the kitchen.",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--profile", "home",
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+        "--save-rejected", str(rejected_path),
+    ])
+    assert rc == 0
+    assert not rejected_path.exists()
+
+
 def test_translate_echo_requires_response_file(
     manifest_path: Path,
     capsys: pytest.CaptureFixture[str],
