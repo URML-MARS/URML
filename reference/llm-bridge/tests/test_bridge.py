@@ -509,3 +509,56 @@ def test_us_compliant_manifest_translates_under_default_policy() -> None:
     )
     result = bridge.translate("ignored request")
     assert result.accepted
+
+
+# ---------------------------------------------------------------------------
+# JSON repair for small/local models (conservative, validator still gates)
+# ---------------------------------------------------------------------------
+
+
+def test_translate_repairs_fenced_emission(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    """A small model that wraps valid JSON in a Markdown fence is recovered."""
+    fenced = "```json\n" + json.dumps(RED_MUG_PROGRAM) + "\n```"
+    provider = EchoProvider(scripted=[fenced])
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=0,
+    )
+    result = bridge.translate("Bring me the red mug from the kitchen.")
+    assert result.accepted is True
+    assert result.program == RED_MUG_PROGRAM
+    # The original (fenced) emission is preserved for --save-rejected style review.
+    assert result.raw_completions[0] == fenced
+
+
+def test_parse_emission_recovers_common_malformations() -> None:
+    from urml_llm_bridge.bridge import _parse_emission
+
+    obj = {"profile": "home", "behavior": {"type": "sequence", "steps": []}}
+    clean = json.dumps(obj)
+    # Markdown fence.
+    assert _parse_emission("```json\n" + clean + "\n```") == obj
+    # Surrounding prose.
+    assert _parse_emission("Here is the program:\n" + clean + "\nHope that helps!") == obj
+    # Trailing comma before a closing brace.
+    assert _parse_emission('{"profile": "home", "behavior": {"type": "sequence", "steps": [],},}') == obj
+    # Already-clean JSON is unchanged.
+    assert _parse_emission(clean) == obj
+
+
+def test_parse_emission_does_not_fabricate_broken_json() -> None:
+    """Genuinely broken JSON (not a safe wrapper issue) still fails, not guessed."""
+    from urml_llm_bridge.bridge import _parse_emission
+
+    with pytest.raises(ProviderError, match="non-JSON output"):
+        _parse_emission('{"profile": "home" "behavior": {}}')  # missing comma, ambiguous
+    with pytest.raises(ProviderError, match="non-JSON output"):
+        _parse_emission("this is not json at all")
+    with pytest.raises(ProviderError, match="expected an object"):
+        _parse_emission("[1, 2, 3]")

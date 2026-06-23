@@ -33,6 +33,7 @@ specific LLM SDK. Use `EchoProvider` for tests; install
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -320,12 +321,51 @@ class FleetBridge:
 # ---------------------------------------------------------------------------
 
 
+_TRAILING_COMMA_RE = re.compile(r",(\s*[}\]])")
+
+
+def _repair_json_text(text: str) -> str:
+    """Conservatively repair the common ways a small model malforms its JSON.
+
+    Three safe, structure-preserving fixes, in order:
+
+    1. Strip a Markdown code fence (```json ... ``` or ``` ... ```).
+    2. Extract the outermost ``{ ... }`` object from any surrounding prose
+       ("Here is the program: { ... }. Hope that helps!").
+    3. Remove trailing commas before ``}`` or ``]``.
+
+    None of these change the program's structure or values; they only remove
+    wrapping and noise. The result is re-validated downstream, so a
+    repaired-but-wrong program is still rejected by the validator. Repair can
+    only recover an otherwise-lost valid emission, never admit a bad one. It
+    deliberately does NOT guess at genuinely broken JSON (missing commas,
+    truncation), which would risk fabricating a different program.
+    """
+    s = text.strip()
+    # 1. Drop a leading fence line (``` or ```json) and a trailing fence.
+    if s.startswith("```"):
+        s = s.split("\n", 1)[1] if "\n" in s else ""
+        s = s.rstrip()
+        if s.endswith("```"):
+            s = s[:-3]
+    # 2. Extract the outermost JSON object from surrounding prose.
+    first, last = s.find("{"), s.rfind("}")
+    if first != -1 and last > first:
+        s = s[first : last + 1]
+    # 3. Remove trailing commas before a closing brace/bracket.
+    s = _TRAILING_COMMA_RE.sub(r"\1", s)
+    return s.strip()
+
+
 def _parse_emission(raw: str) -> dict[str, Any]:
     """Parse the provider's response as a single JSON object.
 
-    Tolerates leading/trailing whitespace. Rejects (with ProviderError)
-    anything that isn't a JSON object at the top level — providers MUST
-    NOT wrap their output in Markdown fences.
+    Tolerates leading/trailing whitespace. A frontier model emits clean JSON;
+    small / local models often wrap it in Markdown fences or prose, or leave a
+    trailing comma, so a strict parse failure falls back to a conservative
+    repair (`_repair_json_text`) before giving up. The repaired text is parsed
+    and then validated downstream like any other emission, so repair never
+    weakens the validation gate.
     """
     text = raw.strip()
     if not text:
@@ -333,7 +373,13 @@ def _parse_emission(raw: str) -> dict[str, Any]:
     try:
         parsed = json.loads(text)
     except json.JSONDecodeError as exc:
-        raise ProviderError(f"provider returned non-JSON output: {exc.msg}") from exc
+        repaired = _repair_json_text(text)
+        try:
+            parsed = json.loads(repaired) if repaired and repaired != text else None
+        except json.JSONDecodeError:
+            parsed = None
+        if parsed is None:
+            raise ProviderError(f"provider returned non-JSON output: {exc.msg}") from exc
     if not isinstance(parsed, dict):
         raise ProviderError(
             f"provider returned a JSON value of type {type(parsed).__name__}; expected an object"
