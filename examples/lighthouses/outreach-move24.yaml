@@ -68,8 +68,8 @@
   posted_url: "https://github.com/isaac-sim/IsaacSim/issues/649"
   channel: github_issue
   contact: "isaac-sim/IsaacSim (NVIDIA Omniverse robotics simulator, now open-sourced; ~3,345 stars, Issues AND Discussions enabled, not archived, last push 2026-03-31). License not SPDX-detected by gh (asked as an RFC question). NVIDIA (US)."
-  last_touch: "2026-06-02"
-  response: acked
+  last_touch: "2026-06-23"
+  response: engaged
   tier: A
   country: US
   sector: simulator
@@ -78,11 +78,16 @@
       text: "Posted issue #649 pointing at the RFC (under idoco2003, after RFCs 0322-0331 landed on main via PR #276), AI-authoring disclosure up front. Awaiting maintainer reply."
     - date: "2026-06-02"
       text: "RandomOakForest (NVIDIA Isaac Sim maintainer) replied on #649: 'Thank you for posting this. Interesting question. We will review with the team and provide feedback shortly.' First Move-24 response off none -> acked. Replied with a brief thanks under idoco2003 (#649 comment), surfacing the two key questions (USD robot-description alignment; naming Isaac Sim as a simulator-target). Awaiting substantive team feedback."
+    - date: "2026-06-23"
+      text: "divyanshm-create (NVIDIA Isaac) posted a detailed expert review on #649, promoting to engaged. Validated URML's three-concern separation (USD/UsdPhysics as structural evidence; the capability manifest as the substrate-neutral validation contract; a backend-neutral adapter for dispatch). Headline recommendation, made twice: manifest capability claims should be traceable to evidence (derived from USD vs declared by integrator vs verified by smoke test), not hand-written unverifiable assertions. Also: dispatch should not integrate via Action Graph/OmniGraph (agreed, backend-neutral); cuMotion/PINK as the controller-interface seam; a language-neutral adapter IDL once adapters exist in more than one language; conformance listing only follows a USD-derived manifest plus a working adapter/fixture, never a conceptual mapping. Replied substantively under idoco2003 (#649 comment 4782573900), committing to scope the evidence-traceability point as a Spec RFC."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0323 merges, post the posts-move24.md Isaac Sim body on isaac-sim/IsaacSim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep distinct from RFC-0050; do not re-pitch NVIDIA broadly."
       status: done
-  next_action: "Maintainer acked on #649 (2026-06-02) and promised team review; brief thanks reply posted. Hold for substantive feedback before replying further; light-touch follow-up ~2026-06-23 if silent. Promote to engaged when the team gives substance."
+    - date: "2026-06-23"
+      text: "divyanshm-create's review spawned RFC-0631 (per-capability evidence traceability: an optional derived/declared/verified tag with a source ref). RFC is Draft with open questions for the founder; do not implement the schema change until the founder settles the open questions (one-way-door discipline, mirrors RFC-0630). Next concrete deliverable toward a conformance listing is a USD-derived manifest plus a working Isaac Sim adapter/fixture demonstrating the flow with evidence tags."
+      status: pending
+  next_action: "Engaged on #649 (2026-06-23) via divyanshm-create's expert review; substantive reply posted (comment 4782573900). RFC-0631 scopes the evidence-traceability ask. Hold for founder decisions on the RFC open questions before implementing; the listing path needs a USD-derived manifest + working adapter/fixture."
   notes: "Move #24. URML -> Isaac Sim via the ROS 2 bridge / Action Graph; manifest aligns with the USD robot description. Manifest gaps queued (USD-robot-description alignment, simulator-target class hint, shared with RFC-0322). NVIDIA already engaged via Isaac Lab (RFC-0050); this is the sim-app conversation. Warp folded (nvidia-warp row). Origin US. Verified 2026-06-02."
 
 - slug: o3de
