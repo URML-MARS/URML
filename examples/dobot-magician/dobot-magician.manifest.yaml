@@ -1,0 +1,60 @@
+# A Dobot Magician 4-axis desktop arm, driven by magician_ros2.
+# Substrate = the magician_ros2 ROS 2 driver. A wrist camera + a 2-finger
+# gripper give it the standard pick-and-place surface. Frames and named
+# locations are taught positions on the work surface.
+#
+# From the magician_ros2 engagement (jkaniuka/magician_ros2#11): an English
+# front door for the Dobot Magician.
+
+manifest_version: "0.1"
+robot_id: dobot_magician
+description: Dobot Magician 4-axis desktop robotic arm with a wrist camera and a 2-finger gripper, via magician_ros2.
+
+frames:
+  - name: base
+    parent: null
+  - name: base_link
+    parent: base
+
+declared_locations:
+  - name: pickup
+    pose: { x: 0.22, y: -0.06, z: 0.02 }
+    frame: base
+    description: Source position on the work surface.
+  - name: dropoff
+    pose: { x: 0.22, y: 0.08, z: 0.02 }
+    frame: base
+    description: Destination position on the work surface.
+  - name: home
+    pose: { x: 0.16, y: 0.0, z: 0.10 }
+    frame: base
+    description: Idle pose above the surface.
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: two_finger
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 8.0
+      accepted_classes: [block, cube, small_part]
+      movable: true
+  reachable_workspace_m: 0.32
+
+perception:
+  cameras:
+    - name: wrist_cam
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "720p"
+  object_vocabulary:
+    - block
+    - cube
+    - small_part
