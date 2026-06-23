@@ -1,0 +1,14 @@
+URML pick-and-place on a Dobot Magician (magician_ros2).
+The validator checks every program against the arm's manifest before it moves.
+robot: dobot_magician   substrate: magician_ros2 (ROS 2 driver)
+
+[VALID] pick the block from pickup, place it at dropoff, return home
+
+[REJECTED] pick a 'mug', which is not in the arm's object vocabulary
+   -> capability.missing_object_class
+
+[REJECTED] move to 'shelf', an undeclared location
+   -> capability.missing_location
+
+[REJECTED] pick with 50 N of force, past the gripper's 8 N maximum
+   -> capability.missing_gripper
