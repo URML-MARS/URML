@@ -1,0 +1,39 @@
+URML in the mind of an autonomous robot (Discussion #526).
+The mastermind (autonomy) decides; URML validates and executes each physical action.
+robot: patrol_bot
+
+# Decisions that stay in the mastermind (autonomy, NOT URML)
+
+  activity hours + battery > 50%   -> may_patrol() = True
+  where to wander next              -> autonomy policy
+  'is this an unclassified shape?'  -> autonomy (open-set perception)
+  store photos tagged to a folder   -> autonomy (filesystem IO)
+
+# Each physical action the mastermind issues becomes a validated URML step
+
+  [autonomy] saw a shape, is_unclassified_shape() = True: stop and photograph it
+
+  [VALID]  turn +30 deg
+  [VALID]  drive 0.50 m
+  [VALID]  turn -20 deg
+  [VALID]  drive 0.50 m
+  [VALID]  capture photo (current view)
+  [VALID]  turn +45 deg
+  [VALID]  drive 0.30 m
+  [VALID]  capture photo (current view)
+  [VALID]  turn +45 deg
+  [VALID]  drive 0.30 m
+  [VALID]  capture photo (current view)
+  [VALID]  measure distance
+
+# Executed through the mock substrate: 12 steps, success=True
+
+# The boundary, shown by what URML REFUSES
+
+  the mastermind's perception judgment is not a URML step. Expressed as one:
+    detect(object: unclassified_shape)  ->  [REJECTED] capability.missing_object_class
+    novelty detection is not a declared capability; it stays in autonomy.
+
+Summary: 12 physical actions validated and executed; 1 non-URML decision correctly refused.
+The mastermind is free to be as clever as it likes; the robot still only does
+what the manifest declares and the envelope allows.
