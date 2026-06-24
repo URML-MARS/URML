@@ -1,0 +1,79 @@
+# RoboCasa kitchen robot, per the spec sepnasiriany gave on robocasa/robocasa#200:
+# a Franka Panda 7-DOF arm on an Omron mobile base, parallel-jaw gripper, with an
+# EEF + base-motion + gripper action space; workspace is kitchen-scene
+# reachability; the object/task vocabulary is the graspable object categories and
+# the atomic/composite task set.
+#
+# URML does not actuate RoboCasa. This manifest is the capability + safety
+# envelope a benchmark can validate an instruction against BEFORE the learned
+# policy runs: an eval lens that flags out-of-distribution or out-of-capability
+# instructions, which is the use the maintainer pointed at.
+manifest_version: "0.1"
+robot_id: robocasa_kitchen_bot
+description: Franka Panda on an Omron mobile base in a RoboCasa kitchen scene.
+
+frames:
+  - name: kitchen
+    parent: null
+  - name: base_link
+    parent: kitchen
+
+declared_locations:
+  - name: counter
+    pose: { x: 1.0, y: 0.5 }
+    frame: kitchen
+  - name: sink
+    pose: { x: 2.0, y: 0.5 }
+    frame: kitchen
+  - name: stove
+    pose: { x: 2.0, y: 1.5 }
+    frame: kitchen
+  - name: cabinet
+    pose: { x: 0.5, y: 1.5 }
+    frame: kitchen
+
+mobility:
+  # Omron mobile base: a wheeled mobile-manipulator base.
+  drive_type: omnidirectional
+  max_velocity: 1.0
+  max_payload: 3.0          # Franka Panda rated payload (kg)
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  reachable_workspace_m: 0.85   # Franka Panda reach
+  grippers:
+    - name: panda_hand
+      kind: servo_electric      # Franka parallel-jaw hand
+      force_min_n: 0.0
+      force_max_n: 70.0         # Franka hand continuous grasp force
+      accepted_classes:
+        - mug
+        - bowl
+        - plate
+        - bottle
+        - can
+        - apple
+        - banana
+        - bread
+        - kettle
+
+perception:
+  cameras:
+    - name: eye_in_hand
+      movable: true
+      supports_photo: true
+  object_vocabulary:
+    - mug
+    - bowl
+    - plate
+    - bottle
+    - can
+    - apple
+    - banana
+    - bread
+    - kettle
+
+outputs:
+  named_endpoints:
+    - eval_log

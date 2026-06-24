@@ -1,0 +1,37 @@
+URML as an eval lens over RoboCasa instructions.
+No actuation: a static, offline capability + safety envelope, checked
+BEFORE a policy runs, to flag out-of-distribution / out-of-capability asks.
+robot: robocasa_kitchen_bot (Franka Panda on an Omron base)
+gripper force <= 70 N   reach <= 0.85 m   payload <= 3 kg
+scene objects (9): mug, bowl, plate, bottle, can, apple, banana, bread, kettle
+scene places (4): counter, sink, stove, cabinet
+
+# Each instruction is lowered to URML intent and validated against the manifest
+
+  [PASS]  Pick up the mug from the counter and put it in the sink
+  [PASS]  Drive to the stove                                     
+  [PASS]  Pick up the bowl from the cabinet                      
+  [FLAG]  Grasp the anvil on the counter                           [out-of-distribution]
+  [FLAG]  Go to the rooftop                                        [out-of-distribution]
+  [FLAG]  Pick up the mug, squeezing it with 200 N                 [out-of-capability]
+  [FLAG]  Fly up to the top shelf                                  [out-of-capability]
+
+3 in-capability and passed; 4 flagged (2 out-of-distribution, 2 out-of-capability).
+
+# Why each flagged instruction was caught
+
+  Grasp the anvil on the counter
+      -> out-of-distribution: capability.missing_object_class
+         pick_from references object class 'anvil' which is not in the manifest's perception.object_vocabulary.
+  Go to the rooftop
+      -> out-of-distribution: capability.missing_location
+         move_to references undeclared location 'rooftop'.
+  Pick up the mug, squeezing it with 200 N
+      -> out-of-capability: capability.missing_gripper
+         no declared gripper supports the requested force (200.0 N). Declared ranges: [('panda_hand', 0.0, 70.0)].
+  Fly up to the top shelf
+      -> out-of-capability: capability.drive_type_not_aerial
+         take_off requires an aerial drive_type (multirotor / fixed_wing / vtol); manifest declares 'omnidirectional'.
+
+The lens never executes anything; it only tells the benchmark which
+instructions are inside the robot's declared capability before the policy sees them.
