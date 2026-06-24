@@ -22,8 +22,16 @@ from typing import Any
 
 from urml_validator.errors import ErrorCode, ValidationError
 from urml_validator.hbom import HBOMComponent, HBOMError, resolve_and_parse
+from urml_validator.schemas.common import EVIDENCE_SOURCE_RANK, Evidence
 from urml_validator.schemas.manifest import CapabilityManifest, Provenance, ProvenanceComponent
-from urml_validator.schemas.policy import OnViolation, Policy, PolicyRule, RulePredicate, RuleSelector
+from urml_validator.schemas.policy import (
+    EvidenceRule,
+    OnViolation,
+    Policy,
+    PolicyRule,
+    RulePredicate,
+    RuleSelector,
+)
 
 # =============================================================================
 # Public entry point
@@ -53,20 +61,28 @@ def evaluate_policy(
 
     Returns:
         A list of ValidationError instances — one per rule violation.
-        Empty if every rule is satisfied (or no provenance is declared).
+        Empty if every rule is satisfied. Provenance rules (RFC-0004/0005) are a
+        no-op when the manifest declares no ``provenance``; evidence rules
+        (RFC-0631) are evaluated independently of provenance.
     """
-    if manifest.provenance is None:
-        return []
-
-    hbom_cache: dict[tuple[str, str | None], list[HBOMComponent] | HBOMError] = {}
-
     out: list[ValidationError] = []
-    for rule in policy.rules:
-        out.extend(
-            _evaluate_rule(
-                rule, manifest.provenance, policy.policy_id, manifest_base_dir, hbom_cache
+
+    # Provenance rules (RFC-0004; HBOM-content sub-pass RFC-0005). Opt-in at the
+    # manifest level: a manifest with no provenance triggers none of them.
+    if manifest.provenance is not None:
+        hbom_cache: dict[tuple[str, str | None], list[HBOMComponent] | HBOMError] = {}
+        for rule in policy.rules:
+            out.extend(
+                _evaluate_rule(
+                    rule, manifest.provenance, policy.policy_id, manifest_base_dir, hbom_cache
+                )
             )
-        )
+
+    # Evidence rules (RFC-0631). Independent of provenance: they gate the
+    # traceability of capability claims, not hardware origin.
+    for evidence_rule in policy.evidence_rules:
+        out.extend(_evaluate_evidence_rule(evidence_rule, manifest, policy.policy_id))
+
     return out
 
 
@@ -359,6 +375,88 @@ def _hbom_resolution_error(
         field="hbom_ref",
         detail=detail,
     )
+
+
+# =============================================================================
+# Evidence-rule evaluation (RFC-0631)
+# =============================================================================
+
+
+def _collect_evidenced_capabilities(
+    manifest: CapabilityManifest, applies_to: str
+) -> list[tuple[str, str, Evidence | None, list[str]]]:
+    """Return (kind, label, evidence, path) for each capability the rule covers.
+
+    `kind` is the capability class (gripper / camera / sensor / mobility /
+    whole_body), `label` names the instance, `evidence` is its tag (or None when
+    absent), and `path` locates it in the manifest for the error payload. A
+    single-instance block (mobility, whole_body) is skipped when not declared.
+    """
+    out: list[tuple[str, str, Evidence | None, list[str]]] = []
+
+    want = {"gripper", "camera", "sensor", "mobility", "whole_body"} if applies_to == "any" else {applies_to}
+
+    if "gripper" in want and manifest.manipulation is not None:
+        for g in manifest.manipulation.grippers:
+            out.append(("gripper", g.name, g.evidence, ["<manifest>", "manipulation", "grippers", g.name]))
+    if "camera" in want and manifest.perception is not None:
+        for c in manifest.perception.cameras:
+            out.append(("camera", c.name, c.evidence, ["<manifest>", "perception", "cameras", c.name]))
+    if "sensor" in want and manifest.perception is not None:
+        for s in manifest.perception.sensors:
+            out.append(("sensor", s.name, s.evidence, ["<manifest>", "perception", "sensors", s.name]))
+    if "mobility" in want and manifest.mobility is not None:
+        out.append(("mobility", "mobility", manifest.mobility.evidence, ["<manifest>", "mobility"]))
+    if "whole_body" in want and manifest.whole_body is not None:
+        out.append(("whole_body", "whole_body", manifest.whole_body.evidence, ["<manifest>", "whole_body"]))
+
+    return out
+
+
+def _evaluate_evidence_rule(
+    rule: EvidenceRule,
+    manifest: CapabilityManifest,
+    policy_id: str,
+) -> list[ValidationError]:
+    """Evaluate one evidence rule (RFC-0631).
+
+    Emits one error per covered capability whose evidence source is below
+    `min_source` (an absent `evidence` tag ranks below the weakest source, so it
+    always violates a rule that requires any). A rule covering a capability the
+    manifest does not declare is vacuously satisfied.
+    """
+    required = EVIDENCE_SOURCE_RANK[rule.min_source]
+    out: list[ValidationError] = []
+    for kind, label, evidence, path in _collect_evidenced_capabilities(manifest, rule.applies_to):
+        actual_source = evidence.source if evidence is not None else None
+        actual_rank = EVIDENCE_SOURCE_RANK[actual_source] if actual_source is not None else -1
+        if actual_rank >= required:
+            continue
+        detail = {
+            "rule_id": rule.id,
+            "policy_id": policy_id,
+            "capability_kind": kind,
+            "capability_label": label,
+            "required_min_source": rule.min_source,
+            "actual_source": actual_source,
+            "remediation_hint": "add_evidence",
+        }
+        had = f"source {actual_source!r}" if actual_source is not None else "no evidence tag"
+        message = rule.on_violation.message or (
+            f"Evidence rule {rule.id!r}: {kind} {label!r} has {had}, "
+            f"below the required minimum {rule.min_source!r}."
+        )
+        out.append(
+            ValidationError(
+                code=_resolve_code(rule.on_violation),
+                severity=rule.on_violation.severity,
+                message=message,
+                path=path,
+                field="evidence",
+                detail=detail,
+            )
+        )
+    return out
 
 
 # =============================================================================

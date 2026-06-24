@@ -1,0 +1,63 @@
+# A small mobile manipulator whose capability manifest was generated from a USD
+# asset, then hand-finished. RFC-0631: every curated capability carries an
+# `evidence` tag recording how its claim was established, so a reviewer (or an
+# opt-in policy) can tell a USD-derived contract from a hand-typed assertion.
+#
+# The mix is deliberate:
+#   - mobility + gripper : derived  (extracted from the USD / UsdPhysics asset)
+#   - front_lidar        : verified (confirmed by a runtime smoke test)
+#   - bumper             : declared (hand-typed by the integrator, no source)
+#   - wrist_cam          : inferred (an LLM guessed `movable` from the asset name)
+manifest_version: "0.1"
+robot_id: usd_jackal_panda
+description: USD-derived mobile manipulator with mixed-strength capability evidence.
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  max_payload: 9.0
+  evidence:
+    source: derived
+    ref: { kind: usd_prim, value: "/World/jackal/base_link" }
+    note: "drive_type and payload read from the UsdPhysics articulation root."
+
+manipulation:
+  arm_count: 1
+  reachable_workspace_m: 0.85
+  grippers:
+    - name: panda_hand
+      kind: servo_electric
+      force_min_n: 0.0
+      force_max_n: 40.0
+      accepted_classes: [widget_red, widget_blue]
+      evidence:
+        source: derived
+        ref: { kind: usd_prim, value: "/World/jackal/panda/panda_hand" }
+        note: "force_max_n read from the UsdPhysics joint-drive force limit."
+
+perception:
+  cameras:
+    - name: wrist_cam
+      movable: true
+      supports_photo: true
+      evidence:
+        source: inferred
+        note: "`movable` was guessed by an LLM from the prim name; not confirmed in USD."
+  sensors:
+    - name: front_lidar
+      measurement_type: point_cloud
+      range_min: 0.1
+      range_max: 25.0
+      units: m
+      evidence:
+        source: verified
+        ref: { kind: test, value: "lidar-range-smoke-2026-06-23" }
+        note: "range confirmed by a runtime smoke test against the live sensor."
+    - name: bumper
+      measurement_type: distance
+      range_min: 0.0
+      range_max: 0.05
+      units: m
+      evidence:
+        source: declared
+        note: "hand-declared by the integrator; no USD source and no smoke test."

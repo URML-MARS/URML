@@ -84,10 +84,10 @@
     - date: "2026-06-02"
       text: "After RFC-0323 merges, post the posts-move24.md Isaac Sim body on isaac-sim/IsaacSim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep distinct from RFC-0050; do not re-pitch NVIDIA broadly."
       status: done
-    - date: "2026-06-23"
-      text: "divyanshm-create's review spawned RFC-0631 (per-capability evidence traceability: an optional derived/declared/verified tag with a source ref). RFC is Draft with open questions for the founder; do not implement the schema change until the founder settles the open questions (one-way-door discipline, mirrors RFC-0630). Next concrete deliverable toward a conformance listing is a USD-derived manifest plus a working Isaac Sim adapter/fixture demonstrating the flow with evidence tags."
-      status: pending
-  next_action: "Engaged on #649 (2026-06-23) via divyanshm-create's expert review; substantive reply posted (comment 4782573900). RFC-0631 scopes the evidence-traceability ask. Hold for founder decisions on the RFC open questions before implementing; the listing path needs a USD-derived manifest + working adapter/fixture."
+    - date: "2026-06-24"
+      text: "divyanshm-create's review spawned RFC-0631 (per-capability evidence traceability), now ACCEPTED and implemented. Founder settled the five open questions: inline tag, curated coverage (mobility/gripper/camera/sensor/whole_body), source enum inferred<declared<derived<verified, structured {kind,value} ref, and an opt-in policy hook (Policy.evidence_rules -> policy.evidence_insufficient). Shipped the Evidence/EvidenceRef schema, the evidence_rules policy, examples/evidence/ worked example, two conformance fixtures, and the Layer-1 spec note. Backward-compatible (advisory by default)."
+      status: done
+  next_action: "Engaged on #649; RFC-0631 (evidence traceability) shipped in response. Next concrete deliverable toward a conformance listing is a USD-derived manifest plus a working Isaac Sim adapter/fixture demonstrating the flow with evidence tags (divyanshm-create's stated bar). Hold for founder before the adapter build; no re-ping owed."
   notes: "Move #24. URML -> Isaac Sim via the ROS 2 bridge / Action Graph; manifest aligns with the USD robot description. Manifest gaps queued (USD-robot-description alignment, simulator-target class hint, shared with RFC-0322). NVIDIA already engaged via Isaac Lab (RFC-0050); this is the sim-app conversation. Warp folded (nvidia-warp row). Origin US. Verified 2026-06-02."
 
 - slug: o3de

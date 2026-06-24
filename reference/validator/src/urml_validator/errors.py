@@ -194,6 +194,11 @@ class ErrorCode(StrEnum):
     # most-restrictive default) declares a licensing component with
     # commercial_use_gate true. Fires only under a compliance policy.
     POLICY_COMMERCIAL_USE_GATE_VIOLATED = "policy.commercial_use_gate_violated"
+    # RFC-0631: an opt-in evidence rule requires a minimum evidence source for a
+    # class of capability claim (e.g. a gripper's force range must be `derived`
+    # or `verified`), and a matching capability is below that bar or carries no
+    # `evidence` tag at all. Fires only when a policy declares `evidence_rules`.
+    POLICY_EVIDENCE_INSUFFICIENT = "policy.evidence_insufficient"
 
     # RFC-0005 — structured HBOM-content predicates (Pass 5 sub-pass).
     # Emitted when a policy rule reaches into a component's parsed Hardware

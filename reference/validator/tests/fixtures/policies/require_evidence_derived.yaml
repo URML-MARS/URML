@@ -1,0 +1,20 @@
+# RFC-0631: an opt-in evidence policy. Requires that every sensor's claim be
+# derived from a robot description or verified by a smoke test (a hand-declared
+# or model-inferred sensor range is refused). Demonstrates a deployment turning
+# advisory evidence into a gate for safety-relevant claims. Empty `rules` means
+# it adds no provenance constraint; only the evidence rule applies.
+policy_version: "0.1"
+policy_id: require_evidence_derived_test
+description: Require derived/verified evidence for sensor claims (RFC-0631 conformance).
+issued_by: urml_test_fixtures
+issued_at: "2026-06-23"
+
+rules: []
+
+evidence_rules:
+  - id: sensor-range-traceable
+    applies_to: sensor
+    min_source: derived
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: error

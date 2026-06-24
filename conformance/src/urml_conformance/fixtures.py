@@ -219,6 +219,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "utm_ground": _VALIDATOR_FIXTURES / "manifests" / "utm_ground.yaml",
     "utm_drone": _VALIDATOR_FIXTURES / "manifests" / "utm_drone.yaml",
     "utm_rov": _VALIDATOR_FIXTURES / "manifests" / "utm_rov.yaml",
+    # RFC-0631: per-capability evidence of mixed strength (derived/verified/declared/inferred).
+    "evidence_mixed": _VALIDATOR_FIXTURES / "manifests" / "evidence_mixed.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -247,6 +249,8 @@ POLICY_REGISTRY: dict[str, Path] = {
     # RFC-0005: an HBOM-content policy that walks parsed CycloneDX, not just
     # the manifest-declared provenance facts.
     "hbom_no_cn_components": _VALIDATOR_FIXTURES / "policies" / "hbom_no_cn_components.yaml",
+    # RFC-0631: an opt-in evidence policy requiring derived/verified sensor claims.
+    "require_evidence_derived": _VALIDATOR_FIXTURES / "policies" / "require_evidence_derived.yaml",
 }
 
 

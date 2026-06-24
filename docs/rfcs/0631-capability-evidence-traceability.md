@@ -2,9 +2,9 @@
 rfc: 0631
 title: Per-capability evidence traceability in the manifest
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Accepted
 created: 2026-06-23
-updated: 2026-06-23
+updated: 2026-06-24
 supersedes: —
 superseded-by: —
 ---
@@ -26,8 +26,8 @@ superseded-by: —
 # RFC-0631: Per-capability evidence traceability in the manifest
 
 **Kind: Spec.** Adds an optional manifest field. Additive and backward-compatible.
-This RFC scopes the design and leaves open questions for the maintainer; no code
-ships until it is accepted.
+Accepted 2026-06-24; the maintainer settled the five open questions (recorded in
+the Decisions section) and the implementation shipped with this RFC.
 
 ## Summary
 
@@ -42,12 +42,14 @@ robot description like USD or URDF, declared by an integrator, or verified by a
 smoke test.
 
 This RFC adds an optional, advisory `evidence` tag to capability declarations, so
-a claim can carry its source (derived / declared / verified) and a reference to
-the evidence. It does not change validation semantics; it makes the manifest a
-traceable contract instead of an unverifiable one.
+a claim can carry its source (inferred / declared / derived / verified) and a
+structured reference to the evidence. It does not change validation semantics by
+default; it makes the manifest a traceable contract instead of an unverifiable
+one, and defines an opt-in policy hook that can require evidence for
+safety-relevant claims.
 
-**State: Draft.** Design proposal with open questions (see the end). Nothing is
-implemented yet.
+**State: Accepted.** Implemented with this RFC (see the Decisions section for the
+settled design).
 
 ## Motivation
 
@@ -101,24 +103,29 @@ Add an optional `Evidence` value attachable to capability declarations:
 
 ```yaml
 evidence:
-  source: derived        # derived | declared | verified
-  ref: "/World/robot/gripper"   # optional: a USD prim path, a URDF link, a test id/URL
-  note: "from UsdPhysics joint limits"   # optional free text
+  source: derived                                   # inferred | declared | derived | verified
+  ref: { kind: usd_prim, value: "/World/robot/gripper" }   # optional, structured
+  note: "from UsdPhysics joint limits"              # optional free text
 ```
 
-`source` is the load-bearing field:
+`source` is the load-bearing field, ordered weakest to strongest by how
+checkable the claim is:
 
+- **inferred** — an LLM or a heuristic guessed it. No external check; the weakest
+  class.
+- **declared** — asserted by the integrator. Honest default; no external check.
 - **derived** — extracted or computed from a structural robot description (USD /
   UsdPhysics, URDF, SDF, a vendor asset). The strongest non-runtime evidence.
-- **declared** — asserted by the integrator. Honest default; no external check.
 - **verified** — confirmed by a runtime smoke test or measurement.
 
-`ref` is a free-form pointer to the evidence (a USD prim path, a URDF link name, a
-test identifier or URL). `note` is optional human context.
+`ref` is a structured pointer to the evidence: `{ kind, value }`, where `kind` is
+one of `usd_prim` / `urdf_link` / `test` / `url`, and `value` is the pointer
+itself. URML records the reference, it does not dereference it. `note` is
+optional human context.
 
-The tag attaches to the capability sub-objects most worth tracing: grippers,
-cameras, sensors, the mobility block, and joint / kinematic limits. (Exact set is
-an open question.)
+The tag attaches inline to the curated capability sub-objects most worth tracing:
+the `mobility` block, each gripper, each camera, each sensor, and the
+`whole_body` block.
 
 ### Validation semantics
 
@@ -126,15 +133,18 @@ Evidence is **advisory in v0.x**. The validator does not require any claim to be
 evidenced, and an unevidenced manifest validates exactly as today (fully backward
 compatible). What evidence enables:
 
-- A reviewer or a tool can see, per capability, whether a claim is derived,
-  declared, or verified.
-- A future, opt-in policy could require `verified` (or at least `derived`)
-  evidence for safety-envelope-relevant claims, the same way the US-federal policy
-  gates provenance today. That policy is out of scope here; this RFC only lays the
-  rail.
+- A reviewer or a tool can see, per capability, whether a claim is inferred,
+  declared, derived, or verified.
+- An opt-in policy (`Policy.evidence_rules`) requires that every capability of a
+  chosen kind carry an `evidence` whose `source` is at least a stated
+  `min_source`. A capability below the bar, or with no tag at all, draws
+  `policy.evidence_insufficient` (error or warning per the rule). This is the
+  same opt-in shape the US-federal policy uses for provenance: no rule, no effect.
 
-Keeping it advisory is deliberate: forcing evidence would break every existing
-hand-authored manifest and is a deployment decision, not a language one.
+Keeping the *default* advisory is deliberate: forcing evidence would break every
+existing hand-authored manifest and is a deployment decision, not a language one.
+The policy hook is how a specific deployment makes evidence mandatory for its
+safety-relevant claims.
 
 ## Prior art
 
@@ -145,30 +155,39 @@ hand-authored manifest and is a deployment decision, not a language one.
   a finer grain.
 - The motivating review on isaac-sim/IsaacSim#649 (NVIDIA Isaac).
 
-## Implementation plan (only after acceptance)
+## Decisions (settled by the maintainer, 2026-06-24)
 
-1. An `Evidence` pydantic model (`source` enum, optional `ref`, optional `note`).
-2. An optional `evidence` field on the chosen capability sub-models (Gripper,
-   Camera, Sensor, Mobility, and a limits carrier), additive, `extra="forbid"`.
-3. No new validator pass for v0.x (advisory). Optionally a Pass-2 info-level note
-   when a safety-relevant claim is `declared` only, behind a flag.
-4. A worked example: a small manifest with mixed evidence (a gripper `derived`
-   from USD, an object vocabulary `declared`, a reach limit `verified`).
-5. A conformance fixture pair: an evidenced manifest and a plain one both validate.
-6. Docs: a Layer-1 note on evidence, and guidance that a USD/URDF derivation tool
-   should stamp `source: derived` with the source ref.
+The five open questions were settled as follows, and the implementation shipped
+with this RFC:
 
-## Open questions (for the maintainer)
+1. **Shape: inline.** `evidence` attaches directly to each capability sub-object,
+   not a separate top-level block. Fine-grained and local to the claim it traces.
+2. **Coverage: a curated set.** `Mobility`, `Gripper`, `Camera`, `Sensor`, and
+   `WholeBody`, the capability blocks whose claims are safety-relevant. Not every
+   declaration.
+3. **`source` enum: add `inferred`.** The set is `inferred < declared < derived <
+   verified`, with `inferred` the distinct, weakest class for a model/heuristic
+   guess.
+4. **`ref` format: structured.** `{ kind, value }`, `kind` one of `usd_prim` /
+   `urdf_link` / `test` / `url`. Queryable, not a free string.
+5. **Policy hook: defined.** `Policy.evidence_rules` ship in this RFC: an opt-in
+   per-capability requirement (`applies_to`, `min_source`, `on_violation`).
 
-1. **Shape.** Inline `evidence` on each capability sub-object (fine-grained,
-   slightly invasive), versus a separate top-level `evidence:` block that
-   references capabilities by path/name (centralized, decoupled). The RFC leans
-   inline.
-2. **Coverage.** Which capabilities carry it: a curated set (grippers, cameras,
-   sensors, mobility, joint limits), or every declaration?
-3. **`source` enum.** Is derived / declared / verified the right set? Add
-   `inferred` (e.g. an LLM or heuristic guessed it) as a distinct, weaker class?
-4. **`ref` format.** Free string, or a structured `{ kind: usd_prim | urdf_link |
-   test | url, value }`?
-5. **Policy hook.** Advisory only now (recommended), or define the opt-in policy
-   that can require evidence for safety-relevant claims in the same RFC?
+## Implementation (shipped with this RFC)
+
+1. `Evidence` and `EvidenceRef` pydantic models in `schemas/common.py`, with the
+   shared `EvidenceSource` literal and `EVIDENCE_SOURCE_RANK` ordering.
+2. An optional `evidence` field on `Mobility`, `Gripper`, `Camera`, `Sensor`, and
+   `WholeBody`, additive and `extra="forbid"`.
+3. `EvidenceRule` + `Policy.evidence_rules` (`schemas/policy.py`), evaluated by
+   the policy engine independent of provenance; a sub-bar or absent tag draws
+   `policy.evidence_insufficient` (new error code). No default-policy change: an
+   empty `evidence_rules` (the default) leaves evidence fully advisory.
+4. Worked example [`examples/evidence/`](../../examples/evidence/): a mixed-evidence
+   manifest (USD-derived gripper/mobility, smoke-verified lidar, hand-declared
+   bumper, LLM-inferred camera), an opt-in policy, and a byte-asserted report
+   guarded by `reference/validator/tests/test_evidence_example.py`.
+5. Conformance fixtures: `compliance/04_evidence_advisory_accepted` (advisory,
+   no policy) and `compliance/05_evidence_required_rejected` (the opt-in gate
+   refuses the hand-declared sensor).
+6. Layer-1 spec note (`spec/layer-1-hal/v0.2.0.md` §2.21).

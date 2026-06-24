@@ -1,0 +1,22 @@
+name: compliance/evidence_advisory_accepted
+description: >
+  RFC-0631. The manifest carries per-capability evidence of mixed strength
+  (a USD-derived gripper and mobility, a smoke-verified lidar, a hand-declared
+  bumper, an LLM-inferred camera). With no evidence policy in force, evidence is
+  advisory: the tags change no validation outcome and the manifest validates.
+  Backward compatibility and the advisory default in one case.
+
+manifest: evidence_mixed
+policy: none
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: true
