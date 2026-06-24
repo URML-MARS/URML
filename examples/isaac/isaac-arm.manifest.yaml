@@ -1,0 +1,57 @@
+# A capability manifest GENERATED FROM a USD asset, then validated. This is the
+# direction NVIDIA Isaac asked for on isaac-sim/IsaacSim#649: the manifest is not
+# hand-written, it is derived from the USD / UsdPhysics scene, and every
+# capability claim carries an RFC-0631 `evidence` tag that traces it back to the
+# prim it came from. A reviewer (or an opt-in policy) can see, per claim, that it
+# was derived from USD rather than asserted.
+#
+# The substrate is a headless Isaac Sim physics model (urml-isaac-runtime,
+# IsaacAdapter): no ROS, no robot. Navigation-only, so it runs hermetically.
+manifest_version: "0.1"
+robot_id: isaac_usd_arm
+description: Isaac Sim model whose capability manifest was derived from its USD asset (RFC-0631).
+
+frames:
+  - name: world
+    parent: null
+  - name: base
+    parent: world
+
+declared_locations:
+  - name: sim_start
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+  - name: sim_waypoint
+    pose: { x: 1.0, y: 0.5 }
+    frame: world
+  - name: sim_home
+    pose: { x: 0.0, y: 0.0 }
+    frame: world
+
+declared_events:
+  - settled
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+  station_keeping: true
+  evidence:
+    source: derived
+    ref: { kind: usd_prim, value: "/World/arm/base/ArticulationRoot" }
+    note: "drive_type and max_velocity read from the UsdPhysics articulation + drive limits."
+
+perception:
+  sensors:
+    - name: joint_state
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+      evidence:
+        source: derived
+        ref: { kind: usd_prim, value: "/World/arm/joints/JointStateSensor" }
+        note: "sensor presence and range read from the USD physics scene."
+
+outputs:
+  named_endpoints:
+    - sim_log

@@ -1,0 +1,23 @@
+URML on Isaac Sim: a USD-derived manifest, validated, then driven through the adapter.
+The flow NVIDIA Isaac asked for on isaac-sim/IsaacSim#649: USD evidence ->
+validated capability contract -> backend-neutral adapter dispatch.
+robot: isaac_usd_arm   substrate: urml-isaac-runtime (zero ROS)
+
+# 1. Each capability claim traces to the USD prim it was derived from (RFC-0631)
+
+  mobility            derived  usd_prim:/World/arm/base/ArticulationRoot
+  sensor joint_state  derived  usd_prim:/World/arm/joints/JointStateSensor
+
+# 2. Validate before actuate
+
+[VALID] navigate to sim_waypoint, wait to settle, return home, report.
+[VALID] under the listing evidence policy (mobility + sensors must be derived/verified).
+        Because the manifest is USD-derived, it clears the gate a listing applies.
+
+# 3. Execute the validated program through IsaacAdapter (hermetic fake isaacsim)
+
+  move_to sim_waypoint  ->  ctrl = [0.4, 0.2, -0.1, 0.0]  (+50 steps)
+  move_to sim_home      ->  ctrl = [0.0, 0.0, 0.0, 0.0]  (+50 steps)
+
+  2 move_to commands dispatched; 100 physics steps advanced.
+  One URML operation, one control-vector write on the USD model. No ROS in the path.
