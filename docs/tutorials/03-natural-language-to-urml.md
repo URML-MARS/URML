@@ -134,11 +134,25 @@ That last line is the important one. `0 revision(s)` means the EchoProvider's re
 If you have an Anthropic API key, install the optional `anthropic` extra and set the env var:
 
 ```bash
-pip install -e "reference/llm-bridge[anthropic]"
+pip install "urml-llm-bridge[anthropic]"
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-(For OpenAI: `pip install -e "reference/llm-bridge[openai]"` and `export OPENAI_API_KEY=...`. Replace `--provider anthropic` with `--provider openai` below.)
+(For OpenAI: `pip install "urml-llm-bridge[openai]"` and `export OPENAI_API_KEY=...`. Replace `--provider anthropic` with `--provider openai` below.)
+
+> Install the package by name (as above) so it works from any directory, including the `my-first-robot/` project you are standing in. The `pip install -e "reference/llm-bridge[...]"` form only resolves from the **repo root** of a source checkout (Tutorial 1's `bootstrap.py` path already installs every extra there).
+
+> **Using a local model (Ollama, LM Studio, ...).** Any OpenAI-compatible server works through the `openai` provider. Point the bridge at it and name the model:
+>
+> ```bash
+> export OPENAI_BASE_URL="http://127.0.0.1:11434"   # your Ollama server
+> export OPENAI_API_KEY="ollama"                     # any non-empty string
+> urml translate "Bring me the red mug from the kitchen." \
+>     --manifest manifest.yaml --envelope envelope.yaml --profile home \
+>     --provider openai --model "qwen3.5:9b"
+> ```
+>
+> `--model` matters: the `openai` provider defaults to a hosted model name, so pass the local model you pulled. Translation is the demanding step, and a small model (under roughly 7B) often emits structurally invalid URML that the validator then rejects; a capable local model works offline (a community user reported qwen3.5:9b at a 128k context translating cleanly). The validator gates either way, so a weak model can be wrong but the robot still only runs a validated program. There is a community Ollama HOWTO on [Discussion #497](https://github.com/URML-MARS/URML/discussions/497).
 
 Then:
 
