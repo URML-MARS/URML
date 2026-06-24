@@ -33,7 +33,9 @@ cd URML
 python bootstrap.py     # creates .venv, installs everything editable
 ```
 
-Re-running is safe (the venv is reused). It's fully reversible — `make clean` or `rm -rf .venv` removes every trace; nothing is published or claimed. When PyPI packages land (Phase 1+), this collapses to `pip install urml-validator urml-llm-bridge`.
+If `python` is not found (many systems, including recent Ubuntu, ship only `python3`), use `python3 bootstrap.py` instead. URML needs Python 3.11 or newer.
+
+Re-running is safe (the venv is reused). It's fully reversible — `make clean` or `rm -rf .venv` removes every trace; nothing is published or claimed. Released packages are also on PyPI: `pip install urml-validator urml-ros2-runtime urml-llm-bridge` (see the README quickstart).
 
 Activate the venv, then confirm the CLI:
 
@@ -42,15 +44,15 @@ Activate the venv, then confirm the CLI:
 urml --version
 ```
 
-Expected:
+Expected (your version may be newer):
 
 ```
-urml-validator 0.1.0
+urml-validator 0.2.0
 ```
 
-> Prefer to do it by hand, or only want a subset? The old path still works:
-> `python -m venv .venv && . .venv/bin/activate && pip install -e reference/validator -e reference/llm-bridge`.
-> `bootstrap.py` just automates exactly that for all five packages.
+> Want a venv with your own name or location? Activate it first, then run `python bootstrap.py` — when a venv is active (`$VIRTUAL_ENV` is set), bootstrap installs into *that* one instead of creating `.venv`.
+>
+> Prefer to do the whole thing by hand? `python -m venv .venv && . .venv/bin/activate && pip install -e reference/validator -e reference/ros2-runtime -e reference/llm-bridge -e reference/px4-runtime -e conformance` — the five packages `bootstrap.py` installs, in dependency order.
 
 ## Scaffold a starter project
 
@@ -102,9 +104,24 @@ Expected:
 
 ```
 Validation passed: program.urml.yaml
+  (1 warning(s))
+
+  WARN  [policy.attestation_insufficient] <manifest>/provenance/manifest_attestation
+    field: manifest_attestation
+    Self-declared provenance accepted in v0.1 but flagged. ...
+    offending_value: self_declared
+    allowed_values: ['third_party_audited', 'cryptographically_signed']
 ```
 
-That's it. The program is statically verified — every primitive it uses references capabilities the manifest declares; every safety check the envelope imposes holds. **A runtime will refuse to execute any program that fails this validation.** The validator is URML's safety boundary.
+The program **passed** — that's the line that matters. The warning is expected and does not block validation. The scaffolded `manifest.yaml` honestly declares `provenance.manifest_attestation: self_declared` (you have not had the robot's hardware audited by a third party, and saying so is the truthful default). The bundled US-federal compliance policy flags self-declared provenance as a **warning**, not an error, so you can see it without being blocked. Three ways to handle it:
+
+- **Leave it.** It is a warning. Validation passed.
+- **Turn the policy off** for a quick local run: add `--no-policy`. The output is then a clean `Validation passed:` with no warnings. This is the right choice while you are learning the language; compliance is one flag away.
+- **Satisfy it** once you have a real attestation, by setting `manifest_attestation` to `third_party_audited` or `cryptographically_signed` in `manifest.yaml`.
+
+Compliance (the policy mechanism is specified in [RFC-0004](../rfcs/0004-compliance-policy.md)) is a feature you opt into, not a hoop. For the rest of this tutorial, either leave the warning or add `--no-policy`.
+
+That aside, the program is statically verified — every primitive it uses references capabilities the manifest declares; every safety check the envelope imposes holds. **A runtime will refuse to execute any program that fails this validation.** The validator is URML's safety boundary.
 
 ## See validation failures, on purpose
 
