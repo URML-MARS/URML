@@ -1,0 +1,40 @@
+# A patrol robot for the "mind of an autonomous robot" example (Discussion #526):
+# a GoPiGo3-class wheeled buggy with a fixed Raspberry Pi camera and a distance
+# sensor. Frameless (dead reckoning), so it moves by amount (RFC-0630 drive/turn).
+#
+# The point of the example is the BOUNDARY. This manifest declares what the robot
+# can physically do: drive, turn, snap a photo of whatever it is pointed at,
+# measure distance. It deliberately does NOT declare an "unclassified shape"
+# object class, because deciding that something is a novel, not-yet-classified
+# shape is an autonomy (mastermind) judgment, not a URML capability.
+manifest_version: "0.1"
+robot_id: patrol_bot
+description: GoPiGo3-class patrol buggy with a fixed Pi camera and a distance sensor.
+
+frames:
+  - name: odom
+    parent: null
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.3
+  supports_relative_motion: true     # wheel encoders -> drive/turn by amount (RFC-0630)
+  max_relative_distance: 2.0
+
+perception:
+  cameras:
+    - name: pi_cam
+      movable: false                 # fixed mount: the robot reposes itself to change angle
+      supports_photo: true
+  sensors:
+    - name: distance
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 3.0
+      units: m
+  # object_vocabulary is intentionally omitted: this robot does not declare a
+  # detector for an "unclassified shape". Novelty detection lives in autonomy.
+
+outputs:
+  named_endpoints:
+    - run_log
