@@ -1,0 +1,36 @@
+# A basic (non-ROS) GoPiGo3 educational robot: a two-motor, wheel-encoder buggy
+# on a Raspberry Pi, driven through Dexter Industries' easygopigo3 Python library.
+# The worked example from Discussion #523, where @slowrunner asked for a native,
+# non-ROS GoPiGo3-URML runtime headstart.
+#
+# The GoPiGo3 is frameless (dead reckoning), so its natural vocabulary is
+# "drive forward X" and "turn X degrees", not "go to the kitchen". URML expresses
+# that with the RFC-0630 `drive` / `turn` primitives, gated by the `educational`
+# profile and `mobility.supports_relative_motion`. "Announce ..." maps to `speak`,
+# which the Pi backs with espeak.
+manifest_version: "0.1"
+robot_id: gopigo3_basic
+description: Basic GoPiGo3 (Raspberry Pi, easygopigo3, no ROS) for the educational profile.
+
+frames:
+  - name: gopigo3
+    parent: null
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.3            # GoPiGo3 cruising speed (m/s)
+  supports_relative_motion: true   # wheel encoders -> drive/turn by amount (RFC-0630)
+  max_relative_distance: 2.0   # bound a single `drive` (m)
+
+perception:
+  sensors:
+    - name: distance
+      measurement_type: distance
+      range_min: 0.05
+      range_max: 3.0
+      units: m
+
+outputs:
+  named_endpoints:
+    - speech                   # `speak` / "announce" -> espeak on the Pi
+    - run_log

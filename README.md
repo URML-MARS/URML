@@ -45,6 +45,16 @@ urml validate program.urml.yaml \
 
 Newer distributions mark the system Python as externally managed ([PEP 668](https://peps.python.org/pep-0668/)), so a bare `pip install` errors out. The virtualenv above keeps the install self-contained; `pipx install urml-validator` is an alternative if you prefer.
 
+**Updating an existing install.** To pull the latest release (for a new flag like `urml translate --save-rejected`, say), add `--upgrade` to the same packages, inside the same venv:
+
+```bash
+. .venv/bin/activate
+pip install --upgrade urml-validator urml-ros2-runtime urml-llm-bridge
+urml --version    # confirm the new version
+```
+
+`pipx upgrade urml-validator` does the same for a pipx install.
+
 <p align="center">
   <a href="docs/demos/sentence-to-motion.md"><img src="docs/assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program becomes an executed step-by-step trace, on a hermetic mock — no API key, no robot." width="760"></a>
 </p>

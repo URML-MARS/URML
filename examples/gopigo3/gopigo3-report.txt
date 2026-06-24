@@ -1,0 +1,23 @@
+URML on a basic GoPiGo3 (Raspberry Pi, easygopigo3, no ROS) - Discussion #523.
+English-shaped intent, validated against the GoPiGo3 manifest, then executed
+onto the wheels. Frameless robot, so motion is `drive` / `turn` by amount (RFC-0630).
+robot: gopigo3_basic   drive_type: differential   max drive: 2.0 m
+
+[VALID] announce, then drive 1 m (the translated command from #497/#523)
+   executed 2 steps, success=True
+   wheel + speech calls, in order:
+     emit_speech  -> espeak 'Driving forward 1 meter'
+     drive_by     -> easygopigo3.drive_cm(100.0)
+
+[VALID] short patrol: turn, drive, turn, drive, announce, report
+   executed 6 steps, success=True
+   wheel + speech calls, in order:
+     turn_by      -> easygopigo3.turn_degrees(90.0)
+     drive_by     -> easygopigo3.drive_cm(50.0)
+     turn_by      -> easygopigo3.turn_degrees(-90.0)
+     drive_by     -> easygopigo3.drive_cm(50.0)
+     emit_speech  -> espeak 'Patrol complete'
+     emit_report
+
+On a real GoPiGo3: `pip install gopigo3 easygopigo3`, delete the fake
+injection in run_gopigo3.py, and the same validated programs drive the wheels.
