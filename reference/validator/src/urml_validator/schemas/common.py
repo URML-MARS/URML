@@ -168,3 +168,69 @@ GraspType = Literal[
     "hook",
     "custom",
 ]
+
+
+# RFC-0631: how a capability claim was established. A manifest line ("this robot
+# has a movable camera", "this gripper closes to 40 N", "this reach limit is 0.8
+# m") is otherwise an unverifiable assertion the validator is forced to trust.
+# An `evidence` tag records the claim's source so a reviewer, a tool, or an
+# opt-in policy can tell a reviewed contract from a guess.
+#
+# The four sources, ordered by how checkable the claim is (weakest to strongest):
+#
+# - inferred  — an LLM or a heuristic guessed it. No external check; a machine's
+#   best guess, the weakest class.
+# - declared  — asserted by the integrator. No external check; an honest human
+#   default.
+# - derived   — extracted or computed from a structural robot description (USD /
+#   UsdPhysics, URDF, SDF, a vendor asset). The strongest non-runtime evidence.
+# - verified  — confirmed by a runtime smoke test or measurement.
+EvidenceSource = Literal["inferred", "declared", "derived", "verified"]
+
+# Strength order for an opt-in policy's `min_source` comparison. Higher is
+# stronger; a claim with no `evidence` tag at all ranks below `inferred`.
+EVIDENCE_SOURCE_RANK: dict[str, int] = {
+    "inferred": 0,
+    "declared": 1,
+    "derived": 2,
+    "verified": 3,
+}
+
+
+class EvidenceRef(BaseModel):
+    """A structured pointer to the evidence backing a capability claim (RFC-0631).
+
+    `kind` names the evidence's medium so a tool can act on it without parsing a
+    free string: a USD prim path, a URDF link, a test identifier, or a URL.
+    `value` is the pointer itself (e.g. `/World/robot/gripper`, `wrist_link`, a
+    test id, or a https URL). The reference is recorded, not dereferenced: URML
+    does not open the USD asset or run the test, it records which one backs the
+    claim.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["usd_prim", "urdf_link", "test", "url"]
+    value: str = Field(
+        ...,
+        min_length=1,
+        description="The pointer (USD prim path, URDF link name, test id, or URL).",
+    )
+
+
+class Evidence(BaseModel):
+    """How a capability claim was established (RFC-0631).
+
+    Optional and advisory: attaching it changes no validation outcome on its
+    own. It records the claim's `source` (inferred / declared / derived /
+    verified), an optional structured `ref` to the evidence, and optional human
+    `note`. An opt-in policy (`Policy.evidence_rules`) can require a minimum
+    `source` for a class of capability; without such a policy, evidence is pure
+    traceability a reviewer or a tool reads.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: EvidenceSource
+    ref: EvidenceRef | None = None
+    note: str | None = None

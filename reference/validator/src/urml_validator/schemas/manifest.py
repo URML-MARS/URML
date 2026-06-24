@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from urml_validator.schemas.common import GraspType, Identifier, Pose, Transform
+from urml_validator.schemas.common import Evidence, GraspType, Identifier, Pose, Transform
 from urml_validator.schemas.connectivity import Connectivity
 
 
@@ -155,6 +155,12 @@ class Mobility(BaseModel):
             "Optional; absent means name-based fallback for pairs involving this robot."
         ),
     )
+    # RFC-0631: how this mobility block's claims were established (derived from a
+    # robot description, declared, verified, or inferred). Advisory.
+    evidence: Evidence | None = Field(
+        None,
+        description="How these mobility claims were established (RFC-0631). Advisory traceability.",
+    )
 
 
 class Dexterity(BaseModel):
@@ -201,6 +207,12 @@ class Gripper(BaseModel):
     dexterity: Dexterity | None = Field(
         None,
         description="Articulation of a multi-fingered hand; required iff kind is `dexterous` (RFC-0586).",
+    )
+    # RFC-0631: how this gripper's claims (force range, accepted classes) were
+    # established. Advisory traceability.
+    evidence: Evidence | None = Field(
+        None,
+        description="How this gripper's claims were established (RFC-0631). Advisory traceability.",
     )
 
     @model_validator(mode="after")
@@ -395,6 +407,12 @@ class WholeBody(BaseModel):
             "(the CoM must lie within the polygon)."
         ),
     )
+    # RFC-0631: how these whole-body / kinematic-limit claims (chains, DoF, CoM,
+    # support polygon, tilt) were established. Advisory traceability.
+    evidence: Evidence | None = Field(
+        None,
+        description="How these whole-body claims were established (RFC-0631). Advisory traceability.",
+    )
 
     @model_validator(mode="after")
     def _well_formed(self) -> WholeBody:
@@ -428,6 +446,11 @@ class Camera(BaseModel):
     supports_video: bool = False
     supports_stream: bool = False
     max_resolution: str | None = None  # "1080p", "4k", ...
+    # RFC-0631: how this camera's claims (movable, modes) were established. Advisory.
+    evidence: Evidence | None = Field(
+        None,
+        description="How this camera's claims were established (RFC-0631). Advisory traceability.",
+    )
 
 
 class Sensor(BaseModel):
@@ -491,6 +514,12 @@ class Sensor(BaseModel):
             "Declared sample-rate ceiling in Hz. Substrate drivers may "
             "configure the sensor below this ceiling at deployment time."
         ),
+    )
+    # RFC-0631: how this sensor's claims (range, beam count, rate) were
+    # established. Advisory traceability.
+    evidence: Evidence | None = Field(
+        default=None,
+        description="How this sensor's claims were established (RFC-0631). Advisory traceability.",
     )
 
 

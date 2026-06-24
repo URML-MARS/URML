@@ -811,6 +811,7 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0628](0628-onrobot-ros2-outreach.md) | Outreach | OnRobot ROS 2 controller (`ABC-iRobotics/onrobot-ros2`) integration; Move #60; RG2/RG6 width-and-force grippers (Isaac Sim + hardware) → one manifest validates the grasp in sim and on the real gripper (declare-once-validate-everywhere); MIT; RFC from the maintainers | Draft | 2026-06-21 |
 | [0629](0629-ros2-robotiqgripper-outreach.md) | Outreach | ros2_RobotiqGripper (`IFRA-Cranfield/ros2_RobotiqGripper`) integration; Move #60, **completes the wave**; service-level Robotiq 2F interface on UR arms → a validated grasp above the service call, combined arm-plus-gripper manifest; Apache-2.0; RFC from the maintainers | Draft | 2026-06-21 |
 | [0630](0630-relative-motion-primitive.md) | Spec | Relative-motion primitives `drive` + `turn` for frameless robots: signed drive `distance` (optional `arc`) and `turn` angle in degrees, gated by `mobility.supports_relative_motion` + the `educational` profile; from the GoPiGo3 edge-LLM user (Discussion #497) | Accepted | 2026-06-22 |
+| [0631](0631-capability-evidence-traceability.md) | Spec | Optional per-capability `evidence` tag (`inferred` / `declared` / `derived` / `verified` + a structured `ref`) so a manifest claim records how it was established; advisory by default with an opt-in policy hook (`evidence_rules`); backward-compatible; from NVIDIA Isaac's review on isaac-sim/IsaacSim#649 | Accepted | 2026-06-24 |
 
 ## Lifecycle states
 

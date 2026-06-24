@@ -1,0 +1,44 @@
+# An opt-in evidence policy (RFC-0631). Without it, evidence is pure
+# traceability and changes no validation outcome. With it, a deployment turns
+# "evidence is advisory" into "safety-relevant claims must be traceable":
+#
+#   - a gripper's force range and the mobility envelope must be `derived` or
+#     `verified` (hard requirement: a hand-typed actuation limit is refused),
+#   - a sensor's range must be at least `derived` (`verified` also passes),
+#   - a camera below `derived` is flagged, not refused (a warning).
+#
+# Source order, weakest to strongest: inferred < declared < derived < verified.
+policy_version: "0.1"
+policy_id: evidence-traceability-demo
+description: Require derived/verified evidence for safety-relevant claims (RFC-0631 demo).
+issued_by: URML evidence-traceability worked example
+
+evidence_rules:
+  - id: gripper-force-traceable
+    applies_to: gripper
+    min_source: derived
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: error
+      message: "A gripper's force range must be derived from the asset or verified, not hand-typed."
+
+  - id: mobility-envelope-traceable
+    applies_to: mobility
+    min_source: derived
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: error
+
+  - id: sensor-range-traceable
+    applies_to: sensor
+    min_source: derived
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: error
+
+  - id: camera-claims-flagged
+    applies_to: camera
+    min_source: derived
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: warning

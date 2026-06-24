@@ -1,0 +1,32 @@
+Per-capability evidence traceability (RFC-0631).
+Each capability claim records how it was established, so a reviewer or an
+opt-in policy can tell a USD-derived contract from a hand-typed assertion.
+robot: usd_jackal_panda
+
+# The evidence on each capability (source order: inferred < declared < derived < verified)
+
+  mobility            derived   usd_prim:/World/jackal/base_link  // drive_type and payload read from the UsdPhysics articulation root.
+  gripper panda_hand  derived   usd_prim:/World/jackal/panda/panda_hand  // force_max_n read from the UsdPhysics joint-drive force limit.
+  camera wrist_cam    inferred  // `movable` was guessed by an LLM from the prim name; not confirmed in USD.
+  sensor front_lidar  verified  test:lidar-range-smoke-2026-06-23  // range confirmed by a runtime smoke test against the live sensor.
+  sensor bumper       declared  // hand-declared by the integrator; no USD source and no smoke test.
+
+# 1. Without a policy, evidence is advisory (validate before actuate is unaffected)
+
+[VALID] the manifest validates; the evidence tags are pure traceability here.
+
+# 2. With evidence-policy.yaml, safety-relevant claims must be traceable
+
+    gripper force + mobility envelope: must be derived/verified (else error)
+    sensor range:                     must be derived/verified (else error)
+    camera claims:                    below derived is flagged (warning)
+
+[REJECTED] under the evidence policy.
+
+  errors:
+    - sensor 'bumper': source declared < required derived
+  warnings:
+    - camera 'wrist_cam': source inferred < required derived
+
+The USD-derived gripper/mobility and the smoke-verified lidar pass; the
+hand-declared bumper is refused; the LLM-inferred camera claim is flagged.

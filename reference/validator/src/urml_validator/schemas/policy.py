@@ -25,6 +25,8 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from urml_validator.schemas.common import EvidenceSource
+
 
 class RuleSelector(BaseModel):
     """Which components (or the manifest as a whole) a rule applies to.
@@ -194,12 +196,49 @@ class PolicyRule(BaseModel):
         return self
 
 
+class EvidenceRule(BaseModel):
+    """An opt-in requirement that a class of capability claim be traceable (RFC-0631).
+
+    Where `rules` gate the manifest's hardware *provenance* (RFC-0004), an
+    `EvidenceRule` gates the *evidence* on a manifest's capability claims: it
+    requires that every capability of a chosen kind carry an `evidence` tag whose
+    `source` is at least `min_source`. A capability that is below the bar, or
+    carries no `evidence` tag at all, is a violation.
+
+    This is how a deployment turns "evidence is advisory" into "evidence is
+    required for safety-relevant claims" without changing the language: the
+    requirement is a policy decision, declared in the policy file, not a default.
+    The source order (weakest to strongest) is inferred < declared < derived <
+    verified, so `min_source: derived` admits `derived` and `verified` and
+    refuses `declared`, `inferred`, and an absent tag.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., description="Free-form identifier; author-chosen.")
+    applies_to: Literal[
+        "gripper", "camera", "sensor", "mobility", "whole_body", "any"
+    ] = Field(
+        ...,
+        description="Which capability kind the rule gates; `any` covers the whole curated set.",
+    )
+    min_source: EvidenceSource = Field(
+        ...,
+        description="Minimum acceptable evidence source (inferred < declared < derived < verified).",
+    )
+    on_violation: OnViolation
+
+
 class Policy(BaseModel):
     """A complete policy file.
 
     `rules` are evaluated in document order; first-match-wins per
     (component, dimension). An empty `rules` list is a no-op policy
     (useful as a permissive baseline).
+
+    `evidence_rules` (RFC-0631) are an independent, opt-in set gating the
+    evidence on capability claims; an empty list (the default) leaves evidence
+    fully advisory.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -213,3 +252,7 @@ class Policy(BaseModel):
         description="ISO-8601 date the policy was issued. Informational.",
     )
     rules: list[PolicyRule] = Field(default_factory=list)
+    evidence_rules: list[EvidenceRule] = Field(
+        default_factory=list,
+        description="Opt-in per-capability evidence requirements (RFC-0631). Empty means advisory.",
+    )

@@ -1,0 +1,66 @@
+# Fixture (RFC-0631): a home robot whose capability claims carry mixed-strength
+# evidence. The gripper and mobility were derived from the USD asset, the lidar
+# was verified by a smoke test, the bumper was hand-declared, and the camera's
+# `movable` was inferred by a model. With no evidence policy the manifest
+# validates unchanged (evidence is advisory); an opt-in evidence policy that
+# requires `derived` for sensors refuses the hand-declared bumper.
+manifest_version: "0.1"
+robot_id: evidence_home_bot
+description: Home robot with per-capability evidence of mixed strength (RFC-0631).
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0 }
+    frame: map
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46
+  station_keeping: true
+  evidence:
+    source: derived
+    ref: { kind: usd_prim, value: "/World/bot/base_link" }
+    note: "drive_type read from the UsdPhysics articulation root."
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: claw
+      kind: servo_electric
+      force_min_n: 0.0
+      force_max_n: 20.0
+      evidence:
+        source: derived
+        ref: { kind: usd_prim, value: "/World/bot/claw" }
+        note: "force_max_n read from the UsdPhysics joint-drive limit."
+
+perception:
+  cameras:
+    - name: head_cam
+      movable: true
+      evidence:
+        source: inferred
+        note: "`movable` guessed by an LLM from the prim name; not confirmed in USD."
+  sensors:
+    - name: lidar
+      measurement_type: distance
+      range_min: 0.1
+      range_max: 12.0
+      units: m
+      evidence:
+        source: verified
+        ref: { kind: test, value: "lidar-range-smoke" }
+    - name: bumper
+      measurement_type: distance
+      range_min: 0.0
+      range_max: 0.05
+      units: m
+      evidence:
+        source: declared
+        note: "hand-declared by the integrator; no USD source."
