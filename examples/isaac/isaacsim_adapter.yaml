@@ -1,0 +1,13 @@
+# Deployment-side config for IsaacAdapter. Model- and deployment-specific, so it
+# lives here, NOT in the URML program / manifest / envelope. Maps each declared
+# location to the actuator control vector that drives the USD model toward that
+# named pose, and points at the model file.
+model_path: isaac-arm.usd
+steps_per_command: 50
+location_to_target:
+  sim_start:
+    ctrl: [0.0, 0.0, 0.0, 0.0]
+  sim_waypoint:
+    ctrl: [0.4, 0.2, -0.1, 0.0]
+  sim_home:
+    ctrl: [0.0, 0.0, 0.0, 0.0]
