@@ -14,8 +14,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
   <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
-  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-1601%20passing-brightgreen.svg" alt="Tests"></a>
-  <a href="conformance/"><img src="https://img.shields.io/badge/conformance-175%20fixtures-brightgreen.svg" alt="Conformance"></a>
+  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-1668%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="conformance/"><img src="https://img.shields.io/badge/conformance-182%20fixtures-brightgreen.svg" alt="Conformance"></a>
   <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-41%20Spec%20%2B%20567%20Outreach-blue.svg" alt="RFCs"></a>
 </p>
 
@@ -62,7 +62,7 @@ Newer distributions mark the system Python as externally managed ([PEP 668](http
 ```bash
 git clone https://github.com/URML-MARS/URML.git && cd URML
 python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
-make test               # → 1601 passed + 28 gated-skipped
+make test               # → 1668 passed + 28 gated-skipped
 make demo-run           # → the animation above, reproduced live on the mock
 ```
 
@@ -72,7 +72,7 @@ make demo-run           # → the animation above, reproduced live on the mock
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-06-15 via `make audit`: **1601 passed + 28 gated-skipped** across 17 packages).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-06-24 via `make audit`: **1668 passed + 28 gated-skipped** across 17 packages).
 
 | Capability | State |
 |---|---|
@@ -80,7 +80,7 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | **24 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`) plus profile/extension verbs: home (`speak`, `listen`), drone (`take_off`, `land`, `return_to_home`), industrial (`pick_from`, `place_at`, `swap_tool`), `bimanual` (RFC-0010), `set_output` (RFC-0017), and the `av` pair `plan_path` / `follow_trajectory` (RFC-0020) | ✅ Validator + reference-runtime executors for all 24 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
 | **LLM bridge** — provider-agnostic (Anthropic + OpenAI + EchoProvider); revision loop with policy-error short-circuit; home / drone / industrial / fleet few-shots | ✅ 115 unit tests |
-| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 175 fixtures (home, drone, industrial, biped, quadruped, mobile, warehouse, marine, educational, research, fleet, av, manipulation, actuation, language, translation, licensing, compliance, deployment) |
+| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 182 fixtures (home, drone, industrial, biped, quadruped, mobile, warehouse, marine, educational, research, fleet, flexbe, av, manipulation, actuation, language, translation, licensing, compliance, deployment) |
 | **CLI** — `urml validate`, `urml execute`, `urml schema`, `urml translate`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All seven subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
 | **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; the `gazebo-e2e` job (live TurtleBot 4 + Nav2 sim) passed ×3 — [job-level, badge caveat explained](docs/launch/claims-audit.md) |
