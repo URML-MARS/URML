@@ -27,24 +27,26 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-06-15, on `main`** (commit `b22a585`), via
+**Measured 2026-06-24, on `main`** (commit `8fde3fc`), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
-(invoke with `make audit`) on a fully-installed host — every row re-measured
-from scratch, no carried-forward numbers. This is the v0.2.0 surface: the
-multi-robot fleet slice (RFC-0286/0290/0291), the manifest-expansion RFCs
-(whole_body RFC-0384, learned_policy RFC-0383, validation RFC-0381,
-substrate ipc/clock/bringup RFC-0385/0477/0478, realtime RFC-0016, digital-I/O
-RFC-0017, AV RFC-0020, the translation-licensing stack RFC-0260/0262/0268/0304),
-and the large conformance growth they brought. The prior 2026-05-20 / 2026-05-22
-measurements (244 validator, 765 total, 101 fixtures) are in git history.
+(invoke with `make audit`). Every row was re-measured except `ros2-runtime`,
+which this host could not run (no `rclpy` on the dev box); it carries the prior
+130/4 number and is re-measured by the gated `ros2-integration.yml` CI. This is
+the v0.2.0 surface: the multi-robot fleet slice (RFC-0286/0290/0291), the
+manifest-expansion RFCs (whole_body RFC-0384, learned_policy RFC-0383,
+validation RFC-0381, substrate ipc/clock/bringup RFC-0385/0477/0478, realtime
+RFC-0016, digital-I/O RFC-0017, AV RFC-0020, the translation-licensing stack
+RFC-0260/0262/0268/0304), the dexterous-hand grasp model (RFC-0586), and the
+per-capability evidence traceability added by RFC-0631. The prior 2026-05-20 /
+2026-05-22 measurements (244 validator, 765 total, 101 fixtures) are in git history.
 
 | Suite | Result |
 |---|---|
-| validator | **625 passed** |
-| llm-bridge | **115 passed** |
+| validator | **673 passed** |
+| llm-bridge | **118 passed** |
 | ros2-runtime | **130 passed, 4 skipped** |
 | px4-runtime | **54 passed, 4 skipped** |
-| conformance | **548 passed** |
+| conformance | **564 passed** |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **5 passed** |
@@ -57,7 +59,7 @@ measurements (244 validator, 765 total, 101 fixtures) are in git history.
 | edu-runtime | **14 passed, 2 skipped** (4 platform adapters parameterized) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
-| **Total** | **1601 passed + 28 gated-skipped** |
+| **Total** | **1668 passed + 28 gated-skipped** |
 
 The 28 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -69,12 +71,12 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **175** YAML cases under `conformance/fixtures/` (live
-count 2026-06-15) — actuation 5, av 4, biped 12, compliance 3, deployment 3,
-drone 16, educational 10, fleet 14, home 28, industrial 49, language 5,
-licensing 3, manipulation 4, marine 1, mobile 2, quadruped 4, research 1,
-translation 3, warehouse 8. Auto-discovered; all pass hermetically against
-`MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `fleet`
+Conformance fixtures: **182** YAML cases under `conformance/fixtures/` (live
+count 2026-06-24) — actuation 5, av 4, biped 12, compliance 5, deployment 3,
+drone 16, educational 10, fleet 14, flexbe 2, home 28, industrial 49, language 5,
+licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 4,
+research 1, translation 3, warehouse 8. Auto-discovered; all pass hermetically
+against `MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `fleet`
 (RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
 `actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
 0268/0304), `compliance`/`deployment` (policy).
@@ -94,11 +96,12 @@ RFC-0385 from iceoryx). Outreach state is tracked in the
 
 ## Per-row backing
 
-**Five-pass static validator — 625 unit tests.**
+**Five-pass static validator — 673 unit tests.**
 `reference/validator/src/urml_validator/validator.py` (`validate()` runs Pass
 1–5); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
-people-occupancy; Pass 4 cross-primitive type check. Evidence: validator suite
-625 passed.
+people-occupancy; Pass 4 cross-primitive type check; Pass 5 compliance policy,
+including the opt-in evidence-traceability rules (RFC-0631). Evidence: validator
+suite 673 passed.
 
 **24 primitives — validator + reference-runtime executors for all 24.** The 12
 core plus profile/extension verbs: home `speak`/`listen`; drone `take_off`/
@@ -123,10 +126,10 @@ ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
 `turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
 suite.
 
-**LLM bridge — 115 unit tests.**
+**LLM bridge — 118 unit tests.**
 `reference/llm-bridge/` — provider-agnostic (anthropic, openai, echo);
 revision loop with `BridgePolicyViolation` short-circuit; single-robot +
-roster-aware fleet assembly (RFC-0286). Evidence: llm-bridge 115 passed.
+roster-aware fleet assembly (RFC-0286). Evidence: llm-bridge 118 passed.
 
 **Conformance suite — 97 fixtures, `urml conformance run`, and a normative
 runtime contract.** `conformance/fixtures/**/*.yaml` = 97 cases (89 pre-RFC-0022 + 8
