@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from importlib import metadata
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -39,6 +40,21 @@ import yaml
 
 _HERE = Path(__file__).resolve().parent
 MANIFEST = _HERE / "gopigo3.manifest.yaml"
+
+# The example travels with URML, so its "version" is the versions of the URML
+# packages that run it, read from installed package metadata. Nothing to hand-edit
+# (Discussion #523): pip records the version, this just reports it.
+_URML_PACKAGES = ("urml-validator", "urml-ros2-runtime")
+
+
+def _version_line() -> str:
+    parts = []
+    for pkg in _URML_PACKAGES:
+        try:
+            parts.append(f"{pkg} {metadata.version(pkg)}")
+        except metadata.PackageNotFoundError:
+            parts.append(f"{pkg} (not installed)")
+    return "gopigo3 example, running on " + ", ".join(parts)
 
 
 def _load(path: Path) -> Any:
@@ -208,6 +224,7 @@ def run_program_file(path: str, prefer_real: bool = False) -> str:
     name = p.name
     lines = [
         f"URML on a basic GoPiGo3 - running {name} (Discussion #523).",
+        _version_line(),
         f"robot: {manifest['robot_id']}   drive_type: {manifest['mobility']['drive_type']}"
         f"   max drive: {manifest['mobility']['max_relative_distance']} m",
         "",
@@ -232,6 +249,12 @@ def main(argv: list[str] | None = None) -> None:
             "backend, no movement). Pass --execute to drive a connected GoPiGo3 "
             "for real; -m forces the fake even with --execute."
         ),
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=_version_line(),
+        help="Print the URML package versions this example runs on, and exit.",
     )
     parser.add_argument(
         "-f",
@@ -263,6 +286,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(_HERE))
+    print(f"[gopigo3 example] {_version_line()}", file=sys.stderr)
     prefer_real = args.execute and not args.mock
     if prefer_real:
         print(

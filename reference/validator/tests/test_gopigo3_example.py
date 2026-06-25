@@ -99,5 +99,18 @@ def test_run_program_file(tmp_path) -> None:
     assert "[VALID] program file: drive10.urml.yaml" in report
     assert "drive_by     -> easygopigo3.drive_cm(10.0)" in report
     assert "Dry run" in report
+    # The report records which URML versions ran it (Discussion #523), auto-derived.
+    assert "running on urml-validator" in report
     # A missing file reports cleanly, never raises.
     assert "[ERROR] no such program file" in gen.run_program_file(str(tmp_path / "nope.yaml"))
+
+
+def test_version_line_is_auto_derived() -> None:
+    """`--version` exits cleanly; the string is read from package metadata, not hand-edited (#523)."""
+    import pytest
+
+    gen = _load_gen()
+    line = gen._version_line()
+    assert "urml-validator" in line and "urml-ros2-runtime" in line
+    with pytest.raises(SystemExit):
+        gen.main(["--version"])

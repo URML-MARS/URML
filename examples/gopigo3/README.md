@@ -57,6 +57,14 @@ python examples/gopigo3/run_gopigo3.py -f drive10.urml.yaml --execute # drives t
 This is the loop @slowrunner runs: translate an English sentence on a capable box,
 copy the validated YAML to the Pi, and run it here.
 
+### Versions, for a traceable run
+
+`run_gopigo3.py --version` prints the URML package versions it runs on, and every
+run prints the same line on stderr (a `-f` run also records it in its report
+header). The version is read from the installed package metadata
+(`importlib.metadata`), so there is no version string to hand-edit when the code
+changes: `pip` records it, the example reports it.
+
 ## On a real GoPiGo3
 
 To actually drive the wheels, pass `--execute`:
