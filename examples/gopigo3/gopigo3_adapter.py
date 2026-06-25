@@ -27,6 +27,7 @@ https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
 from __future__ import annotations
 
 import subprocess
+import sys
 from typing import Any, Callable, Literal
 
 from urml_ros2_runtime.substrate.base import (
@@ -52,11 +53,28 @@ _NOT_APPLICABLE = "not_applicable_ground: {capability} has no meaning for a grou
 
 
 def _espeak(utterance: str) -> None:
-    """Default speech backend: espeak on the Pi. Falls back to a print."""
+    """Default speech backend: espeak on the Pi.
+
+    Speaks the utterance via espeak, and says so out loud (on stderr) when it
+    cannot, so a silent robot is explained rather than mysterious. If your robot
+    has its own speech path (for example a ROS say node), pass your own callable
+    as ``GoPiGo3Adapter(speak=...)`` instead of relying on espeak.
+    """
     try:
-        subprocess.run(["espeak", utterance], check=False)
+        result = subprocess.run(["espeak", utterance], check=False)
     except FileNotFoundError:
-        print(f"[gopigo3 say] {utterance}")
+        print(
+            f"[gopigo3 speak] espeak is not installed, so {utterance!r} was not "
+            "spoken. Install espeak, or pass a speak= backend to GoPiGo3Adapter.",
+            file=sys.stderr,
+        )
+        return
+    if result.returncode != 0:
+        print(
+            f"[gopigo3 speak] espeak exited {result.returncode}; {utterance!r} may "
+            "not have been audible (check the Pi's audio output device).",
+            file=sys.stderr,
+        )
 
 
 class GoPiGo3Adapter:

@@ -1,6 +1,6 @@
 URML on a basic GoPiGo3 (Raspberry Pi, easygopigo3, no ROS) - Discussion #523.
-English-shaped intent, validated against the GoPiGo3 manifest, then executed
-onto the wheels. Frameless robot, so motion is `drive` / `turn` by amount (RFC-0630).
+English-shaped intent, validated against the GoPiGo3 manifest, then lowered
+to wheel/speech calls. Frameless robot, so motion is `drive` / `turn` by amount (RFC-0630).
 robot: gopigo3_basic   drive_type: differential   max drive: 2.0 m
 
 [VALID] announce, then drive 1 m (the translated command from #497/#523)
@@ -19,6 +19,6 @@ robot: gopigo3_basic   drive_type: differential   max drive: 2.0 m
      emit_speech  -> espeak 'Patrol complete'
      emit_report
 
+This is a dry run: the calls above were validated and planned, not actuated.
 On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'
-Installation FAQ), the real easygopigo3 is used automatically and these same
-validated programs drive the wheels. No code changes are needed.
+Installation FAQ), run with --execute to drive the wheels for real.

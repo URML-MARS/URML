@@ -1,27 +1,32 @@
 #!/usr/bin/env python3
-"""Run validated URML programs on a basic GoPiGo3, hermetically (Discussion #523).
+"""Run validated URML programs on a basic GoPiGo3 (Discussion #523).
 
-This is the end-to-end the GoPiGo3 user asked for: an English-shaped intent,
-validated against the GoPiGo3 manifest, then executed through GoPiGo3Adapter onto
-the wheels, with no ROS. It binds to the real ``easygopigo3`` when the GoPiGo3
-software is installed (and drives the wheels), and falls back to a fake when it is
-not (no robot, deterministic). The same file works both ways, no edits. Installing
-the GoPiGo3 software is the platform's job, per Dexter Industries' Installation FAQ:
-https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
+An English-shaped intent, validated against the GoPiGo3 manifest, then shown as
+the wheel/speech calls it lowers to, with no ROS.
+
+**Safe by default: bare invocation never moves a robot.** Running this with no
+arguments (or ``-h``) is a DRY RUN against a fake backend: it validates the
+programs and prints the planned ``drive_cm`` / ``turn_degrees`` / speech calls,
+and writes the report. Nothing actuates. Pass ``--execute`` to drive a connected
+GoPiGo3 for real, after a clear warning. This split exists because URML is a
+validate-before-actuate project; a demo should not surprise-drive a robot (with
+thanks to @slowrunner, whose GoPiGo3 took off across the room when he typed
+``-h`` out of habit, Discussion #542).
 
 Two programs:
   1. The exact thing @slowrunner translated: announce "Driving forward 1 meter",
      then drive 1 m.
   2. A short patrol: turn, drive, turn, drive, announce done, report.
 
-Each is validated (validate before actuate), then executed through the real
-GoPiGo3Adapter. The report shows the easygopigo3 calls the adapter made
-(``drive_cm`` / ``turn_degrees``) and the spoken lines. Deterministic, so the
-committed ``gopigo3-report.txt`` is byte-asserted in CI.
+Installing the GoPiGo3 software is the platform's job, per Dexter Industries'
+Installation FAQ: https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
+The dry run is deterministic, so the committed ``gopigo3-report.txt`` is
+byte-asserted in CI.
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -39,10 +44,10 @@ def _load(path: Path) -> Any:
 
 
 # --------------------------------------------------------------------------
-# The example runs with no robot by falling back to a fake `easygopigo3` when the
-# real Dexter Industries library is not installed. No code edits are needed either
-# way: on a GoPiGo3 with the GoPiGo3 software installed, the real library is used
-# and the wheels move; anywhere else, the fake stands in and records the calls.
+# Backend selection. The default (dry run) installs a fake `easygopigo3` and never
+# touches the real library, so a bare run cannot move a robot. Only `--execute`
+# asks for the real library (falling back to the fake if it is absent). No code
+# edits are needed either way; the choice is a flag, not a deletion.
 # --------------------------------------------------------------------------
 
 
@@ -63,26 +68,33 @@ class _FakeEasyGoPiGo3:
         self.calls.append("stop()")
 
 
-def _ensure_easygopigo3() -> str:
-    """Make `easygopigo3` importable, real if present, fake otherwise.
+def _install_fake() -> str:
+    mod = ModuleType("easygopigo3")
+    mod.EasyGoPiGo3 = _FakeEasyGoPiGo3  # type: ignore[attr-defined]
+    mod._URML_FAKE = True  # type: ignore[attr-defined]
+    sys.modules["easygopigo3"] = mod
+    return "fake"
 
-    Returns "real" or "fake". Idempotent: a second call sees the choice already
-    made. Installing the real GoPiGo3 software is the platform's job (see Dexter
-    Industries' Installation FAQ), not URML's; this only decides which backend
-    the example binds to.
+
+def _ensure_easygopigo3(prefer_real: bool = False) -> str:
+    """Make `easygopigo3` importable and return which backend is in use.
+
+    Default (``prefer_real=False``): install the fake and never import the real
+    library, so nothing can drive a robot. ``prefer_real=True`` (only set by
+    ``--execute``): use the real library if present, else fall back to the fake.
+    Idempotent: a second call returns the backend already chosen. Installing the
+    real GoPiGo3 software is the platform's job, not URML's.
     """
     existing = sys.modules.get("easygopigo3")
     if existing is not None:
         return "fake" if getattr(existing, "_URML_FAKE", False) else "real"
-    try:
-        import easygopigo3  # noqa: F401  (real Dexter Industries library)
-        return "real"
-    except ImportError:
-        mod = ModuleType("easygopigo3")
-        mod.EasyGoPiGo3 = _FakeEasyGoPiGo3  # type: ignore[attr-defined]
-        mod._URML_FAKE = True  # type: ignore[attr-defined]
-        sys.modules["easygopigo3"] = mod
-        return "fake"
+    if prefer_real:
+        try:
+            import easygopigo3  # noqa: F401  (real Dexter Industries library)
+            return "real"
+        except ImportError:
+            return _install_fake()
+    return _install_fake()
 
 
 def _announce_and_drive() -> dict[str, Any]:
@@ -151,14 +163,14 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
     lines.append("")
 
 
-def render_report() -> str:
+def render_report(prefer_real: bool = False) -> str:
     manifest = _load(MANIFEST)
-    _ensure_easygopigo3()
+    _ensure_easygopigo3(prefer_real)
 
     lines = [
         "URML on a basic GoPiGo3 (Raspberry Pi, easygopigo3, no ROS) - Discussion #523.",
-        "English-shaped intent, validated against the GoPiGo3 manifest, then executed",
-        "onto the wheels. Frameless robot, so motion is `drive` / `turn` by amount (RFC-0630).",
+        "English-shaped intent, validated against the GoPiGo3 manifest, then lowered",
+        "to wheel/speech calls. Frameless robot, so motion is `drive` / `turn` by amount (RFC-0630).",
         f"robot: {manifest['robot_id']}   drive_type: {manifest['mobility']['drive_type']}"
         f"   max drive: {manifest['mobility']['max_relative_distance']} m",
         "",
@@ -166,18 +178,44 @@ def render_report() -> str:
     _run(lines, "announce, then drive 1 m (the translated command from #497/#523)", _announce_and_drive(), manifest)
     _run(lines, "short patrol: turn, drive, turn, drive, announce, report", _patrol(), manifest)
 
+    lines.append("This is a dry run: the calls above were validated and planned, not actuated.")
     lines.append("On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'")
-    lines.append("Installation FAQ), the real easygopigo3 is used automatically and these same")
-    lines.append("validated programs drive the wheels. No code changes are needed.")
+    lines.append("Installation FAQ), run with --execute to drive the wheels for real.")
     return "\n".join(lines).rstrip() + "\n"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        prog="run_gopigo3.py",
+        description=(
+            "Validate two URML programs against the GoPiGo3 manifest and show the "
+            "wheel/speech calls they lower to. DRY RUN by default (a fake backend, "
+            "no movement). Pass --execute to drive a connected GoPiGo3 for real."
+        ),
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help=(
+            "Drive a connected GoPiGo3 for real (uses the installed easygopigo3). "
+            "Without this flag the script never moves a robot, so it is safe to run "
+            "by habit or with -h."
+        ),
+    )
+    args = parser.parse_args(argv)
+
     sys.path.insert(0, str(_HERE))
-    backend = _ensure_easygopigo3()
-    print(f"[gopigo3 example] using the {backend} easygopigo3 backend", file=sys.stderr)
+    if args.execute:
+        print(
+            "[gopigo3 example] --execute: this WILL move a connected GoPiGo3. "
+            "Clear space around the robot.",
+            file=sys.stderr,
+        )
+    backend = _ensure_easygopigo3(prefer_real=args.execute)
+    mode = "executing on hardware" if (args.execute and backend == "real") else "dry run, no movement"
+    print(f"[gopigo3 example] backend: {backend} ({mode})", file=sys.stderr)
     out = _HERE / "gopigo3-report.txt"
-    out.write_text(render_report(), encoding="utf-8")
+    out.write_text(render_report(prefer_real=args.execute), encoding="utf-8")
     print(f"wrote {out}")
 
 

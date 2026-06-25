@@ -29,29 +29,41 @@ Three files:
      drive_by     -> easygopigo3.drive_cm(100.0)
 ```
 
-Run it hermetically (no robot):
+Run it (dry run, never moves a robot):
 
 ```sh
 python examples/gopigo3/run_gopigo3.py
 ```
 
-When the real `easygopigo3` is not installed, it falls back to a fake that records
-the wheel calls. The output is deterministic and byte-asserted in
+By default this is a **dry run**: it validates the programs and prints the planned
+wheel/speech calls against a fake backend. Nothing actuates, so it is safe to run
+by habit (including `-h`). The output is deterministic and byte-asserted in
 [`gopigo3-report.txt`](gopigo3-report.txt) by
 `reference/validator/tests/test_gopigo3_example.py`.
 
 ## On a real GoPiGo3
 
-There is nothing to edit. When the GoPiGo3 software is installed, `run_gopigo3.py`
-binds to the real `easygopigo3` automatically and the same validated programs
-drive the wheels; otherwise it uses the fake. The script prints which backend it
-chose on stderr.
+To actually drive the wheels, pass `--execute`:
+
+```sh
+python examples/gopigo3/run_gopigo3.py --execute   # WILL move a connected GoPiGo3
+```
+
+With `--execute` the script uses the installed `easygopigo3` and drives the robot,
+after printing a warning. Without it, the script never moves a robot. (URML is a
+validate-before-actuate project, so actuation is opt-in, not the default; thanks
+to @slowrunner, whose GoPiGo3 drove off when he ran the old version with `-h`.)
 
 Installing the GoPiGo3 software (the `gopigo3` / `easygopigo3` libraries and their
 firmware) is the platform's responsibility, not URML's. Follow Dexter Industries'
 [GoPiGo3 Installation FAQ](https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md).
-You will also want `urml-validator` and `urml-ros2-runtime` in the same
-environment. Swap the `speak=` callback for your own backend if you do not use espeak.
+You will also want `urml-validator` and `urml-ros2-runtime` in the same environment.
+
+**Speech.** The default `speak` backend is espeak; if espeak is missing or the
+Pi has no audio output configured, the utterance is not spoken and the adapter
+says so on stderr (it does not fail silently). If your robot has its own speech
+path (for example a ROS say node), pass your own callable as
+`GoPiGo3Adapter(speak=...)` instead of relying on espeak.
 
 A basic GoPiGo3 has no arm, camera pipeline, or microphone, so `grasp`, `detect`,
 `capture`, and `listen` are returned as not-supported rather than faked. Add a
