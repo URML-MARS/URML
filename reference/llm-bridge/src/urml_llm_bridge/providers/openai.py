@@ -36,6 +36,27 @@ if TYPE_CHECKING:  # pragma: no cover
 # Default to a recent capable OpenAI workhorse model.
 DEFAULT_MODEL = "gpt-4o"
 
+# Per-request timeout (seconds). The dedicated `ollama` / `llama_cpp` providers
+# already expose one; the OpenAI provider also serves any OpenAI-compatible
+# server (Ollama, LM Studio, vLLM) via OPENAI_BASE_URL, where a cold start that
+# loads a multi-GB local model on the first call can be slow. None means "use the
+# OpenAI SDK default"; the URML_OPENAI_TIMEOUT env var raises it without a code or
+# CLI change.
+TIMEOUT_ENV = "URML_OPENAI_TIMEOUT"
+
+
+def _resolve_timeout(explicit: float | None) -> float | None:
+    """An explicit timeout wins; otherwise read URML_OPENAI_TIMEOUT, else None."""
+    if explicit is not None:
+        return explicit
+    raw = os.environ.get(TIMEOUT_ENV)
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
 
 class OpenAIProvider:
     """LLMProvider adapter for OpenAI chat-completion models.
@@ -51,6 +72,7 @@ class OpenAIProvider:
         api_key: str | None = None,
         client: OpenAI | None = None,
         max_tokens: int = 4096,
+        timeout: float | None = None,
     ) -> None:
         """Configure the adapter.
 
@@ -58,8 +80,13 @@ class OpenAIProvider:
             model:      OpenAI model ID. Defaults to ``gpt-4o``.
             api_key:    Explicit API key. Falls back to ``$OPENAI_API_KEY``.
             client:     Pre-constructed ``OpenAI`` client for dependency
-                        injection in tests. If given, ``api_key`` is ignored.
+                        injection in tests. If given, ``api_key`` and ``timeout``
+                        are ignored (configure them on the injected client).
             max_tokens: Default `max_tokens` for completions; overridable per call.
+            timeout:    Per-request timeout in seconds. Falls back to
+                        ``$URML_OPENAI_TIMEOUT``, then the OpenAI SDK default.
+                        Raise it for a slow local model behind ``OPENAI_BASE_URL``
+                        (a cold start that loads a multi-GB model can be slow).
         """
         if client is None:
             try:
@@ -69,7 +96,11 @@ class OpenAIProvider:
                     "OpenAIProvider requires the openai SDK. "
                     "Install with: pip install urml-llm-bridge[openai]"
                 ) from exc
-            client = OpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"))
+            kwargs: dict[str, Any] = {"api_key": api_key or os.environ.get("OPENAI_API_KEY")}
+            resolved_timeout = _resolve_timeout(timeout)
+            if resolved_timeout is not None:
+                kwargs["timeout"] = resolved_timeout
+            client = OpenAI(**kwargs)
         self._client = client
         self._model = model
         self._default_max_tokens = max_tokens

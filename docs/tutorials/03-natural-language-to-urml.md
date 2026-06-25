@@ -153,6 +153,8 @@ export ANTHROPIC_API_KEY=sk-ant-...
 > ```
 >
 > `--model` matters: the `openai` provider defaults to a hosted model name, so pass the local model you pulled. Translation is the demanding step, and a small model (under roughly 7B) often emits structurally invalid URML that the validator then rejects; a capable local model works offline (a community user reported qwen3.5:9b at a 128k context translating cleanly). The validator gates either way, so a weak model can be wrong but the robot still only runs a validated program. There is a community Ollama HOWTO on [Discussion #497](https://github.com/URML-MARS/URML/discussions/497).
+>
+> If the first translate times out (`APITimeoutError`) and a retry then succeeds, that is a cold start: the server is loading a multi-GB model into memory on the first call. Give it more headroom with `export URML_OPENAI_TIMEOUT=600` (seconds), keep the model warm (Ollama's `OLLAMA_KEEP_ALIVE`), or simply re-run.
 
 Then:
 

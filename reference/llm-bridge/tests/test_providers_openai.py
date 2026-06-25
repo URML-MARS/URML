@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from urml_llm_bridge.providers.openai import OpenAIProvider
+from urml_llm_bridge.providers.openai import OpenAIProvider, _resolve_timeout
 
 
 class _FakeCompletions:
@@ -75,3 +75,15 @@ def test_max_tokens_default_and_override() -> None:
     client.chat.completions.calls.clear()
     provider.complete(system="S", user="U", schema={}, max_tokens=512)
     assert client.chat.completions.calls[0]["max_tokens"] == 512
+
+
+def test_resolve_timeout(monkeypatch) -> None:
+    """Per-request timeout: explicit wins, else URML_OPENAI_TIMEOUT, else None (#523)."""
+    monkeypatch.delenv("URML_OPENAI_TIMEOUT", raising=False)
+    assert _resolve_timeout(None) is None
+    assert _resolve_timeout(42.0) == 42.0  # explicit wins
+    monkeypatch.setenv("URML_OPENAI_TIMEOUT", "600")
+    assert _resolve_timeout(None) == 600.0  # env read when no explicit
+    assert _resolve_timeout(30.0) == 30.0  # explicit still wins over env
+    monkeypatch.setenv("URML_OPENAI_TIMEOUT", "not-a-number")
+    assert _resolve_timeout(None) is None  # bad value ignored, never raises
