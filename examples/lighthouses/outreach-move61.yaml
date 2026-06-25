@@ -1,0 +1,150 @@
+# Move #61 outreach ledger. One row per target.
+#
+# Move #61: **net-new VLA / robot-foundation models + university robotics labs.**
+# Sourced 2026-06-25 (two research passes), deduped against the full ledger.
+# The fit filter for the model lane: NOT general chat LLMs (the URML bridge is
+# already provider-agnostic) but Vision-Language-Action / robot-foundation /
+# embodied-policy models that EMIT physical robot action, where validate-before-
+# actuate has a surface. Per the volume-vs-depth caution, this is a small
+# high-fit wave: US/allied-origin models only (PRC-origin VLA models deferred per
+# the RFC-0003 vendor-deferral pattern), and the universities go out as
+# PI-altitude emails (founder-action), not drive-by GitHub issues.
+#
+# GitHub-issue lane (posted under idoco2003, RFCs 0632-0634):
+#   - magma (0632, anchor, US MSR): multimodal agentic foundation model -> action.
+#   - navila (0633, US UCSD/NVIDIA): legged-nav VLA -> locomotion-policy seam (RFC-0384).
+#   - emma-x (0634, SG SUTD): grounded-CoT action model -> validate the sequence.
+#
+# Email lane (founder-action, PI-altitude, Gmail drafts prepared 2026-06-25):
+#   - bremen-cram (Beetz), brown-lang2ltl (Tellex), stanford-voxposer (Wenlong Huang).
+
+- slug: magma
+  rfc: 632
+  sent_at: "2026-06-25"
+  posted_url: "https://github.com/microsoft/Magma/issues/94"
+  channel: github_issue
+  contact: "microsoft/Magma (Microsoft Research, US; CVPR 2025; ~1.9k stars, Issues enabled, not archived, active 2026-03). Multimodal foundation model for AI agents grounding language+vision into action across UI agents and robot manipulation."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments:
+    - date: "2026-06-25"
+      text: "Posted the RFC-0632 body to https://github.com/microsoft/Magma/issues/94 under idoco2003 (Move #61, VLA / robot-foundation-model wave), AI-authoring disclosure up front. URML composes above the action output (validate-before-actuate); no license-ask. Awaiting maintainer reply."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "DONE -- posted 2026-06-25 under idoco2003. Anchor of the high-fit VLA wave (US/MSR). If engaged, the natural build is a worked example mapping a Magma action onto a URML manifest (validated, no execution), like examples/robocasa. Do not re-pitch Microsoft broadly."
+      status: done
+  next_action: "wait 14-30 d. If silent, no aggressive follow-up. If reply, bump last_touch and set response per enum; offer the worked-example mapping."
+  notes: "US-origin lead target. URML is model-neutral and composes above the action surface. No license-ask (URML cross-cites; does not vendor Magma)."
+
+- slug: navila
+  rfc: 633
+  sent_at: "2026-06-25"
+  posted_url: "https://github.com/AnjieCheng/NaVILA/issues/59"
+  channel: github_issue
+  contact: "AnjieCheng/NaVILA (UC San Diego / NVIDIA, US; RSS 2025; ~635 stars, Issues enabled, not archived, last push 2025-08). Legged-robot navigation VLA: high-level language-grounded commands consumed by a real-time locomotion policy."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments:
+    - date: "2026-06-25"
+      text: "Posted the RFC-0633 body to https://github.com/AnjieCheng/NaVILA/issues/59 under idoco2003 (Move #61). Framed at the seam between the high-level VLA command and the locomotion policy; ties RFC-0384 whole-body stability. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "DONE -- posted 2026-06-25 under idoco2003. Quieter repo (last push 2025-08) so mild AI-close risk; accept silently if dismissed. If engaged, map NaVILA's command interface onto a legged URML manifest with the RFC-0384 whole-body block."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; the legged/whole-body angle (RFC-0384) is the differentiator to lead with."
+  notes: "US-origin legged-navigation VLA. The high-level-command vs locomotion-policy split is the cleanest validate-before-actuate seam in the wave."
+
+- slug: emma-x
+  rfc: 634
+  sent_at: "2026-06-25"
+  posted_url: "https://github.com/declare-lab/Emma-X/issues/10"
+  channel: github_issue
+  contact: "declare-lab/Emma-X (DeCLaRe Lab, SUTD, Singapore; ~84 stars, Issues enabled, not archived, last push 2025-05). Embodied multimodal action model with grounded chain-of-thought + look-ahead spatial reasoning; emits a grounded manipulation action sequence."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: SG
+  sector: ai-language
+  comments:
+    - date: "2026-06-25"
+      text: "Posted the RFC-0634 body to https://github.com/declare-lab/Emma-X/issues/10 under idoco2003 (Move #61). Framed on the look-ahead: validate the whole proposed action sequence before the first motion. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "DONE -- posted 2026-06-25 under idoco2003. Smallest/quietest repo (84 stars, 2025-05) so highest AI-close risk of the three; accept silently if dismissed. Singapore (allied). If engaged, the sequence-validation framing is the build."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; offer the sequence-validation worked example."
+  notes: "Singapore (allied) academic. The multi-step action sequence + look-ahead is the differentiator: URML checks the whole sequence pre-dispatch."
+
+# ============================================================
+# Email lane (founder-action, PI-altitude). Gmail drafts prepared 2026-06-25;
+# NOT yet sent. sent_at stays empty until the founder sends from greenvh@gmail.com.
+# ============================================================
+
+- slug: bremen-cram
+  rfc: 0
+  sent_at: ""
+  posted_url: ""
+  channel: email
+  contact: "U. Bremen, Institute for Artificial Intelligence (IAI); CRAM + KnowRob (github code-iai). Prof. Michael Beetz (beetz@cs.uni-bremen.de). CRAM decomposes underspecified requests into grounded executed sub-actions; KnowRob is the knowledge base."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: DE
+  sector: conceptual-peer
+  comments:
+    - date: "2026-06-25"
+      text: "Gmail draft PREPARED (not sent): PI-altitude email to Michael Beetz on the seam between CRAM's action designators and a declared-capability check. Founder reviews + sends from greenvh@gmail.com. Off-GitHub; no posted_url until/unless a reply lands somewhere citable."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "Founder to review the Gmail draft and send to beetz@cs.uni-bremen.de. On send, set sent_at and bump last_touch. Engage at lab/PI altitude (the FlexBE/Conner pattern), never a drive-by GitHub issue. If interest, sketch a worked example mapping a CRAM sub-action to a URML manifest (validated, no execution)."
+      status: pending
+  next_action: "Founder sends the email. Then await reply; this is a slow, high-value academic vector (P5 co-develop / co-author)."
+  notes: "Textbook consume-intent->execute lab. Highest-altitude university fit in the wave. Email lane, not GitHub."
+
+- slug: brown-lang2ltl
+  rfc: 0
+  sent_at: ""
+  posted_url: ""
+  channel: email
+  contact: "Brown University, Humans to Robots Lab (h2r); Lang2LTL (github h2r/Lang2LTL). Prof. Stefanie Tellex. Lang2LTL grounds a free-form command into an LTL task spec that drives a real robot (Spot)."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: US
+  sector: conceptual-peer
+  comments:
+    - date: "2026-06-25"
+      text: "Gmail draft PREPARED (not sent): PI-altitude email to Stefanie Tellex on a declared-capability layer beneath the LTL task spec (NL -> formal spec -> validated action -> execute). Founder reviews + sends from greenvh@gmail.com. Address to confirm (Brown CS)."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "Founder to confirm Tellex's email and send the Gmail draft. On send, set sent_at + bump last_touch. PI altitude. If interest, a worked example mapping a Lang2LTL-dispatched action to a URML manifest is the build."
+      status: pending
+  next_action: "Founder confirms address + sends. Then await reply; P5 academic vector, NL-to-spec is a strong complement to URML."
+  notes: "US, Brown h2r. NL-to-executable-spec pipeline; URML sits one step below the LTL spec. Email lane."
+
+- slug: stanford-voxposer
+  rfc: 0
+  sent_at: ""
+  posted_url: ""
+  channel: email
+  contact: "Stanford Vision & Learning Lab; VoxPoser (github huangwl18/VoxPoser). Wenlong Huang (lead; advisors Fei-Fei Li, Jiajun Wu). VoxPoser turns a free-form instruction into an executed manipulation trajectory via composed value maps, zero-shot."
+  last_touch: "2026-06-25"
+  response: none
+  tier: B
+  country: US
+  sector: conceptual-peer
+  comments:
+    - date: "2026-06-25"
+      text: "Gmail draft PREPARED (not sent): PI-altitude email to Wenlong Huang on a declared capability + envelope guardrail over zero-shot trajectory synthesis (flag a trajectory exceeding reach / gripper force / a keep-out region before the arm moves). Founder reviews + sends. Address to confirm (likely wenlongh@stanford.edu)."
+  claude_directives:
+    - date: "2026-06-25"
+      text: "Founder to confirm Wenlong Huang's email and send the Gmail draft. On send, set sent_at + bump last_touch. PI altitude. If interest, a worked example mapping a VoxPoser-style trajectory to a URML manifest (validated, no execution) is the build."
+      status: pending
+  next_action: "Founder confirms address + sends. Then await reply; NL-to-trajectory is a direct validate-before-actuate complement."
+  notes: "US, Stanford SVL. Instruction-to-trajectory; URML checks admissibility before the arm moves. Email lane."
