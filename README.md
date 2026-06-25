@@ -99,6 +99,9 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run �
 | **PX4 / MAVLink reference runtime** (`PX4Adapter`) — full Protocol via `pymavlink`, no ROS dependency | ✅ Implemented |
 | **CompositeAdapter** — one URML program across two substrates: PX4 flight + a ROS 2 companion, per-method routing | ✅ Implemented |
 | **Twelve further reference runtimes** — `marine` (BlueROV2/ArduSub), `industrial-arm` (ABB/FANUC/KUKA/YASKAWA/UR/Franka/Kawasaki/Stäubli/Comau/Mitsubishi/Denso/Hyundai/Nachi/Epson/Omron/Hanwha = 16 brands), `legged` (Spot/ANYmal), `humanoid` (Digit), `mobile` (Husky/Jackal), and the zero-ROS `opcua` (OPC UA Robotics), `cobot` (8 brands: UR/Franka/Doosan/Techman/Kinova/Mecademic/Neura/Kassow native SDKs), `mujoco` + `isaac` (NVIDIA Sim/Lab, local RTX host) sims, `embedded` (micro:bit/Arduino serial), `edu` (VEX/LEGO SPIKE/Thymio), `autosar` (RFC-0019 scaffold) | ✅ Hermetic suites green; live e2e is gated CI (calibration-staged, **not** a hardware claim) — see [audit](docs/launch/claims-audit.md). Autoware ships **manifest+spec only** pending RFC-0020. |
+| **Run on a real robot (community)** — the validated sentence-to-motion loop, executed on physical hardware by someone who is not us: English → local-LLM translation → validator → wheels, on a GoPiGo3 and a Raspberry Pi, fully offline | ✅ Reproducible: [`examples/gopigo3/`](examples/gopigo3/); the story is in the [field note](https://urml.dev/blog/field-notes-first-robot-runs-urml) |
+
+**In the wild.** The sentence-to-motion loop above runs on a hermetic mock in CI, deliberately, so it stays deterministic and honest. It has also been reproduced on a real robot: a community member ran a validated, LLM-translated URML program on a GoPiGo3 (Raspberry Pi, offline), with a local model doing the English-to-intent translation and the validator gating every action before a wheel turned. The [field note](https://urml.dev/blog/field-notes-first-robot-runs-urml) tells the story, including the actuation-safety bug it surfaced in our own demo and the same-day fix.
 
 ---
 
@@ -190,6 +193,7 @@ The point is not the syntax — it is what the validator rejects **before anythi
 |---|---|
 | Get URML running in under an hour | [Tutorial 1: Getting started](docs/tutorials/01-getting-started.md) |
 | See one English sentence become an executed program | [Sentence-to-motion walkthrough](docs/demos/sentence-to-motion.md) |
+| Run the loop on a real robot | [GoPiGo3 example](examples/gopigo3/): English → validated → wheels, on a Raspberry Pi, no cloud |
 | See an LLM's unsafe program get refused before takeoff | [Safety-rejection walkthrough](docs/demos/safety-rejection.md) |
 | See compliance enforcement in action | [Compliance walkthrough](docs/demos/compliance-walkthrough.md) |
 | Understand the strategic case | [`MANIFESTO.md`](MANIFESTO.md) |
