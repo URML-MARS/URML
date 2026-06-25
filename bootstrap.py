@@ -123,6 +123,19 @@ def main() -> None:
         action="store_true",
         help="Also install each package's [dev] extra (pytest, ruff, mypy).",
     )
+    parser.add_argument(
+        "--llm",
+        action="append",
+        choices=["openai", "anthropic"],
+        default=[],
+        metavar="PROVIDER",
+        help=(
+            "Also install an LLM provider extra for the bridge (repeatable): "
+            "--llm openai and/or --llm anthropic. Needed to `urml translate` "
+            "against that provider; the core install omits these heavy, "
+            "provider-specific SDKs."
+        ),
+    )
     args = parser.parse_args()
 
     _check_python()
@@ -134,11 +147,19 @@ def main() -> None:
 
     # One combined resolved install. The `-e` targets satisfy each
     # other's `urml-*` requirements locally, so nothing is fetched for
-    # the internal graph.
-    suffix = "[dev]" if args.dev else ""
+    # the internal graph. `[dev]` applies to every package; an `--llm`
+    # provider extra applies only to the bridge.
+    def _extras_for(pkg: str) -> str:
+        extras: list[str] = []
+        if args.dev:
+            extras.append("dev")
+        if pkg == "reference/llm-bridge":
+            extras += list(dict.fromkeys(args.llm))  # dedup, keep order
+        return f"[{','.join(extras)}]" if extras else ""
+
     install_args: list[str] = [str(py), "-m", "pip", "install"]
     for pkg in PACKAGES:
-        install_args += ["-e", f"{pkg}{suffix}"]
+        install_args += ["-e", f"{pkg}{_extras_for(pkg)}"]
     _run(install_args)
 
     activate = (
@@ -156,6 +177,12 @@ def main() -> None:
         f"    {rel}/{bin_dir}/urml validate examples/home/red-mug.urml.yaml \\\n"
         "        -m examples/home/red-mug.manifest.yaml --profile home\n"
     )
+    if not args.llm:
+        print(
+            "  To `urml translate` against a real LLM, add a provider extra:\n"
+            "    python bootstrap.py --llm openai      # or --llm anthropic\n"
+            "  (a local OpenAI-compatible server like Ollama also uses --llm openai).\n"
+        )
 
 
 if __name__ == "__main__":

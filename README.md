@@ -71,10 +71,12 @@ urml --version    # confirm the new version
 
 ```bash
 git clone https://github.com/URML-MARS/URML.git && cd URML
-python bootstrap.py     # creates .venv, installs all 5 packages editable, in order
+python bootstrap.py     # creates .venv (or installs into an active one), all 5 packages editable
 make test               # → 1668 passed + 28 gated-skipped
 make demo-run           # → the animation above, reproduced live on the mock
 ```
+
+The core install omits the heavy, provider-specific LLM SDKs. To `urml translate` against a real model, add a provider extra: `python bootstrap.py --llm openai` (or `--llm anthropic`); a local OpenAI-compatible server such as Ollama also uses `--llm openai`. If a virtual environment is already active, `bootstrap.py` installs into it instead of creating `.venv`.
 
 `make demo` (validate only) and `make demo-run` (validate + execute) walk through the same flow with the canonical red-mug example. `make help` lists the rest (`install-dev`, `audit`, `demo-record`, `clean`).
 

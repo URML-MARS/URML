@@ -35,19 +35,23 @@ Run it hermetically (no robot):
 python examples/gopigo3/run_gopigo3.py
 ```
 
-It injects a fake `easygopigo3` that records the wheel calls. The output is
-deterministic and byte-asserted in [`gopigo3-report.txt`](gopigo3-report.txt) by
+When the real `easygopigo3` is not installed, it falls back to a fake that records
+the wheel calls. The output is deterministic and byte-asserted in
+[`gopigo3-report.txt`](gopigo3-report.txt) by
 `reference/validator/tests/test_gopigo3_example.py`.
 
 ## On a real GoPiGo3
 
-```sh
-pip install gopigo3 easygopigo3 urml-validator urml-ros2-runtime
-```
+There is nothing to edit. When the GoPiGo3 software is installed, `run_gopigo3.py`
+binds to the real `easygopigo3` automatically and the same validated programs
+drive the wheels; otherwise it uses the fake. The script prints which backend it
+chose on stderr.
 
-Then delete the fake-injection block in `run_gopigo3.py` (the lazy import in the
-adapter binds to the real wheels), and the same validated programs drive the
-robot. Swap the `speak=` callback for your own backend if you do not use espeak.
+Installing the GoPiGo3 software (the `gopigo3` / `easygopigo3` libraries and their
+firmware) is the platform's responsibility, not URML's. Follow Dexter Industries'
+[GoPiGo3 Installation FAQ](https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md).
+You will also want `urml-validator` and `urml-ros2-runtime` in the same
+environment. Swap the `speak=` callback for your own backend if you do not use espeak.
 
 A basic GoPiGo3 has no arm, camera pipeline, or microphone, so `grasp`, `detect`,
 `capture`, and `listen` are returned as not-supported rather than faked. Add a

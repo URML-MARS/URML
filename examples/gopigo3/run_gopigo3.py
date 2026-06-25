@@ -3,9 +3,11 @@
 
 This is the end-to-end the GoPiGo3 user asked for: an English-shaped intent,
 validated against the GoPiGo3 manifest, then executed through GoPiGo3Adapter onto
-the wheels, with no ROS. It runs here against a fake ``easygopigo3`` (no robot, no
-GPU, deterministic), and unchanged on a real GoPiGo3 once you ``pip install
-gopigo3 easygopigo3`` and remove the fake injection.
+the wheels, with no ROS. It binds to the real ``easygopigo3`` when the GoPiGo3
+software is installed (and drives the wheels), and falls back to a fake when it is
+not (no robot, deterministic). The same file works both ways, no edits. Installing
+the GoPiGo3 software is the platform's job, per Dexter Industries' Installation FAQ:
+https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
 
 Two programs:
   1. The exact thing @slowrunner translated: announce "Driving forward 1 meter",
@@ -37,8 +39,10 @@ def _load(path: Path) -> Any:
 
 
 # --------------------------------------------------------------------------
-# A fake easygopigo3 so the example runs with no robot. EasyGoPiGo3 records the
-# wheel calls the adapter makes; on a real GoPiGo3 this whole block goes away.
+# The example runs with no robot by falling back to a fake `easygopigo3` when the
+# real Dexter Industries library is not installed. No code edits are needed either
+# way: on a GoPiGo3 with the GoPiGo3 software installed, the real library is used
+# and the wheels move; anywhere else, the fake stands in and records the calls.
 # --------------------------------------------------------------------------
 
 
@@ -59,16 +63,26 @@ class _FakeEasyGoPiGo3:
         self.calls.append("stop()")
 
 
-def _install_fake_easygopigo3(sink: dict[str, Any]) -> None:
-    mod = ModuleType("easygopigo3")
+def _ensure_easygopigo3() -> str:
+    """Make `easygopigo3` importable, real if present, fake otherwise.
 
-    def _factory() -> _FakeEasyGoPiGo3:
-        bot = _FakeEasyGoPiGo3()
-        sink["bot"] = bot
-        return bot
-
-    mod.EasyGoPiGo3 = _factory  # type: ignore[attr-defined]
-    sys.modules["easygopigo3"] = mod
+    Returns "real" or "fake". Idempotent: a second call sees the choice already
+    made. Installing the real GoPiGo3 software is the platform's job (see Dexter
+    Industries' Installation FAQ), not URML's; this only decides which backend
+    the example binds to.
+    """
+    existing = sys.modules.get("easygopigo3")
+    if existing is not None:
+        return "fake" if getattr(existing, "_URML_FAKE", False) else "real"
+    try:
+        import easygopigo3  # noqa: F401  (real Dexter Industries library)
+        return "real"
+    except ImportError:
+        mod = ModuleType("easygopigo3")
+        mod.EasyGoPiGo3 = _FakeEasyGoPiGo3  # type: ignore[attr-defined]
+        mod._URML_FAKE = True  # type: ignore[attr-defined]
+        sys.modules["easygopigo3"] = mod
+        return "fake"
 
 
 def _announce_and_drive() -> dict[str, Any]:
@@ -139,8 +153,7 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
 
 def render_report() -> str:
     manifest = _load(MANIFEST)
-    sink: dict[str, Any] = {}
-    _install_fake_easygopigo3(sink)
+    _ensure_easygopigo3()
 
     lines = [
         "URML on a basic GoPiGo3 (Raspberry Pi, easygopigo3, no ROS) - Discussion #523.",
@@ -153,17 +166,20 @@ def render_report() -> str:
     _run(lines, "announce, then drive 1 m (the translated command from #497/#523)", _announce_and_drive(), manifest)
     _run(lines, "short patrol: turn, drive, turn, drive, announce, report", _patrol(), manifest)
 
-    lines.append("On a real GoPiGo3: `pip install gopigo3 easygopigo3`, delete the fake")
-    lines.append("injection in run_gopigo3.py, and the same validated programs drive the wheels.")
+    lines.append("On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'")
+    lines.append("Installation FAQ), the real easygopigo3 is used automatically and these same")
+    lines.append("validated programs drive the wheels. No code changes are needed.")
     return "\n".join(lines).rstrip() + "\n"
 
 
 def main() -> None:
+    sys.path.insert(0, str(_HERE))
+    backend = _ensure_easygopigo3()
+    print(f"[gopigo3 example] using the {backend} easygopigo3 backend", file=sys.stderr)
     out = _HERE / "gopigo3-report.txt"
     out.write_text(render_report(), encoding="utf-8")
     print(f"wrote {out}")
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, str(_HERE))
     main()

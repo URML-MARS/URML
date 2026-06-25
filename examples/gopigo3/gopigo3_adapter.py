@@ -17,9 +17,11 @@ the drone verbs) is returned as not-supported, not raised, exactly as the other
 zero-ROS educational adapters do: a basic GoPiGo3 has no arm, no camera pipeline,
 no speaker beyond espeak. Add them by extending this class.
 
-Run it hermetically with ``run_gopigo3.py`` (which injects a fake
-``easygopigo3``); on a real GoPiGo3, ``pip install gopigo3 easygopigo3`` and the
-lazy import binds to the real wheels.
+Run it with ``run_gopigo3.py``, which binds to the real ``easygopigo3`` when the
+GoPiGo3 software is installed and falls back to a fake otherwise (no edits either
+way). Installing the GoPiGo3 software is the platform's job, per Dexter
+Industries' Installation FAQ:
+https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
 """
 
 from __future__ import annotations
@@ -86,8 +88,12 @@ class GoPiGo3Adapter:
             from easygopigo3 import EasyGoPiGo3  # type: ignore[import-not-found,unused-ignore]
         except ImportError as exc:
             raise RuntimeError(
-                "easygopigo3 is not installed. On a GoPiGo3, install Dexter "
-                "Industries' library:\n  pip install gopigo3 easygopigo3"
+                "easygopigo3 is not available. Installing the GoPiGo3 software is "
+                "the platform's responsibility, not URML's; follow Dexter "
+                "Industries' Installation FAQ:\n"
+                "  https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md\n"
+                "The run_gopigo3.py example falls back to a fake when the library "
+                "is absent, so it runs anywhere without edits."
             ) from exc
         self._gpg = EasyGoPiGo3()
         return self._gpg
