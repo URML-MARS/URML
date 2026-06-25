@@ -19,5 +19,6 @@ robot: gopigo3_basic   drive_type: differential   max drive: 2.0 m
      emit_speech  -> espeak 'Patrol complete'
      emit_report
 
-On a real GoPiGo3: `pip install gopigo3 easygopigo3`, delete the fake
-injection in run_gopigo3.py, and the same validated programs drive the wheels.
+On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'
+Installation FAQ), the real easygopigo3 is used automatically and these same
+validated programs drive the wheels. No code changes are needed.
