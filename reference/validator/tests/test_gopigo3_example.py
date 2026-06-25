@@ -80,3 +80,24 @@ def test_help_flag_does_not_execute() -> None:
     gen = _load_gen()
     with pytest.raises(SystemExit):
         gen.main(["-h"])
+
+
+def test_run_program_file(tmp_path) -> None:
+    """`-f` runs a user's own translated URML program (Discussion #523)."""
+    gen = _load_gen()
+    prog = tmp_path / "drive10.urml.yaml"
+    prog.write_text(
+        "profile: [educational]\n"
+        "behavior:\n"
+        "  type: sequence\n"
+        "  steps:\n"
+        "  - speak: { utterance: Driving forward 10 centimeters }\n"
+        "  - drive: { distance: 0.1 }\n",
+        encoding="utf-8",
+    )
+    report = gen.run_program_file(str(prog), prefer_real=False)
+    assert "[VALID] program file: drive10.urml.yaml" in report
+    assert "drive_by     -> easygopigo3.drive_cm(10.0)" in report
+    assert "Dry run" in report
+    # A missing file reports cleanly, never raises.
+    assert "[ERROR] no such program file" in gen.run_program_file(str(tmp_path / "nope.yaml"))
