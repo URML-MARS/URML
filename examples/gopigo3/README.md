@@ -41,6 +41,22 @@ by habit (including `-h`). The output is deterministic and byte-asserted in
 [`gopigo3-report.txt`](gopigo3-report.txt) by
 `reference/validator/tests/test_gopigo3_example.py`.
 
+### Run your own translated program
+
+Point `-f` at the YAML that `urml translate ... --out prog.urml.yaml` wrote, to
+run *your* program instead of the two built-in demos:
+
+```sh
+urml translate "Drive forward 10 centimeters" \
+    --manifest gopigo3.manifest.yaml --profile educational --no-policy \
+    --provider openai --model qwen3.5:9b --out drive10.urml.yaml
+python examples/gopigo3/run_gopigo3.py -f drive10.urml.yaml          # dry run
+python examples/gopigo3/run_gopigo3.py -f drive10.urml.yaml --execute # drives the robot
+```
+
+This is the loop @slowrunner runs: translate an English sentence on a capable box,
+copy the validated YAML to the Pi, and run it here.
+
 ## On a real GoPiGo3
 
 To actually drive the wheels, pass `--execute`:
@@ -50,9 +66,11 @@ python examples/gopigo3/run_gopigo3.py --execute   # WILL move a connected GoPiG
 ```
 
 With `--execute` the script uses the installed `easygopigo3` and drives the robot,
-after printing a warning. Without it, the script never moves a robot. (URML is a
-validate-before-actuate project, so actuation is opt-in, not the default; thanks
-to @slowrunner, whose GoPiGo3 drove off when he ran the old version with `-h`.)
+after printing a warning. Without it, the script never moves a robot. To preview a
+program on a robot-connected machine without moving anything, add `-m` / `--mock`
+(it forces the fake backend even with `--execute`). URML is a validate-before-actuate
+project, so actuation is opt-in, not the default; thanks to @slowrunner, whose
+GoPiGo3 drove off when he ran the old version with `-h`.
 
 Installing the GoPiGo3 software (the `gopigo3` / `easygopigo3` libraries and their
 firmware) is the platform's responsibility, not URML's. Follow Dexter Industries'

@@ -13,10 +13,13 @@ validate-before-actuate project; a demo should not surprise-drive a robot (with
 thanks to @slowrunner, whose GoPiGo3 took off across the room when he typed
 ``-h`` out of habit, Discussion #542).
 
-Two programs:
+Run your own program with ``-f prog.urml.yaml`` (the ``--out`` of
+``urml translate``); with no ``-f`` it runs two built-in demos:
   1. The exact thing @slowrunner translated: announce "Driving forward 1 meter",
      then drive 1 m.
   2. A short patrol: turn, drive, turn, drive, announce done, report.
+``-m`` / ``--mock`` forces the fake backend even with ``--execute``, to preview a
+program without moving the robot (Discussion #523).
 
 Installing the GoPiGo3 software is the platform's job, per Dexter Industries'
 Installation FAQ: https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
@@ -130,6 +133,12 @@ def _patrol() -> dict[str, Any]:
     }
 
 
+def _profiles_of(program: dict[str, Any]) -> tuple[str, ...]:
+    """The program's declared profiles (a `urml translate` output carries them)."""
+    prof = program.get("profile") or ["educational"]
+    return (prof,) if isinstance(prof, str) else tuple(prof)
+
+
 def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[str, Any]) -> None:
     # Import here so the fake easygopigo3 is already installed.
     from urml_validator import validate
@@ -137,7 +146,8 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
 
     from gopigo3_adapter import GoPiGo3Adapter
 
-    result = validate(program, manifest, profiles=["educational"], policy=None)
+    profiles = _profiles_of(program)
+    result = validate(program, manifest, profiles=profiles, policy=None)
     verdict = "VALID" if result.accepted else "REJECTED"
     lines.append(f"[{verdict}] {label}")
     if not result.accepted:
@@ -148,7 +158,7 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
     spoken: list[str] = []
     adapter = GoPiGo3Adapter(speak=spoken.append)
     runtime = URMLRuntime(adapter)
-    run = runtime.execute(program, manifest, profiles=("educational",))
+    run = runtime.execute(program, manifest, profiles=profiles)
 
     lines.append(f"   executed {run.steps_executed} steps, success={run.success}")
     lines.append("   wheel + speech calls, in order:")
@@ -184,13 +194,52 @@ def render_report(prefer_real: bool = False) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def run_program_file(path: str, prefer_real: bool = False) -> str:
+    """Validate and run a single URML program loaded from a YAML file.
+
+    The file is what `urml translate ... --out prog.urml.yaml` writes: a validated
+    URML program. This is @slowrunner's workflow (Discussion #523): translate an
+    English sentence on a capable box, copy the YAML to the Pi, run it here. Dry
+    run unless ``prefer_real`` (driven by --execute without --mock).
+    """
+    manifest = _load(MANIFEST)
+    _ensure_easygopigo3(prefer_real)
+    p = Path(path)
+    name = p.name
+    lines = [
+        f"URML on a basic GoPiGo3 - running {name} (Discussion #523).",
+        f"robot: {manifest['robot_id']}   drive_type: {manifest['mobility']['drive_type']}"
+        f"   max drive: {manifest['mobility']['max_relative_distance']} m",
+        "",
+    ]
+    if not p.is_file():
+        lines.append(f"[ERROR] no such program file: {path}")
+        return "\n".join(lines) + "\n"
+    program = _load(p)
+    _run(lines, f"program file: {name}", program, manifest)
+    if not prefer_real:
+        lines.append("Dry run: validated and planned, not actuated. Pass --execute (without -m) to drive the robot.")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="run_gopigo3.py",
         description=(
-            "Validate two URML programs against the GoPiGo3 manifest and show the "
-            "wheel/speech calls they lower to. DRY RUN by default (a fake backend, "
-            "no movement). Pass --execute to drive a connected GoPiGo3 for real."
+            "Validate URML against the GoPiGo3 manifest and show the wheel/speech "
+            "calls it lowers to. With -f, run your own translated URML program; "
+            "without it, run the two built-in demos. DRY RUN by default (a fake "
+            "backend, no movement). Pass --execute to drive a connected GoPiGo3 "
+            "for real; -m forces the fake even with --execute."
+        ),
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        metavar="URML_FILE",
+        help=(
+            "Run a validated URML program from a YAML file (the --out of "
+            "`urml translate`) instead of the two built-in demos."
         ),
     )
     parser.add_argument(
@@ -202,20 +251,35 @@ def main(argv: list[str] | None = None) -> None:
             "by habit or with -h."
         ),
     )
+    parser.add_argument(
+        "-m",
+        "--mock",
+        action="store_true",
+        help=(
+            "Force the fake backend even with --execute, to simulate a run without "
+            "moving a robot. Useful to preview a program before running it for real."
+        ),
+    )
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(_HERE))
-    if args.execute:
+    prefer_real = args.execute and not args.mock
+    if prefer_real:
         print(
             "[gopigo3 example] --execute: this WILL move a connected GoPiGo3. "
             "Clear space around the robot.",
             file=sys.stderr,
         )
-    backend = _ensure_easygopigo3(prefer_real=args.execute)
-    mode = "executing on hardware" if (args.execute and backend == "real") else "dry run, no movement"
+    backend = _ensure_easygopigo3(prefer_real=prefer_real)
+    mode = "executing on hardware" if (prefer_real and backend == "real") else "dry run, no movement"
     print(f"[gopigo3 example] backend: {backend} ({mode})", file=sys.stderr)
+
+    if args.file:
+        # A user's own program: print to stdout, do not overwrite the committed report.
+        print(run_program_file(args.file, prefer_real=prefer_real), end="")
+        return
     out = _HERE / "gopigo3-report.txt"
-    out.write_text(render_report(prefer_real=args.execute), encoding="utf-8")
+    out.write_text(render_report(prefer_real=prefer_real), encoding="utf-8")
     print(f"wrote {out}")
 
 
