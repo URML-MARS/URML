@@ -819,6 +819,7 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0636](0636-lang2ltl-outreach.md) | Outreach | Lang2LTL (`h2r/Lang2LTL`) integration; Move #61 university lane; NL → LTL task spec driving a real robot → URML validates each dispatched action beneath the spec (what-to-achieve vs can-the-robot-admissibly-do-it); US, Brown h2r (Tellex) | Draft | 2026-06-25 |
 | [0637](0637-voxposer-outreach.md) | Outreach | VoxPoser (`huangwl18/VoxPoser`) integration; Move #61 university lane; zero-shot NL → executed manipulation trajectory → URML checks the synthesized trajectory against reach/force/keep-out before the arm moves; US, Stanford SVL (Huang) | Draft | 2026-06-25 |
 | [0638](0638-execution-lifecycle-and-run-report.md) | Spec | Optional, substrate-neutral execution contract extending the runtime (RFC-0014): lifecycle (cancel, optional pause/resume), progress events (a step id), and a structured run report (per-step outcomes + duration + a free-form telemetry map); no new primitive; from the autonomy-runtime discussion #526 | Draft | 2026-06-26 |
+| [0639](0639-parameterized-reusable-behaviors.md) | Spec | Parameterized, reusable Layer-3 behaviors — a named behavior with typed parameters (location/scalar/...) and an `invoke` step, to remove the N-minus-1-combinations problem (a "navigate(from, to)" tour leg) without adding control flow or general computation; scopes the design + the one-way-door risk; from discussion #526 | Draft | 2026-06-26 |
 
 ## Lifecycle states
 
