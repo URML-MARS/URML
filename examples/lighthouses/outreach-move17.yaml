@@ -96,19 +96,21 @@
   posted_url: "https://github.com/elisa-tech/wg-automotive/issues/60"
   channel: github_issue
   contact: "elisa-tech/wg-automotive (Multi-OSI, issues enabled, last push 2026-05-27 active). Linux Foundation ELISA Project; safety-Linux for medical / automotive / robotics. Founding members include KUKA / Toyota / BMW / Arm."
-  last_touch: "2026-06-25"
-  response: acked
+  last_touch: "2026-06-26"
+  response: engaged
   tier: A
   country: INTL
   sector: governance-body
   comments:
     - date: "2026-06-25"
       text: "antoni-nv (Anton, COLLABORATOR) answered the question positively on #60: 'Participation is open to anyone -- including individuals and employees of non-member companies.' A named collaborator personally welcoming non-member participation in the wg-automotive / Safety_Architecture_WG calls. Replied under idoco2003 (#60 comment 4798005371) thanking him and asking for the calendar / mailing list so the founder can join an upcoming Safety_Architecture_WG call and listen in. Marked acked (a helpful logistics-and-welcome answer; substantive engagement comes when URML actually attends)."
+    - date: "2026-06-26"
+      text: "antoni-nv pointed to the ELISA calendar for registration and join details: https://elisa.tech/community/meetings/ . Two helpful rounds from a named collaborator plus a concrete schedule pointer; promoted to engaged. Replied under idoco2003 (#60 comment 4809062245) thanking him and confirming the founder will find the next Safety_Architecture_WG slot and join to listen in."
   claude_directives:
-    - date: "2026-06-25"
-      text: "FOUNDER-ACTION: attend an upcoming ELISA Safety_Architecture_WG call (greenvh@gmail.com). The calls are open to non-members. The safety-architecture framing is close to URML's validate-before-actuate + safety-envelope; listen first, then look for a natural place to contribute. Promote to engaged once URML attends and the WG discusses the substance. Watch #60 for antoni-nv's calendar / mailing-list pointer."
+    - date: "2026-06-26"
+      text: "FOUNDER-ACTION: register on the ELISA calendar (https://elisa.tech/community/meetings/) for the next Safety_Architecture_WG call and attend to listen in (greenvh@gmail.com). Calendar pointer received from antoni-nv. The safety-architecture framing is close to URML's validate-before-actuate + safety-envelope; listen first, then look for a natural place to contribute. No re-ping; the next touch is the founder actually attending."
       status: pending
-  next_action: "Founder to get the Safety_Architecture_WG call schedule (asked antoni-nv on #60) and attend one to listen in. A Linux Foundation safety-Linux WG (founding members KUKA/Toyota/BMW/Arm) open to URML is a high-value standards venue; this is the foundation-home / safety-architecture vector. No re-ping; await the schedule pointer."
+  next_action: "Founder to register via the ELISA calendar (https://elisa.tech/community/meetings/) and attend a Safety_Architecture_WG call to listen in. A Linux Foundation safety-Linux WG (founding members KUKA/Toyota/BMW/Arm) open to URML is a high-value standards venue; this is the foundation-home / safety-architecture vector. No re-ping; the next touch is attendance."
   notes: "Class 1 / Sub-wave A. Origin Linux Foundation US. Foundation-home score: high (sister-org cross-citation, not direct host). Safety-Linux is URML-adjacent."
 
 - slug: opc-foundation-ua-nodeset
