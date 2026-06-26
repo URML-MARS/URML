@@ -72,6 +72,37 @@ This is a recurring shape, not one user's quirk. A warehouse pick tour, a home
 cleaning route, an inspection circuit: all are "the same validated behavior, run
 with different declared arguments." URML has no first-class way to express that.
 
+### Pushback from the motivating user (2026-06-26)
+
+The same user pushed back on his own idea a few hours later, and the pushback is
+honest enough to record here, because it cuts against this RFC.
+
+First, the narrow correction: `move_to(goal)` navigates from wherever the robot
+is, so the *from* argument buys nothing. The real argument is just the destination.
+That shrinks the motivating case from a two-argument "navigate(from, to)" to a
+one-argument "navigate(to)", which is thinner. A one-argument behavior is closer to
+the line where parse-time macro expansion (open question 3) or plain
+templating-in-autonomy is plainly enough, and a dedicated language surface is
+harder to justify.
+
+Second, the broader worry, in his words: the "continual reduction of the URML
+Program Content keeps raising organizational complexity and bifurcating the robot
+programming," and "there seems no way 'move to laundry room' could be simplified to
+be certified as a reusable, safe URML mini program." He is pointing at a real cost.
+Each time a capability is placed in autonomy, the runtime, or adapter config rather
+than in the URML program, the program expresses less of the whole intent, and the
+behavior is split across more layers. The safety *contract* survives this (the
+envelope is validated and enforced as a ceiling regardless of adapter tuning; a
+runtime that let config loosen it would be non-conformant), but the dream of a
+single, complete, self-contained expression of robot intent does not. Parameterized
+behaviors add yet another construct to that already-split surface.
+
+This does not kill the proposal, but it lowers its priority and sharpens open
+question 1: the residual goal-only case may be small enough that
+templating-in-autonomy is the right answer after all. The user who motivated the
+feature is now ambivalent about it, which is exactly the signal a Draft RFC exists
+to capture.
+
 ## Why not the existing surface
 
 **`$var` bindings (`store_as`).** A binding names a value *produced at runtime* by a
@@ -204,7 +235,9 @@ do it and to leave instantiation in the autonomy layer.
 
 1. **Do this at all?** Is the N-minus-1 pain worth a Layer-3 surface change, or is
    templating-in-autonomy the right, smaller answer? This is the real decision; the
-   rest is detail.
+   rest is detail. The motivating user's own pushback (see Motivation) leans toward
+   "smaller answer": with `from` dropped, the residual is one-argument
+   `navigate(to)`, which macro expansion or autonomy templating may already cover.
 2. **Parameter types.** Start with `location` only (the motivating and safest case),
    or a small fixed set (location, scalar, duration, enum) from the start?
 3. **Macro expansion vs runtime concept.** Is a parameterized behavior pure
