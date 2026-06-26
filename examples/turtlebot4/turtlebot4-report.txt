@@ -1,0 +1,26 @@
+URML on a TurtleBot 4 (ROS 2, Nav2) - Discussion #526.
+A mapped robot, so motion is `move_to` a named pose, which the ROS 2 runtime
+lowers to a Nav2 NavigateToPose goal (a frameless GoPiGo3 uses drive/turn instead).
+robot: turtlebot4_wali   drive_type: differential   places: kitchen, living_room, charging_dock
+
+# 1. Validate the errand against the manifest (validate before actuate)
+
+[VALID] move_to kitchen, capture a photo, report.
+
+# 2. Execute through the substrate (here a hermetic mock)
+
+  move_to kitchen      -> send_navigation_goal(location='kitchen')  [Nav2 NavigateToPose]
+  capture photo        -> capture_media(media='photo')
+  report               -> emit_report(to='run_log')
+
+  executed 3 steps, success=True
+
+# Where the Nav2 knobs live (substrate-neutrality)
+
+  The URML program is just: move_to { location: kitchen }.
+  A real Nav2 deployment also tunes goal tolerance, a rotation-shim trigger
+  angle, pause-for-moving-obstacles, and replan-vs-plan-once. Those are
+  Nav2 concepts: they live in the ROS 2 adapter's deployment config, not in
+  the URML program, so the same move_to still runs on a GoPiGo3 or a drone.
+  Navigation telemetry (duration, recoveries) comes back in the run report;
+  a neutral shape for that is scoped in RFC-0638.

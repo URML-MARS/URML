@@ -1,0 +1,51 @@
+# A TurtleBot 4 (or a TB4-class clone) on ROS 2, navigated by Nav2. The worked
+# example from Discussion #526, where @slowrunner (whose Dave is a ROS bot, and
+# whose WaLI is a TurtleBot4 clone) asked how a ROS 2 robot maps onto URML.
+#
+# Unlike the frameless GoPiGo3 (which drives by amount: drive / turn, RFC-0630),
+# a TurtleBot 4 is MAPPED: it knows where it is in a `map` frame, so its natural
+# verb is `move_to` a named pose, which the ROS 2 runtime lowers to a Nav2
+# NavigateToPose goal. The named places below are the Nav2 goals. The Nav2-side
+# knobs a real deployment tunes (goal tolerance, rotation-shim trigger angle,
+# pause-for-obstacles, replan-vs-plan-once) are deployment config in the ROS 2
+# adapter, NOT URML program surface; keeping `move_to` substrate-neutral is what
+# lets the same program run on a GoPiGo3, a drone, or this TB4.
+manifest_version: "0.1"
+robot_id: turtlebot4_wali
+description: TurtleBot 4 class robot on ROS 2, navigated by Nav2 (move_to named poses).
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: kitchen
+    pose: { x: 3.2, y: 1.0, yaw: 0.0 }
+    frame: map
+  - name: living_room
+    pose: { x: 1.0, y: 2.5, yaw: 1.57 }
+    frame: map
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0, yaw: 0.0 }
+    frame: map
+
+declared_events:
+  - emergency_stop
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.46        # TurtleBot 4 max linear speed (m/s)
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: oakd
+      movable: false
+      supports_photo: true
+      supports_video: true
+
+outputs:
+  named_endpoints:
+    - run_log
