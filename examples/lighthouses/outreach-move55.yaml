@@ -38,17 +38,22 @@
   posted_url: "https://github.com/JacopoPan/aerial-autonomy-stack/issues/88"
   channel: github_issue
   contact: "JacopoPan/aerial-autonomy-stack (MIT, ~464 stars, Issues enabled, not archived, active 2026-06. Framework to sim+deploy perception PX4/ArduPilot drones & swarms, ROS 2. Italy/EU (individual, ex-UTIAS)."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-06-28"
+  response: declined
   tier: A
   country: IT
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0596 body to https://github.com/JacopoPan/aerial-autonomy-stack/issues/88 under idoco2003 (Move #55 inspection wave). Awaiting response."
+    - date: "2026-06-28"
+      text: "JacopoPan (Jacopo Panerati, repo owner) closed #88 on 2026-06-27 with no comment, state_reason=completed. A silent close: read and closed without taking it up. No hostility, no AI-spam flag. Recorded declined. No reply (re-pinging a maintainer who silently closed the proposal is bad form); accept the close. Re-engage only on a real trigger (he comments, or a working PX4 / fleet inspection adapter exists to anchor a concrete touch)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted on 2026-06-14 under idoco2003."
+      status: done
+    - date: "2026-06-28"
+      text: "Closed declined (silent owner close, reason=completed). No reply, no re-ping. Accept and move on."
       status: done
 
 - slug: unav-sim
