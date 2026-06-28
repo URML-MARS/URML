@@ -42,8 +42,8 @@
 
 - slug: moltbook
   rfc: 640
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-28"
+  posted_url: "https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd"
   channel: moltbook_agent_post
   contact: "Moltbook (moltbook.com) -- social network for AI agents; Reddit-style submolts, X claim-tweet verification, skills-document onboarding. Launched 2026-01-28 (Matt Schlicht); acquired by Meta 2026-03-10. Agent API is SELF-SERVE (POST /api/v1/agents/register -> api_key + claim_url; verified 2026-06-28 via skill.md); the separate developer-app program is early-access. US."
   last_touch: "2026-06-28"
@@ -55,8 +55,10 @@
     - date: "2026-06-28"
       text: "Drafted Move #62 (RFC-0640): the agent-distribution venue, a shape break from the robotics-consumer waves. Built the venue-neutral agent-integration skill (docs/integrations/urml-for-ai-agents.md) + the tools/moltbook/ register+post client and draft body. Verified the API self-serve (skill.md, 2026-06-28). NOT posted: the one gate is the X claim tweet (founder identity). Row stays response: none / empty posted_url until a post lands."
     - date: "2026-06-28"
-      text: "REGISTERED the URML agent on Moltbook (HTTP 201). agent.id b6496b5c-dbea-4142-9027-00a7ae4d3fd6, name 'urml', profile https://www.moltbook.com/u/urml. Status: pending_claim (GET /api/v1/agents/status confirms). api_key saved OUTSIDE the repo at C:/Users/Ido/moltbook-urml-credentials.json (only copy, non-retrievable). Awaiting founder claim: email greenvh@gmail.com at the claim_url + X claim tweet (verification drift-NFEV). Nothing posted yet; response stays none."
+      text: "REGISTERED the URML agent on Moltbook (HTTP 201). agent.id b6496b5c-dbea-4142-9027-00a7ae4d3fd6, name 'urml', profile https://www.moltbook.com/u/urml. api_key saved OUTSIDE the repo at C:/Users/Ido/moltbook-urml-credentials.json (only copy, non-retrievable)."
+    - date: "2026-06-28"
+      text: "CLAIMED + POSTED. Founder claimed the agent via greenvh@gmail.com + X tweet (X account @YahalomiId51861); GET /api/v1/agents/status returned status=claimed 'fully active'. Then posted the demo (founder-approved submolt 'builds', not 'robotics' which does not exist) -> https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd. First real URML agent post. response stays none (no reply yet); do not cite the 0/0 counters."
   claude_directives:
     - date: "2026-06-28"
-      text: "Agent registered, pending_claim. Once the founder claims it (email greenvh@gmail.com at the claim_url + X tweet 'verification drift-NFEV'): export MOLTBOOK_API_KEY from C:/Users/Ido/moltbook-urml-credentials.json, then `python tools/moltbook/post_to_moltbook.py post --post --submolt robotics` (hermetic translate->validate->execute trace + pointer to docs/integrations/urml-for-ai-agents.md). Then set sent_at / posted_url / last_touch, add a posted comment, flip to done, refresh outreach.db. Rate limit 1 post/30min. Do NOT mass-register agents. Do NOT cite Moltbook counters as engagement."
-      status: pending
+      text: "DONE -- agent registered, claimed (X @YahalomiId51861), and the demo posted to submolt 'builds' on 2026-06-28: https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd. Watch for replies via GET /api/v1/home or the post detail; move response off none only on a real maintainer/agent reply. Rate limit 1 post/30min. Do NOT mass-register or mass-post. Do NOT cite Moltbook counters as engagement."
+      status: done
