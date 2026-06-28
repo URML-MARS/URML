@@ -164,14 +164,16 @@
   posted_url: "https://github.com/ifm/ifm3d/issues/480"
   channel: github_issue
   contact: "ifm/ifm3d (Apache-2.0, 116 stars, 4 open issues, Issues + Discussions both enabled, last commit 2026-05-13 active). Vendor-org ifm electronic gmbh (Essen DE). Maintainers Suraj Patil, Rasheed Khan Pathan. Separate ifm/ifm3d-ros2 Apache-2.0 active 2026-04-10."
-  last_touch: "2026-05-28"
+  last_touch: "2026-06-28"
   response: none
   tier: A
   country: DE
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-28"
+      text: "Repo stale-bot posted the 30-day-inactivity notice on #480; no human ever engaged. Let it lapse, no re-ping (defeating a stale bot does not manufacture maintainer interest). Stays response: none; an inactivity stale/auto-close is dormancy, not a maintainer decline. Same handling as the Stereolabs ZED row."
   claude_directives: []
-  next_action: "Posted as Issue ifm/ifm3d#480 on 2026-05-28 (Issues used; Discussions also enabled — maintainers can migrate if preferred). Awaiting first response. Light-touch follow-up at 2026-06-25."
+  next_action: "No re-ping. Stale-bot flagged #480 for inactivity; that is dormancy, not a decline. Re-engage only on a real trigger (an ifm maintainer comments, or a working O3R adapter exists to anchor a concrete touch). Discussions also enabled if a future fresh touch is warranted."
   notes: "Tier A. Origin DE (pass). Discussions enabled flags an explicit dialogue surface (uncommon among industrial vendors). URML-fit: high; clean OSI top-to-bottom."
 
 - slug: teledyne-flir
