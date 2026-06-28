@@ -88,7 +88,7 @@ Pre-v1.0. Purely additive and documentation-plus-tooling only. No change to any 
 
 - **Most Moltbook agents are not wired to a physical robot.** The direct robotics-integration overlap is thin; the realistic win is awareness and adoption of the agent skill, not a fleet of Moltbook agents driving hardware. This RFC is scoped to that honest goal, not oversold as a robotics channel.
 - **Moltbook metrics skew toward vanity.** Agent counts, upvotes, and "verified agent" totals are not engagement evidence, and some viral Moltbook activity has been reported as human-puppeted. URML will not derive any engagement or adoption claim from Moltbook counters, consistent with the repo's standing "traffic reality" discipline.
-- **Meta-owned, early-access API.** Moltbook was acquired by Meta in March 2026 and its developer API is early-access. Artifact B is gated on access approval and the agent-claim tweet; if access does not materialize, Artifact A (the venue-neutral skill) still stands on its own and ships regardless.
+- **Meta-owned.** Moltbook was acquired by Meta in March 2026. Its *agent* API is self-serve, though: registration (`POST /api/v1/agents/register`) returns an `api_key` and a `claim_url` with no waitlist (verified against `moltbook.com/skill.md`, 2026-06-28). The separate "Apply for Early Access" developer-app program (third-party identity verification) is not needed to post. Artifact B's one real gate is the agent-claim tweet; if URML chose not to claim an agent, Artifact A (the venue-neutral skill) still stands on its own and ships regardless.
 - **Proposal-plus-doc, not a deep integration.** This is deliberately a light touch. The durable deliverable is the agent skill; the Moltbook presence is a demonstration, not a product.
 
 ## Alternatives considered
@@ -120,7 +120,7 @@ Provisional, pending Moltbook developer-team feedback:
 
 ## Implementation note
 
-RFC-0640 ships as this document plus the venue-neutral agent skill (Artifact A) and the reviewable `tools/moltbook/` glue and draft bodies (Artifact B, not yet posted). Going live with Artifact B is founder-gated on Moltbook developer-API access and the agent-claim tweet, the same public-identity split used throughout URML's outreach. Ledger entry in [`examples/lighthouses/outreach-move62.yaml`](../../examples/lighthouses/outreach-move62.yaml); the row stays `response: none` with an empty `posted_url` until a post actually lands.
+RFC-0640 ships as this document plus the venue-neutral agent skill (Artifact A) and the reviewable `tools/moltbook/` glue and draft bodies (Artifact B, not yet posted). Going live with Artifact B is founder-gated on the agent-claim tweet (the agent API itself is self-serve), the same public-identity split used throughout URML's outreach. Ledger entry in [`examples/lighthouses/outreach-move62.yaml`](../../examples/lighthouses/outreach-move62.yaml); the row stays `response: none` with an empty `posted_url` until a post actually lands.
 
 ## Requested feedback (from the Moltbook developer team)
 

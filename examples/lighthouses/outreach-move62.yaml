@@ -24,8 +24,11 @@
 #     Do NOT derive any engagement or adoption claim from them (same rule as the
 #     repo's "traffic reality" note). Some viral Moltbook activity is reported as
 #     human-puppeted.
-#   - The developer API is early-access + Meta-owned. The agent PRESENCE
-#     (Component 3) is founder-gated on API approval + the claim tweet. The
+#   - Agent registration is SELF-SERVE (POST /agents/register; no waitlist),
+#     verified 2026-06-28 against moltbook.com/skill.md. The "Apply for Early
+#     Access" developer program is a SEPARATE thing (third-party app identity
+#     verification) and is NOT needed to post. The one real gate on the agent
+#     PRESENCE (Component 3) is the X CLAIM TWEET (founder identity). The
 #     venue-neutral skill (Component 2) ships regardless.
 #
 # STATE: DRAFTED 2026-06-28, NOT YET POSTED. sent_at / posted_url EMPTY,
@@ -42,7 +45,7 @@
   sent_at: ""
   posted_url: ""
   channel: moltbook_agent_post
-  contact: "Moltbook (moltbook.com) -- social network for AI agents; Reddit-style submolts, X claim-tweet verification, developer API, skills-document onboarding. Launched 2026-01-28 (Matt Schlicht); acquired by Meta 2026-03-10. Developer API is EARLY-ACCESS. US."
+  contact: "Moltbook (moltbook.com) -- social network for AI agents; Reddit-style submolts, X claim-tweet verification, skills-document onboarding. Launched 2026-01-28 (Matt Schlicht); acquired by Meta 2026-03-10. Agent API is SELF-SERVE (POST /api/v1/agents/register -> api_key + claim_url; verified 2026-06-28 via skill.md); the separate developer-app program is early-access. US."
   last_touch: "2026-06-28"
   response: none
   tier: B
@@ -50,8 +53,8 @@
   sector: framework-skill
   comments:
     - date: "2026-06-28"
-      text: "Drafted Move #62 (RFC-0640): the agent-distribution venue, a shape break from the robotics-consumer waves. Built the venue-neutral agent-integration skill (docs/integrations/urml-for-ai-agents.md) + the tools/moltbook/ posting glue and draft bodies. NOT posted: founder-gated on Moltbook developer-API early-access approval + the agent claim tweet. Row stays response: none / empty posted_url until a post lands."
+      text: "Drafted Move #62 (RFC-0640): the agent-distribution venue, a shape break from the robotics-consumer waves. Built the venue-neutral agent-integration skill (docs/integrations/urml-for-ai-agents.md) + the tools/moltbook/ register+post client and draft body. Verified the API self-serve (skill.md, 2026-06-28). NOT posted: the one gate is the X claim tweet (founder identity). Row stays response: none / empty posted_url until a post lands."
   claude_directives:
     - date: "2026-06-28"
-      text: "When Moltbook developer-API access + the claim tweet are in place: post the tools/moltbook/ draft demo body (the hermetic translate->validate->execute trace + a pointer to docs/integrations/urml-for-ai-agents.md) in the relevant submolt under the verified URML agent; then set sent_at / posted_url / last_touch, add a posted comment, and refresh outreach.db. Do NOT inflate presence by mass-registering agents. Do NOT cite Moltbook counters as engagement."
+      text: "To go live: run `python tools/moltbook/post_to_moltbook.py register` (self-serve), then post the X claim tweet from the returned claim_url under the founder identity; then `post --post --submolt robotics` (the hermetic translate->validate->execute trace + a pointer to docs/integrations/urml-for-ai-agents.md). Then set sent_at / posted_url / last_touch, add a posted comment, and refresh outreach.db. Rate limit 1 post/30min. Do NOT mass-register agents. Do NOT cite Moltbook counters as engagement."
       status: pending
