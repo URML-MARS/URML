@@ -1,0 +1,57 @@
+# Move #62 outreach ledger. One row per target.
+#
+# Move #62: **Moltbook -- the agent-distribution venue, not a robotics target.**
+# A deliberate shape break from Moves #1-#61. Every prior wave targeted a
+# robotics consumer: a runtime URML executes on, a model that drives a robot,
+# a component/protocol/sim in the actuation stack. Moltbook is none of those.
+# It is a social network FOR AI agents (Reddit-style: submolts, posts, votes;
+# agents verified via their human owner's X "claim" tweet; a developer API;
+# "skills document" onboarding). Acquired by Meta 2026-03-10.
+#
+# Why it earns one row anyway (RFC-0640): URML's Layer-4 LLM bridge is
+# provider-agnostic, and an AI agent that wants to move a robot is exactly the
+# consumer that bridge serves. Moltbook is where that consumer population
+# gathers, and (unlike human-maintained code forges) it is a venue where
+# AI-authored content is native -- the recurring "is this AI-generated?"
+# friction does not apply. The forcing function produced the durable asset:
+# a venue-neutral agent-integration skill (docs/integrations/urml-for-ai-agents.md)
+# the repo was missing anyway.
+#
+# HONESTY DISCIPLINE (carried, not buried):
+#   - Most Moltbook agents are NOT wired to a physical robot; the realistic win
+#     is awareness + skill adoption, not a robot-driving agent fleet.
+#   - Moltbook counters (agents / upvotes / "verified" totals) are VANITY.
+#     Do NOT derive any engagement or adoption claim from them (same rule as the
+#     repo's "traffic reality" note). Some viral Moltbook activity is reported as
+#     human-puppeted.
+#   - The developer API is early-access + Meta-owned. The agent PRESENCE
+#     (Component 3) is founder-gated on API approval + the claim tweet. The
+#     venue-neutral skill (Component 2) ships regardless.
+#
+# STATE: DRAFTED 2026-06-28, NOT YET POSTED. sent_at / posted_url EMPTY,
+# response: none. Posting glue + draft bodies live under tools/moltbook/ for
+# founder review; nothing goes live until developer-API access + the claim
+# tweet are in place. Do NOT massage state to look engaged.
+#
+# No parity test on this ledger (Moltbook has no in-repo manifest; it is not a
+# Move-1 LIGHTHOUSE). The schema-v2 conformance test (tier/country/sector/
+# comments/claude_directives) still applies -- run the FULL suite before merge.
+
+- slug: moltbook
+  rfc: 640
+  sent_at: ""
+  posted_url: ""
+  channel: moltbook_agent_post
+  contact: "Moltbook (moltbook.com) -- social network for AI agents; Reddit-style submolts, X claim-tweet verification, developer API, skills-document onboarding. Launched 2026-01-28 (Matt Schlicht); acquired by Meta 2026-03-10. Developer API is EARLY-ACCESS. US."
+  last_touch: "2026-06-28"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-06-28"
+      text: "Drafted Move #62 (RFC-0640): the agent-distribution venue, a shape break from the robotics-consumer waves. Built the venue-neutral agent-integration skill (docs/integrations/urml-for-ai-agents.md) + the tools/moltbook/ posting glue and draft bodies. NOT posted: founder-gated on Moltbook developer-API early-access approval + the agent claim tweet. Row stays response: none / empty posted_url until a post lands."
+  claude_directives:
+    - date: "2026-06-28"
+      text: "When Moltbook developer-API access + the claim tweet are in place: post the tools/moltbook/ draft demo body (the hermetic translate->validate->execute trace + a pointer to docs/integrations/urml-for-ai-agents.md) in the relevant submolt under the verified URML agent; then set sent_at / posted_url / last_touch, add a posted comment, and refresh outreach.db. Do NOT inflate presence by mass-registering agents. Do NOT cite Moltbook counters as engagement."
+      status: pending
