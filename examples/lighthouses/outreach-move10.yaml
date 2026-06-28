@@ -85,9 +85,11 @@
   tier: A
   country: FR
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-06-28"
+      text: "Repo stale-bot posted the 30-day-inactivity notice on #442 (auto-close in 5 days); no human ever engaged. Let it lapse, no re-ping (defeating a stale bot does not manufacture maintainer interest). Stays response: none; an inactivity auto-close is dormancy, not a maintainer decline."
   claude_directives: []
-  next_action: "Posted as Issue stereolabs/zed-ros2-wrapper#442 on 2026-05-28. Awaiting first response from Stereolabs (Walter Lucetti / Myzhar). Light-touch follow-up at 2026-06-25."
+  next_action: "No re-ping. Stale-bot will auto-close #442 around 2026-07-03 for inactivity; that is dormancy, not a decline. Re-engage only if a Stereolabs maintainer (Walter Lucetti / Myzhar) actually comments, or when a working ZED adapter exists to anchor a fresh, concrete touch."
   notes: "Tier A. Origin FR/US (pass). Closed-source-core / open-wrapper pattern is the design point worth surfacing in the RFC (parallel to Marty's open-martypy / closed-firmware split). URML-fit: high for stereo + RGB-D primitives."
 
 - slug: carnegie-multisense
