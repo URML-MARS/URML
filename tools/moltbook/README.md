@@ -13,38 +13,47 @@ This lives under `tools/`, **not** `reference/`, on purpose: Moltbook is a cloud
 ## What is here
 
 - [`posts/demo-intro.md`](posts/demo-intro.md): the draft post body (title + body), reviewable before anything goes live. AI-authored and disclosed (VIBE.md), the standing posture for URML outreach.
-- [`post_to_moltbook.py`](post_to_moltbook.py): a standard-library-only client. **Dry-run by default**; it never touches the network without `--post` and the credentials below.
+- [`post_to_moltbook.py`](post_to_moltbook.py): a standard-library-only client with `register` and `post` subcommands. Posting is **dry-run by default**; it never touches the network without `--post` and `MOLTBOOK_API_KEY`.
 
-## Status: gated, not live
+## The API, verified
 
-Going live is founder-gated on two things, the same public-identity split used across URML's outreach:
+Request shapes match Moltbook's official agent skill doc (`https://www.moltbook.com/skill.md`), verified 2026-06-28:
 
-1. **Moltbook developer-API access** (early-access, Meta-owned).
-2. **The agent claim tweet** verifying the URML agent under the maintainer's X identity.
+- Base: `https://www.moltbook.com/api/v1` (pinned in the client; the key is only ever sent there, per Moltbook's security rule).
+- Register: `POST /agents/register {name, description}` returns `api_key` (`moltbook_...`), `claim_url`, and a verification code. **Self-serve, no waitlist.**
+- Auth: `Authorization: Bearer <api_key>`.
+- Post: `POST /posts {submolt_name, title (<=300), content (<=40000)}`. Rate limit: **1 post / 30 min**.
 
-Until both are in place the ledger row stays `response: none` with an empty `posted_url`. Do not massage state.
+The "Apply for Early Access" developer program on `moltbook.com/developers` is a *different* thing (third-party app identity verification, the `moltdev_` / `X-Moltbook-App-Key` flow) and is **not** needed to register or post.
 
-The HTTP request shape in `post_to_moltbook.py::_submit()` is a **placeholder** to confirm against Moltbook's developer-API docs once access is granted; it is isolated so it is the only thing that needs updating.
+## The one real gate
+
+There is no Meta-access blocker. The single gate is the **X claim tweet**: registration returns a `claim_url`, and a human (founder identity) must post the claim tweet to verify the agent. Until the agent is claimed and a post lands, the ledger row stays `response: none` with an empty `posted_url`. Do not massage state.
 
 ## Usage
 
-Preview the post (no network, no credentials needed):
+1. Register the agent (prints the api_key and claim_url; save the key, it is shown once):
 
 ```bash
-python tools/moltbook/post_to_moltbook.py
+python tools/moltbook/post_to_moltbook.py register --name URML
 ```
 
-Submit for real (requires the environment variables, and only with `--post`):
+2. Verify the agent: open the printed `claim_url` and post the X claim tweet under the founder identity.
+
+3. Preview the post (no network, no key needed):
 
 ```bash
-export MOLTBOOK_API_TOKEN=...     # developer-API token for the verified agent
-export MOLTBOOK_AGENT_ID=...      # the claimed agent's id
-export MOLTBOOK_API_BASE=https://...   # developer-API base URL
-
-python tools/moltbook/post_to_moltbook.py --post --submolt robotics
+python tools/moltbook/post_to_moltbook.py post
 ```
 
-Credentials come from the environment only; never commit them.
+4. Submit for real (needs the key, and only with `--post`):
+
+```bash
+export MOLTBOOK_API_KEY=moltbook_...
+python tools/moltbook/post_to_moltbook.py post --post --submolt robotics
+```
+
+The key comes from the environment only; never commit it.
 
 ## After a post lands
 
