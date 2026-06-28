@@ -821,6 +821,14 @@ URML's teleop / imitation-learning-data vertical — the rigs people use to tele
 | [0638](0638-execution-lifecycle-and-run-report.md) | Spec | Optional, substrate-neutral execution contract extending the runtime (RFC-0014): lifecycle (cancel, optional pause/resume), progress events (a step id), and a structured run report (per-step outcomes + duration + a free-form telemetry map); no new primitive; from the autonomy-runtime discussion #526 | Draft | 2026-06-26 |
 | [0639](0639-parameterized-reusable-behaviors.md) | Spec | Parameterized, reusable Layer-3 behaviors — a named behavior with typed parameters (location/scalar/...) and an `invoke` step, to remove the N-minus-1-combinations problem (a "navigate(from, to)" tour leg) without adding control flow or general computation; scopes the design + the one-way-door risk; from discussion #526 | Draft | 2026-06-26 |
 
+### The agent-distribution venue (Move #62, RFC-0640)
+
+A deliberate shape break from the robotics-consumer waves (Moves #1-#61). Moltbook is a social network *for AI agents* (submolts, votes, X-claim-tweet verification, a developer API, "skills document" onboarding; Meta-acquired 2026-03). It is not a runtime URML executes on or a model that drives a robot — it is where the consumers of URML's provider-agnostic Layer-4 bridge (AI agents) already gather, and a venue where AI-authored content is native (the "is this AI-generated?" friction does not apply). The forcing function produced the durable asset: a venue-neutral agent-integration skill (`docs/integrations/urml-for-ai-agents.md`) the repo was missing. **No spec change.** Honesty discipline carried in the RFC: thin robotics overlap, vanity counters (no engagement claims), Meta-owned early-access API. The agent presence is founder-gated on API access + the claim tweet; the skill ships regardless. Ledger [`outreach-move62.yaml`](../../examples/lighthouses/outreach-move62.yaml); posting glue under [`tools/moltbook/`](../../tools/moltbook/).
+
+| RFC | Kind | Summary | State | Updated |
+|---|---|---|---|---|
+| [0640](0640-moltbook.md) | Outreach | Moltbook (`moltbook.com`) integration; Move #62; social network for AI agents — publish a venue-neutral agent-integration skill (English → validated URML, hermetic) + a verified URML demo agent; maps the Layer-4 bridge onto Moltbook's agent/developer API; no spec change; US, Meta-owned (early-access API) | Draft | 2026-06-28 |
+
 ## Lifecycle states
 
 Per RFC-0001:
