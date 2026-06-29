@@ -828,6 +828,11 @@ A deliberate shape break from the robotics-consumer waves (Moves #1-#61). Moltbo
 | RFC | Kind | Summary | State | Updated |
 |---|---|---|---|---|
 | [0640](0640-moltbook.md) | Outreach | Moltbook (`moltbook.com`) integration; Move #62; social network for AI agents — publish a venue-neutral agent-integration skill (English → validated URML, hermetic) + a verified URML demo agent; maps the Layer-4 bridge onto Moltbook's agent/developer API; no spec change; US, Meta-owned (early-access API) | Draft | 2026-06-28 |
+| [0641](0641-embodied-cot-outreach.md) | Outreach | Embodied Chain-of-Thought (`MichalZawalski/embodied-CoT`) integration; Move #63 (VLA mini-wave); a VLA that reasons out loud then acts — the legible reasoning trace is where a capability/safety check sits before actuation; no spec change; MIT, Warsaw/UT-Austin | Draft | 2026-06-28 |
+| [0642](0642-baku-outreach.md) | Outreach | BAKU (`siddhanthaldar/BAKU`) integration; Move #63 (VLA mini-wave); multi-task imitation policy emitting action chunks — validate each chunk against reach/force/keep-out before dispatch; no spec change; MIT, NYU | Draft | 2026-06-28 |
+| [0643](0643-human2humanoid-outreach.md) | Outreach | human2humanoid (`LeCAR-Lab/human2humanoid`) integration; Move #63 (VLA mini-wave); learned humanoid whole-body control — validate commanded motion against a declared stability envelope (ties RFC-0384); no spec change; CMU | Draft | 2026-06-28 |
+| [0644](0644-hpt-outreach.md) | Outreach | Heterogeneous Pre-trained Transformers (`liruiw/HPT`) integration; Move #63 (VLA mini-wave); cross-embodiment policy with per-embodiment heads — the manifest as the per-embodiment capability declaration the head's action space maps onto; no spec change; MIT | Draft | 2026-06-28 |
+| [0645](0645-robopoint-outreach.md) | Outreach | RoboPoint (`wentaoyuan/RoboPoint`) integration; Move #63 (VLA mini-wave); spatial-affordance VLM emitting keypoints — URML sits below the point→action step and validates the resulting motion, not the affordance; no spec change; Apache-2.0, UW | Draft | 2026-06-28 |
 
 ## Lifecycle states
 
