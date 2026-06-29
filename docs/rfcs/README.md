@@ -833,6 +833,8 @@ A deliberate shape break from the robotics-consumer waves (Moves #1-#61). Moltbo
 | [0643](0643-human2humanoid-outreach.md) | Outreach | human2humanoid (`LeCAR-Lab/human2humanoid`) integration; Move #63 (VLA mini-wave); learned humanoid whole-body control — validate commanded motion against a declared stability envelope (ties RFC-0384); no spec change; CMU | Draft | 2026-06-28 |
 | [0644](0644-hpt-outreach.md) | Outreach | Heterogeneous Pre-trained Transformers (`liruiw/HPT`) integration; Move #63 (VLA mini-wave); cross-embodiment policy with per-embodiment heads — the manifest as the per-embodiment capability declaration the head's action space maps onto; no spec change; MIT | Draft | 2026-06-28 |
 | [0645](0645-robopoint-outreach.md) | Outreach | RoboPoint (`wentaoyuan/RoboPoint`) integration; Move #63 (VLA mini-wave); spatial-affordance VLM emitting keypoints — URML sits below the point→action step and validates the resulting motion, not the affordance; no spec change; Apache-2.0, UW | Draft | 2026-06-28 |
+| [0646](0646-epfl-lasa-iiwa-outreach.md) | Outreach | EPFL LASA `iiwa_ros` integration; Move #64 (university lane); KUKA iiwa control + learning-from-demonstration — validate a generalized trajectory against the arm's declared envelope before the impedance controller runs it; no spec change; GPL-3.0, EPFL (Billard), CH | Draft | 2026-06-29 |
+| [0647](0647-utra-soccerbot-outreach.md) | Outreach | UTRA `soccerbot` integration; Move #64 (university lane); RoboCup humanoid soccer stack — validate a whole-body kick/step against a declared stability envelope (RFC-0384) before the locomotion controller executes; no spec change; BSD-3-Clause, U Toronto (UTRA), CA | Draft | 2026-06-29 |
 
 ## Lifecycle states
 

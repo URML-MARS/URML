@@ -1,0 +1,67 @@
+# Move #64 outreach ledger. One row per target.
+#
+# Move #64: **university research-lab lane (the honest residue, again).**
+# The founder asked for a fresh cold wave in the university / research-lab lane at
+# ~15-25 clean. Two research agents (US + allied) plus a verify pass found the
+# lane is thin at the GitHub-issue altitude: most lab repos are tiny per-paper
+# code dumps (0-7 stars, often issues-off / no-license), and the strong fits are
+# the minority of labs that maintain a real software flagship. After fit-check
+# (drop perception / SLAM / sim / library tooling -- URML consumes an estimate,
+# it does not gate it), activity (drop >18mo stale), ledger dedup, AND org
+# over-touch (rail-berkeley/Levine hit 3x via octo/crossformer/susie;
+# UT-Austin-RPL/Zhu via Ditto), the genuinely clean net-new set is TWO. The
+# founder chose to post the clean two. This is the second consecutive lane (after
+# the Move #63 VLA mini-wave of 5) to confirm the cold-GitHub-issue surface is
+# largely tapped after ~620 contacts; padding would mean lower-fit or repeat-org
+# posts (the AI-spam risk). Both posted under idoco2003 on 2026-06-29, VIBE.md
+# disclosure up front, no license-ask.
+#
+# Targets (RFCs 0646-0647):
+#   - epfl-lasa-iiwa (0646, GPL-3.0, EPFL CH): KUKA iiwa control + learning-from-
+#     demonstration; validate a generalized trajectory before the impedance
+#     controller runs it. EPFL LASA (Billard) never contacted; cleanest fit.
+#   - utra-soccerbot (0647, BSD-3, U Toronto CA): RoboCup humanoid soccer stack;
+#     validate a whole-body kick/step against the RFC-0384 stability envelope.
+#     Caveat: a student competition team, not a PI research lab.
+
+- slug: epfl-lasa-iiwa
+  rfc: 646
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/epfl-lasa/iiwa_ros/issues/122"
+  channel: github_issue
+  contact: "epfl-lasa/iiwa_ros (GPL-3.0; EPFL Learning Algorithms and Systems Lab, Aude Billard; ~160 stars, Issues enabled, not archived, active 2025-06). A maintained ROS stack for KUKA LBR iiwa control (sim + hardware) with impedance control and a learning-from-demonstration pipeline above it."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: CH
+  sector: robot-platform
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0646 body to https://github.com/epfl-lasa/iiwa_ros/issues/122 under idoco2003 (Move #64 university lane), AI-authoring disclosure up front, no license-ask (GPL-3.0, cross-cite only). Hook: a learning-from-demonstration trajectory still has to be admissible on the specific arm; URML checks it before the impedance controller. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. EPFL LASA (Billard) never contacted; cleanest fit of the lane. If engaged, the build is a worked example mapping an iiwa trajectory onto a URML manifest (validated, no execution). GPL: cross-cite, no code reuse."
+      status: done
+  next_action: "wait 14-30 d; if silent, no aggressive follow-up; if reply, bump last_touch + set response per enum, offer the worked-example mapping. The LfD-trajectory-admissibility angle is the hook."
+  notes: "EU-allied (CH). Genuine net-new lab (EPFL LASA not previously touched). LfD stack = clean validate-before-actuate surface above the controller. GPL-3.0: state, cross-cite, never reuse code."
+
+- slug: utra-soccerbot
+  rfc: 647
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/utra-robosoccer/soccerbot/issues/921"
+  channel: github_issue
+  contact: "utra-robosoccer/soccerbot (BSD-3-Clause; University of Toronto Robotics Association, RoboCup Humanoid League; ~157 stars, Issues enabled, not archived, active 2026-06). A full maintained software stack for an autonomous humanoid soccer robot: perception, localization, planning, whole-body locomotion."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: CA
+  sector: robot-platform
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0647 body to https://github.com/utra-robosoccer/soccerbot/issues/921 under idoco2003 (Move #64 university lane), AI-authoring disclosure up front, no license-ask (BSD-3). Hook: a humanoid kick/step is a whole-body command; URML's RFC-0384 stability envelope (CoM + support polygon) is the manifest to check it against. Also pitched the worked example as a teaching artifact for new team members. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Student competition team (not a PI lab); ties RFC-0384 whole-body. If engaged, a worked example mapping a whole-body motion onto an RFC-0384 manifest doubles as onboarding material for the team."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Student team, so turnover is high; a teaching-artifact framing is the durable hook if they re-engage."
+  notes: "Allied (CA). Caveat: a student competition team, not a PI research lab; included per the founder's choice to post the clean two. Real active humanoid stack ties RFC-0384. BSD-3: state, no ask."
