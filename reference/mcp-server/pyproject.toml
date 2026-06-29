@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urml-mcp-server"
+version = "0.2.0"
+description = "Model Context Protocol server for URML: validate-before-actuate robot intent as agent tools"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+  "mcp>=1.10",
+  "PyYAML>=6.0,<7",
+  "urml-validator>=0.2.0",
+  "urml-llm-bridge>=0.2.0",
+  "urml-ros2-runtime>=0.2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.5", "mypy>=1.10"]
+
+[project.scripts]
+urml-mcp = "urml_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urml_mcp"]
