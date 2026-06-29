@@ -16,12 +16,11 @@ Security note: skills.sh / agentskill.sh run server-side static analysis across 
 
 skills.sh (Vercel) and the `ags` / `npx skills` tool index `SKILL.md` files from public GitHub repos. The GitHub CLI has native support: `gh skill publish` validates a skill against the agentskills.io spec and checks repo security settings.
 
-**Discovery path.** For auto-discovery, the skill should sit at the conventional path `.github/skills/urml-robot-intent/SKILL.md` (or `.claude/skills/`). It currently lives at `skills/urml-robot-intent/`. Either move it there, or add a copy under `.github/skills/`, before publishing. (Say the word and I will relocate it in a follow-up PR.)
+**Discovery path.** The skill lives at the conventional path `.github/skills/urml-robot-intent/SKILL.md`, so `gh skill publish` and the skills.sh / `ags` indexers discover it automatically. No relocation needed.
 
 **Steps:**
-1. Place the skill at `.github/skills/urml-robot-intent/SKILL.md` in the `URML-MARS/URML` repo.
-2. From a checkout: `gh skill publish` (validates against the spec, reports repo-security recommendations).
-3. Confirm it appears on skills.sh and is installable via `npx skills add urml-robot-intent`.
+1. From a checkout of `URML-MARS/URML`: `gh skill publish` (validates against the spec, reports repo-security recommendations).
+2. Confirm it appears on skills.sh and is installable via `npx skills add urml-robot-intent`.
 
 **Listing metadata:**
 - **Name:** `urml-robot-intent`
@@ -43,7 +42,7 @@ The open Agent Skills standard maintains a showcase/spec at [`agentskills/agents
   name: "URML",
   description: "URML is an open Apache-2.0 language for robot intent. The urml-robot-intent skill turns a plain-language goal into a robot program validated against a robot's declared capabilities and safety envelope before any actuator moves. Provider-agnostic, runs offline.",
   url: "https://urml.dev",
-  instructionsUrl: "https://github.com/URML-MARS/URML/blob/main/skills/urml-robot-intent/SKILL.md",
+  instructionsUrl: "https://github.com/URML-MARS/URML/blob/main/.github/skills/urml-robot-intent/SKILL.md",
   sourceCodeUrl: "https://github.com/URML-MARS/URML",
 }
 ```
