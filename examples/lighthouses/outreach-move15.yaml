@@ -71,14 +71,19 @@
   posted_url: "https://github.com/robotology/icub-main/issues/1064"
   channel: github_issue
   contact: "robotology/icub-main (BSD-3-Clause, 118 stars, Issues enabled, last commit 2026-04-27 active, **not archived**). Italian Institute of Technology (IIT), Genoa IT. iCub humanoid platform with assistive / prosthetic / rehabilitation research angle. **The medical-relevant humanoid surface URML's prior humanoid coverage didn't reach** (apollo_biped / digit_biped / figure_biped / neo_biped / optimus_biped fixtures are commercial-humanoid)."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-06-29"
+  response: declined
   tier: A
   country: IT
   sector: robot-platform
-  comments: []
-  claude_directives: []
-  next_action: "Posted as Issue robotology/icub-main#1064 on 2026-05-28. Medical-research humanoid engagement. Sibling to RFC-0194 YARP at the substrate layer. Awaiting first response from IIT. Light-touch follow-up at 2026-06-25."
+  comments:
+    - date: "2026-06-29"
+      text: "pattacini (Ugo Pattacini, IIT iCub lead, repo maintainer) closed #1064 on 2026-06-29 with no comment, state_reason=completed. A silent maintainer close: read and closed without taking it up. No hostility, no AI-spam flag. Recorded declined. No reply (re-pinging a maintainer who silently closed the proposal is bad form); accept the close. Same handling as the aerial-autonomy-stack close (#88)."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "Closed declined (silent maintainer close, reason=completed). No reply, no re-ping. Accept and move on. Sibling RFC-0194 YARP (substrate layer) is tracked separately; do not let this close prompt a re-touch there."
+      status: done
+  next_action: "No re-ping. Silent maintainer close by pattacini. Re-engage only on a real trigger (a maintainer comments, or a working IcubAdapter / YARP-substrate demo exists to anchor a concrete touch). The YARP sibling (RFC-0194) stands on its own."
   notes: "Tier A. Origin IT Genoa (IIT). Research-lab-direct, NATO+EU. URML-fit: high for medical-research humanoid class."
 
 # ---- Delivery (1) ----
