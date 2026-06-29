@@ -108,18 +108,23 @@
   posted_url: "https://github.com/AGH-CEAI/robotiq_hande_driver/issues/44"
   channel: github_issue
   contact: "AGH-CEAI/robotiq_hande_driver (Apache-2.0, ~20 stars, Issues enabled, not archived, active 2025-11. ros2_control driver for the Robotiq Hand-E parallel gripper (fake / serial-Modbus / UR tool-comm backends). AGH University of Krakow, Poland."
-  last_touch: "2026-06-21"
-  response: none
+  last_touch: "2026-06-29"
+  response: engaged
   tier: B
   country: PL
   sector: component-vendor
   comments:
     - date: "2026-06-21"
       text: "Posted the RFC body to https://github.com/AGH-CEAI/robotiq_hande_driver/issues/44 under idoco2003 (Move #60, robotic-end-effector wave). Awaiting response."
+    - date: "2026-06-29"
+      text: "macmacal (CONTRIBUTOR) gave a substantive, correct answer to both questions on #44. Q1: in ros2_control the limits/params live in the URDF and the hardware interface just exchanges I/O; if there is a need to interpret whether an object was grasped, an additional abstraction layer 'could indeed be useful within a larger system' (affirms URML's system-level layer). Q2: yes, the URDF capability manifest covers the params; serial / UR-tool-comm backends look the same from a higher layer, BUT the fake-hardware backend does not simulate force feedback (position only). Promoted to engaged. Replied under idoco2003 (#44 comment 4833621896): URML is additive (reads the same URDF numbers, refuses an out-of-envelope grasp pre-dispatch), the admissible-vs-succeeded distinction is his, the pre-dispatch check behaves identically across backends so the fake-hw feedback gap only affects the runtime interpretation layer; offered a small worked example (Hand-E manifest + a validated grasp + a refused over-force grasp)."
   claude_directives:
     - date: "2026-06-21"
-      text: "DONE -- posted on 2026-06-21 under idoco2003. (orig: post the posts-move60.md robotiq-hande body as a GitHub Issue on AGH-CEAI/robotiq_hande_driver under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (Apache-2.0 stated)."
+      text: "DONE -- posted on 2026-06-21 under idoco2003. No license-ask (Apache-2.0 stated)."
       status: done
+    - date: "2026-06-29"
+      text: "ENGAGED + build cue: macmacal accepted the framing and the manifest mapping. The natural build is a small worked example examples/robotiq-hande/ (Hand-E manifest with aperture/force/speed + a validated close-with-force the validator accepts + one it refuses for exceeding force, hermetic + byte-asserted), the tightest-fit end-effector case (grasp envelope = RFC-0586). Offered it in the reply; build if macmacal says yes or the founder wants to deepen it. No license-ask (Apache-2.0)."
+      status: pending
 
 - slug: onrobot-ros2
   rfc: 628
