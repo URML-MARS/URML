@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.urml-mars/urml",
+  "description": "Validate-before-actuate robot intent for agents. Turn a natural-language goal into a URML program checked against a robot's declared capabilities and safety envelope before any actuator moves. The server never calls an LLM; the agent emits URML, the server validates and runs it.",
+  "version": "0.2.0",
+  "websiteUrl": "https://urml.dev",
+  "repository": {
+    "url": "https://github.com/URML-MARS/URML",
+    "source": "github",
+    "subfolder": "reference/mcp-server"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "urml-mcp-server",
+      "version": "0.2.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

@@ -56,3 +56,14 @@ reference/mcp-server/
 ```
 
 The split is deliberate: `tools.py` has no MCP dependency, so the validate/execute guarantees are testable without the transport. Every command stays in lockstep with the `urml` CLI.
+
+## Publishing to MCP registries (maintainer action)
+
+[`server.json`](server.json) is the registry manifest for the [official MCP Registry](https://registry.modelcontextprotocol.io). Publishing is a maintainer action under the project's GitHub identity:
+
+1. **Publish the package** so the registry can resolve it: `urml-mcp-server` to PyPI (the `server.json` `packages` entry references it). The registry does not host code, it points at a package.
+2. **Publish the manifest** with the `mcp-publisher` CLI, which validates `server.json` and verifies ownership of the `io.github.urml-mars` namespace via GitHub login. Confirm the schema version and field casing against the CLI at publish time; the registry schema is still evolving.
+3. **Directory listings**: Smithery, Glama, PulseMCP, and mcp.so crawl the ecosystem and let you claim ownership of the listing. Submit / claim under `greenvh@gmail.com`.
+
+Track each listing like any other outreach (a row per venue, `response: none` until real adoption signal). Do not cite install counts as engagement without corroboration.
+

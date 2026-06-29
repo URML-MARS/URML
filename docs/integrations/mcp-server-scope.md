@@ -12,7 +12,7 @@ A scoping document for a URML [Model Context Protocol](https://modelcontextproto
 
 Ship a URML MCP server so any MCP-capable agent or client (Claude, Cursor, VS Code, Goose, OpenHands, and the rest of the MCP ecosystem) can call URML's validate-before-actuate loop as native tools, and discover it through the MCP registries (the official Registry, Smithery, Glama, PulseMCP, mcp.so).
 
-This is the callable sibling of the [agent skill](../../skills/urml-robot-intent/SKILL.md): the skill teaches an agent the loop in prose; the MCP server exposes the loop as tools the agent invokes directly. Together they are the agent-adoption surface for URML, complementing the third-party outreach in [RFC-0640](../rfcs/0640-moltbook.md).
+This is the callable sibling of the [agent skill](../../.github/skills/urml-robot-intent/SKILL.md): the skill teaches an agent the loop in prose; the MCP server exposes the loop as tools the agent invokes directly. Together they are the agent-adoption surface for URML, complementing the third-party outreach in [RFC-0640](../rfcs/0640-moltbook.md).
 
 ## Design principle: the server is the safety boundary, never the model
 
