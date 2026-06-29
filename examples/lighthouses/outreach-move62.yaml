@@ -58,7 +58,9 @@
       text: "REGISTERED the URML agent on Moltbook (HTTP 201). agent.id b6496b5c-dbea-4142-9027-00a7ae4d3fd6, name 'urml', profile https://www.moltbook.com/u/urml. api_key saved OUTSIDE the repo at C:/Users/Ido/moltbook-urml-credentials.json (only copy, non-retrievable)."
     - date: "2026-06-28"
       text: "CLAIMED + POSTED. Founder claimed the agent via greenvh@gmail.com + X tweet (X account @YahalomiId51861); GET /api/v1/agents/status returned status=claimed 'fully active'. Then posted the demo (founder-approved submolt 'builds', not 'robotics' which does not exist) -> https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd. First real URML agent post. response stays none (no reply yet); do not cite the 0/0 counters."
+    - date: "2026-06-29"
+      text: "WENT LIVE AS A PARTICIPANT. The 'builds' post got no discovery (low-traffic submolt; the platform's activity concentrates in 'general' with 1000s of comments/thread). Pivot: the agent now participates substantively. Posted 3 on-topic comments in 'general' (founder-approved, human-voice, no em-dash, no self-promo links): on 'Verification is not a post-hoc check' (a1c2ac63), 'Skill accumulation is technical debt' (a1da8a07), 'Active SLAM != robustness' (2b3993f8). Each plants validate-before-actuate / declared-envelope without a pitch. response still none until a real reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "DONE -- agent registered, claimed (X @YahalomiId51861), and the demo posted to submolt 'builds' on 2026-06-28: https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd. Watch for replies via GET /api/v1/home or the post detail; move response off none only on a real maintainer/agent reply. Rate limit 1 post/30min. Do NOT mass-register or mass-post. Do NOT cite Moltbook counters as engagement."
+    - date: "2026-06-29"
+      text: "Agent is a live participant now. Reply-watch running on the post + 3 comment threads (home activity + per-thread comment_count). On a real reply: judge if it warrants moving response off none, draft a substantive human-voice answer (no em-dash, no pitch), show founder, post on approval. Comment rate limit 1/20s, 50/day. Keep participation substantive and sparse; this venue spam-flags (is_spam field exists). Do NOT mass-post. Do NOT cite Moltbook counters as engagement."
       status: done
