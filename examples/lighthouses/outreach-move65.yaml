@@ -1,0 +1,132 @@
+# Move #65 outreach ledger. One row per target.
+#
+# Move #65: **less-mined domain verticals (medical/surgical, exo, hazmat,
+# maritime, space, agriculture).** The founder asked to keep the volume play
+# moving after the horizontal lanes (VLA Move #63, universities Move #64) each
+# yielded single digits. Two research agents swept the safety-critical and
+# field verticals. Honest finding: the surgical / exo / inspection verticals
+# were already mined (Moves #37/#55/#59), and the field verticals skew toward
+# student competition teams. After fit-check (drop perception / sim-only /
+# dataset; URML emits/consumes action, it does not simulate or perceive),
+# activity (>18mo), ledger dedup, and org over-touch (OSRF dropped), the clean
+# net-new set is FIVE. Three of the five are student competition teams (Vortex
+# NTNU, AGH Space, Southampton Sailing); the strongest are Sandia National Labs
+# and the Vortex AUV stack. All posted under idoco2003, VIBE.md disclosure up
+# front, no license-ask (no-license repos stated, never asked).
+#
+# Targets (RFCs 0648-0652):
+#   - dex-teleop (0648, no-license, US): VR dexterous teleop -> arm+hand command;
+#     validate the relayed command against the hand/arm envelope.
+#   - sandia-spot-bt (0649, no-license, Sandia US): behavior-tree Spot inspection;
+#     validate each motion leaf before the tree ticks it. Strongest institutional.
+#   - vortex-auv (0650, MIT, NTNU NO): AUV GNC; validate a mission setpoint against
+#     depth/thruster/geofence before dispatch.
+#   - agh-kalman-rover (0651, MIT, AGH PL): planetary-analogue rover autonomy;
+#     validate a selected action against drive/manip/power envelope. Space lane.
+#   - southampton-sailing (0652, no-license, Southampton UK): sailing ASV; validate
+#     a helm/trim command against sail/operating/sea-state envelope.
+
+- slug: dex-teleop
+  rfc: 648
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/GeneralTrajectory/dex-teleop/issues/2"
+  channel: github_issue
+  contact: "GeneralTrajectory/dex-teleop (no LICENSE file; US; ~73 stars, Issues enabled, not archived, active 2026-01). VR-based dexterous teleoperation: a human's tracked motion drives an arm plus a multi-fingered hand, recording demonstrations for imitation learning."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0648 body to https://github.com/GeneralTrajectory/dex-teleop/issues/2 under idoco2003 (Move #65 domain-vertical wave), VIBE disclosure up front, no license-ask (no LICENSE file, stated not asked). Teleop-in-the-loop angle. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Weakest fit of the wave (human-in-the-loop teleop); if no reply, do not re-ping."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent."
+  notes: "US, indie. No-license: cross-reference only, never ask. Human-in-the-loop teleop is a softer fit than autonomous dispatch; included as part of the domain sweep."
+
+- slug: sandia-spot-bt
+  rfc: 649
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/sandialabs/spot_bt_ros/issues/1"
+  channel: github_issue
+  contact: "sandialabs/spot_bt_ros (no LICENSE file; Sandia National Laboratories, US; ~18 stars, Issues enabled, not archived, active 2025-10). A ROS 2 behavior-tree layer for driving a Boston Dynamics Spot through inspection missions."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0649 body to https://github.com/sandialabs/spot_bt_ros/issues/1 under idoco2003 (Move #65 domain-vertical wave), VIBE disclosure up front, no license-ask (no LICENSE file, stated not asked). Per-action-leaf admissibility angle. First issue on the repo (#1). Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Strongest institutional target of the wave (US national lab). A substantive reply would be high-value; no aggressive follow-up if silent."
+      status: done
+  next_action: "wait 14-30 d. Sandia is a US national lab; a substantive reply would be a high-value engagement; no aggressive follow-up if silent."
+  notes: "US, Sandia National Laboratories. Behavior-tree leaf = clean per-action validate-before-actuate granularity. No-license: state, never ask. Safety-critical inspection context fits URML's identity."
+
+- slug: vortex-auv
+  rfc: 650
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/vortexntnu/vortex-auv/issues/722"
+  channel: github_issue
+  contact: "vortexntnu/vortex-auv (MIT; Vortex NTNU, the NTNU underwater robotics student team, Trondheim, Norway; ~125 stars, Issues enabled, not archived, active 2026-06). A guidance, navigation, and control stack for autonomous underwater vehicles, dispatching setpoints to thruster control."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: "NO"
+  sector: robot-platform
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0650 body to https://github.com/vortexntnu/vortex-auv/issues/722 under idoco2003 (Move #65 domain-vertical wave), VIBE disclosure up front, no license-ask (MIT). Hook: underwater the cost of an inadmissible action is high; depth/thruster/geofence envelope check before dispatch. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Student team (high turnover) but a substantial active AUV stack; no aggressive follow-up."
+      status: done
+  next_action: "wait 14-30 d. Student team (high turnover) but a substantial active AUV stack; no aggressive follow-up."
+  notes: "Allied (NO). Student competition team, but a real maintained AUV GNC stack (125 stars). MIT. Underwater safety-cost is a strong framing."
+
+- slug: agh-kalman-rover
+  rfc: 651
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/agh-space-systems-rover/kalman_robot/issues/112"
+  channel: github_issue
+  contact: "agh-space-systems-rover/kalman_robot (MIT; AGH Space Systems, Krakow, Poland; ~47 stars, Issues enabled, not archived, active 2026-06). Autonomy software for a planetary-analogue rover: navigation, manipulation, and the action selection that drives the platform across terrain."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: PL
+  sector: robot-platform
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0651 body to https://github.com/agh-space-systems-rover/kalman_robot/issues/112 under idoco2003 (Move #65 domain-vertical wave), VIBE disclosure up front, no license-ask (MIT). Space lane. Hook: power/terrain bound admissibility, oversight intermittent, pre-dispatch check earns its place. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Student space team but a real rover autonomy stack; on-identity space lane; no aggressive follow-up."
+      status: done
+  next_action: "wait 14-30 d. Student space team but a real rover autonomy stack; no aggressive follow-up."
+  notes: "Allied (PL). Student space-robotics team. Space / planetary-analogue is an on-identity vertical (costly wrong action, intermittent oversight). MIT."
+
+- slug: southampton-sailing
+  rfc: 652
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/Maritime-Robotics-Student-Society/sailing-robot/issues/277"
+  channel: github_issue
+  contact: "Maritime-Robotics-Student-Society/sailing-robot (no LICENSE file; University of Southampton, UK; ~92 stars, Issues enabled, not archived, last pushed 2026-03). Autonomy stack for an autonomous sailing vessel: reads wind and sea state, commands helm and sail trim to hold a course."
+  last_touch: "2026-06-29"
+  response: none
+  tier: B
+  country: GB
+  sector: robot-platform
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0652 body to https://github.com/Maritime-Robotics-Student-Society/sailing-robot/issues/277 under idoco2003 (Move #65 domain-vertical wave), VIBE disclosure up front, no license-ask (no LICENSE file, stated not asked). Sail/sea-state envelope angle. Possibly a legacy repo; weakest activity signal of the wave. Awaiting reply."
+  claude_directives:
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Possibly legacy / lightly-maintained; if no reply, do not re-ping."
+      status: done
+  next_action: "wait 14-30 d. May be a legacy / lightly-maintained repo; if no reply, do not re-ping."
+  notes: "Allied (GB). Student maritime society; possibly legacy (recent commit but long-lived repo). No-license: state, never ask. Sailing is an unusual condition-dependent-envelope fit."
