@@ -11,7 +11,7 @@
 # Same fit filter as Move #61: NOT general chat LLMs (the bridge is already
 # provider-agnostic) but models that EMIT physical robot action, where
 # validate-before-actuate has a surface. All posted under idoco2003 as GitHub
-# issues, AI-authoring disclosure (VIBE.md) up front, no license-ask.
+# issues on 2026-06-29, AI-authoring disclosure (VIBE.md) up front, no license-ask.
 #
 # Targets (RFCs 0641-0645):
 #   - embodied-cot (0641, MIT, Warsaw/UT-Austin): reasons out loud then acts;
@@ -26,95 +26,105 @@
 
 - slug: embodied-cot
   rfc: 641
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/MichalZawalski/embodied-CoT/issues/35"
   channel: github_issue
   contact: "MichalZawalski/embodied-CoT (MIT; Michal Zawalski, University of Warsaw with US co-authors; ~400 stars, Issues enabled, not archived, active 2025-04). A vision-language-action policy trained to emit an embodied chain-of-thought (plan, sub-tasks, gripper target) before the action."
-  last_touch: ""
+  last_touch: "2026-06-29"
   response: none
   tier: B
   country: PL
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0641 body to https://github.com/MichalZawalski/embodied-CoT/issues/35 under idoco2003 (Move #63 VLA mini-wave), AI-authoring disclosure up front, no license-ask (MIT). Hook: the explicit reasoning trace is where a pre-actuation capability check is legible. Awaiting maintainer reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "PENDING POST: post RFC-0641 body as a GitHub issue on MichalZawalski/embodied-CoT under idoco2003, AI-authoring disclosure up front, no license-ask (MIT). On post, fill sent_at + posted_url + a comment, flip to done. If engaged, the build is a worked example mapping an ECoT sub-goal+action onto a URML manifest (validated, no execution), like examples/robocasa."
-      status: pending
-  next_action: "Post under idoco2003 (Phase B). Then wait 14-30 d; if silent, no aggressive follow-up; if reply, bump last_touch + set response per enum, offer the worked-example mapping. The reasoning-trace angle is the hook."
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. If engaged, the build is a worked example mapping an ECoT sub-goal+action onto a URML manifest (validated, no execution), like examples/robocasa."
+      status: done
+  next_action: "wait 14-30 d; if silent, no aggressive follow-up; if reply, bump last_touch + set response per enum, offer the worked-example mapping. The reasoning-trace angle is the hook."
   notes: "EU-allied (PL). Cleanest fit of the five: an explicit reasoning trace makes a pre-actuation capability check legible and a rejection explainable. URML composes above the action output; no license-ask."
 
 - slug: baku
   rfc: 642
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/siddhanthaldar/BAKU/issues/23"
   channel: github_issue
   contact: "siddhanthaldar/BAKU (MIT; Siddhant Haldar, NYU / Lerrel Pinto's group; ~130 stars, Issues enabled, not archived, active 2025-03). A transformer architecture for multi-task policy learning, one policy across many tasks, emitting action chunks."
-  last_touch: ""
+  last_touch: "2026-06-29"
   response: none
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0642 body to https://github.com/siddhanthaldar/BAKU/issues/23 under idoco2003 (Move #63 VLA mini-wave), AI-authoring disclosure up front, no license-ask (MIT). Hook: a single multi-task policy is where a per-robot capability check at the action-chunk boundary earns its place. Awaiting reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "PENDING POST: post RFC-0642 body as a GitHub issue on siddhanthaldar/BAKU under idoco2003, AI-authoring disclosure up front, no license-ask (MIT). On post, fill sent_at + posted_url + a comment, flip to done. If engaged, the build is a worked example mapping a BAKU action chunk onto a URML manifest (validated)."
-      status: pending
-  next_action: "Post under idoco2003 (Phase B). Then wait 14-30 d; no aggressive follow-up if silent. Hook: a single multi-task policy is where a per-robot, per-context check earns its place."
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. If engaged, the build is a worked example mapping a BAKU action chunk onto a URML manifest (validated)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Hook: a single multi-task policy is where a per-robot, per-context check earns its place."
   notes: "US (NYU). Multi-task policy = good stress test for a per-robot capability check at the action-chunk boundary. URML composes above the action output; no license-ask."
 
 - slug: human2humanoid
   rfc: 643
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/LeCAR-Lab/human2humanoid/issues/76"
   channel: github_issue
   contact: "LeCAR-Lab/human2humanoid (no LICENSE file; CMU LeCAR lab, Guanya Shi; ~1k stars, Issues enabled, not archived, active 2025-02). Learns whole-body humanoid control from human motion, producing real-time policies that drive a full humanoid body (H2O / OmniH2O lineage)."
-  last_touch: ""
+  last_touch: "2026-06-29"
   response: none
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0643 body to https://github.com/LeCAR-Lab/human2humanoid/issues/76 under idoco2003 (Move #63 VLA mini-wave), AI-authoring disclosure up front. NO LICENSE on the repo: stated, did NOT ask for clarification. Hook: URML's RFC-0384 whole-body / stability block is the manifest a learned humanoid controller directly consumes. Awaiting reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "PENDING POST: post RFC-0643 body as a GitHub issue on LeCAR-Lab/human2humanoid under idoco2003, AI-authoring disclosure up front. NO LICENSE on the repo: state that, do NOT ask for a license clarification (the license-ask is an AI-tell). On post, fill sent_at + posted_url + a comment, flip to done. Strongest spec tie-in (RFC-0384 whole-body); if engaged, a worked example mapping a whole-body command onto an RFC-0384 manifest is the build."
-      status: pending
-  next_action: "Post under idoco2003 (Phase B). Then wait 14-30 d. Hook: URML's RFC-0384 whole-body / stability block (CoM + support polygon) is the manifest a learned humanoid controller is the direct consumer of."
-  notes: "US (CMU). Direct consumer of the RFC-0384 whole-body block. No license file: state it, never ask. URML declares the admissibility envelope; the balancing stays in the controller."
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Strongest spec tie-in (RFC-0384 whole-body); if engaged, a worked example mapping a whole-body command onto an RFC-0384 manifest is the build."
+      status: done
+  next_action: "wait 14-30 d. Hook: URML's RFC-0384 whole-body / stability block (CoM + support polygon) is the manifest a learned humanoid controller is the direct consumer of."
+  notes: "US (CMU). Direct consumer of the RFC-0384 whole-body block. No license file: stated, never asked. URML declares the admissibility envelope; the balancing stays in the controller."
 
 - slug: hpt
   rfc: 644
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/liruiw/HPT/issues/39"
   channel: github_issue
   contact: "liruiw/HPT (MIT; Lirui Wang, MIT; ~540 stars, Issues enabled, not archived, active 2024-12 ~18mo). Heterogeneous Pre-trained Transformers: a shared policy trunk pre-trained across embodiments, with embodiment-specific stems and heads mapping each robot's proprioception and action space onto the shared representation."
-  last_touch: ""
+  last_touch: "2026-06-29"
   response: none
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0644 body to https://github.com/liruiw/HPT/issues/39 under idoco2003 (Move #63 VLA mini-wave), AI-authoring disclosure up front, no license-ask (MIT). Hook: HPT already factors a per-embodiment stem/head; asked whether that per-embodiment action space could double as a declared capability surface. Awaiting reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "PENDING POST: post RFC-0644 body as a GitHub issue on liruiw/HPT under idoco2003, AI-authoring disclosure up front, no license-ask (MIT). On post, fill sent_at + posted_url + a comment, flip to done. Hook: HPT already factors a per-embodiment stem/head; ask whether that per-embodiment action space could double as a declared capability surface."
-      status: pending
-  next_action: "Post under idoco2003 (Phase B). Then wait 14-30 d. Borderline activity (~18mo); if no reply, do not re-ping. Shared worldview (thin per-robot boundary around a substrate-neutral core) is the conversational hook."
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Borderline activity (~18mo); if no reply, do not re-ping."
+      status: done
+  next_action: "wait 14-30 d. Borderline age (~18mo); if no reply, do not re-ping. Shared worldview (thin per-robot boundary around a substrate-neutral core) is the conversational hook."
   notes: "US (MIT). Borderline age (~18mo) but exact conceptual alignment: per-embodiment head <-> per-robot manifest. URML composes at the boundary HPT already draws; no license-ask."
 
 - slug: robopoint
   rfc: 645
-  sent_at: ""
-  posted_url: ""
+  sent_at: "2026-06-29"
+  posted_url: "https://github.com/wentaoyuan/RoboPoint/issues/15"
   channel: github_issue
   contact: "wentaoyuan/RoboPoint (Apache-2.0; Wentao Yuan, University of Washington; ~230 stars, Issues enabled, not archived, active 2025-07). A vision-language model that predicts spatial affordances: given an instruction and an image, it answers where, as keypoints a downstream policy acts on."
-  last_touch: ""
+  last_touch: "2026-06-29"
   response: none
   tier: B
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-06-29"
+      text: "Posted the RFC-0645 body to https://github.com/wentaoyuan/RoboPoint/issues/15 under idoco2003 (Move #63 VLA mini-wave), AI-authoring disclosure up front, no license-ask (Apache-2.0). WEAKEST fit: the body is explicit that URML sits BELOW the point->action step (validates the resulting motion, not the affordance). Awaiting reply."
   claude_directives:
-    - date: "2026-06-28"
-      text: "PENDING POST: post RFC-0645 body as a GitHub issue on wentaoyuan/RoboPoint under idoco2003, AI-authoring disclosure up front, no license-ask (Apache-2.0). On post, fill sent_at + posted_url + a comment, flip to done. WEAKEST fit of the five: the body must be honest that URML sits BELOW the point->action step (validates the resulting motion, not the affordance). Do not overclaim."
-      status: pending
-  next_action: "Post under idoco2003 (Phase B). Then wait 14-30 d. Weakest fit; framed as a layered (not overlapping) relationship. If the maintainer says the downstream motion is out of scope for them, accept it gracefully; no re-ping."
+    - date: "2026-06-29"
+      text: "DONE -- posted 2026-06-29 under idoco2003. Weakest fit; if the maintainer says the downstream motion is out of scope for them, accept gracefully; no re-ping."
+      status: done
+  next_action: "wait 14-30 d. Weakest fit; framed as a layered (not overlapping) relationship. If the maintainer says the downstream motion is out of scope, accept it gracefully; no re-ping."
   notes: "US (UW). Weakest fit, included per the founder's choice to post the clean five. Honest framing: RoboPoint above the point->action step, URML below it. No license-ask."
