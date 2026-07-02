@@ -1,0 +1,61 @@
+# Move #66 outreach ledger. One row per target.
+#
+# Move #66: **the tail of the cold-GitHub vein (2 clean).** The founder asked to
+# keep the volume play moving. Two free-range research agents swept every
+# robotics-intent-consumer lane (platforms / teleop / task-behavior frameworks /
+# fleet / domains). One returned ZERO net-new candidates; the other returned two
+# after fit / activity / dedup / org-over-touch filtering. This is the clearest
+# exhaustion signal of the program: after ~630 contacts across 65 waves, the
+# accessible US/allied cold-GitHub surface that fits validate-before-actuate is
+# essentially mined out. The founder chose to post the clean two. Both posted
+# under idoco2003 on 2026-07-02, VIBE.md disclosure up front, no license-ask.
+#
+# Targets (RFCs 0653-0654):
+#   - gmr (0653, MIT, Stanford US): real-time human->humanoid motion retargeting;
+#     validate the retargeted trajectory against the RFC-0384 whole-body envelope.
+#     Strongest fit + star signal (2.4k).
+#   - neobotix-mpc (0654, MIT, Neobotix DE): MPC local planner for an
+#     omnidirectional mobile base; validate the emitted velocity command against
+#     the platform velocity/accel/footprint envelope before dispatch.
+
+- slug: gmr
+  rfc: 653
+  sent_at: "2026-07-02"
+  posted_url: "https://github.com/YanjieZe/GMR/issues/178"
+  channel: github_issue
+  contact: "YanjieZe/GMR (MIT; Yanjie Ze, Stanford, US; ~2.4k stars, Issues enabled, not archived, active 2026-04). General Motion Retargeting: retargets human motion onto a humanoid in real time, producing robot-specific joint commands the target can execute."
+  last_touch: "2026-07-02"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-07-02"
+      text: "Posted the RFC-0653 body to https://github.com/YanjieZe/GMR/issues/178 under idoco2003 (Move #66), VIBE disclosure up front, no license-ask (MIT). Hook: retargeting is where a source-valid motion can land outside the target's limits; validate the retargeted trajectory against the RFC-0384 whole-body envelope. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-02"
+      text: "DONE -- posted 2026-07-02 under idoco2003. Strongest fit of the wave + big star count (2.4k). If engaged, the build is a worked example mapping a retargeted humanoid motion onto an RFC-0384 manifest (validated, no execution). No license-ask (MIT)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Whole-body-envelope-on-retargeted-trajectory (RFC-0384) is the hook."
+  notes: "US (Stanford). Real-time motion retargeting; direct consumer of the RFC-0384 whole-body block. Strongest target of a near-exhausted surface. MIT."
+
+- slug: neobotix-mpc
+  rfc: 654
+  sent_at: "2026-07-02"
+  posted_url: "https://github.com/neobotix/neo_mpc_planner2/issues/43"
+  channel: github_issue
+  contact: "neobotix/neo_mpc_planner2 (MIT; Neobotix GmbH, Germany; ~65 stars, Issues enabled, not archived, active 2026-01). A model-predictive local planner for omnidirectional mobile bases; computes and emits velocity commands to drive the platform toward a goal under constraints."
+  last_touch: "2026-07-02"
+  response: none
+  tier: B
+  country: DE
+  sector: robot-platform
+  comments:
+    - date: "2026-07-02"
+      text: "Posted the RFC-0654 body to https://github.com/neobotix/neo_mpc_planner2/issues/43 under idoco2003 (Move #66), VIBE disclosure up front, no license-ask (MIT). Hook: the emitted velocity command is the last artifact before motion; validate it against the platform velocity/accel/footprint envelope before it reaches the base. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-02"
+      text: "DONE -- posted 2026-07-02 under idoco2003. A vendor (Neobotix) mobile-base MPC planner; net-new org. If engaged, a worked example mapping a mobile-base velocity setpoint onto a URML manifest (validated). No license-ask (MIT)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. The 'MPC already enforces limits, but a declared platform envelope is a separate cross-check' framing is the hook; the maintainer may push back that constraints live in the MPC."
+  notes: "Allied (DE). Neobotix is a real mobile-robot vendor; net-new org. Planner-emits-velocity is a clean validate-before-actuate seam. MIT."
