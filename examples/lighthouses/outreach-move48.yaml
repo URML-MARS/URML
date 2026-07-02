@@ -110,19 +110,24 @@
   posted_url: "https://github.com/AVSLab/bsk_rl/issues/341"
   channel: github_issue
   contact: "AVSLab/bsk_rl (MIT, ~116 stars, Issues enabled, not archived, very active 2026-06). RL environments + tools for spacecraft autonomy (planning/scheduling) on Basilisk. CU Boulder Autonomous Vehicle Systems Lab, US."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-07-02"
+  response: declined
   tier: A
   country: US
   sector: ai-language
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0532 body to https://github.com/AVSLab/bsk_rl/issues/341 under idoco2003 (Move #48 domain/standards/conceptual-peer wave). Awaiting response."
+    - date: "2026-07-02"
+      text: "Mark2000 (bsk_rl lead, CU Boulder AVS Lab) closed #341 on 2026-07-02 with no comment, state_reason=completed. A silent maintainer close: read and closed without taking it up. No hostility, no AI-spam flag. Recorded declined. No reply (re-pinging a maintainer who silently closed the proposal is bad form); accept the close. Same handling as the aerial-autonomy-stack (#88) and iCub (#1064) silent closes."
   claude_directives:
     - date: "2026-06-13"
-      text: "When authorized, post the posts-move48.md bsk-rl body as a GitHub Issue on AVSLab/bsk_rl under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+      text: "Posted the posts-move48.md bsk-rl body as a GitHub Issue on AVSLab/bsk_rl under idoco2003; sent_at / posted_url / last_touch set; posted comment added."
       status: done
-  next_action: "Await founder authorization. Spacecraft RL planning/scheduling -> task intent + constraint envelope; trained policy -> LearnedPolicy envelope (RFC-0383). Space."
+    - date: "2026-07-02"
+      text: "Closed declined (silent maintainer close by Mark2000, reason=completed). No reply, no re-ping. Accept and move on. Space-domain RL scheduling stayed a proposal; re-engage only on a real trigger (a maintainer comments, or a working LearnedPolicy-envelope demo on a bsk_rl policy exists to anchor a concrete touch)."
+      status: done
+  next_action: "No re-ping. Silent maintainer close by Mark2000. Re-engage only on a real trigger; the RFC-0383 LearnedPolicy-envelope angle stands on its own if a user-side demand surfaces."
   notes: "Tier A. MIT. Spacecraft autonomy RL; ties RFC-0383."
 
 - slug: px4-space-systems
