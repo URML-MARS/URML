@@ -1,0 +1,29 @@
+URML on a Robotiq Hand-E - issue robotiq_hande_driver#44.
+A single-DoF parallel-jaw gripper, declared as an ordinary (non-dexterous)
+gripper with a force envelope. URML checks a grasp against that envelope
+before the command reaches the ros2_control hardware interface.
+gripper: hand_e   kind: servo_electric   force envelope: 20.0 - 185.0 N   accepts: small_part
+
+# 1. A grasp inside the declared envelope (validate before actuate)
+
+[VALID] grasp small_part at 60.0 N
+   60.0 N is within the declared 20.0 - 185.0 N envelope; the grasp is admissible.
+
+# 2. The same grasp over the declared force cap
+
+[REJECTED] grasp small_part at 250.0 N
+   -> capability.missing_gripper, envelope.force_exceeded
+   capability.missing_gripper: no declared gripper supports the requested force (250.0 N). Declared ranges: [('hand_e', 20.0, 185.0)].
+   envelope.force_exceeded:    grasp.force (250.0 N) exceeds the strictest declared force cap (185.0 N).
+   Both fire because 250 N is outside the declared 20.0 - 185.0 N range:
+   no declared gripper is rated for it, and it exceeds the force cap.
+
+# What the manifest declares (and what it does not)
+
+  URML's simple-gripper model states a force range and the object classes
+  the gripper accepts. That force range is first-class and enforced above.
+  There is no explicit aperture field: on a single-DoF gripper, 'what fits'
+  is carried by accepted_classes and 'how hard' is the force envelope. The
+  ros2_control hardware interface keeps the actuation (Modbus / UR tool comm /
+  the fake backend); URML is only the pre-dispatch admissibility check, and it
+  behaves identically across those backends because it runs before the command.
