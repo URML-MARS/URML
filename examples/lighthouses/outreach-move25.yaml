@@ -183,19 +183,24 @@
   posted_url: "https://github.com/ceres-solver/ceres-solver/issues/1201"
   channel: github_issue
   contact: "ceres-solver/ceres-solver (general nonlinear least-squares optimizer underlying much SLAM / calibration / bundle adjustment; ~4,491 stars, Issues AND Discussions enabled, not archived, last push 2026-05-31). License not SPDX-detected by gh (understood BSD-3-Clause; asked). Google (US)."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-07-03"
+  response: engaged
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-02"
       text: "Posted issue #1201 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
+    - date: "2026-07-03"
+      text: "sandwichmaker (Ceres maintainer, CONTRIBUTOR) answered + closed #1201 (state_reason=completed) with a substantive, affirming reply: 'URML should talk to the estimator built on Ceres and never to Ceres itself is the correct answer' and confirmed BSD-3-Clause. A maintainer validating URML's altitude discipline (URML sits above the estimator, never at the raw solver). Promoted to engaged (resolved-positive close). Replied under idoco2003 (#1201 comment 4878484475): thanked him, agreed the honest answer to my own boundary question is 'no direct contact point, correct by design.'"
   claude_directives:
     - date: "2026-06-02"
-      text: "After RFC-0338 merges, post the posts-move25.md Ceres body on ceres-solver/ceres-solver under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep it short and honest; deepest substrate layer in the wave."
+      text: "Posted the Ceres body on ceres-solver/ceres-solver under idoco2003; sent_at / posted_url / last_touch set; posted comment. Deepest substrate layer in the wave."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+    - date: "2026-07-03"
+      text: "ENGAGED (resolved-positive close by a Ceres maintainer). No re-ping needed; the boundary question is answered and confirmed. No build owed (URML deliberately has NO contact point with a raw optimization backend; that is the point). Note the license was ASKED in the original post (license-ask tell) but drew no hostility here; keep avoiding it going forward. Cross-link RFC-0333 (GTSAM peer backend)."
+      status: done
+  next_action: "Resolved-positive. No re-ping. If GTSAM (RFC-0333) or another estimator engages, the consume-the-estimate framing is now maintainer-endorsed and can be cited."
   notes: "Move #25 optimization backend (deepest layer, lowest direct fit, stated). Below URML's altitude; recorded for ecosystem completeness. Cross-link RFC-0333 (GTSAM, peer backend). Origin US (Google). Verified 2026-06-02."
 
 - slug: fuse
