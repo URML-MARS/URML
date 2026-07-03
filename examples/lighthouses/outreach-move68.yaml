@@ -1,0 +1,85 @@
+# Move #68 outreach ledger. One row per target.
+#
+# Move #68: **Japan lane.** The founder noted a strong robotics vibe in Japan
+# (US-allied, in scope) and asked to search Japanese repos. A focused Japan
+# search found a dense but narrow surface: AIST's Intelligent Systems Research
+# Institute (isri-aist) dominates open humanoid control (6 sibling repos), rt-net
+# / RT Corporation (Tokyo) makes education arms, Mujin (Tokyo) does warehouse
+# automation. Applied ANCHOR-PER-ORG so the AIST cluster gets ONE touch (not 6),
+# and swapped rt-net's description-only package for its real arm-control repo.
+# The industrial OEMs (Kawasaki/FANUC/Yaskawa/Denso/Mitsubishi Move #1) and
+# U-Tokyo JSK (Move #6) were already contacted. 3 posted under idoco2003 on
+# 2026-07-03, VIBE.md disclosure up front, no license-ask.
+#
+# Targets (RFCs 0659-0661):
+#   - aist-baseline-walking (0659, BSD-2, AIST JP): humanoid bipedal walking
+#     controller; validate a whole-body motion vs the RFC-0384 stability envelope.
+#     Anchor for the AIST humanoid-control cluster (centroidal / multi-contact /
+#     force / NMPC / locomanip siblings folded into this one touch).
+#   - rtnet-crane-x7 (0660, Apache, RT Corp Tokyo): CRANE-X7 7-DoF education arm
+#     ROS stack; validate a motion/grasp vs reach/payload/gripper-force.
+#   - mujin-controllerclient (0661, Apache, Mujin Tokyo): C++ client to the Mujin
+#     controller; validate the outgoing command before send. Honest weak fit.
+
+- slug: aist-baseline-walking
+  rfc: 659
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/isri-aist/BaselineWalkingController/issues/40"
+  channel: github_issue
+  contact: "isri-aist/BaselineWalkingController (BSD-2-Clause; AIST, Intelligent Systems Research Institute, Japan national lab; ~165 stars, Issues enabled, not archived, active 2026-03). A bipedal walking controller commanding whole-body motion for a humanoid; one of a family (centroidal control, multi-contact, NMPC, force control, locomanip)."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: JP
+  sector: framework-skill
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0659 body to https://github.com/isri-aist/BaselineWalkingController/issues/40 under idoco2003 (Move #68 Japan lane), VIBE disclosure up front, no license-ask (BSD-2). ANCHOR for the AIST humanoid-control cluster: mentioned the sibling components (centroidal/multi-contact/force/NMPC) rather than posting to each (anchor-per-org, no carpet-bombing one lab). Hook: a walking controller commands the whole body; validate vs the RFC-0384 stability envelope. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Strongest Japan target (AIST national lab, 165 stars, RFC-0384 whole-body fit). The 5 sibling isri-aist repos (CentroidalControlCollection, MultiContactController, LocomanipController, ForceControlCollection, NMPC) are DELIBERATELY folded into this one touch; do NOT post to them separately. If engaged, a worked example mapping a whole-body motion onto an RFC-0384 manifest."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. If engaged and they want the sibling controllers covered, that is one conversation, not five issues."
+  notes: "Japan (AIST national lab). Direct consumer of the RFC-0384 whole-body block. Anchor-per-org: 5 siblings folded. BSD-2. Densest single-org Japan robotics-control presence."
+
+- slug: rtnet-crane-x7
+  rfc: 660
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/rt-net/crane_x7_ros/issues/217"
+  channel: github_issue
+  contact: "rt-net/crane_x7_ros (Apache-2.0; RT Corporation, Tokyo, Japan; ~127 stars, Issues enabled, not archived, active 2026-07). The ROS control stack for CRANE-X7, a 7-DoF desktop research and education arm."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: JP
+  sector: robot-platform
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0660 body to https://github.com/rt-net/crane_x7_ros/issues/217 under idoco2003 (Move #68 Japan lane), VIBE disclosure up front, no license-ask (Apache-2.0). Note: swapped the agent's original pick (rt-net/raspimouse_description, description-only = wrong fit) for this real arm-control stack. Hook: a small teaching arm with well-defined reach/payload/gripper-force; validate a motion/grasp pre-dispatch, legible to a student. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Strong fit (real 7-DoF arm, clean manipulation envelope). RT Corp also makes Sciurus17 (dual-arm) + CRANE+ + Raspberry Pi Mouse; do NOT carpet-bomb rt-net -- crane_x7_ros is the anchor. Teaching-material framing is the hook. If engaged, a worked example mapping a CRANE-X7 grasp onto a URML manifest."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Education/teaching-arm angle; a worked example doubles as classroom material."
+  notes: "Japan (RT Corporation Tokyo). CRANE-X7 7-DoF education arm; clean validate-before-actuate manipulation fit. Anchor for rt-net (Sciurus17/CRANE+/Raspberry Pi Mouse folded). Apache-2.0."
+
+- slug: mujin-controllerclient
+  rfc: 661
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/mujin/controllerclientcpp/issues/198"
+  channel: github_issue
+  contact: "Mujin/controllerclientcpp (Apache-2.0; Mujin, Tokyo, Japan; warehouse/logistics robotics-automation company; ~11 stars, Issues enabled, not archived, active 2026-06). The C++ client for talking to a Mujin robot controller: sends motion commands to the platform and reads state back."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: JP
+  sector: framework-skill
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0661 body to https://github.com/mujin/controllerclientcpp/issues/198 under idoco2003 (Move #68 Japan lane), VIBE disclosure up front, no license-ask (Apache-2.0). WEAKEST fit of the wave; the body is honest that this is the client to a closed Mujin controller (which holds the real planning + safety), so URML's role is narrower than for an autonomy layer. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Weakest fit (client to a closed platform); included per the founder's choice to post all three. Mujin is a notable Tokyo robotics company. If they say the check belongs inside the controller, accept it gracefully. Do NOT post to other Mujin client repos (anchor-per-org). No license-ask (Apache-2.0)."
+      status: done
+  next_action: "wait 14-30 d. Weakest fit; if silent or 'belongs in the controller', accept and do not re-ping."
+  notes: "Japan (Mujin Tokyo). Controller client = infrastructure-tier fit, stated honestly. Notable warehouse-automation company. Apache-2.0."
