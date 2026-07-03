@@ -840,6 +840,8 @@ A deliberate shape break from the robotics-consumer waves (Moves #1-#61). Moltbo
 | [0650](0650-vortex-auv-outreach.md) | Outreach | Vortex AUV (`vortexntnu/vortex-auv`) integration; Move #65 (domain-vertical lane); AUV guidance-nav-control stack — validate a mission setpoint against depth/thruster/geofence envelope before dispatch; no spec change; MIT, Vortex NTNU, NO | Draft | 2026-06-29 |
 | [0651](0651-agh-kalman-rover-outreach.md) | Outreach | AGH Space `kalman_robot` integration; Move #65 (domain-vertical lane); planetary-analogue rover autonomy — validate a selected action against drive/manipulation/power envelope before dispatch; no spec change; MIT, AGH Space Systems, PL | Draft | 2026-06-29 |
 | [0652](0652-southampton-sailing-robot-outreach.md) | Outreach | Southampton `sailing-robot` integration; Move #65 (domain-vertical lane); autonomous sailing-vessel stack — validate a helm/trim command against sail-limit + operating-boundary + sea-state envelope before dispatch; no spec change; no-license (cross-ref only), U Southampton, UK | Draft | 2026-06-29 |
+| [0653](0653-gmr-outreach.md) | Outreach | GMR General Motion Retargeting (`YanjieZe/GMR`) integration; Move #66; real-time human→humanoid motion retargeting — validate the retargeted trajectory against the target's RFC-0384 whole-body / stability envelope before it runs; no spec change; MIT, Stanford, US | Draft | 2026-07-02 |
+| [0654](0654-neobotix-mpc-outreach.md) | Outreach | Neobotix `neo_mpc_planner2` integration; Move #66; MPC local planner for an omnidirectional mobile base — validate the emitted velocity command against the platform's velocity/accel/footprint envelope before dispatch; no spec change; MIT, Neobotix, DE | Draft | 2026-07-02 |
 
 ## Lifecycle states
 
