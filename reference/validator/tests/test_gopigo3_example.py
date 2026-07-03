@@ -10,6 +10,7 @@ GoPiGo3 through GoPiGo3Adapter, no ROS). Hermetic: the example injects a fake
 from __future__ import annotations
 
 import importlib.util
+import math
 import sys
 from pathlib import Path
 
@@ -54,6 +55,32 @@ def test_validated_intent_lowers_to_wheel_calls() -> None:
     assert "drive_by     -> easygopigo3.drive_cm(100.0)" in report
     assert "emit_speech  -> espeak 'Driving forward 1 meter'" in report
     assert "turn_by      -> easygopigo3.turn_degrees(90.0)" in report
+
+
+def test_arc_drive_lowers_distance_to_orbit_radius() -> None:
+    """RFC-0630: `drive.distance` is the path length swept over `arc`, so the arc
+    radius is distance / arc-in-radians, not distance itself (Discussion #572).
+
+    "Orbit 180 degrees with a 5 cm radius" is a 0.157 m arc (pi x 0.05), and must
+    lower to easygopigo3.orbit(180, 5.0). Regression for the bug where `distance`
+    was passed straight in as the orbit radius.
+    """
+    if str(EX) not in sys.path:
+        sys.path.insert(0, str(EX))
+    from gopigo3_adapter import GoPiGo3Adapter
+
+    class _FakeBot:
+        def __init__(self) -> None:
+            self.calls: list[tuple[float, float]] = []
+
+        def orbit(self, degrees: float, radius_cm: float) -> None:
+            self.calls.append((round(degrees, 1), round(radius_cm, 1)))
+
+    adapter = GoPiGo3Adapter()
+    adapter._gpg = _FakeBot()  # bypass the lazy easygopigo3 import (hermetic)
+    adapter.drive_by(distance=math.pi * 0.05, arc=180.0)  # 5 cm radius, half circle
+    assert adapter._gpg.calls == [(180.0, 5.0)]
+    assert adapter.call_log[-1]["hw"] == "orbit(180.0, 5.0)"
 
 
 def test_default_is_a_dry_run_that_cannot_move_a_robot() -> None:
