@@ -1,0 +1,110 @@
+# Move #67 outreach ledger. One row per target.
+#
+# Move #67: **the newest VLA / robot-LLM residue (4 clean US/allied).** The
+# founder asked to reach out to more "LLMs"; the on-fit reading is VLA /
+# robot-foundation / embodied-policy models (the bridge is already
+# provider-agnostic, so general chat models are not the fit). A focused search
+# of the newest (2026-04+) releases, deduped against ~636 prior contacts and the
+# heavily-mined VLA exclusion list, and with STRICT origin scrutiny (the search
+# agent mislabeled several PRC repos as US), yielded 4 clean US/allied net-new.
+# The larger remaining volume is PRC open-weight academic (MemoryVLA/Tsinghua,
+# DOMINO/HUST, ReconVLA/OpenHelix, Tencent Hunyuan-VLA, etc.) -- deferred per
+# RFC-0003; founder kept the bar. All 4 posted under idoco2003 on 2026-07-03,
+# VIBE.md disclosure up front, no license-ask.
+#
+# Targets (RFCs 0655-0658):
+#   - vitra (0655, MIT, Microsoft US): VLA pretrained on human-activity video ->
+#     manipulation actions; validate the emitted action vs the target envelope.
+#     (Note: Microsoft/Magma was Move #61; VITRA is a distinct MSR project.)
+#   - robotcontrolstack (0656, AGPL-3.0, Ai2+EU): ROS-free sim-to-real VLA/RL
+#     trainer+deployer; validate the policy's action at the sim-to-real boundary.
+#     AGPL -> cross-cite, no code reuse.
+#   - verigraph (0657, MIT, BYU US): scene-graph verifiable planning; the closest
+#     conceptual sibling -- semantic scene-verification + capability admissibility
+#     as two independent gates on the same action.
+#   - airo-mono (0658, MIT, Ghent BE): manipulation library; weakest (infrastructure)
+#     fit, stated honestly in the body.
+
+- slug: vitra
+  rfc: 655
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/microsoft/VITRA/issues/41"
+  channel: github_issue
+  contact: "microsoft/VITRA (MIT; Microsoft Research, US; ICRA 2026; ~426 stars, Issues enabled, not archived, active 2026-06). A scalable vision-language-action model pretrained on real-life human-activity video, emitting manipulation actions."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0655 body to https://github.com/microsoft/VITRA/issues/41 under idoco2003 (Move #67), VIBE disclosure up front, no license-ask (MIT). Hook: a VLA learns from human video; what a human demonstrated is not automatically admissible on the target robot; validate the emitted action vs the declared envelope. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Flagship of the wave (MSR, 426 stars). Note: Microsoft/Magma was contacted in Move #61; VITRA is a distinct MSR robotics project, so this is not a lab over-touch, but do not pitch Microsoft more broadly. If engaged, a worked example mapping a VITRA action onto a URML manifest (validated). No license-ask (MIT)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent."
+  notes: "US (Microsoft Research). Human-video-pretrained VLA; strong fit. Second Microsoft touch (after Magma) but a different project/team; not a lab over-touch. MIT."
+
+- slug: robotcontrolstack
+  rfc: 656
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/RobotControlStack/robot-control-stack/issues/316"
+  channel: github_issue
+  contact: "RobotControlStack/robot-control-stack (AGPL-3.0; lead Tobias Julg at Ai2/Seattle with EU co-authors (Pierre Krack, Seongjin Bien); ICRA 2026; ~119 stars, Issues enabled, not archived, active 2026-06). A lean, ROS-free framework for training and deploying VLA models and RL agents, sim-to-real for Franka / UR5e / xArm / SO-101."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0656 body to https://github.com/RobotControlStack/robot-control-stack/issues/316 under idoco2003 (Move #67), VIBE disclosure up front. AGPL-3.0: stated explicitly as a cross-reference, no code reuse either direction (no license-ask). Hook: the sim-to-real deploy step is exactly the validate-before-actuate boundary; validate the policy's action vs the real arm's envelope before deployment dispatches it. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Strong fit (sim-to-real deploy = the validate-before-actuate seam). Origin verified US/allied (Ai2 lead + EU co-authors), NOT PRC. AGPL: cross-cite only, never reuse code. If engaged, a worked example mapping a deployed action onto a URML manifest."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. The sim-to-real boundary framing is the hook."
+  notes: "US/allied (Ai2 Seattle + EU). AGPL-3.0: cross-reference only. Sim-to-real VLA/RL deploy stack; the deploy boundary is a clean URML seam. Origin scrutinized (author names read German but lead is Ai2/US)."
+
+- slug: verigraph
+  rfc: 657
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/daniekpo/verigraph/issues/2"
+  channel: github_issue
+  contact: "daniekpo/verigraph (MIT; Daniel Ekpo, Brigham Young University, US; ICRA 2026; ~12 stars, Issues enabled, not archived, active 2026-04). Scene graphs for verifiable robot planning: produces action sequences checkable against the scene before execution."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: US
+  sector: ai-language
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0657 body to https://github.com/daniekpo/verigraph/issues/2 under idoco2003 (Move #67), VIBE disclosure up front, no license-ask (MIT). Hook: closest conceptual sibling URML has found -- VeriGraph verifies an action against the scene (semantic), URML verifies it against the robot (capability); the two compose as independent gates. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Small (12 stars) but the strongest CONCEPTUAL fit of the wave (verifiable planning ~ validate-before-actuate). A peer conversation, not a vendor pitch. If engaged, a worked example composing a VeriGraph-verified action through a URML manifest check. No license-ask (MIT)."
+      status: done
+  next_action: "wait 14-30 d. Peer-to-peer verifiability conversation; if he engages, the compose-two-gates framing is the substance."
+  notes: "US (BYU, Daniel Ekpo). Tiny repo but on-theme like no other target: verifiable robot planning. Semantic-scene-check + capability-admissibility-check compose. MIT."
+
+- slug: airo-mono
+  rfc: 658
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/airo-ugent/airo-mono/issues/204"
+  channel: github_issue
+  contact: "airo-ugent/airo-mono (MIT; AI and Robotics Lab (AIRO), Ghent University, Belgium; ~30 stars, Issues enabled, not archived, active 2026-07). A Python library for robotic manipulation: the shared building blocks the lab's projects use to command arms and grippers."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: BE
+  sector: framework-skill
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0658 body to https://github.com/airo-ugent/airo-mono/issues/204 under idoco2003 (Move #67), VIBE disclosure up front, no license-ask (MIT). WEAKEST fit of the wave; the body is honest that airo-mono is infrastructure, not a model, so URML's value is narrower than for an autonomy layer. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Weakest fit (a manipulation library, not an action-emitting model); included per the founder's choice to post all four. Real EU university lab. If they say the check belongs in each project not the library, accept it gracefully. No license-ask (MIT)."
+      status: done
+  next_action: "wait 14-30 d. Weakest fit; if silent or a polite 'belongs elsewhere', accept and do not re-ping."
+  notes: "Allied (BE, Ghent AIRO). Manipulation library = infrastructure-tier fit, stated honestly. Real university lab. MIT."
