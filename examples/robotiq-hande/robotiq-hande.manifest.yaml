@@ -1,0 +1,75 @@
+# Manifest for the robotiq-hande worked example (Discussion / issue
+# AGH-CEAI/robotiq_hande_driver#44).
+#
+# A Robotiq Hand-E is a single-DoF parallel-jaw gripper: an aperture and a
+# commanded force, no dexterity. So it is declared as an ordinary (non-dexterous)
+# gripper. URML's Gripper model states the force range (force_min_n / force_max_n)
+# and the object classes the gripper accepts; that force range is the envelope
+# the validator checks a grasp against. There is no explicit aperture field: on a
+# simple gripper, "what fits" is carried by accepted_classes, and "how hard" is
+# the force envelope. See the README for why that is the honest mapping.
+#
+# The Hand-E's real force range is ~20 to 185 N. US provenance is declared so the
+# bundled US-federal default policy accepts it; the example also runs --no-policy.
+
+manifest_version: "0.1"
+robot_id: robotiq_hande_cell
+description: A single arm carrying a Robotiq Hand-E parallel-jaw gripper.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: parts_bin
+    pose: { x: 0.40, y: -0.20, z: 0.08 }
+    frame: cell
+    description: Source bin for small parts.
+  - name: assembly_fixture
+    pose: { x: -0.30, y: 0.20, z: 0.10 }
+    frame: cell
+    description: Destination fixture.
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: hand_e
+      kind: servo_electric
+      force_min_n: 20.0
+      force_max_n: 185.0
+      accepted_classes: [small_part]
+      movable: true
+  reachable_workspace_m: 0.75
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - small_part
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: hande_gripper_driver
+      role: critical
+      vendor: robotiq
+      country_of_origin: CA
+      country_of_final_assembly: CA
