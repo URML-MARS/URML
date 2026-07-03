@@ -26,6 +26,7 @@ https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
 
 from __future__ import annotations
 
+import math
 import subprocess
 import sys
 from typing import Any, Callable, Literal
@@ -145,12 +146,14 @@ class GoPiGo3Adapter:
         """Drive a signed distance (m). With `arc` (signed degrees) follow a curve."""
         gpg = self._robot()
         cm = distance * 100.0
-        if arc is None:
+        if arc is None or arc == 0:
             gpg.drive_cm(cm)
             hw = f"drive_cm({cm:.1f})"
         else:
-            # easygopigo3.orbit(degrees, radius_cm) sweeps an arc.
-            radius_cm = abs(cm)
+            # RFC-0630: `distance` is the path length swept over `arc` degrees, so
+            # the arc radius is distance / arc-in-radians. easygopigo3.orbit takes
+            # (degrees, radius_cm), a radius, not a path length.
+            radius_cm = abs(cm) / abs(math.radians(arc))
             gpg.orbit(arc, radius_cm)
             hw = f"orbit({arc:.1f}, {radius_cm:.1f})"
         self.call_log.append({"method": "drive_by", "distance": distance, "arc": arc, "hw": hw})
