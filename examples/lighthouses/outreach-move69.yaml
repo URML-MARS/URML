@@ -1,0 +1,85 @@
+# Move #69 outreach ledger. One row per target.
+#
+# Move #69: **South Korea lane.** The founder asked to search Korean repos
+# (US-allied, in scope). A focused Korea search found the big platforms already
+# contacted (ROBOTIS Moves #4/#8/#35, Doosan Move #36) and a moderately thin
+# net-new surface: Rainbow Robotics (RB-Y1 bimanual mobile manipulator, HUBO
+# heritage), Neuromeka (Indy cobot), HD Hyundai Robotics (industrial arm driver).
+# Anchor-per-org applied (siblings folded). Hyundai is a weaker fit (3-star ROS 2
+# driver, and HD Hyundai is already named institutionally in RFC-0038's
+# ROS-Industrial context); posted per the founder's explicit choice, with the
+# consortium overlap disclosed in the body. 3 posted under idoco2003 on
+# 2026-07-03, VIBE.md disclosure up front, no license-ask.
+#
+# Targets (RFCs 0662-0664):
+#   - rainbow-rby1 (0662, Apache, Rainbow Robotics KR): RB-Y1 bimanual mobile
+#     manipulator SDK; one check spanning arm/gripper/base/whole-body (RFC-0384).
+#     Strongest. Siblings folded: rby1_ros2_moveit, rbpodo_ros2.
+#   - neuromeka-indy (0663, no-license, Neuromeka KR): Indy collaborative-arm ROS 2
+#     package; validate motion/grasp vs reach/payload/gripper-force/collab-speed.
+#     Sibling folded: moby-ros2.
+#   - hyundai-hdr (0664, BSD-3, HD Hyundai Robotics KR): ROS 2 driver to industrial
+#     arms; validate the outgoing command. Weakest fit; complements RFC-0038.
+
+- slug: rainbow-rby1
+  rfc: 662
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/RainbowRobotics/rby1-sdk/issues/154"
+  channel: github_issue
+  contact: "RainbowRobotics/rby1-sdk (Apache-2.0; Rainbow Robotics, South Korea (org loc 'Korea, South'); ~62 stars, Issues enabled, not archived, active 2026-05). Official Python and C++ SDK for the RB-Y1, a wheeled bimanual mobile manipulator."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: KR
+  sector: robot-platform
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0662 body to https://github.com/RainbowRobotics/rby1-sdk/issues/154 under idoco2003 (Move #69 South Korea lane), VIBE disclosure up front, no license-ask (Apache-2.0). Hook: a bimanual mobile manipulator spans arm/gripper/base/whole-body limits; one URML manifest covers them all (RFC-0384 for the body). ANCHOR for Rainbow (rby1_ros2_moveit, rbpodo_ros2 folded). Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Strongest Korea target (real humanoid/cobot maker, HUBO heritage, 62 stars, Apache). Anchor-per-org: do NOT post to rby1_ros2_moveit / rbpodo_ros2 separately. If engaged, a worked example mapping an RB-Y1 command onto a URML manifest (arm+base+whole-body)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Bimanual-mobile-manipulator one-check-covers-all-subsystems is the hook."
+  notes: "Korea (Rainbow Robotics). RB-Y1 bimanual mobile manipulator; strong multi-subsystem fit + RFC-0384. Apache-2.0. Best of the Korea wave."
+
+- slug: neuromeka-indy
+  rfc: 663
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/neuromeka-robotics/indy-ros2/issues/9"
+  channel: github_issue
+  contact: "neuromeka-robotics/indy-ros2 (no LICENSE file; Neuromeka, South Korea; collaborative-robot company; ~14 stars, Issues enabled, not archived, active 2026-07). The ROS 2 package for the Indy collaborative arm."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: KR
+  sector: robot-platform
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0663 body to https://github.com/neuromeka-robotics/indy-ros2/issues/9 under idoco2003 (Move #69 South Korea lane), VIBE disclosure up front. NO LICENSE file: stated as a cross-reference, did NOT ask for a license clarification. Hook: a collaborative arm near people; validate reach/payload/gripper-force/collab-speed pre-dispatch. Sibling moby-ros2 folded. Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003. Moderate fit (real Korean cobot company, modest 14-star footprint). No-license: cross-reference only, never ask. Anchor-per-org (moby-ros2 folded). If engaged, a worked example mapping an Indy grasp onto a URML manifest."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Collaborative-arm safety-envelope angle."
+  notes: "Korea (Neuromeka, Seoul-area cobot company). Indy cobot ROS 2 package; clean collaborative-arm fit. No license file: state, never ask. Modest GitHub footprint."
+
+- slug: hyundai-hdr
+  rfc: 664
+  sent_at: "2026-07-03"
+  posted_url: "https://github.com/hyundai-robotics/hdr_ros2_driver/issues/2"
+  channel: github_issue
+  contact: "hyundai-robotics/hdr_ros2_driver (BSD-3-Clause; HD Hyundai Robotics, South Korea (org loc 'Korea, South'); ~3 stars, Issues enabled, not archived, active 2025-12). The ROS 2 driver for HD Hyundai industrial robot arms: communication nodes interfacing with the robot controllers."
+  last_touch: "2026-07-03"
+  response: none
+  tier: B
+  country: KR
+  sector: robot-platform
+  comments:
+    - date: "2026-07-03"
+      text: "Posted the RFC-0664 body to https://github.com/hyundai-robotics/hdr_ros2_driver/issues/2 under idoco2003 (Move #69 South Korea lane), VIBE disclosure up front, no license-ask (BSD-3). WEAKEST fit of the wave (a 3-star ROS 2 driver; the controller holds the real planning/safety). Body discloses that HD Hyundai is already in RFC-0038's ROS-Industrial Consortium context and frames this as complementary. Posted per the founder's explicit choice (I had advised dropping it). Awaiting reply."
+  claude_directives:
+    - date: "2026-07-03"
+      text: "DONE -- posted 2026-07-03 under idoco2003 per founder choice (I recommended dropping: 3 stars + RFC-0038 consortium overlap). Weakest fit. Do NOT post to hdr_client_driver / hdr_description (anchor-per-org). If engaged, the ROS-Industrial consortium (RFC-0038) is the more natural home; coordinate so the two do not fragment. No license-ask (BSD-3)."
+      status: done
+  next_action: "wait 14-30 d. Weakest fit; if silent, do not re-ping; if HD Hyundai wants to engage at scale, route via the RFC-0038 consortium context."
+  notes: "Korea (HD Hyundai Robotics). Industrial-arm ROS 2 driver; driver-tier fit. Already named in RFC-0038 (ROS-Industrial). Thin GitHub signal (3 stars). Included per founder override of my drop recommendation. BSD-3."
