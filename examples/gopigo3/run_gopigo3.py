@@ -172,7 +172,8 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
         return
 
     spoken: list[str] = []
-    adapter = GoPiGo3Adapter(speak=spoken.append)
+    # adapter = GoPiGo3Adapter(speak=spoken.append)
+    adapter = GoPiGo3Adapter(speak=None)
     runtime = URMLRuntime(adapter)
     run = runtime.execute(program, manifest, profiles=profiles)
 
@@ -183,7 +184,7 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
         if method in ("drive_by", "turn_by"):
             lines.append(f"     {method:12} -> easygopigo3.{entry['hw']}")
         elif method == "emit_speech":
-            lines.append(f"     {method:12} -> espeak {entry['utterance']!r}")
+            lines.append(f"     {method:12} -> espeak-ng {entry['utterance']!r}")
         else:
             lines.append(f"     {method}")
     lines.append("")

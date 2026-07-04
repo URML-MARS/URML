@@ -30,6 +30,7 @@ import math
 import subprocess
 import sys
 from typing import Any, Callable, Literal
+from time import sleep
 
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
@@ -56,27 +57,34 @@ _NOT_APPLICABLE = "not_applicable_ground: {capability} has no meaning for a grou
 def _espeak(utterance: str) -> None:
     """Default speech backend: espeak on the Pi.
 
-    Speaks the utterance via espeak, and says so out loud (on stderr) when it
+    Speaks the utterance via espeak-ng, and says so out loud (on stderr) when it
     cannot, so a silent robot is explained rather than mysterious. If your robot
     has its own speech path (for example a ROS say node), pass your own callable
     as ``GoPiGo3Adapter(speak=...)`` instead of relying on espeak.
     """
     try:
-        result = subprocess.run(["espeak", utterance], check=False)
+        result = subprocess.run(['espeak-ng "%s"' % utterance], shell=True)
     except FileNotFoundError:
         print(
-            f"[gopigo3 speak] espeak is not installed, so {utterance!r} was not "
-            "spoken. Install espeak, or pass a speak= backend to GoPiGo3Adapter.",
+            f"[gopigo3 speak] espeak-ng is not installed, so {utterance!r} was not "
+            "spoken. Install espeak-ng, or pass a speak= backend to GoPiGo3Adapter.",
             file=sys.stderr,
         )
         return
     if result.returncode != 0:
         print(
-            f"[gopigo3 speak] espeak exited {result.returncode}; {utterance!r} may "
+            f"[gopigo3 speak] espeak-ng exited {result.returncode}; {utterance!r} may "
             "not have been audible (check the Pi's audio output device).",
             file=sys.stderr,
         )
 
+def _wait_passively(duration_seconds: float) -> None:
+   """ Default wait backend: using OS sleep().
+   """
+   try:
+      result = sleep(duration_seconds)
+   except Exception as e:
+      print(f"_wait_passively exception: {e}")
 
 class GoPiGo3Adapter:
     """Drives a basic GoPiGo3 from URML intent over ``easygopigo3`` (no ROS).
@@ -91,6 +99,7 @@ class GoPiGo3Adapter:
 
     def __init__(self, *, speak: Callable[[str], None] | None = None) -> None:
         self._speak = speak or _espeak
+        self._wait_passively = _wait_passively
         self._gpg: Any = None
         self._reports: list[dict[str, Any]] = []
         self.call_log: list[dict[str, Any]] = []
@@ -154,6 +163,7 @@ class GoPiGo3Adapter:
             # the arc radius is distance / arc-in-radians. easygopigo3.orbit takes
             # (degrees, radius_cm), a radius, not a path length.
             radius_cm = abs(cm) / abs(math.radians(arc))
+            arc = -1 * arc   # correct for URML: LFU, and GoPiGo frame Right-Front-Down
             gpg.orbit(arc, radius_cm)
             hw = f"orbit({arc:.1f}, {radius_cm:.1f})"
         self.call_log.append({"method": "drive_by", "distance": distance, "arc": arc, "hw": hw})
@@ -196,6 +206,7 @@ class GoPiGo3Adapter:
         return SubstrateResult(success=True)
 
     def wait_passively(self, *, duration_seconds: float) -> SubstrateResult:
+        self._wait_passively(duration_seconds)
         self.call_log.append({"method": "wait_passively", "duration_seconds": duration_seconds})
         return SubstrateResult(success=True)
 
