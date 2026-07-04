@@ -852,6 +852,7 @@ A deliberate shape break from the robotics-consumer waves (Moves #1-#61). Moltbo
 | [0662](0662-rainbow-rby1-outreach.md) | Outreach | Rainbow Robotics `rby1-sdk` integration; Move #69 (South Korea lane); RB-Y1 bimanual mobile-manipulator SDK — one check spanning arm/gripper/base/whole-body limits (RFC-0384) before the SDK dispatches; no spec change; Apache-2.0, Rainbow Robotics, KR | Draft | 2026-07-03 |
 | [0663](0663-neuromeka-indy-outreach.md) | Outreach | Neuromeka `indy-ros2` integration; Move #69 (South Korea lane); Indy collaborative-arm ROS 2 package — validate a motion/grasp against reach/payload/gripper-force/collaborative-speed before dispatch; no spec change; no-license (cross-ref only), Neuromeka, KR | Draft | 2026-07-03 |
 | [0664](0664-hyundai-hdr-outreach.md) | Outreach | HD Hyundai Robotics `hdr_ros2_driver` integration; Move #69 (South Korea lane); ROS 2 driver to industrial arms — validate the outgoing command against the arm envelope before send; honest weaker (driver) fit; complements RFC-0038 consortium context; no spec change; BSD-3, HD Hyundai Robotics, KR | Draft | 2026-07-03 |
+| [0665](0665-drive-radius-parameterization.md) | Spec | Optional `radius` field on `drive` (RFC-0630) as a mutually-exclusive alternative to `distance` when `arc` is present, so an utterance's radius + sweep angle pass through without the arc-length arithmetic a small LLM gets wrong; `distance = radius x radians(arc)`, additive, same wheel path; from the GoPiGo3 orbit-2x bug (Discussion #572) | Draft | 2026-07-04 |
 
 ## Lifecycle states
 
