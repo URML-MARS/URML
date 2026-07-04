@@ -1,0 +1,12 @@
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+  - speak:
+      utterance: This is a test of the emit_speech primitive with the GoPiGo3 URML
+        runtime
+  - wait:
+      duration: 5
+  - speak:
+      utterance: execution after wait beginning

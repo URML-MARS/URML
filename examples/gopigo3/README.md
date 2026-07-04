@@ -9,15 +9,15 @@ The GoPiGo3 is frameless (dead reckoning), so its natural vocabulary is "drive
 forward X" and "turn X degrees", not "go to the kitchen". URML expresses that with
 the [RFC-0630](../../docs/rfcs/0630-relative-motion-primitive.md) `drive` / `turn`
 primitives, gated by the `educational` profile and `mobility.supports_relative_motion`.
-"Announce ..." maps to `speak`, which the Pi backs with espeak.
+"Announce ..." maps to `speak`, which the Pi backs with espeak-ng.
 
 Three files:
 
 - [`gopigo3.manifest.yaml`](gopigo3.manifest.yaml) — the basic GoPiGo3 capability
-  manifest (differential, relative-motion, a distance sensor, an espeak output).
+  manifest (differential, relative-motion, a distance sensor, an espeak-ng output).
 - [`gopigo3_adapter.py`](gopigo3_adapter.py) — `GoPiGo3Adapter`, which drives the
   wheels through Dexter Industries' `easygopigo3` (`drive_cm` / `turn_degrees` /
-  `orbit`) and speaks through espeak. The library is imported lazily, so the file
+  `orbit`) and speaks through espeak-ng. The library is imported lazily, so the file
   is importable on any machine; the real library is only needed to move a robot.
 - [`run_gopigo3.py`](run_gopigo3.py) — validates two programs and executes them
   through the adapter.
@@ -85,11 +85,13 @@ firmware) is the platform's responsibility, not URML's. Follow Dexter Industries
 [GoPiGo3 Installation FAQ](https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md).
 You will also want `urml-validator` and `urml-ros2-runtime` in the same environment.
 
-**Speech.** The default `speak` backend is espeak; if espeak is missing or the
+**Speech.** The default `speak` backend is espeak-ng; if espeak-ng is missing or the
 Pi has no audio output configured, the utterance is not spoken and the adapter
 says so on stderr (it does not fail silently). If your robot has its own speech
 path (for example a ROS say node), pass your own callable as
-`GoPiGo3Adapter(speak=...)` instead of relying on espeak.
+`GoPiGo3Adapter(speak=...)` instead of relying on espeak-ng.
+
+Note: The name of the callable cannot contain a hyphen.
 
 A basic GoPiGo3 has no arm, camera pipeline, or microphone, so `grasp`, `detect`,
 `capture`, and `listen` are returned as not-supported rather than faked. Add a

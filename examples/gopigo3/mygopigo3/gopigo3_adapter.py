@@ -98,7 +98,6 @@ class GoPiGo3Adapter:
     BRAND = "gopigo3"
 
     def __init__(self, *, speak: Callable[[str], None], wait_passively: Callable[[float], None] | None = None) -> None:
-        print(f"speak: {speak} _espeak: {_espeak}")
         self._speak = speak or _espeak
         self._wait_passively = _wait_passively
         self._gpg: Any = None
