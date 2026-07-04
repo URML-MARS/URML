@@ -58,22 +58,61 @@ class MoveToArgs(BaseModel):
 
 
 class DriveArgs(BaseModel):
-    """Drive a signed distance along the current heading (RFC-0630).
+    """Drive a signed distance along the current heading (RFC-0630, RFC-0665).
 
     Relative (odometric) motion for frameless robots. With the optional `arc`
-    (signed degrees swept over the distance) it follows a circular arc instead of
-    a straight line. Requires `mobility.supports_relative_motion` and the
+    (signed degrees swept over the drive) it follows a circular arc instead of a
+    straight line. Requires `mobility.supports_relative_motion` and the
     `educational` profile; the validator enforces both.
+
+    An arc can be named two ways (RFC-0665). The arc-length form gives `distance`
+    (the path length) plus `arc`. The radius form gives `radius` (the arc radius)
+    plus `arc`, so an utterance's radius and sweep angle pass through without the
+    caller computing an arc length. The two are exactly equivalent:
+    ``distance = radius x radians(arc)``. Exactly one of `distance` / `radius` is
+    given; `radius` requires a non-zero `arc`.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    distance: float = Field(..., description="Signed metres along the current heading (+ forward, - back).")
+    distance: float | None = Field(
+        None,
+        description="Signed metres along the current heading (+ forward, - back). The "
+        "arc-length form. Mutually exclusive with `radius`; exactly one is given.",
+    )
+    radius: float | None = Field(
+        None,
+        description="Signed metres: the radius of the circular arc (RFC-0665). Requires a "
+        "non-zero `arc`; mutually exclusive with `distance`. Equivalent to "
+        "distance = radius x radians(arc).",
+    )
     arc: float | None = Field(
         None,
         description="Optional signed degrees swept over the drive, making it a circular arc (+ counterclockwise).",
     )
     speed: Speed | float | None = None
+
+    @model_validator(mode="after")
+    def _check_distance_or_radius(self) -> DriveArgs:
+        """RFC-0665: exactly one of `distance` / `radius`; `radius` needs a non-zero `arc`."""
+        has_distance = self.distance is not None
+        has_radius = self.radius is not None
+        if has_distance and has_radius:
+            raise ValueError(
+                "drive takes exactly one of `distance` or `radius`, not both. Use "
+                "`distance` for a path length or `radius` for an arc radius (RFC-0665)."
+            )
+        if not has_distance and not has_radius:
+            raise ValueError(
+                "drive requires `distance` (a path length) or `radius` (an arc radius) "
+                "(RFC-0665)."
+            )
+        if has_radius and (self.arc is None or self.arc == 0):
+            raise ValueError(
+                "drive `radius` requires a non-zero `arc` (the sweep angle in degrees); "
+                "a radius has no meaning without an arc (RFC-0665)."
+            )
+        return self
 
 
 class TurnArgs(BaseModel):

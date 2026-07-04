@@ -14,6 +14,7 @@ in the adapter implementation, not here.
 from __future__ import annotations
 
 from collections.abc import Callable
+from math import radians
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict
@@ -218,7 +219,7 @@ def exec_move_to(
 def exec_drive(
     args: DriveArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
 ) -> PrimitiveOutcome:
-    """RFC-0630: drive a signed distance (optional arc) on a frameless robot."""
+    """RFC-0630 / RFC-0665: drive a signed distance (optional arc) on a frameless robot."""
     if not isinstance(adapter, RelativeMotionAdapter):
         return PrimitiveOutcome(
             success=False,
@@ -230,7 +231,14 @@ def exec_drive(
         speed_value = float(args.speed)
     elif args.speed is not None:
         speed_value = float(getattr(args.speed, "value", 0.0)) or None
-    result = adapter.drive_by(distance=args.distance, arc=args.arc, speed=speed_value)
+    # RFC-0665: resolve the radius form to the arc-length the adapter lowers.
+    # `distance = radius x radians(arc)`; the schema guarantees a non-zero `arc`
+    # here, so no division and no factor-of-2 arithmetic is asked of any caller.
+    if args.radius is not None and args.arc is not None:
+        distance = args.radius * radians(args.arc)
+    else:
+        distance = args.distance if args.distance is not None else 0.0
+    result = adapter.drive_by(distance=distance, arc=args.arc, speed=speed_value)
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 

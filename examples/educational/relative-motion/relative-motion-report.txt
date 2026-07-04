@@ -1,6 +1,7 @@
-URML relative motion on a frameless educational buggy (RFC-0630).
+URML relative motion on a frameless educational buggy (RFC-0630, RFC-0665).
 `drive` / `turn` are gated by the educational profile and the
 mobility.supports_relative_motion capability; the validator refuses misuse.
+An arc can be named by path length (`distance`) or by radius (RFC-0665).
 robot: classroom_buggy   drive_type: differential
 
 [VALID] educational buggy drives a square (turn 90 + drive 0.5 m, one arc side)
@@ -13,3 +14,11 @@ robot: classroom_buggy   drive_type: differential
 
 [REJECTED] a single drive of 5.0 m past the 2.0 m bound
    -> capability.relative_distance_exceeded
+
+[VALID] radius form: orbit 180 degrees at a 5 cm radius (RFC-0665)
+
+[REJECTED] radius form bounded by arc length: 1.0 m radius over 180 deg is a 3.14 m arc, past 2.0 m
+   -> capability.relative_distance_exceeded
+
+[REJECTED] both distance and radius given (overspecified) is rejected
+   -> argument.constraint_violation

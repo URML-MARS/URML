@@ -8,9 +8,12 @@ the `educational` profile and the `mobility.supports_relative_motion` capability
 so the validator still refuses motion a robot cannot perform.
 
 This script validates a four-corner square program against the buggy, then shows
-the three ways the gate rejects misuse: the wrong profile, a robot that does not
-declare relative motion, and a drive past the declared distance bound. It is
-hermetic (the validator only, no robot) and deterministic, so the committed
+the ways the gate rejects misuse: the wrong profile, a robot that does not declare
+relative motion, and a drive past the declared distance bound. It also shows the
+RFC-0665 radius form (`drive: {radius, arc}`), which names an arc by its radius and
+sweep angle so a curved drive needs no arc-length arithmetic (the factor-of-2 slip
+from Discussion #572), bounded by the arc length it travels. It is hermetic (the
+validator only, no robot) and deterministic, so the committed
 ``relative-motion-report.txt`` is byte-asserted in CI.
 """
 
@@ -67,9 +70,10 @@ def _emit(lines: list[str], label: str, program: dict[str, Any], manifest: dict[
 def render_report() -> str:
     manifest = _load(MANIFEST)
     lines = [
-        "URML relative motion on a frameless educational buggy (RFC-0630).",
+        "URML relative motion on a frameless educational buggy (RFC-0630, RFC-0665).",
         "`drive` / `turn` are gated by the educational profile and the",
         "mobility.supports_relative_motion capability; the validator refuses misuse.",
+        "An arc can be named by path length (`distance`) or by radius (RFC-0665).",
         f"robot: {manifest['robot_id']}   drive_type: {manifest['mobility']['drive_type']}",
         "",
     ]
@@ -93,6 +97,30 @@ def render_report() -> str:
         "behavior": {"type": "sequence", "steps": [{"drive": {"distance": 5.0}}]},
     }
     _emit(lines, "a single drive of 5.0 m past the 2.0 m bound", too_far, manifest, ("educational",))
+
+    # 5. RFC-0665: the radius form. "Orbit 180 degrees with a 5 cm radius" is
+    # `drive: {radius: 0.05, arc: 180}`, the two numbers the utterance gives, with
+    # no arc-length arithmetic (the factor-of-2 slip from Discussion #572).
+    radius_form = {
+        "profile": ["educational"],
+        "behavior": {"type": "sequence", "steps": [{"drive": {"radius": 0.05, "arc": 180}}]},
+    }
+    _emit(lines, "radius form: orbit 180 degrees at a 5 cm radius (RFC-0665)", radius_form, manifest, ("educational",))
+
+    # 6. The radius form is bounded by the arc length it travels, not the radius: a
+    # 1.0 m radius over 180 degrees is a pi (~3.14) m arc, past the 2.0 m bound.
+    radius_too_far = {
+        "profile": ["educational"],
+        "behavior": {"type": "sequence", "steps": [{"drive": {"radius": 1.0, "arc": 180}}]},
+    }
+    _emit(lines, "radius form bounded by arc length: 1.0 m radius over 180 deg is a 3.14 m arc, past 2.0 m", radius_too_far, manifest, ("educational",))
+
+    # 7. Exactly one of distance / radius: giving both is rejected before any robot moves.
+    both = {
+        "profile": ["educational"],
+        "behavior": {"type": "sequence", "steps": [{"drive": {"distance": 0.157, "radius": 0.05, "arc": 180}}]},
+    }
+    _emit(lines, "both distance and radius given (overspecified) is rejected", both, manifest, ("educational",))
 
     return "\n".join(lines).rstrip() + "\n"
 

@@ -83,6 +83,31 @@ def test_arc_drive_lowers_distance_to_orbit_radius() -> None:
     assert adapter.call_log[-1]["hw"] == "orbit(180.0, 5.0)"
 
 
+def test_radius_form_lowers_to_orbit_without_arithmetic(tmp_path) -> None:
+    """RFC-0665: the radius form makes the #572 case correct end-to-end.
+
+    "Orbit 180 degrees with a 5 cm radius" is written `drive: {radius: 0.05, arc:
+    180}` with no arc-length arithmetic. The runtime resolves it to the arc length
+    (0.05 x pi) and the adapter recovers the 5 cm radius, so it lowers to
+    easygopigo3.orbit(180, 5.0). Under the arc-length form a model that doubled the
+    arithmetic drove a 10 cm arc; the radius form removes that failure mode.
+    """
+    gen = _load_gen()
+    prog = tmp_path / "orbit.urml.yaml"
+    prog.write_text(
+        "profile: [educational]\n"
+        "behavior:\n"
+        "  type: sequence\n"
+        "  steps:\n"
+        "  - drive: { radius: 0.05, arc: 180 }\n",
+        encoding="utf-8",
+    )
+    report = gen.run_program_file(str(prog), prefer_real=False)
+    assert "[VALID] program file: orbit.urml.yaml" in report
+    assert "drive_by     -> easygopigo3.orbit(180.0, 5.0)" in report
+    assert "Dry run" in report
+
+
 def test_default_is_a_dry_run_that_cannot_move_a_robot() -> None:
     """Safety: bare invocation must never bind the real backend (Discussion #542).
 
