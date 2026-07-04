@@ -97,7 +97,7 @@ class GoPiGo3Adapter:
 
     BRAND = "gopigo3"
 
-    def __init__(self, *, speak: Callable[[str], None], wait_passively: Callable[[float], None] | None = None) -> None:
+    def __init__(self, *, speak: Callable[[str], None] | None = None) -> None:
         self._speak = speak or _espeak
         self._wait_passively = _wait_passively
         self._gpg: Any = None
@@ -163,6 +163,7 @@ class GoPiGo3Adapter:
             # the arc radius is distance / arc-in-radians. easygopigo3.orbit takes
             # (degrees, radius_cm), a radius, not a path length.
             radius_cm = abs(cm) / abs(math.radians(arc))
+            arc = -1 * arc   # correct for URML: LFU, and GoPiGo frame Right-Front-Down
             gpg.orbit(arc, radius_cm)
             hw = f"orbit({arc:.1f}, {radius_cm:.1f})"
         self.call_log.append({"method": "drive_by", "distance": distance, "arc": arc, "hw": hw})
