@@ -2,7 +2,7 @@
 rfc: 0665
 title: Radius parameterization for drive arcs
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Accepted
 created: 2026-07-04
 updated: 2026-07-04
 supersedes: —
@@ -29,8 +29,9 @@ superseded-by: —
 mutually-exclusive `radius` field. This changes the shape of an accepted
 primitive, which is a one-way door, so the decision is left to the maintainer.
 
-**State: Draft.** Proposed in response to a live user bug report (Discussion
-#572). Not yet settled. The Open questions section is the decision surface.
+**State: Accepted.** Proposed in response to a live user bug report (Discussion
+#572) and settled with the maintainer 2026-07-04 (see Resolved decisions).
+Implementation follows: schema, validator, runtime, conformance, worked example.
 
 ## Summary
 
@@ -212,10 +213,11 @@ actually has.
 ## Implementation plan
 
 1. `DriveArgs`: add `radius: float | None`; relax `distance` to `float | None`;
-   add a model validator enforcing the one-of and the `radius`-requires-nonzero-
-   `arc` rules, with clear messages
-   (`primitive.drive_underspecified`, `primitive.drive_overspecified`,
-   `primitive.drive_radius_requires_arc`).
+   add a pydantic model validator enforcing the one-of (exactly one of
+   `distance` / `radius`) and the `radius`-requires-nonzero-`arc` rule, with clear
+   messages. These are argument-shape rules, so they are caught at Pass 1
+   (argument typing) and surface as `argument.constraint_violation`, before any
+   capability or envelope check runs.
 2. Validator: compute the effective path length for the radius form
    (`|radius x radians(arc)|`) and apply the existing `max_relative_distance`
    check to it, so both forms are bounded identically.
@@ -232,30 +234,23 @@ actually has.
 6. Layer-4 grammar note and a bridge few-shot: when an utterance gives a radius
    and a sweep angle, emit the radius form and do not compute an arc length.
 
-## Open questions
-
-1. **Do this at all, or fix it in Layer 4 only?** The cheapest response to #572 is
-   a prompt-contract line plus a model recommendation, no schema change. The case
-   for the field is that the arithmetic-free encoding is robust across models and
-   is the shape the audience's APIs already use; the case against is that it adds
-   a second way to say one thing and slightly widens the primitive. This is the
-   maintainer's call and the reason this RFC is Draft.
-2. **Signed or magnitude `radius`?** Signed keeps the radius form a complete
-   substitute for the arc-length form (all four quadrants) at the cost of a sign
-   rule a small model could still get wrong. Magnitude-only is simpler and matches
-   `orbit(degrees, radius)` APIs directly, but cannot express a reversing arc, so
-   the arc-length form would remain the only way to write one. Recommendation:
-   signed, for completeness, since the common forward-arc case uses positive
-   `radius` and never has to reason about the sign.
-3. **Keep both forms, or is one-of churn not worth it?** The plan keeps both. An
-   alternative is to accept the radius form as the blessed way to write an arc and
-   leave the arc-length form documented but de-emphasized. No behavior differs;
-   this is only about what the docs and the bridge steer toward.
-
 ## Resolved decisions
 
-None yet. This RFC is Draft pending the maintainer's answers to the Open
-questions, chiefly question 1 (whether to add the field at all).
+Settled with the maintainer 2026-07-04:
+
+1. **Add the field.** The arithmetic-free encoding is robust across models,
+   including the small on-device models that are URML's educational audience, and
+   it is the shape those robots' own APIs already use. A Layer-4-only mitigation
+   (a prompt line, a model recommendation) leaves the latent bug in place for any
+   weaker model. The field is worth the small widening of the primitive.
+2. **`radius` is signed.** Signed keeps the radius form a complete substitute for
+   the arc-length form across all four sign combinations, so no motion is
+   expressible in one form but not the other. The common forward-arc case uses a
+   positive `radius` and never has to reason about the sign.
+3. **Keep both forms.** The arc-length form (`distance` + `arc`) stays valid and
+   unchanged; the radius form is added alongside as a one-of. Callers that hold a
+   path length keep using `distance`; callers that hold a radius use `radius`.
+   The bridge and docs steer a radius-plus-angle utterance to the radius form.
 
 ## Strategic note
 

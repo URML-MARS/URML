@@ -1,8 +1,10 @@
-"""The RFC-0630 relative-motion example must be deterministic and true.
+"""The RFC-0630 / RFC-0665 relative-motion example must be deterministic and true.
 
 Mirrors the fieldbus / opcua example guards: the generator is deterministic, the
-committed ``relative-motion-report.txt`` matches it, and the validator decides
-the four cases correctly (one valid square, three distinct gate rejections).
+committed ``relative-motion-report.txt`` matches it, and the validator decides the
+cases correctly (the arc-length square and the RFC-0665 radius form both valid;
+four distinct rejections, including the radius form bounded by its arc length and
+the distance/radius one-of).
 """
 
 from __future__ import annotations
@@ -41,8 +43,14 @@ def test_committed_report_matches_generator() -> None:
 def test_gate_decides_correctly() -> None:
     gen = _load_gen()
     report = gen.render_report()
-    assert report.count("[VALID]") == 1
-    assert report.count("[REJECTED]") == 3
+    # The arc-length square and the RFC-0665 radius form are both valid.
+    assert report.count("[VALID]") == 2
+    # Five rejections: wrong profile, no capability, distance past bound, radius
+    # past bound (by arc length), and the distance/radius one-of.
+    assert report.count("[REJECTED]") == 5
     assert "capability.relative_motion_requires_educational" in report
     assert "capability.relative_motion_unsupported" in report
     assert "capability.relative_distance_exceeded" in report
+    # RFC-0665: the radius form validates, and the one-of is enforced.
+    assert "radius form: orbit 180 degrees at a 5 cm radius (RFC-0665)" in report
+    assert "argument.constraint_violation" in report
