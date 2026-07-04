@@ -470,6 +470,11 @@ def fleet_few_shots() -> list[FewShot]:
 # (degrees) for a curved path. Layer 4 normalizes human units to metres
 # (12 inches -> 0.3048) before emission. Combined motion is an ordered sequence
 # (turn, then drive), not one step.
+#
+# RFC-0665: when the instruction gives a radius and a sweep angle (an orbit, a
+# circle of radius R), emit the radius form `drive { radius, arc }` and pass those
+# two numbers straight through. Do not convert a radius into an arc length; that
+# multiplication is where a small model drops a factor of 2 (Discussion #572).
 
 
 _EDU_TURN_THEN_DRIVE: dict[str, Any] = {
@@ -515,6 +520,18 @@ _EDU_ARC: dict[str, Any] = {
 }
 
 
+_EDU_ORBIT: dict[str, Any] = {
+    "profile": "educational",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"drive": {"radius": 0.05, "arc": 180}},
+        ],
+    },
+}
+
+
 def educational_few_shots() -> list[FewShot]:
     """Return the educational-profile few-shot example set (RFC-0630 relative motion)."""
     return [
@@ -536,6 +553,13 @@ def educational_few_shots() -> list[FewShot]:
             program=_EDU_ARC,
             note="`drive.arc` (signed degrees swept over the distance) makes the "
             "drive a circular arc instead of a straight line.",
+        ),
+        FewShot(
+            user="Orbit 180 degrees with a 5 cm radius.",
+            program=_EDU_ORBIT,
+            note="A radius and a sweep angle: emit the radius form `drive {radius, "
+            "arc}` and pass both numbers straight through (radius 0.05 m, arc 180). "
+            "Do not compute an arc length from the radius (RFC-0665).",
         ),
     ]
 

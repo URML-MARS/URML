@@ -41,7 +41,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from importlib import resources
-from math import hypot
+from math import hypot, radians
 from pathlib import Path
 from typing import Any, Literal
 
@@ -1052,6 +1052,8 @@ def _pydantic_errors_to_validation_errors(
 
 _PRIMITIVE_NAMES_FROZEN = (
     "move_to",
+    "drive",
+    "turn",
     "dock",
     "hover",
     "wait",
@@ -1126,18 +1128,29 @@ def _check_relative_motion_caps(
         verb == "drive"
         and isinstance(args, DriveArgs)
         and mobility.max_relative_distance is not None
-        and abs(args.distance) > mobility.max_relative_distance
     ):
-        out.append(
-            _err(
-                ErrorCode.CAPABILITY_RELATIVE_DISTANCE_EXCEEDED,
-                verb,
-                path,
-                f"drive distance {args.distance} m exceeds "
-                f"mobility.max_relative_distance {mobility.max_relative_distance} m.",
-                field="distance",
+        # RFC-0665: bound the path length the robot travels. For the radius form
+        # that is the arc length `|radius x radians(arc)|`, not the radius, so the
+        # two forms are bounded identically.
+        if args.radius is not None and args.arc is not None:
+            effective = abs(args.radius * radians(args.arc))
+            shown = f"drive arc length {effective:.4g} m (radius {args.radius} m over {args.arc} deg)"
+            shown_field = "radius"
+        else:
+            effective = abs(args.distance) if args.distance is not None else 0.0
+            shown = f"drive distance {effective:.4g} m"
+            shown_field = "distance"
+        if effective > mobility.max_relative_distance:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_RELATIVE_DISTANCE_EXCEEDED,
+                    verb,
+                    path,
+                    f"{shown} exceeds "
+                    f"mobility.max_relative_distance {mobility.max_relative_distance} m.",
+                    field=shown_field,
+                )
             )
-        )
     return out
 
 
