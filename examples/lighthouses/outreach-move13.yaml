@@ -309,12 +309,17 @@
   posted_url: "https://github.com/orgs/tinygo-org/discussions/5433"
   channel: github_discussion
   contact: "tinygo-org/tinygo (Apache-2.0, 17.5k stars, Issues + Discussions enabled, last commit 2026-05-28 daily activity, **not archived**). Community-maintained Go-language compiler for MCU."
-  last_touch: "2026-05-28"
-  response: none
+  last_touch: "2026-07-06"
+  response: engaged
   tier: B
   country: US
   sector: robot-platform
-  comments: []
-  claude_directives: []
-  next_action: "Posted as Discussion tinygo-org#5433 (Ideas category) on 2026-05-28. **Completes the 15 Move-13 posts.** Go-on-MCU language substrate. Light-touch follow-up at 2026-06-25."
-  notes: "Tier B. Community-maintained (vendor-neutral; Linux-Foundation-adjacent posture). Apache-2.0 clean fit. URML-fit: medium for Go-on-MCU class."
+  comments:
+    - date: "2026-07-06"
+      text: "aykevl (Ayke van Laethem, TinyGo lead, MEMBER) replied on #5433: 'What does URML do, and why do we need support in TinyGo?' A direct, skeptical, fair question. Replied under idoco2003 (2026-07-06), de-jargoned: URML is a validate-before-actuate language that sits ABOVE the firmware; the honest answer is TinyGo needs to do NOTHING. TinyGo enters only as an optional manifest label (which firmware substrate a robot runs); the only maintainer input asked is a naming courtesy (reuse TinyGo target ids verbatim vs a mapped URML name). No ask, no adoption, no hosting. Moves none -> engaged."
+  claude_directives:
+    - date: "2026-07-06"
+      text: "DONE -- engaged by aykevl (TinyGo lead). Reply posted 2026-07-06 stating plainly that TinyGo needs to implement nothing (URML is above the firmware; TinyGo is only a manifest label). Correct altitude discipline: do NOT pitch TinyGo to adopt/host anything. If aykevl confirms 'reuse target ids is fine', that closes the naming question cleanly; a graceful maintainer close is a fine outcome. The firmware-language substrate enum work is a URML-side Spec RFC, not a TinyGo task."
+      status: done
+  next_action: "aykevl asked what URML does + why TinyGo support is needed; answered (nothing needed on their side, only a target-id naming courtesy). Await his reply. If he confirms reuse-target-ids or politely closes, record and do not push. Do not ask TinyGo to adopt anything."
+  notes: "Tier B. Community-maintained (vendor-neutral; Linux-Foundation-adjacent posture). Apache-2.0 clean fit. URML-fit: medium for Go-on-MCU class. Engaged 2026-07-06 by aykevl (TinyGo lead). Correct-altitude reminder: TinyGo is a substrate/label, not a URML consumer; never pitch adoption."
