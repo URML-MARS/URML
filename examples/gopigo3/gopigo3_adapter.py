@@ -63,7 +63,8 @@ def _espeak(utterance: str) -> None:
     as ``GoPiGo3Adapter(speak=...)`` instead of relying on espeak.
     """
     try:
-        result = subprocess.run(['espeak-ng "%s"' % utterance], shell=True)
+        # result = subprocess.run(['espeak-ng "%s"' % utterance], shell=True)
+        result = subprocess.run(['espeak-ng',utterance], check=False)
     except FileNotFoundError:
         print(
             f"[gopigo3 speak] espeak-ng is not installed, so {utterance!r} was not "
