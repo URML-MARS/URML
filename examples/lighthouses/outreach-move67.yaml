@@ -94,17 +94,19 @@
   posted_url: "https://github.com/airo-ugent/airo-mono/issues/204"
   channel: github_issue
   contact: "airo-ugent/airo-mono (MIT; AI and Robotics Lab (AIRO), Ghent University, Belgium; ~30 stars, Issues enabled, not archived, active 2026-07). A Python library for robotic manipulation: the shared building blocks the lab's projects use to command arms and grippers."
-  last_touch: "2026-07-03"
-  response: none
+  last_touch: "2026-07-06"
+  response: engaged
   tier: B
   country: BE
   sector: framework-skill
   comments:
     - date: "2026-07-03"
       text: "Posted the RFC-0658 body to https://github.com/airo-ugent/airo-mono/issues/204 under idoco2003 (Move #67), VIBE disclosure up front, no license-ask (MIT). WEAKEST fit of the wave; the body is honest that airo-mono is infrastructure, not a model, so URML's value is narrower than for an autonomy layer. Awaiting reply."
+    - date: "2026-07-06"
+      text: "m-decoster (Mathieu De Coster, airo-mono CONTRIBUTOR, Ghent AIRO) replied: 'What would be the added value of URML for airo-mono? Our philosophy is keep simple things simple, so I am wary of adding complexity better suited outside of the project.' AND explicitly: 'Please communicate yourself if you reply to this issue, without AI prose which is typically far too verbose.' Moves none -> engaged. FOUNDER-ACTION: the maintainer demanded a human, non-AI, non-verbose reply (same signal as CircuitPython @dhalbert), so NO AI-drafted reply was posted. Ido to reply himself, briefly. Honest substance: nothing goes INTO airo-mono; 'keep simple things simple' is right and URML agrees by staying above the library; the pre-dispatch check (reach/payload/gripper-force) lives in the user's code, not airo-mono; if their users do not need it, that is a fine close."
   claude_directives:
-    - date: "2026-07-03"
-      text: "DONE -- posted 2026-07-03 under idoco2003. Weakest fit (a manipulation library, not an action-emitting model); included per the founder's choice to post all four. Real EU university lab. If they say the check belongs in each project not the library, accept it gracefully. No license-ask (MIT)."
-      status: done
-  next_action: "wait 14-30 d. Weakest fit; if silent or a polite 'belongs elsewhere', accept and do not re-ping."
-  notes: "Allied (BE, Ghent AIRO). Manipulation library = infrastructure-tier fit, stated honestly. Real university lab. MIT."
+    - date: "2026-07-06"
+      text: "ENGAGED but HUMAN-REPLY-REQUESTED. m-decoster explicitly asked Ido to reply personally without AI prose (called it too verbose). Do NOT auto-post an AI reply; that would disrespect the explicit request and risk an AI-spam close. Founder posts his own short words, or lets it rest. Substance (his call): URML adds nothing inside airo-mono; it sits above; the value is an optional pre-flight admissibility check in the user's code; if their users do not need it, accept gracefully and close. No re-ping."
+      status: pending
+  next_action: "FOUNDER-ACTION: Ido replies personally (human, brief, no AI prose) or lets it rest. Do not auto-post. If he closes it as 'belongs outside the library', accept gracefully and mark per his read."
+  notes: "Allied (BE, Ghent AIRO). Manipulation library = infrastructure-tier fit, stated honestly. Real university lab. MIT. Engaged 2026-07-06 by m-decoster, who explicitly wants human-only replies (no AI prose). Human-reply-requested, like CircuitPython."
