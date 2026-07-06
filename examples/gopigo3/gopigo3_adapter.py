@@ -172,6 +172,7 @@ class GoPiGo3Adapter:
     def turn_by(self, *, angle: float) -> NavigationResult:
         """Rotate in place by a signed angle (degrees, + counterclockwise)."""
         gpg = self._robot()
+        angle  = -1.0 * angle  # correct for URML: LFU, and GoPiGo frame RFD
         gpg.turn_degrees(angle)
         self.call_log.append({"method": "turn_by", "angle": angle, "hw": f"turn_degrees({angle:.1f})"})
         return NavigationResult(success=True, final_pose=None, frame="gopigo3")
