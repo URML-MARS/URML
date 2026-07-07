@@ -27,6 +27,7 @@ https://github.com/DexterInd/GoPiGo3/blob/main/Installation_FAQ.md
 from __future__ import annotations
 
 import math
+import shutil
 import subprocess
 import sys
 from typing import Any, Callable, Literal
@@ -54,28 +55,48 @@ _NOT_APPLICABLE = "not_applicable_ground: {capability} has no meaning for a grou
 
 
 def _espeak(utterance: str) -> None:
-    """Default speech backend: espeak on the Pi.
+    """Default speech backend: espeak-ng (or espeak) on the Pi.
 
-    Speaks the utterance via espeak, and says so out loud (on stderr) when it
-    cannot, so a silent robot is explained rather than mysterious. If your robot
-    has its own speech path (for example a ROS say node), pass your own callable
-    as ``GoPiGo3Adapter(speak=...)`` instead of relying on espeak.
+    Speaks the utterance through whichever of ``espeak-ng`` / ``espeak`` is on the
+    system, and says so out loud (on stderr) when it cannot, so a silent robot is
+    explained rather than mysterious. If your robot has its own speech path (for
+    example a ROS say node), pass your own callable as ``GoPiGo3Adapter(speak=...)``
+    instead of relying on espeak.
+
+    The utterance is passed as a list argument, never interpolated into a shell
+    string, so quotes or shell metacharacters in the text are literal and there is
+    no injection path. That is why there is no ``shell=True`` here.
     """
+    binary = "espeak-ng" if shutil.which("espeak-ng") else "espeak"
     try:
-        result = subprocess.run(["espeak", utterance], check=False)
+        result = subprocess.run([binary, utterance], check=False)
     except FileNotFoundError:
         print(
-            f"[gopigo3 speak] espeak is not installed, so {utterance!r} was not "
-            "spoken. Install espeak, or pass a speak= backend to GoPiGo3Adapter.",
+            f"[gopigo3 speak] neither espeak-ng nor espeak is installed, so "
+            f"{utterance!r} was not spoken. Install one, or pass a speak= backend "
+            "to GoPiGo3Adapter.",
             file=sys.stderr,
         )
         return
     if result.returncode != 0:
         print(
-            f"[gopigo3 speak] espeak exited {result.returncode}; {utterance!r} may "
+            f"[gopigo3 speak] {binary} exited {result.returncode}; {utterance!r} may "
             "not have been audible (check the Pi's audio output device).",
             file=sys.stderr,
         )
+
+
+# The manifest's `speak.language.tts_engine_class` is a closed Layer-1 vocabulary
+# (openvoice | piper | mozilla_tts | espeak | custom). It is an advisory
+# declaration, not a Python identifier: the adapter maps a declared class to a
+# backend here. A hyphenated real binary (piper-tts) lives in the backend's
+# subprocess args or as a dict key, never as a function name (Discussion #589).
+# To add piper: write a `_piper(utterance)` that shells out to it (piper is
+# GPL-3.0, so cross a subprocess boundary rather than importing it) and add it
+# under the "piper" key.
+_TTS_ENGINES: dict[str, Callable[[str], None]] = {
+    "espeak": _espeak,
+}
 
 
 class GoPiGo3Adapter:
@@ -83,14 +104,28 @@ class GoPiGo3Adapter:
 
     Implements ``drive_by`` / ``turn_by`` (RFC-0630 RelativeMotionAdapter), so a
     ``URMLRuntime`` dispatches ``drive`` / ``turn`` here, plus ``emit_speech`` and
-    ``emit_report``. ``speak`` is injectable (``speak=...``) so tests can record
-    it and a deployment can swap espeak for another backend.
+    ``emit_report``.
+
+    Speech backend selection (Discussion #589). ``speak`` is injectable: pass a
+    callable to capture speech (a dry run records ``spoken.append``) or to route it
+    to your own path. If ``speak`` is omitted, the backend is chosen by
+    ``tts_engine_class`` from the manifest's closed vocabulary (``espeak`` by
+    default, mapped through ``_TTS_ENGINES``). An explicit ``speak`` always wins,
+    which is how the runner keeps a dry run silent while ``--execute`` speaks for
+    real.
     """
 
     BRAND = "gopigo3"
 
-    def __init__(self, *, speak: Callable[[str], None] | None = None) -> None:
-        self._speak = speak or _espeak
+    def __init__(
+        self,
+        *,
+        speak: Callable[[str], None] | None = None,
+        tts_engine_class: str = "espeak",
+    ) -> None:
+        # An explicit `speak` overrides the declared class; otherwise the manifest's
+        # tts_engine_class selects the backend, defaulting to espeak.
+        self._speak = speak if speak is not None else _TTS_ENGINES.get(tts_engine_class, _espeak)
         self._gpg: Any = None
         self._reports: list[dict[str, Any]] = []
         self.call_log: list[dict[str, Any]] = []
