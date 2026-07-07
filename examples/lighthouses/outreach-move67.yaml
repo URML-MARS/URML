@@ -94,8 +94,8 @@
   posted_url: "https://github.com/airo-ugent/airo-mono/issues/204"
   channel: github_issue
   contact: "airo-ugent/airo-mono (MIT; AI and Robotics Lab (AIRO), Ghent University, Belgium; ~30 stars, Issues enabled, not archived, active 2026-07). A Python library for robotic manipulation: the shared building blocks the lab's projects use to command arms and grippers."
-  last_touch: "2026-07-06"
-  response: engaged
+  last_touch: "2026-07-07"
+  response: declined
   tier: B
   country: BE
   sector: framework-skill
@@ -106,9 +106,11 @@
       text: "m-decoster (Mathieu De Coster, airo-mono CONTRIBUTOR, Ghent AIRO) replied: 'What would be the added value of URML for airo-mono? Our philosophy is keep simple things simple, so I am wary of adding complexity better suited outside of the project.' AND explicitly: 'Please communicate yourself if you reply to this issue, without AI prose which is typically far too verbose.' Moves none -> engaged. Honest substance: nothing goes INTO airo-mono; 'keep simple things simple' is right and URML agrees by staying above the library; the pre-dispatch check (reach/payload/gripper-force) lives in the user's code, not airo-mono; if their users do not need it, that is a fine close."
     - date: "2026-07-06"
       text: "Reply posted to #204 (issuecomment-4894973865) after the founder reviewed, corrected (an em-dash slipped in; he flagged it), and explicitly approved it with 'post it'. Kept it short, plain, first-person, human-line-broken, no em/en-dashes: URML sits entirely above airo-mono, nothing goes into the library, the only value is an optional pre-flight reach/payload/gripper-force check in the caller's code, and if their users do not need it that is a fine answer. Awaiting m-decoster's read."
+    - date: "2026-07-07"
+      text: "m-decoster CLOSED #204 as NOT_PLANNED, silently (no further comment), after reading the reply. Amicable, expected close: the reply itself said 'if your users don't need that, that's a fine answer', and he agreed by closing. engaged -> declined. NOT hostile, no AI-spam flag; a clean 'belongs outside the library' resolution. No reply posted to the closed issue (re-commenting on a brevity-demanding maintainer's silent close would be tone-deaf). No re-ping."
   claude_directives:
-    - date: "2026-07-06"
-      text: "ENGAGED, human-reply-requested. Founder reviewed and approved a short human-voiced reply (his words, no AI-tells, no em-dash after he caught one) and told me to post it; posted 2026-07-06. Do NOT send a follow-up unless m-decoster replies. If he closes it as 'belongs outside the library', accept gracefully and mark per his read; no re-ping. Lesson retained: on human-reply-requested threads, draft short + line-broken + em-dash-free, and only post on the founder's explicit go."
+    - date: "2026-07-07"
+      text: "DECLINED (amicable silent NOT_PLANNED close by m-decoster after an honest exchange). Correct outcome for an infrastructure-tier, honestly-weak-fit target. Do NOT reply on the closed issue, do NOT re-ping. If AIRO ever builds an autonomy layer above airo-mono (a policy/model that emits actions), that would be the on-altitude re-engagement, not the library itself. Human-reply-requested precedent retained ([[feedback_human_reply_requested]])."
       status: done
-  next_action: "Await m-decoster's reply. If he closes as 'belongs outside the library', accept gracefully and mark per his read. No re-ping."
-  notes: "Allied (BE, Ghent AIRO). Manipulation library = infrastructure-tier fit, stated honestly. Real university lab. MIT. Engaged 2026-07-06 by m-decoster, who explicitly wants human-only replies (no AI prose). Human-reply-requested, like CircuitPython."
+  next_action: "Closed, declined amicably. No further action, no re-ping. Re-engage only if AIRO stands up an action-emitting autonomy layer above airo-mono."
+  notes: "Allied (BE, Ghent AIRO). Manipulation library = infrastructure-tier fit, stated honestly. Real university lab. MIT. Engaged then declined 2026-07-07 via amicable silent NOT_PLANNED close after m-decoster's 'keep simple things simple' question and an honest 'stays outside the library' reply. Human-reply-requested (no AI prose), like CircuitPython. Not hostile."
