@@ -166,3 +166,84 @@ def test_version_line_is_auto_derived() -> None:
     assert "urml-validator" in line and "urml-ros2-runtime" in line
     with pytest.raises(SystemExit):
         gen.main(["--version"])
+
+
+def test_tts_engine_class_selects_speech_backend() -> None:
+    """RFC-0589: the manifest's tts_engine_class maps to a backend via a dispatch dict.
+
+    An explicit `speak=` always wins; an omitted one resolves the declared class
+    through `_TTS_ENGINES`, defaulting to espeak and falling back to espeak for a
+    class this adapter does not register (never crashing on the declaration).
+    """
+    if str(EX) not in sys.path:
+        sys.path.insert(0, str(EX))
+    from gopigo3_adapter import GoPiGo3Adapter, _espeak
+
+    assert GoPiGo3Adapter()._speak is _espeak
+    assert GoPiGo3Adapter(tts_engine_class="espeak")._speak is _espeak
+    # A class this adapter has no backend for falls back to espeak, not an error.
+    assert GoPiGo3Adapter(tts_engine_class="piper")._speak is _espeak
+
+    def my_sink(_utterance: str) -> None:
+        return None
+
+    # An explicit speak= always wins over the declared class.
+    assert GoPiGo3Adapter(speak=my_sink, tts_engine_class="espeak")._speak is my_sink
+
+
+def test_espeak_prefers_espeak_ng_then_falls_back(monkeypatch) -> None:
+    """RFC-0589 Q1: the default backend uses espeak-ng when present, else espeak,
+    and always passes the utterance as a list arg (no shell, no injection)."""
+    if str(EX) not in sys.path:
+        sys.path.insert(0, str(EX))
+    import gopigo3_adapter
+
+    calls: list[list[str]] = []
+
+    class _R:
+        returncode = 0
+
+    def _fake_run(argv, *args, **kwargs):  # tolerate stdout=/check= etc.
+        calls.append(argv)
+        return _R()
+
+    monkeypatch.setattr(gopigo3_adapter.subprocess, "run", _fake_run)
+
+    monkeypatch.setattr(
+        gopigo3_adapter.shutil, "which", lambda name: "/usr/bin/espeak-ng" if name == "espeak-ng" else None
+    )
+    gopigo3_adapter._espeak("hello world")
+    assert calls[-1] == ["espeak-ng", "hello world"]  # list form, espeak-ng chosen
+
+    monkeypatch.setattr(gopigo3_adapter.shutil, "which", lambda name: None)
+    gopigo3_adapter._espeak("hello world")
+    assert calls[-1] == ["espeak", "hello world"]  # falls back to espeak
+
+
+def test_speech_is_gated_by_execute(tmp_path, monkeypatch) -> None:
+    """RFC-0589 Q2: speech is an actuation, gated like the wheels. A dry run captures
+    it (never audible); only --execute routes it to the real espeak backend."""
+    gen = _load_gen()
+    if str(EX) not in sys.path:
+        sys.path.insert(0, str(EX))
+    import gopigo3_adapter
+
+    emitted: list[str] = []
+    monkeypatch.setitem(gopigo3_adapter._TTS_ENGINES, "espeak", emitted.append)
+
+    prog = tmp_path / "say.urml.yaml"
+    prog.write_text(
+        "profile: [educational]\n"
+        "behavior:\n"
+        "  type: sequence\n"
+        "  steps:\n"
+        "  - speak: { utterance: hello }\n",
+        encoding="utf-8",
+    )
+
+    # Dry run: the real speech backend must NOT be invoked.
+    gen.run_program_file(str(prog), prefer_real=False)
+    assert emitted == []
+    # Execute: speech routes to the (here, recorded) real backend.
+    gen.run_program_file(str(prog), prefer_real=True)
+    assert emitted == ["hello"]

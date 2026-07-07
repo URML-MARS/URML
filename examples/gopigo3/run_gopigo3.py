@@ -155,7 +155,13 @@ def _profiles_of(program: dict[str, Any]) -> tuple[str, ...]:
     return (prof,) if isinstance(prof, str) else tuple(prof)
 
 
-def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[str, Any]) -> None:
+def _run(
+    lines: list[str],
+    label: str,
+    program: dict[str, Any],
+    manifest: dict[str, Any],
+    prefer_real: bool = False,
+) -> None:
     # Import here so the fake easygopigo3 is already installed.
     from urml_validator import validate
     from urml_ros2_runtime.runtime import URMLRuntime
@@ -171,8 +177,12 @@ def _run(lines: list[str], label: str, program: dict[str, Any], manifest: dict[s
         lines.append("")
         return
 
+    # Speech is an actuation, so gate it exactly like the wheels (Discussion #589).
+    # The fake/real backend swap only covers easygopigo3, so speech has to be gated
+    # on its own path: a dry run captures the utterance (never audible), and only
+    # --execute lets the adapter's real espeak speak. `speak=None` uses that default.
     spoken: list[str] = []
-    adapter = GoPiGo3Adapter(speak=spoken.append)
+    adapter = GoPiGo3Adapter(speak=None if prefer_real else spoken.append)
     runtime = URMLRuntime(adapter)
     run = runtime.execute(program, manifest, profiles=profiles)
 
@@ -201,8 +211,8 @@ def render_report(prefer_real: bool = False) -> str:
         f"   max drive: {manifest['mobility']['max_relative_distance']} m",
         "",
     ]
-    _run(lines, "announce, then drive 1 m (the translated command from #497/#523)", _announce_and_drive(), manifest)
-    _run(lines, "short patrol: turn, drive, turn, drive, announce, report", _patrol(), manifest)
+    _run(lines, "announce, then drive 1 m (the translated command from #497/#523)", _announce_and_drive(), manifest, prefer_real)
+    _run(lines, "short patrol: turn, drive, turn, drive, announce, report", _patrol(), manifest, prefer_real)
 
     lines.append("This is a dry run: the calls above were validated and planned, not actuated.")
     lines.append("On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'")
@@ -233,7 +243,7 @@ def run_program_file(path: str, prefer_real: bool = False) -> str:
         lines.append(f"[ERROR] no such program file: {path}")
         return "\n".join(lines) + "\n"
     program = _load(p)
-    _run(lines, f"program file: {name}", program, manifest)
+    _run(lines, f"program file: {name}", program, manifest, prefer_real)
     if not prefer_real:
         lines.append("Dry run: validated and planned, not actuated. Pass --execute (without -m) to drive the robot.")
     return "\n".join(lines).rstrip() + "\n"
