@@ -31,20 +31,22 @@
   posted_url: "https://github.com/microsoft/VITRA/issues/41"
   channel: github_issue
   contact: "microsoft/VITRA (MIT; Microsoft Research, US; ICRA 2026; ~426 stars, Issues enabled, not archived, active 2026-06). A scalable vision-language-action model pretrained on real-life human-activity video, emitting manipulation actions."
-  last_touch: "2026-07-03"
-  response: none
+  last_touch: "2026-07-08"
+  response: engaged
   tier: B
   country: US
   sector: ai-language
   comments:
     - date: "2026-07-03"
       text: "Posted the RFC-0655 body to https://github.com/microsoft/VITRA/issues/41 under idoco2003 (Move #67), VIBE disclosure up front, no license-ask (MIT). Hook: a VLA learns from human video; what a human demonstrated is not automatically admissible on the target robot; validate the emitted action vs the declared envelope. Awaiting reply."
+    - date: "2026-07-08"
+      text: "A VITRA COLLABORATOR (MSR) replied thoughtfully: clarified VITRA is fine-tuned on robot teleop data so its output is already in the target robot's action space (still a VLA emitting robot-executable actions), AGREED a VLA does not guarantee every action is safely executable (capability/workspace/collision/safety-limit constraints may need extra verification), called URML-as-a-safety-validation-layer 'an interesting direction', and asked THE crux question: how does URML differ from existing constraint-checking in MoveIt / Pinocchio-based controllers / ROS 2 safety components? Moves none -> engaged. Replied 2026-07-08 (issuecomment-4917403444), honest and non-salesy: URML does NOT replace those, it is one layer up and complementary; the two real differences are substrate-neutrality (a spec, not a ROS lib; same manifest/validator on ROS 2 / PX4 / vendor SDK / bare firmware; MoveIt cannot check a non-ROS robot) and staticness (a pre-dispatch declarative envelope check, no planner/controller in the loop, fully offline); explicit caveat that URML does NOT do collision solving against a live scene. Offered a worked example: one action checked against two robot manifests, admissible on one and rejected on the other, no ROS in the loop."
   claude_directives:
-    - date: "2026-07-03"
-      text: "DONE -- posted 2026-07-03 under idoco2003. Flagship of the wave (MSR, 426 stars). Note: Microsoft/Magma was contacted in Move #61; VITRA is a distinct MSR robotics project, so this is not a lab over-touch, but do not pitch Microsoft more broadly. If engaged, a worked example mapping a VITRA action onto a URML manifest (validated). No license-ask (MIT)."
-      status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent."
-  notes: "US (Microsoft Research). Human-video-pretrained VLA; strong fit. Second Microsoft touch (after Magma) but a different project/team; not a lab over-touch. MIT."
+    - date: "2026-07-08"
+      text: "ENGAGED (MSR collaborator), and the crux vs-MoveIt/Pinocchio/ROS2-safety positioning question. My answer framed URML as complementary + higher-altitude (substrate-neutral spec + static pre-dispatch declarative envelope), honest that it is NOT a collision solver. STRATEGIC: this vs-existing-tools framing is core to URML's identity; founder should sanity-check it (flagged in chat). If they take the worked-example offer, BUILD IT (the two-manifest same-action admissible/rejected demo, no ROS) -- highest-value next step, mirrors the robotiq-hande depth pattern. On-altitude, high-fit (action-emitting VLA). No license-ask (MIT)."
+      status: pending
+  next_action: "Await their reply. If they want the worked example, build the two-manifest same-action (admissible vs rejected, no ROS) demo as a runnable example + test. Do not pitch Microsoft more broadly; keep to VITRA."
+  notes: "US (Microsoft Research). Human-video-pretrained VLA; strong on-altitude fit. Engaged 2026-07-08 by an MSR collaborator asking the crux URML-vs-MoveIt/Pinocchio/ROS2 distinction. Answered complementary + honest (not a collision solver). Worked-example offer on the table. Second Microsoft touch (after Magma) but a different project/team; not a lab over-touch. MIT."
 
 - slug: robotcontrolstack
   rfc: 656
