@@ -76,20 +76,22 @@
   posted_url: "https://github.com/borglab/gtsam/issues/2557"
   channel: github_issue
   contact: "borglab/gtsam (factor-graph optimization backend, Georgia Tech Borg Lab / Frank Dellaert; ~3,499 stars, Issues AND Discussions enabled, not archived, last push 2026-05-29). License not SPDX-detected by gh (understood BSD; asked). US."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-07-09"
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-02"
       text: "Posted issue #2557 pointing at the RFC (under idoco2003, after RFCs 0332-0341 landed on main via PR #278), AI-authoring disclosure up front, with the explicit 'URML does not do SLAM, it consumes your estimate' framing. Awaiting maintainer reply."
+    - date: "2026-07-09"
+      text: "Issue #2557 was CLOSED as COMPLETED (state_reason=completed, not not_planned) on 2026-07-09, with ZERO comments and zero reactions. The closer was not identifiable via the REST events/timeline API (returned empty). So the observable fact is a silent completed-close with no engagement. Recording none -> declined (the target closed the request-for-comment without taking it up). 'completed' is neutral, not hostile (contrast the not_planned stale-closes). GTSAM was our own self-flagged LOWEST-direct-fit target (a factor-graph backend URML merely consumes, below its altitude), so a graceful non-engagement here is expected; the peer backend Ceres (RFC-0338) is the one that engaged. No reply posted, no re-ping. NOTE: if the founder closed it himself, revisit this label."
   claude_directives:
-    - date: "2026-06-02"
-      text: "After RFC-0333 merges, post the posts-move25.md GTSAM body on borglab/gtsam under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep claims modest (backend, below URML's altitude)."
+    - date: "2026-07-09"
+      text: "DECLINED via silent COMPLETED close, no comment, no engagement. Lowest-fit backend target (stated honestly at post time); this outcome is unsurprising. Do NOT reply on the closed issue, do NOT re-ping. Backend fit stays low; the on-altitude SLAM engagement is Ceres (engaged), not GTSAM. If GTSAM ever wants a concrete pose-source example, the frames/declared-locations consume-the-estimate seam is the hook, but do not pursue proactively."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
-  notes: "Move #25 backend touch (lowest direct fit, stated honestly). Factor-graph estimate is a pose-source URML consumes; internals are Layer 0. Cross-link RFC-0338 (Ceres, peer backend), RFC-0332 (anchor). Origin US (Georgia Tech). Verified 2026-06-02."
+  next_action: "Closed (completed) silently, declined. No reply, no re-ping. Ceres is the engaged peer backend; do not proactively re-approach GTSAM."
+  notes: "Move #25 backend touch (lowest direct fit, stated honestly). Factor-graph estimate is a pose-source URML consumes; internals are Layer 0. Engaged outcome: none -> declined 2026-07-09 via a silent COMPLETED close (0 comments). Peer backend Ceres (RFC-0338) engaged; GTSAM did not. Origin US (Georgia Tech). Verified 2026-06-02."
 
 - slug: openvins
   rfc: 334
