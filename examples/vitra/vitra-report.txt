@@ -1,0 +1,29 @@
+URML: one policy-emitted action, checked against two robots (microsoft/VITRA#41).
+A VLA such as VITRA emits a manipulation action; URML validates it against each
+target robot's declared envelope before dispatch, with no planner and no ROS.
+
+The action: grasp a workpiece at 150.0 N, then place it.
+Robot A: gripper rated 50 to 250 N.   Robot B: gripper rated 10 to 100 N.
+The two manifests differ only in that force range.
+
+# 1. The action on Robot A (grip force within the declared range)
+
+[VALID] grasp workpiece at 150.0 N on Robot A (50 to 250 N gripper)
+   150.0 N is within the declared 50 to 250 N envelope; the action is admissible.
+
+# 2. The same action on Robot B (grip force above the declared range)
+
+[REJECTED] grasp workpiece at 150.0 N on Robot B (10 to 100 N gripper)
+   -> capability.missing_gripper, envelope.force_exceeded
+   capability.missing_gripper: no declared gripper supports the requested force (150.0 N). Declared ranges: [('gentle_jaw', 10.0, 100.0)].
+   envelope.force_exceeded:    grasp.force (150.0 N) exceeds the strictest declared force cap (100.0 N).
+
+# The point
+
+The same policy output is admissible on one robot and refused on another,
+decided statically from each robot's declaration, before anything is sent to
+a controller or a motion planner. URML does not plan the motion, check
+collisions against a live scene, or run on the robot; it is the portable,
+declarative admissibility gate above whatever executes the action. For a VLA
+that may deploy across several robots, that check is one manifest per robot,
+not a per-framework re-implementation.

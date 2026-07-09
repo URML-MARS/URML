@@ -1,0 +1,70 @@
+# Robot A for the VITRA worked example (microsoft/VITRA#41).
+#
+# A research-class arm with a higher-force gripper. Used to show that the SAME
+# policy-emitted manipulation is admissible here but refused on the gentler
+# Robot B (robot-b.manifest.yaml). The only difference between the two manifests
+# is the gripper's declared force range; everything else is identical.
+#
+# This arm's gripper is rated 50 to 250 N, so a 150 N grasp is within envelope.
+
+manifest_version: "0.1"
+robot_id: robot_a_research_arm
+description: A research-class single arm with a higher-force parallel-jaw gripper.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: parts_bin
+    pose: { x: 0.40, y: -0.20, z: 0.08 }
+    frame: cell
+    description: Source bin for workpieces.
+  - name: assembly_fixture
+    pose: { x: -0.30, y: 0.20, z: 0.10 }
+    frame: cell
+    description: Destination fixture.
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: high_force_jaw
+      kind: servo_electric
+      force_min_n: 50.0
+      force_max_n: 250.0
+      accepted_classes: [workpiece]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - workpiece
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_a_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
