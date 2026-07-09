@@ -1,0 +1,68 @@
+# Robot B for the VITRA worked example (microsoft/VITRA#41).
+#
+# A lightweight collaborative arm with a gentler gripper. It is identical to
+# Robot A (robot-a.manifest.yaml) except for the gripper's declared force range:
+# this arm is rated 10 to 100 N, so the same 150 N grasp is out of envelope and
+# is refused. That difference is the whole point of the example.
+
+manifest_version: "0.1"
+robot_id: robot_b_collaborative_arm
+description: A lightweight collaborative single arm with a gentler parallel-jaw gripper.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: parts_bin
+    pose: { x: 0.40, y: -0.20, z: 0.08 }
+    frame: cell
+    description: Source bin for workpieces.
+  - name: assembly_fixture
+    pose: { x: -0.30, y: 0.20, z: 0.10 }
+    frame: cell
+    description: Destination fixture.
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: gentle_jaw
+      kind: servo_electric
+      force_min_n: 10.0
+      force_max_n: 100.0
+      accepted_classes: [workpiece]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - workpiece
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_b_controller
+      role: critical
+      vendor: cobot_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
