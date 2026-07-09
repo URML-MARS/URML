@@ -251,15 +251,17 @@
   posted_url: "https://github.com/rtic-rs/rtic/issues/1188"
   channel: github_issue
   contact: "rtic-rs/rtic (Apache-2.0/MIT, ~2339 stars, Issues enabled, not archived, active 2026-06. Real-time concurrency framework for embedded Rust. EU/intl."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-07-09"
+  response: engaged
   tier: B
   country: EU
   sector: substrate-runtime
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0585 body to https://github.com/rtic-rs/rtic/issues/1188 under idoco2003. RFC-0016 cyclic-timing resonance (declared timing <-> RTIC task set). Completes the wave + slate. Awaiting response."
+    - date: "2026-07-09"
+      text: "Per Lindgren (RTIC lead, RT-systems academic; COLLABORATOR) gave a long, generous expert reply on #1188. On compile-time 'checkable': yes-and-no (SRP scheduling, single-unit resources, fixed priority; v1 does not capture deadlines/inter-arrival, but given those you get response-time + schedulability guarantees via established SRP analysis, needing WCET, which they get by symbolic execution of the binary; possible but extra tooling, not shipped). On run-time 'checkable': yes (watchdog on a periodic task; self-monitoring in the task postlude; overload detection via a watchdog cleared in idle at the hyper-period). Building RTIC eVo (https://github.com/zakimadaoui/rtic-mc-experiments), a modular framework to add periodic tasks + auto-generated run-time verification. Moves none -> engaged. Replied 2026-07-09 (issuecomment-4921054828): URML's RFC-0016 only DECLARES the requirement (no scheduling/WCET/schedulability; one static sanity check = watchdog >= cycle); his two 'checkable' readings map onto pairing that declaration with (a) his SRP analysis at compile time and (b) his watchdog patterns at run time; RTIC eVo is the natural lowering target (declared period -> periodic task, declared watchdog -> generated monitor); URML asks RTIC to adopt nothing. Offered a worked example (a URML RFC-0016 manifest mapped onto an RTIC task set, no RTIC dependency)."
   claude_directives:
-    - date: "2026-06-14"
-      text: "DONE — posted as rtic-rs/rtic#1188 on 2026-06-14 under idoco2003."
-      status: done
+    - date: "2026-07-09"
+      text: "ENGAGED (Per Lindgren, RTIC lead). High-quality expert exchange on RFC-0016. Correct-altitude framing held: URML DECLARES cyclic timing; RTIC (+ SRP analysis / run-time verification) HONORS and PROVES it. Never claim URML does scheduling or WCET (see [[project_rfc0016_realtime]]: watchdog>=cycle check, not RT enforcement). If Per takes the offer, BUILD the worked example: a URML RFC-0016 cyclic-timing manifest (cycle + watchdog) validated, then shown lowering onto an RTIC task set (period->periodic task, watchdog->monitor), aligned with RTIC eVo. Read zakimadaoui/rtic-mc-experiments + the SRP WCET reference before building. RTOS/low-altitude usually converts poorly, but this one engaged deeply; keep it. No license-ask (Apache-2.0/MIT dual)."
+      status: pending
