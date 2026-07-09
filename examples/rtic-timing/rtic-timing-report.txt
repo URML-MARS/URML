@@ -1,0 +1,43 @@
+URML: a declared cyclic-timing requirement, coherence-checked and mapped to RTIC.
+RFC-0016 lets a manifest declare a control-cycle period and a watchdog. URML
+checks the declaration is coherent; it does no scheduling, WCET, or analysis.
+For rtic-rs/rtic#1188.
+
+Declared: 10.0 ms cycle, 50.0 ms watchdog, guarantee = 'hard'.
+
+# 1. The coherent declaration validates
+
+[VALID] watchdog 50.0 ms >= cycle 10.0 ms
+   The watchdog allows at least one full control cycle; the declaration is coherent.
+
+# 2. An incoherent declaration is rejected (watchdog shorter than one cycle)
+
+[REJECTED] watchdog 5.0 ms < cycle 10.0 ms
+   -> capability.watchdog_shorter_than_cycle
+   capability.watchdog_shorter_than_cycle: realtime.watchdog_ms (5.0) is shorter than realtime.cyclic_period_ms (10.0); the watchdog would fault before one control cycle completes.
+
+# How the declaration maps onto an RTIC task set
+
+URML declares the requirement; an RTIC compilation pass generates the code
+that honors it. Aligned with RTIC eVo's modular passes (rtic-mc-experiments),
+where rtic-deadline-pass already turns deadlines into priorities, a periodic
+-task-plus-verification pass would consume this declaration as:
+
+  realtime.cyclic_period_ms = 10.0 ms  ->  a periodic task released every 10.0 ms
+  realtime.watchdog_ms      = 50.0 ms  ->  a watchdog monitor armed to 50.0 ms,
+                                           cleared by the periodic task each cycle;
+                                           it fires if a cycle overruns the deadline
+  realtime.guarantee        = 'hard'   ->  scheduled under RTIC's fixed-priority SRP model
+
+Illustrative sketch of what such a pass could generate (NOT emitted by URML,
+and not verified Rust; the shape, not the syntax):
+
+  #[periodic(period = 10.ms(), watchdog = 50.ms())]
+  fn control_loop(cx: control_loop::Context) {
+      // one control cycle; must complete and clear the watchdog within 50 ms
+  }
+  // a generated monitor faults to a safe state if the watchdog is not cleared
+
+URML does not schedule, compute WCET, or prove schedulability. The declared
+period and watchdog are the inputs an RTIC pass and an SRP response-time
+analysis consume; the guarantee is RTIC's to provide.
