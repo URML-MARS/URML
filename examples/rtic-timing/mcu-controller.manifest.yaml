@@ -1,0 +1,43 @@
+# A robot's low-level control node running on an MCU, declared at the URML
+# capability-manifest level (Layer 1). For rtic-rs/rtic#1188.
+#
+# The point of this example is the `realtime` block (RFC-0016). The node runs a
+# fixed control cycle with a watchdog that faults to a safe state if a cycle is
+# missed. URML *declares* that timing regime so the manifest is a faithful
+# description of the node, and the validator can reject an incoherent declaration
+# (a watchdog shorter than one cycle) before anything is deployed.
+#
+# URML does no scheduling, no WCET, and no schedulability analysis. It states the
+# requirement; a real-time substrate such as RTIC is what honors and proves it.
+# See run_rtic.py for how the declared cycle and watchdog map onto an RTIC task
+# set.
+#
+# 100 Hz control loop (10 ms cycle) with a 50 ms watchdog (five cycles), declared
+# as a hard-real-time regime, which is the class RTIC's SRP scheduling targets.
+
+manifest_version: "0.1"
+robot_id: mcu_motor_controller
+description: A low-level motor-control node on an MCU, run as a cyclic real-time task.
+
+frames:
+  - name: base
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: base
+
+mobility:
+  drive_type: differential
+  max_velocity: 1.0
+
+perception:
+  cameras: []
+  sensors: []
+  object_vocabulary: []
+
+realtime:
+  cyclic_period_ms: 10.0            # 100 Hz control loop
+  watchdog_ms: 50.0                 # safe-state fault deadline (five cycles, >= one cycle)
+  guarantee: hard                   # the regime RTIC's SRP scheduling targets
