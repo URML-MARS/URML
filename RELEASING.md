@@ -14,13 +14,13 @@
 
 # Releasing URML packages
 
-> The five reference packages are published to PyPI from this repository.
+> The six reference packages are published to PyPI from this repository.
 > This is the canonical, deliberate process. Publishing is **irreversible**
 > (a PyPI version can never be re-uploaded, only yanked; names are claimed
 > permanently) and **outward-facing**, so it is a founder-gated action —
 > never automatic on push.
 
-## The five packages and their dependency order
+## The six packages and their dependency order
 
 PyPI resolves dependencies from the index at install time, so a package
 must be on the index **before** anything that depends on it. Publish in
@@ -31,27 +31,40 @@ this order:
 3. `urml-ros2-runtime` — needs `urml-validator`.
 4. `urml-conformance` — needs `urml-validator`, `urml-ros2-runtime`.
 5. `urml-px4-runtime` — needs `urml-validator`, `urml-ros2-runtime`.
+6. `urml-mcp-server` — needs `urml-validator`, `urml-llm-bridge`, `urml-ros2-runtime`.
 
-(2 can publish any time after 1; 4 and 5 any time after 3.)
+(2 can publish any time after 1; 4 and 5 any time after 3; 6 any time
+after 3.)
+
+**First-publish note for 0.2.0.** Only `urml-validator` and
+`urml-llm-bridge` are on PyPI today (both at `0.1.0`); `urml-ros2-runtime`,
+`urml-px4-runtime`, `urml-conformance`, and `urml-mcp-server` are
+**first-ever** publishes, so their names are not yet claimed. Each new name
+needs a **pending** Trusted Publisher configured on (Test)PyPI before its
+first upload (see "Automated path"). Because four names are new, use the
+explicitly-ordered `twine upload` sequence below, not the bulk workflow
+upload, for the 0.2.0 release.
 
 ## Version coherence
 
-**Decided:** all five packages are aligned to a single `0.1.0` for a
-clean public debut (easier for adopters to reason about "I have URML
-0.1.0" than mixed `a0`/`a1` pre-releases). The bump was applied in
-lockstep — every `version =`, every `_version.py` `__version__`, and
-every inter-package pin:
+**Decided:** all six packages are aligned to a single version for a clean
+public debut (easier for adopters to reason about "I have URML 0.2.0" than
+mixed pre-releases). The bump is applied in lockstep — every `version =`,
+every `_version.py` `__version__`, and every inter-package pin. Pins track
+the current minor so installing any one package pulls the matching build of
+its dependencies:
 
 | Package | Version | Pins |
 |---|---|---|
-| urml-validator | `0.1.0` | — |
-| urml-llm-bridge | `0.1.0` | `urml-validator>=0.1.0` |
-| urml-ros2-runtime | `0.1.0` | `urml-validator>=0.1.0` |
-| urml-conformance | `0.1.0` | `urml-validator>=0.1.0`, `urml-ros2-runtime>=0.1.0` |
-| urml-px4-runtime | `0.1.0` | `urml-validator>=0.1.0`, `urml-ros2-runtime>=0.1.0` |
+| urml-validator | `0.2.0` | — |
+| urml-llm-bridge | `0.2.0` | `urml-validator>=0.2.0` |
+| urml-ros2-runtime | `0.2.0` | `urml-validator>=0.2.0` |
+| urml-conformance | `0.2.0` | `urml-validator>=0.2.0`, `urml-ros2-runtime>=0.2.0`, `urml-llm-bridge>=0.2.0` (extra) |
+| urml-px4-runtime | `0.2.0` | `urml-validator>=0.2.0`, `urml-ros2-runtime>=0.2.0` |
+| urml-mcp-server | `0.2.0` | `urml-validator>=0.2.0`, `urml-llm-bridge>=0.2.0`, `urml-ros2-runtime>=0.2.0` |
 
-These resolve correctly for a first publish in the dependency order
-above. Future releases bump in lockstep too — keep the five uniform.
+These resolve correctly for a publish in the dependency order above. Future
+releases bump in lockstep too — keep the six uniform.
 
 ## The discipline (why this is gated)
 
@@ -74,9 +87,9 @@ version number.
 ```bash
 # 0. Clean tree on main, all suites green. Decide versions (see above).
 
-# 1. Build all five (artifacts land in each package's dist/, gitignored).
+# 1. Build all six (artifacts land in each package's dist/, gitignored).
 for p in reference/validator reference/llm-bridge reference/ros2-runtime \
-         reference/px4-runtime conformance; do
+         reference/px4-runtime conformance reference/mcp-server; do
   python -m build --outdir "$p/dist" "$p"
 done
 
@@ -90,6 +103,7 @@ python -m twine upload --repository testpypi reference/llm-bridge/dist/*
 python -m twine upload --repository testpypi reference/ros2-runtime/dist/*
 python -m twine upload --repository testpypi conformance/dist/*
 python -m twine upload --repository testpypi reference/px4-runtime/dist/*
+python -m twine upload --repository testpypi reference/mcp-server/dist/*
 
 # 4. Verify from TestPyPI in a clean venv, OUTSIDE the repo (so bundled
 #    data — validator policies, conformance fixtures — must come from the
@@ -99,20 +113,26 @@ python -m venv /tmp/rel-verify && cd /tmp
   --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
   urml-validator urml-llm-bridge urml-ros2-runtime \
-  urml-px4-runtime urml-conformance
+  urml-px4-runtime urml-conformance urml-mcp-server
 /tmp/rel-verify/bin/urml --version
+/tmp/rel-verify/bin/urml-mcp --help    # MCP server console script resolves
 /tmp/rel-verify/bin/python -c "from urml_conformance import discover_fixtures; \
   assert len(discover_fixtures()) >= 20; print('fixtures shipped OK')"
 
 # 5. ONLY if step 4 is clean: upload to real PyPI, same order.
 #    This is the irreversible step. Founder runs it deliberately.
 python -m twine upload reference/validator/dist/*
-# ... remaining four, in order ...
+# ... remaining five, in order (llm-bridge, ros2-runtime, conformance,
+#     px4-runtime, mcp-server) ...
 
 # 6. In the SAME release commit: flip README + docs/tutorials/01 install
 #    instructions to `pip install urml-validator urml-llm-bridge`, tag
-#    the release (`git tag v0.1.0 && git push --tags`), update the
+#    the release (`git tag v0.2.0 && git push --tags`), update the
 #    CHANGELOG.
+
+# 7. Register the MCP server manifest with the official MCP registry
+#    (separate from PyPI; needs the package live from step 5 first):
+#    see reference/mcp-server/SUBMISSIONS.md for the mcp-publisher steps.
 ```
 
 ## Automated path

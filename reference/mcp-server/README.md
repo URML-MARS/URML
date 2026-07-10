@@ -59,11 +59,7 @@ The split is deliberate: `tools.py` has no MCP dependency, so the validate/execu
 
 ## Publishing to MCP registries (maintainer action)
 
-[`server.json`](server.json) is the registry manifest for the [official MCP Registry](https://registry.modelcontextprotocol.io). Publishing is a maintainer action under the project's GitHub identity:
+[`server.json`](server.json) is the registry manifest for the [official MCP Registry](https://registry.modelcontextprotocol.io). The full playbook (PyPI first, then `mcp-publisher`, then the Smithery/Glama/PulseMCP/mcp.so directory claims) lives in [`SUBMISSIONS.md`](SUBMISSIONS.md). It is gated on the 0.2.0 core release ([`RELEASING.md`](../../RELEASING.md)), since the registry resolves the package from PyPI.
 
-1. **Publish the package** so the registry can resolve it: `urml-mcp-server` to PyPI (the `server.json` `packages` entry references it). The registry does not host code, it points at a package.
-2. **Publish the manifest** with the `mcp-publisher` CLI, which validates `server.json` and verifies ownership of the `io.github.urml-mars` namespace via GitHub login. Confirm the schema version and field casing against the CLI at publish time; the registry schema is still evolving.
-3. **Directory listings**: Smithery, Glama, PulseMCP, and mcp.so crawl the ecosystem and let you claim ownership of the listing. Submit / claim under `greenvh@gmail.com`.
-
-Track each listing like any other outreach (a row per venue, `response: none` until real adoption signal). Do not cite install counts as engagement without corroboration.
+Track each listing in [`examples/lighthouses/distribution.yaml`](../../examples/lighthouses/distribution.yaml) (`response: none` until real adoption signal). Do not cite install counts as engagement without corroboration.
 

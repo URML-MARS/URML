@@ -1,4 +1,4 @@
-# Build + publish the five URML packages.
+# Build + publish the six URML packages.
 #
 # DESIGN: publishing is irreversible and outward-facing, so this workflow
 # is NEVER triggered by push/PR. It is manual-dispatch only, and the
@@ -13,7 +13,7 @@
 #     is mandatory.
 #
 # PREREQUISITE (one-time, founder-side, cannot be done from this repo):
-# configure a PyPI/TestPyPI Trusted Publisher for EACH of the five
+# configure a PyPI/TestPyPI Trusted Publisher for EACH of the six
 # packages — on (test.)pypi.org: the project → Settings → Publishing →
 # add publisher: owner `URML-MARS`, repo `URML`, workflow `release.yml`,
 # environment `pypi-release` (for pypi) / leave blank (for testpypi).
@@ -21,7 +21,8 @@
 #
 # Publish order matters (a package must be on the index before its
 # dependents resolve). The matrix `max-parallel: 1` + the ordered list
-# enforces validator → bridge/ros2 → conformance/px4.
+# enforces validator → bridge/ros2 → conformance/px4 → mcp-server
+# (mcp-server depends on validator + llm-bridge + ros2-runtime).
 
 name: release
 
@@ -46,11 +47,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install build twine
-      - name: Build all five
+      - name: Build all six
         run: |
           set -eux
           for p in reference/validator reference/llm-bridge \
-                   reference/ros2-runtime reference/px4-runtime conformance; do
+                   reference/ros2-runtime reference/px4-runtime conformance \
+                   reference/mcp-server; do
             python -m build --outdir dist "$p"
           done
       - name: Static metadata check (must all PASS)
@@ -80,7 +82,7 @@ jobs:
       # explicitly-ordered `twine upload` sequence in RELEASING.md
       # instead. This workflow is the steady-state path, not the
       # first-release path.
-      - name: Publish all five (bulk; see note + RELEASING.md for first release)
+      - name: Publish all six (bulk; see note + RELEASING.md for first release)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/

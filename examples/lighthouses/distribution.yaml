@@ -1,0 +1,96 @@
+# URML self-distribution ledger. One row per publishing venue.
+#
+# This is NOT outreach. The outreach*.yaml ledgers track third-party robotics
+# targets we pitch URML to. This file tracks the venues where WE publish URML's
+# own agent-adoption artifacts: the Agent Skill and the MCP server. It is
+# deliberately named `distribution.yaml` (not `outreach*.yaml`) so the
+# schema-v2 conformance test does not treat it as an outreach ledger; the shape
+# here is different (a publishing venue, not a request-for-comment to a vendor).
+#
+# HONESTY DISCIPLINE (same rule as the repo's "traffic reality" note):
+#   - `response` stays `none` until there is a REAL adoption signal (a human
+#     using it, an issue, a citation). Install counts / listing views are
+#     VANITY and are NOT engagement. Do not massage them.
+#   - `submitted_at` / `posted_url` stay empty until the venue is actually live.
+#     Publishing is founder-action (needs maintainer PyPI / GitHub identity);
+#     nothing here is live yet. See:
+#       - Skill: .github/skills/SUBMISSIONS.md
+#       - MCP:   reference/mcp-server/SUBMISSIONS.md + RELEASING.md
+#
+# Contact on every listing: greenvh@gmail.com.
+#
+# response enum: none | acked | engaged | declined  (mirrors the outreach enum).
+
+# --- Agent Skill track (unblocked; no PyPI dependency) --------------------
+- slug: skills-sh
+  track: skill
+  venue: "skills.sh / gh skill publish (GitHub-indexed Agent Skills)"
+  artifact: ".github/skills/urml-robot-intent/SKILL.md"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "gh skill publish from a URML-MARS/URML checkout; installable via npx skills add urml-robot-intent. Playbook: .github/skills/SUBMISSIONS.md."
+
+- slug: agentskills-io
+  track: skill
+  venue: "agentskills.io showcase"
+  artifact: ".github/skills/urml-robot-intent/SKILL.md"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "PR to agentskills/agentskills adding the showcase entry. Entry shape drafted in .github/skills/SUBMISSIONS.md."
+
+# --- MCP server track (blocked on the 0.2.0 PyPI release) -----------------
+- slug: pypi-urml-mcp-server
+  track: mcp
+  venue: "PyPI (package urml-mcp-server)"
+  artifact: "reference/mcp-server/"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "First-ever publish; needs the full 0.2.0 core release first (validator, llm-bridge, ros2-runtime). See RELEASING.md."
+
+- slug: mcp-registry
+  track: mcp
+  venue: "Official MCP registry (name io.github.urml-mars/urml)"
+  artifact: "reference/mcp-server/server.json"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "mcp-publisher publish; GitHub login verifies the io.github.urml-mars namespace. Needs the PyPI package live first."
+
+- slug: smithery
+  track: mcp
+  venue: "Smithery (MCP directory)"
+  artifact: "reference/mcp-server/server.json"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "Claim listing under greenvh@gmail.com after the registry entry is live."
+
+- slug: glama
+  track: mcp
+  venue: "Glama (MCP directory)"
+  artifact: "reference/mcp-server/server.json"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "Claim listing under greenvh@gmail.com."
+
+- slug: pulsemcp
+  track: mcp
+  venue: "PulseMCP (MCP directory)"
+  artifact: "reference/mcp-server/server.json"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "Claim listing under greenvh@gmail.com."
+
+- slug: mcp-so
+  track: mcp
+  venue: "mcp.so (MCP directory)"
+  artifact: "reference/mcp-server/server.json"
+  submitted_at: ""
+  posted_url: ""
+  response: none
+  notes: "Claim listing under greenvh@gmail.com."
