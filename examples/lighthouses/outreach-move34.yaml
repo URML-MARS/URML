@@ -76,7 +76,7 @@
   posted_url: "https://github.com/IMRCLab/crazyswarm2/discussions/864"
   channel: github_discussion
   contact: "IMRCLab/crazyswarm2 (MIT, ~239 stars, Issues + Discussions enabled, not archived, active). ROS 2 stack for flying swarms of Bitcraze Crazyflie nano-quadcopters, TU Berlin IMRC lab. DE (Germany)."
-  last_touch: "2026-06-08"
+  last_touch: "2026-07-10"
   response: engaged
   tier: A
   country: DE
@@ -88,11 +88,13 @@
       text: "whoenig (Wolfgang Hoenig, IMRCLab, Crazyswarm2 author) replied on discussion #864 (2026-06-08), engaged + constructive: (1) interface - per-UAV velocity and/or position control is supported; the dispatch surface depends on URML's interface shape; (2) capabilities vary per drone (all Crazyflie/Crazyflie-Bolt-based, different capabilities), per operating-area size, and per swarm size. Replied 2026-06-08 (idoco2003): mapped his points onto URML's fleet model - each Crazyflie a roster member with its own manifest (RFC-0286), the operating area an operational-clearance volume the validator deconflicts (RFC-0291), swarm size = roster length; per-UAV velocity/position is the fan-out dispatch surface. Offered a concrete swarm example as the next step."
     - date: "2026-06-08"
       text: "Shipped the worked example (PR #365, examples/fleet/crazyswarm2/): validates a 3-Crazyflie fleet program (take off, triangle formation, land, in lockstep) with validate_fleet, then maps each per-UAV primitive onto the real crazyflie_interfaces services (take_off->Takeoff, move_to->GoTo, land->Land; barrier->rendezvous). FIRST worked example to exercise URML's fleet model (RFC-0286 roster + RFC-0291 clearance-volume deconfliction): two drones to the same corner -> fleet.concurrent_shared_workspace, rejected before any command. Pure-stdlib, deterministic, byte-asserted. Posted a follow-up to @whoenig on #864 (2026-06-08) linking it + asking whether the mapping + per-drone capability split match his model."
+    - date: "2026-07-10"
+      text: "UNHANDLED-INBOUND caught in a warm-engaged-thread sweep: whoenig had replied on #864 on 2026-06-09 (a month unhandled) with a real technical correction -- crazyflie_interfaces/srv/GoTo takes a duration, and it must be long enough to respect the drone's max velocity. The example mapped move_to->GoTo with a goal but NO duration = incomplete. Built the fix (PR #614, merged): track each member's position and derive the GoTo duration = distance / speed, speed = commanded move_to.speed if present else declared max_velocity, capped at max_velocity; so the duration is never shorter than the speed limit allows (the ~1 m formation legs = a 0.50 s GoTo each at 2 m/s). Regenerated dispatch-plan.txt + added a duration/cap test. Replied to whoenig on #864 (discussioncomment-17591429), acknowledging the slow turn. Stays engaged; ball back in his court."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md Crazyswarm2 body as a GitHub Discussion on IMRCLab/crazyswarm2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged (whoenig, Crazyswarm2 author). Worked swarm example shipped (PR #365) + announced on #864; awaiting his read. Next if he re-engages: a live rclpy dispatcher fanning validated fleet intent to the per-CF service clients (the runtime side). First exercise of URML's fleet model in a worked example; siblings esmini (#357) + kortex (#362)."
+  next_action: "Engaged (whoenig, Crazyswarm2 author). His 2026-06-09 GoTo-duration correction is now addressed (PR #614) and answered on #864. Await his read; do NOT re-ping. Next if he re-engages: a live rclpy dispatcher fanning validated fleet intent to the per-CF service clients (the runtime side). LESSON: sweep engaged threads for inbound after last_touch (this one sat a month); mirrors why the VITRA/RTIC checks matter."
   notes: "Permissive (MIT). High-value swarm teaching/research demonstrator. No license-ask."
 
 - slug: rotorpy
