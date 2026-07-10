@@ -10,9 +10,9 @@ Phase 1 (parallel, all):
   cf3: take_off(altitude=1.0) -> /cf3/takeoff  (crazyflie_interfaces/srv/Takeoff: height=1.0)
 Barrier [cf1, cf2, cf3]: rendezvous; the runtime holds the next phase until all reach completeState
 Phase 2 (parallel, all):
-  cf1: move_to(corner_a) -> /cf1/go_to  (crazyflie_interfaces/srv/GoTo: goal=(1, 0, 1))
-  cf2: move_to(corner_b) -> /cf2/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, 0.87, 1))
-  cf3: move_to(corner_c) -> /cf3/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, -0.87, 1))
+  cf1: move_to(corner_a) -> /cf1/go_to  (crazyflie_interfaces/srv/GoTo: goal=(1, 0, 1), duration=0.50s = 1.00 m / 2 m/s, within max_velocity 2)
+  cf2: move_to(corner_b) -> /cf2/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, 0.87, 1), duration=0.50s = 1.00 m / 2 m/s, within max_velocity 2)
+  cf3: move_to(corner_c) -> /cf3/go_to  (crazyflie_interfaces/srv/GoTo: goal=(-0.5, -0.87, 1), duration=0.50s = 1.00 m / 2 m/s, within max_velocity 2)
 Barrier [cf1, cf2, cf3]: rendezvous; the runtime holds the next phase until all reach completeState
 Phase 3 (parallel, all):
   cf1: land -> /cf1/land  (crazyflie_interfaces/srv/Land)

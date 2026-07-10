@@ -73,3 +73,22 @@ def test_two_drones_to_same_corner_is_refused() -> None:
                     b["body"] = {"move_to": {"location": "corner_a"}}  # collide with cf1
     with pytest.raises(ValueError, match="concurrent_shared_workspace"):
         gen.render_dispatch_plan(roster, members, program)
+
+
+def test_goto_duration_respects_max_velocity() -> None:
+    """@whoenig #864: GoTo needs a duration long enough for the max-velocity limit.
+
+    The mapping derives it as distance / speed, with speed capped at the declared
+    max_velocity, so the emitted duration is never shorter than the speed allows.
+    """
+    gen = _load_gen()
+    plan = gen.render_swarm_formation()
+    # Each formation move is ~1 m at max_velocity 2 m/s = a 0.50 s GoTo.
+    assert "duration=0.50s" in plan
+    assert "within max_velocity 2" in plan
+
+    _, members, _ = gen._load_fleet()
+    cf = members["cf1"]  # declares mobility.max_velocity: 2.0
+    assert gen._speed_for({"speed": 5.0}, cf) == 2.0  # a too-fast command is capped at the declared max
+    assert gen._speed_for({"speed": 1.0}, cf) == 1.0  # a slower command is honored (longer duration)
+    assert gen._speed_for({}, cf) == 2.0  # no command uses the declared max_velocity
