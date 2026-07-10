@@ -90,9 +90,10 @@
 - slug: mitsubishi
   rfc: 27
   sent_at: 2026-05-22
+  posted_url: "https://github.com/Mitsubishi-Electric-Asia/melfa_ros2_driver/discussions/25"
   channel: github
   contact: "@Mitsubishi-Electric-Asia"
-  last_touch: 2026-06-10
+  last_touch: 2026-07-10
   response: engaged
   tier: A
   country: US
@@ -102,8 +103,10 @@
       text: "Posted as discussion Mitsubishi-Electric-Asia/melfa_ros2_driver#25 (2026-05-22, Move #1, RFC-0027); the URL was never recorded on this row. First activity 2026-06-10: offinliu (maintainer) routed the thread to @hunterzhongME (acknowledged + delegated internally, no substantive response yet). No reply owed to a bare routing tag; await hunterzhongME."
     - date: "2026-06-10"
       text: "hunterzhongME [CONTRIBUTOR] replied substantively on #25 (2026-06-10), routed there by offinliu [MEMBER]. Careful, knowledgeable technical feedback BUT explicitly disclaimed authority twice: not an official maintainer rep, not speaking for Mitsubishi Electric, no longer actively developing the driver, cannot promise official support/endorsement/direction. ASSESSMENT: a useful technical contributor/ally, NOT a partner or decision-maker; an official listing/partnership needs an active maintainer or Mitsubishi corporate (offinliu/MEMBER routed but did not engage). His points: (1) prefer the wording 'the current public MELFA ROS 2 driver repository is hosted under Mitsubishi-Electric-Asia'; (2) MELFA-BASIC V invocation belongs separate from the ROS2/MoveIt2 path, via the MELFA API for Linux (host-side) - maps to URML call_program (RFC-0015); (3) no legacy CR1/CR2 support; (4) conformance-listing answer deferred ('will read more'). Replied 2026-06-10 (idoco2003): adopted his wording, tied MELFA-BASIC V to call_program, dropped legacy controllers, no-rush on (4)."
+    - date: "2026-07-10"
+      text: "Verified discussion #25 (read-only): hunterzhongME's Q4 (conformance-listing) answer is STILL deferred; his last comment remains 2026-06-10 ('will read more'). No inbound drift. idoco2003 posted a light Q4 follow-up nudge on #25 (2026-07-10, no-urgency framing, AI-authoring disclosure per VIBE.md). Recorded posted_url on this row so the engaged-inbound sweep can auto-check it going forward (was previously unrecorded, so the sweep skipped it)."
   claude_directives: []
-  next_action: "Engaged (hunterzhongME, CONTRIBUTOR - technical ally, NOT an official rep/decision-maker). Adopt his RFC-0027 corrections: safe repo-scope wording; MELFA-BASIC V via MELFA API for Linux mapped to call_program (RFC-0015), separate from the MoveIt2 trajectory path; drop legacy CR1/CR2. Await his deferred conformance-listing answer (4). An OFFICIAL listing/partnership requires an active maintainer or Mitsubishi corporate, which this thread does not reach - do not treat his feedback as endorsement."
+  next_action: "Q4 follow-up nudge sent 2026-07-10 (idoco2003); still awaiting hunterzhongME's deferred conformance-listing answer (4). Row now carries posted_url, so the engaged-inbound sweep auto-tracks it. hunterzhongME is a CONTRIBUTOR / technical ally, NOT an official rep - his RFC-0027 corrections stand (safe repo-scope wording; MELFA-BASIC V via MELFA API for Linux mapped to call_program (RFC-0015), separate from the MoveIt2 trajectory path; drop legacy CR1/CR2). An OFFICIAL listing/partnership still requires an active maintainer or Mitsubishi corporate, which this thread does not reach - do not treat his feedback as endorsement."
   notes: ""
 - slug: fanuc
   rfc: 28
