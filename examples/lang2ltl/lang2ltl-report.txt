@@ -1,0 +1,35 @@
+URML as the capability gate below an LTL task spec (with Prof. Tellex, Lang2LTL).
+An LTL spec says what to achieve; URML validates each action it dispatches
+against the robot's declared capabilities and safety envelope before dispatch.
+
+Task: "go to the table, pick up the mug, place it on the counter."
+Dispatched actions: move_to table -> detect mug -> grasp -> move_to counter -> release.
+Policy: gripper capability claims must be VERIFIED, not self-declared (RFC-0631).
+
+# 1. Admissible: force within the verified gripper envelope
+
+[VALID] grasp the mug at 60 N (gripper rated 20 to 100 N, evidence verified)
+   Every dispatched action is within the declaration, and the gripper's force
+   claim is verified, so the policy admits it. Necessary check passed.
+
+# 2. Necessary-not-sufficient: an out-of-envelope action is refused before dispatch
+
+[REJECTED] grasp the mug at 250 N (above the 100 N rating)
+   -> capability.missing_gripper, envelope.force_exceeded
+   A 250 N grasp on a 100 N gripper will not work; URML rejects it statically,
+   with no robot and no attempt. This is the cheap, definite half of the check.
+
+# 3. Declared is not actual: a self-declared capability is refused under the policy
+
+[REJECTED] the same 60 N grasp, but the gripper's force range is only self-declared
+   -> policy.evidence_insufficient
+   The action is within the declared range, yet the policy refuses it: the claim
+   is self-declared, not verified. URML does not take a capability on faith.
+
+# The point
+
+URML is the necessary-not-sufficient admissibility gate below the task spec, not
+a competing way to write the task. It cheaply rejects the definitely-inadmissible
+(case 2), and it can refuse to trust an unverified capability claim (case 3, via
+RFC-0631 evidence). It does not, and cannot, promise that an admissible action
+succeeds in a novel scene. That honesty is the point.

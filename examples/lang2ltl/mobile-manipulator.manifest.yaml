@@ -1,0 +1,75 @@
+# A mobile manipulator (a base plus one arm and gripper), for the Lang2LTL
+# worked example. From a conversation with Prof. Stefanie Tellex about where a
+# declared-capability layer sits relative to an LTL task spec.
+#
+# The gripper carries an RFC-0631 `evidence` block: it records HOW the force
+# claim was established. Here `source: verified` means the range was confirmed by
+# a runtime measurement, not just asserted. A deployment policy can require that
+# level of evidence (see verified-evidence.policy.yaml), which is URML's honest
+# answer to "a declared capability is not the same as an actual one": a bare
+# claim does not have to be trusted on faith.
+
+manifest_version: "0.1"
+robot_id: mobile_manipulator
+description: A differential-drive base carrying a single arm and parallel-jaw gripper.
+
+frames:
+  - name: world
+    parent: null
+  - name: base_link
+    parent: world
+
+declared_locations:
+  - name: table
+    pose: { x: 1.5, y: 0.0, z: 0.0 }
+    frame: world
+    description: Pick location.
+  - name: counter
+    pose: { x: 0.0, y: 1.2, z: 0.0 }
+    frame: world
+    description: Place location.
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.6
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: parallel_jaw
+      kind: servo_electric
+      force_min_n: 20.0
+      force_max_n: 100.0
+      accepted_classes: [mug]
+      movable: true
+      evidence:
+        source: verified
+        ref: { kind: test, value: gripper_force_bench_2026_06 }
+        note: Force range confirmed on a bench force gauge.
+  reachable_workspace_m: 0.9
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - mug
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
