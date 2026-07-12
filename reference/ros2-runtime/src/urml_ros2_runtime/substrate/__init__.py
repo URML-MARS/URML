@@ -34,6 +34,7 @@ from urml_ros2_runtime.substrate.base import (
     ROSAdapter,
     ScanResult,
     SubstrateResult,
+    TelemetryAdapter,
     WaitResult,
 )
 from urml_ros2_runtime.substrate.mock import MockROSAdapter
@@ -56,6 +57,7 @@ __all__ = [
     "ScanResult",
     "SpeechTopics",
     "SubstrateResult",
+    "TelemetryAdapter",
     "WaitResult",
     "load_adapter_config",
 ]

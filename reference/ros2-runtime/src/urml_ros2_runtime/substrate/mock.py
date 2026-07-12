@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from urml_validator.monitor import Sample as MonitorSample
+
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
@@ -61,6 +63,10 @@ class MockROSAdapter:
         self._listen_override: ListenResult | None = None
         self._call_program_override: ProgramCallResult | None = None
         self._set_output_override: SubstrateResult | None = None
+
+        # RFC-0667 telemetry: scripted samples, then benign synthesized ones.
+        self._telemetry_queue: list[MonitorSample] = []
+        self._telemetry_last_t: float = -1.0
 
     # ----- Overrides -----
 
@@ -583,3 +589,33 @@ class MockROSAdapter:
     def turn_by(self, *, angle: float) -> NavigationResult:
         self.call_log.append({"method": "turn_by", "angle": angle})
         return NavigationResult(success=True)
+
+    # ---- TelemetryAdapter (RFC-0667) ----
+
+    def set_telemetry(self, samples: list[MonitorSample]) -> None:
+        """Script the samples `sample_signals` returns, in order.
+
+        When the script runs out (or none was set), `sample_signals`
+        synthesizes a benign sample — everything at rest, nobody nearby —
+        with a timestamp after the last one returned, so shield-equipped
+        tests that don't script telemetry keep working.
+        """
+        self._telemetry_queue = list(samples)
+
+    def sample_signals(self) -> MonitorSample:
+        if self._telemetry_queue:
+            sample = self._telemetry_queue.pop(0)
+        else:
+            sample = MonitorSample(
+                t=self._telemetry_last_t + 1.0,
+                signals={
+                    "speed": 0.0,
+                    "altitude": 0.0,
+                    "payload": 0.0,
+                    "grip_force": 0.0,
+                    "person_distance": 100.0,
+                },
+            )
+        self._telemetry_last_t = sample.t
+        self.call_log.append({"method": "sample_signals", "t": sample.t})
+        return sample

@@ -37,6 +37,7 @@ from urml_ros2_runtime.errors import (
 from urml_ros2_runtime.fleet import FleetRuntime, FleetRuntimeResult
 from urml_ros2_runtime.primitives import PrimitiveOutcome
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
+from urml_ros2_runtime.shield import Shield, ShieldedAdapter, ShieldViolationError
 from urml_ros2_runtime.substrate import (
     AdapterConfig,
     CaptureResult,
@@ -47,6 +48,7 @@ from urml_ros2_runtime.substrate import (
     RclpyAdapter,
     ROSAdapter,
     SubstrateResult,
+    TelemetryAdapter,
     WaitResult,
     load_adapter_config,
 )
@@ -67,7 +69,11 @@ __all__ = [
     "RclpyAdapter",
     "RuntimeError",
     "RuntimeResult",
+    "Shield",
+    "ShieldViolationError",
+    "ShieldedAdapter",
     "SubstrateResult",
+    "TelemetryAdapter",
     "URMLRuntime",
     "UnresolvedReferenceError",
     "UnsupportedCompositionError",
