@@ -157,19 +157,24 @@
   posted_url: "https://github.com/pytorch/executorch/issues/20268"
   channel: github_issue
   contact: "pytorch/executorch (BSD, ~4.7k stars, Issues + Discussions enabled, not archived, very active 2026-06). On-device PyTorch inference for mobile/embedded/edge. PyTorch Foundation (Linux Foundation), US."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-07-14"
+  response: acked
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0516 body to https://github.com/pytorch/executorch/issues/20268 under idoco2003 (Move #46 AI/robot-learning wave). Awaiting response."
+    - date: "2026-07-14"
+      text: "nil-is-all (CONTRIBUTOR) commented 2026-06-22: 'shoumikhin could you take a shot at this?'. That is an INTERNAL TRIAGE PING routing the issue to another maintainer, not a substantive reply to us. none -> acked (they saw it and routed it; no engagement yet, do not inflate). NO reply owed: answering an internal routing ping adds noise on a busy PyTorch repo."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move46.md executorch body as a GitHub Issue on pytorch/executorch under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. On-device inference runtime -> ExecuTorch runs the policy, URML validates the action before dispatch; LearnedPolicy envelope travels with the on-device model (RFC-0383). RFC asks the altitude question."
+    - date: "2026-07-14"
+      text: "ACKED via internal triage routing only. Do NOT reply. Await a substantive response from shoumikhin; if it comes, the seam is that ExecuTorch runs the on-device policy and URML validates the emitted action before actuation."
+      status: done
+  next_action: "Acked via internal triage routing (nil-is-all -> shoumikhin). No reply owed, no re-ping. Await a substantive maintainer response."
   notes: "BSD. PyTorch Foundation on-device inference; URML gates above the runtime. Ties RFC-0021 / MCU-substrate edge work."
 
 - slug: openrlbenchmark

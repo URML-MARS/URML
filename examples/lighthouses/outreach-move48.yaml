@@ -287,19 +287,24 @@
   posted_url: "https://github.com/mtconnect/cppagent/issues/613"
   channel: github_issue
   contact: "mtconnect/cppagent (Apache-2.0, ~178 stars, Issues + Discussions enabled, not archived, active 2026-06). Reference C++ agent for MTConnect (US manufacturing interoperability standard). MTConnect Institute (AMT-affiliated), US."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-07-14"
+  response: engaged
   tier: A
   country: US
   sector: governance-body
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0540 body to https://github.com/mtconnect/cppagent/issues/613 under idoco2003 (Move #48 domain/standards/conceptual-peer wave). Awaiting response."
+    - date: "2026-07-14"
+      text: "Shadow-Cipher (NOT a maintainer; a CNC practitioner who has worked with CNCs since the late 1990s) engaged warmly across two messages, and his direct question of 2026-06-28 sat UNANSWERED for over two weeks until the fixed sweep caught it. He said URML looks like a solid foundation and would sit complementary to MTConnect side-by-side, and gave a concrete case: a machine shop with a robotic arm in the centre of a three-CNC cell. His question: does URML work read-only like MTConnect, or does it actually control the robot? none -> engaged. Replied 2026-07-14 (issuecomment-4973386367) honestly: NO, URML is not read-only, it is on the command side, but nothing actuates until the action is statically validated against the declared capabilities and safety envelope, so the control path is gated rather than open. MTConnect tells you what the cell is doing (read-only, safe); URML checks what you are about to tell the arm to do. Complementary, and URML asks nothing of MTConnect. Also disclosed the AI-assisted prose openly per VIBE.md."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move48.md mtconnect-cppagent body as a GitHub Issue on mtconnect/cppagent under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Manufacturing-interop STANDARDS body -> equipment state a URML robot intent conditions on (complements OPC UA Move #22 without re-touch). Standards-to-standards."
+    - date: "2026-07-14"
+      text: "ENGAGED (Shadow-Cipher, a real CNC practitioner, NOT a maintainer). High-quality inbound with a concrete use case (robot arm in a three-CNC cell). The read-only-vs-gated-write framing is clean and he supplied half of it; keep it. Do NOT pitch the MTConnect Institute itself off the back of this, he is not a maintainer and that would be an over-reach. If he keeps engaging, the cell case (MTConnect monitors the CNCs, URML gates the arm command) is the natural worked example."
+      status: done
+  next_action: "Await Shadow-Cipher's read of the read-only-vs-gated-write answer. No re-ping. If he engages further, the three-CNC-cell-with-robot-arm case is the natural worked example (MTConnect monitors, URML gates the arm command)."
   notes: "Tier A. Apache-2.0. MTConnect standards body; shop-floor interop complement."
 
 - slug: auto-apms
