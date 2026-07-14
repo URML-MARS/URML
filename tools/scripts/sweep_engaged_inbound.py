@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
-"""Sweep engaged outreach threads for maintainer replies newer than last_touch.
+"""Sweep outreach threads for maintainer replies newer than last_touch.
 
-Read-only triage. For every outreach-ledger row with ``response: engaged``, fetch
-the latest comment on its ``posted_url`` (a GitHub issue or discussion) and flag
-the thread when the latest comment is BOTH:
+Read-only triage. For every NON-TERMINAL outreach-ledger row (``response`` in
+none / acked / engaged) fetch the latest comment on its ``posted_url`` (a GitHub
+issue or discussion) and flag the thread when the latest comment is BOTH:
 
   * newer than the row's ``last_touch``, AND
   * not by our own account (``idoco2003``).
 
-That combination is an unhandled inbound: a maintainer replied after we last
-recorded a touch, and nobody has acted on it. A month-old miss on
-IMRCLab/crazyswarm2#864 (a real correction from the maintainer that sat unseen
-because it landed right after our own follow-up) is what motivated this.
+That combination is an unhandled inbound: someone replied after we last recorded
+a touch, and nobody has acted on it. A month-old miss on IMRCLab/crazyswarm2#864
+(a real correction from the maintainer that sat unseen because it landed right
+after our own follow-up) is what motivated this.
 
-Notes on the two bugs that made the original ad-hoc sweep unreliable, both fixed
-here:
+**Coverage matters more than it looks.** The first version swept only
+``engaged`` rows, and promptly missed two real maintainer replies:
+Genesis-Embodied-AI/genesis-world#2881 (row was ``none``) and
+ray-project/ray#64064 (row was ``acked``). A first reply on a ``none`` or
+``acked`` thread is a *brand-new engagement*, which is the highest-value signal
+there is, so those states are swept too and reported first. Terminal states
+(``declined`` / ``wontfix``) are settled and skipped.
+
+Notes on the two bugs that made the original ad-hoc sweep unreliable, both fixed:
 
   * ``gh issue view --json comments`` exposes the author as ``author.login``, not
     ``user.login``. The wrong key silently returned null, so every author looked
@@ -37,11 +44,22 @@ import glob
 import json
 import re
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import yaml
 
 OUR_LOGIN = "idoco2003"
+# Settled states we do not re-check; everything else is worth a look.
+_NON_TERMINAL = {"none", "acked", "engaged"}
+# Bots are not inbound. A stale-bot notice or an auto-close is dormancy, not a
+# maintainer reply, and flagging them buries the real ones.
+_BOT_LOGINS = {"github-actions", "dependabot", "codecov", "stale", "renovate"}
+
+
+def _is_bot(login: str) -> bool:
+    low = login.lower()
+    return low.endswith("[bot]") or low.removesuffix("[bot]") in _BOT_LOGINS
 _URL_RE = re.compile(r"github\.com/(?:orgs/)?([^/]+)/([^/]+)/(issues|discussions)/(\d+)")
 
 
@@ -90,7 +108,7 @@ def _latest_comment(url: str) -> tuple[str, str] | None:
     return who, (n.get("createdAt") or "")[:10]
 
 
-def _engaged_rows() -> list[dict]:
+def _target_rows() -> list[dict]:
     rows: list[dict] = []
     here = Path(__file__).resolve().parents[2]
     for f in glob.glob(str(here / "examples" / "lighthouses" / "outreach*.yaml")):
@@ -102,33 +120,57 @@ def _engaged_rows() -> list[dict]:
         if not isinstance(items, list):
             continue
         for r in items:
-            if isinstance(r, dict) and r.get("response") == "engaged" and r.get("posted_url"):
+            # Every NON-TERMINAL row, not just `engaged`. A first reply on a `none`
+            # or `acked` thread is a brand-new engagement and the highest-value
+            # signal there is; sweeping only `engaged` missed exactly that twice
+            # (Genesis #2881 was `none`, ray/RLlib #64064 was `acked`, and both got
+            # real maintainer replies this sweep never flagged). Terminal states
+            # (declined / wontfix) are settled and deliberately skipped.
+            if not isinstance(r, dict) or not r.get("posted_url"):
+                continue
+            if r.get("response") in _NON_TERMINAL:
                 rows.append(r)
     return rows
 
 
-def main() -> None:
-    rows = _engaged_rows()
-    flagged: list[tuple[str, str, str, str, str]] = []
-    for r in rows:
-        slug = str(r.get("slug"))
-        lt = str(r.get("last_touch") or "")
-        url = str(r.get("posted_url"))
-        res = _latest_comment(url)
-        if not res:
-            continue
-        who, when = res
-        # Unhandled inbound: a newer comment, by someone other than us.
-        if when and lt and when > lt and who and who != OUR_LOGIN:
-            flagged.append((slug, lt, when, who, url))
+def _check(r: dict) -> tuple[str, str, str, str, str, str] | None:
+    """Return (state, slug, last_touch, when, who, url) when a thread has unhandled inbound."""
+    slug = str(r.get("slug"))
+    lt = str(r.get("last_touch") or "")
+    url = str(r.get("posted_url"))
+    state = str(r.get("response") or "")
+    res = _latest_comment(url)
+    if not res:
+        return None
+    who, when = res
+    # Unhandled inbound: a newer comment, by a human other than us.
+    if when and lt and when > lt and who and who != OUR_LOGIN and not _is_bot(who):
+        return (state, slug, lt, when, who, url)
+    return None
 
-    print(f"Swept {len(rows)} engaged threads.\n")
+
+def main() -> None:
+    rows = _target_rows()
+    flagged: list[tuple[str, str, str, str, str, str]] = []
+    # Concurrency: the non-terminal set is large (hundreds of rows), so serial gh
+    # calls would take many minutes. These are read-only fetches; 8 at a time.
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for res in pool.map(_check, rows):
+            if res:
+                flagged.append(res)
+
+    print(f"Swept {len(rows)} non-terminal threads (none / acked / engaged).\n")
     if not flagged:
-        print("No unhandled inbound: every engaged thread's newest comment is ours or already recorded.")
+        print("No unhandled inbound: every thread's newest comment is ours or already recorded.")
         return
-    print(f"UNHANDLED INBOUND ({len(flagged)}): a maintainer replied after our last_touch.\n")
-    for slug, lt, when, who, url in sorted(flagged, key=lambda x: x[2], reverse=True):
-        print(f"  {slug:<24} last_touch={lt}  new={when} by @{who}")
+
+    # A reply on a `none` / `acked` row is a NEW engagement: surface it first.
+    order = {"none": 0, "acked": 1, "engaged": 2}
+    flagged.sort(key=lambda x: (order.get(x[0], 9), x[3]), reverse=False)
+    print(f"UNHANDLED INBOUND ({len(flagged)}): someone replied after our last_touch.\n")
+    for state, slug, lt, when, who, url in flagged:
+        tag = "NEW ENGAGEMENT" if state in ("none", "acked") else "engaged thread"
+        print(f"  [{state:<8}] {slug:<24} last_touch={lt}  new={when} by @{who}   <- {tag}")
         print(f"    {url}")
 
 
