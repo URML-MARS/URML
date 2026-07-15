@@ -1,0 +1,45 @@
+# A small quadcopter flown in the gym-pybullet-drones PyBullet sandbox, declared
+# at the URML capability-manifest level. For learnsyslab/gym-pybullet-drones#312.
+#
+# The point of this example is a validate-before-actuate gate that stays entirely
+# on the URML side: nothing here imports gym-pybullet-drones, and nothing in that
+# repo changes. URML declares what this drone can do (an aerial multirotor, its
+# service ceiling and speed) and a deployment declares the arena bounds (see
+# arena.envelope.yaml). A commanded action is checked against both before it is
+# handed to the gym-pybullet-drones control interface. See run_gym_pybullet_drones.py.
+
+manifest_version: "0.1"
+robot_id: sandbox_quadcopter
+description: A small indoor quadcopter flown in the gym-pybullet-drones PyBullet sandbox.
+
+frames:
+  - name: world
+    parent: null
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: world
+    description: Takeoff and landing position.
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 2.0
+  station_keeping: true
+  service_ceiling: 5.0
+
+substrate:
+  autopilot_class: custom
+  autopilot_class_note: "gym-pybullet-drones PyBullet dynamics sandbox, flown by a PID position controller (e.g. DSLPIDControl). Not a production autopilot."
+
+outputs:
+  named_endpoints: []
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: sandbox
+      country_of_origin: US
+      country_of_final_assembly: US
