@@ -55,6 +55,7 @@ SUITES: list[tuple[str, Path]] = [
     ("edu-runtime", REPO / "reference" / "edu-runtime"),
     ("isaac-runtime", REPO / "reference" / "isaac-runtime"),
     ("autosar-runtime", REPO / "reference" / "autosar-runtime"),
+    ("model", REPO / "reference" / "model"),
 ]
 
 # Match pytest's summary line: "234 passed in 3.78s",

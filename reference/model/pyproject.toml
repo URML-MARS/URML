@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urml-model"
+version = "0.2.0"
+description = "Dataset synthesis pipeline and training recipe for a URML-native small model (RFC-0666)."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [{ name = "URML Maintainers" }]
+keywords = ["robotics", "urml", "llm", "dataset", "fine-tuning"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "pydantic>=2.6,<3",
+  "PyYAML>=6.0,<7",
+  "urml-validator>=0.2.0",
+  "urml-llm-bridge>=0.2.0",
+  "urml-conformance>=0.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.5",
+  "mypy>=1.10",
+  "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+urml-model = "urml_model.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/URML-MARS/URML"
+Repository = "https://github.com/URML-MARS/URML"
+Issues = "https://github.com/URML-MARS/URML/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urml_model"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "ANN", "RUF"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["urml_model"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
