@@ -24,8 +24,8 @@ classifiers = [
 dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
-  "urml-validator>=0.1.0",
-  "urml-ros2-runtime>=0.1.0",
+  "urml-validator>=0.2.0",
+  "urml-ros2-runtime>=0.2.0",
 ]
 
 [project.optional-dependencies]
@@ -40,7 +40,7 @@ dev = [
 # drives the bridge over an utterance set. The loader (data only) needs none of
 # this; only `score` does, and it imports the bridge lazily.
 llm-bridge = [
-  "urml-llm-bridge>=0.1.0",
+  "urml-llm-bridge>=0.2.0",
 ]
 
 [project.urls]
