@@ -8,9 +8,8 @@ and ``_open`` runs against controllable doubles.
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from types import ModuleType
-from typing import Any
 
 import pytest
 from urml_ros2_runtime.substrate.base import DetectionResult, ROSAdapter
@@ -143,58 +142,36 @@ class _FakeMarty:
         pass
 
 
-class _FakePetoiBoard:
-    """Stand-in for the Petoi OpenCat-skill-library Python wrapper.
+def _fake_petoi_robot() -> ModuleType:
+    """Stand-in for the PetoiRobot package (pip ``petoi-robot``).
 
-    Mirrors the parametric command surface from the round-1 maintainer
-    engagement on PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-05-28):
-
-    - send_command(token, *args) for raw OpenCat tokens
-      (e.g. send_command('kwkF', 5) for walk forward 5 cycles).
-    - Named methods (walk, trot, ksit, krest, ...) for adapters that
-      prefer the higher-level shape.
-
-    Sensor getters use placeholder names (read_imu, read_battery,
-    read_distance) until the round-2 maintainer ask confirms the
-    authoritative getter list. Each call records (method, args, kwargs)
-    in self.calls so tests can assert on dispatch shape.
+    PetoiRobot's real surface is functional (``openPort`` / ``autoConnect``,
+    ``sendCmdStr`` / ``sendSkillStr`` for commands,
+    ``readAnalogValue`` / ``readDigitalValue`` / ``readUltrasonicDistance`` for
+    sensors), confirmed by the OpenCat maintainer Dr. Rongzhong Li on
+    PetoiCamp/OpenCat-Quadruped-Robot#113. The friendly command names
+    (``send_command``, ``walk``, ``ksit``, ...) and the sensor getters here stand
+    for the URML-side unified wrappers he said are welcome. Calls are recorded on
+    the module's ``calls`` list so tests can assert dispatch shape.
     """
+    mod = ModuleType("PetoiRobot")
+    mod.calls = []  # type: ignore[attr-defined]
 
-    def __init__(self, device: str) -> None:
-        self.device = device
-        self.calls: list[tuple[str, tuple, dict]] = []
+    def _rec(name: str) -> Callable[..., None]:
+        def _f(*args: object, **kwargs: object) -> None:
+            mod.calls.append((name, args, kwargs))  # type: ignore[attr-defined]
 
-    def send_command(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("send_command", args, kwargs))
+        return _f
 
-    def walk(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("walk", args, kwargs))
-
-    def trot(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("trot", args, kwargs))
-
-    def ksit(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("ksit", args, kwargs))
-
-    def krest(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("krest", args, kwargs))
-
-    def kstr(self, *args: object, **kwargs: object) -> None:
-        self.calls.append(("kstr", args, kwargs))
-
-    def read_imu(self) -> list[float]:
-        # OpenCat IMU surface returns 6 axes (gyro x/y/z + accel x/y/z);
-        # exact wrapper shape is a round-2 ask of the maintainer.
-        return [0.01, -0.02, 0.97, 0.0, 0.0, 0.0]
-
-    def read_battery(self) -> float:
-        return 7.4  # nominal LiPo voltage; real value TBD round 2
-
-    def read_distance(self) -> int:
-        return 120  # placeholder ultrasonic / distance reading (mm)
-
-    def close(self) -> None:
-        pass
+    for _n in (
+        "openPort", "autoConnect", "close", "disconnect",
+        "send_command", "walk", "trot", "ksit", "krest", "kstr",
+    ):
+        setattr(mod, _n, _rec(_n))
+    mod.read_imu = lambda: [0.01, -0.02, 0.97, 0.0, 0.0, 0.0]  # type: ignore[attr-defined]
+    mod.read_battery = lambda: 7.4  # type: ignore[attr-defined]
+    mod.read_distance = lambda: 120  # type: ignore[attr-defined]
+    return mod
 
 
 class _FakeCircuitPythonBoard:
@@ -247,17 +224,16 @@ def fake_edu_sdks() -> Iterator[None]:
     thy.Client = _FakeThymio  # type: ignore[attr-defined]
     mar = ModuleType("martypy")
     mar.Marty = _FakeMarty  # type: ignore[attr-defined]
-    pet = ModuleType("petoi_mindpluslib")
-    pet.Petoi = _FakePetoiBoard  # type: ignore[attr-defined]
+    pet = _fake_petoi_robot()
     cpy = ModuleType("circuitpython_host")
     cpy.Board = _FakeCircuitPythonBoard  # type: ignore[attr-defined]
-    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "petoi_mindpluslib", "circuitpython_host")
+    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "PetoiRobot", "circuitpython_host")
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["pyvex"] = vex
     sys.modules["pybricksdev"] = lego
     sys.modules["tdmclient"] = thy
     sys.modules["martypy"] = mar
-    sys.modules["petoi_mindpluslib"] = pet
+    sys.modules["PetoiRobot"] = pet
     sys.modules["circuitpython_host"] = cpy
     try:
         yield

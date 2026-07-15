@@ -55,14 +55,17 @@ marty = [
   "martypy>=3.6",
 ]
 # Petoi Bittle X / Bittle / Nybble Q (Shenzhen, CN) via the OpenCat
-# skill-library command surface. The canonical Python-wrapper package
-# name is a round-2 ask of the PetoiCamp maintainer on
-# PetoiCamp/OpenCat-Quadruped-Robot#113 (round-1 engagement 2026-05-28).
-# 'petoi_mindpluslib' is a placeholder; the adapter only requires *some*
-# Python object that exposes the OpenCat skill-library command surface
-# (named methods or send_command(token, *args)).
+# skill-library command surface. The canonical Python package was
+# confirmed by the OpenCat maintainer Dr. Rongzhong Li on
+# PetoiCamp/OpenCat-Quadruped-Robot#113 (2026-07-15): Petoi unified the
+# Mind+ and desktop-app libraries into PetoiRobot
+# (https://github.com/PetoiCamp/DesktopAppRelease/tree/main/pyUI/PetoiRobot,
+# pip name 'petoi-robot'). Its command surface is functional
+# (sendCmdStr / sendSkillStr) and its raw sensor reads are readAnalogValue /
+# readDigitalValue / readUltrasonicDistance; the adapter is wrapper-agnostic,
+# so a URML-side unified wrapper over those is also fine (maintainer-blessed).
 petoi = [
-  "petoi_mindpluslib",
+  "petoi-robot",
 ]
 # Adafruit CircuitPython (New York, US) via a host-side comms bridge. Per
 # @dhalbert on adafruit/circuitpython#11035 (engaged 2026-05-28): the
