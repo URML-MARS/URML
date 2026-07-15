@@ -46,7 +46,7 @@
   posted_url: "https://github.com/betaflight/betaflight/issues/15333"
   channel: github_issue
   contact: "betaflight/betaflight (GPL-3.0, ~11079 stars, Issues enabled, not archived, active 2026-06. Multirotor flight-controller firmware. International community."
-  last_touch: "2026-06-14"
+  last_touch: "2026-07-15"
   response: none
   tier: A
   country: US
@@ -54,10 +54,13 @@
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0576 body (Move #53 anchor) to https://github.com/betaflight/betaflight/issues/15333 under idoco2003. Declare flight intent + bounds, validate, dispatch; GPL-3.0 cross-citation. Awaiting response."
+    - date: "2026-07-15"
+      text: "The repo stale-bot (github-actions) posted the automatic stale notice on #15333 (2026-07-15): no activity in a month, auto-close in a week. NO human ever engaged. Stays response: none; a stale-bot notice is dormancy, not a maintainer reply, and this is the same handling as ifm-effector and the Stereolabs ZED rows. Do NOT post a keep-alive comment: defeating a stale bot does not manufacture maintainer interest, and if betaflight maintainers were interested they would have looked in the month since posting. Let it lapse. A big FC-firmware GitHub issue getting stale-botted without a human look also hints the venue is off (like WPILib/Chief Delphi): betaflight's real community life is elsewhere (their configurator/Discord), and an RFC-style GitHub issue is easy to auto-close unread."
   claude_directives:
-    - date: "2026-06-14"
-      text: "DONE — posted as betaflight/betaflight#15333 on 2026-06-14 under idoco2003."
+    - date: "2026-07-15"
+      text: "Stale-bot notice, no engagement. Do NOT re-ping / keep-alive; let #15333 auto-close. Betaflight was the Move #53 anchor (integrator FC firmware, clean altitude) but got zero human look on a GitHub RFC issue. If the betaflight/FC-firmware angle is ever revived, lead with a CONCRETE artifact in their actual community venue (not a GitHub RFC issue), the same lesson as WPILib. Stays none until (and if) a human replies; if it auto-closes silently, that is dormancy, not a decline."
       status: done
+  next_action: "Stale-bot notice only, no human engagement. Let #15333 lapse / auto-close; do NOT post a keep-alive. Stays none. Revive the FC-firmware angle only via a concrete artifact in betaflight's real venue, not a GitHub RFC issue."
 
 - slug: inav
   rfc: 577
