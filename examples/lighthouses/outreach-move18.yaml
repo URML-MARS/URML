@@ -89,18 +89,25 @@
 
 - slug: wpilib
   rfc: 228
-  sent_at: ""
-  posted_url: ""
-  channel: deferred
+  sent_at: "2026-05-30"
+  posted_url: "https://github.com/wpilibsuite/allwpilib/issues/8940"
+  channel: github_issue
   contact: "wpilibsuite/allwpilib (BSD-3-Clause, 1.3k stars, Issues enabled, last commit 2026-05-29, **not archived**). The open library (Java/C++/Python) FRC teams program a roboRIO with. Maintained by FIRST and WPILib contributors."
-  last_touch: ""
-  response: none
+  last_touch: "2026-07-15"
+  response: declined
   tier: A
   country: US
   sector: education-toolchain
-  comments: []
-  claude_directives: []
-  next_action: "RFC-0228 drafted (Move-18 batch 1). Awaiting founder approval + posting. Venue: Chief Delphi forum is the FRC cultural home; route there with a GitHub Issue only if maintainers prefer it."
+  comments:
+    - date: "2026-05-30"
+      text: "LEDGER SYNC 2026-07-15: this row had stayed sent_at/posted_url empty (channel deferred, response none) but the issue was in fact POSTED as wpilibsuite/allwpilib#8940 on 2026-05-30 under idoco2003. Corrected the row to reflect reality (sent_at 2026-05-30, url #8940, channel github_issue)."
+    - date: "2026-07-15"
+      text: "Issue #8940 was CLOSED as NOT_PLANNED by calcmogul (Tyler Veness, a WPILib CORE maintainer) on 2026-07-14, with zero comments and zero reactions. A clean silent maintainer decline, not hostile. none -> declined. The venue was likely the problem as much as the content: our own notes flagged that Chief Delphi (not a GitHub issue) is the FRC cultural home, and we posted a GitHub issue anyway. Replied 2026-07-15 (issuecomment-4976355675), brief and gracious: owned the venue mismatch (Chief Delphi is where the FRC community is), asked nothing, thanked him. No re-ping."
+  claude_directives:
+    - date: "2026-07-15"
+      text: "DECLINED via a silent NOT_PLANNED close by a WPILib core maintainer (calcmogul). LESSON: for FRC/WPILib, the venue is Chief Delphi, NOT a GitHub issue; posting the issue against our own venue note was the likely miss. Do NOT re-ping #8940. If the FRC/education play is revived, go to Chief Delphi as a human community post (founder-action), not a GitHub RFC issue, and lead with a concrete artifact. The queued Spec RFCs (swerve drive_type, CAN motor-controller declaration, competition-context metadata) stand on their own regardless."
+      status: done
+  next_action: "Declined (silent NOT_PLANNED close by core maintainer calcmogul). Gracious venue-aware reply posted. No re-ping. Revive only via Chief Delphi (the FRC venue), founder-action, with a concrete artifact."
   notes: "Tier A (BSD-3-Clause composes cleanly). Origin US-domiciled (FIRST/WPI); passes US-federal default policy cleanly. URML-fit: high. First education-pipeline target; inevitability/adoption-at-scale play. Surfaces queued Spec RFCs: swerve drive_type class, CAN motor-controller declaration, competition-context metadata."
 
 # ---- Research micro-platforms with clean demos (1) ----
