@@ -21,6 +21,7 @@ from __future__ import annotations
 from typing import Any, Literal, Protocol, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field
+from urml_validator.monitor import Sample as MonitorSample
 
 # ---------------------------------------------------------------------------
 # Result types — what the adapter returns to the runtime
@@ -500,5 +501,32 @@ class OutputAdapter(Protocol):
 
         Used by `set_output`. `pulse_ms`, when set, holds the value for that
         many milliseconds then reverts the line to its declared safe state.
+        """
+        ...
+
+
+@runtime_checkable
+class TelemetryAdapter(Protocol):
+    """Optional runtime-telemetry surface (RFC-0667): timestamped signal samples.
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only
+    substrates that can read live state (speed, altitude, grip force,
+    person distance — the RFC-0382 signal vocabulary) implement it. The
+    envelope shield checks ``isinstance(adapter, TelemetryAdapter)`` and
+    degrades to gate-only enforcement (no state stream, no property
+    evaluation) for substrates that do not. `MockROSAdapter` implements it
+    with a scriptable sample queue so the hermetic suite can exercise the
+    monitor path.
+
+    Timestamps come from the adapter, not the shield: the shield never
+    reads a clock, which keeps monitor runs reproducible.
+    """
+
+    def sample_signals(self) -> MonitorSample:
+        """Return the current timestamped signal sample.
+
+        Called by the shield after each dispatched primitive (step-boundary
+        cadence). Adapters with an internal control loop may additionally
+        push samples to a shield themselves for finer-grained coverage.
         """
         ...

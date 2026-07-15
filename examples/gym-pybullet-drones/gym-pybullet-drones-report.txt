@@ -1,0 +1,42 @@
+URML validate-before-actuate gate for a gym-pybullet-drones quadcopter (#312).
+URML declares the drone (aerial multirotor, 5 m ceiling, 2 m/s) and the arena
+envelope (3x3 m box, 2.5 m cap), and validates a command against both before any
+target reaches the gym-pybullet-drones controller. Nothing is added to that repo.
+
+Flight: take off, fly to a waypoint, land.
+
+# 1. An admissible flight (inside the arena, under the cap)
+
+[VALID] take off 1.5 m, go to (1, 1, 1.5), land
+   Every step is within the aircraft's capability and the arena envelope.
+
+# 2. Too high: take-off altitude above the arena cap
+
+[REJECTED] take off 3.0 m (arena cap is 2.5 m)
+   -> envelope.altitude_exceeded
+   3.0 m is within the 5 m service ceiling but above the arena's 2.5 m cap, so
+   the deployment envelope refuses it. The command never reaches the controller.
+
+# 3. Out of bounds: a waypoint outside the arena footprint
+
+[REJECTED] fly to (5, 5, 1.5), outside the 3x3 m box
+   -> envelope.geofence_violation
+   The waypoint is outside the declared geofence, so it is refused statically.
+
+# The admissible flight, handed to the gym-pybullet-drones control interface
+
+Each validated primitive becomes a target position for the drone's position
+controller (e.g. DSLPIDControl.computeControlFromState(state, target_pos)),
+which gym-pybullet-drones turns into motor RPMs and steps. URML never imports
+gym-pybullet-drones; it only decides which targets are admissible to send.
+
+  take_off(altitude=1.5)  ->  target_pos = (0, 0, 1.5)
+  move_to(1, 1, 1.5)       ->  target_pos = (1, 1, 1.5)
+  land                    ->  target_pos = (1, 1, 0)
+
+# The point
+
+The gate is on the URML side and adds nothing to gym-pybullet-drones. A command
+is checked against the declared aircraft and arena first; only an admissible one
+is turned into a target for the position controller. Frugal, and validate before
+actuate.

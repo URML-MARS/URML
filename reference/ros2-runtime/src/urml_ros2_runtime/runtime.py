@@ -48,7 +48,8 @@ from urml_ros2_runtime.errors import (
     ValidationRejectedError,
 )
 from urml_ros2_runtime.primitives import PrimitiveOutcome, execute_step
-from urml_ros2_runtime.substrate.base import ROSAdapter
+from urml_ros2_runtime.shield import Shield, ShieldViolationError
+from urml_ros2_runtime.substrate.base import ROSAdapter, TelemetryAdapter
 
 
 class RuntimeResult(BaseModel):
@@ -71,7 +72,13 @@ class RuntimeResult(BaseModel):
 class URMLRuntime:
     """Executes a validated URML program against a substrate adapter."""
 
-    def __init__(self, adapter: ROSAdapter, *, revalidate: bool = True) -> None:
+    def __init__(
+        self,
+        adapter: ROSAdapter,
+        *,
+        revalidate: bool = True,
+        shield: Shield | None = None,
+    ) -> None:
         """Construct a runtime bound to a substrate adapter.
 
         Args:
@@ -86,9 +93,18 @@ class URMLRuntime:
                         (skipping the validator is a safety-boundary
                         violation per CLAUDE.md; the option exists for
                         deterministic test harnesses).
+            shield:     Optional envelope shield (RFC-0667). When set, every
+                        primitive dispatch is gated on the shield's standing
+                        critical violations, and — when the adapter exposes
+                        `TelemetryAdapter` — a telemetry sample is observed
+                        after each step. A critical violation halts the
+                        program through the normal `_ExecutionHalt` path, so
+                        `RuntimeResult` reports the failure and the audit
+                        log carries the violation entries.
         """
         self._adapter = adapter
         self._revalidate = revalidate
+        self._shield = shield
 
     def execute(
         self,
@@ -219,10 +235,37 @@ class URMLRuntime:
         bindings: dict[str, Any],
         steps_executed: int,
     ) -> tuple[int, PrimitiveOutcome]:
+        # RFC-0667: the shield gates dispatch on standing critical violations.
+        if self._shield is not None:
+            try:
+                self._shield.gate(step.primitive_name)
+            except ShieldViolationError as veto:
+                raise _ExecutionHalt(
+                    steps_executed=steps_executed,
+                    last_outcome=PrimitiveOutcome(success=False, reason=f"shield.veto: {veto}"),
+                    primitive=step.primitive_name,
+                    path=path,
+                ) from veto
         outcome = execute_step(step, self._adapter, bindings)
         steps_executed += 1
         # Merge any new bindings the step produced into the runtime scope.
         bindings.update(outcome.bindings)
+        # RFC-0667: step-boundary telemetry. A fresh critical violation halts
+        # before the next action can begin; warning/info stay in the audit log.
+        if self._shield is not None and isinstance(self._adapter, TelemetryAdapter):
+            fresh = self._shield.observe(self._adapter.sample_signals())
+            critical = [v for v in fresh if v.severity == "critical"]
+            if critical:
+                names = ", ".join(v.name for v in critical)
+                raise _ExecutionHalt(
+                    steps_executed=steps_executed,
+                    last_outcome=PrimitiveOutcome(
+                        success=False,
+                        reason=f"shield.critical_violation: {names}",
+                    ),
+                    primitive=step.primitive_name,
+                    path=path,
+                )
         return steps_executed, outcome
 
     def _exec_branch(
@@ -366,11 +409,12 @@ class URMLRuntime:
         return steps_executed, last_outcome
 
     def _audit_snapshot(self) -> list[dict[str, Any]]:
-        """Snapshot of the adapter's call log, if it exposes one."""
+        """Snapshot of the adapter's call log plus any shield violation entries."""
         log = getattr(self._adapter, "call_log", None)
-        if log is None:
-            return []
-        return list(log)
+        entries: list[dict[str, Any]] = [] if log is None else list(log)
+        if self._shield is not None:
+            entries.extend(self._shield.audit_entries())
+        return entries
 
 
 # ---------------------------------------------------------------------------

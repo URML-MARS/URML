@@ -220,6 +220,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit the run result as JSON on stdout instead of a pretty trace.",
     )
+    _add_rehearsal_arguments(p_execute)
     p_execute.set_defaults(func=cmd_execute)
 
     # ---- urml schema ----
@@ -364,6 +365,128 @@ def build_parser() -> argparse.ArgumentParser:
         "LLM) never produced a valid program. The file is never executable URML.",
     )
     p_translate.set_defaults(func=cmd_translate)
+
+    # ---- urml run ----
+    p_run = subparsers.add_parser(
+        "run",
+        help="Sentence to motion: translate, validate, optionally rehearse in sim, then execute.",
+        description=(
+            "The end-to-end verb (RFC-0668): translate a natural-language "
+            "request into URML through the LLM bridge, validate it, "
+            "optionally rehearse the validated program on a simulation "
+            "backend and gate on the envelope, then execute through a "
+            "substrate adapter. Requires urml-llm-bridge and "
+            "urml-ros2-runtime; a rehearsal failure blocks execution."
+        ),
+    )
+    p_run.add_argument(
+        "request",
+        metavar="REQUEST",
+        help="The natural-language request, quoted.",
+    )
+    p_run.add_argument(
+        "--manifest",
+        "-m",
+        type=Path,
+        required=True,
+        metavar="PATH",
+        help="Path to the target robot's capability manifest (YAML).",
+    )
+    p_run.add_argument(
+        "--envelope",
+        "-e",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Optional path to a deployment safety envelope (YAML).",
+    )
+    p_run.add_argument(
+        "--profile",
+        "-p",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="Profile(s) the request targets (repeatable).",
+    )
+    p_run_policy = p_run.add_mutually_exclusive_group()
+    p_run_policy.add_argument(
+        "--policy",
+        "-P",
+        dest="policy_path",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Path to a compliance policy file (YAML). If omitted, the bundled "
+            "default US-federal policy is loaded automatically."
+        ),
+    )
+    p_run_policy.add_argument(
+        "--no-policy",
+        dest="no_policy",
+        action="store_true",
+        help="Skip Pass 5 (compliance policy) throughout the run.",
+    )
+    p_run.add_argument(
+        "--provider",
+        choices=("anthropic", "openai", "echo"),
+        default="anthropic",
+        metavar="NAME",
+        help="LLM provider to use. Default: anthropic. `echo` is a hermetic "
+        "test provider requiring --echo-response-file.",
+    )
+    p_run.add_argument(
+        "--model",
+        default=None,
+        metavar="MODEL",
+        help="Override the provider's default model.",
+    )
+    p_run.add_argument(
+        "--max-revisions",
+        type=int,
+        default=3,
+        metavar="N",
+        help="Maximum number of validator-feedback revision attempts. Default: 3.",
+    )
+    p_run.add_argument(
+        "--echo-response-file",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
+    )
+    p_run.add_argument(
+        "--adapter",
+        choices=("mock", "ros2", "px4"),
+        default="mock",
+        metavar="NAME",
+        help=(
+            "Substrate adapter to execute through. `mock` (default) is a "
+            "hermetic simulation that moves nothing."
+        ),
+    )
+    p_run.add_argument(
+        "--adapter-config",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Adapter configuration file (YAML) for the ros2/px4 adapters.",
+    )
+    p_run.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Also write the accepted program to PATH.",
+    )
+    p_run.add_argument(
+        "--json",
+        dest="as_json",
+        action="store_true",
+        help="Emit the run result as JSON on stdout instead of a pretty trace.",
+    )
+    _add_rehearsal_arguments(p_run)
+    p_run.set_defaults(func=cmd_run)
 
     # ---- urml emit-prompt ----
     p_emit = subparsers.add_parser(
@@ -563,6 +686,154 @@ def _resolve_policy_arg(args: argparse.Namespace) -> Any:
 
 
 # ---------------------------------------------------------------------------
+# Rehearsal (RFC-0668)
+# ---------------------------------------------------------------------------
+
+# Per-backend rehearsal honesty banner, same discipline as _SUBSTRATE_NOTE:
+# a passed rehearsal is evidence under a named motion model, not a guarantee.
+_REHEARSAL_NOTE = {
+    "kinematic": (
+        "SYNTHETIC KINEMATIC PROFILE. No physics: the trace renders declared "
+        "assumptions (cruise speed, climb rate), not simulated dynamics. It "
+        "proves the program's shape keeps the envelope under those assumptions."
+    ),
+    "mujoco": (
+        "MUJOCO PHYSICS. The trace is sampled from a real headless physics "
+        "rollout of the configured MJCF model; fidelity is the model's, and "
+        "the signal map declares how engine state reads as envelope signals."
+    ),
+}
+
+
+def _add_rehearsal_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--rehearse",
+        nargs="?",
+        const="kinematic",
+        choices=("kinematic", "mujoco"),
+        default=None,
+        metavar="BACKEND",
+        help=(
+            "Rehearse the validated program in simulation before executing "
+            "(RFC-0668): roll it out on a sim backend, record the signal "
+            "trace, and evaluate the envelope's monitorable properties and "
+            "static caps over it. A critical violation blocks execution. "
+            "Default backend when the flag is bare: kinematic (hermetic). "
+            "`mujoco` needs urml-mujoco-runtime[sim] and --rehearse-config."
+        ),
+    )
+    parser.add_argument(
+        "--rehearse-config",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Rehearsal backend configuration (YAML). kinematic: the assumed "
+            "motion profile (dt, cruise_speed, climb_rate, move_duration). "
+            "mujoco: {mujoco: {model_path, ...}, signals: {...}} — the MJCF "
+            "config plus the signal map."
+        ),
+    )
+
+
+def _build_rehearsal_adapter(args: argparse.Namespace) -> Any:
+    """Construct the rehearsal backend. Raises _CLILoadError for usage problems."""
+    if args.rehearse == "kinematic":
+        from urml_ros2_runtime.rehearsal import (  # type: ignore[import-not-found,unused-ignore]
+            KinematicProfile,
+            KinematicRehearsalAdapter,
+        )
+
+        profile = None
+        if args.rehearse_config is not None:
+            raw = _load_yaml(args.rehearse_config, kind="rehearse-config")
+            profile = KinematicProfile.model_validate(raw)
+        return KinematicRehearsalAdapter(profile)
+
+    # mujoco
+    try:
+        from urml_mujoco_runtime import (  # type: ignore[import-not-found,unused-ignore]
+            MujocoConfig,
+            RecordingMujocoAdapter,
+            SignalMap,
+        )
+    except ImportError as exc:
+        raise _CLILoadError(
+            "the mujoco rehearsal backend requires urml-mujoco-runtime. "
+            "Install with: pip install urml-mujoco-runtime[sim] "
+            "(or use --rehearse kinematic for a hermetic rehearsal)."
+        ) from exc
+    if args.rehearse_config is None:
+        raise _CLILoadError(
+            "--rehearse mujoco requires --rehearse-config PATH "
+            "(YAML with a `mujoco:` config block and a `signals:` map)."
+        )
+    raw = _load_yaml(args.rehearse_config, kind="rehearse-config")
+    mujoco_cfg = MujocoConfig.model_validate(raw.get("mujoco") or {})
+    signal_map = SignalMap.model_validate({"signals": raw.get("signals") or {}})
+    try:
+        return RecordingMujocoAdapter(mujoco_cfg, signal_map=signal_map)
+    except Exception as exc:  # surface mujoco-missing etc. as usage error
+        raise _CLILoadError(f"could not construct the mujoco rehearsal backend: {exc}") from exc
+
+
+def _run_rehearsal(
+    args: argparse.Namespace,
+    program: dict[str, Any],
+    manifest: dict[str, Any],
+    envelope: dict[str, Any] | None,
+    profiles: tuple[str, ...],
+) -> int | None:
+    """Run the RFC-0668 rehearsal gate. Returns None on pass, an exit code on failure."""
+    try:
+        from urml_ros2_runtime.rehearsal import rehearse  # type: ignore[import-not-found,unused-ignore]
+    except ImportError:
+        print(
+            "urml: error: `--rehearse` requires urml-ros2-runtime.\n"
+            "  Install with: pip install urml-ros2-runtime",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        adapter = _build_rehearsal_adapter(args)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    # The caller already validated with the chosen policy; a second
+    # default-policy validation here would defeat --no-policy / --policy.
+    report = rehearse(
+        program, manifest, envelope, adapter=adapter, profiles=profiles, revalidate=False
+    )
+
+    out = sys.stderr
+    print(f"URML rehearsal: backend={args.rehearse}", file=out)
+    print(f"  model: {_REHEARSAL_NOTE.get(args.rehearse, 'unknown')}", file=out)
+    print(
+        f"  {report.steps_executed} step(s) simulated, {report.trace_len} sample(s) recorded, "
+        f"{report.properties_checked} propert{'y' if report.properties_checked == 1 else 'ies'} checked",
+        file=out,
+    )
+    for note in report.notes:
+        print(f"  note: {note}", file=out)
+    for violation in report.violations:
+        print(
+            f"  {violation.severity.upper()}: {violation.name} violated at t={violation.at_time:g}s "
+            f"({violation.expression})",
+            file=out,
+        )
+    if report.passed:
+        print("  gate: PASSED", file=out)
+        return None
+    print(
+        "  gate: FAILED — execution blocked. The real robot receives nothing (RFC-0668).",
+        file=out,
+    )
+    return 1
+
+
+# ---------------------------------------------------------------------------
 # `urml execute`
 # ---------------------------------------------------------------------------
 
@@ -653,6 +924,12 @@ def cmd_execute(args: argparse.Namespace) -> int:
             )
             _emit_pretty(result, program_path=args.program)
         return 1
+
+    # ----- Rehearsal gate (RFC-0668) -----
+    if getattr(args, "rehearse", None) is not None:
+        gate = _run_rehearsal(args, program, manifest, envelope, profiles)
+        if gate is not None:
+            return gate
 
     # ----- Build the substrate adapter -----
     cleanup: list[Any] = []
@@ -938,6 +1215,144 @@ def _save_rejected_emission(
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(banner + last + ("" if last.endswith("\n") else "\n"), encoding="utf-8")
     print(f"wrote rejected emission to {path} (DO NOT EXECUTE)", file=sys.stderr)
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    """Implement the `urml run` subcommand (RFC-0668).
+
+    Sentence to motion in one verb: translate through the LLM bridge (the
+    bridge validates every emission with the chosen policy), optionally
+    rehearse the accepted program on a simulation backend, then execute.
+    A rehearsal-gate failure exits non-zero before any real adapter is
+    constructed.
+    """
+    try:
+        from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
+            Bridge,
+            BridgePolicyViolation,
+            BridgeRevisionExhausted,
+            ProviderError,
+        )
+    except ImportError:
+        print(
+            "urml: error: `run` requires urml-llm-bridge.\n"
+            "  Install with: pip install urml-llm-bridge[anthropic]\n"
+            "  Or:           pip install urml-llm-bridge[openai]",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        from urml_ros2_runtime import (  # type: ignore[import-not-found,unused-ignore]
+            PrimitiveExecutionError,
+            UnsupportedCompositionError,
+            URMLRuntime,
+        )
+    except ImportError:
+        print(
+            "urml: error: `run` requires urml-ros2-runtime.\n"
+            "  Install with: pip install urml-ros2-runtime",
+            file=sys.stderr,
+        )
+        return 2
+
+    # ----- Load inputs + provider -----
+    try:
+        manifest = _load_yaml(args.manifest, kind="manifest")
+        envelope: dict[str, Any] | None = (
+            _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
+        )
+        policy_arg = _resolve_policy_arg(args)
+        provider = _build_provider(args)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    profiles = tuple(args.profile)
+
+    # ----- Translate (the bridge validates every emission) -----
+    bridge = Bridge(
+        provider=provider,
+        manifest=manifest,
+        envelope=envelope,
+        profiles=profiles,
+        max_revisions=args.max_revisions,
+        policy=policy_arg,
+    )
+    try:
+        result = bridge.translate(args.request)
+    except ProviderError as exc:
+        print(f"urml: provider error: {exc}", file=sys.stderr)
+        return 1
+    except BridgePolicyViolation as exc:
+        print(
+            f"urml: run aborted: compliance policy rejected the target robot "
+            f"after {exc.attempts} attempt(s).",
+            file=sys.stderr,
+        )
+        for issue in getattr(exc.last_result, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        return 1
+    except BridgeRevisionExhausted as exc:
+        print(
+            f"urml: run failed: validator rejected the LLM's emission in all {exc.attempts} attempt(s).",
+            file=sys.stderr,
+        )
+        for issue in getattr(exc.last_result, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        return 1
+
+    if result.program is None:
+        print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
+        return 64
+    program = result.program
+    print(
+        f"Translation accepted after {result.revision_count} revision(s).",
+        file=sys.stderr,
+    )
+
+    if args.out is not None:
+        text = _render_program(program, as_json=False)
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(text + ("" if text.endswith("\n") else "\n"), encoding="utf-8")
+        print(f"wrote {args.out}", file=sys.stderr)
+
+    # ----- Rehearsal gate (RFC-0668) -----
+    if args.rehearse is not None:
+        gate = _run_rehearsal(args, program, manifest, envelope, profiles)
+        if gate is not None:
+            return gate
+
+    # ----- Execute -----
+    cleanup: list[Any] = []
+    try:
+        adapter = _build_execute_adapter(args, cleanup)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+    try:
+        # The bridge validated with the chosen policy; revalidate=False for
+        # the same reason cmd_execute passes it (see that docstring).
+        runtime = URMLRuntime(adapter, revalidate=False)
+        try:
+            rr = runtime.execute(program, manifest, envelope, profiles=profiles)
+        except UnsupportedCompositionError as exc:
+            print(f"urml: execution error: {exc}", file=sys.stderr)
+            return 1
+        except PrimitiveExecutionError as exc:
+            print(f"urml: execution error: a primitive failed: {exc}", file=sys.stderr)
+            return 1
+    finally:
+        for close in cleanup:
+            try:
+                close()
+            except Exception:  # best-effort teardown, never mask the result
+                pass
+
+    if args.as_json:
+        _emit_execute_json(rr, args.adapter)
+    else:
+        _emit_execute_pretty(rr, args.adapter, program_path=Path(f"<run: {args.request!r}>"))
+    return 0 if rr.success else 1
 
 
 def cmd_translate(args: argparse.Namespace) -> int:

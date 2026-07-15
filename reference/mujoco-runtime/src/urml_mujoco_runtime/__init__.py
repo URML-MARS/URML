@@ -13,10 +13,20 @@ from __future__ import annotations
 
 from urml_mujoco_runtime._version import __version__
 from urml_mujoco_runtime.adapter import MujocoAdapter, MujocoConfig, load_mujoco_config
+from urml_mujoco_runtime.recording import (
+    RecordingMujocoAdapter,
+    SignalMap,
+    SignalSpec,
+    load_signal_map,
+)
 
 __all__ = [
     "MujocoAdapter",
     "MujocoConfig",
+    "RecordingMujocoAdapter",
+    "SignalMap",
+    "SignalSpec",
     "__version__",
     "load_mujoco_config",
+    "load_signal_map",
 ]

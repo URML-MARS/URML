@@ -36,7 +36,15 @@ from urml_ros2_runtime.errors import (
 )
 from urml_ros2_runtime.fleet import FleetRuntime, FleetRuntimeResult
 from urml_ros2_runtime.primitives import PrimitiveOutcome
+from urml_ros2_runtime.rehearsal import (
+    KinematicProfile,
+    KinematicRehearsalAdapter,
+    RehearsalReport,
+    TraceRecorder,
+    rehearse,
+)
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
+from urml_ros2_runtime.shield import Shield, ShieldedAdapter, ShieldViolationError
 from urml_ros2_runtime.substrate import (
     AdapterConfig,
     CaptureResult,
@@ -47,6 +55,7 @@ from urml_ros2_runtime.substrate import (
     RclpyAdapter,
     ROSAdapter,
     SubstrateResult,
+    TelemetryAdapter,
     WaitResult,
     load_adapter_config,
 )
@@ -58,6 +67,8 @@ __all__ = [
     "DetectionResult",
     "FleetRuntime",
     "FleetRuntimeResult",
+    "KinematicProfile",
+    "KinematicRehearsalAdapter",
     "MeasurementResult",
     "MockROSAdapter",
     "NavigationResult",
@@ -65,9 +76,15 @@ __all__ = [
     "PrimitiveOutcome",
     "ROSAdapter",
     "RclpyAdapter",
+    "RehearsalReport",
     "RuntimeError",
     "RuntimeResult",
+    "Shield",
+    "ShieldViolationError",
+    "ShieldedAdapter",
     "SubstrateResult",
+    "TelemetryAdapter",
+    "TraceRecorder",
     "URMLRuntime",
     "UnresolvedReferenceError",
     "UnsupportedCompositionError",
@@ -76,6 +93,7 @@ __all__ = [
     "__version__",
     "evaluate_condition",
     "load_adapter_config",
+    "rehearse",
     "resolve_reference",
     "resolve_references",
 ]

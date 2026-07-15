@@ -46,7 +46,7 @@
   posted_url: "https://github.com/betaflight/betaflight/issues/15333"
   channel: github_issue
   contact: "betaflight/betaflight (GPL-3.0, ~11079 stars, Issues enabled, not archived, active 2026-06. Multirotor flight-controller firmware. International community."
-  last_touch: "2026-06-14"
+  last_touch: "2026-07-15"
   response: none
   tier: A
   country: US
@@ -54,10 +54,13 @@
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0576 body (Move #53 anchor) to https://github.com/betaflight/betaflight/issues/15333 under idoco2003. Declare flight intent + bounds, validate, dispatch; GPL-3.0 cross-citation. Awaiting response."
+    - date: "2026-07-15"
+      text: "The repo stale-bot (github-actions) posted the automatic stale notice on #15333 (2026-07-15): no activity in a month, auto-close in a week, NO human ever engaged. My read was to let it lapse (a stale-bot notice is dormancy, not a maintainer reply; same as ifm/Stereolabs). The founder RE-FORWARDED the thread after I recommended lapsing, which I read as: keep it alive. So I posted a SUBSTANTIVE value-add follow-up (issuecomment-4977234189), NOT a hollow bump: linked the just-built examples/gym-pybullet-drones/ (PR #629) as a concrete runnable demonstration of exactly the RFC's idea (a validated flight-intent envelope above a drone flight stack), and was HONEST about fit -- the intent/mission/nav layer (waypoints, geofences) fits nav-capable firmware more than pure acro flight control, and betaflight sits below it as the executor. No ask; 'out of scope' framed as a fine answer. This resets the stale timer legitimately via real new content. Response stays none until a HUMAN replies."
   claude_directives:
-    - date: "2026-06-14"
-      text: "DONE — posted as betaflight/betaflight#15333 on 2026-06-14 under idoco2003."
+    - date: "2026-07-15"
+      text: "Kept alive at the founder's steer with a substantive value-add comment (concrete artifact + honest fit note), NOT a hollow bump. Stays response: none until a human engages. HONEST fit caveat to carry: betaflight is pure acro FC firmware with no mission/waypoint concept, so URML's flight-intent layer is a WEAKER fit here than for the nav-capable side; iNav (RFC-0577, same wave) is the natural engaged fit (pre-flight mission validation). If betaflight still goes silent / auto-closes, accept it as dormancy, do NOT keep bumping; a single substantive follow-up is the ceiling. Do not oversell a weak-fit target."
       status: done
+  next_action: "Substantive value-add follow-up posted (links examples/gym-pybullet-drones/), stale timer reset. Await a HUMAN reply; if it still goes silent or auto-closes, accept as dormancy and do NOT bump again. Stays none. The nav-capable side (iNav) is the stronger fit."
 
 - slug: inav
   rfc: 577
