@@ -154,15 +154,17 @@
     - date: "2026-06-07"
       text: "Posted the RFC-0417 body to https://github.com/learnsyslab/gym-pybullet-drones/discussions/312 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
     - date: "2026-07-14"
-      text: "JacopoPan (repo author) replied 2026-06-09; it sat UNHANDLED for five weeks and was caught by the fixed sweep. He said PRs, including 3rd-party integrations, are always welcome, but the repo's design driver is KISS, so an implementation must be frugal and come with a minimum working example. That is an OPEN INVITATION to contribute. none -> engaged. Replied 2026-07-14 (discussioncomment-17640108): agreed KISS is the right instinct, committed to adding ZERO dependency to their repo, and said I would build a minimum working example on the URML side first (a drone manifest plus a script validating a commanded action against the declared envelope before handing it to the gym-pybullet-drones control interface), and would only bring a PR if it is genuinely useful and stays small."
+      text: "JacopoPan (repo author) replied 2026-06-09; it sat UNHANDLED for five weeks and was caught by the fixed sweep. He said PRs, including 3rd-party integrations, are always welcome, but the repo's design driver is KISS, so an implementation must be frugal and come with a minimum working example. That is an OPEN INVITATION to contribute. none -> engaged. Replied 2026-07-14 (discussioncomment-17640108): agreed KISS is the right instinct, committed to adding ZERO dependency to their repo, and said I would build a minimum working example on the URML side first."
+    - date: "2026-07-15"
+      text: "BUILT + delivered the promised example: examples/gym-pybullet-drones/ (PR #629, merged). Frugal and hermetic (two YAML files + one script, imports nothing from gym-pybullet-drones): a quadcopter manifest (multirotor, 5 m service ceiling, 2 m/s) + an arena envelope (3x3 m geofence, 2.5 m cap); validates a take-off/waypoint/land flight three ways (admissible; 3.0 m take-off above the 2.5 m cap -> envelope.altitude_exceeded; waypoint outside the box -> envelope.geofence_violation), then maps the admissible flight onto gym-pybullet-drones control targets (target_pos for DSLPIDControl). Deterministic + byte-asserted + 4-test guard. Replied to JacopoPan on #312 (discussioncomment-17643538) linking it, and offered a thin opt-in upstream PR only if it fits KISS, his call. Ball in his court."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md gym-pybullet-drones body as a GitHub Discussion on learnsyslab/gym-pybullet-drones under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-    - date: "2026-07-14"
-      text: "ENGAGED (JacopoPan, repo author) and he INVITED a PR under a KISS constraint. This is a contribution-first opening (see [[project_contribution_first_works]]: a real merged PR beats outreach prose). NEXT: BUILD examples/gym-pybullet-drones/ on the URML side, frugal and hermetic, no pybullet dependency at test time; mirror the crazyswarm2 dispatch-plan pattern. Offer the upstream PR ONLY if it stays genuinely small and useful; never push a dependency into their repo."
-      status: pending
-  next_action: "BUILD the promised minimum working example (URML drone manifest + validate a commanded action against the envelope, then map onto the gym-pybullet-drones control interface; hermetic, zero dependency added to their repo). Then show JacopoPan and offer the PR only if it stays frugal. This was committed to publicly on the thread."
+    - date: "2026-07-15"
+      text: "ENGAGED (JacopoPan, repo author) who INVITED a PR under KISS; the promised example is BUILT + merged (examples/gym-pybullet-drones/, PR #629) and linked to him on #312. Await his read. If he wants the upstream PR, keep it a THIN opt-in wrapper (validate the target against manifest+envelope, then call the controller as usual) and never add a URML dependency to his repo; judge it against KISS honestly. If he does not want it, leave it, it costs the project nothing. Do NOT push."
+      status: done
+  next_action: "Await JacopoPan's read of the merged examples/gym-pybullet-drones/. If he wants it upstream, offer a thin opt-in wrapper PR (zero URML dependency added to his repo); otherwise leave it. No re-ping."
   notes: "Permissive (MIT). Canonical owner is learnsyslab (utiasDSL renamed). No license-ask."
 
 - slug: ntnu-arl
