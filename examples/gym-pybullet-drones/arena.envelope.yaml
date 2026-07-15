@@ -1,0 +1,24 @@
+# A deployment-time safety envelope for the gym-pybullet-drones sandbox: the flat
+# where the drone is allowed to fly. It is stricter than the aircraft itself.
+#
+# The quadcopter's service ceiling is 5 m (manifest), but this arena caps altitude
+# at 2.5 m and bounds the footprint to a 3 by 3 m box. So a command can be within
+# the aircraft's capability yet outside the arena, and URML refuses it before it
+# reaches the controller.
+
+envelope_version: "0.1"
+deployment_id: gym_pybullet_drones_arena
+description: A 3x3 m indoor arena with a 2.5 m altitude cap.
+
+max_altitude: 2.5
+
+geofences:
+  - name: arena
+    frame: world
+    vertices:
+      - [-1.5, -1.5]
+      - [1.5, -1.5]
+      - [1.5, 1.5]
+      - [-1.5, 1.5]
+    min_altitude: 0.1
+    max_altitude: 3.0
