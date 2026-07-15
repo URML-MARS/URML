@@ -30,17 +30,17 @@ from contextlib import suppress
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
-    ProgramCallResult,
-    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
+    unsupported_program_call,
 )
 
 from urml_edu_runtime._version import __version__
@@ -578,17 +578,18 @@ class PetoiAdapter(_EduBase):
     - URML-side conformance lane on OpenCat README is open once URML
       ships a working demo link.
 
-    Connection: lazy ``import petoi_mindpluslib`` (placeholder — the
-    actual canonical Python wrapper name is a round-2 ask of the
-    maintainer; ``PetoiCamp/Petoi_MindPlusLib`` is Mind+ block-coding
-    integration, not necessarily a general Python SDK). The adapter only
-    requires *some* Python object that either exposes named skill
-    methods (``walk``, ``trot``, ...) OR a generic
-    ``send_command(token, *args)`` channel; URML's
-    :class:`EduSkillCall` dispatch supports both. For raw OpenCat tokens
-    configure ``EduSkillCall(method='send_command', args=['kwkF', 5])``;
-    for named methods configure
-    ``EduSkillCall(method='walk', args=['forward', 5])``.
+    Connection: lazy ``import PetoiRobot``. The OpenCat maintainer
+    Dr. Rongzhong Li confirmed on PetoiCamp/OpenCat-Quadruped-Robot#113
+    (2026-07-15) that Petoi unified the Mind+ and desktop-app libraries
+    into ``PetoiRobot`` (pip ``petoi-robot``), whose command surface is
+    functional: ``sendCmdStr(cmdStr, delayTime)`` and
+    ``sendSkillStr(skillStr, delayTime)``. The adapter is wrapper-agnostic:
+    it dispatches ``getattr(conn, method)(*args)``, so the connection may be
+    the ``PetoiRobot`` module directly (``method='sendCmdStr'``,
+    ``args=['kwkF 5', 0]``) or a small URML-side unified wrapper over it
+    (``method='walk'``, ``args=['forward', 5]``), which the maintainer
+    explicitly said is fine. Both shapes are configured through
+    :class:`EduSkillCall`.
 
     Manipulation is not applicable on stock Bittle / Nybble (no
     gripper); ``manipulation_commands`` may map ``grasp`` / ``release``
@@ -607,17 +608,23 @@ class PetoiAdapter(_EduBase):
         if self._conn is not None:
             return self._conn
         try:
-            import petoi_mindpluslib  # type: ignore[import-not-found,unused-ignore]
+            import PetoiRobot  # type: ignore[import-not-found,unused-ignore]
         except ImportError as exc:
             raise RuntimeError(
-                "petoi_mindpluslib is not installed. PetoiAdapter requires the [petoi] extra.\n"
+                "PetoiRobot is not installed. PetoiAdapter requires the [petoi] extra.\n"
                 "  Install with: pip install urml-edu-runtime[petoi]\n"
-                "  (Canonical Python-wrapper package name is a round-2 ask of "
-                "the PetoiCamp maintainer on OpenCat-Quadruped-Robot#113; the "
-                "adapter only requires *some* Python object that exposes the "
-                "OpenCat skill-library command surface.)"
+                "  PetoiRobot is Petoi's unified Python package (Mind+ and the desktop\n"
+                "  app), named by the OpenCat maintainer Dr. Rongzhong Li on\n"
+                "  PetoiCamp/OpenCat-Quadruped-Robot#113."
             ) from exc
-        self._conn = petoi_mindpluslib.Petoi(self._config.device)
+        # PetoiRobot is a functional module; connecting opens the serial link
+        # (openPort for a configured device, else autoConnect auto-detects), and
+        # commands go through module-level functions the adapter dispatches to.
+        if self._config.device:
+            PetoiRobot.openPort(self._config.device)
+        else:
+            PetoiRobot.autoConnect()
+        self._conn = PetoiRobot
         return self._conn
 
     def _send(self, command: EduCommand) -> None:
@@ -634,12 +641,13 @@ class PetoiAdapter(_EduBase):
         2. **:class:`EduSkillCall` form** (method + args + kwargs) —
            required for OpenCat's parametric commands:
 
-           - ``EduSkillCall(method='send_command', args=['kwkF', 5])``
-             sends the raw OpenCat token ``kwkF 5`` (walk forward, 5
-             cycles).
-           - ``EduSkillCall(method='walk', args=['forward', 5])`` calls
-             ``petoi.walk('forward', 5)`` if the wrapper exposes a
-             named ``walk`` method.
+           - ``EduSkillCall(method='sendCmdStr', args=['kwkF 5', 0])``
+             calls ``PetoiRobot.sendCmdStr('kwkF 5', 0)``, the real
+             functional command surface (walk forward, 5 cycles).
+           - ``EduSkillCall(method='walk', args=['forward', 5])`` calls a
+             URML-side unified ``walk`` wrapper over ``sendCmdStr`` if you
+             prefer a friendly name; the maintainer said such wrappers are
+             fine.
 
         Unknown skill names are reported as a typed RuntimeError so the
         validator step can surface them as
@@ -647,7 +655,7 @@ class PetoiAdapter(_EduBase):
         ``location_not_configured`` rather than a crash inside the
         wrapper.
 
-        OpenCat command vocabulary per round-1 maintainer engagement
+        OpenCat command vocabulary per maintainer engagement
         (PetoiCamp/OpenCat-Quadruped-Robot#113, 2026-05-28):
 
         - Gait tokens: ``kwk`` (walk), ``ktr`` (trot), ``kbd`` (bound),
@@ -665,10 +673,10 @@ class PetoiAdapter(_EduBase):
         skill = getattr(petoi, method_name, None)
         if not callable(skill):
             raise RuntimeError(
-                f"petoi_skill_not_found: connected Petoi wrapper has no callable "
-                f"named {method_name!r}. Map the location/manipulation entry to an "
-                "OpenCat token (e.g. EduSkillCall(method='send_command', "
-                "args=['kwkF', 5])) or a wrapper-exposed named method "
+                f"petoi_skill_not_found: connected PetoiRobot surface has no callable "
+                f"named {method_name!r}. Map the location/manipulation entry to the "
+                "PetoiRobot command function (e.g. EduSkillCall(method='sendCmdStr', "
+                "args=['kwkF 5', 0])) or a URML-side named wrapper over it "
                 "(e.g. EduSkillCall(method='walk', args=['forward', 5])); see "
                 "src/InstinctBittleESP.h in PetoiCamp/OpenCatEsp32-Quadruped-Robot "
                 "for the authoritative skill table."
@@ -701,24 +709,26 @@ class PetoiAdapter(_EduBase):
 
     def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
         petoi = self._open()
-        # OpenCat sensor surface: IMU (gyro + accel), battery, optional
-        # ultrasonic. The exact Python-wrapper getter names are a
-        # round-2 ask of the PetoiCamp maintainer; the adapter uses
-        # whatever getter name the manifest declares (default
-        # 'read_imu' as a placeholder). Pass the raw return through
-        # into the payload so the URML program receives the structure
-        # the wrapper returns (list / dict / scalar all supported per
-        # the Marty round-3 trace handling precedent).
+        # OpenCat sensor surface. Per the maintainer Dr. Rongzhong Li
+        # (PetoiCamp/OpenCat-Quadruped-Robot#113): sensors are a mixture of
+        # modules; simple ones are read with raw digitalRead / analogRead
+        # (PetoiRobot's readDigitalValue(pin) / readAnalogValue(pin), and
+        # readUltrasonicDistance(trig, echo)), and he said URML is welcome to
+        # define its own unified wrapper getters over them. So the adapter uses
+        # whatever getter name the manifest declares (a raw PetoiRobot read, or a
+        # no-arg URML wrapper), defaulting to 'read_imu', and passes the raw
+        # return through so the program receives the structure the getter returns
+        # (list / dict / scalar all supported).
         getter_name = sensor or "read_imu"
         getter = getattr(petoi, getter_name, None)
         if not callable(getter):
             return MeasurementResult(
                 success=False,
                 reason=(
-                    f"petoi_sensor_not_found: connected Petoi wrapper has no "
-                    f"callable named {getter_name!r}. Use a wrapper-exposed "
-                    "getter; the authoritative sensor getter list is a "
-                    "round-2 ask of the PetoiCamp maintainer on "
+                    f"petoi_sensor_not_found: connected PetoiRobot surface has no "
+                    f"callable named {getter_name!r}. Use a PetoiRobot read "
+                    "(readAnalogValue / readDigitalValue / readUltrasonicDistance) "
+                    "or a URML-side unified wrapper over one, per the maintainer on "
                     "PetoiCamp/OpenCat-Quadruped-Robot#113."
                 ),
             )

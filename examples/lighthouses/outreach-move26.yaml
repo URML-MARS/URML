@@ -77,19 +77,21 @@
   posted_url: "https://github.com/pantor/ruckig/issues/257"
   channel: github_issue
   contact: "pantor/ruckig (online, time-optimal, jerk-limited trajectory generation; used inside MoveIt for time-parameterization; ~1,243 stars, Issues enabled, Discussions disabled, not archived, last push 2026-05-31). License not SPDX-detected by gh (understood MIT; asked). Origin: Germany (Lars Berscheid / pantor)."
-  last_touch: "2026-06-03"
-  response: none
+  last_touch: "2026-07-15"
+  response: declined
   tier: A
   country: DE
   sector: framework-skill
   comments:
     - date: "2026-06-03"
       text: "Posted issue #257 pointing at the RFC (under idoco2003, after RFCs 0342-0351 landed on main via PR #287), AI-authoring disclosure up front, with the consume-not-reimplement framing (URML declares goal plus constraints and validates admissibility; the planner computes the trajectory). Awaiting maintainer reply."
+    - date: "2026-07-15"
+      text: "Issue #257 was CLOSED as NOT_PLANNED by pantor (Lars Berscheid, the ruckig author/maintainer) on 2026-07-15, with zero comments and zero reactions. A clean, deliberate maintainer decline (contrast betaflight's mere stale-bot notice; this is a human NOT_PLANNED close). none -> declined. Consistent with the honest boundary: ruckig takes kinematic limits as INPUT and generates the trajectory, and URML only declares those limits one layer up, so ruckig genuinely needs nothing from it. Posted a brief GRACIOUS reply (issuecomment-4977727330): agreed the boundary is right (ruckig consumes, URML declares), thanked him, asked nothing. Did NOT try to re-open or keep alive; re-engaging a maintainer's deliberate close would be pushy. No re-ping."
   claude_directives:
-    - date: "2026-06-03"
-      text: "After RFC-0343 merges, post the posts-move26.md ruckig body on pantor/ruckig under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db."
+    - date: "2026-07-15"
+      text: "DECLINED via a deliberate NOT_PLANNED close by the ruckig author (pantor). Gracious reply posted; accepting, not arguing. Do NOT re-ping or re-open. The consume-side relationship (URML declares limits, ruckig consumes them) is real but ruckig needs nothing, so there is no artifact to build for ruckig itself. If a URML manifest ever needs to show kinematic-limit declaration mapping onto a solver, do it on the URML side without asking ruckig for anything. The engaged motion-planning fit is elsewhere in Move #26, not ruckig."
       status: done
-  next_action: "wait 14-30 d; follow-up if silent; set response per enum on reply."
+  next_action: "Declined (deliberate NOT_PLANNED close by the ruckig author). Gracious reply posted, no re-ping. ruckig consumes limits and needs nothing; no artifact to build for it."
   notes: "Move #26 online trajectory generation. URML kinematic limits -> ruckig input constraints. Online vs toppra's offline parameterization. Origin DE. Verified 2026-06-03."
 
 - slug: toppra

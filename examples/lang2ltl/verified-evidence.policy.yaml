@@ -1,0 +1,26 @@
+# A deployment policy that requires gripper capability claims to be VERIFIED,
+# not merely self-declared (RFC-0631 evidence_rules).
+#
+# This is how a deployment turns "evidence is advisory" into "evidence is
+# required for a safety-relevant claim" without changing the language. Under this
+# policy, a gripper whose force range is only self-declared (source: declared, or
+# no evidence tag at all) is refused with policy.evidence_insufficient, so a task
+# relying on it is rejected before dispatch. A gripper whose range is `verified`
+# passes. `rules` is empty, so no hardware-provenance rules are in play here; the
+# example is only about capability evidence.
+
+policy_version: "0.1"
+policy_id: verified_gripper_evidence
+description: Require verified evidence for gripper capability claims (RFC-0631).
+issued_by: example deployment
+rules: []
+evidence_rules:
+  - id: gripper_must_be_verified
+    applies_to: gripper
+    min_source: verified
+    on_violation:
+      code: policy.evidence_insufficient
+      severity: error
+      message: >-
+        This deployment trusts a gripper only when its force range is verified by
+        measurement. A self-declared range is refused; add verified evidence.

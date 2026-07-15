@@ -24,19 +24,24 @@
   posted_url: "https://github.com/YanjieZe/GMR/issues/178"
   channel: github_issue
   contact: "YanjieZe/GMR (MIT; Yanjie Ze, Stanford, US; ~2.4k stars, Issues enabled, not archived, active 2026-04). General Motion Retargeting: retargets human motion onto a humanoid in real time, producing robot-specific joint commands the target can execute."
-  last_touch: "2026-07-02"
-  response: none
+  last_touch: "2026-07-14"
+  response: engaged
   tier: B
   country: US
   sector: framework-skill
   comments:
     - date: "2026-07-02"
       text: "Posted the RFC-0653 body to https://github.com/YanjieZe/GMR/issues/178 under idoco2003 (Move #66), VIBE disclosure up front, no license-ask (MIT). Hook: retargeting is where a source-valid motion can land outside the target's limits; validate the retargeted trajectory against the RFC-0384 whole-body envelope. Awaiting reply."
+    - date: "2026-07-14"
+      text: "splendidsummer asked the sharpest possible question 2026-07-10: has URML actually been proved on a Unitree G1 or any real robot body? (He is stuck on long-tail performance in G1 post-retargeting.) none -> engaged. Replied 2026-07-14 (issuecomment-4973386505) with the HONEST answer: NO. URML has never run on a physical G1 or any physical humanoid. What exists is the static side (RFC-0384 whole-body envelope: joint limits plus centre-of-mass against the support polygon), validated in software against a manifest with worked examples, but NOT proven on hardware. Also told him plainly that URML does NOT solve his actual problem: it will not improve retargeting quality and will not fix the long tail; it can only tell him which retargeted trajectories are inadmissible for the G1's declared envelope, so the bad tail is caught and refused rather than executed. A filter, not a fix. Offered a concrete G1-manifest example if such a filter is useful to him."
   claude_directives:
     - date: "2026-07-02"
       text: "DONE -- posted 2026-07-02 under idoco2003. Strongest fit of the wave + big star count (2.4k). If engaged, the build is a worked example mapping a retargeted humanoid motion onto an RFC-0384 manifest (validated, no execution). No license-ask (MIT)."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. Whole-body-envelope-on-retargeted-trajectory (RFC-0384) is the hook."
+    - date: "2026-07-14"
+      text: "ENGAGED (splendidsummer). Answered with a hard NO on hardware proof. NEVER claim URML has run on a physical humanoid; the honesty is the credible position and is the whole reason this reply lands. If he wants the filter, BUILD a G1-manifest example validating a retargeted trajectory against the RFC-0384 whole-body envelope (joint limits + CoM/support-polygon), explicitly labelled software validation and NOT hardware proof."
+      status: pending
+  next_action: "Await splendidsummer. If he wants the filter, build a G1-manifest example gating a retargeted trajectory against the RFC-0384 whole-body envelope (software validation, explicitly NOT hardware proof). Never claim hardware validation."
   notes: "US (Stanford). Real-time motion retargeting; direct consumer of the RFC-0384 whole-body block. Strongest target of a near-exhausted surface. MIT."
 
 - slug: neobotix-mpc

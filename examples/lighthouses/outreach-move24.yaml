@@ -47,19 +47,21 @@
   posted_url: "https://github.com/Genesis-Embodied-AI/genesis-world/issues/2881"
   channel: github_issue
   contact: "Genesis-Embodied-AI/Genesis (canonical name genesis-world; generative / differentiable physics + embodied-AI simulator; ~29,168 stars, Issues AND Discussions enabled, not archived, last push 2026-06-02, very active). License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
-  last_touch: "2026-06-02"
-  response: none
+  last_touch: "2026-07-14"
+  response: acked
   tier: A
   country: INTL
   sector: simulator
   comments:
     - date: "2026-06-02"
       text: "Posted issue #2881 pointing at the RFC (under idoco2003, after RFCs 0322-0331 landed on main via PR #276), AI-authoring disclosure up front. Awaiting maintainer reply."
+    - date: "2026-07-14"
+      text: "Milotrince (MEMBER) replied 2026-07-13 and the issue is CLOSED (completed): 'Vibe coded outreach, interesting.. Yes we are Apache-2.0 licensed. Do as you wish with that!' Bemused but NOT hostile: he answered the license question and gave permission, with no interest in deeper engagement. none -> acked (answered + closed permissively; no substantive technical engagement, do not inflate to engaged). SELF-INFLICTED: the post asked about the license when Genesis has a visible LICENSE file, which is the AI-tell we now forbid ([[feedback_outreach_license_ask_and_macenski]]); he noticed. Replied 2026-07-14 (issuecomment-4972504032): owned the AI-assisted authoring openly per VIBE.md (not apologetically), owned the license-ask as my error, thanked him. Nothing further owed."
   claude_directives:
-    - date: "2026-06-02"
-      text: "After RFC-0322 merges, post the posts-move24.md Genesis body as an Issue on Genesis-Embodied-AI/Genesis under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
+    - date: "2026-07-14"
+      text: "ACKED (Milotrince, MEMBER; answered the license, said 'do as you wish', closed). NOT engaged: no technical engagement. Do NOT re-ping. Two lessons reinforced: (1) never ask a license when a LICENSE file exists, it reads as an AI-tell and he called it out; (2) when AI-authoring is noticed, own it openly per VIBE.md rather than defend it. Genesis remains a high-momentum sim target; if a real technical seam ever surfaces, re-approach with a concrete artifact, not a request-for-comment."
       status: done
-  next_action: "wait 14-30 d. If silent, polite follow-up. If reply, bump last_touch and set response per enum."
+  next_action: "Acked + closed permissively (Apache-2.0, 'do as you wish'). No re-ping. Re-approach only with a concrete artifact if a real seam surfaces."
   notes: "Move #24 highest-momentum sim target. URML composes above: intent -> validated primitive -> Genesis entity. Differentiator: static validation vs the capability manifest + envelope before the sim steps. Manifest gaps queued as Spec RFCs (simulator-target class hint, sim-vs-real provenance marker). Cross-link RFC-0060 (MuJoCo), RFC-0234 (Webots). Origin INTL community. Verified 2026-06-02."
 
 - slug: nvidia-isaac-sim

@@ -16,6 +16,16 @@ error codes in `errors.py` are a stable public API.
 
 from urml_validator._version import __version__
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
+from urml_validator.monitor import (
+    CompiledProperty,
+    Entity,
+    OnlineMonitor,
+    PropertyVerdict,
+    Sample,
+    Violation,
+    compile_envelope_monitors,
+    evaluate_trace,
+)
 from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schema_export import export_all_schemas, export_schema, write_schemas
 from urml_validator.schemas.policy import Policy, PolicyRule
@@ -25,16 +35,24 @@ from urml_validator.validator import DEFAULT_POLICY, validate, validate_fleet
 
 __all__ = [
     "DEFAULT_POLICY",
+    "CompiledProperty",
+    "Entity",
     "ErrorCode",
     "FleetRoster",
+    "OnlineMonitor",
     "Policy",
     "PolicyRule",
+    "PropertyVerdict",
     "RosterMember",
+    "Sample",
     "URMLProgram",
     "ValidationError",
     "ValidationResult",
+    "Violation",
     "__version__",
+    "compile_envelope_monitors",
     "evaluate_policy",
+    "evaluate_trace",
     "export_all_schemas",
     "export_schema",
     "validate",

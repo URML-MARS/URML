@@ -117,20 +117,24 @@
   posted_url: "https://github.com/h2r/Lang2LTL/issues/5"
   channel: github_issue
   contact: "h2r/Lang2LTL (Brown University, Humans to Robots Lab; Prof. Stefanie Tellex). Grounds a free-form command into an LTL task spec that drives a real robot (Spot). Issues enabled, not archived (last push 2025-03)."
-  last_touch: "2026-06-25"
-  response: none
+  last_touch: "2026-07-10"
+  response: engaged
   tier: B
   country: US
   sector: conceptual-peer
   comments:
     - date: "2026-06-25"
       text: "Posted the RFC-0636 body to https://github.com/h2r/Lang2LTL/issues/5 under idoco2003 (Move #61). Framed as a declared-capability layer beneath the LTL spec (what-to-achieve vs can-the-robot-admissibly-do-it). No license-ask. Awaiting reply."
+    - date: "2026-07-10"
+      text: "ENGAGED via DIRECT EMAIL, not the GitHub issue. The founder emailed Prof. Stefanie Tellex directly (2026-07-09) and she replied substantively the same day (INBOX). Three real, skeptical-but-engaged critiques, the sharpest URML has had: (1) the 'YAML problem' / Yet Another Specification Language; (2) declared != actual capability ('someone claiming a capability often doesn't mean it will actually work on a real robot in a new environment'); (3) manipulation is much harder than the mobile robot Lang2LTL assumed/simulated. none -> engaged. Response built: examples/lang2ltl/ worked example (PR #619) answering (1) as a checker-not-authoring-surface, (2) via RFC-0631 evidence + a policy that refuses a self-declared gripper (policy.evidence_insufficient), (3) manipulation-focused. NOTE the channel: the GitHub issue #5 is likely still silent; the engagement is the email thread."
+    - date: "2026-07-10"
+      text: "Reply SENT. The founder sent the drafted email reply to Prof. Tellex himself (confirmed 2026-07-10). It engaged all three critiques honestly and linked examples/lang2ltl/. Ball back in her (and her students') court. Nothing owed unless she replies; no re-ping."
   claude_directives:
-    - date: "2026-06-25"
-      text: "DONE -- posted 2026-06-25 under idoco2003 (founder chose GitHub over email). Quieter repo (2025-03) so mild AI-close risk; accept silently if dismissed. If engaged, map a Lang2LTL-dispatched action to a URML manifest."
+    - date: "2026-07-10"
+      text: "ENGAGED (Prof. Stefanie Tellex, Brown h2r, a leading robotics/NL researcher) via direct email, not GitHub #5. Highest-caliber research contact to date. Worked example examples/lang2ltl/ built + merged (PR #619); email reply SENT by the founder 2026-07-10 (his voice). Await her or her students' read; do NOT re-ping. Honest posture throughout: URML is the necessary-not-sufficient checker below the LTL spec; RFC-0631 evidence is the answer to declared!=actual; never overclaim. If she engages further, the manipulation envelope is where the value is proven or fails."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; NL-to-spec is a strong complement, lead with the dispatch-seam framing."
-  notes: "US, Brown h2r. NL-to-executable-spec pipeline; URML sits one step below the LTL spec at the action-dispatch boundary."
+  next_action: "Await Prof. Tellex's (or her students') read of the sent reply + examples/lang2ltl/. No re-ping. If they engage, deepen on the manipulation envelope (reach/payload/force + RFC-0631 evidence). The GitHub issue #5 channel stays secondary; the email is the live thread."
+  notes: "US, Brown h2r (Prof. Stefanie Tellex). NL-to-executable-spec pipeline; URML sits one step below the LTL spec at the action-dispatch boundary. Engaged 2026-07-10 via direct email (her substantive reply 2026-07-09), NOT the GitHub issue. examples/lang2ltl/ built (PR #619); email reply drafted for founder to send. Highest-caliber research contact so far."
 
 - slug: stanford-voxposer
   rfc: 637
