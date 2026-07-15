@@ -206,20 +206,22 @@
   posted_url: "https://github.com/symforce-org/symforce/issues/464"
   channel: github_issue
   contact: "symforce-org/symforce (Apache-2.0, ~1.6k stars, Issues + Discussions enabled, not archived, active 2026-06). Symbolic computation + codegen + nonlinear optimization (factor-graph engine). Skydio-originated, US."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-07-15"
+  response: declined
   tier: A
   country: US
   sector: perception
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0526 body to https://github.com/symforce-org/symforce/issues/464 under idoco2003 (Move #47 perception/SLAM/mapping wave). Awaiting response."
+    - date: "2026-07-15"
+      text: "aaron-skydio (Skydio, MEMBER) closed the issue with a polite boundary-confirming decline. He answered the altitude question RFC-0526 posed: URML sits above SymForce the same way it sits above any optimization library, so whether that is the right altitude is a design question for URML, not for SymForce. Same boundary GTSAM/Dellaert drew. He also asked for human-authored questions to balance the effort of AI-generated volume. No specific technical question is owed, so accepted silently (no reply): posting a bot ack would add to exactly the effort-imbalance he flagged."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move47.md symforce body as a GitHub Issue on symforce-org/symforce under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Factor-graph/optimization engine behind state estimators -> URML consumes the estimate. RFC asks if optimization-lib is the right altitude vs a SLAM/estimator wrapping it."
-  notes: "Apache-2.0. Factor-graph/optimization; URML consumes the estimate. Asks the altitude question."
+  next_action: "None. Declined and closed by maintainer. Do not re-post: he flagged AI-effort-imbalance and asked for human-authored questions. If a genuinely specific, human-authored SymForce question ever arises, the founder posts it; do not auto-generate one to keep the thread alive."
+  notes: "Apache-2.0. Factor-graph/optimization; URML consumes the estimate. Asked the altitude question; maintainer confirmed URML sits above SymForce (its design concern, not theirs). Declined 2026-07-15, accepted silently."
 
 - slug: patchwork-plusplus
   rfc: 527
