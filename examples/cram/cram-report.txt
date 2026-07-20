@@ -1,0 +1,38 @@
+URML as the validate-before-actuate gate below CRAM's decomposition (U. Bremen IAI).
+CRAM decomposes an underspecified request into grounded sub-actions and resolves
+the open parameters from its knowledge base. URML validates each grounded
+sub-action against the robot's declared capabilities and safety envelope before
+the sub-action is dispatched.
+
+Request: transporting(object: mug, target: on counter).
+Grounded plan: move_to table -> detect mug -> grasp mug -> move_to counter -> place.
+
+# 1. Admissible: every grounded sub-action is within the declaration
+
+[VALID] transport the mug, grasp at 60 N (gripper rated 20 to 100 N)
+   Each grounded sub-action resolves against the manifest: the object is in the
+   perception vocabulary and the grasp force is within the gripper's range.
+   URML admits the plan. Necessary check passed.
+
+# 2. Out-of-envelope parameter: a grounded grasp above the gripper rating is refused
+
+[REJECTED] the same transport, but the grasp is grounded at 250 N (above the 100 N rating)
+   -> capability.missing_gripper, envelope.force_exceeded
+   A 250 N grasp on a 100 N gripper will not work; URML rejects the grounded
+   sub-action statically, before CRAM dispatches the plan. No robot, no attempt.
+
+# 3. Ungrounded perception: a grounded object outside the robot's vocabulary is refused
+
+[REJECTED] transport a tray (the vocabulary declares only: mug)
+   -> capability.missing_object_class
+   CRAM's knowledge base can ground a request to an object the robot's perception
+   does not declare. URML rejects the grounded detect before the plan runs, rather
+   than discovering the gap mid-execution.
+
+# The point
+
+URML is the necessary-not-sufficient admissibility gate below CRAM's decomposition,
+not a competing planner. It cheaply rejects the definitely-inadmissible grounded
+sub-action (case 2, an out-of-envelope force; case 3, an object outside the declared
+vocabulary) before the robot commits to the plan. It does not, and cannot, promise
+that an admissible sub-action succeeds in a novel scene. That honesty is the point.

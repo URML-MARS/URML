@@ -96,20 +96,25 @@
   posted_url: "https://github.com/cram2/cognitive_robot_abstract_machine/issues/391"
   channel: github_issue
   contact: "cram2/cognitive_robot_abstract_machine (U. Bremen, Institute for Artificial Intelligence; Prof. Michael Beetz). CRAM: a cognitive architecture decomposing underspecified requests into grounded executed sub-actions (KnowRob KB). Issues enabled, not archived, very active (last push 2026-06-24). NOTE: cram2/cram is ARCHIVED -> this is the live repo."
-  last_touch: "2026-06-25"
-  response: none
+  last_touch: "2026-07-20"
+  response: engaged
   tier: B
   country: DE
   sector: conceptual-peer
   comments:
     - date: "2026-06-25"
       text: "Posted the RFC-0635 body to https://github.com/cram2/cognitive_robot_abstract_machine/issues/391 under idoco2003 (Move #61, university lane). Framed at the seam between CRAM's action designators and a declared-capability check; asked whether it is useful or already covered by KnowRob. No license-ask. Awaiting reply."
+    - date: "2026-07-20"
+      text: "ENGAGED. tomsch420 (Tom Schierenbeck, CRAM contributor, U. Bremen IAI) replied 2026-07-17: 'What you are proposing sounds interesting! Perhaps it would be best to schedule a meeting such that we can talk about this?' First meeting invite from a research lab of this caliber. Built the pre-scripted worked example examples/cram/ (a CRAM transporting designator -> grounded move_to/detect/grasp/place plan, each sub-action validated before dispatch; three cases: admissible, envelope.force_exceeded on a 250 N grasp, capability.missing_object_class on an out-of-vocabulary object; policy-free). Posted a warm acceptance (https://github.com/cram2/cognitive_robot_abstract_machine/issues/391#issuecomment-5024068993): yes to a call, routed scheduling to greenvh@gmail.com, pointed at examples/cram/ as a concrete starting point. Founder takes the actual meeting."
   claude_directives:
     - date: "2026-06-25"
       text: "DONE -- posted 2026-06-25 under idoco2003 (founder chose GitHub over email). Highest-altitude university fit in the wave. If engaged, the build is a worked example mapping a CRAM sub-action to a URML manifest (validated, no execution). Beetz email (beetz@cs.uni-bremen.de) is the fallback if the issue goes silent."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; offer the sub-action -> manifest worked example. P5 academic vector."
-  notes: "DE, U. Bremen IAI. Textbook consume-intent->execute lab; live repo is cognitive_robot_abstract_machine (cram2/cram archived). Beetz email kept as fallback."
+    - date: "2026-07-20"
+      text: "DONE -- engaged on a meeting invite. Built examples/cram/ (byte-asserted, test-guarded) and posted the acceptance routing scheduling to greenvh@gmail.com. Founder schedules and takes the call."
+      status: done
+  next_action: "Founder schedules the call (tomsch420, via greenvh@gmail.com). Bring examples/cram/ as the concrete artifact. After the call, build exactly what they signal they need."
+  notes: "DE, U. Bremen IAI. Textbook consume-intent->execute lab; live repo is cognitive_robot_abstract_machine (cram2/cram archived). Engaged 2026-07-20 on a meeting invite; worked example examples/cram/ shipped. Beetz email kept as fallback."
 
 - slug: brown-lang2ltl
   rfc: 636

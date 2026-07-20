@@ -57,7 +57,7 @@
   posted_url: "https://github.com/ros-controls/ros2_control/issues/3376"
   channel: github_issue
   contact: "ros-controls/ros2_control (the controls framework anchor: hardware_interface + controller_manager + resource_manager; ~909 stars, Issues enabled, Discussions DISABLED, not archived, last push 2026-06-01). Design questions route to Issues / the ROS Control Working Group. License not SPDX-detected by gh (understood Apache-2.0; asked as an RFC question)."
-  last_touch: "2026-06-02"
+  last_touch: "2026-07-20"
   response: none
   tier: A
   country: INTL
@@ -65,11 +65,13 @@
   comments:
     - date: "2026-06-02"
       text: "Posted issue #3376 pointing at RFC-0319 (under idoco2003, after RFC-0319 landed on main via PR #274), AI-authoring disclosure up front. Anchor for the whole ros-controls family; ros2_controllers / gz_ros2_control / control_toolbox / realtime_tools / control_msgs / kinematics_interface named in the body and ride this thread (folded rows below). Two questions (interface granularity, primitive->controller binding) + a bonus hermetic-demo question (gz_ros2_control / mock_components) + a license question."
+    - date: "2026-07-20"
+      text: "Stale-bot notice 2026-07-17 (github-actions: 45 days no activity, auto-close in 45 more). No human reply since the post. Posted ONE substantive follow-up (idoco2003, issuecomment-5024069419), NOT a hollow bump: reported the two fieldbus mappings referenced here were worked out as RFC-0320 (EtherCAT) / RFC-0321 (CANopen), both mapping onto the same primitive->controller->command-interface path with the bus at Layer 0 (the substrate-neutrality check held on paper across two buses); re-posed the ONE crisp open question (interface granularity: per-joint command/state interfaces vs controller-type as the declaration grain); and asked whether the ROS Control Working Group is a better venue than a GitHub issue (that repo has Discussions disabled and routes design to the WG). No license re-ask. Response stays none (no maintainer has engaged)."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0319 merges to main, post the posts-move23.md ros2_control body as an Issue on ros-controls/ros2_control under idoco2003; then set sent_at / posted_url / last_touch and add a posted comment; refresh outreach.db."
       status: done
-  next_action: "wait 14-30 d. If silent, polite follow-up on issue #3376. If reply, bump last_touch and set response per enum. If a maintainer wants a sibling repo on its own thread, fork a dedicated ledger row."
+  next_action: "Substantive follow-up posted 2026-07-20 (fieldbus progress + interface-granularity question + WG-venue offer). If a maintainer names the ROS Control Working Group / Discourse, take the design question there (founder-action). If the issue auto-closes silently, accept it (no re-open); the anchor lives on in RFC-0319 + the fieldbus RFCs. No further GitHub bump."
   notes: "Move #23 anchor; URML's Layer-1 HAL seam. URML composes ABOVE: intent -> validated primitives -> ros2_control controllers / command interfaces -> hardware. Differentiator over the framework: static validation against the capability manifest + safety envelope BEFORE any command interface is claimed (complements resource_manager's runtime arbitration). Surfaces queued Spec RFCs (per-joint command/state-interface declaration, controller-type declaration, distro/version declaration) for separate follow-up; none proposed in the outreach RFC. Cross-link RFC-0200 (parent), RFC-0202 (MoveIt above), RFC-0320/0321 (fieldbus below). Origin community/multi-national. Verified 2026-06-02."
 
 - slug: ethercat-driver-ros2

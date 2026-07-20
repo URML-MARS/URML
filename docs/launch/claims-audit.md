@@ -83,9 +83,9 @@ against `MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
-(41 as of 2026-06-15: 5 Accepted, 35 Implemented, 1 Open) change URML's
-normative surface — Layer-N schemas, primitives, the policy mechanism, profiles.
-**Outreach RFCs** (the large remainder of the ~609 total docs) are per-target
+(51 as of 2026-07-17: 8 Accepted, 37 Implemented, 5 Draft, 1 Open) change
+URML's normative surface — Layer-N schemas, primitives, the policy mechanism,
+profiles. **Outreach RFCs** (the large remainder of the ~662 total docs) are per-target
 request-for-comment documents that explicitly propose zero spec change ("No spec
 change is proposed here") and live in the RFC dir for discoverability. The
 shipped surface above is the Spec RFCs' result; Outreach RFCs add per-target

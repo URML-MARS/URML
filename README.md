@@ -16,7 +16,7 @@
   <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
   <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-1668%20passing-brightgreen.svg" alt="Tests"></a>
   <a href="conformance/"><img src="https://img.shields.io/badge/conformance-182%20fixtures-brightgreen.svg" alt="Conformance"></a>
-  <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-41%20Spec%20%2B%20567%20Outreach-blue.svg" alt="RFCs"></a>
+  <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-51%20Spec%20%2B%20610%20Outreach-blue.svg" alt="RFCs"></a>
 </p>
 
 ---
@@ -152,7 +152,7 @@ See [RFC-0003](docs/rfcs/0003-us-alignment.md) for the strategic decision and tr
 
 **Phase 1 (public)** — as of v0.1.0 (2026-05-22). External code contributions are open per [`CONTRIBUTING.md`](CONTRIBUTING.md); the RFC process governs spec changes. The author remains the sole maintainer — the phase flip opens the door; it does not assert contributors have arrived. The artifact under review is the manifesto plus the v0.1 implementation; the decision history is in [`docs/rfcs/`](docs/rfcs/).
 
-What works today is what the table above lists as `✅`. What's planned is in [`MANIFESTO.md`](MANIFESTO.md) §Roadmap Snapshot. The decision history is in [`docs/rfcs/`](docs/rfcs/); 41 Spec RFCs are filed (5 accepted, 35 implemented, 1 open), the latest landing the v0.2.0 multi-robot fleet and the expanded capability manifest.
+What works today is what the table above lists as `✅`. What's planned is in [`MANIFESTO.md`](MANIFESTO.md) §Roadmap Snapshot. The decision history is in [`docs/rfcs/`](docs/rfcs/); 51 Spec RFCs are filed (8 accepted, 37 implemented, 5 draft, 1 open), the latest landing the v0.2.0 multi-robot fleet and the expanded capability manifest.
 
 ---
 

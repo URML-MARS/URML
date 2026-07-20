@@ -1,0 +1,75 @@
+# A mobile manipulator (a base plus one arm and gripper), for the CRAM worked
+# example. From a conversation with the CRAM group (U. Bremen, Institute for
+# Artificial Intelligence) about where a validate-before-actuate layer sits
+# relative to a cognitive architecture.
+#
+# CRAM decomposes an underspecified request into grounded sub-actions, resolving
+# the open parameters at runtime from its knowledge base (KnowRob). URML sits one
+# step below that decomposition: each grounded sub-action is validated against
+# this declared capability manifest and safety envelope before it is dispatched.
+#
+# The gripper is a parallel-jaw with a rated force range. The perception layer
+# knows a small object vocabulary. Those two declarations are what let URML reject
+# a grounded grasp that is out of the gripper's range, or a grounded detect of an
+# object the robot's perception does not know, before the robot moves.
+
+manifest_version: "0.1"
+robot_id: mobile_manipulator
+description: A differential-drive base carrying a single arm and parallel-jaw gripper.
+
+frames:
+  - name: world
+    parent: null
+  - name: base_link
+    parent: world
+
+declared_locations:
+  - name: table
+    pose: { x: 1.5, y: 0.0, z: 0.0 }
+    frame: world
+    description: Pick location.
+  - name: counter
+    pose: { x: 0.0, y: 1.2, z: 0.0 }
+    frame: world
+    description: Place location.
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.6
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: parallel_jaw
+      kind: servo_electric
+      force_min_n: 20.0
+      force_max_n: 100.0
+      accepted_classes: [mug]
+      movable: true
+  reachable_workspace_m: 0.9
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - mug
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US

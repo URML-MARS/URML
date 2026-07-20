@@ -63,18 +63,21 @@
   posted_url: "https://github.com/sunnypilot/sunnypilot/issues/1865"
   channel: github_issue
   contact: "sunnypilot/sunnypilot (MIT, ~1981 stars, Issues enabled, not archived, active 2026-06. Driver-assistance system, openpilot fork. US."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-07-20"
+  response: declined
   tier: A
   country: US
   sector: robot-platform
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0559 body to https://github.com/sunnypilot/sunnypilot/issues/1865 under idoco2003. Safety envelope = ODD check before a maneuver. Awaiting response."
+    - date: "2026-07-20"
+      text: "DECLINED. Owner sunnyhaibin closed the issue NOT_PLANNED on 2026-07-20 with no comment. Deliberate silent decline (same class as ruckig / WPILib deliberate closes). Accepted gracefully: no reply, no re-open. An openpilot fork is a weak URML fit anyway (its own tightly-integrated ADAS stack, not a validate-before-actuate consumer)."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as sunnypilot/sunnypilot#1865 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "None. Owner closed NOT_PLANNED 2026-07-20. Do not re-post or re-open."
 
 - slug: f1tenth
   rfc: 560
