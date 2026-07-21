@@ -70,7 +70,7 @@
   posted_url: "https://github.com/isaac-sim/IsaacSim/issues/649"
   channel: github_issue
   contact: "isaac-sim/IsaacSim (NVIDIA Omniverse robotics simulator, now open-sourced; ~3,345 stars, Issues AND Discussions enabled, not archived, last push 2026-03-31). License not SPDX-detected by gh (asked as an RFC question). NVIDIA (US)."
-  last_touch: "2026-06-23"
+  last_touch: "2026-07-21"
   response: engaged
   tier: A
   country: US
@@ -84,6 +84,8 @@
       text: "divyanshm-create (NVIDIA Isaac) posted a detailed expert review on #649, promoting to engaged. Validated URML's three-concern separation (USD/UsdPhysics as structural evidence; the capability manifest as the substrate-neutral validation contract; a backend-neutral adapter for dispatch). Headline recommendation, made twice: manifest capability claims should be traceable to evidence (derived from USD vs declared by integrator vs verified by smoke test), not hand-written unverifiable assertions. Also: dispatch should not integrate via Action Graph/OmniGraph (agreed, backend-neutral); cuMotion/PINK as the controller-interface seam; a language-neutral adapter IDL once adapters exist in more than one language; conformance listing only follows a USD-derived manifest plus a working adapter/fixture, never a conceptual mapping. Replied substantively under idoco2003 (#649 comment 4782573900), committing to scope the evidence-traceability point as a Spec RFC."
     - date: "2026-06-24"
       text: "Closed divyanshm-create's loop on both halves. RFC-0631 (evidence traceability) shipped (PR #527). The conformance-listing bar he set (a USD-derived manifest plus a working adapter run, never a conceptual mapping) is now met in-repo: examples/isaac/ (PR #528) is a manifest derived from a USD asset with RFC-0631 evidence tags tracing each capability to its USD prim, validated before actuate AND under an opt-in evidence policy (the listing-grade gate), then driven through the real IsaacAdapter hermetically (injected fake isaacsim, no wheel/GPU). Posted a follow-up under idoco2003 (#649 comment 4785501600) pointing at both. Still engaged; ball is in NVIDIA's court."
+    - date: "2026-07-21"
+      text: "RandomOakForest (NVIDIA) closed the issue COMPLETED with a friendly wrap: 'Thank you for following up. I'll close this issue for now as it seems resolved. Feel free to reopen it may we be of further help... Consider also creating a new issue if... relevant to newer releases.' A positive resolved-close, NOT a decline: the substantive engagement (divyanshm-create's expert review) was fully actioned (RFC-0631 + examples/isaac/) and I had already posted the final thank-you 2026-06-24. Accepted silently: no further reply, since a third comment after their 'resolved' close would be noise. Response stays engaged (positive close, door left open); this remains URML's strongest simulator engagement."
   claude_directives:
     - date: "2026-06-02"
       text: "After RFC-0323 merges, post the posts-move24.md Isaac Sim body on isaac-sim/IsaacSim under idoco2003; set sent_at / posted_url / last_touch; posted comment; refresh outreach.db. Keep distinct from RFC-0050; do not re-pitch NVIDIA broadly."
@@ -91,7 +93,7 @@
     - date: "2026-06-24"
       text: "divyanshm-create's review spawned RFC-0631 (per-capability evidence traceability), now ACCEPTED and implemented. Founder settled the five open questions: inline tag, curated coverage (mobility/gripper/camera/sensor/whole_body), source enum inferred<declared<derived<verified, structured {kind,value} ref, and an opt-in policy hook (Policy.evidence_rules -> policy.evidence_insufficient). Shipped the Evidence/EvidenceRef schema, the evidence_rules policy, examples/evidence/ worked example, two conformance fixtures, and the Layer-1 spec note. Backward-compatible (advisory by default)."
       status: done
-  next_action: "Engaged on #649; both halves of divyanshm-create's review answered (RFC-0631 evidence traceability + the examples/isaac/ USD-derived manifest + working adapter run). Follow-up posted (#649 comment 4785501600). Ball in NVIDIA's court; hold for their reply, no re-ping owed. If they re-engage, the open thread is a registry/conformance listing once the listing program exists, and the language-neutral adapter IDL once adapters span more than one language."
+  next_action: "None. Issue closed COMPLETED by NVIDIA 2026-07-21 on a friendly resolved-note (door open, reopen or new issue for newer releases). Both halves of divyanshm-create's review are shipped (RFC-0631 + examples/isaac/). Do not re-post on the closed thread. Re-engage only with a concrete NEW artifact (e.g. the language-neutral adapter IDL once adapters span more than one language, or a conformance/registry listing once that program exists), via a fresh issue against a newer release as they suggested."
   notes: "Move #24. URML -> Isaac Sim via the ROS 2 bridge / Action Graph; manifest aligns with the USD robot description. Manifest gaps queued (USD-robot-description alignment, simulator-target class hint, shared with RFC-0322). NVIDIA already engaged via Isaac Lab (RFC-0050); this is the sim-app conversation. Warp folded (nvidia-warp row). Origin US. Verified 2026-06-02."
 
 - slug: o3de
