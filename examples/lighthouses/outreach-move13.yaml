@@ -285,7 +285,7 @@
   posted_url: "https://github.com/STMicroelectronics/STM32CubeF4/issues/203"
   channel: github_issue
   contact: "STMicroelectronics/STM32CubeF4 (Other — mixed license, 1.2k stars, Issues enabled, last commit 2026-05-26 active, **not archived**). STMicroelectronics; HQ Geneva CH (Franco-Italian)."
-  last_touch: "2026-07-20"
+  last_touch: "2026-07-22"
   response: engaged
   tier: B
   country: CH
@@ -301,12 +301,16 @@
       text: "Posted a substantive update (idoco2003, issuecomment-4692065154): RFC-0018 minimal_node SHIPPED to main (PR #389). This is the concrete answer to the MCU manifest-field question raised on this thread - an optional Layer-1 block where a non-mobile sensor/actuator node declares class/declared_sensors/declared_outputs/has_locomotion instead of faking a mobility block, mutually exclusive with mobility, validator-checked, paired with the set_output primitive. Framed as no-reply-needed loop-closure; re-flagged per-series-vs-umbrella as the open question still most wanting ST expert input. No license-ask (per directive). Response stays engaged (proactive update, not a new reply from ST)."
     - date: "2026-07-20"
       text: "ST EXPERT FEEDBACK ARRIVED. ALABSTM returned with a concrete proposal from ST engineers: (1) an STM32 firmware feature-description should carry the STM32 series, the Cortex-M core (CM0/CM0+/CM4/CM33), the firmware version, and the software-component list (CMSIS, HAL-LL drivers, middleware); (2) engagement should be PER-SERIES, not umbrella, because middleware differs per series (USB Core vs Eclipse USBX) and versions drift per release; (3) the firmware description is more effective paired with a HARDWARE descriptor keyed on the MCU full part number (peripherals + instance numbers, packaging, pin/GPIO mapping). Directly answers the manifest-field + scope questions and validates minimal_node's shape. Replied (idoco2003, issuecomment-5024069189): thanked them + experts; confirmed per-series matches URML's per-target manifest model; mapped their four fields onto shipped minimal_node and was candid that the firmware-identity fields (series/core/version/components) are NOT in minimal_node today and are being modeled as a dedicated per-series firmware descriptor (their four points are its spec); acknowledged the part-number hardware descriptor as the natural companion. No license re-ask."
+    - date: "2026-07-21"
+      text: "Founder greenlit the RFC. Drafted and merged RFC-0669 (Draft): an optional Layer-1 `firmware` descriptor (series, core, version, software components), generalized vendor-neutral (STM32 the motivating instance; ESP32/nRF declarable too), per-series = per-manifest, this thread credited as the field-set source. No primitive, additive, manifest_version stays 0.1; the companion part-number hardware descriptor is scoped to a follow-on. Draft only, acceptance + schema implementation still founder-gated."
+    - date: "2026-07-22"
+      text: "WARM CLOSE. ALABSTM closed the thread 2026-07-22: 'I'm glad you found what you were looking for. I think we can close this thread now. I hope to hear more from you about URML and STM32. Good luck.' A positive close with an explicit invitation to future contact, not a decline. Posted a brief gracious sign-off (idoco2003, issuecomment-5044724732): thanked them + experts, told them their input became a concrete draft proposal (RFC-0669) with this thread credited, honestly flagged it as a draft not settled spec, and accepted the invitation to share how URML and STM32 develop. First Tier-1 MCU-vendor engagement, closed warmly. Response stays engaged."
   claude_directives:
-    - date: "2026-07-20"
-      text: "FOUNDER-GATED FOLLOW-ON: a per-series STM32 firmware descriptor (series / core / firmware_version / software_components) is a manifest extension = a one-way door, so it is a Spec RFC for the founder to greenlight, NOT an auto-add. ST engineers effectively spec'd it (2026-07-20 comment). Companion: a part-number-keyed hardware descriptor (peripherals/instances, packaging, pins/GPIO). Do not write the schema change without founder go-ahead."
+    - date: "2026-07-21"
+      text: "DONE (RFC drafted) -- RFC-0669 (MCU firmware descriptor) drafted + merged as Draft, this thread credited. REMAINING founder-gated: advancing RFC-0669 Draft -> Accepted and writing the actual `firmware` schema change is the founder's call; do not implement the schema without go-ahead. Companion part-number hardware descriptor is a separate deferred RFC (Alternative 3 in RFC-0669)."
       status: pending
-  next_action: "Engaged, ST expert feedback in hand (2026-07-20). Reply posted mapping their fields to minimal_node. OPEN founder decision: greenlight a Spec RFC for a per-series STM32 firmware descriptor (+ companion hardware descriptor). License resolved. Drop the license-ask from any STM32 follow-up."
-  notes: "Tier B. Origin CH/FR/IT (pass, NATO+EU). Mixed license. URML-fit: high for industrial / professional MCU class. ST engineers gave a concrete firmware-description spec 2026-07-20; a per-series firmware descriptor RFC is the founder-gated next step."
+  next_action: "Engaged, closed warmly by ST 2026-07-22 with an invitation to future contact. RFC-0669 (firmware descriptor) drafted. Do not re-post on the closed thread. Re-engage when RFC-0669 firms up (Accepted / implemented) or the companion hardware descriptor lands, via a fresh touch to ALABSTM per his invitation. License resolved; never re-ask."
+  notes: "Tier B. Origin CH/FR/IT (pass, NATO+EU). Mixed license. URML-fit: high for industrial / professional MCU class. First Tier-1 MCU-vendor engagement; ST engineers gave a firmware-description spec (2026-07-20) that became RFC-0669 (Draft), closed warmly 2026-07-22 with an open invitation."
 
 - slug: tinygo
   rfc: 183
