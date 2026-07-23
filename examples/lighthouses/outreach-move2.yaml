@@ -331,14 +331,16 @@
   posted_url: "https://github.com/openai/openai-cookbook/issues/2737"
   channel: github_issue
   contact: "openai/openai-cookbook (most active OpenAI public repo; no robotics-specific surface exists)"
-  last_touch: 2026-05-23
+  last_touch: "2026-05-23"
   response: none
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-07-23"
+      text: "Stale-bot notice 2026-07-23 (github-actions: open 60 days, auto-close in 10). No human reply ever. This was a deliberate cold knock to a non-robotics docs/recipes repo (openai-cookbook has no robotics surface, as the issue title itself states), filed for Move #2 symmetry, not a live integration thread. Letting it lapse: NOT bumping to defeat the stale bot (a hollow stale-defeat is the anti-pattern), and openai-cookbook is the wrong venue anyway. Accept the impending auto-close. Response stays none (never engaged)."
   claude_directives: []
-  next_action: "wait 28 d (until 2026-06-20); cold knock with low expectation of substantive reply; if redirected, follow the maintainer's pointer; if reply, bump last_touch, set response per enum, write the concrete next step here."
+  next_action: "None. Let the stale bot auto-close it (cold knock, no engagement, wrong venue). Do NOT bump or re-post. Re-engage only when OpenAI publishes an actual robotics surface (SDK/API/model), via a fresh touch on THAT surface, not this docs repo. reference/llm-bridge/ already carries OpenAI's general LLM API and gains a robotics adapter when one exists."
   notes: "Move #2 RFC; deliberate cold knock — no integration code possible because OpenAI has not published a robotics SDK, API, or model. Filing for symmetry with the rest of Move #2 (Anthropic, Google DeepMind, Meta FAIR, NVIDIA, Ai2, TRI, PI, HF all covered) and to put URML on OpenAI's radar when their robotics work goes public. Verified surface 2026-05-23: openai org has NO robotics-specific repos. Most active general-purpose repos: openai/openai-cookbook 73.7k stars (Issues enabled), openai/openai-python 30.8k stars (Issues enabled), openai/openai-agents-python 26.6k stars (Issues enabled). OpenAI restarted robotics team Feb 2025 (~100 data collectors in 3 shifts, Franka + GELLO teleop, San Francisco). Trademark filings Jan 2025 for 'user-programmable humanoid robots'. Invested in 1X Technologies; Figure partnership ended early 2025. Expected response: low or none until OpenAI's public robotics surface materializes. Provider-neutrality preserved: reference/llm-bridge/ already supports OpenAI's general LLM API and would gain a robotics-specific adapter when available."
 - slug: drake
   rfc: 59
