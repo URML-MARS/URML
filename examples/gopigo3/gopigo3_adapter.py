@@ -189,18 +189,20 @@ class GoPiGo3Adapter:
             # the arc radius is distance / arc-in-radians. easygopigo3.orbit takes
             # (degrees, radius_cm), a radius, not a path length.
             radius_cm = abs(cm) / abs(math.radians(arc))
-            arc *= -1   # Convert from URML LFU to GoPiGo3 RFD frame
-            gpg.orbit(arc, radius_cm)
-            hw = f"orbit({arc:.1f}, {radius_cm:.1f})"
+            # URML FLU (+CCW) -> GoPiGo3 RFD (+CW): negate at the hardware
+            # boundary only, so call_log stays in the URML frame (#591, #598).
+            gpg.orbit(-arc, radius_cm)
+            hw = f"orbit({-arc:.1f}, {radius_cm:.1f})"
         self.call_log.append({"method": "drive_by", "distance": distance, "arc": arc, "hw": hw})
         return NavigationResult(success=True, final_pose=None, frame="gopigo3")
 
     def turn_by(self, *, angle: float) -> NavigationResult:
         """Rotate in place by a signed angle (degrees, + counterclockwise)."""
         gpg = self._robot()
-        angle *= -1   # Convert from URML LFU to GoPiGo3 RFD frame
-        gpg.turn_degrees(angle)
-        self.call_log.append({"method": "turn_by", "angle": angle, "hw": f"turn_degrees({angle:.1f})"})
+        # URML FLU (+CCW) -> GoPiGo3 RFD (+CW): negate at the hardware
+        # boundary only, so call_log stays in the URML frame (#591, #598).
+        gpg.turn_degrees(-angle)
+        self.call_log.append({"method": "turn_by", "angle": angle, "hw": f"turn_degrees({-angle:.1f})"})
         return NavigationResult(success=True, final_pose=None, frame="gopigo3")
 
     # ------------------------------------------------------------------
