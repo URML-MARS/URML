@@ -145,18 +145,21 @@
   posted_url: "https://github.com/EasyNavigation/EasyNavigation/issues/103"
   channel: github_issue
   contact: "EasyNavigation/EasyNavigation (Apache-2.0, ~97 stars, Issues enabled, not archived, active 2026-05. Modular mobile-robot navigation framework; Nav2 alternative (explicitly NOT Macenski). ES."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-07-23"
+  response: declined
   tier: A
   country: ES
   sector: framework-skill
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0563 body to https://github.com/EasyNavigation/EasyNavigation/issues/103 under idoco2003. Typed front door to navigation; NOT a Macenski repo. Awaiting response."
+    - date: "2026-07-23"
+      text: "DECLINED. Butakus (maintainer) closed the issue NOT_PLANNED on 2026-07-23 with no comment. Deliberate silent decline (same class as sunnypilot / ruckig / WPILib). Accepted gracefully: no reply, no re-open. Fit note: a navigation framework is a consume-the-trajectory relationship (URML declares the goal + constraints and validates, the framework plans the path); the maintainer saw no integration surface worth taking on."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as EasyNavigation/EasyNavigation#103 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "None. Maintainer closed NOT_PLANNED 2026-07-23. Do not re-post or re-open."
 
 - slug: agopengps
   rfc: 564
