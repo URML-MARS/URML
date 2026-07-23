@@ -107,6 +107,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "microbit_minimal_node": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node.yaml",
     "microbit_minimal_node_mobility": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_mobility.yaml",
     "microbit_minimal_node_bad_output": _VALIDATOR_FIXTURES / "manifests" / "microbit_minimal_node_bad_output.yaml",
+    # RFC-0669: MCU firmware descriptor (series/core/version/components).
+    "stm32_firmware_node": _VALIDATOR_FIXTURES / "manifests" / "stm32_firmware_node.yaml",
+    "esp32_firmware_node": _VALIDATOR_FIXTURES / "manifests" / "esp32_firmware_node.yaml",
     # RFC-0006: connectivity-bearing variants.
     "drone_civilian_connectivity": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian_connectivity.yaml",
     "drone_connectivity_no_home": _VALIDATOR_FIXTURES / "manifests" / "drone_connectivity_no_home.yaml",

@@ -1,0 +1,44 @@
+# Fixture: an STM32-class minimal node with an RFC-0669 firmware descriptor.
+# A micro:bit-style sensor/actuator node (one LED line, one light sensor, no
+# mobility, RFC-0018 minimal_node) that additionally declares which firmware
+# identity it runs: the STM32F4 series on a Cortex-M4 core, a pinned firmware
+# version, and its software components (CMSIS, the STM32F4 HAL, USBX middleware).
+# The field set is the one STMicroelectronics engineers described on
+# STM32CubeF4#203. `firmware` composes with `minimal_node`; there is no
+# cross-block rule.
+
+manifest_version: "0.1"
+robot_id: stm32f4_sensor_node
+description: Fixed STM32F4-class node with one LED and one light sensor (RFC-0669 firmware descriptor).
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [light]
+  declared_outputs: [led]
+  has_locomotion: false
+
+firmware:
+  series: STM32F4
+  core: cortex-m4
+  version: "1.28.0"
+  components:
+    - name: cmsis
+      version: "5.9.0"
+    - name: stm32f4xx-hal
+    - name: usbx
+
+perception:
+  cameras: []
+  sensors:
+    - name: light
+      measurement_type: custom
+      range_min: 0.0
+      range_max: 1000.0
+      units: lux
+  object_vocabulary: []
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false
