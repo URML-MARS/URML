@@ -37,31 +37,43 @@ FG = "#e8e4da"        # warm off-white — body text
 ACCENT = "#cc6b1f"    # brand orange — prompt, highlights
 DIM = "#8a857a"       # comments / chrome
 OK = "#7fae5f"        # success
+ERR = "#e06c5a"       # the gate blocking (matches the window-dot red)
 
 # --- The transcript --------------------------------------------------------
 # kind: "cmd"  -> what the user types (shown; not output-asserted)
 #       "out"  -> real urml output (asserted byte-for-byte by the test)
+#       "outw" -> display row of a real output line too wide for the panel;
+#                 the full unwrapped line is asserted via WRAPPED_OUTPUT_LINES
 #       "gap"  -> blank spacer line
-#       "hdr"  -> the env-specific `URML execute: <path>` header (shown with
-#                 a clean basename; NOT asserted — the real path is the
-#                 machine temp dir)
+#       "hdr"  -> chrome the test does not assert: the env-specific
+#                 `URML execute:` header and the beat-2 narration comment
 #
-# The "out" lines are exactly the CRLF-stripped lines a real hermetic run
-# emits (translate --provider echo  ->  validate --no-policy  ->  execute
-# --adapter mock against the committed examples/home/red-mug.echo-response
-# .json). test_demo_svg.py runs that loop and asserts each is present.
+# Two beats of the same hermetic `urml run` (RFC-0668), echo provider +
+# kinematic rehearsal + mock adapter against the committed examples/home
+# assets. Beat 1: the backend's default cruise assumption (0.5 m/s) breaks
+# the envelope's 0.4 m/s cap, so the gate blocks and no adapter is built.
+# Beat 2: declare the deployment's real 0.35 m/s profile; the gate passes
+# and the program executes. test_demo_svg.py runs both and asserts every
+# output line is present.
 
 LINES: list[tuple[str, str]] = [
-    ("cmd", '$ urml translate "Bring me the red mug from the kitchen." \\'),
-    ("cmd", "      --provider echo --echo-response-file red-mug.echo-response.json"),
-    ("out", "Translation accepted after 0 revision(s); profile(s)=home"),
+    ("cmd", '$ urml run "Bring me the red mug from the kitchen." --rehearse kinematic \\'),
+    ("cmd", "      --manifest red-mug.manifest.yaml --envelope red-mug.envelope.yaml"),
+    ("out", "Translation accepted after 0 revision(s)."),
+    ("out", "URML rehearsal: backend=kinematic"),
+    ("outw", "  model: SYNTHETIC KINEMATIC PROFILE. No physics: the trace renders declared"),
+    ("outw", "  assumptions (cruise speed, climb rate), not simulated dynamics."),
+    ("out", "  5 step(s) simulated, 16 sample(s) recorded, 2 properties checked"),
+    ("out", "  CRITICAL: envelope.max_velocity violated at t=0.5s (always (speed <= 0.4))"),
+    ("out", "  gate: FAILED. Execution blocked; the real robot receives nothing (RFC-0668)."),
     ("gap", ""),
-    ("cmd", "$ urml validate redmug.generated.yaml --profile home --no-policy"),
-    ("out", "Validation passed"),
-    ("gap", ""),
-    ("cmd", "$ urml execute redmug.generated.yaml --profile home --no-policy"),
-    ("hdr", "URML execute: redmug.generated.yaml"),
+    ("hdr", "# declare the deployment's real cruise speed (0.35 m/s), rehearse again"),
+    ("cmd", '$ urml run "Bring me the red mug from the kitchen." --rehearse kinematic \\'),
+    ("cmd", "      --rehearse-config red-mug.rehearse.yaml"),
+    ("out", "  gate: PASSED"),
+    ("hdr", "URML execute: <run: 'Bring me the red mug from the kitchen.'>"),
     ("out", "  adapter:   mock"),
+    ("out", "  re-validation: passed (executed only after the validator accepted it)"),
     ("out", "  trace (5 step(s) executed, 5 adapter call(s)):"),
     ("out", "   1. send_navigation_goal  location=kitchen"),
     ("out", "   2. query_detection  object_class=mug attributes={'color': 'red'}"),
@@ -74,14 +86,22 @@ LINES: list[tuple[str, str]] = [
     ("out", "  RESULT: SUCCESS (5 step(s) executed)"),
 ]
 
-# Exactly the lines the test asserts appear, verbatim, in a real hermetic
-# run (CRLF-normalised). "Validation passed" is asserted as a line *prefix*
-# because the real line carries the machine-specific generated-file path.
-ASSERTED_OUTPUT_LINES: list[str] = [t for k, t in LINES if k == "out"]
+# Output lines too wide for the panel are displayed wrapped ("outw" rows
+# above) but asserted whole: each entry here must be emitted verbatim by
+# the real run. Nothing shown is fabricated; it is only re-flowed.
+WRAPPED_OUTPUT_LINES: list[str] = [
+    "  model: SYNTHETIC KINEMATIC PROFILE. No physics: the trace renders "
+    "declared assumptions (cruise speed, climb rate), not simulated dynamics. "
+    "It proves the program's shape keeps the envelope under those assumptions.",
+]
 
-TITLE = "urml · sentence to motion · hermetic · no API key · no robot"
-CAPTION = ("hermetic mock — language + validator + executor, end to end. "
-           "no actuator moved.")
+# Exactly the lines the test asserts appear, verbatim, in the two real
+# hermetic runs (CRLF-normalised).
+ASSERTED_OUTPUT_LINES: list[str] = [t for k, t in LINES if k == "out"] + WRAPPED_OUTPUT_LINES
+
+TITLE = "urml · rehearse, then motion · hermetic · no API key · no robot"
+CAPTION = ("hermetic: synthetic kinematic rehearsal + mock executor. the gate "
+           "blocks the bad assumption; the declared profile passes. no actuator moved.")
 
 # --- Layout ----------------------------------------------------------------
 CHAR_W = 7.6          # px per monospace char at FONT px
@@ -96,7 +116,7 @@ _max_chars = max(len(t) for _, t in LINES)
 WIDTH = int(PAD_X * 2 + _max_chars * CHAR_W) + 8
 HEIGHT = int(TOP + len(LINES) * LH + BOT)
 
-DUR = 15.0            # full loop seconds
+DUR = 20.0            # full loop seconds
 STEP = 0.5            # seconds between line reveals
 HOLD_PCT = 95.0       # hold fully visible until here, then reset for the loop
 
@@ -108,9 +128,11 @@ def _esc(s: str) -> str:
 def _color(kind: str, text: str) -> str:
     if kind == "cmd":
         return ACCENT
-    if kind == "hdr":
+    if kind in ("hdr", "outw"):
         return DIM
-    if "RESULT: SUCCESS" in text or text.startswith("Validation passed") \
+    if "CRITICAL:" in text or "gate: FAILED" in text:
+        return ERR
+    if "RESULT: SUCCESS" in text or "gate: PASSED" in text \
             or text.startswith("Translation accepted"):
         return OK
     return FG
@@ -153,8 +175,10 @@ def render_svg() -> str:
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" '
         f'width="{WIDTH}" height="{HEIGHT}" role="img" '
-        f'aria-label="One English sentence becomes a validated URML program '
-        f'becomes an executed trace, on a hermetic mock (no robot).">\n'
+        f'aria-label="One English sentence is translated to a validated URML '
+        f'program and rehearsed in simulation: the gate first blocks an '
+        f'envelope violation, then a declared motion profile passes and the '
+        f'program executes on a hermetic mock (no robot).">\n'
         f"<style>{style}</style>\n"
         f'<rect width="{WIDTH}" height="{HEIGHT}" rx="10" fill="{BG}"/>\n'
         f'<rect width="{WIDTH}" height="{BAR_H}" rx="10" fill="{BAR}"/>\n'

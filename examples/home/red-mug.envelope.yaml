@@ -1,0 +1,16 @@
+# The safety envelope the red-mug hero rehearses against (RFC-0668).
+# Deployment-time caps on top of the capability manifest; the rehearsal
+# gate derives `always (speed <= 0.4)` and `always (grip_force <= 3)`
+# from these and checks them over the simulated trace before the real
+# adapter is ever constructed.
+
+envelope_version: "0.1"
+deployment_id: home_demo
+description: Default home-profile envelope for the red-mug demo.
+
+max_velocity: 0.4          # 0.4 m/s; below manifest's 0.46 max.
+max_grip_force_n: 3.0      # Below the gripper's declared 5.0 N max.
+
+people_occupancy_zones: []
+geofences: []
+link_loss_policy: []

@@ -1,0 +1,5 @@
+# Kinematic rehearsal profile for the red-mug hero (RFC-0668).
+# These are the deployment's declared motion assumptions, not measurements:
+# the robot cruises at 0.35 m/s, under the envelope's 0.4 m/s cap. With the
+# backend's default assumption (0.5 m/s) the gate correctly blocks the run.
+cruise_speed: 0.35
