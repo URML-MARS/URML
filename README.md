@@ -23,9 +23,9 @@
 
 # URML — Universal Robot Language
 
-**One vocabulary for robot intent. Statically validated. Runs on any substrate.**
+**One vocabulary for robot intent. Every action checked against what the robot can actually do before it runs. On any substrate.**
 
-URML sits above existing robot operating systems (ROS 2, PX4, OPC UA Robotics, vendor SDKs) and lets humans, large language models, and robots share one vocabulary for *what should happen* — independent of which motors, joints, or frames carry it out. Every URML program is statically verified against the robot's declared capabilities, the active safety envelope, and the deployment's compliance policy **before a single actuator moves**.
+URML sits above existing robot operating systems (ROS 2, PX4, OPC UA Robotics, vendor SDKs) and gives humans, large language models, and robots one vocabulary for *what should happen*, independent of which motors, joints, or frames carry it out. Every URML program is statically checked against the robot's declared capabilities and the active safety envelope **before a single actuator moves**, so a command the robot cannot safely carry out, a 250 N grasp on a 100 N gripper or a waypoint outside the geofence, is refused on paper instead of attempted on hardware. The bundled US-federal compliance policy runs in the same pass, on by default and one flag away.
 
 URML is a **specification** and a set of **reference implementations**, not a robot operating system. The specification is Apache 2.0 — see [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) for what will always remain so.
 
