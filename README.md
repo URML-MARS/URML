@@ -56,11 +56,11 @@ urml --version    # confirm the new version
 `pipx upgrade urml-validator` does the same for a pipx install.
 
 <p align="center">
-  <a href="docs/demos/sentence-to-motion.md"><img src="docs/assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program becomes an executed step-by-step trace, on a hermetic mock — no API key, no robot." width="760"></a>
+  <a href="docs/demos/sentence-to-motion.md"><img src="docs/assets/sentence-to-motion.svg" alt="One English sentence becomes a validated URML program, is rehearsed in simulation where the gate first blocks an envelope violation, then executes as a step-by-step trace on a hermetic mock. No API key, no robot." width="760"></a>
 </p>
 
 <p align="center">
-  <sub>The sentence-to-motion loop, animated. One English sentence becomes a validated URML program becomes an executed trace, on a hermetic mock (no actuator moved). Every line above is real <code>urml</code> output (asserted in CI). <a href="docs/demos/sentence-to-motion.md">full walkthrough</a>.</sub>
+  <sub>The sentence-to-motion loop, animated. One English sentence becomes a validated URML program, rehearsed in simulation before anything moves: the gate blocks a speed-cap violation, then the declared motion profile passes and the trace executes on a hermetic mock (no actuator moved). Every line above is real <code>urml</code> output (asserted in CI). <a href="docs/demos/sentence-to-motion.md">full walkthrough</a>.</sub>
 </p>
 
 `pip install` brings down the validator CLI and a hermetic mock runtime. `urml init` scaffolds a minimal project on disk (manifest, envelope, sample program with its natural-language prompt, Makefile). `urml validate` runs all five passes (argument typing → capability → safety envelope → variable bindings → compliance policy). The bundled US-federal default policy is on by default; pass `--no-policy` to skip it, or `--policy <your_file.yaml>` to use your own.

@@ -176,8 +176,15 @@ against the robot's real capabilities first.
 make demo-run
 ```
 
-This runs Scene 1 through Scene 3 as a single hermetic chain. `make demo`
-(validate only) still exists and is unchanged.
+This runs the whole loop as `urml run`, twice, with the rehearsal gate on
+(RFC-0668). The first invocation rehearses the program on a synthetic
+kinematic backend using the backend's default cruise assumption (0.5 m/s);
+that breaks the envelope's 0.4 m/s cap, so the gate blocks with a CRITICAL
+violation and the adapter is never constructed. The second declares the
+deployment's real cruise speed (`examples/home/red-mug.rehearse.yaml`,
+0.35 m/s); the gate passes and Scene 3's execution trace follows. The
+rehearsal is synthetic kinematics, not physics; its own output says so.
+`make demo` (validate only) still exists and is unchanged.
 
 ## What this is NOT
 

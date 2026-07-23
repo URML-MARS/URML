@@ -827,7 +827,7 @@ def _run_rehearsal(
         print("  gate: PASSED", file=out)
         return None
     print(
-        "  gate: FAILED — execution blocked. The real robot receives nothing (RFC-0668).",
+        "  gate: FAILED. Execution blocked; the real robot receives nothing (RFC-0668).",
         file=out,
     )
     return 1

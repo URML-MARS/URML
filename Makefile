@@ -22,7 +22,7 @@ help:
 	@echo "  make install      Create .venv and install all 5 packages editable (no PyPI)."
 	@echo "  make install-dev  Same, plus each package's [dev] extra (pytest/ruff/mypy)."
 	@echo "  make demo         Validate the canonical red-mug example end-to-end."
-	@echo "  make demo-run     Sentence -> URML -> validate -> execute (hermetic, no creds)."
+	@echo "  make demo-run     Sentence -> URML -> rehearse -> execute (hermetic, no creds)."
 	@echo "  make demo-record  Regenerate the README hero SVG (deterministic, any OS)."
 	@echo "  make architecture-record  Regenerate the homepage architecture-stack SVG."
 	@echo "  make audit        Re-measure every suite + fixture count; print a paste-ready"
@@ -51,22 +51,28 @@ demo:
 	    --manifest examples/home/red-mug.manifest.yaml --profile home
 
 # The flagship demo: one English sentence becomes a validated URML
-# program becomes an executed step-by-step trace. Hermetic — the `echo`
-# provider replays a committed canned completion (no API key, no network)
-# and the `mock` adapter moves nothing. Proves the whole language
-# pipeline, reproducible by anyone. Full walkthrough + the honest
-# "this is a mock" framing: docs/demos/sentence-to-motion.md.
-# Generated program lands in $(VENV) so `make clean` removes it.
+# program, is rehearsed on a synthetic kinematic backend against the
+# envelope (RFC-0668), and then executes. Hermetic — the `echo` provider
+# replays a committed canned completion (no API key, no network) and the
+# `mock` adapter moves nothing. Two beats: the gate first blocks the
+# backend's default 0.5 m/s assumption (exit 1, expected — hence the
+# leading `-`), then the declared 0.35 m/s profile passes. Full
+# walkthrough + the honest "this is a mock" framing:
+# docs/demos/sentence-to-motion.md.
 demo-run:
-	$(URML) translate "Bring me the red mug from the kitchen." \
-	    --manifest examples/home/red-mug.manifest.yaml --profile home \
+	-$(URML) run "Bring me the red mug from the kitchen." \
+	    --manifest examples/home/red-mug.manifest.yaml \
+	    --envelope examples/home/red-mug.envelope.yaml --profile home \
 	    --provider echo \
 	    --echo-response-file examples/home/red-mug.echo-response.json \
-	    --out $(VENV)/redmug.generated.yaml
-	$(URML) validate $(VENV)/redmug.generated.yaml \
-	    --manifest examples/home/red-mug.manifest.yaml --profile home --no-policy
-	$(URML) execute $(VENV)/redmug.generated.yaml \
-	    --manifest examples/home/red-mug.manifest.yaml --profile home --no-policy
+	    --rehearse kinematic --adapter mock --no-policy
+	$(URML) run "Bring me the red mug from the kitchen." \
+	    --manifest examples/home/red-mug.manifest.yaml \
+	    --envelope examples/home/red-mug.envelope.yaml --profile home \
+	    --provider echo \
+	    --echo-response-file examples/home/red-mug.echo-response.json \
+	    --rehearse kinematic --rehearse-config examples/home/red-mug.rehearse.yaml \
+	    --adapter mock --no-policy
 
 # Regenerate the README hero (docs/assets/sentence-to-motion.svg): the
 # committed, CSS-animated terminal SVG of the demo-run loop. Pure Python,
