@@ -1,0 +1,40 @@
+# Fixture: a non-STM32 minimal node with an RFC-0669 firmware descriptor.
+# The substrate-neutrality check: the same firmware descriptor shape, declared
+# for an ESP32-S3 board with zero STM32 or ST content. The `series`, `core`, and
+# component tokens are the vendor's own (esp32s3, xtensa-lx7, esp-idf), which is
+# why the firmware-token charset admits hyphens. STM32 is the motivating instance
+# of RFC-0669, not a coupling.
+
+manifest_version: "0.1"
+robot_id: esp32s3_sensor_node
+description: Fixed ESP32-S3-class node with one LED and one light sensor (RFC-0669 firmware descriptor, non-STM32).
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [light]
+  declared_outputs: [led]
+  has_locomotion: false
+
+firmware:
+  series: esp32s3
+  core: xtensa-lx7
+  version: "5.2.1"
+  components:
+    - name: esp-idf
+      version: "5.2"
+
+perception:
+  cameras: []
+  sensors:
+    - name: light
+      measurement_type: custom
+      range_min: 0.0
+      range_max: 1000.0
+      units: lux
+  object_vocabulary: []
+
+outputs:
+  lines:
+    - name: led
+      kind: digital
+      safe_state: false

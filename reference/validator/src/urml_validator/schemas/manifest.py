@@ -14,7 +14,14 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from urml_validator.schemas.common import Evidence, GraspType, Identifier, Pose, Transform
+from urml_validator.schemas.common import (
+    Evidence,
+    FirmwareToken,
+    GraspType,
+    Identifier,
+    Pose,
+    Transform,
+)
 from urml_validator.schemas.connectivity import Connectivity
 
 
@@ -1390,6 +1397,55 @@ class MinimalNode(BaseModel):
         return self
 
 
+class FirmwareComponent(BaseModel):
+    """One software component a firmware is built from (RFC-0669).
+
+    A CMSIS pack, a HAL/LL driver set, a middleware library. The `name` is the
+    vendor token for the component (e.g. "cmsis", "stm32f4xx-hal", "usbx",
+    "esp-idf"); `version` is the pinned version when known, a free string.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: FirmwareToken = Field(..., description="The component's vendor token, e.g. 'cmsis', 'stm32f4xx-hal'.")
+    version: str | None = Field(
+        None, min_length=1, max_length=64, description="The component version if pinned, e.g. '1.28.0'. Free string."
+    )
+
+
+class Firmware(BaseModel):
+    """The firmware identity an MCU node runs (RFC-0669).
+
+    Complements `minimal_node` (RFC-0018), which says what a node senses and
+    actuates: `firmware` says which firmware identity it runs, so two boards with
+    the same sensors and outputs but different series, core, or middleware are
+    distinguishable and a runtime can bind to the right surface.
+
+    The field set comes from a request-for-comment exchange with STMicroelectronics
+    engineers (STM32CubeF4#203): series, core, firmware version, software components.
+    It is vendor-neutral (STM32 is the motivating instance; ESP32 / nRF declare the
+    same shape) and declarative only, introducing no primitive. A `firmware` block
+    describes exactly one series-and-release; a multi-series family is several
+    manifests, not one block with a list (per-series = per-manifest).
+
+    `series` and `core` are required; `version` and `components` are optional. A
+    Pass-2 rule (a policy requiring a minimum version or a named component) is
+    deferred, in the RFC-0018 declare-now/enforce-later staging.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    series: FirmwareToken = Field(..., description="The MCU series, e.g. 'STM32F4', 'esp32s3', 'nrf52'.")
+    core: FirmwareToken = Field(..., description="The CPU core the firmware targets, e.g. 'cortex-m4', 'xtensa-lx7'.")
+    version: str | None = Field(
+        None, min_length=1, max_length=64, description="The firmware release, e.g. '1.28.0'. Free string in v0.1."
+    )
+    components: list[FirmwareComponent] = Field(
+        default_factory=list,
+        description="The software components the firmware is built from (CMSIS, HAL/LL drivers, middleware).",
+    )
+
+
 class SttOptions(BaseModel):
     """Speech-to-text engine options (RFC-0260). All optional, deployment hints."""
 
@@ -1713,6 +1769,10 @@ class CapabilityManifest(BaseModel):
     # RFC-0018: optional minimal sensor/actuator MCU-node declaration.
     # Mutually exclusive with `mobility` (checked in the validator).
     minimal_node: MinimalNode | None = None
+
+    # RFC-0669: optional MCU firmware identity (series, core, version, components).
+    # Complements `minimal_node`; declarative, no cross-block rule.
+    firmware: Firmware | None = None
 
     # RFC-0260: optional Layer-4 NL-infrastructure engine declarations
     # (speech-to-text / text-to-speech / translation engine classes).

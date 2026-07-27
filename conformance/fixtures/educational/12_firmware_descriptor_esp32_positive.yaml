@@ -1,0 +1,21 @@
+name: educational/firmware_descriptor_esp32_positive
+description: >
+  RFC-0669 substrate-neutrality: the same firmware descriptor shape declared for
+  a non-STM32 board (ESP32-S3, Xtensa LX7 core, ESP-IDF component) is equally
+  valid. The firmware-token charset admits the vendor's own punctuation
+  (esp32s3, xtensa-lx7, esp-idf). STM32 is the motivating instance of RFC-0669,
+  not a coupling. Validator-only acceptance (manifest-shape) fixture.
+
+manifest: esp32_firmware_node
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: led, value: true }
+
+expected_validation:
+  accepted: true

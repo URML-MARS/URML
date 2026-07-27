@@ -2,9 +2,9 @@
 rfc: 0669
 title: MCU firmware descriptor in the manifest
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-07-20
-updated: 2026-07-20
+updated: 2026-07-23
 supersedes: —
 superseded-by: —
 ---
@@ -78,11 +78,11 @@ An optional Layer-1 manifest block, vendor-neutral, additive:
 
 ```
 firmware:
-  series: <Identifier>            # vendor-namespaced series id, e.g. "stm32f4", "esp32s3", "nrf52"
-  core: <Identifier>              # the CPU core the firmware targets, e.g. "cortex-m4", "xtensa-lx7"
+  series: <FirmwareToken>         # the MCU series, e.g. "STM32F4", "esp32s3", "nrf52"
+  core: <FirmwareToken>           # the CPU core the firmware targets, e.g. "cortex-m4", "xtensa-lx7"
   version: <string>              # the firmware release, e.g. "1.28.0" (semver-ish, free string in v0.1)
   components:                    # the software components the firmware is built from
-    - name: <Identifier>         # e.g. "cmsis", "stm32f4xx-hal", "usbx"
+    - name: <FirmwareToken>      # e.g. "cmsis", "stm32f4xx-hal", "usbx"
       version: <string>          # optional; the component version if pinned
 ```
 
@@ -90,10 +90,14 @@ firmware:
 introduces no primitive and gates nothing on its own in v0.1. It is a positive,
 conformance-checkable statement of firmware identity.
 
-`series`, `core`, and each component `name` are identifiers a runtime can match on;
-`version` fields are free strings in v0.1 (a normative version grammar is deferred,
-see Unresolved questions). The four fields map one-to-one onto the ST engineers'
-list: series, core, firmware version, component list.
+`series`, `core`, and each component `name` are **firmware tokens** a runtime can
+match on. They are NOT URML `Identifier`s (strict snake_case): these are third-party
+vendor tokens URML does not own, so the charset admits the punctuation real MCU names
+use, hyphens, dots, and plus (`^[A-Za-z0-9][A-Za-z0-9._+-]*$`), for example
+`cortex-m0+`, `stm32f4xx-hal`, `esp32s3`. Mixed case is allowed so a vendor's own
+spelling round-trips. `version` fields are free strings in v0.1 (a normative version
+grammar is deferred, see Unresolved questions). The four fields map one-to-one onto
+the ST engineers' list: series, core, firmware version, component list.
 
 **Per-series is the manifest, not a field.** The ST recommendation that engagement be
 per-series matches how URML already works: one manifest per target, not one umbrella
@@ -126,11 +130,14 @@ toolchain. STM32 is the instance that surfaced the need, not a coupling.
 
 ### Validator changes
 
-Schema parse plus a small intra-block check in v0.1: `series` and `core` are
-required non-empty identifiers when `firmware` is present, and component entries have
-non-empty `name`. A future Pass-2 rule (a runtime or policy that requires a minimum
-firmware version, or that a named component be present) is explicitly deferred, in
-the RFC-0011 / RFC-0018 declare-now/enforce-later staging.
+Schema parse only, in v0.1. `series` and `core` are required non-empty firmware
+tokens when `firmware` is present, and component entries have a non-empty `name`;
+all of that is enforced by the model (required fields plus the firmware-token
+constraint), so a violation surfaces as a Pass-1 schema error and no dedicated
+validator pass is needed. Unlike `minimal_node`, `firmware` has no cross-block rule,
+so there is no `_check_firmware`. A future Pass-2 rule (a runtime or policy that
+requires a minimum firmware version, or that a named component be present) is
+explicitly deferred, in the RFC-0011 / RFC-0018 declare-now/enforce-later staging.
 
 ### Reference runtime changes
 
@@ -213,6 +220,35 @@ request-for-comment exchange with STMicroelectronics engineers on
 - The companion hardware descriptor keyed on the full part number (Alternative 3):
   whether it is worth its manifest surface, and if so whether it is one RFC with this
   one or a separate follow-on.
+
+## Implementation note
+
+### Shipped (Draft -> Implemented, 2026-07-23)
+
+Landed as a Layer-1-only change, fully additive (every existing manifest stays
+valid; `manifest_version` stays `0.1`):
+
+- **Schema**: `Firmware` (`series`, `core` required; `version`, `components`
+  optional) + `FirmwareComponent` (`name` required, `version` optional) +
+  `CapabilityManifest.firmware`. A new `FirmwareToken` type in
+  `schemas/common.py` (`^[A-Za-z0-9][A-Za-z0-9._+-]*$`, 1..64) carries the
+  vendor-token charset, distinct from the strict snake_case `Identifier`. Spec:
+  `spec/layer-1-hal/v0.2.0.md` §2.22.
+- **Validator**: none. The block is self-contained (no cross-block rule), so
+  required-field and token-charset violations surface as Pass-1 schema errors;
+  there is no `_check_firmware`.
+- **Conformance**: two manifest fixtures (`stm32_firmware_node`,
+  `esp32_firmware_node`) registered in the conformance manifest map, plus two
+  `conformance/fixtures/educational/` acceptance cases (STM32 instance +
+  non-STM32 neutrality), validator-only (the RFC-0018 no-SDK pattern).
+- **Tests**: `reference/validator/tests/test_firmware_descriptor.py` (18 cases:
+  STM32 + ESP32 acceptance, required series/core, non-empty component name, the
+  token charset admitting `cortex-m0+` / `stm32f4xx-hal` and rejecting whitespace,
+  `extra: forbid`, optional version/components, full-manifest validation, and no
+  false mutual-exclusion with `mobility`).
+
+The companion part-number hardware descriptor (Alternative 3) stays a separate
+follow-on; it is not part of this change.
 
 ## Self-review (Phase 0)
 

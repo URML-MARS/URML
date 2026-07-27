@@ -1,0 +1,22 @@
+name: educational/firmware_descriptor_stm32_positive
+description: >
+  RFC-0669: a minimal sensor/actuator MCU node that also declares its firmware
+  identity (STM32F4 series, Cortex-M4 core, a firmware version, and its software
+  components) is a valid, recognised manifest shape. `firmware` composes with
+  RFC-0018 `minimal_node` and has no cross-block rule. The program turns the
+  declared LED line on via RFC-0017 set_output. Validator-only acceptance
+  (manifest-shape) fixture.
+
+manifest: stm32_firmware_node
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - set_output: { output: led, value: true }
+
+expected_validation:
+  accepted: true

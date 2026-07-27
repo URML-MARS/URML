@@ -20,6 +20,17 @@ Identifier = Annotated[
     StringConstraints(pattern=r"^[a-z][a-z0-9_]*$", min_length=1, max_length=64),
 ]
 
+# A vendor/hardware token for external firmware identity (RFC-0669): MCU series,
+# CPU core, software-component names. Unlike `Identifier`, these are third-party
+# tokens URML does not own, so the charset admits the punctuation real MCU names
+# use: hyphens, dots, and plus (e.g. "STM32F4", "cortex-m4", "cortex-m0+",
+# "stm32f4xx-hal", "esp32s3"). Mixed case is allowed so a vendor's own spelling
+# round-trips; matching is on the declared token as written.
+FirmwareToken = Annotated[
+    str,
+    StringConstraints(pattern=r"^[A-Za-z0-9][A-Za-z0-9._+-]*$", min_length=1, max_length=64),
+]
+
 # `$varname` reference to a prior `store_as` binding. The leading `$` is
 # required by the URML surface syntax.
 _VAR_REF_PATTERN = re.compile(r"^\$[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$")
