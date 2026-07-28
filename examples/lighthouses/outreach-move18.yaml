@@ -340,14 +340,16 @@
   posted_url: "https://github.com/OpenInterpreter/open-interpreter/issues/1771"
   channel: github
   contact: "OpenInterpreter/open-interpreter (AGPL-3.0, 63.7k stars, Issues enabled, last commit 2026-05-17, **not archived**). Natural-language interface for general computer control (run-code-locally agent). Highest stars of the Move-18 wave."
-  last_touch: "2026-05-29"
-  response: none
+  last_touch: "2026-07-28"
+  response: acked
   tier: A
   country: US
   sector: conceptual-peer
-  comments: []
+  comments:
+    - date: "2026-07-28"
+      text: "ACKED via a repo-pivot legacy-sweep close (not a merits decline, not hostile). interpreterwork (COLLABORATOR, a work/staff account) closed #1771 with a templated message: the repo has pivoted from the classic Python/LiteLLM/Jupyter product to a Rust Open Interpreter built on Codex, and they are closing all legacy reports to start clean tracking. They misclassified the RFC as a bug report (boilerplate asking for version/provider/model/wire-API/harness/platform/repro) and redirected the classic version to the community fork https://github.com/endolith/open-interpreter, inviting a new issue on the current product if relevant. No substantive engagement with URML. Accepted silently: no reply (a templated mass-sweep close into a legacy repo no human is watching, replying = noise). Fit was already thin (conceptual peer: computer/code control vs robot control); the Rust/Codex pivot makes it thinner."
   claude_directives: []
-  next_action: "Posted 2026-05-29 (idoco2003); no response yet. Conceptual-peer / mutual-citation framing (URML maps to robots; Open Interpreter maps to general computer control). Follow up at +4-6 weeks if silent."
+  next_action: "None. Repo pivoted to a Rust/Codex product; #1771 closed in a legacy sweep (acked). Do NOT re-pitch: the peer-citation fit was always thin (OI = general computer control, not robot control) and the pivot widens the gap. Only revisit if the new Open Interpreter surfaces a concrete robot-control path, and only then via a fresh issue on the current repo per their template."
   notes: "Tier A (AGPL-3.0 -> REST/IPC-boundary integration, no embedding). Origin community OSS (US-led); passes US-federal default policy. URML-fit: conceptual peer, NOT a substrate URML composes onto. Engagement is mutual-citation / interoperability conversation. Surfaces Spec RFCs: AGPL-network-boundary manifest declaration (shared with RFC-0168 LibreTranslate / RFC-0232 OctoPrint / RFC-0242 Viam)."
 
 - slug: viam-rdk
