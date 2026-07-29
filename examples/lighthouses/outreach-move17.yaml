@@ -151,14 +151,16 @@
   posted_url: "https://github.com/ossf/scorecard/issues/5079"
   channel: github_issue
   contact: "ossf/scorecard (Apache-2.0, issues enabled, last push 2026-05-25, 5.5k stars). OpenSSF / Linux Foundation. Security health scoring; SBOM / provenance signals."
-  last_touch: "2026-05-29"
+  last_touch: "2026-07-29"
   response: none
   tier: A
   country: INTL
   sector: governance-body
-  comments: []
+  comments:
+    - date: "2026-07-29"
+      text: "Stale-bot notice 2026-07-29 (github-actions: 60 days no activity). No maintainer answer to the single-vs-per-repo question. Self-resolved and closed: URML is a monorepo, so it is a single top-level Scorecard run over URML-MARS/URML; Scorecard scores one repo at a time and does not aggregate, so per-repo runs only apply if the runtimes ever split into separate repos. Posted a brief self-resolution + thanks under idoco2003 (issuecomment-5112339830) and closed the issue completed (author-close). Not a hollow bump: closing my own dangling question courteously rather than leaving OpenSSF maintainers feeling they owe an answer to a low-burden usage question. Response stays none (they never engaged); the answer came from Scorecard's own design, not from them. OPEN follow-through: the Scorecard GitHub Action is still not configured on the repo (no .github/workflows/scorecard.yml); adopting it was the ledger's stated plan regardless of reply."
   claude_directives: []
-  next_action: "Posted 2026-05-29 to https://github.com/ossf/scorecard/issues/5079. Tight post-Nav2 format; single low-burden question (single Scorecard run vs per-repo for a multi-runtime project). Assistant flagged this as better served by just adopting the Scorecard Action than by a cold Issue; founder chose to post all five. Follow-up: adopt the Scorecard GitHub Action on the URML repo regardless of reply. Awaiting maintainer response; 4-week first-touch cadence."
+  next_action: "Closed self-resolved 2026-07-29 (monorepo -> single Scorecard run). No further outreach on this thread. REMAINING follow-through (URML-side, not outreach): add the OpenSSF Scorecard GitHub Action to URML-MARS/URML (.github/workflows/scorecard.yml, publish results); this was the plan regardless of a maintainer reply and is still undone. Founder decision to add it."
   notes: "Class 1 / Sub-wave A. Origin OpenSSF / Linux Foundation US. Foundation-home score: high (security-tooling alignment). Apache-2.0 clean fit."
 
 # ============================================================
