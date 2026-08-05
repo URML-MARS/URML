@@ -38,6 +38,9 @@ on:
       - 'reference/edu-runtime/**'
       - '.github/workflows/marty-real-integration.yml'
 
+permissions:
+  contents: read
+
 jobs:
   marty-api-surface:
     name: martypy.Marty API surface gate

@@ -42,6 +42,9 @@ on:
     # Tuesdays 00:00 (staggered after the other lanes) UTC (staggered after the other integration lanes).
     - cron: '0 0 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   autosar-smoke:
     runs-on: ubuntu-24.04

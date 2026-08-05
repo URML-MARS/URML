@@ -1,0 +1,36 @@
+# Dependabot configuration (RFC-0216 / OpenSSF Scorecard Dependency-Update-Tool).
+#
+# Keeps dependencies current across the two ecosystems this repo actually uses:
+# the pinned GitHub Actions SHAs, and the Python packages. Updates are grouped
+# (one PR per ecosystem per week) and capped, so a near-zero-audience repo is not
+# buried in dependency PRs. Weekly Monday cadence matches the repo's scheduled
+# workflows.
+
+version: 2
+updates:
+  # GitHub Actions: keep the SHA-pinned actions across .github/workflows current.
+  # Also feeds the Scorecard Pinned-Dependencies check (SHA pins stay fresh).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Python: the twenty runtime / tooling packages (nineteen under reference/,
+  # plus conformance). Grouped into a single PR to keep volume sane.
+  - package-ecosystem: pip
+    directories:
+      - "/reference/*"
+      - "/conformance"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      python:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 5

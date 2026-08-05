@@ -20,6 +20,9 @@ on:
       - 'conformance/tests/test_outreach_ledger_schema_v2.py'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   ledger-schema:
     runs-on: ubuntu-24.04
