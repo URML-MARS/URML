@@ -1,0 +1,34 @@
+URML as a PER-SUBTASK eval lens over RoboCasa composite tasks.
+RoboCasa annotates every composite frame with a subtask (index, atomic skill,
+stage, instruction). The lens walks those subtasks and flags WHICH one leaves
+the robot's declared capability, instead of a whole-instruction pass/flag.
+robot: robocasa_kitchen_bot (Franka Panda on an Omron base)
+gripper force <= 70 N   scene objects: mug, bowl, plate, bottle, can, apple, banana, bread, kettle
+scene places: counter, sink, stove, cabinet
+
+Composite: "put the mug in the sink"  (4 annotated subtasks)
+  [PASS]  1. NavigateKitchen/navigate  go to the counter
+  [PASS]  2. PnP/pick                  pick up the mug from the counter
+  [PASS]  3. NavigateKitchen/navigate  go to the sink
+  [PASS]  4. PnP/place                 place the mug in the sink
+  => every subtask is in-capability.
+
+Composite: "set the table"  (5 annotated subtasks)
+  [PASS]  1. NavigateKitchen/navigate  go to the cabinet
+  [PASS]  2. PnP/pick                  pick up the plate from the cabinet
+  [PASS]  3. NavigateKitchen/navigate  go to the counter
+  [PASS]  4. PnP/place                 place the plate on the counter
+  [FLAG]  5. PnP/pick                  pick up the anvil from the cabinet
+             -> out-of-distribution: capability.missing_object_class
+  => subtask 5 is the flagged step; the rest are in-capability.
+
+Composite: "wash the kettle"  (3 annotated subtasks)
+  [PASS]  1. NavigateKitchen/navigate  go to the sink
+  [PASS]  2. PnP/pick                  pick up the kettle from the sink
+  [FLAG]  3. PnP/pick                  scrub the kettle, gripping it at 200 N
+             -> out-of-capability: capability.missing_gripper
+  => subtask 3 is the flagged step; the rest are in-capability.
+
+The lens never executes anything. With per-subtask annotations it points at
+the exact step that goes out-of-distribution or out-of-capability, a sharper
+signal for the benchmark than a single verdict over the whole instruction.
