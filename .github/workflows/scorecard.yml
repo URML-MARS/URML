@@ -1,0 +1,75 @@
+name: scorecard
+
+# OpenSSF Scorecard supply-chain security scan (RFC-0216).
+#
+# Runs the OpenSSF Scorecard analysis over this repository and publishes the
+# result so downstream users can check URML's security posture in a standard,
+# comparable format. Two things happen on each run:
+#
+#   1. The SARIF result is uploaded to the repo Security tab (code scanning), so
+#      each check's finding is visible inline. This is the first SARIF publisher
+#      in the repo, which is why the analysis job needs `security-events: write`.
+#   2. With `publish_results: true`, the score is posted to the public OpenSSF
+#      API, which backs the api.securityscorecards.dev badge (added to the README
+#      as a follow-up, once a first run has published). `id-token: write`
+#      authorizes that publish, and it requires this repo to stay public.
+#
+# URML is a monorepo, so this is a single top-level run over URML-MARS/URML;
+# Scorecard scores one repository at a time and does not aggregate across repos.
+# Weekly cadence (Mondays 07:00 UTC) matches the repo's other scheduled
+# workflows; manual runs are available via `workflow_dispatch`. There is
+# deliberately no `push` trigger: `main` takes frequent ledger merges and a
+# per-merge scan would be wasteful, so the scheduled run on the default branch is
+# what refreshes the published score.
+
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+# Least privilege at the top level; the analysis job widens only what it needs.
+permissions: read-all
+
+jobs:
+  analysis:
+    name: scorecard-analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      # Upload the SARIF result to the Security tab (code scanning).
+      security-events: write
+      # Authorize the publish to the public OpenSSF API (for the badge).
+      id-token: write
+      # This repo is public, so `contents: read` is not required. Uncomment the
+      # two lines below if Scorecard is ever run on a private repository.
+      # contents: read
+      # actions: read
+    steps:
+      - name: Checkout
+        # actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: false
+
+      - name: Run Scorecard analysis
+        # ossf/scorecard-action@v2.4.4
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload SARIF as artifact
+        # actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scorecard-sarif
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload SARIF to code scanning
+        # github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@c4dd10e44af883a891fe31ced449bcb4a6728b9b
+        with:
+          sarif_file: results.sarif
