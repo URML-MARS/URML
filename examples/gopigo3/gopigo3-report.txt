@@ -12,9 +12,9 @@ robot: gopigo3_basic   drive_type: differential   max drive: 2.0 m
 [VALID] short patrol: turn, drive, turn, drive, announce, report
    executed 6 steps, success=True
    wheel + speech calls, in order:
-     turn_by      -> easygopigo3.turn_degrees(90.0)
-     drive_by     -> easygopigo3.drive_cm(50.0)
      turn_by      -> easygopigo3.turn_degrees(-90.0)
+     drive_by     -> easygopigo3.drive_cm(50.0)
+     turn_by      -> easygopigo3.turn_degrees(90.0)
      drive_by     -> easygopigo3.drive_cm(50.0)
      emit_speech  -> espeak 'Patrol complete'
      emit_report

@@ -51,10 +51,12 @@ def test_validated_intent_lowers_to_wheel_calls() -> None:
     # Both programs validate before actuating.
     assert "[VALID] announce, then drive 1 m" in report
     assert "[REJECTED]" not in report
-    # `drive` lowered to the easygopigo3 call; `speak` to espeak.
+    # `drive` lowered to the easygopigo3 call; `speak` to espeak. A URML +90
+    # (left, FLU/+CCW) turn lowers to turn_degrees(-90) in GoPiGo3's RFD
+    # frame (#591, #598).
     assert "drive_by     -> easygopigo3.drive_cm(100.0)" in report
     assert "emit_speech  -> espeak 'Driving forward 1 meter'" in report
-    assert "turn_by      -> easygopigo3.turn_degrees(90.0)" in report
+    assert "turn_by      -> easygopigo3.turn_degrees(-90.0)" in report
 
 
 def test_arc_drive_lowers_distance_to_orbit_radius() -> None:
@@ -62,8 +64,9 @@ def test_arc_drive_lowers_distance_to_orbit_radius() -> None:
     radius is distance / arc-in-radians, not distance itself (Discussion #572).
 
     "Orbit 180 degrees with a 5 cm radius" is a 0.157 m arc (pi x 0.05), and must
-    lower to easygopigo3.orbit(180, 5.0). Regression for the bug where `distance`
-    was passed straight in as the orbit radius.
+    lower to easygopigo3.orbit(-180, 5.0) (the sign flip is the FLU->RFD frame
+    conversion, #591/#598). Regression for the bug where `distance` was passed
+    straight in as the orbit radius.
     """
     if str(EX) not in sys.path:
         sys.path.insert(0, str(EX))
@@ -79,8 +82,37 @@ def test_arc_drive_lowers_distance_to_orbit_radius() -> None:
     adapter = GoPiGo3Adapter()
     adapter._gpg = _FakeBot()  # bypass the lazy easygopigo3 import (hermetic)
     adapter.drive_by(distance=math.pi * 0.05, arc=180.0)  # 5 cm radius, half circle
-    assert adapter._gpg.calls == [(180.0, 5.0)]
-    assert adapter.call_log[-1]["hw"] == "orbit(180.0, 5.0)"
+    # The hardware call carries the RFD-frame (negated) arc; call_log stays URML-frame.
+    assert adapter._gpg.calls == [(-180.0, 5.0)]
+    assert adapter.call_log[-1]["hw"] == "orbit(-180.0, 5.0)"
+    assert adapter.call_log[-1]["arc"] == 180.0
+
+
+def test_frame_conversion_flu_to_rfd() -> None:
+    """#591/#598: URML speaks FLU (+CCW = left); easygopigo3 speaks RFD (+CW = right).
+
+    The adapter negates at the hardware boundary and nowhere else: a URML
+    left turn (+90) must reach the wheels as turn_degrees(-90), while the
+    audit trail keeps the URML-frame value the validator approved.
+    """
+    if str(EX) not in sys.path:
+        sys.path.insert(0, str(EX))
+    from gopigo3_adapter import GoPiGo3Adapter
+
+    class _FakeBot:
+        def __init__(self) -> None:
+            self.turns: list[float] = []
+
+        def turn_degrees(self, deg: float) -> None:
+            self.turns.append(round(deg, 1))
+
+    adapter = GoPiGo3Adapter()
+    adapter._gpg = _FakeBot()
+    adapter.turn_by(angle=90.0)   # URML: turn left
+    adapter.turn_by(angle=-45.0)  # URML: turn right
+    assert adapter._gpg.turns == [-90.0, 45.0]
+    assert [c["angle"] for c in adapter.call_log] == [90.0, -45.0]
+    assert adapter.call_log[0]["hw"] == "turn_degrees(-90.0)"
 
 
 def test_radius_form_lowers_to_orbit_without_arithmetic(tmp_path) -> None:
@@ -89,8 +121,8 @@ def test_radius_form_lowers_to_orbit_without_arithmetic(tmp_path) -> None:
     "Orbit 180 degrees with a 5 cm radius" is written `drive: {radius: 0.05, arc:
     180}` with no arc-length arithmetic. The runtime resolves it to the arc length
     (0.05 x pi) and the adapter recovers the 5 cm radius, so it lowers to
-    easygopigo3.orbit(180, 5.0). Under the arc-length form a model that doubled the
-    arithmetic drove a 10 cm arc; the radius form removes that failure mode.
+    easygopigo3.orbit(-180, 5.0) (RFD frame). Under the arc-length form a model that
+    doubled the arithmetic drove a 10 cm arc; the radius form removes that failure mode.
     """
     gen = _load_gen()
     prog = tmp_path / "orbit.urml.yaml"
@@ -104,7 +136,7 @@ def test_radius_form_lowers_to_orbit_without_arithmetic(tmp_path) -> None:
     )
     report = gen.run_program_file(str(prog), prefer_real=False)
     assert "[VALID] program file: orbit.urml.yaml" in report
-    assert "drive_by     -> easygopigo3.orbit(180.0, 5.0)" in report
+    assert "drive_by     -> easygopigo3.orbit(-180.0, 5.0)" in report
     assert "Dry run" in report
 
 
