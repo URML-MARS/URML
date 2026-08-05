@@ -31,7 +31,44 @@ There is no `translate` tool by design. The agent calls `urml_get_contract`, emi
 
 Optionally point `URML_MCP_ADAPTER_CONFIG` at an adapter-config YAML. Every execute re-validates before running; there is no path to an actuator that skips the validator.
 
-## Install and run
+## Use it now, from GitHub (no PyPI needed)
+
+The server runs today, straight from source. The PyPI packages are not published yet (they ship with the 0.2.0 release), so install the server together with its three dependencies from their git subdirectories in a single `pip install`. Passing all four URLs at once lets the `>=0.2.0` version pins resolve against these git builds instead of PyPI:
+
+```bash
+python -m venv .urml-mcp
+. .urml-mcp/bin/activate                     # Windows: .urml-mcp\Scripts\activate
+
+pip install \
+  "git+https://github.com/URML-MARS/URML.git#subdirectory=reference/validator" \
+  "git+https://github.com/URML-MARS/URML.git#subdirectory=reference/llm-bridge" \
+  "git+https://github.com/URML-MARS/URML.git#subdirectory=reference/ros2-runtime" \
+  "git+https://github.com/URML-MARS/URML.git#subdirectory=reference/mcp-server"
+
+urml-mcp        # runs over stdio
+```
+
+`urml-ros2-runtime` carries the hermetic `mock` adapter, so `urml_execute` works with no ROS install and no hardware.
+
+### Register it with an MCP client
+
+Point the client at the `urml-mcp` command (stdio transport), using the absolute path to the `urml-mcp` inside the venv above (`.../.urml-mcp/bin/urml-mcp`, or `...\.urml-mcp\Scripts\urml-mcp.exe` on Windows):
+
+```json
+{
+  "mcpServers": {
+    "urml": {
+      "command": "/absolute/path/to/.urml-mcp/bin/urml-mcp"
+    }
+  }
+}
+```
+
+Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`) take that shape as-is; VS Code (`.vscode/mcp.json`) uses the same fields under a top-level `servers` key instead of `mcpServers`. The agent then holds the five URML tools: it emits URML, the server validates and runs it.
+
+Once the 0.2.0 release is on PyPI, the four git URLs collapse to `pip install urml-mcp-server`.
+
+## Develop against a local checkout
 
 ```bash
 pip install -e reference/validator
@@ -41,8 +78,6 @@ pip install -e reference/mcp-server
 
 urml-mcp        # runs over stdio
 ```
-
-Register it with an MCP client by pointing the client at the `urml-mcp` command (stdio transport).
 
 ## Layout
 

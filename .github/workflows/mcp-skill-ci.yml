@@ -1,0 +1,84 @@
+# MCP server + Agent Skill hermetic gate.
+#
+# Runs on every PR/push that touches the MCP server, its three deps, or the
+# Agent Skill. Two things it keeps honest:
+#
+#   1. The MCP server's hermetic tool tests actually pass (they run on no other
+#      workflow today), and its console entry point resolves.
+#   2. Every CLI command documented in .github/skills/urml-robot-intent/SKILL.md
+#      still runs against the live `urml` CLI. The Skill is indexed straight from
+#      GitHub, so a drifted command would ship a broken skill with no other guard.
+#      This mirrors the repo's demo-svg discipline: the artifact cannot lie about
+#      the tool.
+#
+# Both jobs are hermetic (built-in `echo` provider + `mock` adapter from
+# urml-ros2-runtime): no network, no API key, no ROS, no hardware.
+
+name: mcp-skill-ci
+
+on:
+  pull_request:
+    paths:
+      - 'reference/mcp-server/**'
+      - 'reference/validator/**'
+      - 'reference/llm-bridge/**'
+      - 'reference/ros2-runtime/**'
+      - '.github/skills/**'
+      - '.github/workflows/mcp-skill-ci.yml'
+  push:
+    paths:
+      - 'reference/mcp-server/**'
+      - 'reference/validator/**'
+      - 'reference/llm-bridge/**'
+      - 'reference/ros2-runtime/**'
+      - '.github/skills/**'
+      - '.github/workflows/mcp-skill-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  mcp-server:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the server and its deps (editable)
+        run: |
+          python -m pip install --quiet \
+            -e reference/validator \
+            -e reference/llm-bridge \
+            -e reference/ros2-runtime \
+            -e reference/mcp-server \
+            "pytest>=8"
+      - name: Console entry point resolves
+        run: python -c "from urml_mcp.server import main; print('urml-mcp entry OK')"
+      - name: Hermetic tool tests
+        run: python -m pytest reference/mcp-server/tests -q
+
+  skill-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the CLI and the hermetic mock adapter
+        run: |
+          python -m pip install --quiet \
+            -e reference/validator \
+            -e reference/llm-bridge \
+            -e reference/ros2-runtime
+      - name: Every SKILL.md command must run against the live CLI
+        run: |
+          set -eux
+          urml emit-prompt -m examples/home/red-mug.manifest.yaml --profile home
+          urml translate "Bring me the red mug from the kitchen." \
+            -m examples/home/red-mug.manifest.yaml --profile home \
+            --provider echo --echo-response-file examples/home/red-mug.echo-response.json
+          urml validate examples/home/red-mug.urml.yaml \
+            -m examples/home/red-mug.manifest.yaml --profile home
+          urml execute examples/home/red-mug.urml.yaml \
+            -m examples/home/red-mug.manifest.yaml --adapter mock
