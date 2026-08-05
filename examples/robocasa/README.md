@@ -37,3 +37,35 @@ python examples/robocasa/eval_lens.py
 The output is deterministic and byte-asserted in
 [`eval-report.txt`](eval-report.txt) by
 `reference/validator/tests/test_robocasa_example.py`.
+
+## Per-subtask: which step went out of capability
+
+The maintainer's follow-up on the thread: RoboCasa's composite-task datasets now
+annotate every frame with a subtask (index, atomic-skill name, stage, natural-language
+instruction). Collapsed to segments, a composite is an ordered list of annotated
+subtasks, so the lens can stop being whole-instruction.
+
+[`subtask_lens.py`](subtask_lens.py) lowers a composite to one URML sequence, one
+primitive per annotated subtask, validates it once, and attributes each flag to the
+exact subtask that produced it (the validator error carries the step index). Instead
+of passing or flagging "set the table" as one blob, it names the step:
+
+```
+Composite: "set the table"  (5 annotated subtasks)
+  [PASS]  1. NavigateKitchen/navigate  go to the cabinet
+  [PASS]  2. PnP/pick                  pick up the plate from the cabinet
+  [PASS]  3. NavigateKitchen/navigate  go to the counter
+  [PASS]  4. PnP/place                 place the plate on the counter
+  [FLAG]  5. PnP/pick                  pick up the anvil from the cabinet
+             -> out-of-distribution: capability.missing_object_class
+  => subtask 5 is the flagged step; the rest are in-capability.
+```
+
+This models the documented annotation shape and is hermetic (it does not download
+the dataset); against the real LeRobot parquet the per-subtask fields align. Run it:
+
+```sh
+python examples/robocasa/subtask_lens.py
+```
+
+Deterministic and byte-asserted in [`subtask-eval-report.txt`](subtask-eval-report.txt).
