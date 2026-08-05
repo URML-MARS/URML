@@ -24,10 +24,22 @@ This is the turn-key checklist. Values are exact and match
 `.github/workflows/release.yml` — entering anything different breaks the
 publish.
 
-## The five packages
+## The twenty packages
+
+The family grew past the original five; `release.yml` now builds and
+publishes all of these, aligned at `0.3.0` in lockstep:
 
 `urml-validator` · `urml-llm-bridge` · `urml-ros2-runtime` ·
-`urml-px4-runtime` · `urml-conformance` (all `0.1.0`, aligned).
+`urml-px4-runtime` · `urml-conformance` · `urml-mcp-server` ·
+`urml-model` · `urml-autosar-runtime` · `urml-chrono-runtime` ·
+`urml-cobot-runtime` · `urml-edu-runtime` · `urml-embedded-runtime` ·
+`urml-humanoid-runtime` · `urml-industrial-arm-runtime` ·
+`urml-isaac-runtime` · `urml-legged-runtime` · `urml-marine-runtime` ·
+`urml-mobile-runtime` · `urml-mujoco-runtime` · `urml-opcua-runtime`
+
+(The exact list and its build order live in
+[`release.yml`](../../.github/workflows/release.yml); if the two ever
+disagree, the workflow wins.)
 
 ## 0b — Accounts
 
@@ -40,7 +52,7 @@ publish.
 For a **first** publish the projects don't exist on the index yet, so use
 PyPI's **pending publisher** flow (it creates the project on first upload):
 
-On **test.pypi.org** *and* **pypi.org**, for **each of the five package
+On **test.pypi.org** *and* **pypi.org**, for **each of the twenty package
 names**: Account → *Publishing* → *Add a pending publisher* →
 
 | Field | Value |
@@ -51,7 +63,11 @@ names**: Account → *Publishing* → *Add a pending publisher* →
 | Workflow name | `release.yml` |
 | Environment name | `pypi-release` for pypi.org; **leave blank** for test.pypi.org |
 
-That's 5 entries on TestPyPI + 5 on PyPI = 10 pending publishers.
+That's 20 entries on TestPyPI + 20 on PyPI = 40 pending publishers. It
+is tedious; it is also one-time, and it keeps every long-lived API token
+out of the repository. A pending publisher for a package that was
+already published once (e.g. `urml-validator` at 0.1.0) is instead added
+on the existing project's *Publishing* settings page.
 
 Then in the GitHub repo → Settings → *Environments*, create two:
 
@@ -67,38 +83,34 @@ workflow. Decide one; don't half-configure both.
 
 ## After 0b/0c — what's already done vs. what you fire
 
-Done and verified on `release/version-align` (this branch / its PR):
+Done and verified on `release/v0.3.0` (this branch / its PR):
 
-- All five aligned to `0.1.0` (version + `_version.py` + inter-package
-  pins, lockstep). Suites green: validator 188 / llm-bridge 77 /
-  ros2-runtime 114(+4 gated) / px4-runtime 54 / conformance 40.
-- `python -m build` for all five → clean `*-0.1.0` sdists + wheels.
-- `python -m twine check dist/*` → **all 10 artifacts PASSED**.
+- All twenty aligned to `0.3.0` (version + `_version.py` + inter-package
+  pins, lockstep). Core suites green post-bump.
+- `python -m build` for all twenty → clean `*-0.3.0` sdists + wheels.
+- `python -m twine check dist/*` → all 40 artifacts PASSED.
 
 Remaining, in order (RELEASING.md is authoritative):
 
-1. **TestPyPI rehearsal** — run the `release` workflow (Actions →
+1. **Pending publishers** (0c above) for any package name not yet
+   registered on the index — for the 0.3.0 family that is 19 new names
+   plus the existing `urml-validator` project.
+2. **TestPyPI rehearsal** — run the `release` workflow (Actions →
    *release* → Run workflow → target `testpypi`). Safe; repeatable.
-2. **Clean-venv verify outside the repo** (RELEASING.md step 4):
+3. **Clean-venv verify outside the repo**: in a temp dir,
    `pip install --index-url https://test.pypi.org/simple/
    --extra-index-url https://pypi.org/simple/ urml-validator
-   urml-llm-bridge urml-ros2-runtime urml-px4-runtime urml-conformance`
-   in `/tmp`; `urml --version` → `urml-validator 0.1.0`;
-   `python -c "from urml_conformance import discover_fixtures;
-   assert len(discover_fixtures())>=20"`. **Gate — do not proceed unless
-   clean.**
-3. **First real publish** — because the projects are new to the index,
-   dependency order matters. Use the **manual ordered `twine upload`**
-   sequence in RELEASING.md §Step-by-step (validator → llm-bridge →
-   ros2-runtime → conformance → px4-runtime), *not* the workflow's bulk
-   path (the workflow is the steady-state path; its own header says so).
-   This is **6e — irreversible — you run it.**
-4. **Release commit (6f)** — only after a fresh *real*-PyPI install
-   verifies: flip README + Tutorial 1 install blocks to `pip install`,
-   update CHANGELOG, `git tag v0.1.0 && git push --tags`. (I prepare
-   this commit; it lands with your go.)
-5. **Announce (6g)** — publish `ANNOUNCE.md`; the WS4 Phase-0→1
-   governance flip rides here.
+   urml-llm-bridge urml-ros2-runtime urml-conformance`;
+   `urml --version` → `urml-validator 0.3.0`; then
+   `urml run "Bring me the red mug from the kitchen." ...` per the
+   README hero to prove the wheel path end to end. **Gate — do not
+   proceed unless clean.**
+4. **Real publish** — run the workflow with target `pypi` and approve
+   the `pypi-release` environment gate. Irreversible — you run it.
+5. **Tag** — after the publish verifies:
+   `git tag v0.3.0 && git push origin v0.3.0`.
+6. **Announce** — a short release note; the trained-model story
+   (RFC-0666) gets its own post once measured numbers exist.
 
-I never run steps 3 or 5. I hand a verified-green state and the exact
-commands; the irreversible trigger is yours.
+The irreversible triggers (4, 6) are yours; everything before them is
+prepared and repeatable.
