@@ -22,6 +22,42 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 Nothing pending.
 
+## [0.3.0] — 2026-07-23
+
+Minor release, and the first to publish the full package family. Everything is backward-compatible: a v0.2.0 manifest, envelope, and program validate and execute unchanged. All 20 Python packages move to 0.3.0 in lockstep.
+
+### Added — Envelope enforcement (RFC-0667)
+
+- Normative satisfaction semantics for the RFC-0382 temporal-logic core over finite timed traces: completed-trace offline evaluation, three-valued online verdicts (satisfied / violated / pending), strong truncation semantics, and the severity mapping (info records, warning audits, critical vetoes).
+- `urml_validator.monitor`: the reference trace evaluator (`evaluate_trace`, `OnlineMonitor`, `compile_envelope_monitors`). Static envelope caps (`max_velocity`, `max_grip_force_n`, altitude) now derive to implicit critical `always` properties, so one evaluator covers declared and derived properties alike.
+- `urml_ros2_runtime.shield`: the runtime shield. `Shield` gates each dispatch and observes telemetry; `ShieldedAdapter` wraps any substrate adapter so any driver, a URML runtime or an external policy, passes through envelope checks. New optional `TelemetryAdapter` side-protocol; the frozen RFC-0014 adapter contract is untouched. External runtime-verification backends stay first-class through `compile_to_stl`.
+
+### Added — Rehearsal gate and the `urml run` verb (RFC-0668)
+
+- `urml run "<sentence>"`: translate, validate, optionally rehearse in simulation, then execute, in one verb. `--rehearse` is also available on `urml execute`.
+- Rehearsal backends: a hermetic synthetic-kinematics backend (CI floor, honest about being kinematics rather than physics) and a MuJoCo per-tick recording adapter with a declared `SignalMap`. A critical violation in the rehearsed trace blocks execution before any real adapter is constructed.
+- The README hero now shows the gate live: the same sentence first blocked (envelope speed cap violated under the default motion assumption), then passing under the deployment's declared profile.
+
+### Added — URML-native model pipeline (RFC-0666)
+
+- New package `urml-model` (`reference/model`): mines conformance gold programs and the curated few-shot library, back-translates programs to utterances (deterministic templates in CI, any `LLMProvider` at scale), filters every record through the validator oracle, and exports SFT/DPO training files. Ships the operator-run LoRA training recipe. No weights, no vendor coupling, nothing leaves the repo checkout.
+
+### Added — Agent surface
+
+- `urml-mcp-server` (`reference/mcp-server`): URML's validate-before-actuate loop as Model Context Protocol tools for any MCP-capable agent. The server never calls an LLM; the calling agent emits URML, the server checks and runs it.
+- An Agent Skill (`.github/skills/urml-robot-intent`) with a hermetic no-key, no-robot path.
+
+### Added — Specification and manifests
+
+- Per-capability evidence traceability (RFC-0631): capability claims carry `derived` / `verified` / `declared` / `inferred` evidence strength, with an opt-in policy to require the stronger grades.
+- Whole-body kinematic structure and stability limits for legged and humanoid platforms (RFC-0384); whole-body and bimanual manipulation (RFC-0010).
+- Realtime cyclic-timing manifest block (RFC-0016) and the zero-copy IPC sub-substrate declaration (RFC-0385).
+- `drive` radius parameterization (RFC-0665): a radius plus sweep angle pass through without arc-length arithmetic, closing the small-model orbit-2x failure observed in the field.
+
+### Fixed
+
+- GoPiGo3 example runtime converts URML's FLU (+CCW) frame to the platform's RFD (+CW) frame at the hardware boundary (#591, #598, PR #602). URML's first merged external code contribution, found and fixed on real hardware by @slowrunner.
+
 ## [0.2.0] — 2026-06-02
 
 Minor release. The first spec-bumping release since v0.1.0: it transcribes the accepted multi-robot fleet RFCs into the normative layer specs, so the specification stops lagging its own accepted decisions. Layers 1, 3, and 4 advance to v0.2.0; Layer 2 is unchanged (still 20 normative primitives). All additions are backward-compatible — a v0.1.0 manifest and a single-robot program validate unchanged.

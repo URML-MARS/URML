@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-mujoco-runtime"
-version = "0.2.0"
+version = "0.3.0"
 description = "Simulator reference runtime for URML — MuJoCo physics, zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -24,8 +24,8 @@ classifiers = [
 dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
-  "urml-validator>=0.2.0",
-  "urml-ros2-runtime>=0.2.0",
+  "urml-validator>=0.3.0",
+  "urml-ros2-runtime>=0.3.0",
 ]
 
 [project.optional-dependencies]
