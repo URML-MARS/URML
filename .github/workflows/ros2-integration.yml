@@ -39,6 +39,9 @@ on:
     # Mondays 06:00 UTC.
     - cron: '0 6 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   rclpy-smoke:
     runs-on: ubuntu-24.04

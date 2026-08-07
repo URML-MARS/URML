@@ -36,6 +36,9 @@ on:
     # Mondays 18:00 UTC (staggered after cobot 15:00, marine 12:00).
     - cron: '0 18 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   edu-smoke:
     runs-on: ubuntu-24.04

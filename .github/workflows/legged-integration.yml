@@ -32,6 +32,9 @@ on:
     # Mondays 09:00 UTC (staggered after ros2 06:00 / px4 07:00 / arm 08:00).
     - cron: '0 9 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   spot-smoke:
     runs-on: ubuntu-24.04

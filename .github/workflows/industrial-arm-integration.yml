@@ -51,6 +51,9 @@ on:
     # Mondays 08:00 UTC (staggered after ros2 06:00 and px4 07:00).
     - cron: '0 8 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   arm-sim-e2e:
     runs-on: ubuntu-24.04

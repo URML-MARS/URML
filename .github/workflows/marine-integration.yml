@@ -36,6 +36,9 @@ on:
     # Mondays 12:00 UTC (staggered after the other integration lanes).
     - cron: '0 12 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   marine-smoke:
     runs-on: ubuntu-24.04

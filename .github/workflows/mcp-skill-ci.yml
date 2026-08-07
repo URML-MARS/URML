@@ -35,6 +35,9 @@ on:
       - '.github/workflows/mcp-skill-ci.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   mcp-server:
     runs-on: ubuntu-24.04

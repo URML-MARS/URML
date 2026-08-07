@@ -18,6 +18,9 @@ on:
       - "docs/manufacturers/SUBMISSION.md"
       - "docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md"
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     runs-on: ubuntu-latest

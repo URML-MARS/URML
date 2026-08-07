@@ -31,6 +31,9 @@ on:
     # Mondays 20:00 UTC (staggered after edu 18:00, cobot 15:00, marine 12:00).
     - cron: '0 20 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   flexbe-smoke:
     runs-on: ubuntu-24.04

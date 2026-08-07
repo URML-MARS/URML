@@ -42,6 +42,9 @@ on:
     # Mondays 14:00 UTC (staggered after the other integration lanes).
     - cron: '0 14 * * 1'
 
+permissions:
+  contents: read
+
 jobs:
   opcua-smoke:
     runs-on: ubuntu-24.04
