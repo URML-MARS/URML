@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -319,6 +320,9 @@ def test_translate_openai_needs_api_key(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    # A base URL (flag or env) relaxes the key requirement; make sure the
+    # developer's real environment can't flip this test onto that path.
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
     rc = main([
         "translate",
         "request",
@@ -328,6 +332,206 @@ def test_translate_openai_needs_api_key(
     captured = capsys.readouterr()
     assert rc == 2
     assert "OPENAI_API_KEY" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# Local providers (ollama, llama_cpp, OpenAI-compatible servers)
+# ---------------------------------------------------------------------------
+
+
+def _make_recorder() -> tuple[type, list[dict[str, Any]]]:
+    """A stand-in provider class: records constructor kwargs, emits the
+    canned red-mug program so the translation succeeds end-to-end."""
+    calls: list[dict[str, Any]] = []
+
+    class _Recorder:
+        def __init__(self, **kwargs: Any) -> None:
+            calls.append(kwargs)
+
+        def complete(
+            self, *, system: str, user: str, schema: dict[str, Any], max_tokens: int = 4096
+        ) -> str:
+            return json.dumps(RED_MUG_PROGRAM)
+
+    return _Recorder, calls
+
+
+def _translate_args(manifest_path: Path, envelope_path: Path, *extra: str) -> list[str]:
+    return [
+        "translate",
+        "Bring me the red mug from the kitchen.",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--profile", "home",
+        *extra,
+    ]
+
+
+def test_translate_ollama_end_to_end_with_stub(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.ollama.OllamaProvider", recorder)
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "ollama", "--model", "llama3.2:1b",
+    ))
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "profile: home" in captured.out
+    assert calls == [{"model": "llama3.2:1b"}]  # no base_url: provider default applies
+
+
+def test_translate_ollama_base_url_plumbed(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.ollama.OllamaProvider", recorder)
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "ollama", "--model", "m", "--base-url", "http://127.0.0.1:9999",
+    ))
+    assert rc == 0
+    assert calls == [{"model": "m", "base_url": "http://127.0.0.1:9999"}]
+
+
+def test_translate_ollama_requires_model(
+    manifest_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "request",
+        "--manifest", str(manifest_path),
+        "--provider", "ollama",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "--model" in captured.err
+    assert "ollama list" in captured.err
+
+
+def test_translate_llama_cpp_end_to_end_with_stub(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.llama_cpp.LlamaCppProvider", recorder)
+    # No --model needed: llama-server's loaded GGUF is fixed at launch.
+    rc = main(_translate_args(manifest_path, envelope_path, "--provider", "llama_cpp"))
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert calls == [{}]
+
+    calls.clear()
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "llama_cpp", "--model", "smollm-360m",
+    ))
+    assert rc == 0
+    assert calls == [{"model_label": "smollm-360m"}]
+
+
+def test_translate_llama_cpp_base_url_plumbed(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.llama_cpp.LlamaCppProvider", recorder)
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "llama_cpp", "--base-url", "http://gpu-box:8081",
+    ))
+    assert rc == 0
+    assert calls == [{"base_url": "http://gpu-box:8081"}]
+
+
+@pytest.mark.parametrize("provider", ["anthropic", "echo"])
+def test_translate_base_url_rejected_for_remote_and_echo(
+    provider: str,
+    manifest_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "request",
+        "--manifest", str(manifest_path),
+        "--provider", provider,
+        "--base-url", "http://127.0.0.1:9999",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "--base-url is only meaningful" in captured.err
+    assert "ollama" in captured.err
+
+
+def test_translate_ollama_httpx_missing_hint(
+    manifest_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """When httpx is absent, provider construction raises ImportError; the CLI
+    maps it to exit 2 with the pip-extra hint."""
+
+    class _Unconstructable:
+        def __init__(self, **kwargs: Any) -> None:
+            raise ImportError("No module named 'httpx'")
+
+    monkeypatch.setattr("urml_llm_bridge.providers.ollama.OllamaProvider", _Unconstructable)
+    rc = main([
+        "translate",
+        "request",
+        "--manifest", str(manifest_path),
+        "--provider", "ollama", "--model", "m",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "urml-llm-bridge[ollama]" in captured.err
+
+
+def test_translate_openai_no_key_with_base_url_env(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """OPENAI_BASE_URL alone unlocks the openai provider (LM Studio, vLLM)."""
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.openai.OpenAIProvider", recorder)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("OPENAI_BASE_URL", "http://127.0.0.1:1234/v1")
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "openai", "--model", "qwen3.5:9b",
+    ))
+    assert rc == 0
+    # The SDK reads OPENAI_BASE_URL itself, so no base_url kwarg is passed;
+    # the placeholder key satisfies the SDK's non-None requirement.
+    assert calls == [{"model": "qwen3.5:9b", "api_key": "urml-local-no-key"}]
+
+
+def test_translate_openai_no_key_with_base_url_flag(
+    manifest_path: Path,
+    envelope_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    recorder, calls = _make_recorder()
+    monkeypatch.setattr("urml_llm_bridge.providers.openai.OpenAIProvider", recorder)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    rc = main(_translate_args(
+        manifest_path, envelope_path,
+        "--provider", "openai", "--base-url", "http://127.0.0.1:1234/v1",
+    ))
+    assert rc == 0
+    assert calls == [{"base_url": "http://127.0.0.1:1234/v1", "api_key": "urml-local-no-key"}]
 
 
 # ---------------------------------------------------------------------------

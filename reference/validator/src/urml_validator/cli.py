@@ -314,34 +314,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip Pass 5 (compliance policy) when validating LLM emissions.",
     )
-    p_translate.add_argument(
-        "--provider",
-        choices=("anthropic", "openai", "echo"),
-        default="anthropic",
-        metavar="NAME",
-        help="LLM provider to use. Default: anthropic. `echo` is a hermetic "
-        "test provider requiring --echo-response-file.",
-    )
-    p_translate.add_argument(
-        "--model",
-        default=None,
-        metavar="MODEL",
-        help="Override the provider's default model.",
-    )
-    p_translate.add_argument(
-        "--max-revisions",
-        type=int,
-        default=3,
-        metavar="N",
-        help="Maximum number of validator-feedback revision attempts. Default: 3.",
-    )
-    p_translate.add_argument(
-        "--echo-response-file",
-        type=Path,
-        default=None,
-        metavar="PATH",
-        help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
-    )
+    _add_llm_provider_args(p_translate)
     p_translate.add_argument(
         "--json",
         dest="as_json",
@@ -427,34 +400,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip Pass 5 (compliance policy) throughout the run.",
     )
-    p_run.add_argument(
-        "--provider",
-        choices=("anthropic", "openai", "echo"),
-        default="anthropic",
-        metavar="NAME",
-        help="LLM provider to use. Default: anthropic. `echo` is a hermetic "
-        "test provider requiring --echo-response-file.",
-    )
-    p_run.add_argument(
-        "--model",
-        default=None,
-        metavar="MODEL",
-        help="Override the provider's default model.",
-    )
-    p_run.add_argument(
-        "--max-revisions",
-        type=int,
-        default=3,
-        metavar="N",
-        help="Maximum number of validator-feedback revision attempts. Default: 3.",
-    )
-    p_run.add_argument(
-        "--echo-response-file",
-        type=Path,
-        default=None,
-        metavar="PATH",
-        help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
-    )
+    _add_llm_provider_args(p_run)
     p_run.add_argument(
         "--adapter",
         choices=("mock", "ros2", "px4"),
@@ -703,6 +649,51 @@ _REHEARSAL_NOTE = {
         "the signal map declares how engine state reads as envelope signals."
     ),
 }
+
+
+def _add_llm_provider_args(parser: argparse.ArgumentParser) -> None:
+    """Install the LLM provider flags shared by `translate` and `run`.
+
+    One definition keeps the provider choices from drifting between the
+    two subcommands.
+    """
+    parser.add_argument(
+        "--provider",
+        choices=("anthropic", "openai", "ollama", "llama_cpp", "echo"),
+        default="anthropic",
+        help="LLM provider to use. Default: anthropic. `ollama` and `llama_cpp` "
+        "talk to a local inference server (see --base-url); `echo` is a hermetic "
+        "test provider requiring --echo-response-file.",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        metavar="MODEL",
+        help="Override the provider's default model. Required for --provider ollama.",
+    )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        metavar="URL",
+        help="Endpoint of a local inference server. Defaults: "
+        "http://127.0.0.1:11434 (ollama), http://127.0.0.1:8080 (llama_cpp). "
+        "With --provider openai, targets any OpenAI-compatible server "
+        "(LM Studio, vLLM) and OPENAI_API_KEY is no longer required.",
+    )
+    parser.add_argument(
+        "--max-revisions",
+        type=int,
+        default=3,
+        metavar="N",
+        help="Maximum number of validator-feedback revision attempts. Default: 3.",
+    )
+    parser.add_argument(
+        "--echo-response-file",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
+    )
 
 
 def _add_rehearsal_arguments(parser: argparse.ArgumentParser) -> None:
@@ -1237,7 +1228,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(
             "urml: error: `run` requires urml-llm-bridge.\n"
             "  Install with: pip install urml-llm-bridge[anthropic]\n"
-            "  Or:           pip install urml-llm-bridge[openai]",
+            "  Or:           pip install urml-llm-bridge[openai]\n"
+            "  Or (local):   pip install urml-llm-bridge[ollama]",
             file=sys.stderr,
         )
         return 2
@@ -1373,7 +1365,8 @@ def cmd_translate(args: argparse.Namespace) -> int:
         print(
             "urml: error: `translate` requires urml-llm-bridge.\n"
             "  Install with: pip install urml-llm-bridge[anthropic]\n"
-            "  Or:           pip install urml-llm-bridge[openai]",
+            "  Or:           pip install urml-llm-bridge[openai]\n"
+            "  Or (local):   pip install urml-llm-bridge[ollama]",
             file=sys.stderr,
         )
         return 2
@@ -1468,12 +1461,20 @@ def _build_provider(args: argparse.Namespace) -> Any:
     Raises `_CLILoadError` for usage problems (missing API key, missing echo
     response file, etc.) so the caller can map them to exit code 2.
     """
+    if args.base_url is not None and args.provider in ("anthropic", "echo"):
+        raise _CLILoadError(
+            "--base-url is only meaningful with --provider ollama, llama_cpp, or openai."
+        )
     if args.provider == "echo":
         return _build_echo_provider(args)
     if args.provider == "anthropic":
         return _build_anthropic_provider(args)
     if args.provider == "openai":
         return _build_openai_provider(args)
+    if args.provider == "ollama":
+        return _build_ollama_provider(args)
+    if args.provider == "llama_cpp":
+        return _build_llama_cpp_provider(args)
     raise _CLILoadError(f"unknown provider: {args.provider!r}")
 
 
@@ -1529,14 +1530,60 @@ def _build_openai_provider(args: argparse.Namespace) -> Any:
         raise _CLILoadError(
             "openai SDK not installed. Install with: pip install urml-llm-bridge[openai]"
         ) from exc
-    if "OPENAI_API_KEY" not in os.environ:
+    base_url = args.base_url or os.environ.get("OPENAI_BASE_URL")
+    if "OPENAI_API_KEY" not in os.environ and base_url is None:
         raise _CLILoadError(
-            "OPENAI_API_KEY environment variable is not set. Set it or pick a different --provider."
+            "OPENAI_API_KEY environment variable is not set. Set it, point "
+            "--base-url at a local OpenAI-compatible server, or pick a "
+            "different --provider."
         )
     kwargs: dict[str, Any] = {}
     if args.model is not None:
         kwargs["model"] = args.model
+    if args.base_url is not None:
+        kwargs["base_url"] = args.base_url
+    if "OPENAI_API_KEY" not in os.environ:
+        # Local server via base URL. The OpenAI SDK refuses api_key=None at
+        # construction; local servers ignore the value.
+        kwargs["api_key"] = "urml-local-no-key"
     return OpenAIProvider(**kwargs)
+
+
+def _build_ollama_provider(args: argparse.Namespace) -> Any:
+    if args.model is None:
+        raise _CLILoadError(
+            "--provider ollama requires --model (e.g. --model llama3.2:1b; "
+            "run 'ollama list' to see pulled models)."
+        )
+    kwargs: dict[str, Any] = {"model": args.model}
+    if args.base_url is not None:
+        kwargs["base_url"] = args.base_url
+    try:
+        from urml_llm_bridge.providers.ollama import OllamaProvider  # type: ignore[import-not-found,unused-ignore]
+
+        return OllamaProvider(**kwargs)
+    except ImportError as exc:
+        raise _CLILoadError(
+            "httpx not installed. Install with: pip install urml-llm-bridge[ollama]"
+        ) from exc
+
+
+def _build_llama_cpp_provider(args: argparse.Namespace) -> Any:
+    kwargs: dict[str, Any] = {}
+    if args.model is not None:
+        # llama-server ignores the model field (the loaded GGUF is fixed at
+        # server launch); the label shows up in logs and traces.
+        kwargs["model_label"] = args.model
+    if args.base_url is not None:
+        kwargs["base_url"] = args.base_url
+    try:
+        from urml_llm_bridge.providers.llama_cpp import LlamaCppProvider  # type: ignore[import-not-found,unused-ignore]
+
+        return LlamaCppProvider(**kwargs)
+    except ImportError as exc:
+        raise _CLILoadError(
+            "httpx not installed. Install with: pip install urml-llm-bridge[llama_cpp]"
+        ) from exc
 
 
 def _render_program(program: dict[str, Any], *, as_json: bool) -> str:
