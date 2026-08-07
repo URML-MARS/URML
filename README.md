@@ -33,7 +33,7 @@ URML is a **specification** and a set of **reference implementations**, not a ro
 
 ## Try it in three commands
 
-URML v0.1.0 ships on PyPI. Install the validator and the hermetic mock runtime, scaffold a starter project, validate it. About 30 seconds; no API key, no robot.
+URML v0.3.0 ships on PyPI. Install the validator and the hermetic mock runtime, scaffold a starter project, validate it. About 30 seconds; no API key, no robot.
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate   # recommended; required on PEP 668 systems (Ubuntu 26.04, Debian 12+)
