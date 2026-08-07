@@ -1,4 +1,4 @@
-"""`urml translate` CLI subcommand tests.
+﻿"""`urml translate` CLI subcommand tests.
 
 The subcommand lives in `urml_validator.cli`; this test module is in the
 bridge package because exercising it end-to-end requires both
@@ -532,6 +532,256 @@ def test_translate_openai_no_key_with_base_url_flag(
     ))
     assert rc == 0
     assert calls == [{"base_url": "http://127.0.0.1:1234/v1", "api_key": "urml-local-no-key"}]
+
+
+# ---------------------------------------------------------------------------
+# Speech input (RFC-0670)
+# ---------------------------------------------------------------------------
+
+
+def _make_speech_recorder(transcript: str) -> tuple[type, dict[str, Any]]:
+    """A stand-in speech provider class: records constructor and transcribe
+    kwargs, returns a fixed transcript."""
+    seen: dict[str, Any] = {}
+
+    class _Recorder:
+        def __init__(self, **kwargs: Any) -> None:
+            seen["ctor"] = kwargs
+
+        def transcribe(
+            self, *, audio: bytes, filename: str = "audio.wav", language: str | None = None
+        ) -> str:
+            seen["transcribe"] = {"audio": audio, "filename": filename, "language": language}
+            return transcript
+
+    return _Recorder, seen
+
+
+@pytest.fixture
+def audio_file(tmp_path: Path) -> Path:
+    path = tmp_path / "request.wav"
+    path.write_bytes(b"RIFF-fake-wav-bytes")
+    return path
+
+
+def _audio_translate_args(manifest_path: Path, envelope_path: Path, *extra: str) -> list[str]:
+    """Like `_translate_args` but with no positional REQUEST (--audio replaces it)."""
+    return [
+        "translate",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--profile", "home",
+        *extra,
+    ]
+
+
+def test_translate_audio_end_to_end_with_stub(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    audio_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--audio: transcribe with the (stubbed) default whisper_cpp provider,
+    then translate the transcript with the echo LLM provider."""
+    recorder, seen = _make_speech_recorder("Bring me the red mug from the kitchen.")
+    monkeypatch.setattr("urml_llm_bridge.speech.whisper_cpp.WhisperCppProvider", recorder)
+    rc = main(_audio_translate_args(
+        manifest_path, envelope_path,
+        "--audio", str(audio_file),
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ))
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "profile: home" in captured.out
+    assert 'transcribed request.wav: "Bring me the red mug from the kitchen."' in captured.err
+    assert seen["ctor"] == {}  # no base_url: provider default applies
+    assert seen["transcribe"] == {
+        "audio": b"RIFF-fake-wav-bytes",
+        "filename": "request.wav",
+        "language": None,
+    }
+
+
+def test_translate_audio_echo_speech_provider_is_hermetic(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    audio_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The echo speech provider needs no speech model or server on the host."""
+    rc = main(_audio_translate_args(
+        manifest_path, envelope_path,
+        "--audio", str(audio_file),
+        "--speech-provider", "echo",
+        "--echo-transcript", "Bring me the red mug from the kitchen.",
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ))
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert "profile: home" in captured.out
+
+
+def test_translate_speech_base_url_and_language_plumbed(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    audio_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    recorder, seen = _make_speech_recorder("Bring me the red mug from the kitchen.")
+    monkeypatch.setattr("urml_llm_bridge.speech.whisper_cpp.WhisperCppProvider", recorder)
+    rc = main(_audio_translate_args(
+        manifest_path, envelope_path,
+        "--audio", str(audio_file),
+        "--speech-base-url", "http://gpu-box:9000",
+        "--speech-language", "he",
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ))
+    assert rc == 0
+    assert seen["ctor"] == {"base_url": "http://gpu-box:9000"}
+    assert seen["transcribe"]["language"] == "he"
+
+
+def test_translate_audio_and_request_conflict(
+    manifest_path: Path,
+    audio_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "typed request",
+        "--manifest", str(manifest_path),
+        "--audio", str(audio_file),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "not both" in captured.err
+
+
+def test_translate_requires_request_or_audio(
+    manifest_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "--manifest", str(manifest_path),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "REQUEST or --audio" in captured.err
+
+
+def test_translate_audio_file_not_found(
+    manifest_path: Path,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "--manifest", str(manifest_path),
+        "--audio", str(tmp_path / "missing.wav"),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "audio file not found" in captured.err
+
+
+def test_translate_speech_echo_requires_transcript(
+    manifest_path: Path,
+    audio_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "translate",
+        "--manifest", str(manifest_path),
+        "--audio", str(audio_file),
+        "--speech-provider", "echo",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "--echo-transcript" in captured.err
+
+
+def test_translate_empty_transcript_rejected(
+    manifest_path: Path,
+    audio_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Silence in, error out: an empty transcript never reaches the LLM."""
+    rc = main([
+        "translate",
+        "--manifest", str(manifest_path),
+        "--audio", str(audio_file),
+        "--speech-provider", "echo",
+        "--echo-transcript", "   ",
+    ])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "empty transcript" in captured.err
+
+
+def test_translate_speech_dead_server_exits_1(
+    manifest_path: Path,
+    audio_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    class _Dead:
+        def __init__(self, **kwargs: Any) -> None:
+            pass
+
+        def transcribe(
+            self, *, audio: bytes, filename: str = "audio.wav", language: str | None = None
+        ) -> str:
+            raise ConnectionError(
+                "could not reach whisper-server at http://127.0.0.1:8080: refused. "
+                "Is whisper-server running?"
+            )
+
+    monkeypatch.setattr("urml_llm_bridge.speech.whisper_cpp.WhisperCppProvider", _Dead)
+    rc = main([
+        "translate",
+        "--manifest", str(manifest_path),
+        "--audio", str(audio_file),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 1
+    assert "speech provider error" in captured.err
+    assert "whisper-server" in captured.err
+
+
+def test_translate_openai_speech_no_key_with_base_url(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    audio_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    recorder, seen = _make_speech_recorder("Bring me the red mug from the kitchen.")
+    monkeypatch.setattr("urml_llm_bridge.speech.openai.OpenAISpeechProvider", recorder)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    rc = main(_audio_translate_args(
+        manifest_path, envelope_path,
+        "--audio", str(audio_file),
+        "--speech-provider", "openai",
+        "--speech-base-url", "http://127.0.0.1:1234/v1",
+        "--speech-model", "faster-whisper-large-v3",
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ))
+    assert rc == 0
+    assert seen["ctor"] == {
+        "model": "faster-whisper-large-v3",
+        "base_url": "http://127.0.0.1:1234/v1",
+        "api_key": "urml-local-no-key",
+    }
 
 
 # ---------------------------------------------------------------------------

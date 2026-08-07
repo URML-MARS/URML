@@ -208,3 +208,19 @@ def test_run_ollama_requires_model(capsys) -> None:
     assert code == 2
     assert "--model" in captured.err
     assert "ollama list" in captured.err
+
+
+def test_run_audio_flags_present(tmp_path, capsys) -> None:
+    """The `run` parser carries the shared speech flags (RFC-0670): --audio
+    with a missing file exits 2 before any adapter is constructed."""
+    code = main(
+        [
+            "run",
+            "--manifest", str(MANIFEST),
+            "--audio", str(tmp_path / "missing.wav"),
+            "--no-policy",
+        ]
+    )
+    captured = capsys.readouterr()
+    assert code == 2
+    assert "audio file not found" in captured.err
