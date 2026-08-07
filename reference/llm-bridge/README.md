@@ -181,6 +181,10 @@ Every adapter surfaces its native structured-output mechanism: Anthropic via too
 
 From the CLI, the same providers are one flag away: `urml translate ... --provider ollama --model llama3.2:1b`, `--provider llama_cpp`, or `--provider openai --base-url http://host:port/v1` for any OpenAI-compatible server (LM Studio, vLLM).
 
+### Speech input (RFC-0670)
+
+The bridge also ships a speech front-end: a `SpeechProvider` protocol (`transcribe(audio, filename, language) -> str`) with adapters for whisper.cpp's `whisper-server` (`[whisper_cpp]` extra, on-device, the default), OpenAI-shaped transcription endpoints (`[openai]` extra, `base_url` for self-hosted servers), and a hermetic `EchoSpeechProvider`. The transcript feeds the same `Bridge.translate()` path a typed request does, so the validator boundary is untouched. From the CLI: `urml translate --audio request.wav ...` (and the same on `urml run`).
+
 ## What's not here yet (lands next)
 
 - **Multilingual few-shot variants** (Hebrew, Spanish, Japanese, Mandarin).

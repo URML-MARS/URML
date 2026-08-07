@@ -161,6 +161,17 @@ export ANTHROPIC_API_KEY=sk-ant-...
 >
 > If the first translate times out and a retry then succeeds, that is a cold start: the server is loading a multi-GB model into memory on the first call. Keep the model warm (Ollama's `OLLAMA_KEEP_ALIVE`), or simply re-run. On the `openai` path, `export URML_OPENAI_TIMEOUT=600` (seconds) raises the per-request timeout.
 
+> **Speak it instead of typing it (RFC-0670).** `--audio` replaces the positional request with a recorded one. With a local [whisper.cpp](https://github.com/ggml-org/whisper.cpp) `whisper-server` running (the default speech provider), the whole path is offline: speech model, language model, validator.
+>
+> ```bash
+> pip install "urml-llm-bridge[whisper_cpp]"
+> urml translate --audio request.wav \
+>     --manifest manifest.yaml --envelope envelope.yaml --profile home \
+>     --provider ollama --model "qwen3.5:9b"
+> ```
+>
+> The transcript is echoed to stderr (`urml: transcribed request.wav: "..."`) so you see what was heard before the LLM does, and a mistranscription is gated like any other wrong request: the validator still stands between the sentence and the robot. Record in WAV, 16 kHz mono, with whatever you have (`arecord`, `sox`, a phone). `--speech-language he` (or `es`, `ja`, ...) hints the language instead of auto-detecting; `--speech-provider openai --speech-base-url http://host:port/v1` reaches any OpenAI-compatible transcription server, no API key needed. The same flags work on `urml run`, which makes the full demo one spoken sentence to motion.
+
 Then:
 
 ```bash
