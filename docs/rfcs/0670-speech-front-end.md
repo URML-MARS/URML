@@ -57,7 +57,7 @@ The headline path is one English sentence making a robot move, and since the loc
 ## Prior art
 
 - RFC-0021 established the on-device adapter pattern this RFC copies: lazy httpx, injectable clients, opt-in extras, per-backend defaults matching upstream.
-- The Move #12 speech and translation outreach wave (RFCs 0152 through 0167) mapped the speech-vendor landscape; Meta's Seamless team engagement (RFC-0167, RFC-0304) validated the multilingual intent path.
+- The Move #12 speech and translation outreach wave mapped the speech-vendor landscape, including Whisper (RFC-0153), faster-whisper (RFC-0154), and whisper.cpp itself (RFC-0155); Meta's Seamless team engagement (RFC-0167, RFC-0304) validated the multilingual intent path.
 - whisper.cpp's `whisper-server` and OpenAI's transcription API are the two dominant self-hosted and hosted transcription surfaces; both are covered here.
 
 ## Implementation
