@@ -77,6 +77,25 @@ def test_max_tokens_default_and_override() -> None:
     assert client.chat.completions.calls[0]["max_tokens"] == 512
 
 
+def test_base_url_forwarded_to_client(monkeypatch) -> None:
+    """--base-url path: the constructor hands base_url to the OpenAI client."""
+    recorded: dict[str, Any] = {}
+
+    def _fake_openai(**kwargs: Any) -> Any:
+        recorded.update(kwargs)
+        return _FakeOpenAIClient(content="{}")
+
+    monkeypatch.setattr("openai.OpenAI", _fake_openai)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    OpenAIProvider(base_url="http://127.0.0.1:1234/v1")
+    assert recorded["base_url"] == "http://127.0.0.1:1234/v1"
+    assert recorded["api_key"] == "sk-test"
+
+    recorded.clear()
+    OpenAIProvider()
+    assert "base_url" not in recorded  # SDK's own OPENAI_BASE_URL handling applies
+
+
 def test_resolve_timeout(monkeypatch) -> None:
     """Per-request timeout: explicit wins, else URML_OPENAI_TIMEOUT, else None (#523)."""
     monkeypatch.delenv("URML_OPENAI_TIMEOUT", raising=False)

@@ -191,3 +191,20 @@ def test_execute_rehearse_config_profile(tmp_path: Path, program_file: Path, cap
     captured = capsys.readouterr()
     assert code == 0, captured.err
     assert "gate: PASSED" in captured.err
+
+
+def test_run_ollama_requires_model(capsys) -> None:
+    """The `run` parser carries the shared provider flags: --provider ollama
+    without --model exits 2 before any adapter is constructed."""
+    code = main(
+        [
+            "run", "Patrol the kitchen.",
+            "--manifest", str(MANIFEST),
+            "--provider", "ollama",
+            "--no-policy",
+        ]
+    )
+    captured = capsys.readouterr()
+    assert code == 2
+    assert "--model" in captured.err
+    assert "ollama list" in captured.err

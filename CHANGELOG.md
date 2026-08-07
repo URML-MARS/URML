@@ -20,7 +20,11 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
-Nothing pending.
+### Added — First-class on-prem LLM providers in the CLI
+
+- `urml translate` and `urml run` gain `--provider ollama` and `--provider llama_cpp`, wiring the RFC-0021 on-device adapters (shipped and tested since v0.2) into the CLI. A new `--base-url` flag overrides the local server endpoint for both, and points `--provider openai` at any OpenAI-compatible server (LM Studio, vLLM).
+- `OPENAI_API_KEY` is no longer required when a base URL is set via `--base-url` or `OPENAI_BASE_URL`: local servers ignore the key, so the CLI passes a placeholder. Cloud usage without a base URL is unchanged.
+- A dead local server now surfaces as one actionable line naming the endpoint and the fix, instead of a raw httpx traceback.
 
 ## [0.3.0] — 2026-07-23
 

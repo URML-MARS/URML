@@ -133,3 +133,20 @@ def test_grammar_is_cached_across_calls_with_same_schema() -> None:
     g1 = client.calls[0]["json"]["grammar"]
     g2 = client.calls[1]["json"]["grammar"]
     assert g1 == g2
+
+
+class _DeadHTTPClient:
+    """Fake client standing in for a server that is not running."""
+
+    def post(self, url: str, *, json: dict[str, Any], timeout: float) -> _FakeResponse:
+        raise ConnectionError("connection refused")
+
+
+def test_connect_error_is_friendly() -> None:
+    """A dead server yields one actionable line naming the URL and the fix."""
+    provider = LlamaCppProvider(client=_DeadHTTPClient(), base_url="http://gpu-box:99")
+    with pytest.raises(ConnectionError) as excinfo:
+        provider.complete(system="S", user="U", schema={"type": "object"})
+    message = str(excinfo.value)
+    assert "http://gpu-box:99" in message
+    assert "llama-server" in message

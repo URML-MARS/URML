@@ -112,3 +112,20 @@ def test_adapter_raises_on_http_error() -> None:
     provider = OllamaProvider(model="m", client=client)
     with pytest.raises(RuntimeError, match="503"):
         provider.complete(system="S", user="U", schema={"type": "object"})
+
+
+class _DeadHTTPClient:
+    """Fake client standing in for a server that is not running."""
+
+    def post(self, url: str, *, json: dict[str, Any], timeout: float) -> _FakeResponse:
+        raise ConnectionError("connection refused")
+
+
+def test_connect_error_is_friendly() -> None:
+    """A dead server yields one actionable line naming the URL and the fix."""
+    provider = OllamaProvider(model="m", client=_DeadHTTPClient(), base_url="http://gpu-box:99")
+    with pytest.raises(ConnectionError) as excinfo:
+        provider.complete(system="S", user="U", schema={"type": "object"})
+    message = str(excinfo.value)
+    assert "http://gpu-box:99" in message
+    assert "ollama serve" in message

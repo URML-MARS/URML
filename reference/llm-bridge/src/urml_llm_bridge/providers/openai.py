@@ -70,6 +70,7 @@ class OpenAIProvider:
         *,
         model: str = DEFAULT_MODEL,
         api_key: str | None = None,
+        base_url: str | None = None,
         client: OpenAI | None = None,
         max_tokens: int = 4096,
         timeout: float | None = None,
@@ -79,13 +80,17 @@ class OpenAIProvider:
         Args:
             model:      OpenAI model ID. Defaults to ``gpt-4o``.
             api_key:    Explicit API key. Falls back to ``$OPENAI_API_KEY``.
+            base_url:   Endpoint of an OpenAI-compatible server (LM Studio,
+                        vLLM, Ollama's compat layer). Falls back to the SDK's
+                        own ``$OPENAI_BASE_URL`` handling when None.
             client:     Pre-constructed ``OpenAI`` client for dependency
-                        injection in tests. If given, ``api_key`` and ``timeout``
-                        are ignored (configure them on the injected client).
+                        injection in tests. If given, ``api_key``, ``base_url``
+                        and ``timeout`` are ignored (configure them on the
+                        injected client).
             max_tokens: Default `max_tokens` for completions; overridable per call.
             timeout:    Per-request timeout in seconds. Falls back to
                         ``$URML_OPENAI_TIMEOUT``, then the OpenAI SDK default.
-                        Raise it for a slow local model behind ``OPENAI_BASE_URL``
+                        Raise it for a slow local model behind ``base_url``
                         (a cold start that loads a multi-GB model can be slow).
         """
         if client is None:
@@ -97,6 +102,8 @@ class OpenAIProvider:
                     "Install with: pip install urml-llm-bridge[openai]"
                 ) from exc
             kwargs: dict[str, Any] = {"api_key": api_key or os.environ.get("OPENAI_API_KEY")}
+            if base_url is not None:
+                kwargs["base_url"] = base_url
             resolved_timeout = _resolve_timeout(timeout)
             if resolved_timeout is not None:
                 kwargs["timeout"] = resolved_timeout
