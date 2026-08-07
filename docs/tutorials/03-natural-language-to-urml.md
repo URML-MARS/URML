@@ -142,19 +142,24 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 > Install the package by name (as above) so it works from any directory, including the `my-first-robot/` project you are standing in. The `pip install -e "reference/llm-bridge[...]"` form only resolves from the **repo root** of a source checkout (Tutorial 1's `bootstrap.py` path already installs every extra there).
 
-> **Using a local model (Ollama, LM Studio, ...).** Any OpenAI-compatible server works through the `openai` provider. Point the bridge at it and name the model:
+> **Using a local model (Ollama, llama.cpp, LM Studio, vLLM).** On-prem models are first-class providers. No API key is involved, and translation runs fully offline. For Ollama:
 >
 > ```bash
-> export OPENAI_BASE_URL="http://127.0.0.1:11434"   # your Ollama server
-> export OPENAI_API_KEY="ollama"                     # any non-empty string
+> pip install "urml-llm-bridge[ollama]"
 > urml translate "Bring me the red mug from the kitchen." \
 >     --manifest manifest.yaml --envelope envelope.yaml --profile home \
->     --provider openai --model "qwen3.5:9b"
+>     --provider ollama --model "qwen3.5:9b"
 > ```
 >
-> `--model` matters: the `openai` provider defaults to a hosted model name, so pass the local model you pulled. Translation is the demanding step, and a small model (under roughly 7B) often emits structurally invalid URML that the validator then rejects; a capable local model works offline (a community user reported qwen3.5:9b at a 128k context translating cleanly). The validator gates either way, so a weak model can be wrong but the robot still only runs a validated program. There is a community Ollama HOWTO on [Discussion #497](https://github.com/URML-MARS/URML/discussions/497).
+> The provider talks to `ollama serve` at `http://127.0.0.1:11434` (override with `--base-url`) and forwards the URML schema as Ollama's `format` constraint, so recent servers refuse to emit non-conforming JSON at the decoder. `--model` is required: pass a tag you have pulled (`ollama list` shows them).
 >
-> If the first translate times out (`APITimeoutError`) and a retry then succeeds, that is a cold start: the server is loading a multi-GB model into memory on the first call. Give it more headroom with `export URML_OPENAI_TIMEOUT=600` (seconds), keep the model warm (Ollama's `OLLAMA_KEEP_ALIVE`), or simply re-run.
+> llama.cpp's `llama-server` gets the strongest structural guarantee: `--provider llama_cpp` derives a GBNF grammar from the URML schema, making structurally invalid output unrepresentable. Install `urml-llm-bridge[llama_cpp]`; the default endpoint is `http://127.0.0.1:8080` and no `--model` is needed (the loaded GGUF is fixed at server launch).
+>
+> Any other OpenAI-compatible server (LM Studio, vLLM) works through the `openai` provider: `--provider openai --base-url http://127.0.0.1:1234/v1 --model your-model-name`. When a base URL is set, `OPENAI_API_KEY` is not required.
+>
+> Translation is the demanding step, and a small model (under roughly 7B) often emits structurally invalid URML that the validator then rejects; a capable local model works offline (a community user reported qwen3.5:9b at a 128k context translating cleanly). The validator gates either way, so a weak model can be wrong but the robot still only runs a validated program. There is a community Ollama HOWTO on [Discussion #497](https://github.com/URML-MARS/URML/discussions/497).
+>
+> If the first translate times out and a retry then succeeds, that is a cold start: the server is loading a multi-GB model into memory on the first call. Keep the model warm (Ollama's `OLLAMA_KEEP_ALIVE`), or simply re-run. On the `openai` path, `export URML_OPENAI_TIMEOUT=600` (seconds) raises the per-request timeout.
 
 Then:
 

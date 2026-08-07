@@ -123,6 +123,9 @@ both following the lazy-import, opt-in-extra pattern set by
   weaker than on llama-server (Ollama's `format: json` is a hint, not a
   hard grammar gate); the adapter passes the schema through anyway so a
   future Ollama version that supports JSON-Schema constraints picks it up.
+  [Erratum 2026-08: the shipped adapter uses `/api/chat` and forwards the
+  full JSON Schema as `format`, which Ollama 0.5+ honors as a decoder
+  constraint.]
   Documented in the adapter docstring. Lazy-imports `httpx`; install with
   `pip install urml-llm-bridge[ollama]`. Defaults to
   `http://127.0.0.1:11434`.
@@ -384,7 +387,8 @@ untouched):
   `schema_to_gbnf()` (pure, `lru_cache`d, derives a GBNF from the program JSON
   Schema), with hermetic tests (`test_grammar.py`).
 - **Providers**: `providers/llama_cpp.py` (HTTP to `llama-server`, sends the
-  derived grammar) and `providers/ollama.py` (`/api/generate`, `format: json`),
+  derived grammar) and `providers/ollama.py` (`/api/generate`, `format: json`
+  [Erratum 2026-08: shipped as `/api/chat` with the full schema as `format`]),
   both lazy-importing `httpx` behind opt-in extras (`[llama_cpp]`, `[ollama]`)
   with injectable clients; tests with injected fakes.
 - **Conformance sub-suite**: `conformance/llm-bridge/` (README + row schema +

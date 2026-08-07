@@ -14,7 +14,7 @@
 
 # LLM Bridge
 
-**Status:** `0.1.0`, aligned with the other four packages. Shipped: the provider-agnostic `Bridge` + bounded validator-feedback revision loop, real Anthropic / OpenAI adapters (lazy-imported) + the hermetic `EchoProvider`, the `urml translate` / `urml emit-prompt` CLI, and profile-scoped few-shot libraries (home / industrial / drone). The normative contract is [`spec/layer-4-nl-grammar/v0.1.0.md`](../../spec/layer-4-nl-grammar/); a hermetic end-to-end walkthrough is [`docs/demos/bridge-roundtrip.md`](../../docs/demos/bridge-roundtrip.md).
+**Status:** `0.3.0`. Shipped: the provider-agnostic `Bridge` + bounded validator-feedback revision loop, five providers (Anthropic, OpenAI, Ollama, llama.cpp, all lazy-imported, plus the hermetic `EchoProvider`), schema-derived GBNF grammar for llama.cpp (RFC-0021), the `urml translate` / `urml emit-prompt` CLI, and profile-scoped few-shot libraries (home / industrial / drone / educational / fleet). The normative contract is [`spec/layer-4-nl-grammar/`](../../spec/layer-4-nl-grammar/); a hermetic end-to-end walkthrough is [`docs/demos/bridge-roundtrip.md`](../../docs/demos/bridge-roundtrip.md).
 
 ## What this is
 
@@ -49,7 +49,7 @@ Vendor lock-in here is explicitly prohibited by [`CLAUDE.md`](../../CLAUDE.md) �
 - It does **not** execute URML. That is the runtime's job.
 - It does **not** make safety decisions. The validator is the safety boundary; the bridge only relays.
 
-## Architecture (planned)
+## Architecture
 
 ```
                 ┌────────────────────────┐
@@ -64,8 +64,9 @@ Vendor lock-in here is explicitly prohibited by [`CLAUDE.md`](../../CLAUDE.md) �
               providers/           validator
               (anthropic.py,       (separate
                openai.py,           process)
-               local_vllm.py,
-               on_device.py)
+               ollama.py,
+               llama_cpp.py,
+               echo.py)
 ```
 
 The bridge is small. The intelligence lives in the LLM (which is configured, not built here) and in the validator (which is a separate process). The bridge orchestrates.
@@ -143,6 +144,8 @@ Install the extra for the provider you want — the bridge package itself has no
 ```bash
 pip install urml-llm-bridge[anthropic]    # adds the `anthropic` SDK
 pip install urml-llm-bridge[openai]       # adds the `openai` SDK
+pip install urml-llm-bridge[ollama]       # adds httpx; talks to a local `ollama serve`
+pip install urml-llm-bridge[llama_cpp]    # adds httpx; talks to a local `llama-server`
 ```
 
 Then:
@@ -164,12 +167,22 @@ from urml_llm_bridge.providers.openai import OpenAIProvider
 provider = OpenAIProvider(model="gpt-4o")  # reads OPENAI_API_KEY env var
 ```
 
-Both adapters surface their native structured-output mechanism — Anthropic via tool use (with the URML schema as the `emit_urml` tool's `input_schema`), OpenAI via `response_format={"type": "json_object"}` with the schema conveyed in the system prompt. Either way, conformance to the schema is validated downstream by `urml_validator.validate()` as part of the bridge's revision loop.
+Or a local model, fully offline (RFC-0021):
 
-## What's not in this pre-alpha (lands next)
+```python
+from urml_llm_bridge.providers.ollama import OllamaProvider
+from urml_llm_bridge.providers.llama_cpp import LlamaCppProvider
 
-- **CLI integration** — `urml translate` subcommand on top of `urml-validator`'s CLI.
-- **Profile-specific few-shot libraries** (drone scenarios, industrial scenarios).
+provider = OllamaProvider(model="llama3.2:1b")   # talks to ollama serve at 127.0.0.1:11434
+provider = LlamaCppProvider()                    # talks to llama-server at 127.0.0.1:8080
+```
+
+Every adapter surfaces its native structured-output mechanism: Anthropic via tool use (with the URML schema as the `emit_urml` tool's `input_schema`), OpenAI via `response_format={"type": "json_object"}` with the schema conveyed in the system prompt, Ollama via the schema as the `format` constraint, and llama.cpp via a GBNF grammar derived from the schema (structurally invalid output is unrepresentable at the decoder). In all cases, conformance to the schema is validated downstream by `urml_validator.validate()` as part of the bridge's revision loop.
+
+From the CLI, the same providers are one flag away: `urml translate ... --provider ollama --model llama3.2:1b`, `--provider llama_cpp`, or `--provider openai --base-url http://host:port/v1` for any OpenAI-compatible server (LM Studio, vLLM).
+
+## What's not here yet (lands next)
+
 - **Multilingual few-shot variants** (Hebrew, Spanish, Japanese, Mandarin).
 - **Conversation memory** for follow-up requests within a session.
 - **OpenAI strict JSON-schema mode** — needs schema preprocessing to satisfy the strict-mode constraints (every property required, no `oneOf`, etc.). The current adapter uses `json_object` mode plus the schema in the system prompt for portability.
