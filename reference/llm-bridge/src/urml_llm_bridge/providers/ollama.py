@@ -51,6 +51,22 @@ class _HTTPClient(Protocol):
     def post(self, url: str, *, json: dict[str, Any], timeout: float) -> Any: ...
 
 
+def _connect_error_types() -> tuple[type[BaseException], ...]:
+    """Exception types that mean "could not reach the server".
+
+    httpx is an optional extra, so the tuple is built at call time: with
+    httpx installed it covers httpx's connect and timeout errors; without
+    it (hermetic tests with an injected fake client) a plain
+    ``ConnectionError`` still gets the friendly message.
+    """
+    types: tuple[type[BaseException], ...] = (ConnectionError,)
+    try:
+        import httpx
+    except ImportError:
+        return types
+    return (*types, httpx.ConnectError, httpx.TimeoutException)
+
+
 class OllamaProvider:
     """LLMProvider adapter for Ollama's chat API.
 
@@ -123,11 +139,17 @@ class OllamaProvider:
                 "num_predict": max_tokens,
             },
         }
-        response = self._client.post(
-            self._base_url + CHAT_PATH,
-            json=body,
-            timeout=self._timeout,
-        )
+        try:
+            response = self._client.post(
+                self._base_url + CHAT_PATH,
+                json=body,
+                timeout=self._timeout,
+            )
+        except _connect_error_types() as exc:
+            raise ConnectionError(
+                f"could not reach ollama at {self._base_url}: {exc}. "
+                "Is 'ollama serve' running?"
+            ) from exc
         return _extract_content(response)
 
 
