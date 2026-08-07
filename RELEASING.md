@@ -38,18 +38,18 @@ this dependency order (tiers; within a tier the order is free):
    `urml-mcp-server` (needs validator + llm-bridge + ros2-runtime).
 5. `urml-model` — needs `urml-validator`, `urml-llm-bridge`, `urml-conformance`.
 
-**First-publish note for 0.2.0.** Only `urml-validator` and
+**First-publish note for 0.3.0.** Only `urml-validator` and
 `urml-llm-bridge` are on PyPI today (both at `0.1.0`); the other **eighteen**
 names are **first-ever** publishes, so their names are not yet claimed. Each
 new name needs a **pending** Trusted Publisher configured on (Test)PyPI
 before its first upload (see "Automated path"). Because eighteen names are
 new, use the explicitly-ordered `twine upload` sequence below, not the bulk
-workflow upload, for the 0.2.0 release.
+workflow upload, for the 0.3.0 release.
 
 ## Version coherence
 
 **Decided:** all twenty packages are aligned to a single version for a clean
-public debut (easier for adopters to reason about "I have URML 0.2.0" than
+public debut (easier for adopters to reason about "I have URML 0.3.0" than
 mixed pre-releases). The bump is applied in lockstep — every `version =`,
 every `_version.py` `__version__`, and every inter-package pin. Pins track
 the current minor so installing any one package pulls the matching build of
@@ -57,13 +57,13 @@ its dependencies:
 
 | Package | Version | Pins |
 |---|---|---|
-| urml-validator | `0.2.0` | — |
-| urml-llm-bridge | `0.2.0` | `urml-validator>=0.2.0` |
-| urml-ros2-runtime | `0.2.0` | `urml-validator>=0.2.0` |
-| the 13 platform runtimes + urml-px4-runtime | `0.2.0` | `urml-validator>=0.2.0`, `urml-ros2-runtime>=0.2.0` |
-| urml-conformance | `0.2.0` | `urml-validator>=0.2.0`, `urml-ros2-runtime>=0.2.0`, `urml-llm-bridge>=0.2.0` (extra) |
-| urml-mcp-server | `0.2.0` | `urml-validator>=0.2.0`, `urml-llm-bridge>=0.2.0`, `urml-ros2-runtime>=0.2.0` |
-| urml-model | `0.2.0` | `urml-validator>=0.2.0`, `urml-llm-bridge>=0.2.0`, `urml-conformance>=0.2.0` |
+| urml-validator | `0.3.0` | — |
+| urml-llm-bridge | `0.3.0` | `urml-validator>=0.3.0` |
+| urml-ros2-runtime | `0.3.0` | `urml-validator>=0.3.0` |
+| the 13 platform runtimes + urml-px4-runtime | `0.3.0` | `urml-validator>=0.3.0`, `urml-ros2-runtime>=0.3.0` |
+| urml-conformance | `0.3.0` | `urml-validator>=0.3.0`, `urml-ros2-runtime>=0.3.0`, `urml-llm-bridge>=0.3.0` (extra) |
+| urml-mcp-server | `0.3.0` | `urml-validator>=0.3.0`, `urml-llm-bridge>=0.3.0`, `urml-ros2-runtime>=0.3.0` |
+| urml-model | `0.3.0` | `urml-validator>=0.3.0`, `urml-llm-bridge>=0.3.0`, `urml-conformance>=0.3.0` |
 
 These resolve correctly for a publish in the dependency order above. Future
 releases bump in lockstep too — keep the twenty uniform.
@@ -136,7 +136,7 @@ for p in $PKGS; do python -m twine upload "$p"/dist/*; done
 
 # 6. In the SAME release commit: flip README + docs/tutorials/01 install
 #    instructions to `pip install urml-validator urml-llm-bridge`, tag
-#    the release (`git tag v0.2.0 && git push --tags`), update the
+#    the release (`git tag v0.3.0 && git push --tags`), update the
 #    CHANGELOG.
 
 # 7. Register the MCP server manifest with the official MCP registry
