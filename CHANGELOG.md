@@ -20,6 +20,10 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added — Speech front-end (RFC-0670)
+
+- `urml translate --audio request.wav` and `urml run --audio request.wav`: speak the request instead of typing it. A `SpeechProvider` protocol mirrors the LLM provider contract, with adapters for whisper.cpp's `whisper-server` (new `[whisper_cpp]` extra, on-device, the default), OpenAI-compatible transcription endpoints (key not required with a base URL), and a hermetic echo provider. The transcript is echoed to stderr and feeds the unchanged translate path, so the validator boundary is untouched. `--speech-language` hints the language for multilingual requests.
+
 ### Added — First-class on-prem LLM providers in the CLI
 
 - `urml translate` and `urml run` gain `--provider ollama` and `--provider llama_cpp`, wiring the RFC-0021 on-device adapters (shipped and tested since v0.2) into the CLI. A new `--base-url` flag overrides the local server endpoint for both, and points `--provider openai` at any OpenAI-compatible server (LM Studio, vLLM).

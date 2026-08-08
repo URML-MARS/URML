@@ -268,8 +268,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_translate.add_argument(
         "request",
+        nargs="?",
+        default=None,
         metavar="REQUEST",
-        help="The user's natural-language request, in quotes.",
+        help="The user's natural-language request, in quotes. Omit it and "
+        "pass --audio to speak the request instead.",
     )
     p_translate.add_argument(
         "--manifest",
@@ -315,6 +318,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip Pass 5 (compliance policy) when validating LLM emissions.",
     )
     _add_llm_provider_args(p_translate)
+    _add_speech_args(p_translate)
     p_translate.add_argument(
         "--json",
         dest="as_json",
@@ -354,8 +358,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_run.add_argument(
         "request",
+        nargs="?",
+        default=None,
         metavar="REQUEST",
-        help="The natural-language request, quoted.",
+        help="The natural-language request, quoted. Omit it and pass "
+        "--audio to speak the request instead.",
     )
     p_run.add_argument(
         "--manifest",
@@ -401,6 +408,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip Pass 5 (compliance policy) throughout the run.",
     )
     _add_llm_provider_args(p_run)
+    _add_speech_args(p_run)
     p_run.add_argument(
         "--adapter",
         choices=("mock", "ros2", "px4"),
@@ -694,6 +702,139 @@ def _add_llm_provider_args(parser: argparse.ArgumentParser) -> None:
         metavar="PATH",
         help="Path to a YAML/JSON file with the canned response, used only with --provider echo.",
     )
+
+
+def _add_speech_args(parser: argparse.ArgumentParser) -> None:
+    """Install the speech-input flags shared by `translate` and `run` (RFC-0670)."""
+    parser.add_argument(
+        "--audio",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Transcribe this audio file (WAV, 16 kHz mono recommended) and "
+        "use the transcript as the request. Replaces the positional REQUEST.",
+    )
+    parser.add_argument(
+        "--speech-provider",
+        choices=("whisper_cpp", "openai", "echo"),
+        default="whisper_cpp",
+        help="Speech-to-text provider for --audio. Default: whisper_cpp (a "
+        "local whisper-server). `echo` is a hermetic test provider requiring "
+        "--echo-transcript.",
+    )
+    parser.add_argument(
+        "--speech-base-url",
+        default=None,
+        metavar="URL",
+        help="Endpoint of the speech server. Default: http://127.0.0.1:8080 "
+        "(whisper-server). With --speech-provider openai, targets any "
+        "OpenAI-compatible transcription server and OPENAI_API_KEY is not "
+        "required.",
+    )
+    parser.add_argument(
+        "--speech-model",
+        default=None,
+        metavar="MODEL",
+        help="Transcription model, openai speech provider only (default: "
+        "whisper-1). whisper-server's model is fixed at server launch.",
+    )
+    parser.add_argument(
+        "--speech-language",
+        default=None,
+        metavar="CODE",
+        help="Language hint for transcription (ISO 639-1, e.g. `he`, `es`, "
+        "`ja`). Omit to auto-detect.",
+    )
+    parser.add_argument(
+        "--echo-transcript",
+        default=None,
+        metavar="TEXT",
+        help="Canned transcript, used only with --speech-provider echo.",
+    )
+
+
+def _resolve_request(args: argparse.Namespace) -> str:
+    """The request text: the positional REQUEST, or the transcript of --audio.
+
+    Raises `_CLILoadError` for usage problems (exit code 2 at the caller).
+    Transcription failures (dead server, malformed response) propagate as
+    ConnectionError / RuntimeError for the caller to map to exit code 1.
+    """
+    if args.audio is not None and args.request is not None:
+        raise _CLILoadError("give either a REQUEST or --audio, not both.")
+    if args.audio is None:
+        if args.request is None:
+            raise _CLILoadError("provide a natural-language REQUEST or --audio PATH.")
+        return str(args.request)
+    if not args.audio.is_file():
+        raise _CLILoadError(f"audio file not found: {args.audio}")
+    provider = _build_speech_provider(args)
+    transcript: str = provider.transcribe(
+        audio=args.audio.read_bytes(),
+        filename=args.audio.name,
+        language=args.speech_language,
+    ).strip()
+    if not transcript:
+        raise _CLILoadError(
+            f"speech provider returned an empty transcript for {args.audio.name}."
+        )
+    print(f'urml: transcribed {args.audio.name}: "{transcript}"', file=sys.stderr)
+    return transcript
+
+
+def _build_speech_provider(args: argparse.Namespace) -> Any:
+    """Construct the right speech provider based on the CLI args.
+
+    Mirrors `_build_provider`: return type is `Any` because the bridge is
+    an optional dependency, and usage problems raise `_CLILoadError`.
+    """
+    if args.speech_provider == "echo":
+        from urml_llm_bridge.speech import EchoSpeechProvider  # type: ignore[import-not-found,unused-ignore]
+
+        if args.echo_transcript is None:
+            raise _CLILoadError("--speech-provider echo requires --echo-transcript TEXT.")
+        return EchoSpeechProvider(text=args.echo_transcript)
+    if args.speech_provider == "whisper_cpp":
+        kwargs: dict[str, Any] = {}
+        if args.speech_base_url is not None:
+            kwargs["base_url"] = args.speech_base_url
+        try:
+            from urml_llm_bridge.speech.whisper_cpp import (  # type: ignore[import-not-found,unused-ignore]
+                WhisperCppProvider,
+            )
+
+            return WhisperCppProvider(**kwargs)
+        except ImportError as exc:
+            raise _CLILoadError(
+                "httpx not installed. Install with: pip install urml-llm-bridge[whisper_cpp]"
+            ) from exc
+    if args.speech_provider == "openai":
+        try:
+            from urml_llm_bridge.speech.openai import (  # type: ignore[import-not-found,unused-ignore]
+                OpenAISpeechProvider,
+            )
+        except ImportError as exc:
+            raise _CLILoadError(
+                "openai SDK not installed. Install with: pip install urml-llm-bridge[openai]"
+            ) from exc
+        base_url = args.speech_base_url or os.environ.get("OPENAI_BASE_URL")
+        if "OPENAI_API_KEY" not in os.environ and base_url is None:
+            raise _CLILoadError(
+                "OPENAI_API_KEY environment variable is not set. Set it, point "
+                "--speech-base-url at a local OpenAI-compatible transcription "
+                "server, or pick a different --speech-provider."
+            )
+        speech_kwargs: dict[str, Any] = {}
+        if args.speech_model is not None:
+            speech_kwargs["model"] = args.speech_model
+        if args.speech_base_url is not None:
+            speech_kwargs["base_url"] = args.speech_base_url
+        if "OPENAI_API_KEY" not in os.environ:
+            # Local server via base URL. The OpenAI SDK refuses api_key=None
+            # at construction; local servers ignore the value.
+            speech_kwargs["api_key"] = "urml-local-no-key"
+        return OpenAISpeechProvider(**speech_kwargs)
+    raise _CLILoadError(f"unknown speech provider: {args.speech_provider!r}")
 
 
 def _add_rehearsal_arguments(parser: argparse.ArgumentParser) -> None:
@@ -1247,6 +1388,16 @@ def cmd_run(args: argparse.Namespace) -> int:
         )
         return 2
 
+    # ----- Resolve the request (typed or spoken, RFC-0670) -----
+    try:
+        args.request = _resolve_request(args)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+    except (ConnectionError, RuntimeError) as exc:
+        print(f"urml: speech provider error: {exc}", file=sys.stderr)
+        return 1
+
     # ----- Load inputs + provider -----
     try:
         manifest = _load_yaml(args.manifest, kind="manifest")
@@ -1370,6 +1521,16 @@ def cmd_translate(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 2
+
+    # ----- Resolve the request (typed or spoken, RFC-0670) -----
+    try:
+        args.request = _resolve_request(args)
+    except _CLILoadError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+    except (ConnectionError, RuntimeError) as exc:
+        print(f"urml: speech provider error: {exc}", file=sys.stderr)
+        return 1
 
     # ----- Load fixtures -----
     try:
