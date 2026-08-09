@@ -202,6 +202,7 @@ The point is not the syntax — it is what the validator rejects **before anythi
 | Author a capability manifest | [Tutorial 4: Writing your own manifest](docs/tutorials/04-writing-your-own-manifest.md) |
 | Connect URML to an LLM | [Tutorial 3: Natural language to URML](docs/tutorials/03-natural-language-to-urml.md) |
 | Understand governance and the open-source posture | [`GOVERNANCE.md`](GOVERNANCE.md), [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) |
+| Know what stays free and where commercial work happens | [`COMMERCIAL.md`](COMMERCIAL.md) |
 | Understand how URML is authored | [`VIBE.md`](VIBE.md) |
 | Contribute (Phase 1+) | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | List your runtime in the registry | [`docs/registry/SUBMISSION.md`](docs/registry/SUBMISSION.md) |
