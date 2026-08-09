@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-model"
-version = "0.3.0"
+version = "0.4.0"
 description = "Dataset synthesis pipeline and training recipe for a URML-native small model (RFC-0666)."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -24,9 +24,9 @@ classifiers = [
 dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
-  "urml-validator>=0.3.0",
-  "urml-llm-bridge>=0.3.0",
-  "urml-conformance>=0.3.0",
+  "urml-validator>=0.4.0",
+  "urml-llm-bridge>=0.4.0",
+  "urml-conformance>=0.4.0",
 ]
 
 [project.optional-dependencies]

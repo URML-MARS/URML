@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "urml-cobot-runtime"
-version = "0.3.0"
+version = "0.4.0"
 description = "Collaborative-arm reference runtime for URML — UR (RTDE) + Franka (FCI), zero ROS."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -24,8 +24,8 @@ classifiers = [
 dependencies = [
   "pydantic>=2.6,<3",
   "PyYAML>=6.0,<7",
-  "urml-validator>=0.3.0",
-  "urml-ros2-runtime>=0.3.0",
+  "urml-validator>=0.4.0",
+  "urml-ros2-runtime>=0.4.0",
 ]
 
 [project.optional-dependencies]

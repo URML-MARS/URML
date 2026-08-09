@@ -27,7 +27,7 @@ publish.
 ## The twenty packages
 
 The family grew past the original five; `release.yml` now builds and
-publishes all of these, aligned at `0.3.0` in lockstep:
+publishes all of these, aligned at `0.4.0` in lockstep:
 
 `urml-validator` · `urml-llm-bridge` · `urml-ros2-runtime` ·
 `urml-px4-runtime` · `urml-conformance` · `urml-mcp-server` ·
@@ -83,34 +83,38 @@ workflow. Decide one; don't half-configure both.
 
 ## After 0b/0c — what's already done vs. what you fire
 
-Done and verified on `release/v0.3.0` (this branch / its PR):
+Done and verified on `release/v0.4.0` (this branch / its PR):
 
-- All twenty aligned to `0.3.0` (version + `_version.py` + inter-package
-  pins, lockstep). Core suites green post-bump.
-- `python -m build` for all twenty → clean `*-0.3.0` sdists + wheels.
+- All twenty aligned to `0.4.0` via `tools/scripts/bump_version.py`
+  (version + `_version.py` + inter-package pins, lockstep;
+  `--check 0.4.0` clean). Core suites green post-bump.
+- `python -m build` for all twenty → clean `*-0.4.0` sdists + wheels.
 - `python -m twine check dist/*` → all 40 artifacts PASSED.
 
 Remaining, in order (RELEASING.md is authoritative):
 
 1. **Pending publishers** (0c above) for any package name not yet
-   registered on the index — for the 0.3.0 family that is 19 new names
-   plus the existing `urml-validator` project.
+   registered on the index — for the 0.4.0 family that is 18 new names
+   plus the existing `urml-validator` and `urml-llm-bridge` projects.
 2. **TestPyPI rehearsal** — run the `release` workflow (Actions →
    *release* → Run workflow → target `testpypi`). Safe; repeatable.
 3. **Clean-venv verify outside the repo**: in a temp dir,
    `pip install --index-url https://test.pypi.org/simple/
    --extra-index-url https://pypi.org/simple/ urml-validator
    urml-llm-bridge urml-ros2-runtime urml-conformance`;
-   `urml --version` → `urml-validator 0.3.0`; then
+   `urml --version` → `urml-validator 0.4.0`; then
    `urml run "Bring me the red mug from the kitchen." ...` per the
    README hero to prove the wheel path end to end. **Gate — do not
    proceed unless clean.**
 4. **Real publish** — run the workflow with target `pypi` and approve
    the `pypi-release` environment gate. Irreversible — you run it.
-5. **Tag** — after the publish verifies:
-   `git tag v0.3.0 && git push origin v0.3.0`.
-6. **Announce** — a short release note; the trained-model story
-   (RFC-0666) gets its own post once measured numbers exist.
+5. **Tag + release** — after the publish verifies:
+   `git tag v0.4.0 && git push origin v0.4.0`, then a GitHub release
+   with the CHANGELOG 0.4.0 section as notes.
+6. **Flip + announce** — the README / Tutorial 1 install-line flip PR,
+   the Discussion #497 note, and the whisper.cpp follow-up (drafts in
+   the release PR); the trained-model story (RFC-0666) gets its own
+   post once measured numbers exist.
 
 The irreversible triggers (4, 6) are yours; everything before them is
 prepared and repeatable.
