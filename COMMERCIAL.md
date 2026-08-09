@@ -16,7 +16,7 @@
 
 Status: interim statement, Phase 1.
 Established: Phase 1.
-Authority: summarizes [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) for adopters and refines [`GOVERNANCE.md`](GOVERNANCE.md). Does not modify [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md), which controls.
+Authority: ratified by [RFC-0671](docs/rfcs/0671-commercial-boundary.md). Summarizes [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md) for adopters and refines [`GOVERNANCE.md`](GOVERNANCE.md). Does not modify [`CORE_COMMITMENT.md`](CORE_COMMITMENT.md), which controls.
 
 ## What this is
 
