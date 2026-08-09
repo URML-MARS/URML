@@ -20,6 +20,12 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+Nothing pending.
+
+## [0.4.0] — 2026-08-09
+
+Minor release. Everything is backward-compatible: a v0.3.0 manifest, envelope, and program validate and execute unchanged. All 20 Python packages move to 0.4.0 in lockstep, and 0.4.0 is the first version of the family actually uploaded to PyPI (0.2.0 and 0.3.0 were version alignments on `main`; the index still served 0.1.0).
+
 ### Added — Speech front-end (RFC-0670)
 
 - `urml translate --audio request.wav` and `urml run --audio request.wav`: speak the request instead of typing it. A `SpeechProvider` protocol mirrors the LLM provider contract, with adapters for whisper.cpp's `whisper-server` (new `[whisper_cpp]` extra, on-device, the default), OpenAI-compatible transcription endpoints (key not required with a base URL), and a hermetic echo provider. The transcript is echoed to stderr and feeds the unchanged translate path, so the validator boundary is untouched. `--speech-language` hints the language for multilingual requests.
@@ -30,9 +36,14 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - `OPENAI_API_KEY` is no longer required when a base URL is set via `--base-url` or `OPENAI_BASE_URL`: local servers ignore the key, so the CLI passes a placeholder. Cloud usage without a base URL is unchanged.
 - A dead local server now surfaces as one actionable line naming the endpoint and the fix, instead of a raw httpx traceback.
 
+### Notes
+
+- The PyPI publish (TestPyPI rehearsal, then the real index), the `v0.4.0` git tag, the GitHub release, and the README install-line flip are executed by the maintainer after this lands, per `RELEASING.md`.
+- New `tools/scripts/bump_version.py`: the lockstep bump is now scripted and checkable (`--check`), replacing the hand-edited 40-file sweeps of 0.2.0 and 0.3.0.
+
 ## [0.3.0] — 2026-07-23
 
-Minor release, and the first to publish the full package family. Everything is backward-compatible: a v0.2.0 manifest, envelope, and program validate and execute unchanged. All 20 Python packages move to 0.3.0 in lockstep.
+Minor release, and the first to version the full package family in lockstep. Everything is backward-compatible: a v0.2.0 manifest, envelope, and program validate and execute unchanged. All 20 Python packages move to 0.3.0 in lockstep.
 
 ### Added — Envelope enforcement (RFC-0667)
 
