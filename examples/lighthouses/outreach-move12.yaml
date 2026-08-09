@@ -68,7 +68,7 @@
   sector: ai-language
   comments: []
   claude_directives: []
-  next_action: "Posted 2026-05-28 to https://github.com/openai/whisper/discussions/2783. RFC-0153 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0153-whisper-outreach.md). First Move-12 RFC. Pairs with Layer-2 `listen` primitive (`input: speech`); shares STT-engine-class declaration Spec RFC with RFC-0154 / RFC-0155. Engagement channel constrained: Issues are disabled on openai/whisper, so post must go to Discussions (Show-and-tell or Q&A category). Awaiting founder review then post Discussion on openai/whisper."
+  next_action: "Posted 2026-05-28 to https://github.com/openai/whisper/discussions/2783; 0 comments since. Speech front-end shipped 2026-08-08 (RFC-0670): optional closing-the-loop follow-up drafted in examples/lighthouses/posts-followups-0.4.0.md, gated on the 0.4.0 PyPI publish and founder choice."
   notes: "Tier A. Origin US (pass). Foundational STT reference; URML-fit: high. Engagement-channel friction: Discussions-only changes the post body framing vs an Issue."
 
 - slug: faster-whisper
@@ -84,7 +84,7 @@
   sector: ai-language
   comments: []
   claude_directives: []
-  next_action: "Posted 2026-05-28 to https://github.com/SYSTRAN/faster-whisper/discussions/1446. RFC-0154 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0154-faster-whisper-outreach.md). Realtime-inference angle for `listen` primitive on resource-constrained robots. Shares STT-engine-class + STT-inference-runtime declaration Spec RFC with RFC-0153 / RFC-0155; introduces quantization-level + latency-class manifest gaps. Org migration (guillaumekln → SYSTRAN) noted in RFC body. Awaiting founder review then post Discussion on SYSTRAN/faster-whisper."
+  next_action: "Posted 2026-05-28 to https://github.com/SYSTRAN/faster-whisper/discussions/1446; 0 comments since. Speech front-end shipped 2026-08-08 (RFC-0670, faster-whisper reachable via the OpenAI-compat speech path): optional closing-the-loop follow-up drafted in examples/lighthouses/posts-followups-0.4.0.md, gated on the 0.4.0 PyPI publish and founder choice."
   notes: "Tier A. Origin FR (pass — NATO/EU allied). Active surface; realtime-latency profile is the distinct contribution worth a separate RFC from upstream Whisper."
 
 - slug: whisper-cpp
@@ -100,7 +100,7 @@
   sector: ai-language
   comments: []
   claude_directives: []
-  next_action: "Posted 2026-05-28 to https://github.com/ggml-org/whisper.cpp/discussions/3836. RFC-0155 drafted 2026-05-28 on URML branch rfc/move12-batch1-speech (docs/rfcs/0155-whisper-cpp-outreach.md). Embedded / edge-substrate angle: Layer-1 robots without Python can host whisper.cpp directly. Shares STT-engine-class + STT-inference-runtime declaration Spec RFC with RFC-0153 / RFC-0154; introduces novel runtime-dependency-profile manifest gap (no_python / libc_only / rtos). Org migration (ggerganov → ggml-org) noted in RFC body. Awaiting founder review then post Discussion on ggml-org/whisper.cpp."
+  next_action: "Posted 2026-05-28 to https://github.com/ggml-org/whisper.cpp/discussions/3836; 0 comments since. URML now ships a whisper-server adapter (RFC-0670, default speech backend, in 0.4.0): shipped-artifact follow-up drafted in examples/lighthouses/posts-followups-0.4.0.md, gated on the 0.4.0 PyPI publish and founder review."
   notes: "Tier A. Origin BG / individual (pass — NATO/EU allied). Ubiquitous on edge; URML composition angle is the no-Python deployment path."
 
 - slug: openvoice
