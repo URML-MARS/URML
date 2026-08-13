@@ -254,7 +254,7 @@
   posted_url: "https://github.com/rtic-rs/rtic/issues/1188"
   channel: github_issue
   contact: "rtic-rs/rtic (Apache-2.0/MIT, ~2339 stars, Issues enabled, not archived, active 2026-06. Real-time concurrency framework for embedded Rust. EU/intl."
-  last_touch: "2026-07-09"
+  last_touch: "2026-08-13"
   response: engaged
   tier: B
   country: EU
@@ -268,6 +268,8 @@
       text: "BUILT the offered worked example proactively (founder said 'built it'): examples/rtic-timing/ (PR #611, merged). A URML RFC-0016 realtime manifest (10 ms cycle, 50 ms watchdog, guarantee hard) validates; an incoherent copy (5 ms watchdog) is rejected with capability.watchdog_shorter_than_cycle; and the declared period+watchdog map onto an RTIC task set (period -> periodic task, watchdog -> run-time monitor), aligned with RTIC eVo's modular passes (rtic-deadline-pass turns deadlines into priorities). Honest altitude throughout: URML declares + coherence-checks only; RTIC honors/proves (SRP compile-time, watchdog run-time). Illustrative Rust sketch marked not-generated-by-URML. Deterministic generator + byte-asserted report + 4-test guard."
     - date: "2026-07-09"
       text: "Posted the follow-up on #1188 (issuecomment-4922123617) on the founder's explicit 'post it': short, points Per at the examples/rtic-timing/ link, asks nothing of RTIC, keeps altitude honest. Awaiting his read. Nothing owed unless he replies."
+    - date: "2026-08-13"
+      text: "Per replied 2026-08-12 (warm soft-close): 'we might come back to URML, as it allows for high level modelling (and perhaps an interesting outset for model checking and such)... an interesting topic for future research projects in this direction.' No pull for the eVo-mapping work; a positive maybe-later on the research angle, not a decline. Posted a brief gracious ack (issuecomment-5276916981): thanks, that high-level-declaration-consumed-by-analysis/model-checking is exactly the intended use; offered help from the URML side if a future research project explores it; noted the RFC-0016 example stays current; routed future contact to greenvh@gmail.com. Stays engaged; issue remains OPEN. Do NOT re-ping; any real follow-up is founder-side via email."
   claude_directives:
     - date: "2026-07-09"
       text: "ENGAGED (Per Lindgren, RTIC lead). Correct-altitude framing held: URML DECLARES cyclic timing; RTIC HONORS/PROVES it (never claim URML does scheduling/WCET; see [[project_rfc0016_realtime]]). Worked example BUILT + merged (examples/rtic-timing/, PR #611) and the 'here it is' follow-up POSTED 2026-07-09. Await Per's reply; do NOT re-ping. If he engages further, natural next step is aligning the mapping with an actual RTIC eVo periodic-task pass, on his pull only."
