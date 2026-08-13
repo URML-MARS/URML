@@ -1,5 +1,5 @@
 ---
-rfc: 0671
+rfc: 0672
 title: "The open/commercial boundary: what stays Apache 2.0 and where commercial work happens"
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Accepted
@@ -23,7 +23,7 @@ superseded-by: —
 
 ---
 
-# RFC-0671: The open/commercial boundary: what stays Apache 2.0 and where commercial work happens
+# RFC-0672: The open/commercial boundary: what stays Apache 2.0 and where commercial work happens
 
 ## Summary
 

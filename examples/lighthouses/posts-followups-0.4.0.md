@@ -14,10 +14,14 @@
 
 # v0.4.0 follow-up posts
 
-Drafts for the surfaces that earned a "this shipped" note. **Gate: none of
-these go out until the 0.4.0 family is live on PyPI** (`pip index versions
-urml-validator` shows 0.4.0). Founder reviews every draft; the Discussion
-#497 note is founder-voiced and founder-posted.
+Drafts for the surfaces that earned a "this shipped" note. Rewritten
+2026-08-10 to claim only what is true today: 0.4.0 is cut and merged on
+`main`, and the PyPI publish has not run yet, so no draft says "on PyPI"
+or gives a `pip install` line. When the family goes live on the index
+(`pip index versions urml-validator` shows 0.4.0), swap the from-source
+lines for the pip lines before posting anything not yet posted. Founder
+reviews every draft; the Discussion #497 note is founder-voiced and
+founder-posted.
 
 Ledger discipline on posting: edit `outreach-move12.yaml` first (bump
 `last_touch`, quoted-string dates in `comments[]`), run the full
@@ -33,14 +37,14 @@ Thread: https://github.com/URML-MARS/URML/discussions/497 (closed, not
 locked; a new comment works). Keep it short and personal; he prefers human
 replies. No footer.
 
-> Quick update you earned: URML 0.4.0 is on PyPI, and this thread drove part of it.
+> Quick update you earned: native Ollama support just landed on `main`, and this thread drove part of it.
 >
 > ```bash
-> pip install --upgrade urml-validator urml-llm-bridge
+> git pull && python bootstrap.py
 > urml translate "Bring me the red mug." --manifest manifest.yaml --provider ollama --model "qwen3.5:9b"
 > ```
 >
-> Native Ollama support. No more `OPENAI_BASE_URL`, no more model tag standing in for `OPENAI_API_KEY`. Your old recipe keeps working, but the flags now say what they mean. Your `OLLAMA_CONTEXT_LENGTH` guidance still applies word for word; that part of the HOWTO is not superseded.
+> No more `OPENAI_BASE_URL`, no more model tag standing in for `OPENAI_API_KEY`. Your old recipe keeps working, but the flags now say what they mean. Your `OLLAMA_CONTEXT_LENGTH` guidance still applies word for word; that part of the HOWTO is not superseded. It is all in the 0.4.0 release cut, which reaches PyPI next; until then the source checkout above is the way to run it.
 >
 > One more thing that fits your all-local setup: `urml translate --audio request.wav` now transcribes with a local whisper-server before translating. One spoken sentence to motion, fully offline.
 >
@@ -55,7 +59,7 @@ subprocess/pybind sketch.
 
 > Follow-up with a shipped artifact rather than a proposal.
 >
-> Since posting this, URML shipped a whisper.cpp adapter (RFC-0670, in v0.4.0 on PyPI): `urml translate --audio request.wav` sends the audio to a running `whisper-server` `/inference` endpoint (multipart, `response_format: json`, optional `language` hint) and feeds the transcript into a validate-before-actuate pipeline, so the resulting robot program is statically checked against a capability manifest before anything moves. whisper-server is the default speech backend; install is `pip install "urml-llm-bridge[whisper_cpp]"`. Adapter source: https://github.com/URML-MARS/URML/blob/main/reference/llm-bridge/src/urml_llm_bridge/speech/whisper_cpp.py
+> Since posting this, URML shipped a whisper.cpp adapter (RFC-0670, merged on `main` in the 0.4.0 cut): `urml translate --audio request.wav` sends the audio to a running `whisper-server` `/inference` endpoint (multipart, `response_format: json`, optional `language` hint) and feeds the transcript into a validate-before-actuate pipeline, so the resulting robot program is statically checked against a capability manifest before anything moves. whisper-server is the default speech backend. Adapter source: https://github.com/URML-MARS/URML/blob/main/reference/llm-bridge/src/urml_llm_bridge/speech/whisper_cpp.py
 >
 > It differs from the sketch in my original post: instead of a subprocess wrapper around the binary, the adapter speaks HTTP to whisper-server, which keeps the model resident between requests and needs no Python on the inference host.
 >
@@ -69,13 +73,13 @@ subprocess/pybind sketch.
 
 **openai/whisper Discussion #2783** (0 comments since 2026-05-28):
 
-> Closing the loop on this proposal: URML v0.4.0 shipped speech input (RFC-0670). Whisper models serve it two ways today: whisper.cpp's `whisper-server` as the default on-device backend, and any OpenAI-compatible transcription endpoint via `--speech-provider openai --speech-base-url`. No ask here; the original manifest-mapping questions above still stand if they ever become interesting.
+> Closing the loop on this proposal: URML shipped speech input (RFC-0670, on `main` in the 0.4.0 cut). Whisper models serve it two ways today: whisper.cpp's `whisper-server` as the default on-device backend, and any OpenAI-compatible transcription endpoint via `--speech-provider openai --speech-base-url`. No ask here; the original manifest-mapping questions above still stand if they ever become interesting.
 >
 > AI-assisted prose, maintainer-reviewed before posting (see VIBE.md). Human-only correspondence available on request.
 
 **SYSTRAN/faster-whisper Discussion #1446** (0 comments since 2026-05-28):
 
-> Closing the loop on this proposal: URML v0.4.0 shipped speech input (RFC-0670). A faster-whisper deployment exposing an OpenAI-compatible transcription endpoint is reachable today with `--speech-provider openai --speech-base-url http://host:port/v1`, no API key required for a local server. No ask here; the realtime-latency manifest questions above still stand if they ever become interesting.
+> Closing the loop on this proposal: URML shipped speech input (RFC-0670, on `main` in the 0.4.0 cut). A faster-whisper deployment exposing an OpenAI-compatible transcription endpoint is reachable today with `--speech-provider openai --speech-base-url http://host:port/v1`, no API key required for a local server. No ask here; the realtime-latency manifest questions above still stand if they ever become interesting.
 >
 > AI-assisted prose, maintainer-reviewed before posting (see VIBE.md). Human-only correspondence available on request.
 
@@ -87,4 +91,4 @@ third consecutive no-ask message from us, to a maintainer who asked for
 human-only correspondence, spends goodwill without adding information.
 If the founder wants one anyway: founder-written, human-only, no footer,
 one sentence ("the permissive-alternative mechanism you steered us
-toward shipped as RFC-0304 and is in 0.4.0 on PyPI").
+toward shipped as RFC-0304 and is in the 0.4.0 cut").

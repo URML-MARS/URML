@@ -124,19 +124,21 @@
   posted_url: "https://github.com/fzi-forschungszentrum-informatik/ros2_ros_bt_py/issues/255"
   channel: github_issue
   contact: "fzi-forschungszentrum-informatik/ros2_ros_bt_py (BSD-3-Clause, ~110 stars, Issues enabled, not archived, active 2026-05). Behavior-tree library + Vue3 web GUI for ROS 2 (alternative to SMACH/FlexBE). FZI, Karlsruhe, DE."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-08-12"
+  response: declined
   tier: A
   country: DE
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0505 body to https://github.com/fzi-forschungszentrum-informatik/ros2_ros_bt_py/issues/255 under idoco2003 (Move #45 middleware/control/drivers wave). Awaiting response."
+    - date: "2026-08-12"
+      text: "Maintainer Oberacda (FZI) closed #255 as not_planned with no comment. Silent decline: no reasoning left, no AI-content flag, not hostile, no discussion conversion. Accept gracefully; no reply (a not_planned close with no comment is a clear no). Same class as the sunnypilot / ruckig / WPILib silent declines."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move45.md ros2-ros-bt-py body as a GitHub Issue on fzi-forschungszentrum-informatik/ros2_ros_bt_py under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Layer-3 BT interop (Move #41 framing): lower URML composition to a tree OR a BT leaf dispatches a validated URML primitive. Ask: which direction; static cap/envelope check."
+  next_action: "Declined (Oberacda not_planned close, silent, 2026-08-12). No reply, do not re-post. Layer-3 BT interop peer; the interop RFC drew no engagement. If ever re-approached, only via a concrete example (a BT leaf that dispatches a validated URML primitive), not another RFC."
   notes: "BSD-3. BT framework; Layer-3 interop peer."
 
 - slug: libcyphal
