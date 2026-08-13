@@ -85,19 +85,21 @@
   posted_url: "https://github.com/robosoft-ai/SMACC2/issues/740"
   channel: github_issue
   contact: "robosoft-ai/SMACC2 (Apache-2.0, ~364 stars, Issues enabled, Discussions OFF, not archived, active — v3.1.0 May 2026). Event-driven async behavioral state-machine library for ROS 2 (C++). Robosoft AI / ReelRobotix. US."
-  last_touch: "2026-06-12"
-  response: none
+  last_touch: "2026-08-13"
+  response: declined
   tier: A
   country: US
   sector: framework-skill
   comments:
     - date: "2026-06-12"
       text: "Posted the RFC-0472 body to https://github.com/robosoft-ai/SMACC2/issues/740 under idoco2003 (Move #41 behavior-tree/FSM/orchestration wave). Awaiting response."
+    - date: "2026-08-13"
+      text: "brettpac (Brett Aldrich, SMACC/SMACC2 creator) closed #740 with no comment. Close reason 'completed' rather than 'not_planned', but zero substance: no reply, no discussion conversion (Discussions are off on this repo), no transfer. Functionally a silent non-engagement dismissal, not hostile, no AI-flag. Accept gracefully; no reply (nothing to build on and Layer-3 FSM-interop drew no response). Same class as the ros2_ros_bt_py silent decline."
   claude_directives:
     - date: "2026-06-12"
       text: "When authorized, post the posts-move41.md SMACC2 body as a GitHub Issue on robosoft-ai/SMACC2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Event-driven ROS 2 FSM, very active (this month), US + Apache (best license/recency/country profile). Ask: lower-to-state-machine vs client-behavior dispatches a primitive; mapping onto states/orthogonal-lines/transitions."
+  next_action: "Declined (brettpac silent 'completed' close, no comment, 2026-08-13). No reply, do not re-post. Layer-3 FSM-interop peer; interop RFC drew no engagement. If ever re-approached, only via a concrete worked example (a URML program lowered onto a SMACC2 state set), not another RFC."
   notes: "Permissive (Apache-2.0). Standout fresh FSM target. No license-ask."
 
 - slug: transitions
