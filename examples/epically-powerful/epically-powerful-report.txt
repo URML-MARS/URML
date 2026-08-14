@@ -1,0 +1,39 @@
+URML: a declared actuator envelope, checked before dispatch, beside a runtime monitor.
+RFC-0018 minimal_node + RFC-0017 analog output lines let a manifest declare a QDD
+actuator's command envelope. URML checks a command against it statically, before
+anything reaches the CAN bus. For gatech-epic-power/epically-powerful#32.
+
+Envelope cross-cited from Epically Powerful's CubeMars AKE80-8-V3 entry
+(epicallypowerful/actuation/motor_data.py, commit 2a3941278c59):
+  joint_torque_nm     range +/-35.0 Nm   (torque_limits)
+  joint_velocity_rad_s  range +/-20.0 rad/s (velocity_limits)
+
+# 1. A command inside the declared envelope validates
+
+[VALID] set_output joint_torque_nm = 20.0 Nm  (|20.0| <= 35.0)
+   Admissible: within the actuator's declared torque limit. Dispatch may proceed.
+
+# 2. A torque command beyond the declared limit is rejected before dispatch
+
+[REJECTED] set_output joint_torque_nm = 50.0 Nm  (|50.0| > 35.0)
+   -> capability.output_value_out_of_range
+   capability.output_value_out_of_range: set_output value 50.0 is outside the declared range [-35.0, 35.0] of analog line 'joint_torque_nm'.
+   Caught off-hardware, before the command ever reaches epically-powerful's CAN path.
+
+# 3. The same check generalizes across limit types (velocity, not just torque)
+
+[REJECTED] set_output joint_velocity_rad_s = 30.0 rad/s  (|30.0| > 20.0)
+   -> capability.output_value_out_of_range
+   capability.output_value_out_of_range: set_output value 30.0 is outside the declared range [-20.0, 20.0] of analog line 'joint_velocity_rad_s'.
+
+# Complementary layers, not duplicates
+
+URML's static envelope check is the first line, off-hardware: it runs in an LLM
+planning loop, in CI, or in simulation, before any command reaches the bus. Epically
+Powerful's runtime monitor is the last line, on-hardware, during execution. The static
+gate catches an inadmissible command where a runtime monitor cannot run, because there
+is no hardware in the loop yet, and the envelope is one substrate-neutral declaration
+that covers CubeMars, RobStride, and CyberGear actuators from a single manifest.
+
+URML declares and statically checks; Epically Powerful monitors at run time and drives
+the CAN bus. No code is vendored and there is no dependency on their package.
