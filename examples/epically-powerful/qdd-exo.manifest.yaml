@@ -1,0 +1,66 @@
+# Capability manifest for one QDD actuator in an exoskeleton joint.
+#
+# For gatech-epic-power/epically-powerful#32. Epically Powerful commands
+# quasi-direct-drive actuators (CubeMars AK / RobStride / CyberGear) over CAN and
+# enforces per-motor limits at run time. This manifest declares the SAME envelope
+# statically, so a command outside it is rejected before dispatch, off-hardware.
+#
+# The numbers are cross-cited from Epically Powerful's own published motor table,
+# the CubeMars AKE80-8-V3 entry, no code vendored, no dependency on their package:
+#   epicallypowerful/actuation/motor_data.py  (commit 2a3941278c59)
+#     torque_limits   = (-35.0, 35.0)   Nm
+#     velocity_limits = (-20.0, 20.0)   rad/s
+#     position_limits = (-12.56, 12.56) rad
+#
+# URML declares and statically checks; Epically Powerful does the run-time
+# monitoring and the actual CAN actuation. The two are complementary layers, not
+# duplicates: this manifest is the first line (off-hardware, pre-dispatch), their
+# monitor is the last line (on-hardware, during execution). Compliance policy is
+# out of scope here (the point is the actuation envelope), so this example runs
+# with policy off; the CubeMars origin is stated truthfully all the same.
+
+manifest_version: "0.1"
+robot_id: exo_qdd_joint
+description: One QDD actuator joint node, torque and velocity command envelope (RFC-0018 minimal_node + RFC-0017 lines).
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [joint_encoder]
+  declared_outputs: [joint_torque_nm, joint_velocity_rad_s]
+  has_locomotion: false
+
+perception:
+  cameras: []
+  sensors:
+    - name: joint_encoder
+      measurement_type: custom
+      range_min: -12.56
+      range_max: 12.56
+      units: rad
+  object_vocabulary: []
+
+outputs:
+  lines:
+    # The actuator's torque command channel, bounded by AKE80-8-V3 torque_limits.
+    - name: joint_torque_nm
+      kind: analog
+      range: [-35.0, 35.0]
+      safe_state: 0.0
+    # The actuator's velocity command channel, bounded by AKE80-8-V3 velocity_limits.
+    - name: joint_velocity_rad_s
+      kind: analog
+      range: [-20.0, 20.0]
+      safe_state: 0.0
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: qdd_actuator
+      role: critical
+      vendor: cubemars
+      country_of_origin: CN
+      country_of_final_assembly: CN
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/qdd_actuator.cdx.json
+        sha256: "5555555555555555555555555555555555555555555555555555555555555555"

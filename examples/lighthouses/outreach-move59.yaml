@@ -94,18 +94,23 @@
   posted_url: "https://github.com/gatech-epic-power/epically-powerful/issues/32"
   channel: github_issue
   contact: "gatech-epic-power/epically-powerful (AGPL-3.0, ~11 stars, Issues + Discussions enabled, not archived, active 2026-03. Python framework commanding QDD actuators over CAN (CubeMars AK / RobStride / CyberGear) for exoskeletons + sensor suits, with built-in safety monitoring. Georgia Tech EPIC Lab, US."
-  last_touch: "2026-06-21"
-  response: none
+  last_touch: "2026-08-14"
+  response: engaged
   tier: B
   country: US
   sector: medical
   comments:
     - date: "2026-06-21"
       text: "Posted the RFC body to https://github.com/gatech-epic-power/epically-powerful/issues/32 under idoco2003 (Move #59, actuation-altitude consumer wave). Awaiting response."
+    - date: "2026-08-14"
+      text: "cnusslein (Christoph, GT EPIC Lab CONTRIBUTOR) replied warmly on #32 and closed it 'completed' (engaged, not a dismissal). Praised URML as 'an excellent push towards more standardized robot communication'; answered both questions: (1) a pre-dispatch static envelope check is feasible but 'already accounted for by Epically Powerful's runtime monitoring, so implementing it over existing functionality could add unnecessary overhead'; (2) their actuator limit-checking (motor_data.py) handles hardware constraints and extends to new devices. Left the door open ('let us know if you have further thoughts on cross-integration'). Moves none -> engaged. This is URML's single most important objection (static == redundant with runtime monitoring)."
+    - date: "2026-08-14"
+      text: "BUILT the reusable answer: examples/epically-powerful/ (a URML minimal_node manifest whose RFC-0017 analog output lines carry the AKE80-8-V3 torque/velocity limits cross-cited from their motor_data.py commit 2a3941278c59; a 20 Nm command validates, a 50 Nm and a 30 rad/s command are rejected with capability.output_value_out_of_range before dispatch). Deterministic + byte-asserted report + 4-test guard (test_epically_powerful_example.py). Honest altitude: static = first line off-hardware (LLM/CI/sim), their runtime monitor = last line on-hardware; complementary layers, not duplicates; portable across CubeMars/RobStride/CyberGear. AGPL-3.0: cross-citation only, zero dependency on their package. Posted a brief reply pointing at it, routed further discussion to greenvh@gmail.com."
   claude_directives:
     - date: "2026-06-21"
       text: "DONE -- posted on 2026-06-21 under idoco2003. (orig: post the posts-move59.md epically-powerful body as a GitHub Issue on gatech-epic-power/epically-powerful under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db. No license-ask (AGPL-3.0 stated, cross-citation only). Framing: static envelope COMPLEMENTS their runtime monitor."
       status: done
+  next_action: "Engaged (Christoph, GT EPIC). Worked example BUILT (examples/epically-powerful/) answering the redundancy objection, reply POSTED 2026-08-14. Do NOT re-ping; issue closed but door open. The example is the REUSABLE answer to every future 'our runtime monitor already covers it' objection (rtic/cram-class artifact). Any deeper cross-integration is founder-side via greenvh@gmail.com."
 
 - slug: open-mower-ros
   rfc: 621
