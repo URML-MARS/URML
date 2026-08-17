@@ -80,20 +80,22 @@
   posted_url: "https://github.com/gbionics/bipedal-locomotion-framework/issues/1042"
   channel: github_issue
   contact: "gbionics/bipedal-locomotion-framework (BSD-3-Clause, ~220 stars, Issues enabled, not archived, active 2026-06; transferred from ami-iit, IIT lineage). Libraries for bipedal locomotion on humanoids (MPC + WBC). IT."
-  last_touch: "2026-06-13"
-  response: none
+  last_touch: "2026-08-17"
+  response: declined
   tier: A
   country: IT
   sector: framework-skill
   comments:
     - date: "2026-06-13"
       text: "Posted the RFC-0503 body to https://github.com/gbionics/bipedal-locomotion-framework/issues/1042 under idoco2003 (Move #45 middleware/control/drivers wave). Awaiting response."
+    - date: "2026-08-17"
+      text: "traversaro (Silvio Traversaro, IIT / robotology core dev, COLLABORATOR) commented: 'I am not sure it is particulary useful to use AI to spam a lot of repos with a request for comments for your project.' A public AI-spam callout from a highly credible, influential figure (connected to many humanoid/whole-body maintainers URML has contacted). Founder decided: humble, human reply in HIS words (he flagged the em-dash + no-line-breaks as AI-tells; reformatted to fix), then close. Posted issuecomment-5317369734: 'You're right... a request for comment posted across many repos reads as spam, disclosure or not, and I take the point. I won't keep pinging here. I'll close this now. Sorry for the noise.' Closed the issue not_planned. No defense, no more AI prose. response -> declined."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move45.md bipedal-locomotion-framework body as a GitHub Issue on gbionics/bipedal-locomotion-framework under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Await founder authorization. Bipedal MPC/WBC -> URML hands a validated whole_body locomotion goal (RFC-0384). Canonical path is now gbionics/ (ex ami-iit) — verify at post time."
-  notes: "BSD-3. IIT lineage; repo moved ami-iit -> gbionics. Locomotion controller."
+  next_action: "Declined + closed (2026-08-17). Do NOT re-post, do NOT re-engage traversaro/IIT repos with cold RFCs. STRATEGIC: this is the 2nd credible AI-spam callout (after the 604-corpus one), now from an influential IIT dev -> reinforces the cold-volume-vs-depth reconsideration (see [[project_volume_spam_signal]]). Depth/contribution-first (worked examples, merged PRs) has converted; cold-volume RFC waves are drawing reputational blowback. Volume-dial-back decision is founder-pending."
+  notes: "BSD-3. IIT lineage; repo moved ami-iit -> gbionics. Locomotion controller. Terminal: AI-spam decline (traversaro), handled with a humble human reply + close."
 
 - slug: hpp-core
   rfc: 504
