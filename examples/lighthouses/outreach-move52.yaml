@@ -216,18 +216,22 @@
   posted_url: "https://github.com/RaspberryPiFoundation/blockly/issues/9989"
   channel: github_issue
   contact: "RaspberryPiFoundation/blockly (Apache-2.0, ~13431 stars, Issues enabled, not archived, active 2026-06. Block-based visual programming toolkit fork. Raspberry Pi Foundation, UK."
-  last_touch: "2026-06-14"
-  response: none
+  last_touch: "2026-08-17"
+  response: acked
   tier: A
   country: UK
   sector: education-toolchain
   comments:
     - date: "2026-06-14"
       text: "Posted the RFC-0573 body to https://github.com/RaspberryPiFoundation/blockly/issues/9989 under idoco2003. Language peer; could a block palette emit URML; conceptual, no integration ask. Large active repo -> watch for fast close. Awaiting response."
+    - date: "2026-08-17"
+      text: "maribethb (Blockly team) replied 2026-07-27: team not positioned to comment (they work with neither students nor robotics directly); redirected to the Blockly Google-groups forum for the wider block-based-tools audience. Venue redirect, Klipper-pattern -> acked. Posted a gracious two-line ack (issuecomment-5317490681), no AI-defense, no forum spam."
   claude_directives:
     - date: "2026-06-14"
       text: "DONE — posted as RaspberryPiFoundation/blockly#9989 on 2026-06-14 under idoco2003."
       status: done
+  next_action: "Venue-redirected + acked 2026-08-17. The Google-groups cross-post is founder-optional and probably not worth it (wrong-persona risk on a general forum; the education lane already has direct channels via GoPiGo/CleoQc). No further touch on the issue."
+  notes: "Tier A, UK (Raspberry Pi Foundation fork). Polite non-hostile redirect; the conceptual block-palette-emits-URML idea stays parked for the education lane."
 
 - slug: tank-royale
   rfc: 574

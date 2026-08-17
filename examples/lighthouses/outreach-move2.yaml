@@ -45,17 +45,19 @@
 - slug: lerobot
   rfc: 40
   sent_at: "2026-05-23"
-  posted_url: "https://github.com/huggingface/lerobot/issues/3658"
+  posted_url: "https://github.com/huggingface/lerobot/issues/3655"
   channel: github_issue
   contact: "huggingface/lerobot (Remi Cadene @cadene, HF Robotics)"
-  last_touch: 2026-05-23
-  response: none
+  last_touch: "2026-08-17"
+  response: acked
   tier: A
   country: US
   sector: ai-language
-  comments: []
+  comments:
+    - date: "2026-08-17"
+      text: "imstevenpmwork (LeRobot maintainer) closed #3658 on 2026-07-31 as 'Duplicate of #3655'. Both issues are OURS: a parallel session double-posted the BYOP proposal on 2026-05-23 (#3655 then #3658) and only #3658 was recorded here. Administrative consolidation by a human maintainer = acked, not engaged. posted_url repointed to the surviving OPEN issue #3655 per [[feedback_issue_to_discussion_conversion]] (track the surviving surface). No reply owed on a dup-close. Lesson recorded: double-post came from parallel sessions not checking the ledger before posting ([[feedback_check_ledger_before_posting]])."
   claude_directives: []
-  next_action: "wait 14 d (until 2026-06-06); if silent, nudge via a polite follow-up comment on huggingface/lerobot#3658; if reply, bump last_touch, set `response` per enum, write the concrete next step here. HF Discord cross-post still parked pending a successful join."
+  next_action: "Surviving surface is huggingface/lerobot#3655 (OPEN, acked via dup-triage). The separate Move #38 thread (#3734, RFC-0447) is the active anchor for the learned-policy angle. No nudge on #3655; a maintainer has now touched the proposal once, let it breathe. HF Discord cross-post still parked pending a successful join."
   notes: "first Move #2 RFC; proposal-only (no shipping plugin); follows LeRobot's published Bring Your Own Policies convention (lerobot_policy_urml); see docs/rfcs/0040-hugging-face-lerobot.md. Discussions are NOT enabled on huggingface/lerobot, surface confirmed against the repo (2026-05-23); Issues + Discord is the documented contribution path per CONTRIBUTING.md. 2026-05-23: HF Discord join attempt via https://huggingface.co/join/discord failed (email block on the founder's domain); founder will retry the Discord join later."
 - slug: ardupilot
   rfc: 41

@@ -157,8 +157,8 @@
   posted_url: "https://github.com/pytorch/executorch/issues/20268"
   channel: github_issue
   contact: "pytorch/executorch (BSD, ~4.7k stars, Issues + Discussions enabled, not archived, very active 2026-06). On-device PyTorch inference for mobile/embedded/edge. PyTorch Foundation (Linux Foundation), US."
-  last_touch: "2026-07-14"
-  response: acked
+  last_touch: "2026-08-17"
+  response: engaged
   tier: A
   country: US
   sector: framework-skill
@@ -167,6 +167,8 @@
       text: "Posted the RFC-0516 body to https://github.com/pytorch/executorch/issues/20268 under idoco2003 (Move #46 AI/robot-learning wave). Awaiting response."
     - date: "2026-07-14"
       text: "nil-is-all (CONTRIBUTOR) commented 2026-06-22: 'shoumikhin could you take a shot at this?'. That is an INTERNAL TRIAGE PING routing the issue to another maintainer, not a substantive reply to us. none -> acked (they saw it and routed it; no engagement yet, do not inflate). NO reply owed: answering an internal routing ping adds noise on a busy PyTorch repo."
+    - date: "2026-08-17"
+      text: "shoumikhin (Meta, ExecuTorch maintainer) answered all three questions substantively 2026-07-17. Q1 layering: URML above/beside ExecuTorch, confirmed; sharp correction that the LearnedPolicy RFC reads as one check when static declaration-validation and runtime per-action inspection are different things. Q2: envelope-with-model is feasible TODAY via named data (string-keyed blobs in the .pte or an external .ptd FlatTensor, retrieved through NamedDataMap; MethodMeta/TensorInfo expose shapes); ExecuTorch stores and returns, URML owns schema and validation. Q3: right boundary to build above, no ExecuTorch spec change needed; suggested a small URML-side end-to-end example. acked -> engaged. Replied (issuecomment-5317490941): the two checks are already separate mechanisms (RFC-0383 static + RFC-0667 shield), we will make the split explicit in the RFC text; committed to building the end-to-end example (policy + envelope packaged together, loaded via ExecuTorch, outputs validated pre-dispatch) and posting it back."
   claude_directives:
     - date: "2026-06-13"
       text: "When authorized, post the posts-move46.md executorch body as a GitHub Issue on pytorch/executorch under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
@@ -174,7 +176,10 @@
     - date: "2026-07-14"
       text: "ACKED via internal triage routing only. Do NOT reply. Await a substantive response from shoumikhin; if it comes, the seam is that ExecuTorch runs the on-device policy and URML validates the emitted action before actuation."
       status: done
-  next_action: "Acked via internal triage routing (nil-is-all -> shoumikhin). No reply owed, no re-ping. Await a substantive maintainer response."
+    - date: "2026-08-17"
+      text: "ENGAGED + build cue (shoumikhin). Two owed artifacts, both committed in the reply: (1) RFC-0383 text amendment making the static-check vs runtime-shield split explicit; (2) examples/executorch-policy/ end-to-end (export policy + URML envelope via named data / .ptd, load with ExecuTorch, validate outputs pre-dispatch, hermetic with a fake runtime if the executorch pip dep is heavy). Post back on #20268 when real. Track both on the commitments page."
+      status: done
+  next_action: "Engaged 2026-08-17 (shoumikhin answered all three questions; reply posted). Two owed artifacts, committed publicly: (1) RFC-0383 text amendment making the static-check vs runtime-shield (RFC-0667) split explicit; (2) examples/executorch-policy/ end-to-end via NamedDataMap/.ptd packaging. Post back on #20268 when real. Tracked on the commitments page."
   notes: "BSD. PyTorch Foundation on-device inference; URML gates above the runtime. Ties RFC-0021 / MCU-substrate edge work."
 
 - slug: openrlbenchmark

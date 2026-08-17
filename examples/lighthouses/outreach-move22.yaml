@@ -197,7 +197,7 @@
   posted_url: "https://github.com/OPCFoundation/UA-.NETStandard/issues/3827"
   channel: github_issue
   contact: "OPCFoundation/UA-.NETStandard (MIT, relicensed from RCL Dec 2025, ~2.3k stars, Issues + Discussions enabled, active, **not archived**). The OPC Foundation reference stack; the standards body that stewards the OPC UA Robotics companion spec."
-  last_touch: "2026-06-16"
+  last_touch: "2026-08-17"
   response: engaged
   tier: A
   country: INTL
@@ -215,8 +215,10 @@
       text: "Built examples/opcua/ as the shared demand artifact for the binding collaboration marcschier proposed: a validated URML program lowered to one OPC UA method per operation, executed against the real OpcUaAdapter and byte-asserted (reference/validator/tests/test_opcua_example.py). It is a concrete reference point for the binding/library interface (URML stays the thin front end; his companion-spec extension library owns the standard-conformant impl)."
     - date: "2026-06-16"
       text: "Posted the human note on #3827 (issuecomment-4719056269, idoco2003): pointed marcschier at examples/opcua/ as the 'project that uses it', restated the division of labor, and offered to define the binding interface together or take it to a call. Await his (or the maintainers') read on the extension-library step."
+    - date: "2026-08-17"
+      text: "marcschier replied 2026-08-02 with a standards-track status note: the Robotics CS API is now part of the UA-.NETStandard stack, and a standardized CONTROL API for full binding remains open standardization work. That is the standards body naming the exact seam URML occupies. Replied (issuecomment-5317490854): understood the boundary, will follow the control-API standardization, and offered a worked mapping from URML primitives onto the Robotics CS as-is as input to that work."
   claude_directives: []
-  next_action: "Engaged + showcased the working OPC UA runtime; now a worked example (examples/opcua/) makes the 'project that uses it' demand concrete. Next: if marcschier/the maintainers agree on the companion-spec extension library, co-define its interface so OpcUaAdapter can target the standard MotionDevice nodeset instead of per-deployment config. Human note drafted for the founder; he may take the collaboration step to a call. Crown-jewel standards-body thread."
+  next_action: "marcschier's 2026-08-02 note named the open seam: Robotics CS API is in the stack, a standardized control API for full binding is open standardization work. Offer on the table (2026-08-17 reply): a worked mapping of URML primitives onto the Robotics CS as-is, as input to that standardization. If he takes it, build the mapping doc; it doubles as the Manifesto Phase-4 standards-liaison on-ramp. Crown-jewel standards-body thread; founder may still take it to a call."
   notes: "Tier A. MIT (relicensed from RCL Dec 2025); protocol-boundary engagement, no redistribution. Targets the OPC UA Robotics companion nodeset URML's manifesto names."
 
 - slug: eclipse-milo

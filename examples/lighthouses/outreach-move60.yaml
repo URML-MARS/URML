@@ -130,8 +130,8 @@
     - date: "2026-07-03"
       text: "BUILT + NOTIFIED. examples/robotiq-hande/ merged (PR #582); macmacal notified on #44. Next natural step is his: if he says the example is useful or wants a listing, that is a conformance/README-listing conversation (Phase-0 reference-runtime exclusion still applies). No re-ping; await his read."
       status: done
-
-- slug: onrobot-ros2
+  next_action: "Loop closed: worked example shipped (examples/robotiq-hande/, PR #582) and macmacal notified on #44 (comment 4878554213). Await his read; no re-ping. If he responds positively or asks about a listing, that conversation is unblocked by the Phase-1 listing wave (the Phase-0 exclusion the 2026-07-03 directive cited has expired)."
+  notes: "Tier B, PL (AGH University of Krakow). macmacal affirmed URML's system-level layer and the URDF-as-manifest mapping; flagged that the fake-hardware backend has no force feedback (position only), documented in the example. Hand-E manifest validates a 60 N grasp and refuses 250 N pre-dispatch on two grounds."
   rfc: 628
   sent_at: "2026-06-21"
   posted_url: "https://github.com/ABC-iRobotics/onrobot-ros2/issues/3"
