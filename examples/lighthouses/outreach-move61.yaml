@@ -20,6 +20,16 @@
 #   - bremen-cram (0635, DE Beetz): cognitive architecture -> action-designator seam.
 #   - brown-lang2ltl (0636, US Tellex): NL -> LTL spec -> validate dispatched action.
 #   - stanford-voxposer (0637, US Huang): zero-shot NL -> trajectory -> check before move.
+#
+# PRC tranche added 2026-08-18 (RFCs 0673-0676): the founder authorized a small
+# batch of the strongest, most-active PRC open-weight VLA repos, deferred above.
+# Open-weight research models, cross-citation only, no vendor coupling (outreach
+# is not a spec/policy change; the default US-federal policy is untouched). Each
+# RFC is grounded in that model's specific action output:
+#   - dexbotic (0673, Dexmal): VLA deployment toolbox -> per-robot gate in the deploy path.
+#   - robobrain-2-5 (0674, BAAI): 3D keypoint-trace prediction -> validate the trace vs workspace/envelope.
+#   - univla (0675, Shanghai AI Lab): embodiment-agnostic action -> per-embodiment admissibility at decode.
+#   - rynnvla-002 (0676, Alibaba DAMO): continuous action for LeRobot arms -> gate the emitted action.
 
 - slug: magma
   rfc: 632
@@ -163,3 +173,87 @@
       status: done
   next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the check-the-trajectory-before-the-arm-moves framing."
   notes: "US, Stanford SVL. Zero-shot instruction-to-trajectory; URML checks admissibility before the arm moves."
+
+- slug: dexbotic
+  rfc: 673
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/dexmal/dexbotic/issues/101"
+  channel: github_issue
+  contact: "dexmal/dexbotic (Dexmal, CN; ~1350 stars, Issues enabled, not archived, very active 2026-08). VLA development + deployment toolbox (pi0/CogACT/OFT/GR00T/NaVILA) with a unified inference API + unified data format + deployment scripts across UR5/Franka/ALOHA/SO-101/Unitree G1."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: CN
+  sector: ai-language
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0673 body to https://github.com/dexmal/dexbotic/issues/101 under idoco2003 (Move #61 PRC open-weight tranche), AI-authoring disclosure up front. Seam: Dexbotic deploys a policy's action onto a specific robot; URML's per-robot capability manifest + envelope is a natural pre-dispatch gate in the deploy/inference path. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Strongest PRC target (deployment toolbox altitude = exactly where a pre-dispatch gate lives). If engaged, build a worked example mapping one deployed policy's action onto a URML manifest (validated, no execution), like examples/epically-powerful. PRC-origin: engaged on open-weight-research grounds, founder-authorized; do not re-pitch beyond a single genuine RFC."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response per enum; offer the worked-example mapping. If silent, no aggressive follow-up."
+  notes: "CN, Dexmal. Open-weight VLA deployment toolbox. Highest-fit PRC target (deploy-path altitude). No license-ask (cross-cite, no vendoring)."
+
+- slug: robobrain-2-5
+  rfc: 674
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/FlagOpen/RoboBrain2.5/issues/36"
+  channel: github_issue
+  contact: "FlagOpen/RoboBrain2.5 (BAAI, CN; ~1126 stars, Issues enabled, not archived, active 2026-02). Embodied foundation model: precise 3D spatial reasoning emitting complete 3D manipulation traces as ordered keypoint sequences under physical constraints, plus affordance prediction + trajectory forecasting."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: CN
+  sector: ai-language
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0674 body to https://github.com/FlagOpen/RoboBrain2.5/issues/36 under idoco2003 (Move #61 PRC open-weight tranche), AI-authoring disclosure up front. Seam: the model emits a 3D keypoint trace; URML checks the trace against the declared reachable workspace + safety envelope before execution. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. BAAI (state-affiliated) open-weight model; founder-authorized on open-weight-research grounds. If engaged, map a predicted keypoint trace onto a URML manifest + envelope (validated, no execution)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the check-the-keypoint-trace-vs-workspace framing."
+  notes: "CN, BAAI. 3D-trace/keypoint output maps cleanly to reachable_workspace + envelope checks. No license-ask."
+
+- slug: univla
+  rfc: 675
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/OpenDriveLab/UniVLA/issues/82"
+  channel: github_issue
+  contact: "OpenDriveLab/UniVLA (Shanghai AI Lab, CN; ~1120 stars, Issues enabled, not archived, active 2025-11). Generalist policy planning in a unified, embodiment-agnostic latent action space, post-trained + decoded to a specific embodiment (real-world arm, LIBERO, CALVIN)."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: CN
+  sector: ai-language
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0675 body to https://github.com/OpenDriveLab/UniVLA/issues/82 under idoco2003 (Move #61 PRC open-weight tranche), AI-authoring disclosure up front. Seam: UniVLA's embodiment-agnostic action is decoded per-embodiment; URML's per-embodiment capability manifest + envelope is the admissibility check at the decode step. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Shanghai AI Lab (state-affiliated) open-weight; founder-authorized. Cleanest conceptual fit (embodiment-agnostic -> per-embodiment admissibility). If engaged, map a decoded UniVLA action onto a URML manifest (validated, no execution)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the per-embodiment-admissibility-at-decode framing."
+  notes: "CN, Shanghai AI Lab. Embodiment-agnostic action space pairs naturally with a per-embodiment admissibility gate. No license-ask."
+
+- slug: rynnvla-002
+  rfc: 676
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/alibaba-damo-academy/RynnVLA-002/issues/27"
+  channel: github_issue
+  contact: "alibaba-damo-academy/RynnVLA-002 (Alibaba DAMO, CN; ~1111 stars, Issues enabled, not archived, active 2025-12). Unified VLA + world model: VLA half maps text+image to a continuous action (Action Transformer, wrist camera + state) on real-world LeRobot arms; world model predicts the next frame given an action."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: CN
+  sector: ai-language
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0676 body to https://github.com/alibaba-damo-academy/RynnVLA-002/issues/27 under idoco2003 (Move #61 PRC open-weight tranche), AI-authoring disclosure up front. Seam: the VLA half emits a concrete continuous action for a real LeRobot arm; URML gates it against the declared capability + envelope before dispatch (static gate complementary to the world-model rollout). No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Alibaba DAMO open-weight; founder-authorized. The static-gate-vs-world-model-rollout framing is a distinctive hook. If engaged, map a RynnVLA-002 action onto a URML LeRobot-arm manifest (validated, no execution)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the emitted-action pre-dispatch gate framing."
+  notes: "CN, Alibaba DAMO. Continuous action for LeRobot arms; static gate complements the world model. No license-ask."
