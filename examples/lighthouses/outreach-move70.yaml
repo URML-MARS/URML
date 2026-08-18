@@ -1,0 +1,129 @@
+# Move #70 outreach ledger. One row per target.
+#
+# Move #70: **nuclear / hazmat remote-handling + haptic teleoperation.** Drawn
+# from slate 4 (the banked, previously-unposted net-new targets); the two lanes
+# that survived a 9-lane widened sweep. Non-PRC (GB/US/NL/IT), all with a real
+# validate-before-actuate seam. Nuclear/hazmat ties URML's safety-envelope
+# identity most directly (you cannot try-and-see in a radiation cell). Posted
+# 2026-08-18 under idoco2003 as GitHub issues, RFCs 0677-0681, VIBE disclosure up
+# front, no license-ask (cross-citation only; SofaHaply GPL cross-cite dropped for
+# weak robot-intent fit before posting).
+#
+# Nuclear / hazmat (RFCs 0677-0679):
+#   - crcopen-ros2 (0677, GB UKAEA, anchor): ros2_control driver to real Comau arms
+#     in nuclear cells -> validate a motion/grasp before the driver dispatches it.
+#   - safe-ros (0678, GB Manchester): formal safety architecture (FRET/MCAPL/Dafny)
+#     that stops the robot before an unsafe move -> URML is the lightweight portable sibling.
+#   - cca-ros (0679, US UT Austin): CCA planner emits joint trajectories to real arms
+#     -> URML consumes the trajectory + validates admissibility (NOT a constraint source).
+#
+# Haptic teleoperation (RFCs 0680-0681):
+#   - senseglove-ros (0680, NL SenseGlove, sub-lane anchor): force-feedback glove via
+#     ros2_control -> validate the teleoperated robot command + the render envelope.
+#   - weart (0681, IT WEART): TouchDIVER haptic-glove SDK (force/texture/thermal) ->
+#     validate the teleoperated grasp + a force/thermal render envelope.
+
+- slug: crcopen-ros2
+  rfc: 677
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/ukaea/CRCOpenROS2Driver/issues/14"
+  channel: github_issue
+  contact: "ukaea/CRCOpenROS2Driver (UK Atomic Energy Authority / RACE, GB; Apache-2.0, ~7 stars, Issues enabled, not archived, active 2026-07). A ros2_control hardware component commanding real Comau arms (NJ130-2.6) via Comau CRCOpen for nuclear R&D."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: GB
+  sector: robot-platform
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0677 body to https://github.com/ukaea/CRCOpenROS2Driver/issues/14 under idoco2003 (Move #70 nuclear/hazmat wave anchor), VIBE disclosure up front. Seam: ros2_control driver to a real Comau arm in a nuclear cell = URML's Layer-1 seam (RFC-0319); validate a motion/grasp against the arm's manifest + envelope before the driver dispatches it. No try-and-see in a radiation cell. Cross-cite only (Comau orl_driver binary is proprietary; not vendored). No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Anchor of the nuclear/hazmat wave; strongest safety-envelope-identity fit. If engaged, a worked example mapping a Comau NJ130 motion/grasp onto a URML manifest (validated, no execution). Do not carpet-bomb UKAEA."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. Nuclear remote-handling is the tightest validate-before-actuate fit; a worked example doubles as a safety-case artifact."
+  notes: "GB, UKAEA/RACE. Apache-2.0. ros2_control driver to real Comau arms, nuclear R&D. Anchor. No license-ask (cross-cite, Comau binary untouched)."
+
+- slug: safe-ros
+  rfc: 678
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/dianabenjumea/Safe-ROS/issues/1"
+  channel: github_issue
+  contact: "dianabenjumea/Safe-ROS (University of Manchester, GB; BSD-3-Clause, ~2 stars, Issues enabled, not archived, active 2026-03). Architecture for autonomous robots in safety-critical domains: FRET + MCAPL + Dafny so a Safety System stops the robot before an unsafe move, in a radiation-store Gazebo sim."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: GB
+  sector: conceptual-peer
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0678 body to https://github.com/dianabenjumea/Safe-ROS/issues/1 under idoco2003 (Move #70). Seam: same 'refuse before the unsafe move' contract as URML, reached via formal methods; URML is the lightweight, declarative, portable sibling (necessary-not-sufficient, does not replace formal verification); a declarative capability+envelope manifest could be a portable front-end their formally-verified safety system enforces. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Closest conceptual sibling in the wave (safety-envelope idea in a formal-methods toolchain). Honest framing held (URML lightweight/portable, not a replacement for formal verification). If engaged, compare one Safe-ROS requirement expressed as a URML envelope."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the complement-not-replace framing."
+  notes: "GB, U Manchester. BSD-3. Formal safety architecture; conceptual peer. No license-ask."
+
+- slug: cca-ros
+  rfc: 679
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/issues/9"
+  channel: github_issue
+  contact: "UTNuclearRoboticsPublic/closed-chain-affordance-ros (UT Austin Nuclear Robotics Group, US; BSD-3-Clause, ~3 stars, Issues enabled, not archived, active 2026-05). Robot-agnostic ROS2 interface to the Closed-Chain Affordance planner; plans joint trajectories (linear/rotational/screw) on real arms (Spot, Kinova Gen3), MoveIt self-collision."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0679 body to https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/issues/9 under idoco2003 (Move #70). Planner-pitch discipline held: URML consumes the CCA-planned trajectory + validates admissibility against a per-robot manifest + envelope before dispatch, NOT a source of planning constraints (RFC-0020). Robot-agnostic interface -> per-robot manifest is the check when it lands on a Spot/Kinova. No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Same group as lanl/nrg-mobile (dropped to avoid org over-touch). Consume-trajectory-and-validate framing. If engaged, validate one CCA trajectory against a URML manifest (no execution)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; keep the consume-and-validate (not constraint-source) framing."
+  notes: "US, UT Austin Nuclear Robotics Group. BSD-3. CCA motion planner; consume-trajectory seam. No license-ask."
+
+- slug: senseglove-ros
+  rfc: 680
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/Adjuvo/senseglove_ros/issues/50"
+  channel: github_issue
+  contact: "Adjuvo/senseglove_ros (SenseGlove, NL; MIT, ~10 stars, Issues enabled, not archived, active 2026-03). ROS 2 (Jazzy) integration of the SenseGlove force-feedback glove via ros2_control."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: NL
+  sector: robot-platform
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0680 body to https://github.com/Adjuvo/senseglove_ros/issues/50 under idoco2003 (Move #70, haptic-teleop sub-lane anchor). Seam twice over: robot side (validate the teleoperated grasp/motion vs the robot manifest + envelope, ros2_control = Layer-1 seam RFC-0319) + operator side (the commanded fingertip-force render has a declared safe max, checkable like any actuation output RFC-0017). No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Haptic-teleop anchor; framed on the ROBOT-INTENT side (teleoperated command) not just haptic render, to keep the fit honest. If engaged, map a teleoperated grasp onto a URML manifest (validated, no execution)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the teleoperated-command validation, render-envelope second."
+  notes: "NL, SenseGlove. MIT. Force-feedback glove via ros2_control; teleop-command + render-envelope fit. No license-ask."
+
+- slug: weart
+  rfc: 681
+  sent_at: "2026-08-18"
+  posted_url: "https://github.com/WEARTHaptics/WEART-SDK-Python/issues/6"
+  channel: github_issue
+  contact: "WEARTHaptics/WEART-SDK-Python (WEART, Milan, IT; MIT, ~4 stars, Issues enabled, not archived, active 2026-02). Low-level Python SDK for the TouchDIVER haptic gloves (send force/texture/thermal effects, read tracking/sensor data); vendor markets teleoperation."
+  last_touch: "2026-08-18"
+  response: none
+  tier: B
+  country: IT
+  sector: component-vendor
+  comments:
+    - date: "2026-08-18"
+      text: "Posted the RFC-0681 body to https://github.com/WEARTHaptics/WEART-SDK-Python/issues/6 under idoco2003 (Move #70, haptic-teleop sub-lane). Seam: robot side (validate the teleoperated grasp vs the robot manifest + envelope) + render side (a commanded force/thermal effect has a declared safe max; an unsafe render refused before it reaches the operator; thermal is a natural envelope fit). No license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-08-18"
+      text: "DONE -- posted 2026-08-18 under idoco2003. Weaker robot-intent fit than senseglove (SDK, not a robot stack); framed on the teleoperated-command + render-envelope angle to stay honest. Thermal-render envelope is the distinctive hook. If silent, accept as dormancy; do not push."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent (borderline fit). If reply, bump last_touch + set response."
+  notes: "IT, WEART Milan. MIT. TouchDIVER haptic-glove SDK; teleop-command + force/thermal render envelope. Borderline robot-intent fit, framed honestly. No license-ask."
