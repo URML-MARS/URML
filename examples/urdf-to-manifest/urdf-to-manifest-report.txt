@@ -1,0 +1,35 @@
+URML: a URDF's own limits, read out and used as a capability-manifest source.
+A URDF already carries per-joint effort / velocity / position limits. This reads
+simple_arm.urdf, takes the gripper finger joint's effort limit as a grasp-force
+cap, and validates a grasp against it. For clemense/yourdfpy#69.
+
+# 1. What the URDF declares (read with the standard library)
+
+  joint                type       effort   velocity   lower    upper
+  shoulder_pan        revolute     45.0     2.00   -2.967    2.967
+  elbow               revolute     30.0     2.50   -1.745    1.745
+  left_finger_joint   prismatic   185.0     0.15    0.000    0.025
+
+# 2. The mapping
+
+  gripper finger joint 'left_finger_joint' effort limit = 185.0
+    -> manipulation.grippers[0].force_max_n = 185.0 N
+  (Effort/velocity/position come from the URDF; frames, object classes, and
+   provenance are deployment context the URDF does not carry, so they are authored.)
+
+# 3. A grasp checked against the URDF-sourced force cap
+
+[VALID] grasp small_part at 60.0 N  (|60.0| <= 185.0)
+   Admissible: within the URDF-sourced 185.0 N cap. Dispatch may proceed.
+
+[REJECTED] grasp small_part at 250.0 N  (|250.0| > 185.0)
+   -> capability.missing_gripper, envelope.force_exceeded
+   envelope.force_exceeded: grasp.force (250.0 N) exceeds the strictest declared force cap (185.0 N).
+   Refused before the gripper closes, on the limit the URDF itself declared.
+
+# Honest altitude
+
+URML reads the URDF's limits and checks a command against them; it does no
+kinematics, no motion planning, and no control. A URDF-to-JSON emission that
+preserves these limits with explicit units (the liburdf direction) would make the
+limit half of this mapping automatic for any validate-before-actuate layer.

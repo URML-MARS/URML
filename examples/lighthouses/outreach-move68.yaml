@@ -48,19 +48,21 @@
   posted_url: "https://github.com/rt-net/crane_x7_ros/issues/217"
   channel: github_issue
   contact: "rt-net/crane_x7_ros (Apache-2.0; RT Corporation, Tokyo, Japan; ~127 stars, Issues enabled, not archived, active 2026-07). The ROS control stack for CRANE-X7, a 7-DoF desktop research and education arm."
-  last_touch: "2026-07-03"
-  response: none
+  last_touch: "2026-08-18"
+  response: declined
   tier: B
   country: JP
   sector: robot-platform
   comments:
     - date: "2026-07-03"
       text: "Posted the RFC-0660 body to https://github.com/rt-net/crane_x7_ros/issues/217 under idoco2003 (Move #68 Japan lane), VIBE disclosure up front, no license-ask (Apache-2.0). Note: swapped the agent's original pick (rt-net/raspimouse_description, description-only = wrong fit) for this real arm-control stack. Hook: a small teaching arm with well-defined reach/payload/gripper-force; validate a motion/grasp pre-dispatch, legible to a student. Awaiting reply."
+    - date: "2026-08-18"
+      text: "Kuwamai (RT-net maintainer) closed #217 as completed with no comment. Silent close: no reply, no discussion conversion, no transfer. Functionally a non-engagement dismissal, not hostile, no AI-flag. Accept gracefully; no reply (same class as the SMACC2 / ros2_ros_bt_py silent closes). response none -> declined."
   claude_directives:
     - date: "2026-07-03"
       text: "DONE -- posted 2026-07-03 under idoco2003. Strong fit (real 7-DoF arm, clean manipulation envelope). RT Corp also makes Sciurus17 (dual-arm) + CRANE+ + Raspberry Pi Mouse; do NOT carpet-bomb rt-net -- crane_x7_ros is the anchor. Teaching-material framing is the hook. If engaged, a worked example mapping a CRANE-X7 grasp onto a URML manifest."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. Education/teaching-arm angle; a worked example doubles as classroom material."
+  next_action: "Declined (Kuwamai silent 'completed' close, no comment, 2026-08-18). No reply, do not re-post, do not carpet-bomb rt-net (Sciurus17/CRANE+/RaspiMouse stay folded). Terminal."
   notes: "Japan (RT Corporation Tokyo). CRANE-X7 7-DoF education arm; clean validate-before-actuate manipulation fit. Anchor for rt-net (Sciurus17/CRANE+/Raspberry Pi Mouse folded). Apache-2.0."
 
 - slug: mujin-controllerclient
