@@ -146,7 +146,7 @@
   posted_url: "https://github.com/clemense/yourdfpy/issues/69"
   channel: github_issue
   contact: "clemense/yourdfpy (MIT, ~286 stars, Issues enabled, not archived, active — Jan 2026 v0.0.60). Clean Python URDF parser + visualizer. Individual (Clemens Eppner). US."
-  last_touch: "2026-08-17"
+  last_touch: "2026-08-18"
   response: engaged
   tier: B
   country: US
@@ -156,11 +156,13 @@
       text: "Posted the RFC-0460 body to https://github.com/clemense/yourdfpy/issues/69 under idoco2003 (Move #39 robot-description/interop-formats wave). Awaiting response."
     - date: "2026-08-17"
       text: "wissem01chiha (maintainer) replied 2026-07-28 with a warm reverse-pitch: showcased his liburdf project (URDF read/serialize-to-JSON/generate-from-3D, UE/Unity bridges, VSCode extension; two years of work) and welcomed feedback and contributions. none -> engaged. Replied (issuecomment-5317490758): the URML-relevant seam is his IR-to-JSON serialization preserving joint/effort limits with units, directly consumable as a capability-manifest source (Robotiq Hand-E example cited as the existing URDF-limits-to-refusal path); offered to contribute a URDF-to-manifest mapping example as a liburdf doc page or test case."
+    - date: "2026-08-18"
+      text: "wissem replied again 2026-08-17 (warm, reciprocal): pushing liburdf cleanups this weekend; JSON serialization is 'yet to come' (needs to finalize the internal graph representation first); said URML 'looks interesting' and 'liburdf can be very useful in this direction' (he'd had the same idea); asked whether anyone in the URML community is interested in his cross-platform Geometry->URDF/XACRO pipeline; welcomed contribution + asked for a star. Replied (issuecomment-5323479718, human/no-em-dash): HONEST that URML's community is small/early (no overclaim), but the Geometry->URDF direction genuinely helps URML's manifest-authoring on-ramp (no clean URDF = can't write a manifest); reaffirmed the offer to write the URDF-to-manifest mapping as a small worked example (real URDF in, validated manifest out, one admissible + one refused), now against a standard URDF or when his JSON lands, his call. STARRED wissem01chiha/liburdf under idoco2003 (genuine reciprocation, he asked, it's relevant)."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move39.md yourdfpy body as a GitHub Issue on clemense/yourdfpy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
       status: done
-  next_action: "Engaged 2026-08-17 via maintainer reverse-pitch (liburdf). Offer on the table: contribute a URDF-to-manifest mapping example to liburdf (contribution-first pattern, [[project_contribution_first_works]]). If he takes it, build the example in HIS repo, small and honest; do not re-ping otherwise."
+  next_action: "Engaged, reciprocal (wissem01chiha / liburdf). Concrete offer live: a URDF-joint/effort-limits -> URML capability-manifest worked example (real URDF in, validated manifest out, one admissible + one refused), buildable NOW against a standard URDF (URML already consumes URDF limits via the ros2_control / Robotiq Hand-E path) or when his liburdf JSON lands. Contribution-first ([[project_contribution_first_works]]); the natural next build if the founder wants to deepen it. Do not re-ping; he is actively engaged."
   notes: "Permissive (MIT). Python-parser vertex. No license-ask."
 
 - slug: orocos-kdl
