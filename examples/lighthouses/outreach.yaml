@@ -169,15 +169,17 @@
   sent_at: 2026-05-22
   channel: github
   contact: "@ouster-lidar"
-  last_touch: 2026-05-22
+  last_touch: "2026-08-19"
   response: engaged
   tier: A
   country: US
   sector: perception
-  comments: []
+  comments:
+    - date: "2026-08-19"
+      text: "Posted the promised close-the-loop on #711 (issuecomment-5346125012, under idoco2003; repo renamed ouster-lidar/ouster-sdk, issue number unchanged). Field-by-field report against Samahu's Qs 1/2/4: beam_count, point_cloud measurement_type + channels + units obligation, time_sync_methods capability list, all shipped in RFC-0039 (Implemented, 2026-06-03) with the OS-1-64 reference declaration in ouster_3d_lidar_cell.yaml. Owned the lateness (the schema landed in June; the report-back is what waited). No ask; corrections invited. Oldest open commitment on the commitments page now closed."
   claude_directives: []
-  next_action: "v0.2 schema iteration threads in beam_count, units-on-point-cloud, time_sync_methods capability list (Samahu Qs 1/2/4); post back on issue #711 when it lands"
-  notes: "Samahu (Ussama Naal, Ouster Inc engineer) gave substantive reply on issue #711 at 2026-05-22 16:48Z on all 5 RFC questions; founder replied 18:01Z. Open Q5 (RFC-0020 lidar review) — Samahu said 'will try'; no nudge needed."
+  next_action: "All four commitments closed (three schema items shipped in RFC-0039, post-back done 2026-08-19). Passive watch: Samahu's open Q5 (RFC-0020 lidar review) stays on his side, no nudge. If he corrects any field mapping, fold it into RFC-0039 as a maintainer-correction note per the octomap/fuse pattern."
+  notes: "Samahu (Ussama Naal, Ouster Inc engineer) gave substantive reply on issue #711 at 2026-05-22 16:48Z on all 5 RFC questions; founder replied 18:01Z. Repo renamed ouster_example -> ouster-sdk (old issue URLs redirect). RFC-0039 credits his answers as the design input."
 - slug: sick
   rfc: 33
   sent_at: 2026-05-22

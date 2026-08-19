@@ -32,12 +32,12 @@ It exists because nine outreach moves and ~100 RFCs produce engagement threads w
 
 Open commitments:
 
-- [ ] **v0.2 schema iteration: `beam_count`** (Samahu Q1).
-- [ ] **v0.2 schema iteration: units-on-point-cloud** (Samahu Q2).
-- [ ] **v0.2 schema iteration: `time_sync_methods` capability list** (Samahu Q4).
-- [ ] **Post back on `ouster_example#711`** when the iteration lands.
+- [x] **v0.2 schema iteration: `beam_count`** (Samahu Q1). DONE 2026-06-03 (RFC-0039, Implemented).
+- [x] **v0.2 schema iteration: units-on-point-cloud** (Samahu Q2). DONE 2026-06-03 (RFC-0039: `point_cloud` measurement type, `channels`, units obligation in Layer-1 text).
+- [x] **v0.2 schema iteration: `time_sync_methods` capability list** (Samahu Q4). DONE 2026-06-03 (RFC-0039).
+- [x] **Post back on `ouster_example#711`** when the iteration lands. DONE 2026-08-19 (issuecomment-5346125012; the schema shipped in June, the report-back is what waited, and the post owns that lateness).
 
-Notes: Samahu's Q5 ("RFC-0020 lidar review — will try") is on his side; URML has nudged once and does not nudge again.
+Notes: Samahu's Q5 ("RFC-0020 lidar review — will try") is on his side; URML has nudged once and does not nudge again. Repo renamed `ouster_example` → `ouster-sdk`; old URLs redirect.
 
 ---
 
