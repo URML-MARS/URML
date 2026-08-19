@@ -1,0 +1,6 @@
+VALIDATION: accepted (educational profile, scout manifest)
+MOTION MODEL: cruise=0.4 m/s, turn=0.1 m/s at 4 Hz, throttle_per_mps=1.25, turn_steer=0.4
+SCHEDULE: 56 ticks -> 14 Oasis infer() calls
+GATE [critical] envelope.max_velocity (derived): satisfied
+GATE: PASSED under the declared motion model.
+OASIS: skipped (hermetic run; pass --live to stream the preview)

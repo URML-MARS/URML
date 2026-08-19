@@ -1,0 +1,4 @@
+# Deployment envelope for the scout. The static cap derives into an implicit
+# critical `always` property (RFC-0667), which is exactly what the kinematic
+# gate in rehearse_oasis.py evaluates over the lowered action schedule.
+max_velocity: 0.5

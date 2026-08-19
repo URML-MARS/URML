@@ -1,0 +1,21 @@
+# A small differential-drive scout patrolling an urban sidewalk, described the
+# same way the GoPiGo3 example describes its buggy: RFC-0630 `drive` / `turn`
+# relative motion under the educational profile. The robot is deliberately
+# ordinary; the point of this example is the rehearsal seam, not the platform.
+manifest_version: "0.1"
+robot_id: urban_scout
+description: Differential-drive sidewalk scout (relative motion, no ROS) for the Oasis rehearsal example.
+
+frames:
+  - name: scout
+    parent: null
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.5            # m/s
+  supports_relative_motion: true
+  max_relative_distance: 5.0   # bound a single `drive` (m)
+
+outputs:
+  named_endpoints:
+    - run_log
