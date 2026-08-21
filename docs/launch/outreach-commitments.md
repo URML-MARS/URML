@@ -132,7 +132,7 @@ Open commitments (both made in the 2026-08-17 reply):
 
 - [x] **RFC-0383 text amendment**: make explicit that the static declared-limits check and the runtime per-action shield (RFC-0667) are two separate mechanisms; the current text reads as one check. DONE 2026-08-20 (new "Two checks, not one" subsection, single-mechanism sentences rewritten, Layer-1 spec §2.12 mirrored).
 - [x] **`examples/executorch-policy/` end-to-end**: export a policy and its URML envelope together via ExecuTorch named data (`.pte`/`.ptd`, `NamedDataMap`), load and run with ExecuTorch, validate outputs pre-dispatch. No ExecuTorch change requested. DONE 2026-08-20 (hermetic bundle + `--live` path; static refusal on the over-scoped envelope, runtime shield veto of one output; first example to exercise the RFC-0667 shield).
-- [ ] **Post back on #20268** with both artifacts once they are on `main`.
+- [x] **Post back on #20268** with both artifacts once they are on `main`. DONE 2026-08-20 (issuecomment-5366854596; both links, the two-check wording, one optional question on the `urml/` named-data key convention).
 
 ---
 

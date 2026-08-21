@@ -44,7 +44,7 @@ Live (exports a real two-output `torch.nn.Module` with `executorch`, reloads it 
 python run_executorch_policy.py --live
 ```
 
-The live path is best-effort against the ExecuTorch APIs documented as of August 2026 (`NamedDataStore`, `to_edge_transform_and_lower`, `executorch.runtime.Runtime`); the hermetic path is the CI contract. Outputs land in `live/` (gitignored).
+First verified live run: 2026-08-20 with `executorch` 1.4.1 and `torch` 2.12 on Windows, producing the same report as the hermetic path (`NamedDataStore` for the envelope blob, `to_edge_transform_and_lower` for the export, `executorch.runtime.Runtime` for the reload and execution). The hermetic path remains the CI contract, because the live one needs a multi-gigabyte dependency set. Outputs land in `live/` (gitignored). One detail the live run taught us: a float32 model returns `0.5 * 1.6` as `0.8000000119`, which the shield correctly treats as over a 0.8 cap, so no synthetic observation sits exactly on the cap.
 
 ## Honesty lines
 
