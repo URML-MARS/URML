@@ -1,0 +1,4 @@
+# The coherent deployment: admissible ceiling min(2.0 mechanical, 0.8 here)
+# = 0.8 m/s, inside the policy's trained 1.0 m/s. Check 1 (static) accepts.
+# Check 2 (runtime) still has work to do: the policy can emit more than 0.8.
+max_velocity: 0.8

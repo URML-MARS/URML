@@ -1,0 +1,7 @@
+profile: [home]
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - wait: {duration: "1s"}
+    - report: {to: run_log, facts: {patrol: started}, status: success}

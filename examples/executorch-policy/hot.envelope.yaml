@@ -1,0 +1,4 @@
+# The over-scoped deployment: admissible ceiling min(2.0, 1.5) = 1.5 m/s,
+# above the policy's trained 1.0 m/s. Check 1 (static) refuses this with
+# capability.learned_policy_exceeds_training before any program runs.
+max_velocity: 1.5
