@@ -61,8 +61,11 @@ ENVELOPE_KEY = "urml/learned_policy.yaml"
 # Synthetic observations: distance-to-goal in metres. The fixed policy maps
 # 0.5 * distance to linear velocity, so 2.4 m asks for 1.2 m/s, above both
 # the deployment cap (0.8) and the trained bound (1.0). That one output is
-# what Check 2 exists to catch.
-OBSERVATIONS: tuple[float, ...] = (0.4, 1.0, 1.6, 2.4, 0.2)
+# what Check 2 exists to catch. No observation lands exactly on the cap: a
+# real float32 model returns 0.5 * 1.6 as 0.8000000119, which the shield
+# correctly treats as over 0.8, and the hermetic Python-float path would
+# not, so the two paths would disagree on a value that is not the point.
+OBSERVATIONS: tuple[float, ...] = (0.4, 1.0, 1.5, 2.4, 0.2)
 POLICY_GAIN = 0.5
 POLICY_YAW_GAIN = 0.1
 DT = 0.25
