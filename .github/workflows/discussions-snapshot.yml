@@ -1,0 +1,68 @@
+name: Discussions snapshot for cloud triage
+
+# The daily Discussions-triage cloud routine cannot reach the GitHub API:
+# its sandbox proxies api.github.com and serves only a pinned set of
+# PR-review operations (GraphQL and REST both return 403). Git transport
+# works, so this workflow snapshots all discussions to the branch
+# meta/discussions-snapshot once a day, an hour before the routine fires
+# at 15:00 UTC. The routine fetches that branch and reads
+# .discussions-snapshot/discussions.json instead of calling the API.
+#
+# The branch is force-pushed as a single commit on top of main each run,
+# so its history stays one commit deep. meta.json carries generated_at;
+# the routine treats a snapshot older than 26 hours as stale and reports
+# instead of triaging from old data.
+
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch discussions via GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api graphql -f query='{repository(owner:"URML-MARS",name:"URML"){discussions(first:50,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{id number title url category{name} updatedAt author{login} answerChosenAt closed comments(first:30){totalCount nodes{id author{login} createdAt body replies(first:20){totalCount nodes{id author{login} createdAt body}}}}}}}}' > /tmp/discussions.json
+          python3 - <<'EOF'
+          import json
+          d = json.load(open('/tmp/discussions.json'))
+          nodes = d['data']['repository']['discussions']['nodes']
+          print(f'snapshot contains {len(nodes)} discussions')
+          EOF
+
+      - name: Push single-commit snapshot branch
+        run: |
+          git checkout -B meta/discussions-snapshot origin/main
+          mkdir -p .discussions-snapshot
+          cp /tmp/discussions.json .discussions-snapshot/discussions.json
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf '{\n "generated_at": "%s",\n "source": ".github/workflows/discussions-snapshot.yml"\n}\n' "$NOW" > .discussions-snapshot/meta.json
+          cat > .discussions-snapshot/README.md <<'EOF'
+          # meta/discussions-snapshot
+
+          Machine-written branch. The scheduled workflow
+          `.github/workflows/discussions-snapshot.yml` on `main` force-pushes a
+          single-commit snapshot of this repo's GitHub Discussions here once a
+          day. The daily Discussions-triage cloud routine reads
+          `discussions.json` from this branch via `git fetch`, because its
+          sandbox cannot reach the GitHub API (the egress proxy serves only a
+          pinned set of PR-review operations).
+
+          Do not base work on this branch. History is intentionally one commit
+          deep on top of main.
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .discussions-snapshot
+          git commit -s -m "meta: discussions snapshot $(date -u +%Y-%m-%d)"
+          git push -f origin meta/discussions-snapshot
