@@ -1,0 +1,127 @@
+# Fixture: Unitree G1 humanoid — RFC-0384 whole-body manifest.
+#
+# SOFTWARE VALIDATION ONLY. This declares the G1's whole-body structure and
+# static-stability envelope so URML can check a retargeted whole-body motion
+# against it BEFORE any hardware runs. It is NOT hardware proof: nothing here
+# has run on a physical G1, and no such claim is made. Every kinematic and
+# stability value is DECLARED, not measured (see the `evidence: source:
+# declared` tag on the whole_body block).
+#
+# It is also NOT a compliance claim. Unitree is a PRC-origin vendor; a real
+# provenance block would be DENIED by the bundled US-federal default policy
+# (see fixtures/manifests/unitree_quadruped_denied.yaml). This manifest carries
+# no provenance block, so Pass 5 is a no-op and the whole-body axis is
+# validated on its own. The two axes — capability and compliance — are
+# deliberately separate.
+#
+# Biped (RFC-0009) + two arms (RFC-0010) + a whole_body block (RFC-0384):
+# 2 legs, 2 arms bound to manipulation.arms, torso; center_of_mass inside the
+# support_polygon, so a statically-stable retarget validates. Its sibling
+# unitree_g1_wholebody_unstable.yaml declares a CoM outside the polygon — the
+# filter that rejects an out-of-envelope retarget.
+
+manifest_version: "0.1"
+robot_id: unitree_g1_wholebody_1
+description: Unitree G1 humanoid, declared whole-body envelope (RFC-0384). Software validation, not hardware proof.
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: staging
+    pose: { x: 4.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: bench
+    pose: { x: 4.0, y: 2.5, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.2
+  station_keeping: true
+
+manipulation:
+  arm_count: 2
+  grippers:
+    - name: left_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 60.0
+      accepted_classes:
+        - payload
+    - name: right_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 60.0
+      accepted_classes:
+        - payload
+  arms:
+    - name: left
+      gripper_ref: left_hand
+    - name: right
+      gripper_ref: right_hand
+
+whole_body:
+  # ~29 declared degrees of freedom across the chains below. Declared, not
+  # measured: these are the structure URML validates a retarget against.
+  chains:
+    - name: left_leg
+      kind: leg
+      dof: 6
+    - name: right_leg
+      kind: leg
+      dof: 6
+    - name: left_arm
+      kind: arm
+      dof: 7
+      arm_ref: left
+    - name: right_arm
+      kind: arm
+      dof: 7
+      arm_ref: right
+    - name: torso
+      kind: torso
+      dof: 3
+  static_stable: true
+  can_carry_while_moving: true
+  max_incline_deg: 12.0
+  max_tilt_deg: 8.0
+  # CoM (x, y) sits inside the support_polygon below → statically stable.
+  center_of_mass: { x: 0.0, y: 0.0, z: 0.70 }
+  support_polygon:
+    - { x: -0.18, y: -0.12 }
+    - { x: 0.18, y: -0.12 }
+    - { x: 0.18, y: 0.12 }
+    - { x: -0.18, y: 0.12 }
+  evidence:
+    source: declared
+    note: >
+      Declared structure and stability envelope, not measured on hardware.
+      URML validates a retargeted motion against these declarations; it makes
+      no claim that the values match a physical G1 or that anything ran on one.
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - payload
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - motion_log
