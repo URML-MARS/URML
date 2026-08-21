@@ -1,0 +1,110 @@
+# Fixture: Unitree G1 humanoid — RFC-0384 whole-body, STATICALLY UNSTABLE.
+#
+# SOFTWARE VALIDATION ONLY, not hardware proof, not a compliance claim (see
+# unitree_g1_wholebody.yaml for the full framing). Identical to that manifest
+# except the declared center_of_mass lies OUTSIDE the declared support_polygon.
+#
+# This is "the filter": a retarget that would leave the robot statically
+# unstable is rejected at Pass 2 with capability.whole_body_unstable_com,
+# before any actuator moves. The CoM/support_polygon check is a static
+# declaration the validator verifies, not a runtime controller model — the
+# honest scope of what URML catches here.
+
+manifest_version: "0.1"
+robot_id: unitree_g1_wholebody_unstable_1
+description: Unitree G1 humanoid with a declared CoM outside its support polygon (RFC-0384 negative).
+
+frames:
+  - name: site
+    parent: null
+  - name: body
+    parent: site
+
+declared_locations:
+  - name: staging
+    pose: { x: 4.0, y: 0.0, z: 0.0 }
+    frame: site
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+
+declared_events:
+  - estop_engaged
+
+mobility:
+  drive_type: biped
+  max_velocity: 1.2
+  station_keeping: true
+
+manipulation:
+  arm_count: 2
+  grippers:
+    - name: left_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 60.0
+      accepted_classes:
+        - payload
+    - name: right_hand
+      kind: compliant
+      force_min_n: 1.0
+      force_max_n: 60.0
+      accepted_classes:
+        - payload
+  arms:
+    - name: left
+      gripper_ref: left_hand
+    - name: right
+      gripper_ref: right_hand
+
+whole_body:
+  chains:
+    - name: left_leg
+      kind: leg
+      dof: 6
+    - name: right_leg
+      kind: leg
+      dof: 6
+    - name: left_arm
+      kind: arm
+      dof: 7
+      arm_ref: left
+    - name: right_arm
+      kind: arm
+      dof: 7
+      arm_ref: right
+    - name: torso
+      kind: torso
+      dof: 3
+  static_stable: true
+  can_carry_while_moving: true
+  max_incline_deg: 12.0
+  max_tilt_deg: 8.0
+  # CoM x = 0.45 is well outside the support_polygon (x in [-0.18, 0.18]).
+  # Statically unstable → rejected with capability.whole_body_unstable_com.
+  center_of_mass: { x: 0.45, y: 0.0, z: 0.70 }
+  support_polygon:
+    - { x: -0.18, y: -0.12 }
+    - { x: 0.18, y: -0.12 }
+    - { x: 0.18, y: 0.12 }
+    - { x: -0.18, y: 0.12 }
+  evidence:
+    source: declared
+    note: Declared structure and stability envelope, not measured on hardware.
+
+perception:
+  cameras:
+    - name: head_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  object_vocabulary:
+    - payload
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - motion_log

@@ -197,6 +197,11 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "digit_wholebody_no_carry": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_no_carry.yaml",
     "digit_wholebody_fourlegs": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_fourlegs.yaml",
     "digit_wholebody_unstable": _VALIDATOR_FIXTURES / "manifests" / "digit_wholebody_unstable.yaml",
+    # Unitree G1 humanoid — declared whole-body envelope (RFC-0384). Software
+    # validation of a retargeted motion, NOT hardware proof or a compliance
+    # claim (PRC-origin; no provenance block, so Pass 5 is a no-op).
+    "unitree_g1_wholebody": _VALIDATOR_FIXTURES / "manifests" / "unitree_g1_wholebody.yaml",
+    "unitree_g1_wholebody_unstable": _VALIDATOR_FIXTURES / "manifests" / "unitree_g1_wholebody_unstable.yaml",
     "optimus_biped": _VALIDATOR_FIXTURES / "manifests" / "optimus_biped.yaml",
     # RFC-0586: dexterous (multi-fingered) hand + grasp_type selector.
     "leap_hand_cell": _VALIDATOR_FIXTURES / "manifests" / "leap_hand_cell.yaml",

@@ -1,0 +1,52 @@
+# URML v0.2 — a retargeted whole-body motion, validated against the envelope.
+#
+# Scenario: humanoid/unitree-g1-retarget
+# Source NL: "Reach for the payload with both hands, pick it up, carry it to
+#             staging, and set it down." (see unitree-g1-retarget.en.txt)
+#
+# THE POINT (RFC-0384, RFC-0010): a motion retargeted onto a humanoid is only
+# safe if it stays inside the robot's whole-body envelope. This program is that
+# retargeted motion expressed in URML: a two-arm (`bimanual together`) reach and
+# lift, a walk to staging while `carrying` the load, and a two-arm place. The
+# validator checks it against the G1 manifest's declared whole_body block —
+# two legs on a biped, both arm chains bound to `manipulation.arms`, the
+# center_of_mass inside the support_polygon (static stability), and the
+# can_carry_while_moving gate — BEFORE any actuator moves.
+#
+# This is SOFTWARE VALIDATION of the declared envelope. It is NOT hardware
+# proof: nothing here has run on a physical G1. Flip the manifest's CoM outside
+# the support_polygon (see
+# reference/validator/tests/fixtures/manifests/unitree_g1_wholebody_unstable.yaml)
+# and the same class of program is rejected with
+# capability.whole_body_unstable_com — the static-stability filter.
+#
+#   urml validate unitree-g1-retarget.urml.yaml \
+#     -m unitree-g1-retarget.manifest.yaml --profile home
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: payload
+        store_as: the_payload
+    - bimanual:
+        mode: together
+        left:
+          target: $the_payload
+          force: firm
+        right:
+          target: $the_payload
+          force: firm
+    - move_to:
+        location: staging
+        carrying: $the_payload
+    - bimanual:
+        mode: together
+        left:
+          mode: place
+          at: staging
+        right:
+          mode: place
+          at: staging

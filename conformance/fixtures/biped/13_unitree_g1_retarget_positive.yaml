@@ -1,0 +1,29 @@
+name: biped/unitree_g1_retarget_positive
+description: >
+  RFC-0384 whole-body, positive. A Unitree G1 humanoid declares a static-stability
+  envelope (center_of_mass inside its support_polygon, can_carry_while_moving: true).
+  A retargeted whole-body motion — pick a payload, then carry it while walking to
+  staging — validates against that envelope and executes hermetically. This is
+  software validation of the declared envelope, explicitly NOT hardware proof:
+  nothing has run on a physical G1. The manifest carries no provenance block, so
+  Pass 5 (compliance) is a no-op; the whole-body axis is checked on its own.
+
+manifest: unitree_g1_wholebody
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: payload, store_as: the_payload }
+      - move_to: { location: staging, carrying: $the_payload }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods: [query_detection, send_navigation_goal]
