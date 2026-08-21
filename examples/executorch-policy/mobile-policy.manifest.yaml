@@ -1,0 +1,29 @@
+# A differential-drive mobile base whose locomotion is a learned policy. The
+# policy's training envelope travels WITH the policy: at export time the
+# `learned_policy` block below is written as a named blob next to the .pte
+# (ExecuTorch named data / .ptd), and at load time it is read back by key and
+# merged into this manifest before validation. The mechanical ceiling is
+# deliberately looser than the trained one, so the deployment envelope decides
+# the admissible ceiling and the two checks have something to disagree about.
+manifest_version: "0.1"
+robot_id: policy_rover
+description: Differential-drive rover driven by an on-device learned locomotion policy (RFC-0383 training envelope, RFC-0667 shield).
+
+mobility:
+  drive_type: differential
+  max_velocity: 2.0          # mechanical; the trained bound below is tighter
+  max_payload: 5.0
+  station_keeping: false
+
+learned_policy:
+  policy_ref: "urml/policy.pte"      # opaque; the .pte this envelope ships with
+  command_ranges:
+    - { quantity: linear_velocity_x, min: -0.5, max: 1.0, unit: m_per_s }
+    - { quantity: yaw_rate,          min: -1.0, max: 1.0, unit: rad_per_s }
+  terrain_classes: [rigid]
+  payload_range: { min: 0.0, max: 5.0, unit: kg }
+  enforcement: reject
+
+outputs:
+  named_endpoints:
+    - run_log

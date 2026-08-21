@@ -1,0 +1,15 @@
+EXPORT: learned_policy envelope packaged with the policy under named-data key 'urml/learned_policy.yaml' (268 bytes)
+LOAD: envelope read back by key and merged into the manifest
+
+CHECK 1 (static, RFC-0383) deploy.envelope max_velocity=0.8: accepted
+CHECK 1 (static, RFC-0383) hot.envelope max_velocity=1.5: REFUSED (capability.learned_policy_exceeds_training)
+
+CHECK 2 (runtime, RFC-0667 shield) under deploy.envelope:
+  obs=0.4 m -> policy proposes speed=0.20 m/s: ALLOW, dispatched
+  obs=1.0 m -> policy proposes speed=0.50 m/s: ALLOW, dispatched
+  obs=1.6 m -> policy proposes speed=0.80 m/s: ALLOW, dispatched
+  obs=2.4 m -> policy proposes speed=1.20 m/s: VETO (would violate envelope.max_velocity); not dispatched
+  obs=0.2 m -> policy proposes speed=0.10 m/s: ALLOW, dispatched
+  dispatched to adapter: 4 of 5 proposals
+
+TWO CHECKS: the static check refused the over-scoped deployment without running anything; the runtime shield vetoed one out-of-range output under a deployment every declaration called coherent. Neither subsumes the other.

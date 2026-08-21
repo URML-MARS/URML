@@ -4,7 +4,7 @@ title: learned_policy, declaring the envelope a learned controller was trained u
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Implemented
 created: 2026-06-04
-updated: 2026-06-04
+updated: 2026-08-20
 supersedes: —
 superseded-by: —
 ---
@@ -27,7 +27,7 @@ superseded-by: —
 
 ## Summary
 
-A growing share of URML's substrate targets are learned locomotion and manipulation policies: a neural controller trained in simulation owns the gait or the grasp, and URML sits above it as the validated-intent layer. A learned policy is only valid inside the distribution it was trained on. A biped walk policy trained for commands up to 1.0 m/s over flat-to-mild terrain has undefined behavior at 2.5 m/s on stairs. URML's static gate is the natural place to refuse intent outside that distribution, but URML v0.1 has no way for a manifest to declare what the policy was trained for. This RFC adds an optional Layer-1 manifest block, `learned_policy`, declaring the training envelope: command ranges, terrain classes, and payload range the policy was trained and validated under. The validator rejects (or warns on) Layer-2 intent whose implied command exceeds the declared training envelope. How a training framework *exports* these limits is out of scope; URML defines the declaration and the static check. No primitive changes. Backward compatible (additive optional block).
+A growing share of URML's substrate targets are learned locomotion and manipulation policies: a neural controller trained in simulation owns the gait or the grasp, and URML sits above it as the validated-intent layer. A learned policy is only valid inside the distribution it was trained on. A biped walk policy trained for commands up to 1.0 m/s over flat-to-mild terrain has undefined behavior at 2.5 m/s on stairs. URML's static gate is the natural place to refuse intent outside that distribution, but URML v0.1 has no way for a manifest to declare what the policy was trained for. This RFC adds an optional Layer-1 manifest block, `learned_policy`, declaring the training envelope: command ranges, terrain classes, and payload range the policy was trained and validated under. The validator rejects (or warns on) Layer-2 intent whose implied command exceeds the declared training envelope. How a training framework *exports* these limits is out of scope; URML defines the declaration and two separate checks against it: a static declaration check before any program is accepted, and a per-action runtime shield (RFC-0667) at dispatch. No primitive changes. Backward compatible (additive optional block).
 
 The surface that demanded this RFC is the recurring "learned-policy-as-substrate" framing across Move #28 and Move #29, and the specific question from the rsl_rl maintainer on [RFC-0377](0377-rsl-rl-outreach.md): could a trained policy export the limits it was trained under? Sibling threads: [RFC-0380 (rl_games)](0380-rl-games-outreach.md), [RFC-0376 (legged_gym)](0376-legged-gym-outreach.md), [RFC-0373 (Open Duck Mini)](0373-open-duck-mini-outreach.md), [RFC-0369 (OmniSafe)](0369-omnisafe-outreach.md), [RFC-0360 (robomimic)](0360-robomimic-outreach.md).
 
@@ -39,7 +39,7 @@ The ML ecosystem URML is engaging makes this concrete. When URML reached rsl_rl 
 
 Three concrete consequences of the gap:
 
-1. **URML cannot honestly bound a learned substrate.** It can check intent against a mechanical `max_velocity`, but the policy's *trained* velocity is a tighter and more meaningful bound that URML has no field for. The static gate is checking the wrong limit.
+1. **URML cannot honestly bound a learned substrate.** It can check intent against a mechanical `max_velocity`, but the policy's *trained* velocity is a tighter and more meaningful bound that URML has no field for. The static gate is checking the wrong limit, and nothing at runtime is checking the policy's actual outputs against the right one.
 2. **The learned-policy engagements have no anchor.** Every "learned-policy-as-substrate" RFC pitches URML as the layer that respects the policy's competence boundary. That pitch needs a manifest field to be real.
 3. **It is the same move URML already makes, applied to a new substrate.** URML declares capability and refuses intent that exceeds it. A training envelope is just the capability of a learned controller, expressed in the terms that controller's validity is defined by.
 
@@ -87,11 +87,20 @@ The `learned_policy` block is **optional**. A manifest without it validates exac
 3. **Strictest-wins with mechanical limits.** The training envelope conjoins with the manifest's mechanical `mobility.max_velocity` and the safety envelope's `max_velocity`, strictest-wins (the existing Pass-3 machinery). The trained bound is usually the tightest, which is the point.
 4. **Enum and shape checks.** `quantity`, `terrain_classes`, and units are validated against their closed sets; unknown values fail.
 
-The validator does **not** load, run, or introspect the policy. `policy_ref` is opaque. URML checks intent against the *declared* envelope; whether the declaration is true is the training framework's responsibility, exactly as a manifest's `max_velocity` is trusted today.
+The validator does **not** load, run, or introspect the policy. `policy_ref` is opaque. The static check compares *declarations* against *declarations*; whether the declaration is true is the training framework's responsibility, exactly as a manifest's `max_velocity` is trusted today. What the policy actually emits at runtime is the second check's job, below.
+
+### Two checks, not one
+
+This RFC and RFC-0667 together describe **two separate mechanisms**, and earlier text here read as if there were one. Stated plainly (amended 2026-08-20, prompted by the ExecuTorch maintainers' review on [pytorch/executorch#20268](https://github.com/pytorch/executorch/issues/20268)):
+
+1. **Check 1, static, this RFC.** `_check_learned_policy` runs in Pass 3 before any program is accepted. It reads only declarations: the trained `command_ranges`, `terrain_classes`, and `payload_range` against the deployment's admissible ceilings (the strictest of `mobility.max_velocity`, the safety envelope's caps, and `validation.terrain_fidelity`). It catches a *deployment* that could ask the policy for more than it was trained for. It never sees a policy output.
+2. **Check 2, runtime, RFC-0667.** The shield gates each action the policy proposes at dispatch and observes the telemetry stream; an out-of-envelope output is vetoed even when every declaration was coherent. It catches a *policy* that emits more than the deployment allows, which a static check cannot, because the output does not exist until the policy runs.
+
+Neither subsumes the other. A coherent declaration does not make a network's outputs bounded, and a runtime veto does not make an over-scoped deployment honest. The worked example at `examples/executorch-policy/` runs both on one policy: the static check refuses an over-scoped envelope, and the shield vetoes a single out-of-range output under a coherent one.
 
 ### Reference runtime changes
 
-No reference runtime must change to stay conformant. A learned-policy substrate adapter (a future Isaac Lab / rsl_rl runtime) reads `learned_policy` for documentation and may surface it, but the enforcement is the validator's, before dispatch. The block is substrate-neutral: it describes the policy's competence boundary, not how any framework trained it.
+No reference runtime must change to stay conformant. A learned-policy substrate adapter (a future Isaac Lab / rsl_rl runtime) reads `learned_policy` for documentation and may surface it. The static enforcement is the validator's, before any program is accepted; per-action enforcement at dispatch is the RFC-0667 shield's, optional and substrate-side (`ShieldedAdapter` wraps any adapter). The block is substrate-neutral: it describes the policy's competence boundary, not how any framework trained it.
 
 ### Conformance suite changes
 
@@ -170,3 +179,5 @@ This is a Spec RFC. Comments belong in the RFC's PR thread on `URML-MARS/URML`.
 Implemented 2026-06-04. Landed: the `LearnedPolicy` / `CommandRange` / `PayloadRange` models + the optional `learned_policy` field on `CapabilityManifest`; the `_check_learned_policy` Pass-2/3 coherence check (terrain within the trained classes; the admissible velocity and payload ceiling, strictest of `mobility` and the safety envelope, against the trained maxima) with severity routed by `enforcement` (`reject` to errors, `warn` to warnings) and two error codes (`capability.learned_policy_terrain_mismatch`, `capability.learned_policy_exceeds_training`); integration tests; and Layer-1 spec §2.12.
 
 The shipped check is the manifest/envelope ceiling form (it catches the case where admissible intent could exceed training regardless of any specific program). Per-primitive intent-to-command inference (reading an explicit `move_to` speed against a command range) and the manipulation command quantities are the documented follow-ons (Unresolved questions 1 and 2). `terrain_classes` reuses the RFC-0381 `terrain_fidelity` enum, now landed.
+
+Amended 2026-08-20: the Detailed design now states explicitly that the static declaration check (this RFC) and the per-action runtime shield (RFC-0667) are two separate mechanisms; earlier wording read as one. Prompted by the ExecuTorch maintainers' review on pytorch/executorch#20268. `examples/executorch-policy/` is the worked example exercising both. The conformance fixture this RFC promised (`learned_policy_biped`) has still not landed and remains a follow-on.
