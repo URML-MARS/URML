@@ -103,14 +103,16 @@
   posted_url: "https://github.com/spencerfolk/rotorpy/issues/42"
   channel: github_issue
   contact: "spencerfolk/rotorpy (MIT, ~267 stars, Issues enabled, Discussions OFF, not archived, active — Mar 2026 v2.1.2). Python multirotor simulator with realistic aerodynamics for education + research, UPenn. US."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-08-23"
+  response: declined
   tier: A
   country: US
   sector: simulator
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0415 body to https://github.com/spencerfolk/rotorpy/issues/42 under idoco2003 (Move #34 aerial-autonomy wave). Awaiting response."
+    - date: "2026-08-23"
+      text: "CLOSED by the maintainer spencerfolk (repo owner, UPenn) on 2026-08-23 as 'completed' with ZERO comments across its life: a silent maintainer close, no engagement, no RFC question answered. none -> declined. A deliberate maintainer close is not something to re-open or bump (same posture as ruckig #257); accepted as a soft decline. No reply posted."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move34.md RotorPy body as a GitHub Issue (Discussions off) on spencerfolk/rotorpy under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."

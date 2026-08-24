@@ -151,14 +151,16 @@
   posted_url: "https://github.com/DoosanRobotics/doosan-robot2/issues/370"
   channel: github_issue
   contact: "doosan-robotics/doosan-robot2 (BSD-3-Clause, ~157 stars, Issues enabled, Discussions OFF, not archived, active — 2026-04-23). Official ROS 2 stack for Doosan collaborative arms. Doosan Robotics. KR (South Korea)."
-  last_touch: "2026-06-07"
-  response: none
+  last_touch: "2026-08-24"
+  response: declined
   tier: B
   country: KR
   sector: component-vendor
   comments:
     - date: "2026-06-07"
       text: "Posted the RFC-0436 body to https://github.com/DoosanRobotics/doosan-robot2/issues/370 under idoco2003 (Move #36 industrial arm-driver wave). Awaiting response."
+    - date: "2026-08-24"
+      text: "CLOSED by DoosanRobotics org member yuri-rocha-dr on 2026-08-24 as 'completed' with ZERO comments: a silent maintainer close, no engagement. none -> declined. Not re-opened or bumped (re-engaging a deliberate close is pushy). Note: URML already ships a DoosanAdapter (cobot-runtime, DRFL), so Doosan substrate support exists regardless; this was driver-maintainer outreach only. No reply posted."
   claude_directives:
     - date: "2026-06-07"
       text: "When authorized, post the posts-move36.md Doosan body as a GitHub Issue on doosan-robotics/doosan-robot2 under idoco2003; set sent_at / posted_url / last_touch; add a posted comment; refresh outreach.db."
