@@ -46,7 +46,7 @@
   posted_url: "https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd"
   channel: moltbook_agent_post
   contact: "Moltbook (moltbook.com) -- social network for AI agents; Reddit-style submolts, X claim-tweet verification, skills-document onboarding. Launched 2026-01-28 (Matt Schlicht); acquired by Meta 2026-03-10. Agent API is SELF-SERVE (POST /api/v1/agents/register -> api_key + claim_url; verified 2026-06-28 via skill.md); the separate developer-app program is early-access. US."
-  last_touch: "2026-06-28"
+  last_touch: "2026-08-07"
   response: none
   tier: B
   country: US
@@ -60,7 +60,14 @@
       text: "CLAIMED + POSTED. Founder claimed the agent via greenvh@gmail.com + X tweet (X account @YahalomiId51861); GET /api/v1/agents/status returned status=claimed 'fully active'. Then posted the demo (founder-approved submolt 'builds', not 'robotics' which does not exist) -> https://www.moltbook.com/post/243080d3-3f2c-4909-abcb-67a1d7696dfd. First real URML agent post. response stays none (no reply yet); do not cite the 0/0 counters."
     - date: "2026-06-29"
       text: "WENT LIVE AS A PARTICIPANT. The 'builds' post got no discovery (low-traffic submolt; the platform's activity concentrates in 'general' with 1000s of comments/thread). Pivot: the agent now participates substantively. Posted 3 on-topic comments in 'general' (founder-approved, human-voice, no em-dash, no self-promo links): on 'Verification is not a post-hoc check' (a1c2ac63), 'Skill accumulation is technical debt' (a1da8a07), 'Active SLAM != robustness' (2b3993f8). Each plants validate-before-actuate / declared-envelope without a pitch. response still none until a real reply."
+    - date: "2026-08-07"
+      text: "REPLY-WATCH GAP FOUND via a live authenticated API check (GET /home + /notifications). The URML agent's Active SLAM comment (post 2b3993f8, comment 008fa7b0) drew a substantive counter-reply from agent lexprotocol on 2026-06-29 17:02 UTC, plus a new follow (followerCount now 2). lexprotocol argues the estimator must carry the safety story because the planner only sees estimator output, so a wrong declared envelope fails the whole stack. It sat UNANSWERED about 6 weeks: the 2026-06-29 reply-watch directive was marked done but never actually ran. A human-voice reply is drafted (concede a corrupted-but-admissible estimate escapes the envelope; hold that the envelope is an independent admissibility check, defense in depth) and is pending founder approval to post. Everything else flat: karma 0, builds demo post 0/0. response stays none because one agent comment reply is not the Moltbook venue adopting URML."
+    - date: "2026-08-07"
+      text: "POSTED the reply to lexprotocol (founder-approved wording). New comment id 10ad2028-6373-4638-b4a0-e9ce6c540f6b, parent 008fa7b0, on post 2b3993f8 (HTTP 201). Notification marked read (1). The reply concedes that a corrupted-but-admissible estimate escapes the envelope, then holds that the envelope is an independent admissibility check so a single corrupted component cannot both cause and authorize the motion. response stays none: this is a one-to-one exchange with a single agent, not the venue adopting URML, and the thread is ~6 weeks cold so no further movement is expected. Watch the same post once for any counter."
   claude_directives:
     - date: "2026-06-29"
       text: "Agent is a live participant now. Reply-watch running on the post + 3 comment threads (home activity + per-thread comment_count). On a real reply: judge if it warrants moving response off none, draft a substantive human-voice answer (no em-dash, no pitch), show founder, post on approval. Comment rate limit 1/20s, 50/day. Keep participation substantive and sparse; this venue spam-flags (is_spam field exists). Do NOT mass-post. Do NOT cite Moltbook counters as engagement."
+      status: done
+    - date: "2026-08-07"
+      text: "Reply-watch must ACTUALLY run against the authenticated API, not be assumed done (the 2026-06-29 one was not). The api_key is nested at agent.api_key in C:/Users/Ido/moltbook-urml-credentials.json; GET https://www.moltbook.com/api/v1/home and /notifications surface replies, follows, and DMs. Pending action: once the founder approves the wording, POST the drafted reply to /api/v1/posts/2b3993f8-64eb-4f21-a5d4-b3bab253560b/comments as a reply to comment 008fa7b0, then record the returned comment id here and mark this done. The thread is about 6 weeks stale, so expect little; still worth closing the loop once. DONE 2026-08-07: founder approved, reply posted as comment 10ad2028-6373-4638-b4a0-e9ce6c540f6b."
       status: done
