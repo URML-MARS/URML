@@ -155,14 +155,16 @@
   sent_at: 2026-05-22
   channel: github
   contact: "@SCHUNK-SE-Co-KG"
-  last_touch: 2026-05-22
-  response: none
+  last_touch: "2026-08-25"
+  response: declined
   tier: A
-  country: US
-  sector: robot-platform
-  comments: []
+  country: DE
+  sector: component-vendor
+  comments:
+    - date: "2026-08-25"
+      text: "CLOSED by the maintainer jonasbeil (SCHUNK-SE-Co-KG org) on 2026-08-25 as 'completed' with ZERO comments across its life: a silent maintainer close, no engagement, no RFC question answered, on schunk_mechatronic_gripper#159 (the RFC-0031 posting). none -> declined. A deliberate maintainer close is not re-opened or bumped (same posture as rotorpy #42 / doosan #370 / ruckig #257). No reply posted. Also corrected two pre-existing fields on this row: country US -> DE (SCHUNK is German) and sector robot-platform -> component-vendor (SCHUNK makes grippers). The RFC-0031 SCHUNK MPG compliant-part reference manifest is URML's own first-party artifact and is unaffected; the vendor never engaged."
   claude_directives: []
-  next_action: "wait 14 d; if silent, nudge via RFC-0031 comment"
+  next_action: "Declined (silent maintainer close 2026-08-25). No further action."
   notes: "first parts-vendor RFC"
 - slug: ouster
   rfc: 32
