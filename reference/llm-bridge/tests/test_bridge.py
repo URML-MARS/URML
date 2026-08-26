@@ -382,6 +382,51 @@ def test_system_prompt_with_envelope(turtlebot_manifest: dict, home_envelope: di
     assert "max_velocity=0.4" in prompt
 
 
+def test_system_prompt_with_extra_context(turtlebot_manifest: dict) -> None:
+    hint = "Robot is in outdoor mode. User prefers metric units."
+    prompt = build_system_prompt(
+        schema=export_schema("program"),
+        manifest=turtlebot_manifest,
+        extra_context=hint,
+    )
+    assert "Deployment context" in prompt
+    assert hint in prompt
+    # extra_context section appears before the schema section
+    assert prompt.index("Deployment context") < prompt.index("URML program JSON Schema")
+
+
+def test_system_prompt_without_extra_context(turtlebot_manifest: dict) -> None:
+    prompt = build_system_prompt(
+        schema=export_schema("program"),
+        manifest=turtlebot_manifest,
+    )
+    assert "Deployment context" not in prompt
+
+
+def test_bridge_extra_context_appears_in_prompt(turtlebot_manifest: dict) -> None:
+    from urml_llm_bridge.providers.echo import EchoProvider
+
+    captured: list[str] = []
+
+    class CapturingProvider(EchoProvider):
+        def complete(self, *, system: str, **kwargs: object) -> str:
+            captured.append(system)
+            return super().complete(system=system, **kwargs)
+
+    hint = "Mission phase: return to base."
+    provider = CapturingProvider(scripted=[json.dumps(RED_MUG_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        extra_context=hint,
+        max_revisions=0,
+        policy=None,
+    )
+    bridge.translate("go home")
+    assert captured, "provider was not called"
+    assert hint in captured[0]
+
+
 def test_default_few_shots_returns_red_mug() -> None:
     shots = default_few_shots()
     assert len(shots) >= 1

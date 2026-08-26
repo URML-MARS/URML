@@ -91,6 +91,7 @@ class Bridge:
         envelope: dict[str, Any] | None = None,
         profiles: tuple[str, ...] = (),
         few_shots: list[FewShot] | None = None,
+        extra_context: str | None = None,
         max_revisions: int = 3,
         policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
     ) -> None:
@@ -105,6 +106,10 @@ class Bridge:
             few_shots:     Examples to inline into the prompt. If omitted, the
                            bridge auto-selects examples that match the active
                            `profiles` via `few_shots_for(profiles)`.
+            extra_context: Optional deployment-specific context injected after the
+                           manifest and envelope summaries on every translation
+                           attempt. Use for runtime state, user preferences, or
+                           mission-phase hints that do not belong in the manifest.
             max_revisions: How many revision attempts to allow after the first
                            emission. `max_revisions=0` means one attempt and out.
             policy:        Compliance policy (RFC-0004) passed to the validator
@@ -118,6 +123,7 @@ class Bridge:
         self._envelope = envelope
         self._profiles = tuple(profiles)
         self._few_shots = few_shots if few_shots is not None else few_shots_for(self._profiles)
+        self._extra_context = extra_context
         self._max_revisions = max_revisions
         self._policy = policy
         self._schema = export_schema("program")
@@ -144,6 +150,7 @@ class Bridge:
                 envelope=self._envelope,
                 profiles=self._profiles,
                 few_shots=self._few_shots,
+                extra_context=self._extra_context,
                 revision_context=revision_context,
             )
             try:
@@ -226,6 +233,7 @@ class FleetBridge:
         member_envelopes: dict[str, dict[str, Any]] | None = None,
         profiles: tuple[str, ...] = (),
         few_shots: list[FewShot] | None = None,
+        extra_context: str | None = None,
         max_revisions: int = 3,
         policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
     ) -> None:
@@ -235,6 +243,7 @@ class FleetBridge:
         self._member_envelopes = member_envelopes
         self._profiles = tuple(profiles)
         self._few_shots = few_shots if few_shots is not None else fleet_few_shots()
+        self._extra_context = extra_context
         self._max_revisions = max_revisions
         self._policy = policy
         self._schema = export_schema("program")
@@ -257,6 +266,7 @@ class FleetBridge:
                 member_manifests=self._member_manifests,
                 profiles=self._profiles,
                 few_shots=self._few_shots,
+                extra_context=self._extra_context,
                 revision_context=revision_context,
             )
             try:

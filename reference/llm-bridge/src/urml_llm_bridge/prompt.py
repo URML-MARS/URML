@@ -52,6 +52,7 @@ def build_system_prompt(
     envelope: dict[str, Any] | None = None,
     profiles: tuple[str, ...] = (),
     few_shots: list[FewShot] | None = None,
+    extra_context: str | None = None,
     revision_context: str | None = None,
 ) -> str:
     """Assemble the full system prompt as a single string.
@@ -62,6 +63,9 @@ def build_system_prompt(
         envelope:         Optional active safety envelope.
         profiles:         Profile names this request targets. Currently informational.
         few_shots:        Examples to include in the prompt. Empty list = no examples.
+        extra_context:    Optional deployment-specific context injected after the manifest
+                          and envelope summaries. Use for runtime state, user preferences,
+                          or mission-phase hints that do not belong in the manifest itself.
         revision_context: When set, appended at the end with the prior emission and
                           the validator's structured errors. Used during the revision loop.
     """
@@ -76,6 +80,11 @@ def build_system_prompt(
     if envelope:
         parts.append("=== Active safety envelope ===")
         parts.append(_summarise_envelope(envelope))
+        parts.append("")
+
+    if extra_context:
+        parts.append("=== Deployment context ===")
+        parts.append(extra_context.strip())
         parts.append("")
 
     if few_shots:
@@ -140,12 +149,17 @@ def build_fleet_system_prompt(
     member_manifests: dict[str, dict[str, Any]],
     profiles: tuple[str, ...] = (),
     few_shots: list[FewShot] | None = None,
+    extra_context: str | None = None,
     revision_context: str | None = None,
 ) -> str:
     """Assemble the system prompt for a multi-robot (fleet) translation.
 
     Mirrors `build_system_prompt`, but summarizes the whole roster (one
     capability summary per member) instead of a single manifest.
+
+    Args:
+        extra_context: Optional deployment-specific context injected after the
+                       roster summary. Same semantics as in `build_system_prompt`.
     """
     parts: list[str] = [_FLEET_INSTRUCTION_HEADER]
     parts.append(f"Active profile(s): {', '.join(profiles) if profiles else '(none declared)'}")
@@ -154,6 +168,11 @@ def build_fleet_system_prompt(
     parts.append("=== Fleet roster ===")
     parts.append(_summarise_roster(roster, member_manifests))
     parts.append("")
+
+    if extra_context:
+        parts.append("=== Deployment context ===")
+        parts.append(extra_context.strip())
+        parts.append("")
 
     if few_shots:
         parts.append("=== Examples ===")

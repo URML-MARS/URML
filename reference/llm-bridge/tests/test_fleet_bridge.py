@@ -101,6 +101,34 @@ def test_fleet_prompt_summarizes_every_member():
     assert "barrier" in prompt and '"type": "on"' in prompt
 
 
+def test_fleet_prompt_with_extra_context():
+    from urml_llm_bridge import build_fleet_system_prompt
+    from urml_validator import export_schema
+
+    hint = "All members are currently docked at base station."
+    prompt = build_fleet_system_prompt(
+        schema=export_schema("program"),
+        roster=ROSTER,
+        member_manifests=MEMBERS,
+        extra_context=hint,
+    )
+    assert "Deployment context" in prompt
+    assert hint in prompt
+    assert prompt.index("Deployment context") < prompt.index("URML program JSON Schema")
+
+
+def test_fleet_prompt_without_extra_context():
+    from urml_llm_bridge import build_fleet_system_prompt
+    from urml_validator import export_schema
+
+    prompt = build_fleet_system_prompt(
+        schema=export_schema("program"),
+        roster=ROSTER,
+        member_manifests=MEMBERS,
+    )
+    assert "Deployment context" not in prompt
+
+
 def test_fleet_bridge_does_not_mutate_inputs():
     program = copy.deepcopy(fleet_few_shots()[1].program)
     provider = EchoProvider(scripted=[json.dumps(program)])
