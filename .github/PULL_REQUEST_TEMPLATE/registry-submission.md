@@ -30,11 +30,11 @@ Fill in each field. The values below populate the row added in `docs/compatible-
 - [ ] The report covers exactly the spec versions declared above. No overclaim.
 - [ ] `CONFORMANCE.md` and `conformance-report.json` are committed at the pinned commit, not floating on `main`.
 - [ ] The conformance report URL above resolves and returns valid JSON.
-- [ ] I have read [TRADEMARK.md](../TRADEMARK.md).
+- [ ] I have read [TRADEMARK.md](https://github.com/URML-MARS/URML/blob/main/TRADEMARK.md).
 
 ## Trademark acknowledgement
 
-- [ ] I understand that being listed in the Compatible Runtimes registry does not grant me a license to use the URML or URML-Certified trademarks beyond the factual descriptor use described in [TRADEMARK.md](../TRADEMARK.md). I will not describe my runtime as "URML-Certified". I will not imply URML endorsement, sponsorship, or affiliation.
+- [ ] I understand that being listed in the Compatible Runtimes registry does not grant me a license to use the URML or URML-Certified trademarks beyond the factual descriptor use described in [TRADEMARK.md](https://github.com/URML-MARS/URML/blob/main/TRADEMARK.md). I will not describe my runtime as "URML-Certified". I will not imply URML endorsement, sponsorship, or affiliation.
 
 ## Maintenance commitment
 

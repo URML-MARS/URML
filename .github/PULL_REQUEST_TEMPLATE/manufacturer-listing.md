@@ -33,12 +33,12 @@ Fill in each field. The values below populate the row added in `docs/manufacture
 - [ ] The declared spec versions match what I actually validated. No overclaim.
 - [ ] My manifest, and my `URML-FEDERAL-VALIDATION.md` if I published one, are committed at the pinned commit, not floating on `main`.
 - [ ] Every URL above resolves at the pinned commit.
-- [ ] I have read [TRADEMARK.md](../TRADEMARK.md) and [docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md](../docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md).
+- [ ] I have read [TRADEMARK.md](https://github.com/URML-MARS/URML/blob/main/TRADEMARK.md) and [docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md](https://github.com/URML-MARS/URML/blob/main/docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md).
 
 ## Trademark and phrasing acknowledgement
 
-- [ ] I understand that being listed in the Manufacturer & Product Directory does not grant me a license to use the URML or `URML-Certified` trademarks beyond the factual descriptor use described in [TRADEMARK.md](../TRADEMARK.md). I will not describe my product as "URML-Certified" or "NDAA compliant by URML". I will not imply URML endorsement, sponsorship, affiliation, or a compliance determination.
-- [ ] If I published a federal-validation self-report, it uses only the factual phrasing permitted in [docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md](../docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md), is pinned to a URML commit, and includes the mandatory "not a certification / not legal advice" disclaimer block.
+- [ ] I understand that being listed in the Manufacturer & Product Directory does not grant me a license to use the URML or `URML-Certified` trademarks beyond the factual descriptor use described in [TRADEMARK.md](https://github.com/URML-MARS/URML/blob/main/TRADEMARK.md). I will not describe my product as "URML-Certified" or "NDAA compliant by URML". I will not imply URML endorsement, sponsorship, affiliation, or a compliance determination.
+- [ ] If I published a federal-validation self-report, it uses only the factual phrasing permitted in [docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md](https://github.com/URML-MARS/URML/blob/main/docs/manufacturers/FEDERAL-VALIDATION-SELF-REPORT.md), is pinned to a URML commit, and includes the mandatory "not a certification / not legal advice" disclaimer block.
 
 ## Maintenance commitment
 

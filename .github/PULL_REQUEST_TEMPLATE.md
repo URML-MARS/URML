@@ -24,7 +24,7 @@ Anything that changes specification semantics needs an accepted RFC first
 
 ## Checklist
 
-- [ ] Commits are **DCO-signed** (`git commit -s`). See [`DCO`](https://github.com/URML-MARS/URML/blob/main/DCO) and [`CONTRIBUTING.md`](../CONTRIBUTING.md).
+- [ ] Commits are **DCO-signed** (`git commit -s`). See [`DCO`](https://github.com/URML-MARS/URML/blob/main/DCO) and [`CONTRIBUTING.md`](https://github.com/URML-MARS/URML/blob/main/CONTRIBUTING.md).
 - [ ] Linked RFC is **Accepted** (or this PR does not change specification semantics).
 - [ ] Tests added or updated for the change; existing tests pass.
 - [ ] Conformance impact considered. If a primitive's contract changed, conformance tests are updated.
