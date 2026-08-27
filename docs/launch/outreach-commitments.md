@@ -102,8 +102,9 @@ Open commitments:
 
 - [x] **Substrate-cut validation acknowledged**: URML's bosdyn-direct `SpotAdapter` (parallel to `PX4Adapter` for MAVLink) is the canonical cut. DONE 2026-05-27 (PR #150).
 - [x] **"Not Boston Dynamics" Q4 redirect accepted**: BD-policy questions go to BD directly. DONE 2026-05-27 (PR #150).
-- [ ] **Q2 capability-vocabulary nits**: frames (`site` + `body` vs `vision` / `odom` / `body`), `perception.cameras` (single aggregate vs five fisheye + arm), `mobility.station_keeping` for posture-hold. Surfaced for optional low-pressure engagement; no Tim-side commitment, but URML's open question.
-- [ ] **Q3 Spot Arm extension**: minimum manifest fields + minimum `SpotAdapter` extension for grasp/release on Spot Arm deployments. Surfaced for optional low-pressure engagement.
+- [x] **Q2 capability-vocabulary nits** answered by a worked manifest. DONE 2026-08-27 (PR #700, `spot_arm.yaml`: `site` root with `vision`/`odom` declared under it, `body` under `vision`, `hand` under `body`; five fisheyes + hand camera declared individually with RFC-0682 `mount`; `station_keeping: true` as the RFC-0009 posture-hold reading).
+- [x] **Q3 Spot Arm extension**: DONE 2026-08-27 (PR #700: manifest minimum = one arm bound to one single-DoF gripper; `SpotAdapter` grasp/release wired behind `arm_attached` via manipulation-api `PickObject` + robot-command claw/stow; Protocol `grasp_type` drift fixed).
+- [x] **Report back on spot_ros2#805.** DONE 2026-08-27 (discussioncomment-18172082; no ask; surfaced the `capture` camera-selector gap as a URML spec question).
 - [ ] **BD-side primary thread** (`spot-cpp-sdk#14`): still `response: none`. No BD-side commitment; URML monitors for any future signal.
 
 ---
