@@ -4,7 +4,7 @@ title: Universal Robots integration — same robot, two URML adapters; request f
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Draft
 created: 2026-05-22
-updated: 2026-05-22
+updated: 2026-08-27
 supersedes: —
 superseded-by: —
 ---
@@ -60,7 +60,7 @@ This is the substrate-neutrality acid test from [RFC-0014](0014-substrate-confor
 |---|---|---|---|
 | `move_to` (named location → pose) | MoveIt 2 plan + `control_msgs/FollowJointTrajectory` via `ur_robot_driver` | `rtde_control.RTDEControlInterface.moveL(vec, speed)` after `CobotConfig.resolve_location(name)` | Named-pose semantics identical; planner differs. |
 | `hover` (station-keeping pose) | Same as `move_to` to a declared home_pose | Same as `move_to` to a declared home_pose | Fixed-base arm; `hover` ≡ `move_to` for industrial profile. |
-| `grasp` | `control_msgs/GripperCommand` on `_BRAND_GRIPPER_SERVER["ur"]` = `/ur/robotiq_gripper/gripper_cmd` (Robotiq is the dominant UR+ gripper) | `_open()` is sufficient at v0.1 fidelity; scalar `force_n` returned via `ManipulationResult.grip_force_n` | RTDE path does not currently command a specific gripper out of the box (UR+ ecosystem ships per-gripper SDKs on top of RTDE — a v0.1 SPEC-GAPS item, [RFC-0017](0017-digital-io-actuation.md) covers raw digital-I/O tool actuation). |
+| `grasp` | `control_msgs/GripperCommand` on the deployment-declared gripper server; **no brand default is baked in** (`_BRAND_GRIPPER_SERVER["ur"]` unset). Robotiq's `/ur/robotiq_gripper/gripper_cmd` is documented as one example only, and note there is no official vendor-maintained ROS 2 Robotiq driver (what exists is community-maintained). | `_open()` is sufficient at v0.1 fidelity; scalar `force_n` returned via `ManipulationResult.grip_force_n` | RTDE path does not currently command a specific gripper out of the box (UR+ ecosystem ships per-gripper SDKs on top of RTDE — a v0.1 SPEC-GAPS item, [RFC-0017](0017-digital-io-actuation.md) covers raw digital-I/O tool actuation). |
 | `release` | Same `GripperCommand` action | Same as `grasp` — `_open()` + `ManipulationResult(success=True)` | |
 | `measure` | One-shot read from `/joint_states` or a wrench topic | `rtde_receive.RTDEReceiveInterface.getActualTCPForce()` | RTDE exposes TCP force directly; ROS 2 path uses MoveIt 2 / `wrench` topics. |
 | `wait_for` (event / threshold / signal) | Block on a ROS topic / latched event | One-shot RTDE read returning `WaitResult(success=True, timed_out=False)` | Threshold-watch via polling on RTDE is a candidate refinement (SPEC-GAPS), not invented here. |
@@ -73,7 +73,7 @@ This is the substrate-neutrality acid test from [RFC-0014](0014-substrate-confor
 | `place_at` (RFC-0013) | Composed: `send_navigation_goal(target)` → `send_manipulation_goal(action="release", release_mode=...)` | Same | |
 | `swap_tool` (RFC-0013) | `send_docking_goal(station=..., service="swap_tool")` → FollowJointTrajectory to tool-change pose | `send_docking_goal(...)` — RTDE adapter returns `not_supported_on_bare_cobot` unless a `docking_stations[]` with `services: [swap_tool]` is declared and a tool-change routine is wired (deployment-specific) | UR+ tool-change stations (Robotiq AGC, ATI QC) are common; the RFC-0013 design does not require a new Protocol method. |
 
-A bare UR cell (UR5e / UR10e + Robotiq gripper + wrist RGB camera) with RFC-0013 industrial primitives is expressible today through **either** adapter and validates ACCEPTED under the bundled US-federal default compliance policy ([RFC-0004](0004-compliance-policy.md)) — Denmark (DK) origin + Teradyne (US) parent passes; `universal_robots` is not on the denylist.
+A bare UR cell (UR5e / UR10e + a manifest-declared UR+ gripper, Robotiq 2F-85 as one example + wrist RGB camera) with RFC-0013 industrial primitives is expressible today through **either** adapter and validates ACCEPTED under the bundled US-federal default compliance policy ([RFC-0004](0004-compliance-policy.md)) — Denmark (DK) origin + Teradyne (US) parent passes; `universal_robots` is not on the denylist.
 
 ### Substrate-neutrality demonstration — the unique-on-UR proof
 
@@ -92,7 +92,7 @@ The PRs that built this proof: Track A (industrial-arm-runtime baseline includin
 - **UR controllers.** `UrAdapter` and `UrRtdeAdapter` both target the URe-series controllers (CB3 deprecated; e-Series and PolyScope 5.x recommended). Future PolyScope X migration is out of scope for v0.1 — the RTDE protocol is the stability anchor.
 - **PolyScope versions.** `ur_rtde >=1.5,<2` (the pinned RTDE Python client) supports PolyScope 5.4 and later. The ROS 2 path requires `ur_robot_driver >=2.0` for ROS 2 Humble / Iron / Jazzy.
 - **MoveIt 2 dependency.** Only the ROS 2 path; the RTDE path is fully MoveIt-free.
-- **Gripper coupling.** Both paths assume a Robotiq 2F-85 or analogous UR+ gripper as the default; alternative grippers (OnRobot RG2 / RG6 / VG10, Schmalz vacuum, Piab vacuum, Soft Robotics) are declared in the manifest and routed through a companion adapter at the deployment layer. The URML manifest fixture for any of those is already shipping (see RFC-0031 SCHUNK, the forthcoming RFC-0032..0036 parts RFCs).
+- **Gripper coupling.** No brand gripper is assumed as a default. The gripper is declared in the manifest and routed through a companion adapter at the deployment layer; Robotiq 2F-85 is documented as one example among many UR+ options (OnRobot RG2 / RG6 / VG10, Schmalz vacuum, Piab vacuum, Soft Robotics). Baking in a brand default was avoided per UR maintainer feedback (2026-08-27): the UR+ catalogue is broad, deployments pick from it, and there is no official vendor-maintained ROS 2 Robotiq driver, so a spec default would couple to a community dependency neither project controls. The URML manifest fixture for any of those grippers is already shipping (see RFC-0031 SCHUNK, the forthcoming RFC-0032..0036 parts RFCs).
 - **Origin.** Universal Robots A/S, Odense, Denmark; Teradyne (US) parent since 2015. DK + Teradyne-US passes the US-federal default policy ([RFC-0003](0003-us-alignment.md) / [0004](0004-compliance-policy.md)) without flagging.
 
 ### Spec changes
@@ -137,12 +137,12 @@ Pre-v1.0; purely additive (new RFC doc + new manifest + new conformance fixture)
 
 ## Unresolved questions
 
-Provisional pending UniversalRobots maintainer feedback:
+**Maintainer feedback received (2026-08-27).** A Universal Robots maintainer (`urrsk`) gave a detailed point-by-point review on [Universal_Robots_ROS2_Driver discussion #1799](https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/discussions/1799). The gripper-default (Q2) and the `sendCustomScript` naming (part of Q3) are corrected in this revision. The deeper modeling their feedback calls for, splitting anonymous-script from named-program invocation and expressing the yield-control / run / reacquire mode-handover, goes into [RFC-0015](0015-control-program-invocation.md), and the clock-authority / per-controller-rate point (Q4) into an [RFC-0016](0016-realtime-cyclic-manifest-block.md) amendment, through the normal RFC process rather than being resolved here.
 
-1. **PolyScope 5 vs PolyScope X path forward.** Should URML's RTDE adapter pin or branch for PolyScope X, or is the RTDE protocol stable enough across the transition that one adapter suffices?
-2. **Gripper-coupling defaults.** Is the Robotiq 2F-85 the right default to document in `_BRAND_GRIPPER_SERVER["ur"]`, or should the brand-default be unset (deployment chooses)?
-3. **URScript invocation.** UR's on-controller scripting language is URScript. [RFC-0015](0015-control-program-invocation.md) (`call_program`) proposes a primitive for invoking a named substrate program. Would UR maintainers support binding RFC-0015 to a URScript invocation over RTDE (`rtde_control.sendCustomScript(...)`) or over the ROS 2 driver?
-4. **Realtime / cyclic execution.** UR's controller runs a 500 Hz realtime loop. Does [RFC-0016](0016-realtime-cyclic-manifest-block.md) (real-time / cyclic manifest block) match the model UR maintainers would endorse for URML manifests targeting UR?
+1. **PolyScope 5 vs PolyScope X path forward.** Answered: RTDE is the stable part across the transition, so the RTDE data exchange does not need a generation branch; the generation distinction belongs only to the layer above it (program loading, program state, URCaps; PolyScope X replaces the Dashboard server with a REST Robot API).
+2. **Gripper-coupling defaults.** Resolved: **unset the brand default; deployment chooses** from the UR+ catalogue, with Robotiq 2F-85 documented as an example only. Applied above (mapping table + compatibility notes).
+3. **URScript invocation.** Naming corrected: `sendCustomScript` is SDU's `ur_rtde`, not the `RTDE_Python_Client_Library` / UR Client Library the ROS 2 driver builds on. The UR-stack path for anonymous script is the secondary interface (port 30002), and on ROS 2 the `urscript_interface` node via `/urscript_interface/script_command`. Named-program invocation is a *separate* mechanism (Dashboard `load`/`play` on PolyScope 5 via the dashboard client services; the REST Robot API on PolyScope X), and on UR it is a mode handover that stops External Control, not a call inside a running trajectory. Also to encode: no argument passing to a `.urp` (values via I/O, RTDE input registers, installation variables, or inlined script) and remote-control mode required on e-Series and newer. The RFC-0015 modeling of this is tracked in [RFC-0015](0015-control-program-invocation.md).
+4. **Realtime / cyclic execution.** Refined: script is evaluated at 500 Hz on e-Series / PolyScope X but 125 Hz on CB3, so a manifest must not hardcode a single rate; and the manifest should state which clock is authoritative, with the endorsable pattern being the external computer slaved to the robot clock (block on incoming RTDE data) rather than running its own loop. Tracked for an [RFC-0016](0016-realtime-cyclic-manifest-block.md) amendment.
 5. **UR+ ecosystem conformance.** Would Universal Robots be open to URML-conformance becoming a UR+ badge criterion in the future? (No commitment requested — exploratory.)
 6. **Which repo for feedback?** Both `Universal_Robots_ROS2_Driver` and `RTDE_Python_Client_Library` have Discussions enabled. Which would maintainers prefer as the canonical thread for this RFC? (URML's Discussions are also available as a neutral venue.)
 
