@@ -27,6 +27,11 @@ name: flexbe-integration
 
 on:
   workflow_dispatch:
+    inputs:
+      run_placeholder:
+        description: Run the unwired e2e placeholder (fails loudly by design)
+        type: boolean
+        default: false
   schedule:
     # Mondays 20:00 UTC (staggered after edu 18:00, cobot 15:00, marine 12:00).
     - cron: '0 20 * * 1'
@@ -67,9 +72,10 @@ jobs:
 
   flexbe-turtlesim-e2e:
     runs-on: ubuntu-24.04
-    # Placeholder until wired: runs on manual dispatch only, so the
-    # weekly cron reports the real smoke/build jobs, not a known exit 1.
-    if: github.event_name == 'workflow_dispatch'
+    # Placeholder until wired: skipped on cron and on plain dispatch, so
+    # the lane stays green on the real jobs. Opt in with the
+    # run_placeholder input; it then fails loudly rather than green-washing.
+    if: github.event_name == 'workflow_dispatch' && inputs.run_placeholder
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
