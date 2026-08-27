@@ -54,7 +54,7 @@ with EmbeddedAdapter(cfg) as buggy:
 **v0.1 (this release):**
 - `EmbeddedAdapter` + `EmbeddedConfig` (pyserial, no ROS). `microbit_edu` manifest + `conformance/fixtures/educational/01_buggy_patrol_positive.yaml` verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `EmbeddedAdapter`). First fixture under the new `educational` profile dir.
 - Hermetic unit tests: nav (configured + unmapped), grasp, measure, scan-stub, lifecycle, the not-supported / not-applicable sentinels, the missing-`[serial]`-extra error, the conformance hook — no pyserial install required.
-- Gated `.github/workflows/embedded-integration.yml`: `embedded-smoke` (real pyserial loopback), `embedded-arm64-build` (Jetson-class QEMU), `embedded-board-e2e` placeholder against a real micro:bit/Arduino (first run is a calibration run by design).
+- Gated `.github/workflows/embedded-integration.yml`: `embedded-smoke` (real pyserial loopback), `embedded-arm64-build` (Jetson-class QEMU), `embedded-board-e2e` placeholder against a real micro:bit/Arduino (manual dispatch only; first run is a calibration run by design).
 
 **Follow-ups (not yet):** RFC-0018 outcome (minimal-MCU subset); a `pyfirmata2` path for stock Firmata sketches.
 
