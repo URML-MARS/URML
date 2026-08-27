@@ -1,0 +1,121 @@
+# Capability manifest for a robot arm tending three CNC machines.
+#
+# For mtconnect/cppagent Discussion #615 (making the MTConnect Task model
+# robot-agnostic). This is the cell robot-ranger described: a robot arm in the
+# centre of a three-CNC machine cell. The arm loads and unloads blanks and
+# finished parts between an infeed bin and three machine chucks.
+#
+# Adapted from examples/industrial/simple-pick-and-place.manifest.yaml (same
+# known-valid, US-compliant provenance shape), so it validates with the bundled
+# policy on or with --no-policy. Illustrative: example_* vendors are fictional,
+# ISO country codes are real, integrity hashes are zeroed placeholders.
+
+manifest_version: "0.1"
+robot_id: cnc_cell_tender
+description: Single-arm robot tending three CNC machines (load/unload blanks and parts).
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: infeed_bin
+    pose: { x: 0.45, y: -0.30, z: 0.10 }
+    frame: cell
+    description: Infeed bin of raw blanks.
+  - name: cnc_1_chuck
+    pose: { x: 0.45, y: 0.25, z: 0.15 }
+    frame: cell
+    description: Load port / chuck of CNC machine 1.
+  - name: cnc_2_chuck
+    pose: { x: 0.00, y: 0.50, z: 0.15 }
+    frame: cell
+    description: Load port / chuck of CNC machine 2.
+  - name: cnc_3_chuck
+    pose: { x: -0.45, y: 0.25, z: 0.15 }
+    frame: cell
+    description: Load port / chuck of CNC machine 3.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+    description: Idle pose between tasks.
+
+declared_events:
+  - safety_door_closed
+  - line_ready
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.50
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: pneumatic_2_finger
+      kind: pneumatic
+      force_min_n: 1.0
+      force_max_n: 60.0
+      accepted_classes: [blank, finished_part, widget]
+      movable: true
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: false
+      supports_stream: false
+      max_resolution: "1080p"
+  sensors:
+    - name: tcp_force
+      measurement_type: pressure
+      range_min: 0.0
+      range_max: 100.0
+      units: N
+  object_vocabulary:
+    - blank
+    - finished_part
+    - widget
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: self_declared
+  attestation_uri: https://example.com/attestations/cnc_cell_tender.signed
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: example_arm_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: wrist_camera
+      role: critical
+      vendor: example_camera_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/wrist_camera.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+    - id: pneumatic_gripper
+      role: critical
+      vendor: example_gripper_vendor
+      country_of_origin: DE
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/pneumatic_gripper.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

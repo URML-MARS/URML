@@ -45,3 +45,29 @@ recorded in RFC-0029 and the commitments page has been met, the
 self-reported tier, link to the row. No ask. Then the Mitsubishi follow-up on
 melfa_ros2_driver discussion #25: the conformance-listing wave hunterzhongME
 deferred on is now real, his Q4 answer welcome whenever.
+
+## 3. Zivid report-back (after RFC-0682 merges)
+
+**Public, on zivid/zivid-ros#163** (posted under idoco2003, VIBE line, no ask):
+
+> Closing the loop on the schema questions from May: RFC-0682 (https://github.com/URML-MARS/URML/blob/main/docs/rfcs/0682-3d-camera-declaration.md) is on main. It follows the guidance from the email exchange rather than inventing shapes: a 3D camera declares its primary product as a color point cloud with per-point attributes (xyz, rgba, snr, normals), accuracy is never a scalar (the manifest points at the per-model datasheet instead), acquisition modes stay the camera's business, and `pick_from` gained no vision-source field. The one open item that was ours to decide, hand-eye calibration, is a `mount` declaration (eye-in-hand or eye-to-hand against a declared frame, with an opaque reference to the calibration artifact). The Zivid Two cell manifest in the repo demonstrates every field. No ask; corrections welcome.
+>
+> AI-assisted prose, maintainer-reviewed before posting (see VIBE.md). Human-only correspondence available on request.
+
+**Email to Espen Holmbakken** (founder-voiced, founder-sent from greenvh@gmail.com; he chose email as the substantive channel):
+
+> Subject: URML follow-up: the 3D-camera schema, built the way you suggested
+>
+> Hi Espen,
+>
+> A short report-back on the exchange from May. You steered us away from recommending schema shapes and toward Zivid's authoritative documentation, and that turned out to be the right instruction. RFC-0682 is now on URML's main branch: a camera declares its primary product as a color point cloud with per-point attributes (xyz, rgba, snr, normals), accuracy is deliberately not a scalar (the manifest carries a pointer to the per-model datasheet, exactly the trueness/precision/working-distance point you made), acquisition modes stay the camera's business, and we dropped the pick_from vision-source idea as you suggested.
+>
+> The one question you left with us, hand-eye calibration, became a small `mount` declaration: eye-in-hand or eye-to-hand against a declared frame, with an opaque reference to the calibration artifact and the geometry riding the frame transforms we already had. No calibration file format invented.
+>
+> The Zivid Two cell manifest in the repo demonstrates every field: https://github.com/URML-MARS/URML/blob/main/reference/validator/tests/fixtures/manifests/zivid_two_cell.yaml
+>
+> Nothing to ask. If any of it misrepresents how Zivid thinks about these fields, I would rather fix it than leave it wrong.
+>
+> Thanks again,
+> Ido
+

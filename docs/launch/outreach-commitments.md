@@ -66,8 +66,9 @@ Open commitments:
 
 - [x] **RFC-0035 "Maintainer engagement received (2026-05-27)" section** reflecting Espen's Q1–Q5 outcomes. DONE 2026-05-27 (PR #155).
 - [x] **Manifest fixture `manifest_attestation: third_party_audited → self_declared`** in `zivid_two_cell.yaml`. DONE 2026-05-27 (PR #155, broadened to all fixtures in PR #157).
-- [ ] **Future Spec RFC: 3D-camera schema extension** (color + per-point attributes parallel to RFC-0039 lidar). Not opened in this round; URML records this as a queued Spec RFC question.
-- [ ] **Q4 hand-eye calibration declaration** — Espen did not address; remains a v0.1 manifest gap. URML notes it as deployment-side concern unless a future RFC says otherwise.
+- [x] **Future Spec RFC: 3D-camera schema extension** (color + per-point attributes parallel to RFC-0039 lidar). DONE 2026-08-27 (RFC-0682: `Camera.point_cloud`, closed-set channels incl. xyz/rgba/snr/normals, `organized`; plus `rate_hz_max`/`time_sync_methods` parity and `datasheet_ref` instead of any scalar accuracy).
+- [x] **Q4 hand-eye calibration declaration** — Espen did not address; URML's call. DONE 2026-08-27 (RFC-0682 `Camera.mount`: `eye_in_hand`/`eye_to_hand` against a declared frame, opaque `calibration_ref`; topology rides RFC-0290 frame transforms, no calibration file format invented).
+- [ ] **Report back** on zivid-ros#163 (short public note) and to Espen by email (founder-voiced draft in `examples/lighthouses/posts-adoption-campaign.md`) once RFC-0682 is on `main`.
 
 ---
 

@@ -4,7 +4,7 @@
 
 manifest_version: "0.1"
 robot_id: zivid_two_cell_1
-description: Single-arm pick-and-place cell with a wrist-mounted RGB camera and an industrial gripper.
+description: Single-arm pick-and-place cell with a fixed Zivid 3D camera, a wrist-mounted RGB camera, and an industrial gripper.
 
 frames:
   - name: cell
@@ -59,6 +59,17 @@ perception:
       supports_video: false
       supports_stream: false
       max_resolution: "5mp"
+      # RFC-0682: the primary product is a 3D color point cloud, not a 2D image.
+      point_cloud:
+        channels: [xyz, rgba, snr, normals]
+        organized: true
+      rate_hz_max: 10.0
+      time_sync_methods: [ptp]
+      datasheet_ref: "zivid://datasheets/zivid-2"     # per-model trueness/precision/working distance; never a scalar here
+      mount:
+        kind: eye_to_hand
+        frame: base_link                              # optical frame expressed in the declared base_link
+        calibration_ref: "cell://calibration/zivid-hand-eye-2026-05"
     - name: wrist_rgb
       movable: true
       supports_photo: true

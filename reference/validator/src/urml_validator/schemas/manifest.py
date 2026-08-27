@@ -442,8 +442,65 @@ class WholeBody(BaseModel):
         return self
 
 
+class PointCloudOutput(BaseModel):
+    """RFC-0682: the primary 3D product of a camera that emits point clouds.
+
+    A 3D camera (structured light, ToF, stereo) stays a `Camera` (it also
+    captures 2D images) and declares its point-cloud product here. Lidar
+    stays on `Sensor.measurement_type: point_cloud` (RFC-0039): lidar
+    declares beams and timing, cameras declare color and organization.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    channels: list[
+        Literal["xyz", "rgba", "rgb", "snr", "normals", "intensity", "amplitude", "confidence", "custom"]
+    ] = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Per-point attributes the cloud carries. Closed set drawn from shipped "
+            "3D cameras (Zivid: xyz, rgba, snr, normals; ToF: amplitude; stereo: "
+            "confidence); `custom` is the escape hatch."
+        ),
+    )
+    organized: bool = Field(
+        False,
+        description="True when the cloud is 2D-organized (one point per image pixel).",
+    )
+
+
+class CameraMount(BaseModel):
+    """RFC-0682: where a camera sits and how its extrinsic was established.
+
+    The topology rides the declared `frames` (RFC-0290 `Frame.transform`);
+    URML defines no calibration file format. `calibration_ref` is an opaque
+    handle to the calibration artifact, documentation only, like `policy_ref`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    frame: Identifier = Field(
+        ...,
+        description=(
+            "Declared frame the camera's optical frame is expressed in: the flange "
+            "or wrist frame for eye-in-hand, a base or cell frame for eye-to-hand."
+        ),
+    )
+    kind: Literal["eye_in_hand", "eye_to_hand"]
+    calibration_ref: str | None = Field(
+        None, description="Opaque handle to the hand-eye calibration artifact. Not parsed."
+    )
+
+
 class Camera(BaseModel):
-    """A camera declared in the manifest's perception block."""
+    """A camera declared in the manifest's perception block.
+
+    URML's Camera block declares **what the camera can do**, not how a
+    deployment configures it (RFC-0682): acquisition modes (HDR, exposure,
+    projector settings) stay substrate-internal, and accuracy is never a
+    scalar; `datasheet_ref` points at the authoritative per-model numbers.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -459,6 +516,28 @@ class Camera(BaseModel):
         description="How this camera's claims were established (RFC-0631). Advisory traceability.",
     )
 
+    # RFC-0682 additions (3D cameras, hand-eye mount, RFC-0039 parity). All
+    # optional and additive; existing manifests validate unchanged.
+    point_cloud: PointCloudOutput | None = Field(
+        None, description="Declared when the camera's primary product is a point cloud (RFC-0682)."
+    )
+    rate_hz_max: float | None = Field(
+        None, gt=0, description="Declared frame-rate ceiling in Hz; the driver may run below it."
+    )
+    time_sync_methods: list[str] | None = Field(
+        None,
+        description="Capability list of supported timestamping methods (free-form; e.g. ptp, ntp).",
+    )
+    datasheet_ref: str | None = Field(
+        None,
+        description=(
+            "Opaque pointer to the authoritative per-model datasheet (trueness, precision, "
+            "working distance). Not parsed; URML never compresses accuracy into a scalar."
+        ),
+    )
+    mount: CameraMount | None = Field(
+        None, description="Where the camera sits and how its extrinsic was established (RFC-0682)."
+    )
 
 class Sensor(BaseModel):
     """A non-camera sensor declared in the manifest's perception block.
@@ -1797,4 +1876,18 @@ class CapabilityManifest(BaseModel):
             if lp.name in seen:
                 raise ValueError(f"duplicate learned_policies name {lp.name!r}.")
             seen.add(lp.name)
+        return self
+
+    @model_validator(mode="after")
+    def _camera_mounts_reference_declared_frames(self) -> CapabilityManifest:
+        """RFC-0682: a camera `mount.frame` must name a declared frame."""
+        if self.perception is None:
+            return self
+        declared = {f.name for f in self.frames}
+        for cam in self.perception.cameras:
+            if cam.mount is not None and cam.mount.frame not in declared:
+                raise ValueError(
+                    f"perception.cameras[{cam.name!r}].mount.frame {cam.mount.frame!r} "
+                    "is not a declared frame."
+                )
         return self
