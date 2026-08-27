@@ -67,6 +67,9 @@ jobs:
 
   flexbe-turtlesim-e2e:
     runs-on: ubuntu-24.04
+    # Placeholder until wired: runs on manual dispatch only, so the
+    # weekly cron reports the real smoke/build jobs, not a known exit 1.
+    if: github.event_name == 'workflow_dispatch'
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
