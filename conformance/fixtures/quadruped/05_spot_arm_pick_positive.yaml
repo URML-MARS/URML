@@ -1,0 +1,57 @@
+name: quadruped/spot_arm_pick_positive
+description: >
+  Spot with the Spot Arm (rai-opensource spot_ros2 Discussion #805 vocabulary):
+  five fixed fisheyes plus a movable hand camera declared individually with an
+  RFC-0682 mount, one arm bound to one single-DoF gripper. The program walks to
+  the inspection point, detects the tote handle through the hand camera, grasps
+  it, walks to the bin, releases it, and reports. Exercises the arm minimum on
+  a legged base through the validator and the MockROSAdapter, hermetically.
+
+manifest: spot_arm
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: inspection_point }
+      - detect:
+          object: tote_handle
+          store_as: handle
+      - grasp:
+          target: $handle
+          force: firm
+      - move_to: { location: drop_bin, carrying: $handle }
+      - release: { mode: drop }
+      - report:
+          to: ops_log
+          facts: { task: tote_retrieval, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: tote_handle
+      pose: { x: 6.2, y: 2.1, z: 0.4 }
+      frame: site
+      confidence: 0.91
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 6
+  audit_methods:
+    - send_navigation_goal
+    - query_detection
+    - send_manipulation_goal
+    - send_navigation_goal
+    - send_manipulation_goal
+    - emit_report
+  bindings_contains:
+    handle:
+      class: tote_handle
