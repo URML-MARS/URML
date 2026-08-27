@@ -1,0 +1,118 @@
+# Fixture: Boston Dynamics Spot with the Spot Arm, declared at the vocabulary
+# the rai-opensource spot_ros2 conversation (Discussion #805) asked about.
+#
+# Frames: `site` is the deployment root; Spot's own `vision` and `odom`
+# frames are declared as children of `site` (named, not geometrically
+# placed: no transform, the RFC-0290 v0.1 posture), `body` hangs off
+# `vision`, and `hand` is the arm's gripper frame under `body`. Cameras:
+# the five fixed body fisheyes and the movable hand camera are declared
+# individually with an RFC-0682 `mount`, not as one aggregate, so
+# `object_detection` and `scan`/`measure` can address them. Arm: the
+# RFC-0010 / RFC-0013 minimum, one arm bound to one single-DoF gripper.
+# `station_keeping: true` is the posture-hold reading RFC-0009 gives a
+# legged robot that actively balances.
+#
+# Honest caveat carried into the thread: `capture` has no camera selector,
+# so a targeted capture validates as long as any declared camera is movable.
+
+manifest_version: "0.1"
+robot_id: spot_arm_1
+description: Spot with Spot Arm, inspection and light manipulation.
+
+frames:
+  - name: site
+    parent: null
+  - name: vision
+    parent: site
+  - name: odom
+    parent: site
+  - name: body
+    parent: vision
+  - name: hand
+    parent: body
+
+declared_locations:
+  - name: inspection_point
+    pose: { x: 6.0, y: 2.0, z: 0.0 }
+    frame: site
+    description: Valve panel to inspect.
+  - name: drop_bin
+    pose: { x: 1.0, y: 1.0, z: 0.0 }
+    frame: site
+    description: Bin the retrieved item is released into.
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Charging dock.
+
+declared_events:
+  - estop_engaged
+  - site_clear
+
+mobility:
+  drive_type: quadruped     # RFC-0009
+  max_velocity: 1.6         # m/s walk cap
+  station_keeping: true     # actively balances: posture-hold, gates `hover` (RFC-0009)
+
+manipulation:
+  arm_count: 1
+  arms:
+    - name: arm
+      gripper_ref: gripper
+  grippers:
+    - name: gripper
+      kind: servo_electric
+      force_min_n: 2.0
+      force_max_n: 130.0
+      accepted_classes: [tote_handle, small_part]
+      movable: true
+  reachable_workspace_m: 0.98
+
+perception:
+  cameras:
+    - name: frontleft_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: frontright_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: left_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: right_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: back_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: hand_color
+      movable: true
+      supports_photo: true
+      supports_video: true
+      max_resolution: "1080p"
+      mount: { frame: hand, kind: eye_in_hand }
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 100.0
+      units: percent
+  object_vocabulary:
+    - person
+    - obstacle
+    - tote_handle
+    - small_part
+  object_detection:
+    - { object_class: person, sensor: frontleft_fisheye }
+    - { object_class: tote_handle, sensor: hand_color }
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - ops_log

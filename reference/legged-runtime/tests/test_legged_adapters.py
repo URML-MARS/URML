@@ -40,6 +40,33 @@ class _FakeGraphNav:
         self.calls.append(("navigate_to_anchor", pose))
 
 
+class _FakeRobotCommand:
+    """Records every robot_command() and still answers stand()."""
+
+    def __init__(self) -> None:
+        self.commands: list[Any] = []
+
+    def stand(self, duration_seconds: float = 0.0) -> None:
+        return None
+
+    def robot_command(self, command: Any) -> None:
+        self.commands.append(command)
+
+
+class _FakeManipulationApi:
+    """Answers a PickObject with one DONE feedback."""
+
+    def __init__(self) -> None:
+        self.requests: list[Any] = []
+
+    def manipulation_api_command(self, *, manipulation_api_request: Any) -> Any:
+        self.requests.append(manipulation_api_request)
+        return SimpleNamespace(manipulation_cmd_id=42)
+
+    def manipulation_api_feedback_command(self, *, manipulation_api_feedback_request: Any) -> Any:
+        return SimpleNamespace(current_state=1)
+
+
 class _FakeRobot:
     def __init__(self) -> None:
         self.powered_off = False
@@ -48,10 +75,11 @@ class _FakeRobot:
         self._clients: dict[str, Any] = {
             "graph-nav": _FakeGraphNav(),
             "docking": SimpleNamespace(dock=lambda station: None),
-            "robot-command": SimpleNamespace(stand=lambda duration_seconds=0.0: None),
+            "robot-command": _FakeRobotCommand(),
             "robot-state": SimpleNamespace(
                 get_robot_state=lambda: SimpleNamespace(battery_percentage=87.0)
             ),
+            "manipulation-api": _FakeManipulationApi(),
         }
 
     def authenticate(self, username: str, password: str) -> None:
@@ -79,9 +107,42 @@ def fake_bosdyn() -> Iterator[_FakeSdk]:
     client_mod.create_standard_sdk = lambda name: sdk  # type: ignore[attr-defined]
     pkg = ModuleType("bosdyn")
     pkg.client = client_mod  # type: ignore[attr-defined]
-    saved = {k: sys.modules.get(k) for k in ("bosdyn", "bosdyn.client")}
-    sys.modules["bosdyn"] = pkg
-    sys.modules["bosdyn.client"] = client_mod
+
+    # Minimal protobuf-shaped fakes for the Spot Arm path (RFC-0043 Q3):
+    # PickObject / Vec3 are plain records; ManipulationFeedbackState.Name maps
+    # the fake feedback's state 1 to DONE.
+    def _record(**kwargs: Any) -> SimpleNamespace:
+        return SimpleNamespace(**kwargs)
+
+    api_mod = ModuleType("bosdyn.api")
+    manip_mod = ModuleType("bosdyn.api.manipulation_api_pb2")
+    manip_mod.ManipulationApiRequest = _record  # type: ignore[attr-defined]
+    manip_mod.PickObject = _record  # type: ignore[attr-defined]
+    manip_mod.ManipulationApiFeedbackRequest = _record  # type: ignore[attr-defined]
+    manip_mod.ManipulationFeedbackState = SimpleNamespace(  # type: ignore[attr-defined]
+        Name=lambda n: {1: "MANIP_STATE_DONE"}.get(n, "MANIP_STATE_UNKNOWN")
+    )
+    geom_mod = ModuleType("bosdyn.api.geometry_pb2")
+    geom_mod.Vec3 = _record  # type: ignore[attr-defined]
+    api_mod.manipulation_api_pb2 = manip_mod  # type: ignore[attr-defined]
+    api_mod.geometry_pb2 = geom_mod  # type: ignore[attr-defined]
+    rc_mod = ModuleType("bosdyn.client.robot_command")
+    rc_mod.RobotCommandBuilder = SimpleNamespace(  # type: ignore[attr-defined]
+        claw_gripper_open_fraction_command=lambda fraction: ("claw_open", fraction),
+        arm_stow_command=lambda: ("arm_stow",),
+    )
+    client_mod.robot_command = rc_mod  # type: ignore[attr-defined]
+
+    fakes = {
+        "bosdyn": pkg,
+        "bosdyn.client": client_mod,
+        "bosdyn.client.robot_command": rc_mod,
+        "bosdyn.api": api_mod,
+        "bosdyn.api.manipulation_api_pb2": manip_mod,
+        "bosdyn.api.geometry_pb2": geom_mod,
+    }
+    saved = {k: sys.modules.get(k) for k in fakes}
+    sys.modules.update(fakes)
     try:
         yield sdk
     finally:
@@ -135,6 +196,33 @@ def test_spot_unsupported_returns_sentinel(fake_bosdyn: _FakeSdk) -> None:
     for r in results:
         assert r.success is False
         assert r.reason is not None and r.reason.startswith("not_supported_on_spot")
+
+
+def test_spot_arm_grasp_and_release(fake_bosdyn: _FakeSdk) -> None:
+    """RFC-0043 Q3: with arm_attached, grasp lowers to a PickObject at the
+    validated target pose and release opens the claw then stows the arm.
+    A bare Spot keeps the sentinel (covered by the test above)."""
+    from urml_legged_runtime import SpotAdapter, SpotConfig
+
+    spot = SpotAdapter(SpotConfig(arm_attached=True, grasp_frame="vision"))
+    grasp = spot.send_manipulation_goal(
+        action="grasp",
+        target={"class": "tote_handle", "pose": {"x": 6.2, "y": 2.1, "z": 0.4}, "frame": "site"},
+        grasp_type="power",  # Protocol parity; the claw ignores it
+    )
+    assert grasp.success is True and grasp.reason is None
+    manip = fake_bosdyn.robot.ensure_client("manipulation-api")
+    sent = manip.requests[0].pick_object
+    assert sent.frame_name == "vision"
+    assert (sent.object_rt_frame.x, sent.object_rt_frame.y, sent.object_rt_frame.z) == (6.2, 2.1, 0.4)
+
+    missing = spot.send_manipulation_goal(action="grasp", target={"class": "tote_handle"})
+    assert missing.success is False and "no resolved pose" in (missing.reason or "")
+
+    release = spot.send_manipulation_goal(action="release", release_mode="drop")
+    assert release.success is True
+    command = fake_bosdyn.robot.ensure_client("robot-command")
+    assert command.commands == [("claw_open", 1.0), ("arm_stow",)]
 
 
 def test_spot_missing_bosdyn_is_actionable(monkeypatch: pytest.MonkeyPatch) -> None:

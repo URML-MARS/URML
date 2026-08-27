@@ -118,6 +118,7 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
     # RFC-0009: legged/quadruped manifests.
     "spot_quadruped": _VALIDATOR_FIXTURES / "manifests" / "spot_quadruped.yaml",
+    "spot_arm": _VALIDATOR_FIXTURES / "manifests" / "spot_arm.yaml",
     "unitree_quadruped_denied": _VALIDATOR_FIXTURES / "manifests" / "unitree_quadruped_denied.yaml",
     # RFC-0474: turtlesim mobile base for the URML <-> FlexBE worked example.
     "turtlesim_mobile": _VALIDATOR_FIXTURES / "manifests" / "turtlesim_mobile.yaml",

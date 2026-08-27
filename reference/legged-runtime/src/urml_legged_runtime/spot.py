@@ -42,23 +42,24 @@ unrecoverable transport break (the runtime wraps that).
 from __future__ import annotations
 
 import os
+import time
 from contextlib import suppress
 from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 from urml_ros2_runtime.substrate.base import (
-    ProgramCallResult,
-    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
+    unsupported_program_call,
 )
 
 from urml_legged_runtime._version import __version__
@@ -99,6 +100,18 @@ class SpotConfig(BaseModel):
         description="Map manifest-declared location names to GraphNav waypoint ids.",
     )
     command_timeout_seconds: float = 10.0
+    arm_attached: bool = Field(
+        default=False,
+        description=(
+            "True when the deployment carries the Spot Arm. Enables grasp/release "
+            "through the manipulation-api and robot-command services; a bare Spot "
+            "keeps returning the not-supported sentinel."
+        ),
+    )
+    grasp_frame: str = Field(
+        default="vision",
+        description="Spot frame a resolved target pose is expressed in for PickObject.",
+    )
 
     def resolve_location(self, name: str) -> str | None:
         """Return the GraphNav waypoint id for a named location, or None."""
@@ -291,7 +304,7 @@ class SpotAdapter:
         )
 
     # ------------------------------------------------------------------
-    # Not supported on a bare Spot
+    # Spot Arm (opt-in via SpotConfig.arm_attached)
     # ------------------------------------------------------------------
 
     def send_manipulation_goal(
@@ -304,8 +317,68 @@ class SpotAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
     ) -> ManipulationResult:
-        return ManipulationResult(success=False, reason=self._reason("arm (Spot Arm SDK not wired in v0.1)"))
+        """Grasp or release with the Spot Arm.
+
+        Grasp lowers to a manipulation-api ``PickObject`` at the resolved
+        target pose (URML validated the target against the manifest before
+        this call; the arm plans its own approach). Release opens the claw
+        via robot-command and stows the arm. ``grasp_type`` is accepted for
+        Protocol parity and ignored: the Spot gripper is a single-DoF claw.
+        A bare Spot (``arm_attached: false``) keeps the sentinel.
+        """
+        if not self._config.arm_attached:
+            return ManipulationResult(success=False, reason=self._reason("arm (arm_attached is false)"))
+        try:
+            if action == "grasp":
+                return self._arm_grasp(target)
+            return self._arm_release()
+        except Exception as exc:  # bosdyn raises RpcError subclasses; keep the reason honest.
+            return ManipulationResult(success=False, reason=f"spot_arm_error: {exc}")
+
+    def _arm_grasp(self, target: dict[str, Any] | None) -> ManipulationResult:
+        pose = (target or {}).get("pose")
+        if not isinstance(pose, dict):
+            return ManipulationResult(success=False, reason="spot_arm_error: grasp target has no resolved pose")
+        from bosdyn.api import geometry_pb2, manipulation_api_pb2  # type: ignore[import-not-found,unused-ignore]
+
+        request = manipulation_api_pb2.ManipulationApiRequest(
+            pick_object=manipulation_api_pb2.PickObject(
+                frame_name=self._config.grasp_frame,
+                object_rt_frame=geometry_pb2.Vec3(
+                    x=float(pose.get("x", 0.0)), y=float(pose.get("y", 0.0)), z=float(pose.get("z", 0.0))
+                ),
+            )
+        )
+        client = self._connect().ensure_client("manipulation-api")
+        response = client.manipulation_api_command(manipulation_api_request=request)
+        feedback_request = manipulation_api_pb2.ManipulationApiFeedbackRequest(
+            manipulation_cmd_id=response.manipulation_cmd_id
+        )
+        deadline = time.monotonic() + self._config.command_timeout_seconds
+        while True:
+            feedback = client.manipulation_api_feedback_command(manipulation_api_feedback_request=feedback_request)
+            state = manipulation_api_pb2.ManipulationFeedbackState.Name(feedback.current_state)
+            if state == "MANIP_STATE_DONE":
+                return ManipulationResult(success=True)
+            if state.startswith("MANIP_STATE_GRASP_FAILED") or state == "MANIP_STATE_GRASP_PLANNING_NO_SOLUTION":
+                return ManipulationResult(success=False, reason=f"spot_arm_grasp_failed: {state}")
+            if time.monotonic() > deadline:
+                return ManipulationResult(success=False, reason="spot_arm_error: grasp feedback timed out")
+            time.sleep(0.1)
+
+    def _arm_release(self) -> ManipulationResult:
+        from bosdyn.client.robot_command import RobotCommandBuilder  # type: ignore[import-not-found,unused-ignore]
+
+        command = self._connect().ensure_client("robot-command")
+        command.robot_command(RobotCommandBuilder.claw_gripper_open_fraction_command(1.0))
+        command.robot_command(RobotCommandBuilder.arm_stow_command())
+        return ManipulationResult(success=True)
+
+    # ------------------------------------------------------------------
+    # Not supported on a bare Spot
+    # ------------------------------------------------------------------
 
     def query_detection(
         self,
