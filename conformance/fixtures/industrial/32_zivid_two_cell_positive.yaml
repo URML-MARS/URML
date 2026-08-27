@@ -3,7 +3,7 @@ description: >
   Track I-C compliant-part fixture — Zivid Two industrial 3D camera (NO, vendor token
   `zivid`). The manifest validates ACCEPTED under the bundled
   US-federal default policy (RFC-0004): allied origin not on the denylist,
-  third-party-audited attestation, hbom_ref present. The program exercises
+  self-declared attestation, hbom_ref present. The program exercises
   the RFC-0013 pick_from/place_at happy path so the part is demonstrated
   end-to-end through the validator + the MockROSAdapter, hermetically.
 

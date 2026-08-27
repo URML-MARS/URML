@@ -4,7 +4,7 @@ title: Zivid integration — request for comment from zivid/zivid-python maintai
 author: Ido Yahalomi (greenvh@gmail.com)
 state: Open
 created: 2026-05-22
-updated: 2026-05-27
+updated: 2026-08-27
 supersedes: —
 superseded-by: —
 ---
@@ -40,6 +40,8 @@ Espen Holmbakken (Principal Engineering Manager, Zivid) replied via email follow
 5. **Manufacturer-directory listing (Q6 in the Unresolved-questions list above).** "We'll pass for now. The project is early and we don't currently participate in third-party conformance registries at this stage." **URML action:** accepted. URML does not re-pitch the directory listing on this surface.
 
 The maintainer did not address Q4 (hand-eye calibration declaration). Calibration remains a v0.1 gap; URML notes it as a deployment-side concern rather than a manifest-level declaration unless a future RFC says otherwise.
+
+**Spec follow-up shipped (2026-08-27).** [RFC-0682](0682-3d-camera-declaration.md) closes both open items from this exchange: `Camera.point_cloud` carries color and per-point attributes (xyz, rgba, snr, normals) for 3D cameras, and `Camera.mount` is the hand-eye decision (eye-in-hand or eye-to-hand against a declared frame, with an opaque `calibration_ref`; the topology rides RFC-0290 frame transforms). It honors the answers above: no scalar accuracy (a `datasheet_ref` pointer instead), no acquisition-mode fields, no `pick_from` vision-source metadata.
 
 ## Summary
 
