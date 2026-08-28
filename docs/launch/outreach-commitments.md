@@ -165,7 +165,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] Harness, positioning doc, RFC-0683 on `main`. DONE 2026-08-28 (PR #705).
 - [x] Blog post live. DONE 2026-08-28 (https://urml.dev/blog/mhs-and-urml/).
 - [x] URML Discussions announcement. DONE 2026-08-28 (discussions/707).
-- [ ] Research-preview application (founder submits; §4.1).
+- [x] Research-preview application. DONE 2026-08-28 (founder submitted the interest form; awaiting Anthropic).
 - [ ] LinkedIn post, then the LinkedIn article (founder; §4.3).
 - [ ] Show HN (founder, US-morning weekday; §4.4).
 - [ ] ROS Discourse (founder; §4.5).
