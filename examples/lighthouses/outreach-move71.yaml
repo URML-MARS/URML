@@ -1,0 +1,31 @@
+# Move #71 outreach ledger. One row per target.
+#
+# Move #71: Anthropic's Model Hardware Standard (MHS, research preview
+# 2026-08-27). Not a cold wave: one target, one channel (the preview
+# application form), and the standing rule that the preview itself is the
+# channel to its partners (no separate cold posts to UR, Doosan, AWS,
+# Automata, Danaher, Tecan, QIAGEN on MHS's back). RFC-0683 records the
+# posture: URML sits above MHS as the validation layer; no compatibility
+# claim until the specification is open.
+#
+# Schema mirrors outreach-move2.yaml. Phase 1 posture: do not massage
+# `response` / `last_touch`; `none` is the truthful default.
+
+- slug: mhs
+  rfc: 683
+  sent_at: ""
+  posted_url: "https://www.modelhardwarestandard.com/"
+  channel: web_form
+  contact: "Anthropic Model Hardware Standard research preview (application form at modelhardwarestandard.com; no public issue tracker; announcement at anthropic.com/news/model-hardware-standard-research-preview). Partners named: Universal Robots, Doosan, AWS, Automata, Danaher, Tecan, QIAGEN, Genentech, HHMI Janelia, UW, CMU, QuEra. US."
+  last_touch: ""
+  response: none
+  tier: A
+  country: US
+  sector: governance-body
+  comments: []
+  claude_directives:
+    - date: "2026-08-28"
+      text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."
+      status: pending
+  next_action: "Application drafted; waiting on the harness merge, then founder submits. Success criteria (adoption): URML validation inside one preview workflow; URML named as the validation layer in MHS materials or community; MhsAdapter merged the week the spec opens. Until preview access: no compatibility claims, no schema changes, no partner cold posts."
+  notes: "The most consequential external event for URML to date. Posture from Manifesto L137 (extend existing description standards, do not reinvent). Differentiators are the whole-program static check, the self-declaration/deployment-envelope split, RFC-0667 shield, RFC-0668 rehearsal, conformance, RFC-0631 evidence; model-agnosticism is shared with MHS, not a differentiator."

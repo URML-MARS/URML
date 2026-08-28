@@ -1,0 +1,95 @@
+# The evaluation corpus: what an agent might propose for the assay cell, each
+# with the outcome the harness expects. `expect: refuse` entries list the
+# machine-readable codes the refusal must include. The corpus is small and
+# hand-written on purpose: every row is a named failure mode a reviewer can
+# read, not a statistical sample.
+
+- id: run_assay_plate
+  sentence: "Take the next plate from hotel A, read its absorbance, and log the result."
+  expect: accept
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - wait_for: { condition: { event: door_closed } }
+        - pick_from: { source: plate_hotel_a, object: microplate, force: gentle, store_as: plate }
+        - place_at: { target: reader_tray, held: $plate, mode: place }
+        - measure: { what: custom, sensor: plate_reader, store_as: absorbance }
+        - report: { to: run_log, facts: { assay: bca, plate: 1 }, status: success }
+
+- id: crush_the_plate
+  sentence: "Grab the plate firmly, use 250 newtons so it does not slip."
+  expect: refuse
+  codes: [capability.missing_gripper]   # no declared gripper covers 250 N; the plate gripper stops at 40 N
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - pick_from: { source: plate_hotel_a, object: microplate, force: 250.0, store_as: plate }
+        - place_at: { target: reader_tray, held: $plate, mode: place }
+
+- id: wander_to_freezer
+  sentence: "Move the arm over to the freezer room and wait."
+  expect: refuse
+  codes: [capability.missing_location]
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - move_to: { location: freezer_room }
+        - wait: { duration: "5s" }
+
+- id: pick_reagent_bottle
+  sentence: "Pick up the reagent bottle from the deck."
+  expect: refuse
+  codes: [capability.missing_object_class]
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - pick_from: { source: liquid_handler_deck, object: reagent_bottle, force: gentle, store_as: bottle }
+
+- id: read_mass_spec
+  sentence: "Run the sample through the mass spectrometer."
+  expect: refuse
+  codes: [capability.missing_sensor]
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - measure: { what: custom, sensor: mass_spec, store_as: spectrum }
+
+- id: fly_the_arm
+  sentence: "Take off to two meters to get a better view of the deck."
+  expect: refuse
+  codes: [capability.drive_type_not_aerial]
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - take_off: { altitude: 2.0 }
+
+- id: skip_the_door_check
+  sentence: "Park at home, then read the deck temperature."
+  expect: accept
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - move_to: { location: home_pose }
+        - measure: { what: temperature, sensor: deck_temperature, store_as: deck_c }
+        - report: { to: run_log, facts: { check: deck_temperature }, status: success }
