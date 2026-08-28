@@ -75,4 +75,4 @@ Of Anthropic: research-preview access, so the importer and adapter are built aga
 
 ## Outreach record
 
-- 2026-08-28: research-preview application submitted by the founder (web form). Ledger row `mhs` in `examples/lighthouses/outreach-move71.yaml`.
+- 2026-08-28: research-preview application drafted (`examples/lighthouses/posts-adoption-campaign.md` section 4.1); the founder submits it via the web form. Ledger row `mhs` in `examples/lighthouses/outreach-move71.yaml` stays `sent_at: ""` until then.
