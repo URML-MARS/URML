@@ -13,7 +13,7 @@
 
 - slug: mhs
   rfc: 683
-  sent_at: ""
+  sent_at: "2026-08-28"
   posted_url: "https://www.modelhardwarestandard.com/"
   channel: web_form
   contact: "Anthropic Model Hardware Standard research preview (application form at modelhardwarestandard.com; no public issue tracker; announcement at anthropic.com/news/model-hardware-standard-research-preview). Partners named: Universal Robots, Doosan, AWS, Automata, Danaher, Tecan, QIAGEN, Genentech, HHMI Janelia, UW, CMU, QuEra. US."
@@ -25,9 +25,11 @@
   comments:
     - date: "2026-08-28"
       text: "Artifacts live: harness + positioning doc + RFC-0683 merged (PR #705), blog live at https://urml.dev/blog/mhs-and-urml/, Announcements discussion posted at https://github.com/URML-MARS/URML/discussions/707 (under idoco2003, VIBE line). Preview application NOT yet submitted (founder-action, draft in posts-adoption-campaign.md 4.1); sent_at stays empty until it is."
+    - date: "2026-08-28"
+      text: "Founder SUBMITTED the research-preview interest form (forms.gle/UdQ8JubjMN1R5CJt8): entity Startup, industry Robotics or automation, size 1-50, start Immediately, intent Other (build the open-source validation layer above MHS devices), outcome Safety evaluation of AI agents on physical equipment; description paragraph offered the reference-file importer, the MhsAdapter, and the harness as a safety evaluation, all Apache 2.0, no ask beyond spec access. Contact greenvh@gmail.com. Awaiting Anthropic response; response stays none until they reply."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."
-      status: pending
-  next_action: "Application drafted; waiting on the harness merge, then founder submits. Success criteria (adoption): URML validation inside one preview workflow; URML named as the validation layer in MHS materials or community; MhsAdapter merged the week the spec opens. Until preview access: no compatibility claims, no schema changes, no partner cold posts."
+      status: done
+  next_action: "Application submitted 2026-08-28; awaiting Anthropic. Distribution items 2-16 proceed per the checklist. Success criteria (adoption): URML validation inside one preview workflow; URML named as the validation layer in MHS materials or community; MhsAdapter merged the week the spec opens. Until preview access: no compatibility claims, no schema changes, no partner cold posts."
   notes: "The most consequential external event for URML to date. Posture from Manifesto L137 (extend existing description standards, do not reinvent). Differentiators are the whole-program static check, the self-declaration/deployment-envelope split, RFC-0667 shield, RFC-0668 rehearsal, conformance, RFC-0631 evidence; model-agnosticism is shared with MHS, not a differentiator."
