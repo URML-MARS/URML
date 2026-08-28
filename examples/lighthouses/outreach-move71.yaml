@@ -37,6 +37,8 @@
       text: "Distribution item 4.6: project submitted via Anthropic's official community intake form (Typeform VIUAjxNi; confirmation received; fields: name, greenvh@gmail.com, harness link, description, location Israel, blog link). Claude Discord post NOT made: server Community Standards prohibit self-promotion and no MHS/physical-AI/showcase channel exists; the browser agent stopped as instructed. Next: Universal Robots warm update (4.7)."
     - date: "2026-08-28"
       text: "Distribution item 4.7 done: UR update posted on the warm #1799 thread (discussioncomment-18192126). Next: OPC Foundation (4.8)."
+    - date: "2026-08-28"
+      text: "Distribution item 4.8 done: OPC Foundation note posted on warm issue #3827 (issuecomment-5456046381). Next: Zivid email with the MHS paragraph (4.9, founder-sent)."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."

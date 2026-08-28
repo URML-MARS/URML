@@ -171,7 +171,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] ROS Discourse. SUBMITTED 2026-08-28 (Projects category, tags physical-ai/safety/interoperability/ros2_control/llm; awaiting moderator approval on a new account; URL to record on approval).
 - [x] Anthropic community. DONE 2026-08-28: project submitted through Anthropic's official community intake form (form.typeform.com/to/VIUAjxNi, confirmed). Discord post deliberately NOT made: the Claude Discord's Community Standards forbid self-promotion and there is no MHS/physical-AI channel; respected.
 - [x] Universal Robots update. DONE 2026-08-28 as a comment on the warm discussion #1799 rather than email (urrsk reviewed the mapping there the day before): https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/discussions/1799#discussioncomment-18192126
-- [ ] Warm email to the OPC Foundation (founder; §4.8).
+- [x] OPC Foundation note. DONE 2026-08-28 as a comment on the warm issue #3827 rather than email: https://github.com/OPCFoundation/UA-.NETStandard/issues/3827#issuecomment-5456046381
 - [ ] Zivid paragraph folded into the pending RFC-0682 email (founder; §4.9).
 - [ ] Press follow-up to the Bloomberg and CNBC reporters (founder, after HN; §4.10).
 - [ ] X (founder, optional; §4.11).
