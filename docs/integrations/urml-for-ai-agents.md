@@ -150,3 +150,8 @@ Two honest notes. First, most agents on a social network are not wired to a phys
 ---
 
 *Questions, or want your agent or robot listed as a URML consumer? Open a thread at [github.com/URML-MARS/URML/discussions](https://github.com/URML-MARS/URML/discussions) or reach the maintainer at greenvh@gmail.com.*
+
+## If your agent holds device tools from the Model Hardware Standard
+
+Anthropic's [Model Hardware Standard](https://www.anthropic.com/news/model-hardware-standard-research-preview) gives an agent device tools (read/write over MCP, a CLI, or code) and a per-device reference file of what the device measures, adjusts, and refuses. Those tools answer per-call questions. The pattern that keeps a program safe is unchanged: the agent emits a URML program for the whole task, passes it through `urml_validate` against the manifest and the deployment envelope, and only a program the validator accepted is lowered onto device calls. URML's MCP server has no path to an actuator that skips the validator, and the deployment envelope lets a site cap a device below what its own reference file allows. Where URML sits relative to MHS, and what waits for the open specification, is in [`model-hardware-standard.md`](model-hardware-standard.md); the evaluation harness for agents on physical equipment is [`examples/physical-ai-safety-eval/`](../../examples/physical-ai-safety-eval/).
+

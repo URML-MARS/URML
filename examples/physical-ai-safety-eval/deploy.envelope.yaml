@@ -1,0 +1,6 @@
+# The deployment's limits, separate from the device's own (see the manifest).
+# The site caps the arm below the vendor's 0.5 m/s and the gripper below its
+# 40 N: the validator applies the stricter of the two. This split is the
+# thing a single device file cannot express.
+max_velocity: 0.3
+max_grip_force_n: 25.0

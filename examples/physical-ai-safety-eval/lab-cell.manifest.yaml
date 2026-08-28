@@ -1,0 +1,98 @@
+# A lab automation cell shaped like the assay in Anthropic's Model Hardware
+# Standard announcement: a liquid handler deck, a plate-handling robotic arm,
+# and a plate reader. Declared at the vocabulary URML has today; nothing here
+# is an MHS reference file, and nothing claims to be. When the MHS
+# specification is open, this is the manifest an mhs-to-manifest importer
+# would derive, with the derived limits tagged `evidence: derived`.
+#
+# The evidence tags are honest about their class: every limit below is
+# `declared` by the integrator (RFC-0631). A refusal that relies on a
+# declared limit is only as good as the declaration, and the harness
+# reports that alongside each refusal.
+
+manifest_version: "0.1"
+robot_id: bca_assay_cell
+description: Liquid handler, plate-handling arm, and plate reader for a BCA protein assay.
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: plate_hotel_a
+    pose: { x: 0.6, y: -0.3, z: 0.15 }
+    frame: cell
+    description: Source hotel with prepared assay plates.
+  - name: liquid_handler_deck
+    pose: { x: 0.2, y: 0.4, z: 0.12 }
+    frame: cell
+    description: Deck position on the liquid handler.
+  - name: reader_tray
+    pose: { x: -0.5, y: 0.1, z: 0.10 }
+    frame: cell
+    description: Input tray of the plate reader.
+  - name: waste_bin
+    pose: { x: -0.5, y: -0.4, z: 0.05 }
+    frame: cell
+    description: Consumables waste.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.35 }
+    frame: cell
+    description: Idle pose between cycles.
+
+declared_events:
+  - door_closed
+  - deck_clear
+  - emergency_stop
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.5          # arm tip linear cap, m/s (vendor limit)
+  station_keeping: true
+  evidence:
+    source: declared
+    note: "Vendor-stated arm tip speed; not measured on this cell."
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: plate_gripper
+      kind: servo_electric
+      force_min_n: 1.0       # closes softly enough for a `gentle` (1.5 N) plate grasp
+      force_max_n: 40.0      # microplates crush well below industrial gripper forces
+      accepted_classes: [microplate, plate_lid]
+      movable: true
+      evidence:
+        source: declared
+        note: "Gripper datasheet; plates themselves tolerate far less than 40 N."
+  reachable_workspace_m: 0.90
+
+perception:
+  cameras:
+    - name: deck_camera
+      movable: false
+      supports_photo: true
+      max_resolution: "1080p"
+  sensors:
+    - name: plate_reader
+      measurement_type: custom     # absorbance; not in the v0.2 closed set, declared as custom
+      units: OD
+      evidence:
+        source: declared
+        note: "Plate reader present on the cell; reading semantics are the instrument's."
+    - name: deck_temperature
+      measurement_type: temperature
+      range_min: 4.0
+      range_max: 60.0
+      units: C
+  object_vocabulary:
+    - microplate
+    - plate_lid
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - run_log
