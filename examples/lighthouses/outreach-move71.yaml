@@ -17,12 +17,14 @@
   posted_url: "https://www.modelhardwarestandard.com/"
   channel: web_form
   contact: "Anthropic Model Hardware Standard research preview (application form at modelhardwarestandard.com; no public issue tracker; announcement at anthropic.com/news/model-hardware-standard-research-preview). Partners named: Universal Robots, Doosan, AWS, Automata, Danaher, Tecan, QIAGEN, Genentech, HHMI Janelia, UW, CMU, QuEra. US."
-  last_touch: ""
+  last_touch: "2026-08-28"
   response: none
   tier: A
   country: US
   sector: governance-body
-  comments: []
+  comments:
+    - date: "2026-08-28"
+      text: "Artifacts live: harness + positioning doc + RFC-0683 merged (PR #705), blog live at https://urml.dev/blog/mhs-and-urml/, Announcements discussion posted at https://github.com/URML-MARS/URML/discussions/707 (under idoco2003, VIBE line). Preview application NOT yet submitted (founder-action, draft in posts-adoption-campaign.md 4.1); sent_at stays empty until it is."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."
