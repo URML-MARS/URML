@@ -173,7 +173,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] Universal Robots update. DONE 2026-08-28 as a comment on the warm discussion #1799 rather than email (urrsk reviewed the mapping there the day before): https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/discussions/1799#discussioncomment-18192126
 - [x] OPC Foundation note. DONE 2026-08-28 as a comment on the warm issue #3827 rather than email: https://github.com/OPCFoundation/UA-.NETStandard/issues/3827#issuecomment-5456046381
 - [x] Zivid paragraph, sent inside the RFC-0682 email. DONE 2026-08-28.
-- [ ] Press follow-up to the Bloomberg and CNBC reporters (founder, after HN; §4.10).
+- [x] Press follow-up. DONE 2026-08-28: three emails from greenvh@gmail.com to the day-one reporters (Bloomberg, CNBC, Fortune), the §4.10 text with the blog and harness links, offering a quote. No reply expected; passive watch.
 - [ ] X (founder, optional; §4.11).
 - [ ] ROSCon UK abstract sentence (I edit; founder submits by Oct 14; §4.12).
 - [ ] Strands Agents integration PR (I build; founder OK before posting; §4.13).
