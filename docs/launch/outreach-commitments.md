@@ -169,7 +169,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] LinkedIn post. DONE 2026-08-28 (founder; refusal-matrix image + blog and harness links). Article version still pending (§4.3).
 - [x] Show HN. DONE 2026-08-28 (https://news.ycombinator.com/item?id=49480890, posted from the 2014 account Yahalomi after the new account hit the Show HN restriction).
 - [x] ROS Discourse. SUBMITTED 2026-08-28 (Projects category, tags physical-ai/safety/interoperability/ros2_control/llm; awaiting moderator approval on a new account; URL to record on approval).
-- [ ] Anthropic developer community note (founder; §4.6).
+- [x] Anthropic community. DONE 2026-08-28: project submitted through Anthropic's official community intake form (form.typeform.com/to/VIUAjxNi, confirmed). Discord post deliberately NOT made: the Claude Discord's Community Standards forbid self-promotion and there is no MHS/physical-AI channel; respected.
 - [ ] Warm email to Universal Robots (founder; §4.7).
 - [ ] Warm email to the OPC Foundation (founder; §4.8).
 - [ ] Zivid paragraph folded into the pending RFC-0682 email (founder; §4.9).
