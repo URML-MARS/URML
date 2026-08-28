@@ -42,7 +42,7 @@
     - date: "2026-08-28"
       text: "Distribution item 4.9 done: founder sent the Zivid email with the MHS paragraph. Next: press follow-up (4.10)."
     - date: "2026-08-28"
-      text: "Distribution item 4.10 done: press follow-up emailed to the three day-one reporters (Bloomberg, CNBC, Fortune) with the blog and harness links and an offer of a quote. Next: LinkedIn article version of the blog (4.4b)."
+      text: "Distribution item 4.10 done: press follow-up emailed to the three day-one reporters (Bloomberg, CNBC, Fortune) with the blog and harness links and an offer of a quote. Bloomberg bounced on the pattern-guessed address; re-sent to the published one (flung6@bloomberg.net). Next: LinkedIn article version of the blog (4.3b)."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."

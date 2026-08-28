@@ -117,6 +117,46 @@ Links every draft uses:
 >
 > Post: <blog link>. Harness: <harness link>.
 
+### 4.3b LinkedIn article (founder profile; the blog in first person, published a few days after the post)
+
+> **Title:** The driver and the language: where URML sits next to Anthropic's Model Hardware Standard
+>
+> Anthropic opened a research preview of the Model Hardware Standard this week. In their words it is a standardized driver, a small set of primitives like read and write that any device can understand, plus discovery over the network and a reference file per device describing what it can measure, what can be adjusted, and what safety limits it will enforce. It is model-agnostic, reachable through MCP, a command line, or code, and it will be open-sourced after Anthropic and its partners build safety evaluations for AI systems that operate physical equipment. Universal Robots and Doosan are launch partners, next to lab-automation vendors and several of the best labs in the world.
+>
+> I have spent the last months building URML, an open language for robot intent. So the obvious question landed on my desk the same day: what is URML for, if MHS exists?
+>
+> **Two different questions**
+>
+> MHS answers: how does an agent find this device, what can it do, and what will it refuse when asked? Those are per-device, per-call questions, and putting the answers in a file the vendor writes is exactly right.
+>
+> URML answers a different one: is this whole program admissible on this hardware, in this deployment, before the first call goes out? A URML program is checked in five passes against the robot's capability manifest and a deployment envelope. A per-call limit at the device catches the fifth action of a bad plan. A program check refuses the plan.
+>
+> The second difference matters more in practice than it sounds. A device's limits are not a deployment's limits. A vendor says the arm may move at 1 m/s. A lab says that in this room, next to these people, it moves at 0.3. MHS puts the device's limits in the device file, which is where they belong. URML keeps the deployment's limits in a separate envelope, and the validator applies the stricter of the two. One artifact cannot express that a site owner is more conservative than a vendor. Two can.
+>
+> **Where URML sits**
+>
+> URML's manifesto has said since the first commit that its hardware layer extends existing description standards rather than reinventing them. MHS is another such standard, and I treat it the way I treat URDF: a source the capability manifest derives from, and a substrate the validated program dispatches to. URML already ships adapters for two of the MHS partners and an OPC UA runtime whose intent-to-node mapping is the closest existing cousin of intent-to-read/write.
+>
+> So this is not a contest. MHS is the driver. URML is the language above it, with the check in between.
+>
+> **The gate Anthropic named, and what I built for it**
+>
+> Anthropic said the standard opens after safety evaluations exist. That is what URML has been building toward: static validation, envelope enforcement at runtime, a rehearsal gate that rolls a program out in simulation before real execution, a conformance suite, and evidence tags on every capability claim.
+>
+> This week I packaged that into an evaluation harness. It takes a corpus of agent intents against a lab cell shaped like the assay in Anthropic's own post (a liquid handler, a robotic arm, a plate reader) and a deployment envelope, and reports which intents are refused and why, in machine-readable codes: a grasp above the gripper's force, a move to a location the cell never declared, a measurement on an instrument that is not there, a flight command on an arm. For every accepted program it reports the envelope-monitor verdict over the rehearsed trace. It measures whether an agent's intent is admissible on declared hardware under a declared envelope. It does not measure physics, and the README says so in its first paragraph.
+>
+> It runs offline, with no model and no device, in a few seconds. Apache 2.0, like everything else in the project.
+>
+> **What I am not claiming**
+>
+> I have not seen the MHS specification. Nothing in URML claims compatibility with it, and nothing in the manifest schema has been bent toward a format I have not read. When the standard is open, two pieces follow: an importer that reads a reference file into a manifest, and an adapter that dispatches URML programs through MHS read and write, so every MHS device becomes a URML target through one adapter. Until then there is a scaffold with a placeholder transport, labeled as such.
+>
+> I applied to the research preview. If you are one of the partners, or you run a lab about to hand an agent a pipetting robot, the harness is the thing to try first.
+>
+> Harness: https://github.com/URML-MARS/URML/tree/main/examples/physical-ai-safety-eval
+> Where URML sits, with the mapping table: https://github.com/URML-MARS/URML/blob/main/docs/integrations/model-hardware-standard.md
+> Original post: https://urml.dev/blog/mhs-and-urml/
+
 ### 4.4 Show HN (founder posts; title + first comment)
 
 Title: `Show HN: URML, a safety-evaluation harness for AI agents operating lab and factory hardware`
