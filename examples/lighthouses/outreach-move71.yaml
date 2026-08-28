@@ -29,6 +29,8 @@
       text: "Founder SUBMITTED the research-preview interest form (forms.gle/UdQ8JubjMN1R5CJt8): entity Startup, industry Robotics or automation, size 1-50, start Immediately, intent Other (build the open-source validation layer above MHS devices), outcome Safety evaluation of AI agents on physical equipment; description paragraph offered the reference-file importer, the MhsAdapter, and the harness as a safety evaluation, all Apache 2.0, no ask beyond spec access. Contact greenvh@gmail.com. Awaiting Anthropic response; response stays none until they reply."
     - date: "2026-08-28"
       text: "Distribution item 4.3 done: founder posted the LinkedIn post (refusal-matrix image, blog + harness links). Post URL not captured. Next: Show HN (4.4)."
+    - date: "2026-08-28"
+      text: "Distribution item 4.4 done: Show HN posted from the founder account Yahalomi (created 2014; a fresh account was blocked by the temporary Show HN restriction): https://news.ycombinator.com/item?id=49480890. Next: ROS Discourse (4.5)."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."
