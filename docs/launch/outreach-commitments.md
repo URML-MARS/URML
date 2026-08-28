@@ -166,7 +166,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] Blog post live. DONE 2026-08-28 (https://urml.dev/blog/mhs-and-urml/).
 - [x] URML Discussions announcement. DONE 2026-08-28 (discussions/707).
 - [x] Research-preview application. DONE 2026-08-28 (founder submitted the interest form; awaiting Anthropic).
-- [ ] LinkedIn post, then the LinkedIn article (founder; §4.3).
+- [x] LinkedIn post. DONE 2026-08-28 (founder; refusal-matrix image + blog and harness links). Article version still pending (§4.3).
 - [ ] Show HN (founder, US-morning weekday; §4.4).
 - [ ] ROS Discourse (founder; §4.5).
 - [ ] Anthropic developer community note (founder; §4.6).
