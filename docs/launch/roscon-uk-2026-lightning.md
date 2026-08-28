@@ -26,7 +26,7 @@ One spoken sentence, one validated program, zero cloud
 
 URML (urml.dev) is an Apache-2.0 intent language that sits above ROS 2 and other substrates. A language model turns a plain sentence into a small YAML program, and a five-pass validator checks that program against the robot's declared capability manifest and safety envelope before anything actuates. A 250 N grasp on a 100 N gripper is refused on paper, not attempted on hardware.
 
-In three minutes, live on one laptop with no cloud anywhere: speak a sentence into a microphone, watch whisper.cpp transcribe it and a local LLM emit URML, watch the validator reject an over-limit variant with a machine-readable reason, then watch the accepted program execute as a step-by-step trace. The interesting part is not the LLM. It is the boundary: models may be wrong, declarations are checkable, and nothing moves without passing the check. Everything shown is open source and reproducible from the repository.
+In three minutes, live on one laptop with no cloud anywhere: speak a sentence into a microphone, watch whisper.cpp transcribe it and a local LLM emit URML, watch the validator reject an over-limit variant with a machine-readable reason, then watch the accepted program execute as a step-by-step trace. The interesting part is not the LLM. It is the boundary: models may be wrong, declarations are checkable, and nothing moves without passing the check. Everything shown is open source and reproducible from the repository. The demo now includes the validator refusing an out-of-limit action against a device manifest shaped like Anthropic's Model Hardware Standard reference file.
 
 ## Demo run-of-show (3:00)
 
