@@ -69,7 +69,7 @@ Open commitments:
 - [x] **Future Spec RFC: 3D-camera schema extension** (color + per-point attributes parallel to RFC-0039 lidar). DONE 2026-08-27 (RFC-0682: `Camera.point_cloud`, closed-set channels incl. xyz/rgba/snr/normals, `organized`; plus `rate_hz_max`/`time_sync_methods` parity and `datasheet_ref` instead of any scalar accuracy).
 - [x] **Q4 hand-eye calibration declaration** — Espen did not address; URML's call. DONE 2026-08-27 (RFC-0682 `Camera.mount`: `eye_in_hand`/`eye_to_hand` against a declared frame, opaque `calibration_ref`; topology rides RFC-0290 frame transforms, no calibration file format invented).
 - [x] **Public report-back on zivid-ros#163.** DONE 2026-08-27 (issuecomment-5435419773; RFC-0682 link, the four decisions, no ask).
-- [ ] **Email to Espen Holmbakken** (founder-voiced, founder-sent; draft in `examples/lighthouses/posts-adoption-campaign.md` §3). Founder action.
+- [x] **Email to Espen Holmbakken.** DONE 2026-08-28 (founder sent the reply in the May thread: RFC-0682 report-back plus the MHS paragraph). Every Zivid promise is now closed.
 
 ---
 
@@ -172,7 +172,7 @@ Distribution checklist (nothing precedes the artifact; founder-voiced channels c
 - [x] Anthropic community. DONE 2026-08-28: project submitted through Anthropic's official community intake form (form.typeform.com/to/VIUAjxNi, confirmed). Discord post deliberately NOT made: the Claude Discord's Community Standards forbid self-promotion and there is no MHS/physical-AI channel; respected.
 - [x] Universal Robots update. DONE 2026-08-28 as a comment on the warm discussion #1799 rather than email (urrsk reviewed the mapping there the day before): https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/discussions/1799#discussioncomment-18192126
 - [x] OPC Foundation note. DONE 2026-08-28 as a comment on the warm issue #3827 rather than email: https://github.com/OPCFoundation/UA-.NETStandard/issues/3827#issuecomment-5456046381
-- [ ] Zivid paragraph folded into the pending RFC-0682 email (founder; §4.9).
+- [x] Zivid paragraph, sent inside the RFC-0682 email. DONE 2026-08-28.
 - [ ] Press follow-up to the Bloomberg and CNBC reporters (founder, after HN; §4.10).
 - [ ] X (founder, optional; §4.11).
 - [ ] ROSCon UK abstract sentence (I edit; founder submits by Oct 14; §4.12).

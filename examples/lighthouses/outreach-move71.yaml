@@ -39,6 +39,8 @@
       text: "Distribution item 4.7 done: UR update posted on the warm #1799 thread (discussioncomment-18192126). Next: OPC Foundation (4.8)."
     - date: "2026-08-28"
       text: "Distribution item 4.8 done: OPC Foundation note posted on warm issue #3827 (issuecomment-5456046381). Next: Zivid email with the MHS paragraph (4.9, founder-sent)."
+    - date: "2026-08-28"
+      text: "Distribution item 4.9 done: founder sent the Zivid email with the MHS paragraph. Next: press follow-up (4.10)."
   claude_directives:
     - date: "2026-08-28"
       text: "Founder submits the preview application (draft in posts-adoption-campaign.md section 4.1) once the safety-eval harness PR is merged so the link is live; then set sent_at / last_touch, add a posted comment, refresh outreach.db. Distribution items 2-16 of the plan follow the artifact, never precede it."
