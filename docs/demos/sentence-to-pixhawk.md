@@ -180,8 +180,9 @@ Tools/autotest/sim_vehicle.py -v ArduCopter --console --map \
 ```
 
 Set these SITL parameters once so camera, gripper, and winch commands are
-acknowledged: `CAM_TRIGG_TYPE 1`, `GRIP_ENABLE 1`, `GRIP_TYPE 1`,
-`WINCH_TYPE 1`. Then:
+acknowledged: `CAM1_TYPE 1`, `GRIP_ENABLE 1`, `GRIP_TYPE 1`, `WINCH_TYPE 1`
+(PWM), with a servo function assigned to each (`SERVO9_FUNCTION 10` camera
+trigger, `SERVO10_FUNCTION 28` gripper, `SERVO11_FUNCTION 88` winch). Then:
 
 ```bash
 URML_ARDUPILOT_SITL=1 URML_ARDUPILOT_SITL_URL=udp:0.0.0.0:14550 \
@@ -189,10 +190,16 @@ URML_ARDUPILOT_SITL=1 URML_ARDUPILOT_SITL_URL=udp:0.0.0.0:14550 \
 ```
 
 That flies the `drone/flight_only_positive` conformance fixture and the two
-example programs below against the simulator. The job also exists as
+example programs below against the simulator. First calibration run:
+2026-08-29, SITL built from `Copter-4.6.3` in WSL2, home at the example
+coordinates, all three green in one uninterrupted run. (Direct binary used
+instead of `sim_vehicle.py`, which needs MAVProxy for `--out`:
+`build/sitl/bin/arducopter --model + --speedup 4 -w --home 32.0853,34.7818,50,0
+--defaults Tools/autotest/default_params/copter.parm,urml_sitl.parm
+--serial0 udpclient:<windows-host-ip>:14550`.) The same job exists as
 `ardupilot-sitl-e2e` in
 [`.github/workflows/ardupilot-integration.yml`](../../.github/workflows/ardupilot-integration.yml),
-manual-trigger only; its first run is the calibration run.
+manual-trigger only, not yet run in CI.
 
 ### Flight test 1: five photos at 100 m around an address
 
@@ -247,7 +254,8 @@ Files: [`parcel-delivery.urml.yaml`](../../examples/drone/parcel-delivery.urml.y
 
 1. The mechanisms are manifest `outputs.lines` driven by `set_output`
    (RFC-0017), bound in the adapter config to ArduPilot's gripper
-   (`MAV_CMD_DO_GRIPPER`), winch (`MAV_CMD_DO_WINCH`), or a servo. The drone
+   (`MAV_CMD_DO_GRIPPER`), winch (`MAV_CMD_DO_WINCH`, relative-length control;
+   ArduCopter 4.6 rejects the deliver / retract actions), or a servo. The drone
    profile keeps `manipulation` off aerial manifests, so `release` is not the
    verb; a follow-up RFC proposes an aerial-delivery extension.
 2. ArduPilot acknowledges a winch command when it accepts it, not when the

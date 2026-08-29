@@ -10,9 +10,10 @@
 #   ardupilot-sitl-e2e — manual only (workflow_dispatch). Boots ArduCopter
 #                       SITL from the ArduPilot repo and flies the
 #                       drone/flight_only_positive fixture plus the two
-#                       flight-test examples. Not scheduled: like the PX4
-#                       SITL job, its first run is the calibration run and
-#                       no green run is claimed until one exists.
+#                       flight-test examples. Not scheduled. The same tests
+#                       went green locally on 2026-08-29 (Copter-4.6.3 SITL in
+#                       WSL2); this CI job has not yet run, so its first CI
+#                       run is still a calibration run.
 #
 # The bench test (URML_ARDUPILOT_BENCH=<port>) needs a physical board and
 # never runs in CI.
@@ -109,8 +110,19 @@ jobs:
           set -eux
           cd /tmp/ardupilot
           # Gripper / winch / camera enabled so the delivery + survey examples ack.
-          nohup Tools/autotest/sim_vehicle.py -v ArduCopter --no-mavproxy -w \
-            --out udp:127.0.0.1:14550 \
+          cat > /tmp/urml_sitl.parm <<'PARM'
+          CAM1_TYPE 1
+          GRIP_ENABLE 1
+          GRIP_TYPE 1
+          WINCH_TYPE 1
+          SERVO9_FUNCTION 10
+          SERVO10_FUNCTION 28
+          SERVO11_FUNCTION 88
+          PARM
+          nohup build/sitl/bin/arducopter --model + --speedup 4 -w \
+            --home 32.0853,34.7818,50,0 \
+            --defaults Tools/autotest/default_params/copter.parm,/tmp/urml_sitl.parm \
+            --serial0 udpclient:127.0.0.1:14550 \
             > /tmp/sitl.log 2>&1 &
           sleep 60
 

@@ -81,8 +81,7 @@ MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6
 
 GRIPPER_ACTION_RELEASE = 0
 GRIPPER_ACTION_GRAB = 1
-WINCH_DELIVER = 4
-WINCH_RETRACT = 6
+WINCH_RELATIVE_LENGTH_CONTROL = 1  # ArduCopter implements 0/1/2 only; DELIVER(4)/RETRACT(6) return FAILED
 
 MSG_ID_HEARTBEAT = 0
 MSG_ID_GPS_RAW_INT = 24
@@ -704,10 +703,16 @@ class ArduCopterAdapter(PX4Adapter):
             action = GRIPPER_ACTION_RELEASE if on else GRIPPER_ACTION_GRAB
             return self._send_command_long(MAV_CMD_DO_GRIPPER, float(binding.instance), float(action))
         if binding.kind == "winch":
-            action = WINCH_DELIVER if on else WINCH_RETRACT
-            length = binding.deliver_length_m if on else 0.0
+            # ArduCopter's DO_WINCH handler (4.6.x) accepts RELAXED, RELATIVE_LENGTH_CONTROL,
+            # and RATE_CONTROL; the enum's DELIVER / RETRACT values are rejected. Deliver is
+            # a positive relative length, retract the same length negative.
+            length = binding.deliver_length_m if on else -binding.deliver_length_m
             return self._send_command_long(
-                MAV_CMD_DO_WINCH, float(binding.instance), float(action), length, binding.rate_m_s
+                MAV_CMD_DO_WINCH,
+                float(binding.instance),
+                float(WINCH_RELATIVE_LENGTH_CONTROL),
+                length,
+                binding.rate_m_s,
             )
         if binding.channel is None:
             return False, "servo binding needs `channel`"

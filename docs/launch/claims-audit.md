@@ -181,10 +181,21 @@ identified the board, `urml execute --adapter ardupilot` ran the
 `bench-hop` flight program was refused by the autopilot's own pre-arm checks
 with the reason carried verbatim (`arm_rejected: ... Arm: GPS 1: Bad fix ...`),
 vehicle still disarmed afterwards. `URML_ARDUPILOT_BENCH=COM5` re-runs those
-three assertions as a gated test (3 passed on that host). The ArduCopter SITL
-e2e (`ardupilot-sitl-e2e`, manual-trigger) has not been executed; the two
-flight-test examples (site photogrammetry, parcel delivery) validate in CI and
-have not been flown. Runbook: `docs/demos/sentence-to-pixhawk.md`.
+three assertions as a gated test (3 passed on that host).
+
+**ArduCopter SITL end-to-end — calibration run GREEN 2026-08-29, locally.**
+`test_arducopter_sitl_e2e.py` (`URML_ARDUPILOT_SITL=1`) against ArduCopter
+SITL built from the `Copter-4.6.3` tag (the board's own firmware version) in
+WSL2 on the maintainer's machine, home placed at the example coordinates,
+speedup 4: the `drone/flight_only_positive` conformance fixture, the
+`site-photogrammetry` example (arm, climb to 100 m, five global setpoints with
+ROI, five `DO_DIGICAM_CONTROL` captures, RTL, land) and the `parcel-delivery`
+example (gripper + winch via `set_output`, both hovers held) all passed, 3/3.
+The run surfaced one real defect fixed the same day: ArduCopter 4.6 rejects
+the MAVLink `WINCH_DELIVER` / `WINCH_RETRACT` actions, so the adapter now uses
+relative-length control. The GitHub `ardupilot-sitl-e2e` job itself
+(manual-trigger) has not been run in CI; the local run is the evidence. The
+two flight-test examples have not been flown on hardware.
 
 **CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
 routing across a flight + companion backend. Evidence: px4-runtime suite.

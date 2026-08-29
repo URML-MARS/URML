@@ -45,7 +45,7 @@ Nothing in this package disables `ARMING_CHECK` or any pre-arm gate. On a bench 
 | `land` | `DO_SET_MODE(LAND)` | waits for auto-disarm (bounded) |
 | `return_to_home` | `DO_SET_MODE(RTL)` | clears any ROI first |
 | `capture` (photo) | `DO_DIGICAM_CONTROL` or `DO_SET_SERVO` pulse | image stays on the camera; payload has `camera://shot/N` and the trigger-time position |
-| `set_output` | `DO_GRIPPER` / `DO_WINCH` / `DO_SET_SERVO` | per `output_lines` binding in the config |
+| `set_output` | `DO_GRIPPER` / `DO_WINCH` / `DO_SET_SERVO` | per `output_lines` binding in the config; winch uses relative-length control (+length deliver, -length retract) because ArduCopter 4.6 rejects the `WINCH_DELIVER` / `WINCH_RETRACT` actions |
 | `measure` (distance, voltage), `wait_for`, `report`, `wait` | inherited from PX4Adapter | |
 | `dock`, `grasp`, `release`, `detect`, `speak`, `listen`, video capture | not supported | documented `not_supported` result, never raised |
 
@@ -121,7 +121,7 @@ Three tiers, mirroring the PX4 runtime:
 
 ## Status
 
-Bench link verified on hardware (Pixhawk, ArduCopter, USB). No physical flight is claimed anywhere in this repository; see [`docs/demos/sentence-to-pixhawk.md`](../../docs/demos/sentence-to-pixhawk.md) for the bench runbook and the two flight-test runbooks that gate a field run on a green SITL pass.
+Bench link verified on hardware (Pixhawk, ArduCopter 4.6.3, USB). The SITL e2e (flight-only fixture plus both flight-test examples) is green against ArduCopter SITL built from `Copter-4.6.3`, run locally on 2026-08-29. No physical flight is claimed anywhere in this repository; see [`docs/demos/sentence-to-pixhawk.md`](../../docs/demos/sentence-to-pixhawk.md) for the bench runbook and the two flight-test runbooks that gate a field run on a green SITL pass.
 
 ## License
 

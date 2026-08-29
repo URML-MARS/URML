@@ -528,7 +528,7 @@ def test_winch_line_deliver_and_retract(fake: dict[str, Any]) -> None:
     assert a.set_output_line(output="winch", value=True).success is True
     assert a.set_output_line(output="winch", value=False).success is True
     calls = [c["params"][:4] for c in fake["connections"][0].mav.command_long_calls if c["command"] == 42600]
-    assert calls == [(1.0, 4.0, 15.0, 0.5), (1.0, 6.0, 0.0, 0.5)]
+    assert calls == [(1.0, 1.0, 15.0, 0.5), (1.0, 1.0, -15.0, 0.5)]  # relative length +/-
 
 
 def test_servo_line_pulse_reverts(fake: dict[str, Any]) -> None:
