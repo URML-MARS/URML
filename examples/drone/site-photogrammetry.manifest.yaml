@@ -25,23 +25,23 @@ declared_locations:
     frame: agl
     description: Launch point.
   - name: site
-    pose: { x: 60.0, y: 0.0, z: 100.0 }
+    pose: { x: -88.6, y: -47.3, z: 100.0 }
     frame: agl
-    description: The geocoded address, sixty metres north of launch.
+    description: One Times Square, geocoded; about ninety metres south-west of the launch point.
   - name: site_p1
-    pose: { x: 100.0, y: 0.0, z: 100.0 }
+    pose: { x: -48.6, y: -47.3, z: 100.0 }
     frame: agl
   - name: site_p2
-    pose: { x: 72.4, y: 38.0, z: 100.0 }
+    pose: { x: -76.2, y: -9.2, z: 100.0 }
     frame: agl
   - name: site_p3
-    pose: { x: 27.6, y: 23.5, z: 100.0 }
+    pose: { x: -120.9, y: -23.8, z: 100.0 }
     frame: agl
   - name: site_p4
-    pose: { x: 27.6, y: -23.5, z: 100.0 }
+    pose: { x: -120.9, y: -70.8, z: 100.0 }
     frame: agl
   - name: site_p5
-    pose: { x: 72.4, y: -38.0, z: 100.0 }
+    pose: { x: -76.2, y: -85.3, z: 100.0 }
     frame: agl
 
 declared_events:

@@ -8,52 +8,52 @@ camera:
   settle_seconds: 1.0
 location_to_global:
   home:
-    lat: 32.0853
-    lon: 34.7818
+    lat: 40.7570095
+    lon: -73.9859724
     alt_agl: 0.0
   site:
-    lat: 32.08584
-    lon: 34.7818
+    lat: 40.7562129
+    lon: -73.9865339
     alt_agl: 100.0
   dropoff:
-    lat: 32.08602
-    lon: 34.78212
+    lat: 40.7587417
+    lon: -73.9851805
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339
   site_p1:
-    lat: 32.0861997
-    lon: 34.7818
+    lat: 40.7565726
+    lon: -73.9865339
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339
   site_p2:
-    lat: 32.0859512
-    lon: 34.7822038
+    lat: 40.7563241
+    lon: -73.9860822
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339
   site_p3:
-    lat: 32.085549
-    lon: 34.7820496
+    lat: 40.7559219
+    lon: -73.9862548
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339
   site_p4:
-    lat: 32.085549
-    lon: 34.7815504
+    lat: 40.7559219
+    lon: -73.986813
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339
   site_p5:
-    lat: 32.0859512
-    lon: 34.7813962
+    lat: 40.7563241
+    lon: -73.9869856
     alt_agl: 100.0
     look_at:
-      lat: 32.08584
-      lon: 34.7818
+      lat: 40.7562129
+      lon: -73.9865339

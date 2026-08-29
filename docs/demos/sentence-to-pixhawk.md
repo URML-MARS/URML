@@ -224,8 +224,10 @@ Files: [`site-photogrammetry.urml.yaml`](../../examples/drone/site-photogrammetr
    It writes `location_to_global` (five orbit stations, each yawing toward
    the site) into the adapter config and prints the matching
    `declared_locations` block; paste that into the manifest so the validator
-   has metres to check against the geofence. The committed example used
-   `--fix` coordinates and is illustrative.
+   has metres to check against the geofence. The committed example is Times
+   Square, New York (geocoded via Nominatim on 2026-08-29, then pinned with
+   `--fix` so it regenerates offline); see step 5 for why that site is a
+   legal case study rather than a flight plan.
 2. **Camera.** `camera.kind: digicam` in the adapter config sends
    `MAV_CMD_DO_DIGICAM_CONTROL`; set `CAM_TRIGG_TYPE` on the board to match
    your shutter wiring, or use `kind: servo` with the AUX `channel`. Images
@@ -236,10 +238,37 @@ Files: [`site-photogrammetry.urml.yaml`](../../examples/drone/site-photogrammetr
    OpenDroneMap / WebODM or COLMAP. Five frames make a coarse model; 20 to 40
    frames with 70 % overlap is the usual photogrammetry input
    (`--points 20`). URML does not run reconstruction; see RFC-0519 / 0520.
-5. **Altitude and law.** 100 m AGL is under the US Part 107 ceiling (400 ft)
-   and above several other jurisdictions' hobby limits. The operator checks
-   local rules and airspace before the run. URML encodes the envelope you
-   give it, not the law.
+5. **Altitude and law, for the committed example (Times Square, New York).**
+   The example addresses were geocoded on 2026-08-29 (home: Times Square;
+   site: One Times Square; drop-off: Duffy Square). What the rules say about
+   flying there, checked the same day:
+   - **FAA.** Times Square sits in LaGuardia's Class B airspace. The FAA UAS
+     Facility Map grid at 40.754 N, 73.988 W shows a **400 ft LAANC
+     ceiling** (map effective 2026-08-06), so 100 m AGL (328 ft) is inside
+     what LAANC can auto-authorize for a Part 107 pilot. Class B still means
+     an authorization is mandatory before every flight, and a night flight or
+     anything above the grid ceiling needs a waiver through FAADroneZone.
+     Five photos of a building with a crowd underneath is also an operation
+     over people: Part 107 Subpart D category rules apply to the aircraft.
+   - **New York City.** NYC Admin Code 10-126(c) and 38 RCNY Ch. 24 forbid
+     any drone take-off or landing in the five boroughs without an **NYPD
+     permit**: application 30 days ahead at the NYPD Unmanned Aircraft portal,
+     USD 150 fee, Part 107 certificate, general-liability insurance naming the
+     City, and an operations plan with the take-off site, path, altitude, and
+     window. Fines up to USD 1,000 per violation and equipment seizure. The
+     only permit-free sites are three model-aircraft fields in Queens, Staten
+     Island, and Brooklyn.
+   - **Net.** The committed Times Square bundle is a real geocoding example
+     and a real validator exercise; it is not a flight plan. Fly it only with
+     an approved NYPD permit and a LAANC authorization in hand, or re-geocode
+     to a site where you can. URML encodes the envelope you give it, not the
+     law.
+
+   Sources: [flyusi.org New York drone laws](https://www.flyusi.org/guides/drone-laws/new-york),
+   [drone-laws.com NYC](https://drone-laws.com/drone-laws-in-nyc/),
+   [FAA UAS Facility Maps](https://www.faa.gov/uas/commercial_operators/uas_facility_maps),
+   [FAA UASFM FAQ](https://www.faa.gov/uas/commercial_operators/uas_facility_maps/faq),
+   FAA UASFM ArcGIS feature service (queried at the Times Square point).
 
 ### Flight test 2: parcel delivery
 

@@ -14,14 +14,14 @@ output_lines:
     rate_m_s: 0.5
 location_to_global:
   home:
-    lat: 32.0853
-    lon: 34.7818
+    lat: 40.7570095
+    lon: -73.9859724
     alt_agl: 0.0
   site:
-    lat: 32.08584
-    lon: 34.7818
+    lat: 40.7562129
+    lon: -73.9865339
     alt_agl: 30.0
   dropoff:
-    lat: 32.08602
-    lon: 34.78212
+    lat: 40.7587417
+    lon: -73.9851805
     alt_agl: 30.0
