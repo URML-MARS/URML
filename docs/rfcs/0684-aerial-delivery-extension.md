@@ -109,7 +109,7 @@ Pass 3 rejects a `release(mode: latch)` whose preceding altitude exceeds it, and
 
 - RFC-0017 (`set_output`): the bounded line-write this RFC builds on for the mechanism binding.
 - RFC-0002 §release: the existing `drop | place | hand_to_user` semantics and the drop-height ceiling that was specified but never enforced.
-- ArduPilot `MAV_CMD_DO_WINCH` / `MAV_CMD_DO_GRIPPER`: the substrate surface `reference/ardupilot-runtime` already maps.
+- ArduPilot `MAV_CMD_DO_WINCH` / `MAV_CMD_DO_GRIPPER`: the substrate surface `reference/ardupilot-runtime` already maps (ArduCopter 4.6 implements only the relaxed / relative-length / rate winch actions; `WINCH_DELIVER` and `WINCH_RETRACT` return FAILED, so the adapter sends signed relative lengths).
 - [`examples/drone/parcel-delivery.urml.yaml`](../../examples/drone/parcel-delivery.urml.yaml): the program this RFC would simplify.
 
 ## Implementation plan

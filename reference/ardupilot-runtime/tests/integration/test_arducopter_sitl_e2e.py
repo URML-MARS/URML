@@ -84,8 +84,22 @@ def test_flight_only_fixture_runs_against_sitl() -> None:
     _assert_sitl_up()
     cases = [c for c in discover_fixtures() if c.name == "drone/flight_only_positive"]
     assert cases
-    runner = ConformanceRunner(cases=cases, adapter_factory=lambda: ArduCopterAdapter(_sitl_config()))  # type: ignore[arg-type]
-    report = runner.run()
+    # The runner does not close the adapter it is handed. Keep a reference and
+    # close it here, or the UDP socket on 14550 leaks into the next test and
+    # steals its heartbeats.
+    adapters: list[ArduCopterAdapter] = []
+
+    def _factory() -> ArduCopterAdapter:
+        adapter = ArduCopterAdapter(_sitl_config())  # type: ignore[arg-type]
+        adapters.append(adapter)
+        return adapter
+
+    try:
+        runner = ConformanceRunner(cases=cases, adapter_factory=_factory)
+        report = runner.run()
+    finally:
+        for adapter in adapters:
+            adapter.close()
     assert report.all_passed, report.render()
 
 
