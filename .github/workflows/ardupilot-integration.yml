@@ -30,6 +30,12 @@ on:
   schedule:
     # Mondays 08:00 UTC (after ros2- and px4-integration).
     - cron: '0 8 * * 1'
+  push:
+    # Pushing any branch named ci/ardupilot-sitl-* runs both jobs, SITL
+    # included. A push is a repository event, so it works even when manual
+    # dispatch is blocked for the maintainer's user account.
+    branches:
+      - 'ci/ardupilot-sitl-**'
 
 permissions:
   contents: read
@@ -74,7 +80,7 @@ jobs:
         run: python -m pytest tools/scripts/test_geocode_locations.py -q
 
   ardupilot-sitl-e2e:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_sitl }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_sitl) || github.event_name == 'push' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
