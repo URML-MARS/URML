@@ -164,15 +164,17 @@
   sent_at: 2026-05-22
   channel: github
   contact: "@SCHUNK-SE-Co-KG"
-  last_touch: 2026-05-22
-  response: none
+  last_touch: 2026-08-25
+  response: wontfix
   tier: A
   country: US
   sector: robot-platform
-  comments: []
+  comments:
+    - date: "2026-08-25"
+      text: "Issue #159 silently closed by jonasbeil (state_reason: completed, no comment). No explicit refusal; silent close-to-clear-queue. Detected by automated drift check 2026-08-29."
   claude_directives: []
-  next_action: "wait 14 d; if silent, nudge via RFC-0031 comment"
-  notes: "first parts-vendor RFC"
+  next_action: "Thread closed 2026-08-25 by jonasbeil (no comment, state: completed). No URML-side action required. Passive watch."
+  notes: "first parts-vendor RFC. jonasbeil closed with state_reason=completed and zero comments on 2026-08-25; wontfix reflects silent close, not an explicit no."
 - slug: ouster
   rfc: 32
   sent_at: 2026-05-22
