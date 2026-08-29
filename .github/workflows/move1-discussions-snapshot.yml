@@ -1,0 +1,162 @@
+name: Move-1 vendor discussions snapshot
+
+# The daily outreach-drift cloud routine cannot reach the GitHub API:
+# its sandbox proxy blocks GraphQL (and REST) for external repos. Git
+# transport works, so this workflow snapshots the five Move-1 vendor
+# discussion threads once a day and pushes the result to the branch
+# meta/move1-discussions-snapshot. The routine fetches that branch
+# and reads .move1-discussions-snapshot/discussions.json instead of
+# calling the API directly.
+#
+# All five repos are public; GITHUB_TOKEN is sufficient.
+# The branch is force-pushed as a single commit on top of main each
+# run, keeping history one commit deep.
+# check_move1_discussions.py auto-detects this branch and prefers it
+# over a direct API call.
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # 13:00 UTC — before the triage routine
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # actions/checkout@v4
+
+      - name: Fetch vendor discussions via GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api graphql -f query='
+          {
+            yaskawa: repository(owner:"Yaskawa-Global", name:"motoros2") {
+              discussion(number:495) {
+                title closed
+                reactions { totalCount }
+                comments(first:100) {
+                  nodes {
+                    author { login }
+                    createdAt
+                    body
+                    reactions { totalCount }
+                    replies(first:50) {
+                      nodes { author { login } createdAt body }
+                    }
+                  }
+                }
+              }
+            }
+            ur: repository(owner:"UniversalRobots", name:"Universal_Robots_ROS2_Driver") {
+              discussion(number:1799) {
+                title closed
+                reactions { totalCount }
+                comments(first:100) {
+                  nodes {
+                    author { login }
+                    createdAt
+                    body
+                    reactions { totalCount }
+                    replies(first:50) {
+                      nodes { author { login } createdAt body }
+                    }
+                  }
+                }
+              }
+            }
+            kuka: repository(owner:"kroshu", name:"kuka_drivers") {
+              discussion(number:342) {
+                title closed
+                reactions { totalCount }
+                comments(first:100) {
+                  nodes {
+                    author { login }
+                    createdAt
+                    body
+                    reactions { totalCount }
+                    replies(first:50) {
+                      nodes { author { login } createdAt body }
+                    }
+                  }
+                }
+              }
+            }
+            staubli: repository(owner:"ros-industrial", name:"staubli_val3_driver") {
+              discussion(number:57) {
+                title closed
+                reactions { totalCount }
+                comments(first:100) {
+                  nodes {
+                    author { login }
+                    createdAt
+                    body
+                    reactions { totalCount }
+                    replies(first:50) {
+                      nodes { author { login } createdAt body }
+                    }
+                  }
+                }
+              }
+            }
+            mitsubishi: repository(owner:"Mitsubishi-Electric-Asia", name:"melfa_ros2_driver") {
+              discussion(number:25) {
+                title closed
+                reactions { totalCount }
+                comments(first:100) {
+                  nodes {
+                    author { login }
+                    createdAt
+                    body
+                    reactions { totalCount }
+                    replies(first:50) {
+                      nodes { author { login } createdAt body }
+                    }
+                  }
+                }
+              }
+            }
+          }' > /tmp/vendor-discussions.json
+
+          python3 - <<'EOF'
+          import json, sys
+          d = json.load(open('/tmp/vendor-discussions.json'))
+          errors = d.get('errors')
+          if errors:
+              print(f'GraphQL errors: {errors}', file=sys.stderr)
+              sys.exit(1)
+          slugs = list((d.get('data') or {}).keys())
+          print(f'Snapshot contains data for: {", ".join(slugs)}')
+          EOF
+
+      - name: Push single-commit snapshot branch
+        run: |
+          git checkout -B meta/move1-discussions-snapshot origin/main
+          mkdir -p .move1-discussions-snapshot
+          cp /tmp/vendor-discussions.json .move1-discussions-snapshot/discussions.json
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf '{\n  "generated_at": "%s",\n  "source": ".github/workflows/move1-discussions-snapshot.yml"\n}\n' \
+            "$NOW" > .move1-discussions-snapshot/meta.json
+          cat > .move1-discussions-snapshot/README.md <<'RDME'
+          # meta/move1-discussions-snapshot
+
+          Machine-written branch. The scheduled workflow
+          `.github/workflows/move1-discussions-snapshot.yml` on `main`
+          force-pushes a single-commit snapshot of the five Move-1 vendor
+          GitHub Discussion threads here once a day. The daily outreach-drift
+          cloud routine reads `discussions.json` from this branch via
+          `git fetch`, because its sandbox cannot reach the GitHub API.
+
+          Slugs covered: yaskawa, ur, kuka, staubli, mitsubishi.
+
+          Do not base work on this branch. History is intentionally one
+          commit deep on top of main.
+          RDME
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .move1-discussions-snapshot
+          git commit -s -m "meta: move1 discussions snapshot $(date -u +%Y-%m-%d)"
+          git push -f origin meta/move1-discussions-snapshot
