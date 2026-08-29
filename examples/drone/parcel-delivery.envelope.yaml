@@ -1,0 +1,47 @@
+# Safety envelope for flight test 2.
+#
+# A geofence around the route with a 60 m ceiling, a people-occupancy
+# zone over the footpath beside the yard (the drop point itself is
+# outside it, so the program passes; a `move_to` into the path would be
+# rejected), a payload cap, and return-to-home on command-link loss.
+#
+# Known validator blind spot, recorded rather than hidden: `set_output`
+# and a `hover` without `over` contribute no spatial target, so the drop
+# point is checked only through the preceding `move_to`.
+
+envelope_version: "0.1"
+deployment_id: parcel_delivery_test
+description: Short delivery hop with a winch, inside a fenced footprint.
+
+max_velocity: 10.0
+max_altitude: 60.0
+max_payload: 1.5
+
+geofences:
+  - name: delivery_corridor
+    frame: agl
+    vertices:
+      - [-10.0, -10.0]
+      - [100.0, -10.0]
+      - [100.0, 50.0]
+      - [-10.0, 50.0]
+    min_altitude: 0.0
+    max_altitude: 60.0
+
+people_occupancy_zones:
+  - name: footpath
+    frame: agl
+    vertices:
+      - [70.0, 40.0]
+      - [100.0, 40.0]
+      - [100.0, 50.0]
+      - [70.0, 50.0]
+    allow_override: false
+
+weather:
+  max_wind_m_per_s: 6.0
+  allow_precipitation: false
+
+link_loss_policy:
+  - role: command_link
+    action: return_to_home

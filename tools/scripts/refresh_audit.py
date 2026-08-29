@@ -42,6 +42,7 @@ SUITES: list[tuple[str, Path]] = [
     ("llm-bridge", REPO / "reference" / "llm-bridge"),
     ("ros2-runtime", REPO / "reference" / "ros2-runtime"),
     ("px4-runtime", REPO / "reference" / "px4-runtime"),
+    ("ardupilot-runtime", REPO / "reference" / "ardupilot-runtime"),
     ("conformance", REPO / "conformance"),
     ("marine-runtime", REPO / "reference" / "marine-runtime"),
     ("industrial-arm-runtime", REPO / "reference" / "industrial-arm-runtime"),

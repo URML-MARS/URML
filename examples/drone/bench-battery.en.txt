@@ -1,0 +1,1 @@
+Read the battery voltage and report it.

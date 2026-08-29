@@ -14,7 +14,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
   <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
-  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-1997%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-2122%20passing-brightgreen.svg" alt="Tests"></a>
   <a href="conformance/"><img src="https://img.shields.io/badge/conformance-184%20fixtures-brightgreen.svg" alt="Conformance"></a>
   <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-51%20Spec%20%2B%20610%20Outreach-blue.svg" alt="RFCs"></a>
 </p>
@@ -72,7 +72,7 @@ urml --version    # confirm the new version
 ```bash
 git clone https://github.com/URML-MARS/URML.git && cd URML
 python bootstrap.py     # creates .venv (or installs into an active one), all 5 packages editable
-make test               # → 1997 passed + 29 gated-skipped
+make test               # → 2122 passed + 38 gated-skipped
 make demo-run           # → the animation above, reproduced live on the mock
 ```
 
@@ -84,7 +84,7 @@ The core install omits the heavy, provider-specific LLM SDKs. To `urml translate
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-08-09 via `make audit`: **1997 passed + 29 gated-skipped** across 18 packages).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run — see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-08-29 via `make audit`: **2122 passed + 38 gated-skipped** across 19 packages).
 
 | Capability | State |
 |---|---|

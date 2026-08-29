@@ -27,28 +27,30 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-08-09, on `release/v0.4.0`** (tree at `main` commit `d317547`
-plus the 0.4.0 lockstep bump), via
+**Measured 2026-08-29, on `feat/ardupilot-runtime`** (branching from `main`
+commit `20b57cf`), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
-(invoke with `make audit`). Every row was re-measured on this host, including
-`ros2-runtime` (its 4 skips are the gated live-rclpy tests, re-measured by
-`ros2-integration.yml` CI). New since the 2026-06-24 measurement: the v0.3.0
-surface (envelope enforcement RFC-0667, rehearsal gate + `urml run` RFC-0668,
-the URML-native model pipeline RFC-0666 with its own `model` suite row) and
-the 0.4.0 surface (first-class on-prem LLM providers in the CLI, the RFC-0670
-speech front-end). The prior measurements (2026-06-24: 1668 total; 2026-05-20 /
-2026-05-22: 244 validator, 765 total, 101 fixtures) are in git history.
+(invoke with `make audit`). Every row was re-measured on this host. New since
+the 2026-08-09 measurement: the ArduPilot / MAVLink reference runtime
+(`ardupilot-runtime`, its own suite row, RFC-0041), the `hover.duration` fix in
+the executor (the drone `hover_positive` fixture now expects the hold), the
+full-validator rot guard over the drone example bundles (RFC-0250 had silently
+broken them), and the v0.4.x additions to the validator and conformance
+surfaces since that measurement. The prior measurements (2026-08-09: 1997
+total; 2026-06-24: 1668 total; 2026-05-20 / 2026-05-22: 244 validator, 765
+total, 101 fixtures) are in git history.
 
 | Suite | Result |
 |---|---|
-| validator | **828 passed** |
+| validator | **894 passed** |
 | llm-bridge | **162 passed** |
-| ros2-runtime | **157 passed, 4 skipped** |
+| ros2-runtime | **159 passed, 4 skipped** |
 | px4-runtime | **54 passed, 4 skipped** |
-| conformance | **630 passed** |
+| ardupilot-runtime | **38 passed, 9 skipped** (live smoke, bench, SITL gated) |
+| conformance | **648 passed** |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
-| legged-runtime | **5 passed** |
+| legged-runtime | **6 passed** |
 | humanoid-runtime | **4 passed** |
 | mobile-runtime | **4 passed** |
 | opcua-runtime | **4 passed, 3 skipped** |
@@ -59,10 +61,11 @@ speech front-end). The prior measurements (2026-06-24: 1668 total; 2026-05-20 /
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
 | model | **32 passed** |
-| **Total** | **1997 passed + 29 gated-skipped** |
+| **Total** | **2122 passed + 38 gated-skipped** |
 
-The 29 skips are live integration tests, gated behind per-runtime environment
+The 38 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
+`URML_ARDUPILOT_INTEGRATION` / `URML_ARDUPILOT_BENCH` / `URML_ARDUPILOT_SITL` /
 `URML_OPCUA_INTEGRATION` / `URML_COBOT_INTEGRATION` / `URML_MUJOCO_INTEGRATION`
 / `URML_EMBEDDED_INTEGRATION` / `URML_EDU_INTEGRATION` /
 `URML_ISAAC_INTEGRATION` / `URML_AUTOSAR_INTEGRATION`, plus the industrial-arm
@@ -71,10 +74,10 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **184** YAML cases under `conformance/fixtures/` (live
-count 2026-08-09) — actuation 5, av 4, biped 12, compliance 5, deployment 3,
+Conformance fixtures: **187** YAML cases under `conformance/fixtures/` (live
+count 2026-08-29) — actuation 5, av 4, biped 14, compliance 5, deployment 3,
 drone 16, educational 12, fleet 14, flexbe 2, home 28, industrial 49, language 5,
-licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 4,
+licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 5,
 research 1, translation 3, warehouse 8. Auto-discovered; all pass hermetically
 against `MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `fleet`
 (RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
@@ -167,6 +170,21 @@ proving job is green ×3," verifiable with `gh run view <id> --json jobs`, not
 **PX4 SITL end-to-end — gated, NOT yet calibrated.** Unchanged honest status:
 `px4-sitl-e2e` in `px4-integration.yml` has not been executed; its first run
 is the calibration run. No green run is claimed.
+
+**ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
+on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`
+(RFC-0041 implemented for Copter). Evidence: the hermetic suite (38 passed,
+9 gated-skipped) plus a bench run on 2026-08-29 against a Pixhawk-class board
+running ArduCopter 4.6.3 over USB, propellers off: the read-only probe
+identified the board, `urml execute --adapter ardupilot` ran the
+`bench-battery` example to SUCCESS (battery read over MAVLink), and the
+`bench-hop` flight program was refused by the autopilot's own pre-arm checks
+with the reason carried verbatim (`arm_rejected: ... Arm: GPS 1: Bad fix ...`),
+vehicle still disarmed afterwards. `URML_ARDUPILOT_BENCH=COM5` re-runs those
+three assertions as a gated test (3 passed on that host). The ArduCopter SITL
+e2e (`ardupilot-sitl-e2e`, manual-trigger) has not been executed; the two
+flight-test examples (site photogrammetry, parcel delivery) validate in CI and
+have not been flown. Runbook: `docs/demos/sentence-to-pixhawk.md`.
 
 **CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
 routing across a flight + companion backend. Evidence: px4-runtime suite.

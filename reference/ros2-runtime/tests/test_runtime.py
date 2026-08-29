@@ -662,3 +662,48 @@ def test_relative_motion_drive_turn_execute() -> None:
     assert methods == ["turn_by", "drive_by", "drive_by"]
     arc_call = [e for e in result.audit_log if e["method"] == "drive_by"][1]
     assert arc_call["arc"] == 30
+
+
+# ---------------------------------------------------------------------------
+# hover.duration is honoured (regression: it used to be dropped)
+# ---------------------------------------------------------------------------
+
+
+def test_hover_duration_holds_via_wait_passively() -> None:
+    """`hover: {duration: 2s}` = station-keep, then hold for 2 s.
+
+    Before the fix the executor sent the station-keeping goal and returned
+    immediately, so a 40 s hover in a delivery program lasted 0 s.
+    """
+    adapter = MockROSAdapter()
+    program = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "on_error": "abort_and_report",
+            "steps": [{"hover": {"over": "home", "duration": "2s"}}],
+        },
+    }
+    manifest = _load(VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml")
+    result = URMLRuntime(adapter).execute(program, manifest, profiles=("drone",))
+    assert result.success is True
+    methods = [e["method"] for e in result.audit_log]
+    assert methods == ["send_navigation_goal", "wait_passively"]
+    hold = next(e for e in result.audit_log if e["method"] == "wait_passively")
+    assert hold.get("duration_seconds") == 2.0
+
+
+def test_hover_without_duration_does_not_wait() -> None:
+    adapter = MockROSAdapter()
+    program = {
+        "profile": "drone",
+        "behavior": {
+            "type": "sequence",
+            "on_error": "abort_and_report",
+            "steps": [{"hover": {"over": "home"}}],
+        },
+    }
+    manifest = _load(VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml")
+    result = URMLRuntime(adapter).execute(program, manifest, profiles=("drone",))
+    assert result.success is True
+    assert [e["method"] for e in result.audit_log] == ["send_navigation_goal"]

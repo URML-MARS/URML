@@ -134,6 +134,8 @@ test:
 	$(PYTEST) reference/llm-bridge/tests -q
 	$(PYTEST) reference/ros2-runtime/tests -q
 	$(PYTEST) reference/px4-runtime/tests -q
+	$(PYTEST) reference/ardupilot-runtime/tests -q
+	$(PYTEST) tools/scripts/test_geocode_locations.py -q
 	$(PYTEST) reference/model/tests -q
 	$(PYTEST) conformance/tests -q
 

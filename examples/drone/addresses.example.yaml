@@ -1,0 +1,16 @@
+# Input for tools/scripts/geocode_locations.py.
+#
+# One street address per location name. `home` is the launch point; every
+# other entry becomes a WGS84 binding in the adapter config. The example
+# adapter configs in this directory were produced from this file with
+# `--fix` coordinates (no network), so the committed numbers are
+# illustrative, not a real survey. Replace both addresses and re-run the
+# script before any flight.
+#
+#   python tools/scripts/geocode_locations.py examples/drone/addresses.example.yaml \
+#       --out examples/drone/site-photogrammetry.adapter.yaml \
+#       --alt-agl 100 --orbit site --radius-m 40 --points 5
+
+home: "Launch point, Example Field, Example City"
+site: "Example Building, Example Street 10, Example City"
+dropoff: "Example Yard, Example Street 12, Example City"

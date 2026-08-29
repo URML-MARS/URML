@@ -291,6 +291,15 @@ def exec_hover(
         carrying=None,
         speed=0.0,
     )
+    if not result.success:
+        return PrimitiveOutcome(success=False, reason=result.reason, raw=result)
+    # `hover.duration` is "maintain position for this long" (Layer 2 spec).
+    # Station-keeping is the substrate's job; the elapsed time is ours.
+    seconds = _duration_seconds(args.duration)
+    if seconds is not None and seconds > 0:
+        held = adapter.wait_passively(duration_seconds=seconds)
+        if not held.success:
+            return PrimitiveOutcome(success=False, reason=held.reason, raw=held)
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 

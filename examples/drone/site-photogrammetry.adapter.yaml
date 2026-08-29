@@ -1,0 +1,59 @@
+# location_to_global written by tools/scripts/geocode_locations.py
+# provider: none   geocoded_at: 2026-08-29
+# The runtime never geocodes; edit or regenerate this file, never the program.
+connection_url: COM5
+baud: 115200
+camera:
+  kind: digicam
+  settle_seconds: 1.0
+location_to_global:
+  home:
+    lat: 32.0853
+    lon: 34.7818
+    alt_agl: 0.0
+  site:
+    lat: 32.08584
+    lon: 34.7818
+    alt_agl: 100.0
+  dropoff:
+    lat: 32.08602
+    lon: 34.78212
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818
+  site_p1:
+    lat: 32.0861997
+    lon: 34.7818
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818
+  site_p2:
+    lat: 32.0859512
+    lon: 34.7822038
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818
+  site_p3:
+    lat: 32.085549
+    lon: 34.7820496
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818
+  site_p4:
+    lat: 32.085549
+    lon: 34.7815504
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818
+  site_p5:
+    lat: 32.0859512
+    lon: 34.7813962
+    alt_agl: 100.0
+    look_at:
+      lat: 32.08584
+      lon: 34.7818

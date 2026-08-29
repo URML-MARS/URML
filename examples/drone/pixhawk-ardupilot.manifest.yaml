@@ -1,0 +1,57 @@
+# Bare-autopilot manifest for a Pixhawk running ArduCopter, bench bring-up.
+#
+# No camera, no companion computer: just the flight controller on USB.
+# What the manifest declares is exactly what the board can do on its own:
+# fly (multirotor mobility) and report a battery voltage over MAVLink.
+# No provenance block; the bench demo runs with `--no-policy` so the
+# language, not the compliance pass, is on stage.
+#
+#   python -m urml_ardupilot_runtime.probe COM5
+#   urml execute bench-battery.urml.yaml -m pixhawk-ardupilot.manifest.yaml \
+#     --profile drone --no-policy --adapter ardupilot \
+#     --adapter-config pixhawk-ardupilot.adapter.yaml
+
+manifest_version: "0.1"
+robot_id: pixhawk_arducopter_bench
+description: Pixhawk-class flight controller running ArduCopter, on the bench over USB, props off.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Launch point.
+  - name: bench_north
+    pose: { x: 5.0, y: 0.0, z: 3.0 }
+    frame: agl
+    description: Five metres north of launch at three metres, for a first hop.
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 10.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 0.5
+
+perception:
+  sensors:
+    - name: battery
+      measurement_type: voltage
+      range_min: 0.0
+      range_max: 60.0
+      units: V
+
+outputs:
+  named_endpoints: []
+
+substrate:
+  autopilot_class: ardupilot

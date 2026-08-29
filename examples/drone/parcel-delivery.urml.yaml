@@ -1,0 +1,55 @@
+# URML v0.1
+#
+# Scenario: drone/parcel-delivery
+# Source NL: "Deliver the parcel to the drop-off point and come back."
+#            (see parcel-delivery.en.txt)
+#
+# Flight test 2, winch variant. The aircraft climbs to 30 m, flies to the
+# geocoded drop-off, pays out the winch, opens the latch at the bottom,
+# retracts, and returns.
+#
+# The verb is `set_output` (RFC-0017) against manifest-declared output
+# lines, not `release`: the drone profile keeps `manipulation` off aerial
+# manifests, and a winch or servo latch really is a line write. The two
+# `hover` pauses bracket the winch: ArduPilot acknowledges the deliver
+# and retract commands when it accepts them, not when the line reaches
+# the ground, so the wait is 15 m at 0.5 m/s plus margin, written here
+# and mirrored in parcel-delivery.adapter.yaml.
+#
+#   urml validate parcel-delivery.urml.yaml \
+#     -m parcel-delivery.manifest.yaml -e parcel-delivery.envelope.yaml \
+#     --profile drone --no-policy
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 30.0
+    - move_to:
+        location: dropoff
+    - hover:
+        duration: 3s
+    - set_output:
+        output: winch
+        value: true
+    - hover:
+        duration: 40s
+    - set_output:
+        output: payload_latch
+        value: true
+    - hover:
+        duration: 2s
+    - set_output:
+        output: winch
+        value: false
+    - hover:
+        duration: 40s
+    - report:
+        to: user
+        facts:
+          delivered_to: dropoff
+          mechanism: winch
+    - return_to_home: {}
+    - land: {}

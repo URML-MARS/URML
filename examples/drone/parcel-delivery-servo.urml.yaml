@@ -1,0 +1,38 @@
+# URML v0.1
+#
+# Scenario: drone/parcel-delivery (servo-latch variant)
+# Source NL: "Deliver the parcel to the drop-off point and come back."
+#
+# Same flight as parcel-delivery.urml.yaml for an airframe with only a
+# latch and no winch: descend to a low drop-off station (3 m AGL) over
+# the same point, open the latch, climb back out on the return.
+#
+#   urml validate parcel-delivery-servo.urml.yaml \
+#     -m parcel-delivery.manifest.yaml -e parcel-delivery.envelope.yaml \
+#     --profile drone --no-policy
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 30.0
+    - move_to:
+        location: dropoff
+    - move_to:
+        location: dropoff_low
+    - hover:
+        duration: 3s
+    - set_output:
+        output: payload_latch
+        value: true
+    - hover:
+        duration: 2s
+    - report:
+        to: user
+        facts:
+          delivered_to: dropoff
+          mechanism: servo_latch
+    - return_to_home: {}
+    - land: {}

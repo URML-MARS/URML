@@ -4,7 +4,9 @@ description: >
   primitive's positive path: a multirotor manifest with station_keeping
   enabled, hovering over the declared `home` location. The executor
   dispatches hover to send_navigation_goal with speed=0, matching the
-  station-keeping contract in the substrate base.
+  station-keeping contract in the substrate base, then holds for the
+  declared `duration` via wait_passively (the Layer-2 hover contract:
+  maintain position for this long).
 manifest: drone_civilian
 envelope: drone_default
 profiles: [drone]
@@ -28,3 +30,4 @@ expected_execution:
   steps_executed: 1
   audit_methods:
     - send_navigation_goal
+    - wait_passively

@@ -1,0 +1,28 @@
+# URML v0.1
+#
+# Scenario: drone/bench-hop
+# Source NL: "Take off to three metres, hop five metres north, come back
+#             and land." (see bench-hop.en.txt)
+#
+# The refusal demo for a Pixhawk on the bench. The validator accepts this
+# program (three metres is inside the ceiling, bench_north is declared),
+# the adapter enters the real arming sequence, and the autopilot's pre-arm
+# checks say no: no GPS fix indoors, compass not calibrated, whatever is
+# unmet. URML reports the autopilot's words as the step's reason and
+# stops. Outdoors with a fix and props on, the same file is a first hop.
+#
+#   urml execute bench-hop.urml.yaml -m pixhawk-ardupilot.manifest.yaml \
+#     --profile drone --no-policy --adapter ardupilot \
+#     --adapter-config pixhawk-ardupilot.adapter.yaml
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 3.0
+    - move_to:
+        location: bench_north
+    - return_to_home: {}
+    - land: {}
