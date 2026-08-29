@@ -48,6 +48,7 @@ PACKAGES: tuple[str, ...] = (
     "reference/ros2-runtime",
     "reference/llm-bridge",
     "reference/px4-runtime",
+    "reference/ardupilot-runtime",
     "conformance",
 )
 

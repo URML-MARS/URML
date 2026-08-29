@@ -2,9 +2,9 @@
 rfc: 0041
 title: ArduPilot integration, request for comment from ArduPilot/ardupilot maintainers
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented (Copter)
 created: 2026-05-23
-updated: 2026-05-23
+updated: 2026-08-29
 supersedes: —
 superseded-by: —
 ---
@@ -167,7 +167,11 @@ Provisional pending ArduPilot maintainer feedback:
 
 ## Implementation note
 
-RFC-0041 ships as a single RFC document PR. No adapter code in this PR. The `reference/ardupilot-runtime/` package is the mechanical follow-up, gated on ArduPilot maintainer feedback. Ledger entry under [`examples/lighthouses/outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml) (Move #1 substrate follow-on placed in the Move #2 file because the Move #1 file is parity-tested against an in-repo demo runner that ArduPilot does not yet have).
+**2026-08-29 update.** `reference/ardupilot-runtime/` shipped with `ArduCopterAdapter` (Copter first; Plane and Rover remain follow-ups, answering Q1 in favour of per-family classes). It subclasses `PX4Adapter` and adds what the ArduPilot firmware needs around the shared command set: GUIDED entry, explicit arming with the autopilot's `PreArm:` text surfaced on refusal, ack matching by command id, arrival waits, `SET_POSITION_TARGET_GLOBAL_INT` for WGS84-bound locations, camera trigger for `capture`, and gripper / winch / servo output lines for `set_output`. `urml execute --adapter ardupilot` is wired in the CLI and the MCP server. The bench link was verified on a Pixhawk running ArduCopter 4.6.3 over USB; no flight is claimed. Runbook: [`docs/demos/sentence-to-pixhawk.md`](../demos/sentence-to-pixhawk.md). The ArduPilot maintainer feedback this RFC requested is still welcome; nothing below is superseded by the shipped code.
+
+Original note follows.
+
+RFC-0041 shipped as a single RFC document PR. No adapter code in that PR. The `reference/ardupilot-runtime/` package is the mechanical follow-up, gated on ArduPilot maintainer feedback. Ledger entry under [`examples/lighthouses/outreach-move2.yaml`](../../examples/lighthouses/outreach-move2.yaml) (Move #1 substrate follow-on placed in the Move #2 file because the Move #1 file is parity-tested against an in-repo demo runner that ArduPilot does not yet have).
 
 ## Requested feedback (from ArduPilot/ardupilot maintainers)
 

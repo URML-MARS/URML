@@ -136,11 +136,11 @@ def build_parser() -> argparse.ArgumentParser:
             "step by step through a substrate adapter, printing the audit "
             "trace. The default `mock` adapter is a hermetic, zero-dependency "
             "simulation: it proves the URML language and execution pipeline "
-            "without touching any robot. `ros2` and `px4` dispatch to a real "
-            "(or simulated) substrate and require their optional runtime "
-            "package. Requires urml-ros2-runtime (always installed in the "
-            "bootstrap venv); the px4 adapter additionally needs "
-            "urml-px4-runtime."
+            "without touching any robot. `ros2`, `px4`, and `ardupilot` "
+            "dispatch to a real (or simulated) substrate and require their "
+            "optional runtime package. Requires urml-ros2-runtime (always "
+            "installed in the bootstrap venv); px4 additionally needs "
+            "urml-px4-runtime, ardupilot needs urml-ardupilot-runtime."
         ),
     )
     p_execute.add_argument(
@@ -175,14 +175,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_execute.add_argument(
         "--adapter",
-        choices=("mock", "ros2", "px4"),
+        choices=("mock", "ros2", "px4", "ardupilot"),
         default="mock",
         metavar="NAME",
         help=(
             "Substrate adapter to execute through. `mock` (default) is a "
             "hermetic simulation that moves nothing. `ros2` dispatches to a "
             "live ROS 2 graph; `px4` to a connected PX4 autopilot (SITL or "
-            "hardware)."
+            "hardware); `ardupilot` to a connected ArduCopter (Pixhawk on "
+            "USB / telemetry, or ArduCopter SITL)."
         ),
     )
     p_execute.add_argument(
@@ -191,8 +192,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="PATH",
         help=(
-            "Adapter configuration file (YAML). Used by the ros2 and px4 "
-            "adapters for connection/topic settings; ignored by mock."
+            "Adapter configuration file (YAML). Used by the ros2, px4, and "
+            "ardupilot adapters for connection/topic settings; ignored by mock."
         ),
     )
     p_execute_policy = p_execute.add_mutually_exclusive_group()
@@ -411,7 +412,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_speech_args(p_run)
     p_run.add_argument(
         "--adapter",
-        choices=("mock", "ros2", "px4"),
+        choices=("mock", "ros2", "px4", "ardupilot"),
         default="mock",
         metavar="NAME",
         help=(
@@ -424,7 +425,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         metavar="PATH",
-        help="Adapter configuration file (YAML) for the ros2/px4 adapters.",
+        help="Adapter configuration file (YAML) for the ros2/px4/ardupilot adapters.",
     )
     p_run.add_argument(
         "--out",
@@ -987,6 +988,11 @@ _SUBSTRATE_NOTE = {
         "PX4 / MAVLink. Primitives dispatched to the connected autopilot "
         "(PX4 SITL or hardware). The vehicle will act."
     ),
+    "ardupilot": (
+        "ArduPilot / MAVLink. Primitives dispatched to the connected "
+        "ArduCopter (SITL or hardware). The vehicle will enter GUIDED, arm, "
+        "and act; the autopilot's own pre-arm checks still apply."
+    ),
 }
 
 
@@ -1164,6 +1170,35 @@ def _build_execute_adapter(args: argparse.Namespace, cleanup: list[Any]) -> Any:
             raise _CLILoadError(
                 f"could not construct the px4 adapter: {exc} "
                 f"(a reachable PX4 SITL/autopilot is also required to execute)."
+            ) from exc
+        close = getattr(adapter, "close", None)
+        if callable(close):
+            cleanup.append(close)
+        return adapter
+
+    if adapter_name == "ardupilot":
+        try:
+            from urml_ardupilot_runtime import (  # type: ignore[import-not-found,unused-ignore]
+                ArduCopterAdapter,
+                load_ardupilot_config,
+            )
+        except ImportError as exc:
+            raise _CLILoadError(
+                "the ardupilot adapter requires urml-ardupilot-runtime. Install with: "
+                "pip install urml-ardupilot-runtime[ardupilot] (or use --adapter mock)."
+            ) from exc
+
+        config = None
+        if args.adapter_config is not None:
+            if not args.adapter_config.is_file():
+                raise _CLILoadError(f"adapter-config file not found: {args.adapter_config}")
+            config = load_ardupilot_config(args.adapter_config)
+        try:
+            adapter = ArduCopterAdapter(config)
+        except Exception as exc:  # noqa: BLE001 — surface pymavlink-missing etc. as usage error
+            raise _CLILoadError(
+                f"could not construct the ardupilot adapter: {exc} "
+                f"(a reachable ArduCopter SITL/autopilot is also required to execute)."
             ) from exc
         close = getattr(adapter, "close", None)
         if callable(close):

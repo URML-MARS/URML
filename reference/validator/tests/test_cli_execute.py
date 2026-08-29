@@ -18,9 +18,7 @@ from typing import Any
 
 import pytest
 
-from urml_validator.cli import _emit_execute_pretty
-
-from urml_validator.cli import build_parser, main
+from urml_validator.cli import _emit_execute_pretty, build_parser, main
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURE_ROOT = Path(__file__).parent / "fixtures"
@@ -295,3 +293,57 @@ def test_trace_render_empty_tree_when_zero_steps(
     _emit_execute_pretty(rr, "mock", program_path=Path("empty.yaml"))
     out = capsys.readouterr().out
     assert "behavior tree was empty" in out
+
+
+# ---------------------------------------------------------------------------
+# --adapter ardupilot is wired the same way as px4
+# ---------------------------------------------------------------------------
+
+
+def test_execute_accepts_ardupilot_adapter_choice() -> None:
+    parser = build_parser()
+    args = parser.parse_args(["execute", "prog.yaml", "-m", "man.yaml", "--adapter", "ardupilot"])
+    assert args.adapter == "ardupilot"
+
+
+def test_execute_ardupilot_adapter_config_not_found_exits_2(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A missing --adapter-config for ardupilot is a clean usage error, no traceback."""
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(MANIFEST),
+        "--no-policy",
+        "--adapter",
+        "ardupilot",
+        "--adapter-config",
+        str(tmp_path / "no_such.yaml"),
+    ])
+    err = capsys.readouterr().err
+    assert rc == 2
+    assert "adapter-config file not found" in err.lower()
+    assert "Traceback" not in err
+
+
+def test_execute_ardupilot_missing_package_is_actionable(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Without urml-ardupilot-runtime installed, exit 2 with the install hint."""
+    import sys
+
+    monkeypatch.setitem(sys.modules, "urml_ardupilot_runtime", None)  # type: ignore[arg-type]
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(MANIFEST),
+        "--no-policy",
+        "--adapter",
+        "ardupilot",
+    ])
+    err = capsys.readouterr().err
+    assert rc == 2
+    assert "urml-ardupilot-runtime" in err
+    assert "Traceback" not in err

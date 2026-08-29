@@ -1,0 +1,77 @@
+# URML v0.1
+#
+# Scenario: drone/site-photogrammetry
+# Source NL: "Fly 100 metres above the site and take five pictures around
+#             it for a 3D model." (see site-photogrammetry.en.txt)
+#
+# Flight test 1. Five orbit stations at 100 m AGL around a geocoded
+# address, one still photo at each, all photos attached to the report.
+# The stations `site_p1..p5` are declared in the manifest as local-metre
+# poses (what the validator checks against the geofence and ceiling) and
+# bound to WGS84 in site-photogrammetry.adapter.yaml, where the aircraft
+# actually flies them.
+#
+# There is no loop in URML by design, so five shots are five step pairs.
+# A short hover before each shot lets the airframe settle. `wait` is not
+# allowed in flight; `hover` is the in-flight pause.
+#
+# Reconstruction is not URML's job: hand the five files and the geotag
+# JSON from `urml execute --json` to OpenDroneMap / WebODM or COLMAP.
+# Five frames give a coarse model; 20 to 40 with 70 % overlap is the norm
+# (`geocode_locations.py --points N`).
+#
+#   urml validate site-photogrammetry.urml.yaml \
+#     -m site-photogrammetry.manifest.yaml -e site-photogrammetry.envelope.yaml \
+#     --profile drone --no-policy
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 100.0
+    - move_to:
+        location: site_p1
+    - hover:
+        duration: 2s
+    - capture:
+        media: photo
+        store_as: shot_1
+    - move_to:
+        location: site_p2
+    - hover:
+        duration: 2s
+    - capture:
+        media: photo
+        store_as: shot_2
+    - move_to:
+        location: site_p3
+    - hover:
+        duration: 2s
+    - capture:
+        media: photo
+        store_as: shot_3
+    - move_to:
+        location: site_p4
+    - hover:
+        duration: 2s
+    - capture:
+        media: photo
+        store_as: shot_4
+    - move_to:
+        location: site_p5
+    - hover:
+        duration: 2s
+    - capture:
+        media: photo
+        store_as: shot_5
+    - report:
+        to: user
+        facts:
+          subject: site
+          purpose: photogrammetry
+          stations: 5
+        attachments: [$shot_1, $shot_2, $shot_3, $shot_4, $shot_5]
+    - return_to_home: {}
+    - land: {}

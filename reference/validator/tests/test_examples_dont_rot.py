@@ -63,3 +63,41 @@ def test_example_manifest_parses(path: Path) -> None:
 @pytest.mark.parametrize("path", _ENVELOPES, ids=_ids(_ENVELOPES))
 def test_example_envelope_parses(path: Path) -> None:
     SafetyEnvelope.model_validate(_load(path))
+
+
+# ---------------------------------------------------------------------------
+# Drone bundles run the full validator, not just the schema parse.
+#
+# RFC-0250 made `substrate.autopilot_class` mandatory for drone-class
+# manifests and the published drone examples silently rotted for a while
+# because this file only parsed them. Each bundle below is validated the
+# way the docs tell a reader to validate it (`--profile drone --no-policy`).
+# ---------------------------------------------------------------------------
+
+from urml_validator import validate  # noqa: E402
+
+_DRONE = _EXAMPLES_ROOT / "drone"
+_DRONE_BUNDLES: list[tuple[str, str, str | None]] = [
+    ("roof-inspection", "roof-inspection", None),
+    ("bridge-survey", "bridge-survey", None),
+    ("parallel-watch", "parallel-watch", None),
+    ("link-aware-patrol", "link-aware-patrol", "link-aware-patrol"),
+    ("bench-battery", "pixhawk-ardupilot", None),
+    ("bench-hop", "pixhawk-ardupilot", None),
+    ("site-photogrammetry", "site-photogrammetry", "site-photogrammetry"),
+    ("parcel-delivery", "parcel-delivery", "parcel-delivery"),
+    ("parcel-delivery-servo", "parcel-delivery", "parcel-delivery"),
+]
+
+
+@pytest.mark.parametrize(("program", "manifest", "envelope"), _DRONE_BUNDLES, ids=[b[0] for b in _DRONE_BUNDLES])
+def test_drone_bundle_validates(program: str, manifest: str, envelope: str | None) -> None:
+    env = _load(_DRONE / f"{envelope}.envelope.yaml") if envelope else None
+    result = validate(
+        _load(_DRONE / f"{program}.urml.yaml"),
+        _load(_DRONE / f"{manifest}.manifest.yaml"),
+        envelope=env,
+        profiles=("drone",),
+        policy=None,
+    )
+    assert result.accepted, [e.message for e in result.errors]

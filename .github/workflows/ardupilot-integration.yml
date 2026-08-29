@@ -1,0 +1,128 @@
+# ArduPilot integration gates for urml-ardupilot-runtime.
+#
+# Two jobs, mirroring px4-integration.yml's shape:
+#
+#   ardupilot-smoke   — install the real `pymavlink` + `pyserial` wheels via
+#                       the [ardupilot] extra, run the live smoke (adapter
+#                       constructs, conformance runner accepts the factory,
+#                       nothing is contacted), then re-run the hermetic unit
+#                       suite under the real wheel.
+#   ardupilot-sitl-e2e — manual only (workflow_dispatch). Boots ArduCopter
+#                       SITL from the ArduPilot repo and flies the
+#                       drone/flight_only_positive fixture plus the two
+#                       flight-test examples. Not scheduled: like the PX4
+#                       SITL job, its first run is the calibration run and
+#                       no green run is claimed until one exists.
+#
+# The bench test (URML_ARDUPILOT_BENCH=<port>) needs a physical board and
+# never runs in CI.
+
+name: ardupilot-integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_sitl:
+        description: "Also run the ArduCopter SITL e2e (slow, uncalibrated)"
+        type: boolean
+        default: false
+  schedule:
+    # Mondays 08:00 UTC (after ros2- and px4-integration).
+    - cron: '0 8 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  ardupilot-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install URML packages + real pymavlink / pyserial
+        run: |
+          set -eux
+          python -m pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/px4-runtime \
+            -e conformance \
+            -e "reference/ardupilot-runtime[ardupilot,dev]"
+
+      - name: Live smoke (real wheel, no autopilot)
+        env:
+          URML_ARDUPILOT_INTEGRATION: "1"
+        run: |
+          cd reference/ardupilot-runtime
+          python -m pytest tests/integration/test_arducopter_live.py -q
+
+      - name: Hermetic unit suite under the real wheel
+        run: |
+          cd reference/ardupilot-runtime
+          python -m pytest tests -q
+          ruff check src tests
+          mypy
+
+      - name: Geocode tool tests (stub resolver, no network)
+        run: python -m pytest tools/scripts/test_geocode_locations.py -q
+
+  ardupilot-sitl-e2e:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_sitl }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install URML packages
+        run: |
+          set -eux
+          python -m pip install -U pip
+          pip install \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e reference/px4-runtime \
+            -e conformance \
+            -e "reference/ardupilot-runtime[ardupilot]"
+
+      - name: Fetch ArduPilot and build SITL
+        run: |
+          set -eux
+          git clone --depth 1 --recurse-submodules --shallow-submodules \
+            https://github.com/ArduPilot/ardupilot.git /tmp/ardupilot
+          cd /tmp/ardupilot
+          Tools/environment_install/install-prereqs-ubuntu.sh -y
+          ./waf configure --board sitl
+          ./waf copter
+
+      - name: Boot ArduCopter SITL headless
+        run: |
+          set -eux
+          cd /tmp/ardupilot
+          # Gripper / winch / camera enabled so the delivery + survey examples ack.
+          nohup Tools/autotest/sim_vehicle.py -v ArduCopter --no-mavproxy -w \
+            --out udp:127.0.0.1:14550 \
+            > /tmp/sitl.log 2>&1 &
+          sleep 60
+
+      - name: SITL e2e
+        env:
+          URML_ARDUPILOT_SITL: "1"
+        run: |
+          cd reference/ardupilot-runtime
+          python -m pytest tests/integration/test_arducopter_sitl_e2e.py -q -x
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ardupilot-sitl-log
+          path: /tmp/sitl.log

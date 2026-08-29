@@ -172,8 +172,8 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
 
         return URMLRuntime(MockROSAdapter()), cleanup
 
-    if adapter not in {"ros2", "px4"}:
-        raise ValueError(f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', or 'px4')")
+    if adapter not in {"ros2", "px4", "ardupilot"}:
+        raise ValueError(f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', or 'ardupilot')")
 
     if not _real_execute_allowed():
         raise PermissionError(
@@ -200,6 +200,25 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
         ros_adapter = RclpyAdapter(config)
         cleanup.append(ros_adapter.close)
         return URMLRuntime(ros_adapter), cleanup
+
+    if adapter == "ardupilot":
+        try:
+            from urml_ardupilot_runtime import (  # type: ignore[import-not-found]
+                ArduCopterAdapter,
+                load_ardupilot_config,
+            )
+        except ImportError as exc:
+            raise RuntimeError(
+                "the ardupilot adapter requires urml-ardupilot-runtime "
+                "(pip install urml-ardupilot-runtime[ardupilot]), plus a reachable ArduCopter SITL/autopilot."
+            ) from exc
+
+        ap_config = load_ardupilot_config(Path(config_path)) if config_path else None
+        ap_adapter = ArduCopterAdapter(ap_config)
+        ap_close = getattr(ap_adapter, "close", None)
+        if callable(ap_close):
+            cleanup.append(ap_close)
+        return URMLRuntime(ap_adapter), cleanup
 
     # adapter == "px4"
     try:

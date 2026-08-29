@@ -1,0 +1,18 @@
+# ArduPilot adapter config for the bench bring-up.
+#
+# A Pixhawk on USB shows up as COM<n> on Windows and /dev/ttyACM0 on
+# Linux; baud is ignored on USB but needed for a telemetry radio. The
+# location bindings are local metres from the launch point.
+
+connection_url: "COM5"
+baud: 115200
+
+location_to_pose:
+  home:
+    north: 0.0
+    east: 0.0
+    alt: 0.0
+  bench_north:
+    north: 5.0
+    east: 0.0
+    alt: 3.0

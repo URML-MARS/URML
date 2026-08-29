@@ -57,7 +57,7 @@ jobs:
           set -eux
           for p in reference/validator \
                    reference/llm-bridge reference/ros2-runtime \
-                   reference/autosar-runtime reference/chrono-runtime \
+                   reference/ardupilot-runtime reference/autosar-runtime reference/chrono-runtime \
                    reference/cobot-runtime reference/edu-runtime \
                    reference/embedded-runtime reference/humanoid-runtime \
                    reference/industrial-arm-runtime reference/isaac-runtime \

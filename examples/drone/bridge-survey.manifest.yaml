@@ -47,6 +47,11 @@ mobility:
   service_ceiling: 120.0
   max_payload: 0.5
 
+# RFC-0250: drone-class manifests declare the autopilot they compose
+# against. These examples target the PX4 SITL demo path.
+substrate:
+  autopilot_class: px4
+
 perception:
   cameras:
     - name: downward
