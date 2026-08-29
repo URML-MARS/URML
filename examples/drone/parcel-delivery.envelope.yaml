@@ -22,9 +22,9 @@ geofences:
     frame: agl
     vertices:
       - [-10.0, -10.0]
-      - [100.0, -10.0]
-      - [100.0, 50.0]
-      - [-10.0, 50.0]
+      - [220.0, -10.0]
+      - [220.0, 90.0]
+      - [-10.0, 90.0]
     min_altitude: 0.0
     max_altitude: 60.0
 
@@ -32,10 +32,10 @@ people_occupancy_zones:
   - name: footpath
     frame: agl
     vertices:
-      - [70.0, 40.0]
-      - [100.0, 40.0]
-      - [100.0, 50.0]
-      - [70.0, 50.0]
+      - [170.0, 75.0]
+      - [220.0, 75.0]
+      - [220.0, 90.0]
+      - [170.0, 90.0]
     allow_override: false
 
 weather:

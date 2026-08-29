@@ -25,11 +25,11 @@ declared_locations:
     frame: agl
     description: Launch point.
   - name: dropoff
-    pose: { x: 80.0, y: 30.0, z: 30.0 }
+    pose: { x: 192.6, y: 66.7, z: 30.0 }
     frame: agl
-    description: Drop-off station over the geocoded yard, at cruise height.
+    description: Drop-off station over Duffy Square (geocoded), at cruise height.
   - name: dropoff_low
-    pose: { x: 80.0, y: 30.0, z: 3.0 }
+    pose: { x: 192.6, y: 66.7, z: 3.0 }
     frame: agl
     description: Same point at three metres, for the latch-only variant.
 
