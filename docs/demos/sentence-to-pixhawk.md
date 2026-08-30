@@ -201,6 +201,23 @@ instead of `sim_vehicle.py`, which needs MAVProxy for `--out`:
 [`.github/workflows/ardupilot-integration.yml`](../../.github/workflows/ardupilot-integration.yml),
 manual-trigger only, not yet run in CI.
 
+### Watching the simulation
+
+Two ways to see the simulated flight instead of reading a green test:
+
+- **Live, in a ground station.** Start SITL with a second link
+  (`--serial1 udpclient:<this-host>:14551`), point Mission Planner or
+  QGroundControl at UDP 14551, then run `urml execute ... --adapter ardupilot`
+  against `udp:0.0.0.0:14550`. The map shows the aircraft fly the program.
+- **Recorded track.** `python tools/scripts/sitl_flight_track.py <out_dir>
+  site-photogrammetry` flies the program, logs the position stream from the
+  second link, and writes a PNG of the path with the capture points plus the
+  altitude profile, a CSV of positions, and the autopilot's STATUSTEXT
+  timeline. Run 2026-08-30 for both flight tests: the photogrammetry orbit
+  held 100 m across all five captures; the delivery log reads
+  `Winch: lowering 15.0m`, `Gripper load released`, `Winch: raising 15.0m`,
+  then RTL.
+
 ### Flight test 1: five photos at 100 m around an address
 
 Sentence: *Fly 100 metres above the site and take five pictures around it
