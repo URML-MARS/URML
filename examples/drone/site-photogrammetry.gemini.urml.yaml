@@ -1,0 +1,43 @@
+# URML v0.1, emitted by an LLM (not hand-written).
+#
+# Sentence:  "Fly 100 metres above the site and take five pictures around it for a 3D model."
+# Provider:  Gemini 2.5 Pro via the bridge's OpenAI-compatible provider
+#            (--base-url https://generativelanguage.googleapis.com/v1beta/openai/)
+# Manifest:  site-photogrammetry.manifest.yaml, envelope site-photogrammetry.envelope.yaml
+# Result:    accepted by the validator after 0 revisions, 2026-08-30
+# Then flown unchanged on ArduCopter SITL (see sentence-to-pixhawk.md).
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+  - take_off:
+      altitude: 100.0
+  - move_to:
+      location: site_p1
+  - capture:
+      media: photo
+      store_as: site_photo_1
+  - move_to:
+      location: site_p2
+  - capture:
+      media: photo
+      store_as: site_photo_2
+  - move_to:
+      location: site_p3
+  - capture:
+      media: photo
+      store_as: site_photo_3
+  - move_to:
+      location: site_p4
+  - capture:
+      media: photo
+      store_as: site_photo_4
+  - move_to:
+      location: site_p5
+  - capture:
+      media: photo
+      store_as: site_photo_5
+  - return_to_home: {}
+  - land: {}

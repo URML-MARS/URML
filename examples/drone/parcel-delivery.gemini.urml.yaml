@@ -1,0 +1,47 @@
+# URML v0.1, emitted by an LLM (not hand-written).
+#
+# Sentence:  "Deliver the parcel to the drop-off point and come back."
+# Provider:  Gemini 2.5 Pro via the bridge's OpenAI-compatible provider
+#            (--base-url https://generativelanguage.googleapis.com/v1beta/openai/)
+# Manifest:  parcel-delivery.manifest.yaml, envelope parcel-delivery.envelope.yaml
+# Result:    accepted by the validator after 0 revisions, 2026-08-30
+# Then flown unchanged on ArduCopter SITL (see sentence-to-pixhawk.md).
+#
+# History worth keeping: before the bridge carried a drone delivery few-shot,
+# the same sentence and model produced a program that flew to the drop-off,
+# hovered, and returned with the parcel still aboard (validator-accepted,
+# because nothing about it was unsafe or impossible). `set_output` had never
+# appeared in the prompt. One few-shot later, this is what the sentence yields.
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+  - take_off:
+      altitude: 30.0
+  - move_to:
+      location: dropoff
+  - hover:
+      duration: 3s
+  - set_output:
+      output: winch
+      value: true
+  - hover:
+      duration: 40s
+  - set_output:
+      output: payload_latch
+      value: true
+  - hover:
+      duration: 2s
+  - set_output:
+      output: winch
+      value: false
+  - hover:
+      duration: 40s
+  - report:
+      to: user
+      facts:
+        delivered_to: dropoff
+  - return_to_home: {}
+  - land: {}

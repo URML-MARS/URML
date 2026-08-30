@@ -362,6 +362,29 @@ _DRONE_HOVER_AND_MEASURE: dict[str, Any] = {
 }
 
 
+_DRONE_PARCEL_DELIVERY: dict[str, Any] = {
+    "profile": "drone",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"take_off": {"altitude": 30.0}},
+            {"move_to": {"location": "dropoff"}},
+            {"hover": {"duration": "3s"}},
+            {"set_output": {"output": "winch", "value": True}},
+            {"hover": {"duration": "40s"}},
+            {"set_output": {"output": "payload_latch", "value": True}},
+            {"hover": {"duration": "2s"}},
+            {"set_output": {"output": "winch", "value": False}},
+            {"hover": {"duration": "40s"}},
+            {"report": {"to": "user", "facts": {"delivered_to": "dropoff"}}},
+            {"return_to_home": {}},
+            {"land": {}},
+        ],
+    },
+}
+
+
 def drone_few_shots() -> list[FewShot]:
     """Return the drone-profile few-shot example set."""
     return [
@@ -382,6 +405,17 @@ def drone_few_shots() -> list[FewShot]:
             program=_DRONE_HOVER_AND_MEASURE,
             note="Station-keeping + sensor measurement + structured report. "
             "Exercises hover, measure, and a $ref into report.facts.",
+        ),
+        FewShot(
+            user="Deliver the parcel to the drop-off point and come back.",
+            program=_DRONE_PARCEL_DELIVERY,
+            note="Aerial delivery. A drone manifest declares no `manipulation`, "
+            "so the payload leaves the aircraft through manifest-declared "
+            "output lines driven by `set_output` (RFC-0017): winch out, latch "
+            "open, winch in. Each winch command is bracketed by `hover` (never "
+            "`wait` in flight) because the autopilot acknowledges the command, "
+            "not the line reaching the ground. A delivery program that only "
+            "flies to the drop-off and returns is incomplete.",
         ),
     ]
 
