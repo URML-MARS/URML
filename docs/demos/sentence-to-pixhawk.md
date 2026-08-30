@@ -251,7 +251,9 @@ Two ways to see the simulated flight instead of reading a green test:
   site-photogrammetry` flies the program, logs the position stream from the
   second link, and writes a PNG of the path with the capture points plus the
   altitude profile, a CSV of positions, and the autopilot's STATUSTEXT
-  timeline. Run 2026-08-30 for both flight tests: the photogrammetry orbit
+  timeline. `tools/scripts/sitl_track_map.py`, run in the same directory,
+  redraws the track over aerial imagery (Esri World Imagery via
+  `contextily`; network at documentation time only). Run 2026-08-30 for both flight tests: the photogrammetry orbit
   held 100 m across all five captures; the delivery log reads
   `Winch: lowering 15.0m`, `Gripper load released`, `Winch: raising 15.0m`,
   then RTL.
