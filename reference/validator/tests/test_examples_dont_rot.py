@@ -87,6 +87,8 @@ _DRONE_BUNDLES: list[tuple[str, str, str | None]] = [
     ("site-photogrammetry", "site-photogrammetry", "site-photogrammetry"),
     ("parcel-delivery", "parcel-delivery", "parcel-delivery"),
     ("parcel-delivery-servo", "parcel-delivery", "parcel-delivery"),
+    ("site-photogrammetry.gemini", "site-photogrammetry", "site-photogrammetry"),
+    ("parcel-delivery.gemini", "parcel-delivery", "parcel-delivery"),
 ]
 
 
