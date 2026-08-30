@@ -201,6 +201,44 @@ instead of `sim_vehicle.py`, which needs MAVProxy for `--out`:
 [`.github/workflows/ardupilot-integration.yml`](../../.github/workflows/ardupilot-integration.yml),
 manual-trigger only, not yet run in CI.
 
+### The LLM step, on record
+
+The two flight-test programs in `examples/drone/` are hand-written so the
+validator, adapter, and SITL work could be built against known inputs. On
+2026-08-30 the two sentences were also put through the bridge for real,
+with a frontier model, and the emitted programs are committed next to the
+hand-written ones as `site-photogrammetry.gemini.urml.yaml` and
+`parcel-delivery.gemini.urml.yaml`:
+
+```bash
+urml translate "Fly 100 metres above the site and take five pictures around it for a 3D model."     -m examples/drone/site-photogrammetry.manifest.yaml     -e examples/drone/site-photogrammetry.envelope.yaml --profile drone --no-policy     --provider openai --base-url https://generativelanguage.googleapis.com/v1beta/openai/     --model gemini-2.5-pro
+```
+
+(Gemini through the bridge's OpenAI-compatible provider; the bridge is
+provider-agnostic and this needed no code change. The key lives in
+`OPENAI_API_KEY`; nothing is stored in the repo.)
+
+What happened, in order:
+
+- **Photogrammetry.** Accepted after 0 revisions: `take_off` 100 m, the five
+  `move_to` / `capture` pairs on the manifest's `site_p1..p5`, return, land.
+  Flown unchanged on SITL: 13 steps, success, five geotagged captures.
+- **Delivery, first pass.** Accepted after 1 revision, and *incomplete*: fly
+  to `dropoff`, descend to `dropoff_low`, hover, return. The parcel never
+  left the aircraft. The validator checks that a program is safe and
+  possible, not that it fulfils the sentence. Root cause was on our side:
+  `set_output` did not appear anywhere in the bridge's prompt or few-shot
+  examples, so no model had ever seen how a drone releases a payload in URML.
+- **Fix.** One drone few-shot added to the bridge (winch out, latch open,
+  winch in, each bracketed by `hover`). The same sentence then produced the
+  complete program after 0 revisions, and it flew on SITL: `Winch: lowering
+  15.0m`, `Gripper load released`, `Winch: raising`, RTL, land.
+- **Local 7B, for contrast.** `qwen2.5:7b` on CPU emitted the same invalid
+  program four times for both sentences (`profile: delivery`, no `type:
+  sequence`, undeclared locations, no release) and was refused every time.
+  The gate holds regardless of the model; a weak model is wrong, not
+  dangerous.
+
 ### Watching the simulation
 
 Two ways to see the simulated flight instead of reading a green test:

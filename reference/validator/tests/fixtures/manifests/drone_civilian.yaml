@@ -21,6 +21,10 @@ declared_locations:
   - name: roof_north
     pose: { x: 10.0, y: 5.0, z: 30.0 }
     frame: agl
+  - name: dropoff
+    pose: { x: 40.0, y: 20.0, z: 30.0 }
+    frame: agl
+    description: Parcel drop-off station at cruise height (few-shot + delivery tests).
 
 declared_events:
   - emergency_stop
@@ -56,6 +60,14 @@ perception:
 
 outputs:
   named_endpoints: []
+  # RFC-0017 payload mechanisms driven by `set_output` (winch + latch delivery).
+  lines:
+    - name: payload_latch
+      kind: digital
+      safe_state: false
+    - name: winch
+      kind: digital
+      safe_state: false
 
 # US-compliant illustrative provenance so the bundled default policy passes.
 provenance:
