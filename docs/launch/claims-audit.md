@@ -197,6 +197,17 @@ relative-length control. The GitHub `ardupilot-sitl-e2e` job itself
 (manual-trigger) has not been run in CI; the local run is the evidence. The
 two flight-test examples have not been flown on hardware.
 
+**LLM bridge on the flight sentences — measured 2026-08-30.** Gemini 2.5 Pro
+through the bridge's OpenAI-compatible provider: the photogrammetry sentence
+produced the accepted five-station program after 0 revisions; the delivery
+sentence first produced an accepted-but-incomplete program (no payload
+release; `set_output` was absent from the prompt's few-shots), and after the
+drone delivery few-shot was added, the complete winch + latch program after
+0 revisions. Both LLM-emitted programs are committed
+(`examples/drone/*.gemini.urml.yaml`) and flew unchanged on ArduCopter SITL.
+`qwen2.5:7b` locally on CPU was rejected on all four attempts for both
+sentences. No physical flight claimed.
+
 **CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
 routing across a flight + companion backend. Evidence: px4-runtime suite.
 

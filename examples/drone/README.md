@@ -24,6 +24,8 @@ End-to-end drone-profile programs. Each scenario ships as three companion files:
 - **`site-photogrammetry`** — flight test 1: five orbit stations at 100 m AGL around a geocoded address, one photo each. WGS84 bindings in `site-photogrammetry.adapter.yaml`, produced by `tools/scripts/geocode_locations.py` from `addresses.example.yaml`.
 - **`parcel-delivery`**, **`parcel-delivery-servo`** — flight test 2: carry a parcel to a geocoded drop-off and release by winch + latch, or latch only. Payload mechanisms are RFC-0017 output lines driven by `set_output`.
 
+- **`site-photogrammetry.gemini`**, **`parcel-delivery.gemini`** — the same two sentences translated by an LLM (Gemini 2.5 Pro via the bridge, 2026-08-30), validator-accepted, and flown unchanged on SITL. Provenance and the one honest caveat are in each file's header.
+
 The flight-test bundles are validated in CI and gated on an ArduCopter SITL pass before any field run; no physical flight is claimed. Each ships a manifest and an envelope; validate with `-e <name>.envelope.yaml`.
 
 ## Run on hardware
