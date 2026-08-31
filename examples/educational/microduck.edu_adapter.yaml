@@ -1,0 +1,18 @@
+# Microduck adapter config: manifest-named intents -> duck-ipc-proto calls.
+#
+# device: 'unix:///run/robotd.sock' when URML runs on the robot (or over an
+# SSH-forwarded socket); 'tcp://<host>:<port>' for a TCP forward from a
+# laptop. The wire is JSON-RPC 2.0, one object per line, per the contract
+# crate in pollen-robotics/microduck. kwargs become the params object
+# verbatim; skills use the wire's snake_case names.
+
+device: "tcp://duck.local:7007"
+
+location_to_command:
+  stand_up: robot.init
+  step_ahead: { method: robot.move, kwargs: { vx: 0.10, vy: 0.0, vyaw: 0.0 } }
+  sit_spot: { method: robot.do, kwargs: { skill: sit_toggle } }
+
+manipulation_commands:
+  grasp: { method: robot.do, kwargs: { skill: ground_pick } }
+  release: { method: robot.relax }

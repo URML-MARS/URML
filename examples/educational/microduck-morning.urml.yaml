@@ -1,0 +1,39 @@
+# URML v0.1 — generated from natural language
+#
+# Scenario: educational/microduck-morning
+# Source NL: "Stand up, step forward, sit down, and tell me how you feel."
+#            (see microduck-morning.en.txt)
+#
+# The Microduck bring-up program: power the joints and ramp to home
+# (`stand_up` -> robot.init), one small velocity intent (`step_ahead` ->
+# robot.move as a JSON-RPC notification, exactly how the gamepad drives
+# it), sit (`sit_spot` -> robot.do SitToggle), read the daemon's health
+# gate, and report. Every named location is bound to a wire call in
+# microduck.edu_adapter.yaml; the URML program never sees JSON-RPC.
+#
+#   urml validate microduck-morning.urml.yaml \
+#     -m microduck.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        location: stand_up
+    - move_to:
+        location: step_ahead
+    - wait:
+        duration: 2s
+    - move_to:
+        location: sit_spot
+    - measure:
+        what: custom
+        sensor: health
+        store_as: duck_health
+    - report:
+        to: user
+        facts:
+          check: microduck_morning
+        status: success
+        severity: info
