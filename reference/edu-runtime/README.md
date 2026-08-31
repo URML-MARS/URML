@@ -46,6 +46,7 @@ pip install -e reference/edu-runtime[vex]      # VEX V5 (pyvex)
 pip install -e reference/edu-runtime[lego]     # LEGO Pybricks (pybricksdev BLE)
 pip install -e reference/edu-runtime[thymio]   # Thymio (tdmclient)
 pip install -e reference/edu-runtime[marty]    # Robotical Marty v1/v2 (martypy)
+pip install -e reference/edu-runtime           # Microduck (stdlib JSON-RPC, no extra)
 ```
 
 ```python

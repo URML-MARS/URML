@@ -5,6 +5,7 @@
   ThymioAdapter        — Thymio over the Aseba TDM (Thymio Device Manager).
   RoboticalMartyAdapter — Robotical Marty v1/v2 via the martypy skill library.
   PetoiAdapter         — Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library.
+  MicroduckAdapter     — Pollen Robotics / Hugging Face Microduck via its JSON-RPC contract.
   CircuitPythonAdapter — Adafruit CircuitPython (Python on MCU) via a host-side comms bridge.
   (+ EduConfig, BRAND_ADAPTERS, load_edu_config)
 
@@ -34,6 +35,7 @@ from urml_edu_runtime.adapter import (
     VexV5Adapter,
     load_edu_config,
 )
+from urml_edu_runtime.microduck import MicroduckAdapter
 
 BRAND_ADAPTERS = {
     "vex": VexV5Adapter,
@@ -41,6 +43,7 @@ BRAND_ADAPTERS = {
     "thymio": ThymioAdapter,
     "marty": RoboticalMartyAdapter,
     "petoi": PetoiAdapter,
+    "microduck": MicroduckAdapter,
     "circuitpython": CircuitPythonAdapter,
 }
 
@@ -51,6 +54,7 @@ __all__ = [
     "EduConfig",
     "EduSkillCall",
     "LegoSpikeAdapter",
+    "MicroduckAdapter",
     "PetoiAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",

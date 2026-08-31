@@ -1,0 +1,70 @@
+# Capability manifest for a Pollen Robotics / Hugging Face Microduck.
+#
+# A 25 cm biped whose walking is an ONNX policy trained in MuJoCo
+# (pollen-robotics/microduck_rl), which is exactly what RFC-0383's
+# `learned_policy` block declares: the training envelope, so the
+# validator refuses a deployment whose admissible intent exceeds what
+# the policy ever saw. The pose ranges below are the trained ranges the
+# contract crate documents (z -0.025..+0.010 m, roll/pitch +-0.26 rad);
+# the velocity range is illustrative until Pollen publishes the
+# training numbers.
+#
+# Locations here are named intents, not places: each is bound to one
+# JSON-RPC wire call in microduck.edu_adapter.yaml (robot.init,
+# robot.move, robot.do). The URML program never sees the wire.
+
+manifest_version: "0.1"
+robot_id: microduck_classroom
+description: Microduck biped (Pollen Robotics / Hugging Face), JSON-RPC intents over the robotd contract.
+
+frames:
+  - name: classroom
+    parent: null
+
+declared_locations:
+  - name: stand_up
+    pose: { x: 0.0, y: 0.0 }
+    frame: classroom
+    description: Power the joints and ramp to home pose (robot.init).
+  - name: step_ahead
+    pose: { x: 0.3, y: 0.0 }
+    frame: classroom
+    description: A small forward velocity intent (robot.move).
+  - name: sit_spot
+    pose: { x: 0.3, y: 0.0 }
+    frame: classroom
+    description: Sit (robot.do sit_toggle).
+
+declared_events:
+  - emergency_stop
+
+mobility:
+  drive_type: biped
+  max_velocity: 0.3
+  station_keeping: false
+
+perception:
+  sensors:
+    - name: health
+      measurement_type: custom
+      units: report
+    - name: tof
+      measurement_type: distance
+      range_min: 0.02
+      range_max: 4.0
+      units: m
+
+outputs:
+  named_endpoints: []
+
+learned_policy:
+  name: alpha_walking
+  governs: locomotion
+  policy_ref: "github://pollen-robotics/microduck/policies/alpha_walking.onnx"
+  command_ranges:
+    - quantity: linear_velocity_x
+      min: -0.15
+      max: 0.15
+      unit: m_per_s
+  terrain_classes: [rigid]
+  enforcement: warn

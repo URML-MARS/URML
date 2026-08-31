@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "petoi", "bittle", "nybble", "opencat", "urml", "runtime"]
+keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "petoi", "bittle", "nybble", "opencat", "microduck", "pollen", "urml", "runtime"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
