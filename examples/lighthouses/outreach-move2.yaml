@@ -376,3 +376,18 @@
   claude_directives: []
   next_action: "open a Discussion on google-deepmind/mujoco (help / questions category) referencing RFC-0060, scoped to the adapter shape (Q1) and the plugin viability (Q3); optional cross-reference Issue if Discussion gets low visibility; record sent_at and last_touch when posted."
   notes: "Move #2 RFC; formalization-with-stub (URML already ships reference/mujoco-runtime/ scaffold + gated mujoco-integration.yml CI workflow). Two integration vectors: Vector A = MuJoCoAdapter completing URML's existing stub against the substrate Protocol; Vector B = optional urml_envelope_plugin via MuJoCo's /plugin/ architecture for simulation-loop-level safety. Verified surface 2026-05-23: google-deepmind/mujoco 13.6k stars, Apache 2.0 code + CC BY 4.0 docs, 158 open issues + 185 open PRs, BOTH Discussions and Issues enabled, v3.8.1 released 2026-05-11, /plugin/ architecture documented, first-party JS/WASM + C#/Unity bindings, Python >=3.10. Forms a DeepMind institutional cluster with RFC-0046 (OXE annotation) and the indirect Gemini Robotics touch — three surfaces, separate front doors, no institutional threading assumed. Honest about the stub-to-full gap: 'URML supports MuJoCo' is the current overclaim that this RFC closes."
+- slug: microduck
+  rfc: 685
+  sent_at: "2026-08-31"
+  posted_url: "https://github.com/pollen-robotics/microduck/issues/178"
+  channel: github_issue
+  contact: "pollen-robotics/microduck (Pollen Robotics, Bordeaux FR; Hugging Face-owned since 2025)"
+  last_touch: "2026-08-31"
+  response: none
+  tier: A
+  country: FR
+  sector: robot-platform
+  comments: []
+  claude_directives: []
+  next_action: "wait 14 d (until 2026-09-14); if silent, one polite follow-up on pollen-robotics/microduck#178; if reply, bump last_touch, set response per enum, write the concrete next step here. If Q2 yields real training-envelope numbers, update examples/educational/microduck.manifest.yaml command_ranges and drop the illustrative caveat."
+  notes: "Adapter-first outreach (the Petoi/forge pattern): MicroduckAdapter shipped in reference/edu-runtime (PR #727) speaking the duck-ipc-proto JSON-RPC NDJSON contract before posting; RFC-0685 asks three questions (off-robot transport, training-envelope export from microduck_rl, api_version handshake). Verified surface 2026-08-31: pollen-robotics/microduck 3.9k stars, Apache-2.0, Issues enabled, not archived, pushed same day; $399 pre-orders opened 2026-08-27; no Python SDK exists (Rust daemons), adapter is pure stdlib. Second Pollen touch after RFC-0240 (Reachy 2, Move #18, silent). Manifest declares the ONNX walking policy as an RFC-0383 learned_policy; hermetic tests only, no hardware claim (robot ships months out). Origin FR (Bordeaux); Hugging Face (FR/US) parent."
