@@ -40,7 +40,7 @@ declared_events:
 
 mobility:
   drive_type: biped
-  max_velocity: 0.3
+  max_velocity: 0.15
   station_keeping: false
 
 perception:
