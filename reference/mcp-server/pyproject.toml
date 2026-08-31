@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
   # Pin below 2.0: server.py uses the bundled FastMCP 1.x
   # (`mcp.server.fastmcp.FastMCP`), which mcp 2.0 removed.
-  "mcp>=1.10,<2",
+  "mcp>=1.10,<3",
   "PyYAML>=6.0,<7",
   "urml-validator>=0.4.0",
   "urml-llm-bridge>=0.4.0",
