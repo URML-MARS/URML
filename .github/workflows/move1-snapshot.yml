@@ -1,0 +1,33 @@
+name: Move-1 discussions snapshot
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch vendor discussions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/scripts/fetch_move1_discussions.py /tmp/vendor-discussions.json
+
+      - name: Push snapshot branch
+        run: |
+          git checkout -B meta/move1-discussions-snapshot origin/main
+          mkdir -p .move1-discussions-snapshot
+          cp /tmp/vendor-discussions.json .move1-discussions-snapshot/discussions.json
+          date -u +%Y-%m-%dT%H:%M:%SZ > .move1-discussions-snapshot/generated_at.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .move1-discussions-snapshot
+          git commit -s -m "meta: move1 discussions snapshot $(date -u +%Y-%m-%d)"
+          git push -f origin meta/move1-discussions-snapshot
