@@ -1,0 +1,123 @@
+# Move #72 outreach ledger. One row per target.
+#
+# Move #72: **small open robots with their OWN control stack (NOT the Hugging Face /
+# Pollen / LeRobot ecosystem).** Founder scoped this on 2026-09-01 ("like Microduck,
+# but no Pollen/HF, find other") after a first LeRobot-hardware pass was set aside.
+# Sourced + deduped against the full 700+ target ledger; two seeds that turned out to
+# be already-contacted (igus iRC_ROS = move36, Berkeley-Humanoid-Lite = move4) were
+# dropped at verification. Each target is a small/affordable open robot with a real
+# software control surface; the URML hook is identical in shape and grounded per-robot:
+# validate a program against the declared capability manifest + safety envelope BEFORE
+# an intent reaches the driver/SDK. Posted 2026-09-01 under idoco2003 as GitHub issues,
+# RFCs 0686-0690, VIBE disclosure up front, no license-ask (GPL/BSD/MIT/Apache stated).
+#
+#   - ar4 (0686, US, anchor): AR4 6-axis DIY arm; ROS 2 driver + MoveIt (Annin hardware).
+#   - turtlebot4 (0687, CA, Clearpath/Open Robotics): edu ROS 2 mobile robot; Nav2/velocity.
+#   - niryo-ned (0688, FR): Ned2 edu 6-axis arm; ROS + pyniryo (GPL, cross-cite only).
+#   - xarm (0689, CN-community): UFACTORY xArm/Lite6 Python SDK (XArmAPI) + xarm_ros2.
+#   - pybear (0690, US): BEAR-actuator Python driver (BRUCE humanoid joints); actuator envelope.
+
+- slug: ar4
+  rfc: 686
+  sent_at: "2026-09-01"
+  posted_url: "https://github.com/ycheng517/ar4_ros_driver/issues/71"
+  channel: github_issue
+  contact: "ycheng517/ar4_ros_driver (community; Annin Robotics AR4 hardware, US; ~149 stars, MIT, Issues + Discussions enabled, not archived, active 2026-04). ROS 2 driver + MoveIt 2 for the AR4 6-axis DIY desktop arm (MK1/2/3 + servo gripper)."
+  last_touch: "2026-09-01"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments:
+    - date: "2026-09-01"
+      text: "Posted the RFC-0686 body to https://github.com/ycheng517/ar4_ros_driver/issues/71 under idoco2003 (Move #72 small-open-robot wave anchor), VIBE disclosure up front. Seam: the driver sends a MoveIt goal / servo command to the AR4 Teensy firmware; URML's capability manifest (joint limits / workspace / gripper force) + envelope is a pre-firmware gate. No license-ask (MIT). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-01"
+      text: "DONE -- posted 2026-09-01 under idoco2003. Cleanest anchor (MIT, active, discussions on). If engaged, a worked example mapping an AR4 motion/grasp onto a URML manifest (validated, no execution), like examples/epically-powerful."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
+  notes: "US, community (Annin AR4 hardware). MIT. ROS2+MoveIt DIY arm. Anchor. No license-ask."
+
+- slug: turtlebot4
+  rfc: 687
+  sent_at: "2026-09-01"
+  posted_url: "https://github.com/turtlebot/turtlebot4/issues/710"
+  channel: github_issue
+  contact: "turtlebot/turtlebot4 (Clearpath Robotics / Open Robotics, Canada; ~163 stars, Apache-2.0, Issues + Discussions enabled, not archived, active 2025-09). ROS 2 software for TurtleBot 4, the affordable educational mobile robot on an iRobot Create 3 base. NB: distinct org/repo from the already-contacted ROBOTIS TurtleBot3 (move35/move4)."
+  last_touch: "2026-09-01"
+  response: none
+  tier: B
+  country: CA
+  sector: robot-platform
+  comments:
+    - date: "2026-09-01"
+      text: "Posted the RFC-0687 body to https://github.com/turtlebot/turtlebot4/issues/710 under idoco2003 (Move #72). Seam: a navigation/dock intent becomes a Nav2/velocity goal driving the base; URML's mobility bounds + safety envelope (geofence, speed cap) is a pre-drive gate, legible in a classroom. No license-ask (Apache). NB: different org (Clearpath/OpenRobotics) from the contacted ROBOTIS turtlebot3. Awaiting reply."
+  claude_directives:
+    - date: "2026-09-01"
+      text: "DONE -- posted 2026-09-01 under idoco2003. Clearpath / Open Robotics = ROS-core org (high-value maintainers). Brand-adjacent to the contacted ROBOTIS turtlebot3 but a distinct org/repo. If engaged, a mobile geofence/speed worked example (educational)."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the classroom-legible geofence/speed-cap framing."
+  notes: "CA, Clearpath/Open Robotics. Apache-2.0. Edu ROS2 mobile robot (Create 3 base). No license-ask."
+
+- slug: niryo-ned
+  rfc: 688
+  sent_at: "2026-09-01"
+  posted_url: "https://github.com/NiryoRobotics/ned_ros/issues/26"
+  channel: github_issue
+  contact: "NiryoRobotics/ned_ros (Niryo, France; ~43 stars, GPL-3.0, Issues enabled, not archived, active 2026-07). The ROS stack for the Ned / Ned2 educational 6-axis desktop arm; pyniryo Python client."
+  last_touch: "2026-09-01"
+  response: none
+  tier: B
+  country: FR
+  sector: robot-platform
+  comments:
+    - date: "2026-09-01"
+      text: "Posted the RFC-0688 body to https://github.com/NiryoRobotics/ned_ros/issues/26 under idoco2003 (Move #72). Seam: a joint/pose/gripper command (pyniryo or ROS) actuates the Ned; URML's capability manifest + envelope is a pre-actuation gate, legible for education. GPL-3.0: cross-citation only, no code reuse, NO license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-09-01"
+      text: "DONE -- posted 2026-09-01 under idoco2003. Educational-arm archetype (closest to Microduck spirit). GPL: cross-cite only, never ask about license. If engaged, a Ned motion/grasp worked example."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; classroom framing."
+  notes: "FR, Niryo. GPL-3.0 (cross-cite only). Edu 6-axis arm + pyniryo. No license-ask."
+
+- slug: xarm
+  rfc: 689
+  sent_at: "2026-09-01"
+  posted_url: "https://github.com/xArm-Developer/xArm-Python-SDK/issues/157"
+  channel: github_issue
+  contact: "xArm-Developer/xArm-Python-SDK (UFACTORY, Shenzhen, CN = commercial/community vendor, NOT state-affiliated; ~322 stars, BSD-3-Clause, Issues + Discussions enabled, not archived, active 2026-06). Python SDK (XArmAPI) for xArm 5/6/7 + Lite 6 desktop arms; companion xarm_ros2 (BSD-3, ROS 2 + MoveIt)."
+  last_touch: "2026-09-01"
+  response: none
+  tier: B
+  country: CN
+  sector: robot-platform
+  comments:
+    - date: "2026-09-01"
+      text: "Posted the RFC-0689 body to https://github.com/xArm-Developer/xArm-Python-SDK/issues/157 under idoco2003 (Move #72). Seam: a joint/Cartesian move via XArmAPI (or xarm_ros2) with speed/force params actuates the arm; URML's capability manifest + envelope is a pre-set_position gate. No license-ask (BSD-3). PRC-community vendor (UFACTORY), not state-affiliated. Awaiting reply."
+  claude_directives:
+    - date: "2026-09-01"
+      text: "DONE -- posted 2026-09-01 under idoco2003. UFACTORY = PRC-community commercial vendor (not state), flagged; the priciest/most-prosumer of the wave but a clean open Python SDK. If silent, accept as dormancy; do not push."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response."
+  notes: "CN-community (UFACTORY Shenzhen, not state-affiliated). BSD-3. Python arm SDK + xarm_ros2. No license-ask."
+
+- slug: pybear
+  rfc: 690
+  sent_at: "2026-09-01"
+  posted_url: "https://github.com/Westwood-Robotics/PyBEAR/issues/18"
+  channel: github_issue
+  contact: "Westwood-Robotics/PyBEAR (Westwood Robotics, US; ~13 stars, Apache-2.0, Issues enabled, not archived, active 2026-07). Python driver for the BEAR actuators used as the joints of the BRUCE kid-size open humanoid."
+  last_touch: "2026-09-01"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments:
+    - date: "2026-09-01"
+      text: "Posted the RFC-0690 body to https://github.com/Westwood-Robotics/PyBEAR/issues/18 under idoco2003 (Move #72). Seam: the driver writes a torque/position/velocity command to a real BEAR actuator; URML's per-actuator limit manifest + envelope (RFC-0017) is a pre-write gate -- the epically-powerful actuator-envelope pattern. No license-ask (Apache). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-01"
+      text: "DONE -- posted 2026-09-01 under idoco2003. Actuator-level fit (closest to the epically-powerful envelope pattern). Small (13 stars) but clean Apache + active; niche but honest fit. If engaged, a BEAR-actuator envelope worked example."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent (small repo). If reply, bump last_touch + set response."
+  notes: "US, Westwood Robotics. Apache-2.0. BEAR-actuator driver (BRUCE humanoid). Actuator-level validate-before-actuate. No license-ask."
