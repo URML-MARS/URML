@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  discussions: read
 
 jobs:
   snapshot:
