@@ -1,0 +1,107 @@
+# Move #73 outreach ledger. One row per target.
+#
+# Move #73: **manipulation / control stacks + one open robot** (fresh net-new
+# after the banked slates 1-4 were exhausted). Sourced 2026-09-03 by a fresh
+# research pass over genuinely-uncovered niches; most niches (marine/aerial/
+# teleop/SLAM/legged) came back already-mined, and the clean net-new fits
+# clustered in manipulation-control and task-planning. All gh-verified live
+# 2026-09-03 (not archived, issues on) and grep-confirmed absent from the ledger.
+# Each target has a real programmatic surface where a pre-dispatch admissibility
+# check has a place; the URML hook is grounded per-target. Posted 2026-09-03
+# under idoco2003 as GitHub issues, RFCs 0692-0695, VIBE disclosure up front,
+# no license-ask (Apache/MIT stated).
+#
+#   - panda-py (0692, DE TUM, anchor): libfranka real-time controllers -> pre-setpoint gate.
+#   - frankapy (0693, US CMU): FrankaArm skill API -> pre-skill-call gate.
+#   - pyrobosim (0694, US community): task-and-motion sandbox -> validate a planned sequence.
+#   - sesame-robot (0695, INTL): ESP32 mini quadruped -> per-leg gait/pose gate (Petoi-shape).
+#
+# DELIBERATELY DROPPED at verification: OpenSoT (IIT lab -> avoid, traversaro
+# AI-spam-callout risk); armour (roahmlab, exceptional fit but org already
+# contacted via tidybot_ros move35, founder-flagged); ada_feeding (UW PRL, org
+# contacted move6); exotica (Edinburgh SLMC, org contacted move12); the
+# animatronics/camera fold-ins (stale / no-license / wrong-fit).
+
+- slug: panda-py
+  rfc: 692
+  sent_at: "2026-09-03"
+  posted_url: "https://github.com/JeanElsner/panda-py/issues/58"
+  channel: github_issue
+  contact: "JeanElsner/panda-py (Jean Elsner, Technical University of Munich, Germany; ~177 stars, Apache-2.0, Issues enabled, not archived, active 2026-09). Python library over libfranka exposing real-time controllers (joint-position / Cartesian-pose / torque) that dispatch to a Franka arm."
+  last_touch: "2026-09-03"
+  response: none
+  tier: B
+  country: DE
+  sector: robot-platform
+  comments:
+    - date: "2026-09-03"
+      text: "Posted the RFC-0692 body to https://github.com/JeanElsner/panda-py/issues/58 under idoco2003 (Move #73 anchor), VIBE disclosure up front. Seam: panda_py.controllers dispatch a real-time setpoint to a Franka arm; URML's capability manifest (joint/Cartesian/torque bounds) + envelope is a pre-setpoint gate. No license-ask (Apache). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-03"
+      text: "DONE -- posted 2026-09-03 under idoco2003. Cleanest anchor (Apache, freshest push, TUM). Distinct from frankapy (both Franka, different labs/altitude). If engaged, a worked example mapping a panda-py setpoint onto a URML manifest (validated, no execution)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
+  notes: "DE, TUM (Jean Elsner). Apache-2.0. libfranka real-time controllers. Anchor. No license-ask."
+
+- slug: frankapy
+  rfc: 693
+  sent_at: "2026-09-03"
+  posted_url: "https://github.com/iamlab-cmu/frankapy/issues/25"
+  channel: github_issue
+  contact: "iamlab-cmu/frankapy (CMU Intelligent Autonomous Manipulation Lab, US; ~250 stars, MIT, Issues enabled, not archived, active 2025-09). Python skill API (goto_pose / goto_joints / execute_trajectory) for the Franka arm over a franka-interface action server."
+  last_touch: "2026-09-03"
+  response: none
+  tier: B
+  country: US
+  sector: robot-platform
+  comments:
+    - date: "2026-09-03"
+      text: "Posted the RFC-0693 body to https://github.com/iamlab-cmu/frankapy/issues/25 under idoco2003 (Move #73). Seam: a FrankaArm skill call is already a typed intent; URML's capability manifest + envelope checks it before the action server executes. No license-ask (MIT). Distinct lab/repo from panda-py (both Franka). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-03"
+      text: "DONE -- posted 2026-09-03 under idoco2003. Skill-API altitude (contrast panda-py's RT controllers). ~12mo push, still active + 250 stars (CMU IAM lab). If engaged, a skill-call -> URML manifest worked example."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the skill-call-as-typed-intent framing."
+  notes: "US, CMU IAM Lab. MIT. Franka skill API. No license-ask."
+
+- slug: pyrobosim
+  rfc: 694
+  sent_at: "2026-09-03"
+  posted_url: "https://github.com/sea-bass/pyrobosim/issues/453"
+  channel: github_issue
+  contact: "sea-bass/pyrobosim (Sebastian Castro, US community; ~384 stars, MIT, Issues enabled, not archived, active 2026-08). Lightweight 2D mobile-robot behavior-prototyping framework with a world/entity model, task-and-motion actions (navigate/pick/place), and an optional ROS 2 interface."
+  last_touch: "2026-09-03"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-09-03"
+      text: "Posted the RFC-0694 body to https://github.com/sea-bass/pyrobosim/issues/453 under idoco2003 (Move #73). Seam: pyrobosim assembles a planned action sequence before dispatch; URML checks each step is admissible against declared robot capabilities + the world model (decide-then-check-then-do) in a ROS 2-connected sandbox. No license-ask (MIT). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-03"
+      text: "DONE -- posted 2026-09-03 under idoco2003. TAMP-sandbox altitude (validate a planned sequence). robot+world modeled as declared entities = near one-to-one with a URML manifest+envelope. If engaged, a pyrobosim-sequence -> URML worked example."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the decide-then-check-then-do sandbox framing."
+  notes: "US, Sebastian Castro (community). MIT. Task-and-motion prototyping framework + ROS2. No license-ask."
+
+- slug: sesame-robot
+  rfc: 695
+  sent_at: "2026-09-03"
+  posted_url: "https://github.com/dorianborian/sesame-robot/issues/82"
+  channel: github_issue
+  contact: "dorianborian/sesame-robot (dorianborian, individual; ~4278 stars, Apache-2.0, Issues enabled, not archived, active 2026-08). An open and affordable mini quadruped robot based on the ESP32."
+  last_touch: "2026-09-03"
+  response: none
+  tier: B
+  country: INTL
+  sector: robot-platform
+  comments:
+    - date: "2026-09-03"
+      text: "Posted the RFC-0695 body to https://github.com/dorianborian/sesame-robot/issues/82 under idoco2003 (Move #73). Seam: an ESP32 mini quadruped commands leg-joint positions to walk/sit/pose; URML's per-leg capability manifest + envelope is a pre-servo gate (same shape as the engaged Petoi Bittle/Nybble). High-traction repo (4.3k stars). No license-ask (Apache). Awaiting reply."
+  claude_directives:
+    - date: "2026-09-03"
+      text: "DONE -- posted 2026-09-03 under idoco2003. High-star (4.3k) open quadruped; the only clean survivor of the animatronics/fold-in lane. Petoi-shape fit. If engaged, a gait/pose -> URML manifest worked example."
+      status: done
+  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the per-leg envelope framing (Petoi precedent)."
+  notes: "INTL, dorianborian (individual). Apache-2.0. ESP32 mini quadruped, 4.3k stars. No license-ask."
