@@ -105,3 +105,24 @@
       status: done
   next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the per-leg envelope framing (Petoi precedent)."
   notes: "INTL, dorianborian (individual). Apache-2.0. ESP32 mini quadruped, 4.3k stars. No license-ask."
+
+- slug: armour
+  rfc: 697
+  sent_at: "2026-09-04"
+  posted_url: "https://github.com/roahmlab/armour/issues/2"
+  channel: github_issue
+  contact: "roahmlab/armour (ROAHM Lab, University of Michigan, US; ~23 stars, GPL-3.0, Issues enabled, not archived, active 2025-07). Reachability-based trajectory optimization producing provably-safe manipulation trajectories under uncertainty (T-RO 2025)."
+  last_touch: "2026-09-04"
+  response: none
+  tier: B
+  country: US
+  sector: framework-skill
+  comments:
+    - date: "2026-09-04"
+      text: "Posted the RFC-0697 body to https://github.com/roahmlab/armour/issues/2 under idoco2003 (Move #73 follow-on, founder-approved add). The closest CONCEPTUAL fit URML has found: ARMOUR certifies a trajectory as safe before execution (reachable sets); URML validates an intent as admissible before dispatch. Framed HONESTLY as complementary (different weight classes; URML necessary-not-sufficient, consumes-the-trajectory + validates, does NOT replace the certificate), like the Safe-ROS framing (RFC-0678). GPL: cross-cite only, no license-ask. Awaiting reply."
+  claude_directives:
+    - date: "2026-09-04"
+      text: "DONE -- posted 2026-09-04 under idoco2003 on the founder's explicit go. ORG-PROXIMITY: roahmlab was already contacted via tidybot_ros (Move #35); this is a 2nd, distinct-project touch (armour = safe-motion-planning, unrelated to tidybot). Kept the issue genuinely specific + humble to avoid spam perception. Push ~14mo (borderline-fresh) but not dead. If engaged, an ARMOUR-trajectory -> URML-admissibility worked example (RFC-0678 Safe-ROS shape)."
+      status: done
+  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; lead with the complement-not-replace framing. Do NOT touch other roahmlab repos (org already 2x)."
+  notes: "US, U-Michigan ROAHM Lab. GPL-3.0 (cross-cite). Reachability-based safe-trajectory planner; closest conceptual URML sibling. 2nd roahmlab touch (org-proximity flagged). No license-ask."
