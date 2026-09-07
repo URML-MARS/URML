@@ -142,6 +142,7 @@ def _patrol() -> dict[str, Any]:
                 {"drive": {"distance": 0.5}},
                 {"turn": {"angle": -90}},
                 {"drive": {"distance": 0.5}},
+                {"wait": {"duration": 2}},
                 {"speak": {"utterance": "Patrol complete"}},
                 {"report": {"to": "run_log", "facts": {"patrol": "done"}, "status": "success"}},
             ],
@@ -172,6 +173,10 @@ def _run(
     result = validate(program, manifest, profiles=profiles, policy=None)
     verdict = "VALID" if result.accepted else "REJECTED"
     lines.append(f"[{verdict}] {label}")
+    # A program written by `urml translate` carries the sentence it came from in
+    # `description` (Discussion #597); show it next to what it lowered to.
+    if program.get("description"):
+        lines.append(f"   prompted by: {program['description']}")
     if not result.accepted:
         lines.append("   -> " + ", ".join(sorted({e.code_str for e in result.errors})))
         lines.append("")
@@ -181,8 +186,15 @@ def _run(
     # The fake/real backend swap only covers easygopigo3, so speech has to be gated
     # on its own path: a dry run captures the utterance (never audible), and only
     # --execute lets the adapter's real espeak speak. `speak=None` uses that default.
+    # `wait` is gated the same way (Discussion #600, #592): a dry run records the
+    # duration and never sleeps, so planning an hourly behavior takes no time;
+    # only --execute lets the adapter's real clock (time.sleep) hold the robot.
     spoken: list[str] = []
-    adapter = GoPiGo3Adapter(speak=None if prefer_real else spoken.append)
+    waited: list[float] = []
+    adapter = GoPiGo3Adapter(
+        speak=None if prefer_real else spoken.append,
+        wait=None if prefer_real else waited.append,
+    )
     runtime = URMLRuntime(adapter)
     run = runtime.execute(program, manifest, profiles=profiles)
 
@@ -194,6 +206,8 @@ def _run(
             lines.append(f"     {method:12} -> easygopigo3.{entry['hw']}")
         elif method == "emit_speech":
             lines.append(f"     {method:12} -> espeak {entry['utterance']!r}")
+        elif method == "wait_passively":
+            lines.append(f"     {method:12} -> time.sleep({entry['duration_seconds']:.1f})")
         else:
             lines.append(f"     {method}")
     lines.append("")
@@ -212,7 +226,7 @@ def render_report(prefer_real: bool = False) -> str:
         "",
     ]
     _run(lines, "announce, then drive 1 m (the translated command from #497/#523)", _announce_and_drive(), manifest, prefer_real)
-    _run(lines, "short patrol: turn, drive, turn, drive, announce, report", _patrol(), manifest, prefer_real)
+    _run(lines, "short patrol: turn, drive, turn, drive, wait 2 s, announce, report", _patrol(), manifest, prefer_real)
 
     lines.append("This is a dry run: the calls above were validated and planned, not actuated.")
     lines.append("On a GoPiGo3 with the GoPiGo3 software installed (see Dexter Industries'")
