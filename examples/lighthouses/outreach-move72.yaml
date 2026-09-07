@@ -16,6 +16,13 @@
 #   - niryo-ned (0688, FR): Ned2 edu 6-axis arm; ROS + pyniryo (GPL, cross-cite only).
 #   - xarm (0689, CN-community): UFACTORY xArm/Lite6 Python SDK (XArmAPI) + xarm_ros2.
 #   - pybear (0690, US): BEAR-actuator Python driver (BRUCE humanoid joints); actuator envelope.
+#
+# POST-MORTEM 2026-09-07: every row in this wave was posted while the posting
+# account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found
+# 2026-09-06). A flagged account's content is hidden from everyone but the owner,
+# so each posted_url returns 404 to the maintainer. Nobody has seen these posts.
+# sent_at is provisional on every row; the wait clock restarts once visibility
+# is verified after reinstatement. response stays none, which is the truth.
 
 - slug: ar4
   rfc: 686
@@ -31,11 +38,13 @@
   comments:
     - date: "2026-09-01"
       text: "Posted the RFC-0686 body to https://github.com/ycheng517/ar4_ros_driver/issues/71 under idoco2003 (Move #72 small-open-robot wave anchor), VIBE disclosure up front. Seam: the driver sends a MoveIt goal / servo command to the AR4 Teensy firmware; URML's capability manifest (joint limits / workspace / gripper force) + envelope is a pre-firmware gate. No license-ask (MIT). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-01"
       text: "DONE -- posted 2026-09-01 under idoco2003. Cleanest anchor (MIT, active, discussions on). If engaged, a worked example mapping an AR4 motion/grasp onto a URML manifest (validated, no execution), like examples/epically-powerful."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
   notes: "US, community (Annin AR4 hardware). MIT. ROS2+MoveIt DIY arm. Anchor. No license-ask."
 
 - slug: turtlebot4
@@ -52,11 +61,13 @@
   comments:
     - date: "2026-09-01"
       text: "Posted the RFC-0687 body to https://github.com/turtlebot/turtlebot4/issues/710 under idoco2003 (Move #72). Seam: a navigation/dock intent becomes a Nav2/velocity goal driving the base; URML's mobility bounds + safety envelope (geofence, speed cap) is a pre-drive gate, legible in a classroom. No license-ask (Apache). NB: different org (Clearpath/OpenRobotics) from the contacted ROBOTIS turtlebot3. Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-01"
       text: "DONE -- posted 2026-09-01 under idoco2003. Clearpath / Open Robotics = ROS-core org (high-value maintainers). Brand-adjacent to the contacted ROBOTIS turtlebot3 but a distinct org/repo. If engaged, a mobile geofence/speed worked example (educational)."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the classroom-legible geofence/speed-cap framing."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date. If reply, bump last_touch + set response; lead with the classroom-legible geofence/speed-cap framing."
   notes: "CA, Clearpath/Open Robotics. Apache-2.0. Edu ROS2 mobile robot (Create 3 base). No license-ask."
 
 - slug: niryo-ned
@@ -73,11 +84,13 @@
   comments:
     - date: "2026-09-01"
       text: "Posted the RFC-0688 body to https://github.com/NiryoRobotics/ned_ros/issues/26 under idoco2003 (Move #72). Seam: a joint/pose/gripper command (pyniryo or ROS) actuates the Ned; URML's capability manifest + envelope is a pre-actuation gate, legible for education. GPL-3.0: cross-citation only, no code reuse, NO license-ask. Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-01"
       text: "DONE -- posted 2026-09-01 under idoco2003. Educational-arm archetype (closest to Microduck spirit). GPL: cross-cite only, never ask about license. If engaged, a Ned motion/grasp worked example."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; classroom framing."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date. If reply, bump last_touch + set response; classroom framing."
   notes: "FR, Niryo. GPL-3.0 (cross-cite only). Edu 6-axis arm + pyniryo. No license-ask."
 
 - slug: xarm
@@ -94,11 +107,13 @@
   comments:
     - date: "2026-09-01"
       text: "Posted the RFC-0689 body to https://github.com/xArm-Developer/xArm-Python-SDK/issues/157 under idoco2003 (Move #72). Seam: a joint/Cartesian move via XArmAPI (or xarm_ros2) with speed/force params actuates the arm; URML's capability manifest + envelope is a pre-set_position gate. No license-ask (BSD-3). PRC-community vendor (UFACTORY), not state-affiliated. Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-01"
       text: "DONE -- posted 2026-09-01 under idoco2003. UFACTORY = PRC-community commercial vendor (not state), flagged; the priciest/most-prosumer of the wave but a clean open Python SDK. If silent, accept as dormancy; do not push."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date; no aggressive follow-up if silent. If reply, bump last_touch + set response."
   notes: "CN-community (UFACTORY Shenzhen, not state-affiliated). BSD-3. Python arm SDK + xarm_ros2. No license-ask."
 
 - slug: pybear
@@ -115,9 +130,11 @@
   comments:
     - date: "2026-09-01"
       text: "Posted the RFC-0690 body to https://github.com/Westwood-Robotics/PyBEAR/issues/18 under idoco2003 (Move #72). Seam: the driver writes a torque/position/velocity command to a real BEAR actuator; URML's per-actuator limit manifest + envelope (RFC-0017) is a pre-write gate -- the epically-powerful actuator-envelope pattern. No license-ask (Apache). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-01"
       text: "DONE -- posted 2026-09-01 under idoco2003. Actuator-level fit (closest to the epically-powerful envelope pattern). Small (13 stars) but clean Apache + active; niche but honest fit. If engaged, a BEAR-actuator envelope worked example."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent (small repo). If reply, bump last_touch + set response."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date; no aggressive follow-up if silent (small repo). If reply, bump last_touch + set response."
   notes: "US, Westwood Robotics. Apache-2.0. BEAR-actuator driver (BRUCE humanoid). Actuator-level validate-before-actuate. No license-ask."

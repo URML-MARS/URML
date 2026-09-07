@@ -21,6 +21,13 @@
 # contacted via tidybot_ros move35, founder-flagged); ada_feeding (UW PRL, org
 # contacted move6); exotica (Edinburgh SLMC, org contacted move12); the
 # animatronics/camera fold-ins (stale / no-license / wrong-fit).
+#
+# POST-MORTEM 2026-09-07: every row in this wave was posted while the posting
+# account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found
+# 2026-09-06). A flagged account's content is hidden from everyone but the owner,
+# so each posted_url returns 404 to the maintainer. Nobody has seen these posts.
+# sent_at is provisional on every row; the wait clock restarts once visibility
+# is verified after reinstatement. response stays none, which is the truth.
 
 - slug: panda-py
   rfc: 692
@@ -36,11 +43,13 @@
   comments:
     - date: "2026-09-03"
       text: "Posted the RFC-0692 body to https://github.com/JeanElsner/panda-py/issues/58 under idoco2003 (Move #73 anchor), VIBE disclosure up front. Seam: panda_py.controllers dispatch a real-time setpoint to a Franka arm; URML's capability manifest (joint/Cartesian/torque bounds) + envelope is a pre-setpoint gate. No license-ask (Apache). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). posted_url returns 404 to the maintainer and the public (verified unauthenticated 2026-09-06); the authenticated API still shows it open with 0 comments. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-03"
       text: "DONE -- posted 2026-09-03 under idoco2003. Cleanest anchor (Apache, freshest push, TUM). Distinct from frankapy (both Franka, different labs/altitude). If engaged, a worked example mapping a panda-py setpoint onto a URML manifest (validated, no execution)."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date; no aggressive follow-up if silent. If reply, bump last_touch + set response; offer the worked-example mapping."
   notes: "DE, TUM (Jean Elsner). Apache-2.0. libfranka real-time controllers. Anchor. No license-ask."
 
 - slug: frankapy
@@ -57,11 +66,13 @@
   comments:
     - date: "2026-09-03"
       text: "Posted the RFC-0693 body to https://github.com/iamlab-cmu/frankapy/issues/25 under idoco2003 (Move #73). Seam: a FrankaArm skill call is already a typed intent; URML's capability manifest + envelope checks it before the action server executes. No license-ask (MIT). Distinct lab/repo from panda-py (both Franka). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-03"
       text: "DONE -- posted 2026-09-03 under idoco2003. Skill-API altitude (contrast panda-py's RT controllers). ~12mo push, still active + 250 stars (CMU IAM lab). If engaged, a skill-call -> URML manifest worked example."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the skill-call-as-typed-intent framing."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date. If reply, bump last_touch + set response; lead with the skill-call-as-typed-intent framing."
   notes: "US, CMU IAM Lab. MIT. Franka skill API. No license-ask."
 
 - slug: pyrobosim
@@ -78,11 +89,13 @@
   comments:
     - date: "2026-09-03"
       text: "Posted the RFC-0694 body to https://github.com/sea-bass/pyrobosim/issues/453 under idoco2003 (Move #73). Seam: pyrobosim assembles a planned action sequence before dispatch; URML checks each step is admissible against declared robot capabilities + the world model (decide-then-check-then-do) in a ROS 2-connected sandbox. No license-ask (MIT). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-03"
       text: "DONE -- posted 2026-09-03 under idoco2003. TAMP-sandbox altitude (validate a planned sequence). robot+world modeled as declared entities = near one-to-one with a URML manifest+envelope. If engaged, a pyrobosim-sequence -> URML worked example."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the decide-then-check-then-do sandbox framing."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date. If reply, bump last_touch + set response; lead with the decide-then-check-then-do sandbox framing."
   notes: "US, Sebastian Castro (community). MIT. Task-and-motion prototyping framework + ROS2. No license-ask."
 
 - slug: sesame-robot
@@ -99,11 +112,13 @@
   comments:
     - date: "2026-09-03"
       text: "Posted the RFC-0695 body to https://github.com/dorianborian/sesame-robot/issues/82 under idoco2003 (Move #73). Seam: an ESP32 mini quadruped commands leg-joint positions to walk/sit/pose; URML's per-leg capability manifest + envelope is a pre-servo gate (same shape as the engaged Petoi Bittle/Nybble). High-traction repo (4.3k stars). No license-ask (Apache). Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-03"
       text: "DONE -- posted 2026-09-03 under idoco2003. High-star (4.3k) open quadruped; the only clean survivor of the animatronics/fold-in lane. Petoi-shape fit. If engaged, a gait/pose -> URML manifest worked example."
       status: done
-  next_action: "wait 14-30 d. If reply, bump last_touch + set response; lead with the per-leg envelope framing (Petoi precedent)."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date. If reply, bump last_touch + set response; lead with the per-leg envelope framing (Petoi precedent)."
   notes: "INTL, dorianborian (individual). Apache-2.0. ESP32 mini quadruped, 4.3k stars. No license-ask."
 
 - slug: armour
@@ -120,9 +135,11 @@
   comments:
     - date: "2026-09-04"
       text: "Posted the RFC-0697 body to https://github.com/roahmlab/armour/issues/2 under idoco2003 (Move #73 follow-on, founder-approved add). The closest CONCEPTUAL fit URML has found: ARMOUR certifies a trajectory as safe before execution (reachable sets); URML validates an intent as admissible before dispatch. Framed HONESTLY as complementary (different weight classes; URML necessary-not-sufficient, consumes-the-trajectory + validates, does NOT replace the certificate), like the Safe-ROS framing (RFC-0678). GPL: cross-cite only, no license-ask. Awaiting reply."
+    - date: "2026-09-07"
+      text: "Post-mortem: this issue was opened while the posting account (idoco2003) was flagged by GitHub (flag applied 2026-08-27, found 2026-09-06). A flagged account's content is hidden from everyone but the owner, so posted_url returns 404 to the maintainer. Nobody has seen this post. sent_at is provisional. After reinstatement, verify posted_url returns 200 unauthenticated, then restart the 14-30 d wait from that date. response stays none (true)."
   claude_directives:
     - date: "2026-09-04"
       text: "DONE -- posted 2026-09-04 under idoco2003 on the founder's explicit go. ORG-PROXIMITY: roahmlab was already contacted via tidybot_ros (Move #35); this is a 2nd, distinct-project touch (armour = safe-motion-planning, unrelated to tidybot). Kept the issue genuinely specific + humble to avoid spam perception. Push ~14mo (borderline-fresh) but not dead. If engaged, an ARMOUR-trajectory -> URML-admissibility worked example (RFC-0678 Safe-ROS shape)."
       status: done
-  next_action: "wait 14-30 d; no aggressive follow-up if silent. If reply, bump last_touch + set response; lead with the complement-not-replace framing. Do NOT touch other roahmlab repos (org already 2x)."
+  next_action: "HOLD (account flagged 2026-08-27, post invisible): after reinstatement verify posted_url returns 200 unauthenticated, then wait 14-30 d from that date; no aggressive follow-up if silent. If reply, bump last_touch + set response; lead with the complement-not-replace framing. Do NOT touch other roahmlab repos (org already 2x)."
   notes: "US, U-Michigan ROAHM Lab. GPL-3.0 (cross-cite). Reachability-based safe-trajectory planner; closest conceptual URML sibling. 2nd roahmlab touch (org-proximity flagged). No license-ask."
