@@ -57,6 +57,14 @@ python examples/gopigo3/run_gopigo3.py -f drive10.urml.yaml --execute # drives t
 This is the loop @slowrunner runs: translate an English sentence on a capable box,
 copy the validated YAML to the Pi, and run it here.
 
+Two details of that loop, both from @slowrunner's threads. `urml translate`
+writes the sentence it was given into the program's `description`, and the
+runner prints it as `prompted by:` above the lowered calls (Discussion #597),
+so a report on the Pi still says what the program was asked to do. A `wait`
+step is honored on the real clock only under `--execute`; a dry run records
+`time.sleep(N)` in the plan and never sleeps, so previewing an hourly behavior
+takes no time (Discussion #600, Issue #592).
+
 ### Versions, for a traceable run
 
 `run_gopigo3.py --version` prints the URML package versions it runs on, and every

@@ -161,6 +161,8 @@ def test_translate_out_file(
     assert out_path.is_file()
     assert "wrote" in captured.err
     parsed = yaml.safe_load(out_path.read_text(encoding="utf-8"))
+    # The request rides along as `description` (Discussion #597); the rest is verbatim.
+    assert parsed.pop("description") == "Bring me the red mug."
     assert parsed == RED_MUG_PROGRAM
 
 
@@ -795,3 +797,55 @@ def test_translate_help_in_parser_output(capsys: pytest.CaptureFixture[str]) -> 
         main(["--help"])
     out = capsys.readouterr().out
     assert "translate" in out
+
+
+# ---------------------------------------------------------------------------
+# The request rides along in `description` (Discussion #597)
+# ---------------------------------------------------------------------------
+
+
+def test_translate_carries_request_as_description(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The emitted program says what it was asked to do, right after `profile`."""
+    rc = main([
+        "translate",
+        "Bring me the red mug from the kitchen.",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    parsed = yaml.safe_load(captured.out)
+    assert parsed["description"] == "Bring me the red mug from the kitchen."
+    assert list(parsed)[:2] == ["profile", "description"]
+
+
+def test_translate_keeps_model_description(
+    tmp_path: Path,
+    manifest_path: Path,
+    envelope_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A description the model wrote itself is not overwritten by the request."""
+    response = tmp_path / "echo-with-description.json"
+    response.write_text(
+        json.dumps({**RED_MUG_PROGRAM, "description": "Fetch the red mug."}),
+        encoding="utf-8",
+    )
+    rc = main([
+        "translate",
+        "Bring me the red mug.",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--provider", "echo",
+        "--echo-response-file", str(response),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 0, captured.err
+    assert yaml.safe_load(captured.out)["description"] == "Fetch the red mug."

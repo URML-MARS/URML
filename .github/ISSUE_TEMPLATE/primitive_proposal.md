@@ -39,7 +39,7 @@ Before filing, please confirm:
 
 ## Substrate-neutrality acid test
 
-Per [`CLAUDE.md`](../../CLAUDE.md) and [`MANIFESTO.md`](../../MANIFESTO.md): every Layer-2 primitive must be cleanly implementable on a runtime with **zero** ROS dependencies. Sketch both implementations below.
+Per [`CLAUDE.md`](https://github.com/URML-MARS/URML/blob/main/CLAUDE.md) and [`MANIFESTO.md`](https://github.com/URML-MARS/URML/blob/main/MANIFESTO.md): every Layer-2 primitive must be cleanly implementable on a runtime with **zero** ROS dependencies. Sketch both implementations below.
 
 ### ROS 2 implementation sketch
 

@@ -30,6 +30,7 @@ import math
 import shutil
 import subprocess
 import sys
+import time
 from typing import Any, Callable, Literal
 
 from urml_ros2_runtime.substrate.base import (
@@ -122,10 +123,15 @@ class GoPiGo3Adapter:
         *,
         speak: Callable[[str], None] | None = None,
         tts_engine_class: str = "espeak",
+        wait: Callable[[float], None] | None = None,
     ) -> None:
         # An explicit `speak` overrides the declared class; otherwise the manifest's
         # tts_engine_class selects the backend, defaulting to espeak.
         self._speak = speak if speak is not None else _TTS_ENGINES.get(tts_engine_class, _espeak)
+        # `wait` is the clock behind the `wait` primitive. The default is the OS
+        # clock (time.sleep); a dry run passes a recorder so planning never
+        # blocks, and a simulator can pass its own clock (Discussion #600, #592).
+        self._wait = wait if wait is not None else time.sleep
         self._gpg: Any = None
         self._reports: list[dict[str, Any]] = []
         self.call_log: list[dict[str, Any]] = []
@@ -235,6 +241,8 @@ class GoPiGo3Adapter:
         return SubstrateResult(success=True)
 
     def wait_passively(self, *, duration_seconds: float) -> SubstrateResult:
+        """Honor a `wait` step on the configured clock (real: time.sleep)."""
+        self._wait(duration_seconds)
         self.call_log.append({"method": "wait_passively", "duration_seconds": duration_seconds})
         return SubstrateResult(success=True)
 

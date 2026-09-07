@@ -1482,7 +1482,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if result.program is None:
         print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
         return 64
-    program = result.program
+    program = _with_source_prompt(result.program, args.request)
     print(
         f"Translation accepted after {result.revision_count} revision(s).",
         file=sys.stderr,
@@ -1628,7 +1628,8 @@ def cmd_translate(args: argparse.Namespace) -> int:
         print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
         return 64
 
-    text = _render_program(result.program, as_json=args.as_json)
+    program = _with_source_prompt(result.program, args.request)
+    text = _render_program(program, as_json=args.as_json)
     if args.out is not None:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(text + ("" if text.endswith("\n") else "\n"), encoding="utf-8")
@@ -1780,6 +1781,27 @@ def _build_llama_cpp_provider(args: argparse.Namespace) -> Any:
         raise _CLILoadError(
             "httpx not installed. Install with: pip install urml-llm-bridge[llama_cpp]"
         ) from exc
+
+
+def _with_source_prompt(program: dict[str, Any], request: str) -> dict[str, Any]:
+    """Carry the natural-language request into the program's `description`.
+
+    A translated program should say what it was asked to do (Discussion #597):
+    a runtime can print the sentence next to the lowered calls, and a reviewer
+    can check the program against it without the terminal history. The slot is
+    the existing optional top-level `description`, so no schema changes. A
+    description the model itself emitted is kept. A spoken request (RFC-0670)
+    arrives here as its transcript.
+    """
+    if program.get("description"):
+        return program
+    out: dict[str, Any] = {}
+    for key, value in program.items():
+        out[key] = value
+        if key == "profile":
+            out["description"] = request
+    out.setdefault("description", request)
+    return out
 
 
 def _render_program(program: dict[str, Any], *, as_json: bool) -> str:

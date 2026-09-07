@@ -20,7 +20,14 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
-Nothing pending.
+### Changed — `urml translate` and `urml run` carry the request into `description`
+
+- The emitted program's existing optional top-level `description` now holds the sentence (or the spoken transcript) it was translated from, placed right after `profile`. A description the model wrote itself is kept. Runtimes can print it next to the lowered calls; the GoPiGo3 example does, as `prompted by:`. No schema change (Discussion #597).
+
+### Fixed — GoPiGo3 example
+
+- `wait` is honored. The adapter takes a `wait` clock (default `time.sleep`) and the runner gates it exactly like speech: `--execute` holds the robot for the declared duration, a dry run records `time.sleep(N)` in the plan and never blocks. The report line now shows the duration (Discussion #600, Issue #592).
+- PR and issue templates link `CONTRIBUTING.md`, `CLAUDE.md`, and `MANIFESTO.md` by absolute URL. Relative links do not resolve from a PR or issue page (Discussion #604).
 
 ## [0.4.0] — 2026-08-09
 

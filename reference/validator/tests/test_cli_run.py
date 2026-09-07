@@ -123,7 +123,10 @@ def test_run_writes_program_out(tmp_path: Path, echo_response: Path) -> None:
         ]
     )
     assert code == 0
-    assert yaml.safe_load(out.read_text(encoding="utf-8")) == _PROGRAM
+    written = yaml.safe_load(out.read_text(encoding="utf-8"))
+    # The request rides along as `description` (Discussion #597); the rest is verbatim.
+    assert written.pop("description") == "Patrol the kitchen and come back to me."
+    assert written == _PROGRAM
 
 
 def test_run_echo_requires_response_file(capsys) -> None:
