@@ -47,8 +47,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install build twine
@@ -70,7 +70,7 @@ jobs:
           done
       - name: Static metadata check (must all PASS)
         run: python -m twine check dist/*
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dists
           path: dist/
@@ -84,7 +84,7 @@ jobs:
     permissions:
       id-token: write   # OIDC for Trusted Publishing — no tokens in the repo
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dists
           path: dist/
