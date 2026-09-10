@@ -1,0 +1,30 @@
+# URML v0.1, the refusal case for RFC-0698 (Draft)
+#
+# Scenario: home/reachy-mini-greeting (rejected variant)
+# Source NL: "Wave at me, then look straight up."
+#
+# Reachy Mini has no arms and its head pitch tops out at +25 degrees. Against
+# reachy-mini-greeting.manifest.yaml the validator is expected to refuse
+# both steps before anything reaches the robot:
+#
+#   capability.gesture_not_declared        gesture 'wave' is not in the declared
+#                                          vocabulary (yes, no, curious, pondering,
+#                                          boredom, nuzzle, purr, enjoy)
+#   capability.head_pose_outside_envelope  look_at direction pitch 60 exceeds the
+#                                          declared range [-15, 25]
+#
+# That refusal text is what an LLM harness hears back and corrects on. This
+# is the behavior the RFC exists to produce; the file is NOT YET VALIDATING
+# until the schema lands.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - gesture:
+        name: wave
+    - look_at:
+        target: direction
+        direction: { yaw: 0, pitch: 60 }
+        duration: 1s

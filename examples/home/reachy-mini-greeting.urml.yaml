@@ -1,0 +1,36 @@
+# URML v0.1, generated from natural language
+#
+# Scenario: home/reachy-mini-greeting
+# Source NL: "Look at me, nod, and say hello. Then glance up and to the left."
+#            (see reachy-mini-greeting.en.txt)
+#
+# Motivating example for RFC-0698 (Draft): an expressive desk robot with a
+# head, a body yaw, and a gesture vocabulary, and no wheels or gripper.
+# Uses the proposed home-profile primitives `look_at` and `gesture` beside
+# the existing `speak`.
+#
+# NOT YET VALIDATING. `look_at` and `gesture` exist only in the RFC until it
+# advances; `urml validate` rejects them today as unknown primitives.
+#
+# Intended check once the schema lands:
+#   urml validate reachy-mini-greeting.urml.yaml \
+#     -m reachy-mini-greeting.manifest.yaml --profile home --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - look_at:
+        target: face
+        duration: 1s
+        hold: 3s
+    - gesture:
+        name: yes
+    - speak:
+        utterance: "Hello! Nice to see you."
+        style: conversational
+    - look_at:
+        target: direction
+        direction: { yaw: 30, pitch: 20 }
+        duration: 1s

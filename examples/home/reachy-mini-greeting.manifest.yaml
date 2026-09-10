@@ -1,0 +1,113 @@
+# Capability manifest for a Reachy Mini desk robot (Hugging Face / Pollen
+# Robotics) driven by an LLM brain. Motivating example for RFC-0698 (Draft).
+#
+# NOT YET VALIDATING. The `expression` block and the `look_at` / `gesture`
+# primitives are proposed in docs/rfcs/0698-expressive-platform.md and land
+# only if the RFC advances. Until then `urml validate` rejects this file on
+# the unknown `expression` key. That is the point: this is what the
+# declaration would look like, written down before the schema exists.
+#
+# The numbers are real. Head and body ranges are the deployment limits the
+# OriNachum/reachy-nova harness hard-codes in safety.py and gestures.py
+# (yaw +-45, pitch -15..25, body yaw +-25, head-body gap 30). Gesture
+# durations are the animation lengths in its gestures.py. Translation ranges
+# are illustrative until the vendor publishes the head workspace; the
+# per-servo limits it does publish live in the SDK's hardware_config.yaml.
+#
+# Reachy Mini does not locomote and has no gripper, so it declares
+# `minimal_node` (RFC-0018) for that fact and `expression` for what it can
+# do. Antennas are RFC-0017 analog output lines driven by `set_output`.
+#
+# Intended check once the schema lands:
+#   urml validate reachy-mini-greeting.urml.yaml \
+#     -m reachy-mini-greeting.manifest.yaml --profile home --no-policy
+
+manifest_version: "0.1"
+robot_id: reachy_mini_desk
+description: Reachy Mini desk robot (6-DoF head, body yaw, two antennas, camera, mic array, speaker); expressive, non-locomoting.
+
+frames:
+  - name: base
+    parent: null
+
+declared_locations: []
+
+declared_events:
+  - emergency_stop
+  - face_detected
+  - sound_detected
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [mic_array]
+  declared_outputs: [antenna_left, antenna_right]
+  has_locomotion: false
+
+perception:
+  cameras:
+    - name: head_camera
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: true
+      max_resolution: "1080p"
+  sensors:
+    - name: mic_array
+      measurement_type: speech
+      units: transcript
+  object_vocabulary:
+    - person
+    - mug
+    - cup
+
+outputs:
+  named_endpoints: [speech]
+  lines:
+    - name: antenna_left
+      kind: analog
+      range: [-90.0, 90.0]     # degrees
+      safe_state: 0.0
+    - name: antenna_right
+      kind: analog
+      range: [-90.0, 90.0]
+      safe_state: 0.0
+
+# Proposed by RFC-0698. Degrees for angles, metres for translation, rad/s
+# for angular velocity (the manifest's existing convention).
+expression:
+  head:
+    roll:  { min: -30.0, max: 30.0 }
+    pitch: { min: -15.0, max: 25.0 }
+    yaw:   { min: -45.0, max: 45.0 }
+    x: { min: -0.02, max: 0.02 }
+    y: { min: -0.02, max: 0.02 }
+    z: { min: -0.01, max: 0.03 }
+    max_angular_velocity: 3.0
+  body_yaw: { min: -25.0, max: 25.0 }
+  max_head_body_yaw_gap: 30.0
+  gaze: [face, sound, object, direction]
+  gestures:
+    - name: yes
+      duration_s: 1.2
+      description: Nod.
+    - name: no
+      duration_s: 1.5
+      description: Head shake.
+    - name: curious
+      duration_s: 1.8
+      description: Head tilt, hold, settle.
+    - name: pondering
+      duration_s: 2.3
+      description: Look aside and slightly down, drift, return.
+    - name: boredom
+      duration_s: 5.5
+      description: Slow slide away, sag, drift, recover.
+    - name: nuzzle
+      duration_s: 2.5
+      description: Small side-to-side lean with roll.
+    - name: purr
+      duration_s: 3.0
+      description: Lean in with a gentle roll oscillation.
+    - name: enjoy
+      duration_s: 2.0
+      description: Lean into touch, short nuzzle, settle.

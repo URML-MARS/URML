@@ -75,7 +75,7 @@ These are added per-scenario only when needed. The minimum example is one `*.urm
 
 | Profile | v0.1 content | How it grows |
 |---|---|---|
-| [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock); `patient-fetch` (retry/branch). | Additional home scenarios land alongside the home-profile spec. |
+| [`home/`](home/) | `red-mug` (the manifesto example); `evening-routine` (speech + dock); `patient-fetch` (retry/branch); `reachy-mini-greeting` (expressive desk robot, RFC-0698 draft: `look_at` + `gesture`, not yet validating). | Additional home scenarios land alongside the home-profile spec. |
 | [`educational/`](educational/) | `hello-square` (nav-only "hello world"); `classroom-patrol` (start/checkpoint/base); `fetch-the-block` (gentle grasp + fail-closed detect). See [Tutorial 5](../docs/tutorials/05-teaching-urml.md). | Additional classroom scenarios land alongside the educational profile (RFC-0011). |
 | [`drone/`](drone/) | `roof-inspection` (citizen-inspector); `bridge-survey` (scan/hover/measure); `parallel-watch` (parallel); `link-aware-patrol` (connectivity + link-loss). | Additional drone scenarios land alongside the drone-profile spec. |
 | [`industrial/`](industrial/) | `simple-pick-and-place` (MVP integrator example). | Additional industrial scenarios land alongside the industrial-profile spec. |
