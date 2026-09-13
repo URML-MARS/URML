@@ -17,6 +17,7 @@ Exit codes:
       failures, a primitive failed at runtime)
   2   usage error (missing files, bad YAML, bad arguments, optional dep missing)
   64  internal error (an unhandled exception bubbled out of validate())
+  130 interrupted by the user (Ctrl-C / SIGINT)
 
 The CLI is a thin wrapper around `urml_validator.validate()`. All semantics
 live in the validator; this module's job is argument parsing, I/O, and output
@@ -582,6 +583,9 @@ def main(argv: list[str] | None = None) -> int:
         return rc
     except SystemExit:
         raise
+    except KeyboardInterrupt:
+        print("urml: interrupted", file=sys.stderr)
+        return 130
     except Exception as exc:
         print(f"urml: internal error: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 64
