@@ -758,6 +758,39 @@ def test_translate_speech_dead_server_exits_1(
     assert "whisper-server" in captured.err
 
 
+def test_translate_keyboard_interrupt_exits_130(
+    manifest_path: Path,
+    envelope_path: Path,
+    echo_response_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Ctrl-C during a translate run exits 130 cleanly, not with a traceback (#558).
+
+    KeyboardInterrupt is a BaseException, so the bridge's `except Exception` does
+    not swallow it; it propagates to the CLI's top-level dispatch, which turns it
+    into a clean `urml: interrupted` message and exit code 130.
+    """
+    def _interrupt(self: Any, **kwargs: Any) -> str:
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(
+        "urml_llm_bridge.providers.echo.EchoProvider.complete", _interrupt
+    )
+    rc = main([
+        "translate",
+        "Bring me the red mug from the kitchen.",
+        "--manifest", str(manifest_path),
+        "--envelope", str(envelope_path),
+        "--provider", "echo",
+        "--echo-response-file", str(echo_response_file),
+    ])
+    captured = capsys.readouterr()
+    assert rc == 130
+    assert "urml: interrupted" in captured.err
+    assert "Traceback" not in captured.err
+
+
 def test_translate_openai_speech_no_key_with_base_url(
     manifest_path: Path,
     envelope_path: Path,
