@@ -242,6 +242,7 @@ class EmbeddedAdapter:
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         return CaptureResult(success=False, reason=_NOT_SUPPORTED.format(capability="recordable camera"))
 

@@ -1,0 +1,37 @@
+URML: selecting the camera a capture shoots with, checked before dispatch.
+RFC-0699 adds an optional `camera` selector to the `capture` primitive, naming a
+declared perception.cameras entry. The validator scopes the media-support and
+movable-for-target checks to that one camera, statically, before any command is
+dispatched. For the rai-opensource spot_ros2 conversation (Discussion #805).
+
+The Spot Arm declares five fixed body fisheyes (photo-only) and one movable hand
+camera (hand_color, photo + video). A targeted capture means the hand camera; a
+fixed fisheye cannot be pointed at a subject.
+
+# 1. A targeted capture on the movable hand camera validates
+
+[VALID] capture(media: photo, camera: hand_color, target: $subject)
+   Admissible: hand_color is movable and supports photo. Dispatch may proceed.
+
+# 2. A capture naming a camera the robot does not have is rejected
+
+[REJECTED] capture(media: photo, camera: chest_cam)
+   -> capability.missing_camera
+   capability.missing_camera: capture references undeclared camera 'chest_cam'.
+
+# 3. A targeted capture on a fixed fisheye is rejected, even though a movable
+#    camera exists on the same robot (the motivating case from #805)
+
+[REJECTED] capture(media: photo, camera: frontleft_fisheye, target: $subject)
+   -> capability.fixed_camera_target
+   capability.fixed_camera_target: capture targets a specific subject but the named camera 'frontleft_fisheye' is fixed (non-movable).
+   Before RFC-0699 this validated against the movable hand_color camera, so a
+   program that named the wrong camera passed the static gate.
+
+# What the selector buys
+
+The `camera` selector turns capture's existing checks (mode support, movable for a
+targeted shot) from any-eligible-camera into this-camera. Omitting it keeps the old
+behavior, so existing programs are unaffected. URML validates the intent against the
+declared manifest before dispatch; the per-robot adapter still drives the actual
+camera. No code is vendored and there is no dependency on spot_ros2.

@@ -1,0 +1,81 @@
+# Boston Dynamics Spot + Spot Arm, at the vocabulary the rai-opensource spot_ros2
+# conversation (Discussion #805) asked about. Five fixed body fisheyes plus one
+# movable hand camera, declared individually with an RFC-0682 mount so a program
+# can name the one it wants. Used by examples/spot-capture to show the RFC-0699
+# `capture` camera selector: a targeted capture on a fixed fisheye is rejected
+# even though the movable hand_color camera exists on the same robot.
+
+manifest_version: "0.1"
+robot_id: spot_capture_1
+description: Spot with Spot Arm, inspection capture example.
+
+frames:
+  - name: site
+    parent: null
+  - name: vision
+    parent: site
+  - name: body
+    parent: vision
+  - name: hand
+    parent: body
+
+declared_locations:
+  - name: inspection_point
+    pose: { x: 6.0, y: 2.0, z: 0.0 }
+    frame: site
+    description: Valve panel to inspect.
+  - name: dock
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: site
+    description: Charging dock.
+
+declared_events:
+  - estop_engaged
+  - site_clear
+
+mobility:
+  drive_type: quadruped
+  max_velocity: 1.6
+  station_keeping: true
+
+perception:
+  cameras:
+    - name: frontleft_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: frontright_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: left_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: right_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: back_fisheye
+      movable: false
+      supports_photo: true
+      mount: { frame: body, kind: eye_to_hand }
+    - name: hand_color
+      movable: true
+      supports_photo: true
+      supports_video: true
+      max_resolution: "1080p"
+      mount: { frame: hand, kind: eye_in_hand }
+  object_vocabulary:
+    - person
+    - obstacle
+    - tote_handle
+  object_detection:
+    - { object_class: person, sensor: frontleft_fisheye }
+    - { object_class: tote_handle, sensor: hand_color }
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - ops_log

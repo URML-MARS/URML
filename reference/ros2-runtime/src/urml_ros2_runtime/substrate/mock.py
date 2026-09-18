@@ -291,6 +291,7 @@ class MockROSAdapter:
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         self.call_log.append(
             {
@@ -299,6 +300,7 @@ class MockROSAdapter:
                 "target": target,
                 "duration_seconds": duration_seconds,
                 "attributes": attributes,
+                "camera": camera,
             }
         )
         if self._capture_override is not None:
@@ -308,6 +310,7 @@ class MockROSAdapter:
             payload={
                 "type": media,
                 "format": (attributes or {}).get("format", "default"),
+                "camera": camera,
                 "pose": {"x": 0.0, "y": 0.0},
                 "frame": "map",
                 "uri": "mock://capture/0001",

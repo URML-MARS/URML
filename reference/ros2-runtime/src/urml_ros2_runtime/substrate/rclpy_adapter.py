@@ -500,6 +500,7 @@ class RclpyAdapter:
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         from sensor_msgs.msg import Image  # type: ignore[import-not-found,unused-ignore]
 

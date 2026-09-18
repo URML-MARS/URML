@@ -397,6 +397,7 @@ class SpotAdapter:
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         return CaptureResult(success=False, reason=self._reason("wired camera capture"))
 

@@ -473,6 +473,90 @@ def test_capture_target_with_fixed_camera(
 
 
 # ---------------------------------------------------------------------------
+# capture `camera` selector (RFC-0699).
+# ---------------------------------------------------------------------------
+
+
+def _two_camera_manifest(base: dict) -> dict:
+    """A manifest with one fixed photo-only camera and one movable photo+video
+    camera, so a named selector can be exercised against distinct devices."""
+    m = _deep_copy(base)
+    m["perception"]["cameras"] = [
+        {"name": "fixed_front", "movable": False, "supports_photo": True, "supports_video": False},
+        {"name": "ptz_hand", "movable": True, "supports_photo": True, "supports_video": True},
+    ]
+    return m
+
+
+def _capture_program(cap: dict, *, detect: bool = False) -> dict:
+    steps: list[dict[str, Any]] = []
+    if detect:
+        steps.append({"detect": {"object": "mug", "store_as": "mug"}})
+    steps.append({"capture": cap})
+    return {"profile": "home", "behavior": {"type": "sequence", "steps": steps}}
+
+
+def test_capture_named_undeclared_camera_rejected(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    m = _two_camera_manifest(turtlebot_manifest)
+    program = _capture_program({"media": "photo", "camera": "nonexistent", "store_as": "p"})
+    result = validate(program, m, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_MISSING_CAMERA)
+
+
+def test_capture_named_movable_camera_with_target_accepted(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    m = _two_camera_manifest(turtlebot_manifest)
+    program = _capture_program(
+        {"media": "photo", "camera": "ptz_hand", "target": "$mug", "store_as": "p"},
+        detect=True,
+    )
+    result = validate(program, m, home_envelope)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+def test_capture_named_fixed_camera_with_target_rejected(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """The Spot case: a targeted capture on a *named* fixed camera is rejected
+    even though a movable camera exists on the robot. Pre-RFC-0699 this
+    validated against the movable camera."""
+    m = _two_camera_manifest(turtlebot_manifest)
+    program = _capture_program(
+        {"media": "photo", "camera": "fixed_front", "target": "$mug", "store_as": "p"},
+        detect=True,
+    )
+    result = validate(program, m, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_FIXED_CAMERA_TARGET)
+
+
+def test_capture_named_camera_video_unsupported(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    m = _two_camera_manifest(turtlebot_manifest)
+    program = _capture_program(
+        {"media": "video", "duration": "3s", "camera": "fixed_front", "store_as": "v"}
+    )
+    result = validate(program, m, home_envelope)
+    assert not result.accepted
+    assert result.has(ErrorCode.CAPABILITY_VIDEO_UNSUPPORTED)
+
+
+def test_capture_without_camera_selector_is_backward_compatible(
+    turtlebot_manifest: dict, home_envelope: dict
+) -> None:
+    """Omitting `camera` keeps the pre-RFC-0699 any-eligible-camera behavior."""
+    m = _two_camera_manifest(turtlebot_manifest)
+    program = _capture_program({"media": "photo", "store_as": "p"})
+    result = validate(program, m, home_envelope)
+    assert result.accepted, [e.code for e in result.errors]
+
+
+# ---------------------------------------------------------------------------
 # Envelope pass.
 # ---------------------------------------------------------------------------
 

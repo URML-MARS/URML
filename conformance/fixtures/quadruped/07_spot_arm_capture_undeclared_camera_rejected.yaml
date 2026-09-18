@@ -1,0 +1,25 @@
+name: quadruped/spot_arm_capture_undeclared_camera_rejected
+description: >
+  RFC-0699 negative: capture names `chest_cam`, which the Spot Arm manifest does
+  not declare under perception.cameras. There is no such device to shoot with,
+  so the program is rejected at Pass 2 with capability.missing_camera before
+  anything actuates.
+
+manifest: spot_arm
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - capture:
+          media: photo
+          camera: chest_cam
+          store_as: shot
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_camera

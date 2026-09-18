@@ -285,8 +285,15 @@ class ROSAdapter(Protocol):
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
-        """Capture a photo or bounded video. Used by `capture`."""
+        """Capture a photo or bounded video. Used by `capture`.
+
+        `camera` (RFC-0699) is the declared `perception.cameras[].name` the
+        program selected, or `None` to let the substrate pick an eligible
+        camera. The validator has already confirmed a named camera exists and
+        supports the requested media, so the adapter routes to that device.
+        """
         ...
 
     def wait_for_condition(
