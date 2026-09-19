@@ -101,6 +101,8 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     }
     # Profile-extension primitives. New entries here track profile specs.
     home_extensions = {"speak", "listen"}
+    # social: expressive robots that look and gesture (RFC-0698).
+    social_extensions = {"look_at", "gesture"}
     drone_extensions = {"take_off", "land", "return_to_home"}
     industrial_extensions = {"pick_from", "place_at", "swap_tool"}  # RFC-0013
     # bimanual: whole-body / two-arm coordination (RFC-0010), available to any
@@ -118,6 +120,7 @@ def test_primitive_registry_covers_rfc_0002_set() -> None:
     expected = (
         core
         | home_extensions
+        | social_extensions
         | drone_extensions
         | industrial_extensions
         | manipulation_extensions

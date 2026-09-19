@@ -1,11 +1,5 @@
 # Capability manifest for a Reachy Mini desk robot (Hugging Face / Pollen
-# Robotics) driven by an LLM brain. Motivating example for RFC-0698 (Draft).
-#
-# NOT YET VALIDATING. The `expression` block and the `look_at` / `gesture`
-# primitives are proposed in docs/rfcs/0698-expressive-platform.md and land
-# only if the RFC advances. Until then `urml validate` rejects this file on
-# the unknown `expression` key. That is the point: this is what the
-# declaration would look like, written down before the schema exists.
+# Robotics) driven by an LLM brain. Motivating example for RFC-0698.
 #
 # The numbers are real. Head and body ranges are the deployment limits the
 # OriNachum/reachy-nova harness hard-codes in safety.py and gestures.py
@@ -15,12 +9,11 @@
 # per-servo limits it does publish live in the SDK's hardware_config.yaml.
 #
 # Reachy Mini does not locomote and has no gripper, so it declares
-# `minimal_node` (RFC-0018) for that fact and `expression` for what it can
-# do. Antennas are RFC-0017 analog output lines driven by `set_output`.
+# `minimal_node` (RFC-0018) for that fact and `expression` (RFC-0698) for what
+# it can do. Antennas are RFC-0017 analog output lines driven by `set_output`.
 #
-# Intended check once the schema lands:
 #   urml validate reachy-mini-greeting.urml.yaml \
-#     -m reachy-mini-greeting.manifest.yaml --profile home --no-policy
+#     -m reachy-mini-greeting.manifest.yaml --profile social --no-policy
 
 manifest_version: "0.1"
 robot_id: reachy_mini_desk
@@ -72,8 +65,8 @@ outputs:
       range: [-90.0, 90.0]
       safe_state: 0.0
 
-# Proposed by RFC-0698. Degrees for angles, metres for translation, rad/s
-# for angular velocity (the manifest's existing convention).
+# RFC-0698. Degrees for angles, metres for translation, rad/s for angular
+# velocity (the manifest's existing convention).
 expression:
   head:
     roll:  { min: -30.0, max: 30.0 }
@@ -87,10 +80,10 @@ expression:
   max_head_body_yaw_gap: 30.0
   gaze: [face, sound, object, direction]
   gestures:
-    - name: yes
+    - name: "yes"
       duration_s: 1.2
       description: Nod.
-    - name: no
+    - name: "no"
       duration_s: 1.5
       description: Head shake.
     - name: curious

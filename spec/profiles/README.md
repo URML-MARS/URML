@@ -47,6 +47,7 @@ The canonical URML organization maintains profiles within its declared scope: **
 | [`industrial/`](industrial/) | Phase 3 target | Single-arm manipulators and mobile bases in controlled industrial cells: pick-and-place, line reconfiguration, safety-door-gated motion. |
 | [`educational/`](educational/) | Draft ([RFC-0011](../../docs/rfcs/0011-educational-profile.md)) | Low-cost classroom/teaching robots, beginner authors, students nearby: conservative fail-loud defaults. v0.1 adds no primitives. |
 | [`research/`](research/) | Draft ([RFC-0012](../../docs/rfcs/0012-research-profile.md)) | Robotics research platforms in attended labs: reproducibility-first (required provenance, explicit error policy), pose-based motion permitted. v0.1 adds no primitives. |
+| [`social/`](social/) | Draft ([RFC-0698](../../docs/rfcs/0698-expressive-platform.md)) | Expressive consumer/desk robots that look and gesture and do not locomote or manipulate (Reachy Mini, Furhat, ARI, animatronics): an `expression` head/body envelope and a declared gesture vocabulary, driving the `look_at` and `gesture` primitives. |
 
 ## Stretch profiles
 

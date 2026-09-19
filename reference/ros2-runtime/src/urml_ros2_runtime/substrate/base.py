@@ -486,6 +486,55 @@ class RelativeMotionAdapter(Protocol):
 
 
 @runtime_checkable
+class ExpressionAdapter(Protocol):
+    """Optional expressive-platform surface (RFC-0698): gaze + gesture.
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only
+    expressive robots that look and gesture (Reachy Mini, Furhat, ARI, a desk
+    animatronic) implement it. The runtime checks
+    ``isinstance(adapter, ExpressionAdapter)`` and returns an unsuccessful
+    result for substrates that do not. `MockROSAdapter` implements it so the
+    hermetic suite can exercise the `look_at` / `gesture` path.
+
+    The validator has already confirmed the manifest declares `expression`, the
+    gaze target and gesture name are declared, and a numeric `direction` is
+    inside the declared ranges, so the adapter just orients or plays the motion.
+    Angles are degrees (the manifest convention); the adapter converts to the
+    SDK's units.
+    """
+
+    def orient_gaze(
+        self,
+        *,
+        target: Literal["face", "sound", "object", "direction"],
+        object: str | None = None,
+        yaw: float | None = None,
+        pitch: float | None = None,
+        roll: float | None = None,
+        body_yaw: float | None = None,
+        duration_seconds: float | None = None,
+        hold_seconds: float | None = None,
+    ) -> SubstrateResult:
+        """Orient the head (and body) toward a target. Used by `look_at`.
+
+        For `face` / `sound` / `object` the adapter resolves the target to a
+        pose itself (its tracker, its direction-of-arrival, its detector). For
+        `direction` the numeric angles are supplied and already range-checked.
+        """
+        ...
+
+    def perform_gesture(
+        self,
+        *,
+        name: str,
+        intensity: float | None = None,
+        interrupt: bool = False,
+    ) -> SubstrateResult:
+        """Play a named expressive gesture from the declared vocabulary. Used by `gesture`."""
+        ...
+
+
+@runtime_checkable
 class OutputAdapter(Protocol):
     """Optional digital/analog output-line surface (RFC-0017).
 

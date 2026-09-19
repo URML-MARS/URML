@@ -1,0 +1,25 @@
+name: social/direction_out_of_range_rejected
+description: >
+  RFC-0698 negative: a look_at direction asks for pitch 60 degrees, beyond the
+  Reachy Mini's declared head pitch range [-15, 25]. The numeric direction is
+  the one gaze target URML can check against the declared envelope, so it is
+  rejected with capability.head_pose_outside_envelope before dispatch.
+
+manifest: reachy_mini
+profiles: [social]
+
+program:
+  profile: social
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - look_at:
+          target: direction
+          direction: { yaw: 0, pitch: 60 }
+          duration: 1s
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.head_pose_outside_envelope

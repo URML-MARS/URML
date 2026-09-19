@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 # A snake_case identifier for primitive names, variable names, location names,
 # frame names, etc. The character class is deliberately conservative.
@@ -79,6 +79,26 @@ class Pose(BaseModel):
     yaw: float | None = None
     pitch: float | None = None
     roll: float | None = None
+
+
+class AxisRange(BaseModel):
+    """A commandable min/max range on one axis (RFC-0698).
+
+    Degrees for a rotation axis, metres for a translation axis. Shared by the
+    manifest's `expression` block and the safety envelope's `expression`
+    sub-block, so a deployment can tighten a declared range strictest-wins.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    min: float
+    max: float
+
+    @model_validator(mode="after")
+    def _ordered(self) -> AxisRange:
+        if self.max < self.min:
+            raise ValueError(f"axis range max {self.max} is below min {self.min}")
+        return self
 
 
 class Location(BaseModel):

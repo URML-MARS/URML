@@ -27,10 +27,12 @@ from urml_validator.schemas.primitives import (
     DockArgs,
     DriveArgs,
     FollowTrajectoryArgs,
+    GestureArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
     ListenArgs,
+    LookAtArgs,
     MeasureArgs,
     MoveToArgs,
     PickFromArgs,
@@ -53,6 +55,7 @@ from urml_ros2_runtime.bindings import resolve, resolve_all
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
     DetectionResult,
+    ExpressionAdapter,
     ListenResult,
     ManipulationResult,
     MeasurementResult,
@@ -253,6 +256,46 @@ def exec_turn(
             "(turn requires a RelativeMotionAdapter, RFC-0630).",
         )
     result = adapter.turn_by(angle=args.angle)
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_look_at(
+    args: LookAtArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0698: orient the head (and body) toward a target on an expressive robot."""
+    if not isinstance(adapter, ExpressionAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate is not expressive "
+            "(look_at requires an ExpressionAdapter, RFC-0698).",
+        )
+    d = args.direction
+    result = adapter.orient_gaze(
+        target=args.target,
+        object=args.object,
+        yaw=d.yaw if d is not None else None,
+        pitch=d.pitch if d is not None else None,
+        roll=d.roll if d is not None else None,
+        body_yaw=d.body_yaw if d is not None else None,
+        duration_seconds=_duration_seconds(args.duration),
+        hold_seconds=_duration_seconds(args.hold),
+    )
+    return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
+
+
+def exec_gesture(
+    args: GestureArgs, adapter: ROSAdapter, _bindings: dict[str, Any]
+) -> PrimitiveOutcome:
+    """RFC-0698: play a named expressive gesture from the declared vocabulary."""
+    if not isinstance(adapter, ExpressionAdapter):
+        return PrimitiveOutcome(
+            success=False,
+            reason="not_supported: this substrate is not expressive "
+            "(gesture requires an ExpressionAdapter, RFC-0698).",
+        )
+    result = adapter.perform_gesture(
+        name=args.name, intensity=args.intensity, interrupt=args.interrupt
+    )
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
 
@@ -851,6 +894,8 @@ PRIMITIVE_EXECUTORS: dict[
     "report": exec_report,
     "speak": exec_speak,
     "listen": exec_listen,
+    "look_at": exec_look_at,
+    "gesture": exec_gesture,
     "take_off": exec_take_off,
     "land": exec_land,
     "return_to_home": exec_return_to_home,

@@ -1,0 +1,42 @@
+name: social/reachy_greeting_positive
+description: >
+  RFC-0698 positive: on an expressive Reachy Mini desk robot, the program looks
+  at a face, nods (a declared gesture), speaks, and glances to a numeric
+  direction inside the declared head ranges. Exercises look_at and gesture
+  through the validator and the MockROSAdapter's ExpressionAdapter surface,
+  hermetically.
+
+manifest: reachy_mini
+profiles: [social]
+
+program:
+  profile: social
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - look_at:
+          target: face
+          duration: 1s
+          hold: 3s
+      - gesture:
+          name: "yes"
+      - speak:
+          utterance: "Hello! Nice to see you."
+          style: conversational
+      - look_at:
+          target: direction
+          direction: { yaw: 30, pitch: 20 }
+          duration: 1s
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4
+  audit_methods:
+    - orient_gaze
+    - perform_gesture
+    - emit_speech
+    - orient_gaze
