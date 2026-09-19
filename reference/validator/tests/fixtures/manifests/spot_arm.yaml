@@ -12,8 +12,10 @@
 # `station_keeping: true` is the posture-hold reading RFC-0009 gives a
 # legged robot that actively balances.
 #
-# Honest caveat carried into the thread: `capture` has no camera selector,
-# so a targeted capture validates as long as any declared camera is movable.
+# RFC-0699: `capture` now takes an optional `camera` selector naming a declared
+# camera, so a targeted capture on a fixed body fisheye is rejected even though
+# the movable `hand_color` exists. Without the selector, capture stays admissible
+# against any eligible camera (unchanged). See the quadruped capture fixtures.
 
 manifest_version: "0.1"
 robot_id: spot_arm_1

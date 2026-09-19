@@ -1,0 +1,28 @@
+name: quadruped/spot_arm_capture_fixed_camera_target_rejected
+description: >
+  RFC-0699 negative, and the motivating case from Discussion #805: a targeted
+  capture names `frontleft_fisheye`, a fixed body camera. A fixed camera cannot
+  be pointed at a specific subject, so the program is rejected with
+  capability.fixed_camera_target -- even though the movable hand_color camera
+  exists on the same robot. Before RFC-0699, with no camera selector, this
+  validated against whichever declared camera happened to be movable.
+
+manifest: spot_arm
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - capture:
+          media: photo
+          camera: frontleft_fisheye
+          target: inspection_point
+          store_as: shot
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.fixed_camera_target

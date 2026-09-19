@@ -537,6 +537,7 @@ def exec_capture(
         target=target_str,
         duration_seconds=duration_s,
         attributes=attributes,
+        camera=args.camera,
     )
     new_bindings: dict[str, Any] = {}
     if result.payload is not None:

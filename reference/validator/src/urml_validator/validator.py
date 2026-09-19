@@ -2761,32 +2761,61 @@ def _check_capture_caps(
             )
         )
         return out
+    # RFC-0699: a named `camera` narrows every subsequent check to that one
+    # declared camera. Without it, capture stays admissible against any eligible
+    # camera (the pre-RFC-0699 behavior), so existing programs are unaffected.
+    cameras = perception.cameras
+    if args.camera is not None:
+        cameras = [c for c in perception.cameras if c.name == args.camera]
+        if not cameras:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_MISSING_CAMERA,
+                    "capture",
+                    path,
+                    f"capture references undeclared camera {args.camera!r}.",
+                    field="camera",
+                    suggestion=f"Declare {args.camera!r} under manifest.perception.cameras.",
+                )
+            )
+            return out
     needed_video = args.media == "video"
     eligible: list[Camera] = [
         c
-        for c in perception.cameras
+        for c in cameras
         if (needed_video and c.supports_video) or (not needed_video and c.supports_photo)
     ]
     if not eligible:
+        named = args.camera is not None
         out.append(
             _err(
                 ErrorCode.CAPABILITY_VIDEO_UNSUPPORTED if needed_video else ErrorCode.CAPABILITY_MISSING_CAMERA,
                 "capture",
                 path,
-                f"no declared camera supports {args.media} capture.",
-                field="media",
-                suggestion="Declare a camera that supports the requested media mode.",
+                f"declared camera {args.camera!r} does not support {args.media} capture."
+                if named
+                else f"no declared camera supports {args.media} capture.",
+                field="camera" if named else "media",
+                suggestion=f"Choose a camera that supports {args.media}, or omit `camera`."
+                if named
+                else "Declare a camera that supports the requested media mode.",
             )
         )
-    if args.target is not None and all(not c.movable for c in (eligible or perception.cameras)):
+    if args.target is not None and all(not c.movable for c in (eligible or cameras)):
+        named = args.camera is not None
         out.append(
             _err(
                 ErrorCode.CAPABILITY_FIXED_CAMERA_TARGET,
                 "capture",
                 path,
-                "capture targets a specific subject but every declared camera is fixed (non-movable).",
+                f"capture targets a specific subject but the named camera {args.camera!r} "
+                "is fixed (non-movable)."
+                if named
+                else "capture targets a specific subject but every declared camera is fixed (non-movable).",
                 field="target",
-                suggestion="Omit `target` and rely on the current camera view, "
+                suggestion="Choose a movable camera, omit `target`, or declare the camera movable."
+                if named
+                else "Omit `target` and rely on the current camera view, "
                 "or declare a movable camera in the manifest.",
             )
         )

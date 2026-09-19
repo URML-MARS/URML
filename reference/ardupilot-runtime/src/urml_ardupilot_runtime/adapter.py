@@ -619,6 +619,7 @@ class ArduCopterAdapter(PX4Adapter):
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         cam = self._ap_config.camera
         if cam is None:

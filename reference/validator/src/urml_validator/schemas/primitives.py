@@ -430,6 +430,7 @@ class CaptureArgs(BaseModel):
     target: VarRef | Identifier | None = None
     duration: Duration | None = None
     attributes: CaptureAttributes | None = None
+    camera: Identifier | None = None  # RFC-0699: select a declared perception.camera by name
     store_as: Identifier
 
     @model_validator(mode="after")

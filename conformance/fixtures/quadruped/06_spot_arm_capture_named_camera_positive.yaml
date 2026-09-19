@@ -1,0 +1,51 @@
+name: quadruped/spot_arm_capture_named_camera_positive
+description: >
+  RFC-0699 positive: on the Spot Arm (rai-opensource spot_ros2 Discussion #805
+  vocabulary), a targeted photo capture names the movable `hand_color` camera.
+  hand_color supports photo and is movable, so pointing it at a detected subject
+  is admissible, and the selected camera name flows through to capture_media.
+  Hermetic against the MockROSAdapter.
+
+manifest: spot_arm
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: inspection_point }
+      - detect:
+          object: tote_handle
+          store_as: handle
+      - capture:
+          media: photo
+          camera: hand_color
+          target: $handle
+          store_as: shot
+      - report:
+          to: ops_log
+          facts: { task: valve_capture, result: ok }
+          status: success
+
+adapter_overrides:
+  detection:
+    success: true
+    payload:
+      class: tote_handle
+      pose: { x: 6.2, y: 2.1, z: 0.4 }
+      frame: site
+      confidence: 0.91
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 4
+  audit_methods:
+    - send_navigation_goal
+    - query_detection
+    - capture_media
+    - emit_report
