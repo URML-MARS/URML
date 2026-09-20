@@ -1,0 +1,10 @@
+# Fixture: the default safety envelope a social-profile deployment applies on
+# top of an expressive robot's capability manifest (RFC-0698). The `expression`
+# sub-block is left empty by default, so the manifest's declared head/body
+# ranges and gesture durations apply until a specific deployment tightens them.
+
+envelope_version: "0.1"
+deployment_id: social_demo
+description: Default social-profile envelope for an expressive desk robot.
+
+link_loss_policy: []

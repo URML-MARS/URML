@@ -709,6 +709,56 @@ class SetOutputArgs(BaseModel):
     )
 
 
+# ---------------------------------------------------------------------------
+# Social-profile primitives (RFC-0698): expressive robots that look and gesture.
+# ---------------------------------------------------------------------------
+
+
+class LookAtDirection(BaseModel):
+    """A numeric gaze direction for look_at(target: direction) (RFC-0698). Degrees."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    yaw: float
+    pitch: float
+    roll: float | None = None
+    body_yaw: float | None = None
+
+
+class LookAtArgs(BaseModel):
+    """Orient the head (and body, if declared) toward a target (social profile, RFC-0698)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target: Literal["face", "sound", "object", "direction"]
+    object: Identifier | None = None
+    direction: LookAtDirection | None = None
+    duration: Duration | None = None
+    hold: Duration | None = None
+
+    @model_validator(mode="after")
+    def _target_shape(self) -> LookAtArgs:
+        if self.target == "object" and self.object is None:
+            raise ValueError("look_at(target: object) requires `object`")
+        if self.target != "object" and self.object is not None:
+            raise ValueError("look_at.object is only allowed when target == 'object'")
+        if self.target == "direction" and self.direction is None:
+            raise ValueError("look_at(target: direction) requires `direction`")
+        if self.target != "direction" and self.direction is not None:
+            raise ValueError("look_at.direction is only allowed when target == 'direction'")
+        return self
+
+
+class GestureArgs(BaseModel):
+    """Perform a named expressive gesture from the declared vocabulary (social profile, RFC-0698)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    intensity: float | None = Field(None, ge=0.0, le=1.0)
+    interrupt: bool = False
+
+
 PRIMITIVE_NAMES: tuple[str, ...] = (
     "move_to",
     "dock",
@@ -725,6 +775,8 @@ PRIMITIVE_NAMES: tuple[str, ...] = (
     "report",
     "speak",
     "listen",
+    "look_at",
+    "gesture",
     "take_off",
     "land",
     "return_to_home",
@@ -753,6 +805,8 @@ PRIMITIVE_MODELS: dict[str, type[BaseModel]] = {
     "report": ReportArgs,
     "speak": SpeakArgs,
     "listen": ListenArgs,
+    "look_at": LookAtArgs,
+    "gesture": GestureArgs,
     "take_off": TakeOffArgs,
     "land": LandArgs,
     "return_to_home": ReturnToHomeArgs,

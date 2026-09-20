@@ -15,7 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from urml_validator.schemas.common import Identifier
+from urml_validator.schemas.common import AxisRange, Identifier
 from urml_validator.schemas.connectivity import LinkLossRule
 
 
@@ -109,6 +109,35 @@ class MonitorableProperty(BaseModel):
     )
 
 
+class EnvelopeHead(BaseModel):
+    """Deployment-tightened head rotation ranges (RFC-0698). Strictest-wins
+    against the manifest's `expression.head`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    roll: AxisRange | None = None
+    pitch: AxisRange | None = None
+    yaw: AxisRange | None = None
+
+
+class EnvelopeExpression(BaseModel):
+    """The safety envelope's expressive sub-block (RFC-0698).
+
+    Every field tightens, never widens, the manifest's `expression`. An empty
+    sub-block (the social profile's default) leaves the manifest ranges in force.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    head: EnvelopeHead | None = None
+    body_yaw: AxisRange | None = None
+    max_angular_velocity: float | None = Field(None, gt=0)
+    max_gesture_duration_s: float | None = Field(None, gt=0)
+    gestures_allowed: list[Identifier] | None = Field(
+        None, description="Allow-list of gesture names; omitted = all declared gestures allowed."
+    )
+
+
 class SafetyEnvelope(BaseModel):
     """A complete deployment-time safety envelope."""
 
@@ -141,3 +170,7 @@ class SafetyEnvelope(BaseModel):
     # and signal-checked by the validator, compiled + enforced by a monitor
     # backend. URML does not run the monitor.
     monitorable_properties: list[MonitorableProperty] = Field(default_factory=list)
+
+    # RFC-0698: optional expressive-platform tightening (head/body ranges,
+    # gesture duration cap, gesture allow-list) for the social profile.
+    expression: EnvelopeExpression | None = None

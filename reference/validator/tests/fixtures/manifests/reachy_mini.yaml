@@ -1,0 +1,74 @@
+# Fixture: Reachy Mini desk robot (Hugging Face / Pollen Robotics), the
+# expressive-platform vocabulary from RFC-0698. Non-locomoting (minimal_node),
+# a 6-DoF head with body yaw, two antennas as output lines, a camera, a mic
+# array, and a declared gesture vocabulary. Head/body ranges are the deployment
+# limits the OriNachum/reachy-nova harness hard-codes; gesture durations are its
+# animation lengths.
+
+manifest_version: "0.1"
+robot_id: reachy_mini_desk
+description: Reachy Mini desk robot; expressive, non-locomoting.
+
+frames:
+  - name: base
+    parent: null
+
+declared_events:
+  - emergency_stop
+  - face_detected
+  - sound_detected
+
+minimal_node:
+  class: sensor_actuator
+  declared_sensors: [mic_array]
+  declared_outputs: [antenna_left, antenna_right]
+  has_locomotion: false
+
+perception:
+  cameras:
+    - name: head_camera
+      movable: true
+      supports_photo: true
+      supports_video: true
+      supports_stream: true
+      max_resolution: "1080p"
+  sensors:
+    - name: mic_array
+      measurement_type: speech
+      units: transcript
+  object_vocabulary:
+    - person
+    - mug
+    - cup
+
+outputs:
+  named_endpoints: [speech]
+  lines:
+    - name: antenna_left
+      kind: analog
+      range: [-90.0, 90.0]
+      safe_state: 0.0
+    - name: antenna_right
+      kind: analog
+      range: [-90.0, 90.0]
+      safe_state: 0.0
+
+expression:
+  head:
+    roll:  { min: -30.0, max: 30.0 }
+    pitch: { min: -15.0, max: 25.0 }
+    yaw:   { min: -45.0, max: 45.0 }
+    max_angular_velocity: 3.0
+  body_yaw: { min: -25.0, max: 25.0 }
+  max_head_body_yaw_gap: 30.0
+  gaze: [face, sound, object, direction]
+  gestures:
+    - name: "yes"
+      duration_s: 1.2
+      description: Nod.
+    - name: "no"
+      duration_s: 1.5
+      description: Head shake.
+    - name: curious
+      duration_s: 1.8
+      description: Head tilt, hold, settle.

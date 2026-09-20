@@ -1,0 +1,23 @@
+name: social/gesture_requires_social_profile_rejected
+description: >
+  RFC-0698 negative: look_at and gesture are gated to the `social` profile. The
+  same Reachy Mini program under the `home` profile is rejected with
+  capability.expressive_requires_social, so the expressive verbs cannot leak into
+  a profile that does not own them.
+
+manifest: reachy_mini
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - gesture:
+          name: "yes"
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.expressive_requires_social

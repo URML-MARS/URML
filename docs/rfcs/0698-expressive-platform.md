@@ -1,10 +1,10 @@
 ---
 rfc: 0698
-title: Expressive platform, the `expression` manifest block and the home-profile `look_at` / `gesture` primitives
+title: Expressive platform, the `expression` manifest block and the social-profile `look_at` / `gesture` primitives
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Accepted
 created: 2026-09-10
-updated: 2026-09-10
+updated: 2026-09-19
 supersedes: —
 superseded-by: —
 ---
@@ -23,7 +23,11 @@ superseded-by: —
 
 ---
 
-# RFC-0698: Expressive platform, the `expression` manifest block and the home-profile `look_at` / `gesture` primitives
+# RFC-0698: Expressive platform, the `expression` manifest block and the social-profile `look_at` / `gesture` primitives
+
+## Resolution (2026-09-19)
+
+**Accepted.** The maintainer chose alternative 2: `look_at` and `gesture` live in a new **`social`** profile, not the home profile. The vertical slice landed additively in the `0.1.x` line: the Layer-1 `Expression` models and envelope sub-block, `LookAtArgs` / `GestureArgs` in the primitive registries, the Pass-2 and Pass-4 checks and their codes, the Layer-2 §3.16 / §3.17 sections, the `social` profile (`spec/profiles/social/`), an optional `ExpressionAdapter` runtime surface with the `MockROSAdapter` implementation, conformance fixtures under `conformance/fixtures/social/`, and the motivating example turned validating at `examples/social/reachy-mini-greeting.*`. The body below is the original Draft; where it says "home profile", read "social profile".
 
 ## Summary
 

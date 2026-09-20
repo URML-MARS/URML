@@ -117,6 +117,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "industrial_cell_connectivity": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell_connectivity.yaml",
     "turtlebot4_home_connectivity": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_connectivity.yaml",
     # RFC-0009: legged/quadruped manifests.
+    # RFC-0698: expressive desk robot (Reachy Mini) for the social profile.
+    "reachy_mini": _VALIDATOR_FIXTURES / "manifests" / "reachy_mini.yaml",
     "spot_quadruped": _VALIDATOR_FIXTURES / "manifests" / "spot_quadruped.yaml",
     "spot_arm": _VALIDATOR_FIXTURES / "manifests" / "spot_arm.yaml",
     "unitree_quadruped_denied": _VALIDATOR_FIXTURES / "manifests" / "unitree_quadruped_denied.yaml",
@@ -234,6 +236,7 @@ MANIFEST_REGISTRY: dict[str, Path] = {
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_default": _VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml",
+    "social_default": _VALIDATOR_FIXTURES / "envelopes" / "social_default.yaml",
     "drone_default": _VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml",
     "drone_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_geofence.yaml",
     "drone_with_altitude_band": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_altitude_band.yaml",

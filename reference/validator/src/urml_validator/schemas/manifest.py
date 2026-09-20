@@ -15,6 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from urml_validator.schemas.common import (
+    AxisRange,
     Evidence,
     FirmwareToken,
     GraspType,
@@ -1784,6 +1785,85 @@ class Deployment(BaseModel):
     declared_at: str | None = None
 
 
+class HeadExpression(BaseModel):
+    """The head's commandable pose envelope (RFC-0698).
+
+    Each axis is optional; an omitted axis is not commandable. Rotation axes
+    (roll/pitch/yaw) are degrees, translation axes (x/y/z) are metres, and
+    `max_angular_velocity` is rad/s, matching the manifest's existing units.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    chain_ref: Identifier | None = Field(
+        None, description="Optional: a whole_body.chains[] entry of kind head (RFC-0384)."
+    )
+    roll: AxisRange | None = None
+    pitch: AxisRange | None = None
+    yaw: AxisRange | None = None
+    x: AxisRange | None = None
+    y: AxisRange | None = None
+    z: AxisRange | None = None
+    max_angular_velocity: float | None = Field(None, gt=0, description="rad/s")
+
+    @model_validator(mode="after")
+    def _at_least_one_rotation_axis(self) -> HeadExpression:
+        if self.roll is None and self.pitch is None and self.yaw is None:
+            raise ValueError(
+                "expression.head must declare at least one rotation axis (roll, pitch, or yaw)"
+            )
+        return self
+
+
+class GestureDecl(BaseModel):
+    """One entry in a robot's declared expressive-gesture vocabulary (RFC-0698)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    duration_s: float = Field(..., gt=0, description="Nominal duration; what the envelope caps.")
+    description: str | None = None
+
+
+class Expression(BaseModel):
+    """An expressive robot's head/body pose envelope and gesture vocabulary (RFC-0698).
+
+    Optional. Declared by a robot that looks and gestures (Reachy Mini, Furhat,
+    ARI, a desk animatronic). Composes with `minimal_node` (a non-locomoting
+    desk robot) and with `mobility` (a mobile robot with an expressive head);
+    neither is required. Antennas and other single-axis expressive actuators
+    stay `outputs.lines[]` (RFC-0017), not part of this block.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    head: HeadExpression | None = None
+    body_yaw: AxisRange | None = Field(None, description="Body turn range, degrees.")
+    max_head_body_yaw_gap: float | None = Field(
+        None, ge=0, description="Max |head_yaw - body_yaw|, degrees."
+    )
+    gaze: list[Literal["face", "sound", "object", "direction"]] = Field(
+        default_factory=list,
+        description="Closed set of look_at targets this platform resolves.",
+    )
+    gestures: list[GestureDecl] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _head_or_body(self) -> Expression:
+        if self.head is None and self.body_yaw is None:
+            raise ValueError("expression requires at least one of `head` or `body_yaw`")
+        return self
+
+    @model_validator(mode="after")
+    def _unique_gesture_names(self) -> Expression:
+        seen: set[str] = set()
+        for g in self.gestures:
+            if g.name in seen:
+                raise ValueError(f"duplicate expression.gestures name {g.name!r}")
+            seen.add(g.name)
+        return self
+
+
 class CapabilityManifest(BaseModel):
     """A robot's complete capability declaration.
 
@@ -1853,6 +1933,10 @@ class CapabilityManifest(BaseModel):
     # Complements `minimal_node`; declarative, no cross-block rule.
     firmware: Firmware | None = None
 
+    # RFC-0698: optional expressive-platform envelope (head/body pose ranges +
+    # declared gesture vocabulary) for the social profile's look_at / gesture.
+    expression: Expression | None = None
+
     # RFC-0260: optional Layer-4 NL-infrastructure engine declarations
     # (speech-to-text / text-to-speech / translation engine classes).
     language: Language | None = None
@@ -1889,5 +1973,51 @@ class CapabilityManifest(BaseModel):
                 raise ValueError(
                     f"perception.cameras[{cam.name!r}].mount.frame {cam.mount.frame!r} "
                     "is not a declared frame."
+                )
+        return self
+
+    @model_validator(mode="after")
+    def _expression_coherent(self) -> CapabilityManifest:
+        """RFC-0698: an `expression` block's chain_ref and gaze set must be
+        backed by the rest of the manifest (head chain, cameras, sensors,
+        object vocabulary)."""
+        if self.expression is None:
+            return self
+        expr = self.expression
+        head = expr.head
+        if head is not None and head.chain_ref is not None:
+            head_chains = (
+                {c.name for c in self.whole_body.chains if c.kind == "head" and c.name is not None}
+                if self.whole_body is not None
+                else set()
+            )
+            if head.chain_ref not in head_chains:
+                raise ValueError(
+                    f"expression.head.chain_ref {head.chain_ref!r} must name a "
+                    "whole_body.chains[] entry of kind 'head'."
+                )
+        cameras = self.perception.cameras if self.perception is not None else []
+        vocab = self.perception.object_vocabulary if self.perception is not None else []
+        speech_sensors = (
+            [s for s in self.perception.sensors if s.measurement_type == "speech"]
+            if self.perception is not None
+            else []
+        )
+        for target in expr.gaze:
+            if target == "face" and not cameras:
+                raise ValueError("expression.gaze 'face' requires a declared perception.cameras entry.")
+            if target == "object" and not vocab:
+                raise ValueError(
+                    "expression.gaze 'object' requires a non-empty perception.object_vocabulary."
+                )
+            if target == "sound" and not speech_sensors:
+                raise ValueError(
+                    "expression.gaze 'sound' requires a perception.sensors entry with "
+                    "measurement_type 'speech'."
+                )
+            if target == "direction" and (head is None or (head.yaw is None and head.pitch is None)):
+                raise ValueError(
+                    "expression.gaze 'direction' requires expression.head with at least one of "
+                    "yaw or pitch."
                 )
         return self

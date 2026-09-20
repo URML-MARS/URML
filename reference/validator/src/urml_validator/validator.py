@@ -86,10 +86,12 @@ from urml_validator.schemas.primitives import (
     DetectArgs,
     DockArgs,
     DriveArgs,
+    GestureArgs,
     GraspArgs,
     HoverArgs,
     LandArgs,
     ListenArgs,
+    LookAtArgs,
     MeasureArgs,
     MoveToArgs,
     PickFromArgs,
@@ -1068,6 +1070,8 @@ _PRIMITIVE_NAMES_FROZEN = (
     "report",
     "speak",
     "listen",
+    "look_at",
+    "gesture",
     "take_off",
     "land",
     "return_to_home",
@@ -1154,6 +1158,156 @@ def _check_relative_motion_caps(
     return out
 
 
+def _check_social_caps(
+    verb: str,
+    args: LookAtArgs | GestureArgs,
+    manifest: CapabilityManifest,
+    path: list[str],
+    profiles: tuple[str, ...],
+) -> list[ValidationError]:
+    """RFC-0698: `look_at` / `gesture` need the social profile + an `expression` block."""
+    out: list[ValidationError] = []
+    if "social" not in profiles:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_EXPRESSIVE_REQUIRES_SOCIAL,
+                verb,
+                path,
+                f"`{verb}` is gated to the `social` profile (RFC-0698).",
+                suggestion="Add `social` to the program's profiles.",
+            )
+        )
+    expr = manifest.expression
+    if expr is None:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_EXPRESSION_NOT_DECLARED,
+                verb,
+                path,
+                f"`{verb}` requires the manifest to declare an `expression` block.",
+                suggestion="Declare `expression` (head pose ranges and/or body_yaw, and a gesture vocabulary).",
+            )
+        )
+        return out
+
+    if verb == "gesture" and isinstance(args, GestureArgs):
+        declared = [g.name for g in expr.gestures]
+        if args.name not in declared:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_GESTURE_NOT_DECLARED,
+                    verb,
+                    path,
+                    f"gesture {args.name!r} is not in the declared vocabulary "
+                    f"({', '.join(declared) or 'none'}).",
+                    field="name",
+                    suggestion="Use a declared gesture name, or add it to expression.gestures.",
+                )
+            )
+        return out
+
+    assert isinstance(args, LookAtArgs)
+    if args.target not in expr.gaze:
+        out.append(
+            _err(
+                ErrorCode.CAPABILITY_GAZE_TARGET_NOT_DECLARED,
+                verb,
+                path,
+                f"look_at target {args.target!r} is not in the declared gaze set "
+                f"({', '.join(expr.gaze) or 'none'}).",
+                field="target",
+                suggestion="Use a declared gaze target, or add it to expression.gaze.",
+            )
+        )
+    if args.target == "object" and args.object is not None:
+        vocab = manifest.perception.object_vocabulary if manifest.perception is not None else []
+        if args.object not in vocab:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_MISSING_OBJECT_CLASS,
+                    verb,
+                    path,
+                    f"look_at references object class {args.object!r} which is not in the "
+                    "manifest's perception.object_vocabulary.",
+                    field="object",
+                    suggestion=f"Add {args.object!r} to manifest.perception.object_vocabulary.",
+                )
+            )
+    if args.target == "direction" and args.direction is not None:
+        head = expr.head
+        d = args.direction
+        rotation_axes = (
+            ("yaw", d.yaw, head.yaw if head is not None else None),
+            ("pitch", d.pitch, head.pitch if head is not None else None),
+            ("roll", d.roll, head.roll if head is not None else None),
+        )
+        for axis, value, rng in rotation_axes:
+            if value is None:
+                continue
+            if rng is None:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_HEAD_POSE_OUTSIDE_ENVELOPE,
+                        verb,
+                        path,
+                        f"look_at direction {axis} {value} but the head declares no commandable "
+                        f"{axis} axis.",
+                        field="direction",
+                        suggestion=f"Declare expression.head.{axis}, or omit {axis}.",
+                    )
+                )
+            elif not (rng.min <= value <= rng.max):
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_HEAD_POSE_OUTSIDE_ENVELOPE,
+                        verb,
+                        path,
+                        f"look_at direction {axis} {value} is outside the declared range "
+                        f"[{rng.min}, {rng.max}].",
+                        field="direction",
+                        suggestion=f"Request a {axis} within [{rng.min}, {rng.max}].",
+                    )
+                )
+        if d.body_yaw is not None:
+            if expr.body_yaw is None:
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_HEAD_POSE_OUTSIDE_ENVELOPE,
+                        verb,
+                        path,
+                        f"look_at direction body_yaw {d.body_yaw} but the manifest declares no "
+                        "expression.body_yaw.",
+                        field="direction",
+                        suggestion="Declare expression.body_yaw, or omit body_yaw.",
+                    )
+                )
+            elif not (expr.body_yaw.min <= d.body_yaw <= expr.body_yaw.max):
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_HEAD_POSE_OUTSIDE_ENVELOPE,
+                        verb,
+                        path,
+                        f"look_at direction body_yaw {d.body_yaw} is outside the declared range "
+                        f"[{expr.body_yaw.min}, {expr.body_yaw.max}].",
+                        field="direction",
+                    )
+                )
+            if expr.max_head_body_yaw_gap is not None:
+                gap = abs(d.yaw - d.body_yaw)
+                if gap > expr.max_head_body_yaw_gap:
+                    out.append(
+                        _err(
+                            ErrorCode.CAPABILITY_HEAD_BODY_YAW_GAP_EXCEEDED,
+                            verb,
+                            path,
+                            f"look_at head-body yaw gap {gap} exceeds the declared maximum "
+                            f"{expr.max_head_body_yaw_gap}.",
+                            field="direction",
+                        )
+                    )
+    return out
+
+
 def _check_capabilities(
     step: Step,
     manifest: CapabilityManifest,
@@ -1194,6 +1348,8 @@ def _check_capabilities(
         return _check_speak_caps(args, manifest, path)
     if name == "listen":
         return _check_listen_caps(args, manifest, path)
+    if name == "look_at" or name == "gesture":
+        return _check_social_caps(name, args, manifest, path, profiles)
     if name == "take_off":
         return _check_take_off_caps(args, manifest, path)
     if name == "land":
@@ -3061,6 +3217,10 @@ def _check_envelope(
         out.extend(_check_envelope_return_to_home(args, manifest, envelope, path))
     elif name == "follow_trajectory":
         out.extend(_check_envelope_follow_trajectory(args, manifest, envelope, path))
+    elif name == "look_at":
+        out.extend(_check_envelope_look_at(args, envelope, path))
+    elif name == "gesture":
+        out.extend(_check_envelope_gesture(args, manifest, envelope, path))
 
     # Geofence containment + occupancy-zone intrusion run for every
     # spatial primitive. Each helper returns no errors when the envelope
@@ -3070,6 +3230,96 @@ def _check_envelope(
         out.extend(_check_envelope_geofence(step, manifest, envelope, path))
         out.extend(_check_envelope_occupancy_zones(step, manifest, envelope, path))
 
+    return out
+
+
+def _check_envelope_look_at(
+    args: LookAtArgs, envelope: SafetyEnvelope | None, path: list[str]
+) -> list[ValidationError]:
+    """RFC-0698: the envelope's expression sub-block tightens the head/body ranges."""
+    out: list[ValidationError] = []
+    if (
+        envelope is None
+        or envelope.expression is None
+        or args.target != "direction"
+        or args.direction is None
+    ):
+        return out
+    ee = envelope.expression
+    d = args.direction
+    eh = ee.head
+    axis_ranges = (
+        ("yaw", d.yaw, eh.yaw if eh is not None else None),
+        ("pitch", d.pitch, eh.pitch if eh is not None else None),
+        ("roll", d.roll, eh.roll if eh is not None else None),
+    )
+    for axis, value, rng in axis_ranges:
+        if value is None or rng is None:
+            continue
+        if not (rng.min <= value <= rng.max):
+            out.append(
+                _err(
+                    ErrorCode.ENVELOPE_HEAD_POSE_EXCEEDED,
+                    "look_at",
+                    path,
+                    f"look_at direction {axis} {value} exceeds the envelope range "
+                    f"[{rng.min}, {rng.max}].",
+                    field="direction",
+                )
+            )
+    if (
+        d.body_yaw is not None
+        and ee.body_yaw is not None
+        and not (ee.body_yaw.min <= d.body_yaw <= ee.body_yaw.max)
+    ):
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_HEAD_POSE_EXCEEDED,
+                "look_at",
+                path,
+                f"look_at direction body_yaw {d.body_yaw} exceeds the envelope range "
+                f"[{ee.body_yaw.min}, {ee.body_yaw.max}].",
+                field="direction",
+            )
+        )
+    return out
+
+
+def _check_envelope_gesture(
+    args: GestureArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """RFC-0698: the envelope caps gesture duration and may allow-list gestures."""
+    out: list[ValidationError] = []
+    if envelope is None or envelope.expression is None:
+        return out
+    ee = envelope.expression
+    if ee.max_gesture_duration_s is not None and manifest.expression is not None:
+        declared = {g.name: g.duration_s for g in manifest.expression.gestures}
+        dur = declared.get(args.name)
+        if dur is not None and dur > ee.max_gesture_duration_s:
+            out.append(
+                _err(
+                    ErrorCode.ENVELOPE_GESTURE_DURATION_EXCEEDED,
+                    "gesture",
+                    path,
+                    f"gesture {args.name!r} nominal duration {dur}s exceeds the envelope cap "
+                    f"{ee.max_gesture_duration_s}s.",
+                    field="name",
+                )
+            )
+    if ee.gestures_allowed is not None and args.name not in ee.gestures_allowed:
+        out.append(
+            _err(
+                ErrorCode.ENVELOPE_GESTURE_NOT_ALLOWED,
+                "gesture",
+                path,
+                f"gesture {args.name!r} is not in the envelope's gestures_allowed list.",
+                field="name",
+            )
+        )
     return out
 
 

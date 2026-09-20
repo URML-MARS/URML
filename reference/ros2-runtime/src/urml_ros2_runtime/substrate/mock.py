@@ -593,6 +593,52 @@ class MockROSAdapter:
         self.call_log.append({"method": "turn_by", "angle": angle})
         return NavigationResult(success=True)
 
+    # ---- ExpressionAdapter (RFC-0698) ----
+
+    def orient_gaze(
+        self,
+        *,
+        target: Literal["face", "sound", "object", "direction"],
+        object: str | None = None,
+        yaw: float | None = None,
+        pitch: float | None = None,
+        roll: float | None = None,
+        body_yaw: float | None = None,
+        duration_seconds: float | None = None,
+        hold_seconds: float | None = None,
+    ) -> SubstrateResult:
+        self.call_log.append(
+            {
+                "method": "orient_gaze",
+                "target": target,
+                "object": object,
+                "yaw": yaw,
+                "pitch": pitch,
+                "roll": roll,
+                "body_yaw": body_yaw,
+                "duration_seconds": duration_seconds,
+                "hold_seconds": hold_seconds,
+            }
+        )
+        return SubstrateResult(success=True)
+
+    def perform_gesture(
+        self,
+        *,
+        name: str,
+        intensity: float | None = None,
+        interrupt: bool = False,
+    ) -> SubstrateResult:
+        self.call_log.append(
+            {
+                "method": "perform_gesture",
+                "name": name,
+                "intensity": intensity,
+                "interrupt": interrupt,
+            }
+        )
+        return SubstrateResult(success=True)
+
     # ---- TelemetryAdapter (RFC-0667) ----
 
     def set_telemetry(self, samples: list[MonitorSample]) -> None:

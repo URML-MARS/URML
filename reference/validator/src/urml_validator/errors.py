@@ -85,6 +85,13 @@ class ErrorCode(StrEnum):
     CAPABILITY_RELATIVE_MOTION_UNSUPPORTED = "capability.relative_motion_unsupported"
     CAPABILITY_RELATIVE_DISTANCE_EXCEEDED = "capability.relative_distance_exceeded"
     CAPABILITY_RELATIVE_MOTION_REQUIRES_EDUCATIONAL = "capability.relative_motion_requires_educational"
+    # RFC-0698: social-profile expressive primitives (look_at / gesture).
+    CAPABILITY_EXPRESSIVE_REQUIRES_SOCIAL = "capability.expressive_requires_social"
+    CAPABILITY_EXPRESSION_NOT_DECLARED = "capability.expression_not_declared"
+    CAPABILITY_GAZE_TARGET_NOT_DECLARED = "capability.gaze_target_not_declared"
+    CAPABILITY_HEAD_POSE_OUTSIDE_ENVELOPE = "capability.head_pose_outside_envelope"
+    CAPABILITY_HEAD_BODY_YAW_GAP_EXCEEDED = "capability.head_body_yaw_gap_exceeded"
+    CAPABILITY_GESTURE_NOT_DECLARED = "capability.gesture_not_declared"
     CAPABILITY_IPC_RUNTIME_NAME_NOT_APPLICABLE = "capability.ipc_runtime_name_not_applicable"
     CAPABILITY_IPC_GENERATION_NOTE_REQUIRED = "capability.ipc_generation_note_required"
     # RFC-0016: realtime timing-block coherence.
@@ -167,6 +174,10 @@ class ErrorCode(StrEnum):
     ENVELOPE_LINK_OUTAGE_EXCEEDS_DECLARED = "envelope.link_outage_exceeds_declared"
     # RFC-0382: monitorable temporal-logic properties.
     ENVELOPE_MONITORABLE_PARSE_ERROR = "envelope.monitorable_parse_error"
+    # RFC-0698: expressive-platform envelope tightening (social profile).
+    ENVELOPE_HEAD_POSE_EXCEEDED = "envelope.head_pose_exceeded"
+    ENVELOPE_GESTURE_DURATION_EXCEEDED = "envelope.gesture_duration_exceeded"
+    ENVELOPE_GESTURE_NOT_ALLOWED = "envelope.gesture_not_allowed"
     ENVELOPE_MONITORABLE_UNDECLARED_SIGNAL = "envelope.monitorable_undeclared_signal"
 
     # Pass 4 — variable bindings.
