@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: System deps
         run: |
@@ -82,10 +82,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up QEMU (arm64 emulation)
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
@@ -122,7 +122,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.run_placeholder
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Placeholder for UR/Franka controller-driven e2e
         run: |
@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cobot-controller-e2e-diagnostics
           path: ~/.cache/urml-cobot
