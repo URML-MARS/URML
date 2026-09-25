@@ -32,6 +32,7 @@ from __future__ import annotations
 from typing import Any, Protocol
 
 from urml_llm_bridge.grammar import schema_to_gbnf
+from urml_llm_bridge.providers.base import build_clarify_union_schema
 
 # llama-server's default port. Override in the constructor for non-default
 # deployments.
@@ -127,14 +128,22 @@ class LlamaCppProvider:
         user: str,
         schema: dict[str, Any],
         max_tokens: int = 4096,
+        clarify_schema: dict[str, Any] | None = None,
     ) -> str:
         """Send a chat completion with the schema-derived GBNF grammar.
 
         The grammar is computed via ``grammar.schema_to_gbnf(schema)`` and
         cached at the module level; repeated calls with the same schema do
         no extra work.
+
+        RFC-0700 clarify mode: when ``clarify_schema`` is given, the grammar
+        is derived from the program-or-clarify union instead, so the decoder
+        can produce either shape while the clarification budget lasts.
         """
-        grammar = schema_to_gbnf(schema)
+        effective = schema
+        if clarify_schema is not None:
+            effective = build_clarify_union_schema(schema, clarify_schema)
+        grammar = schema_to_gbnf(effective)
         body: dict[str, Any] = {
             "model": self._model_label,
             "messages": [

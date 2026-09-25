@@ -119,6 +119,8 @@ class OpenAIProvider:
         user: str,
         schema: dict[str, Any],  # schema is conveyed via `system`; kept for protocol parity
         max_tokens: int = 4096,
+        clarify_schema: dict[str, Any] | None = None,  # RFC-0700; JSON mode is
+        # unconstrained, so the prompt addendum carries the clarify contract.
     ) -> str:
         """Call the model in JSON mode and return the raw JSON content string.
 

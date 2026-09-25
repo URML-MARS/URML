@@ -64,9 +64,18 @@ class EchoProvider:
         user: str,
         schema: dict[str, Any],
         max_tokens: int = 4096,
+        clarify_schema: dict[str, Any] | None = None,
     ) -> str:
         """Return the pre-canned response for `user` (or the next scripted entry)."""
-        self.call_log.append({"system": system, "user": user, "schema": schema, "max_tokens": max_tokens})
+        self.call_log.append(
+            {
+                "system": system,
+                "user": user,
+                "schema": schema,
+                "max_tokens": max_tokens,
+                "clarify_schema": clarify_schema,
+            }
+        )
         if self._iter is not None:
             try:
                 return next(self._iter)

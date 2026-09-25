@@ -44,6 +44,29 @@ explaining what is missing — do not fabricate undeclared capabilities.
 Respect the safety envelope, if one is provided.
 """
 
+# Appended to the header ONLY in clarify mode (RFC-0700) while the
+# clarification budget lasts. Never present in the default configuration.
+_CLARIFY_ADDENDUM = """\
+Clarify mode is enabled. If, and only if, the request is genuinely
+ambiguous AND the manifest does not determine the answer, you MAY emit,
+instead of a program, exactly this shape:
+
+{"clarify": {"question": "<one short question>", "options": ["<choice>", "..."]}}
+
+`options` is optional. Ask at most ONE short question, and only on your
+first emission. Never ask about something the manifest already decides,
+and never ask when the request needs an undeclared capability — that
+still gets a `report` step with `status: failure`.
+"""
+
+# Appended in clarify mode once the clarification budget is spent.
+_CLARIFY_SPENT_ADDENDUM = """\
+The clarification budget is spent. You MUST now emit a URML program:
+either one that fulfils the request using a reasonable manifest-grounded
+reading, or a `report` step with `status: failure` explaining why the
+request cannot be fulfilled. Do NOT emit another clarify object.
+"""
+
 
 def build_system_prompt(
     *,
@@ -53,6 +76,8 @@ def build_system_prompt(
     profiles: tuple[str, ...] = (),
     few_shots: list[FewShot] | None = None,
     revision_context: str | None = None,
+    clarify: bool = False,
+    clarify_budget_spent: bool = False,
 ) -> str:
     """Assemble the full system prompt as a single string.
 
@@ -64,8 +89,15 @@ def build_system_prompt(
         few_shots:        Examples to include in the prompt. Empty list = no examples.
         revision_context: When set, appended at the end with the prior emission and
                           the validator's structured errors. Used during the revision loop.
+        clarify:          RFC-0700 clarify mode. When True and the budget is not
+                          spent, the clarify addendum follows the header; when the
+                          budget is spent, the commit instruction follows instead.
+                          Default False: the prompt is byte-identical to v0.2.0.
+        clarify_budget_spent: See `clarify`.
     """
     parts: list[str] = [_INSTRUCTION_HEADER]
+    if clarify:
+        parts.append(_CLARIFY_SPENT_ADDENDUM if clarify_budget_spent else _CLARIFY_ADDENDUM)
     parts.append(f"Active profile(s): {', '.join(profiles) if profiles else '(none declared)'}")
     parts.append("")
 

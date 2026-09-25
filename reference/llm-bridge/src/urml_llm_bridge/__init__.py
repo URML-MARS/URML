@@ -33,6 +33,7 @@ from urml_llm_bridge.bench import (
 )
 from urml_llm_bridge.bridge import Bridge, FleetBridge, TranslateResult
 from urml_llm_bridge.errors import (
+    BridgeClarificationNeeded,
     BridgeError,
     BridgePolicyViolation,
     BridgeRevisionExhausted,
@@ -58,6 +59,7 @@ __all__ = [
     "BenchRow",
     "BenchUtterance",
     "Bridge",
+    "BridgeClarificationNeeded",
     "BridgeError",
     "BridgePolicyViolation",
     "BridgeRevisionExhausted",
