@@ -444,6 +444,117 @@ def build_parser() -> argparse.ArgumentParser:
     _add_rehearsal_arguments(p_run)
     p_run.set_defaults(func=cmd_run)
 
+    # ---- urml bench ----
+    p_bench = subparsers.add_parser(
+        "bench",
+        help="Benchmark how well a model translates a corpus of requests into valid URML.",
+        description=(
+            "Run a YAML corpus of natural-language utterances through the LLM "
+            "bridge against one manifest and report where each landed: accepted, "
+            "honest refusal (report-only program), invalid emission, provider "
+            "error, or policy block. Writes a machine-readable row YAML and "
+            "prints a markdown table. This is a benchmark, not a conformance "
+            "test. Requires the urml-llm-bridge package."
+        ),
+    )
+    p_bench.add_argument(
+        "--corpus",
+        action="append",
+        type=Path,
+        default=[],
+        metavar="PATH",
+        help="Utterance corpus YAML (repeatable). See bench/corpora/ in the "
+        "URML repository for the format.",
+    )
+    p_bench.add_argument(
+        "--manifest",
+        "-m",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Path to the target robot's capability manifest (YAML).",
+    )
+    p_bench.add_argument(
+        "--envelope",
+        "-e",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Optional path to a deployment safety envelope (YAML).",
+    )
+    p_bench.add_argument(
+        "--profile",
+        "-p",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="Profile(s) to validate against (repeatable). Default: the "
+        "corpus's own `profile` field.",
+    )
+    p_bench_policy = p_bench.add_mutually_exclusive_group()
+    p_bench_policy.add_argument(
+        "--policy",
+        "-P",
+        dest="policy_path",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Compliance policy file (YAML). Default: the bundled US-federal policy.",
+    )
+    p_bench_policy.add_argument(
+        "--no-policy",
+        dest="no_policy",
+        action="store_true",
+        help="Skip Pass 5 (compliance policy) when validating emissions.",
+    )
+    _add_llm_provider_args(p_bench)
+    p_bench.add_argument(
+        "--echo-script",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Bench-only alternative to --echo-response-file: a YAML map of "
+        "utterance-substring -> canned JSON response, matched per request. "
+        "Used only with --provider echo.",
+    )
+    p_bench.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Write the machine-readable row YAML here. Default: "
+        "bench/results/<date>/<row_id>.yaml under the current directory.",
+    )
+    p_bench.add_argument(
+        "--render",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help="Aggregate mode: read every row YAML in DIR and print the "
+        "comparison table. No provider or corpus needed.",
+    )
+    p_bench.add_argument(
+        "--tag",
+        default="",
+        metavar="TEXT",
+        help="Suffix appended to the row id (e.g. a hardware class).",
+    )
+    p_bench.add_argument(
+        "--notes",
+        default="",
+        metavar="TEXT",
+        help="Free-text note recorded in the row YAML.",
+    )
+    p_bench.add_argument(
+        "--fail-under-match",
+        type=float,
+        default=None,
+        metavar="RATE",
+        help="Exit 1 when the expected-match rate falls below RATE (0..1). "
+        "Default: a completed measurement always exits 0.",
+    )
+    p_bench.set_defaults(func=cmd_bench)
+
     # ---- urml emit-prompt ----
     p_emit = subparsers.add_parser(
         "emit-prompt",
@@ -1649,6 +1760,129 @@ def cmd_translate(args: argparse.Namespace) -> int:
         file=sys.stderr,
     )
     return 0
+
+
+def cmd_bench(args: argparse.Namespace) -> int:
+    """Implement the `urml bench` subcommand.
+
+    A benchmark, not a conformance test: it measures how often a model's
+    emissions survive the validator, using the same bridge loop `urml
+    translate` uses. Exit code 0 means the measurement completed (whatever
+    the rates), unless --fail-under-match asked for a gate.
+    """
+    try:
+        from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
+            Bridge,
+            bench,
+        )
+    except ImportError:
+        print(
+            "urml: error: `bench` requires urml-llm-bridge.\n"
+            "  Install with: pip install urml-llm-bridge[anthropic]\n"
+            "  Or:           pip install urml-llm-bridge[openai]\n"
+            "  Or (local):   pip install urml-llm-bridge[ollama]",
+            file=sys.stderr,
+        )
+        return 2
+
+    # ----- Aggregate mode -----
+    if args.render is not None:
+        try:
+            rows = bench.load_rows(args.render)
+        except bench.BenchCorpusError as exc:
+            print(f"urml: {exc}", file=sys.stderr)
+            return 1
+        sys.stdout.write(bench.render_table(rows))
+        return 0
+
+    # ----- Measurement mode -----
+    if not args.corpus:
+        print("urml: bench requires at least one --corpus PATH (or --render DIR).", file=sys.stderr)
+        return 2
+    if args.manifest is None:
+        print("urml: bench requires --manifest PATH.", file=sys.stderr)
+        return 2
+
+    try:
+        manifest = _load_yaml(args.manifest, kind="manifest")
+        envelope: dict[str, Any] | None = (
+            _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
+        )
+        policy_arg = _resolve_policy_arg(args)
+        provider = _build_bench_provider(args)
+        corpora = [bench.load_corpus(p) for p in args.corpus]
+    except (_CLILoadError, bench.BenchCorpusError) as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
+
+    model_id = args.model or {"anthropic": "claude (default)", "openai": "openai (default)"}.get(
+        args.provider, args.provider
+    )
+
+    worst_match = 1.0
+    for corpus in corpora:
+        profiles = tuple(args.profile) or ((corpus.profile,) if corpus.profile else ())
+        bridge = Bridge(
+            provider=provider,
+            manifest=manifest,
+            envelope=envelope,
+            profiles=profiles,
+            max_revisions=args.max_revisions,
+            policy=policy_arg,
+        )
+        row = bench.run_bench(
+            bridge=bridge,
+            corpus=corpus,
+            backend=args.provider,
+            model_id=model_id,
+            tag=args.tag,
+            notes=args.notes,
+        )
+        out = args.out
+        if out is None:
+            out = Path("bench") / "results" / row.recorded_at / f"{row.row_id}.yaml"
+        elif len(corpora) > 1:
+            out = out.parent / f"{out.stem}-{corpus.corpus_id}{out.suffix or '.yaml'}"
+        bench.write_row(row, out)
+        sys.stdout.write(bench.render_row(row))
+        print(f"wrote {out}", file=sys.stderr)
+        worst_match = min(worst_match, row.expected_match_rate)
+
+    if args.fail_under_match is not None and worst_match < args.fail_under_match:
+        print(
+            f"urml: bench gate failed: expected-match rate {worst_match:.0%} "
+            f"is below --fail-under-match {args.fail_under_match:.0%}.",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
+
+
+def _build_bench_provider(args: argparse.Namespace) -> Any:
+    """The bench provider: `_build_provider`, plus the --echo-script mode.
+
+    A single canned response (--echo-response-file) cannot drive a whole
+    corpus, so bench adds a YAML map of utterance-substring -> response,
+    built into `EchoProvider(responses=..., match_substrings=True)`.
+    """
+    if args.echo_script is not None:
+        if args.provider != "echo":
+            raise _CLILoadError("--echo-script is only meaningful with --provider echo.")
+        from urml_llm_bridge import EchoProvider
+
+        if not args.echo_script.is_file():
+            raise _CLILoadError(f"echo-script file not found: {args.echo_script}")
+        data = yaml.safe_load(args.echo_script.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not data:
+            raise _CLILoadError(
+                "echo-script must be a non-empty YAML map of "
+                "utterance-substring -> canned JSON response string."
+            )
+        responses = {
+            str(k): v if isinstance(v, str) else json.dumps(v) for k, v in data.items()
+        }
+        return EchoProvider(responses=responses, match_substrings=True)
+    return _build_provider(args)
 
 
 def _build_provider(args: argparse.Namespace) -> Any:

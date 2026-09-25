@@ -1,0 +1,53 @@
+# URML bench corpus: home profile, English.
+# A BENCHMARK corpus (see bench/README.md), not a conformance fixture.
+# Run against reference/validator/tests/fixtures/manifests/turtlebot4_home.yaml.
+#
+# `expected` says what a good model should do with the request on THAT
+# manifest: `accept` = emit a program the validator accepts and that does
+# real work; `refuse` = emit an honest report(status: failure) because the
+# manifest cannot satisfy the request. Do not re-key rows; row ids are how
+# result YAMLs index back to utterances.
+corpus_id: home-en
+profile: home
+language: en
+manifest: turtlebot4_home
+utterances:
+  - id: red_mug
+    text: "Bring me the red mug from the kitchen."
+    expected: accept
+
+  - id: blue_cup
+    text: "Fetch the blue cup from the kitchen and hand it to me."
+    expected: accept
+
+  - id: go_kitchen
+    text: "Go to the kitchen."
+    expected: accept
+
+  - id: come_here
+    text: "Come to me."
+    expected: accept
+
+  - id: dock_charge
+    text: "Go back to your dock and charge until full."
+    expected: accept
+
+  - id: kitchen_check
+    text: "Check whether someone is in the kitchen and tell me."
+    expected: accept
+
+  - id: sandwich
+    text: "Make me a sandwich in the kitchen."
+    expected: refuse
+
+  - id: attic
+    text: "Bring the mug to the attic."
+    expected: refuse
+
+  - id: fly_upstairs
+    text: "Fly upstairs and look around."
+    expected: refuse
+
+  - id: lift_couch
+    text: "Pick up the couch and move it to the kitchen."
+    expected: refuse
