@@ -104,7 +104,7 @@ def score(
     the clock, keeping runs reproducible).
     """
     from urml_llm_bridge import Bridge
-    from urml_llm_bridge.errors import BridgePolicyViolation, BridgeRevisionExhausted
+    from urml_llm_bridge.errors import BridgePolicyViolation, BridgeRevisionExhausted, ProviderError
 
     n = len(utterances.utterances)
     if n == 0:
@@ -124,7 +124,7 @@ def score(
         )
         try:
             result = bridge.translate(utt.text)
-        except (BridgeRevisionExhausted, BridgePolicyViolation) as exc:
+        except (BridgeRevisionExhausted, BridgePolicyViolation, ProviderError) as exc:
             rev_total += float(max_revisions + 1)
             raw = getattr(exc, "raw_completions", None)
             if raw and _is_structural(raw[0]):
