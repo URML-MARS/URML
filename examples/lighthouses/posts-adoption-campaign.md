@@ -217,3 +217,42 @@ Build a `urml_validate` tool for Strands agents (github.com/strands-agents), ope
 
 > Since this proposal: an evaluation harness for agents on physical equipment now exists (<harness link>); the BYOP wrapper proposed here would be judged by it. No ask.
 
+
+## 5. urml bench + clarify mode announce (2026-09-25 release)
+
+Blog is live at https://urml.dev/blog/bench-and-clarify/. GitHub channels
+(Discussions, replies to slowrunner) wait until the idoco2003 flag lifts;
+posting there now points people at 404s.
+
+### 5.1 LinkedIn post (founder profile; link to the blog)
+
+> My robot-language project URML learned two things this week.
+>
+> First, receipts for a claim we have made since day one: URML works with any
+> language model, cloud or local. The new `urml bench` command runs a corpus of
+> plain-English requests through any model and reports what survived the
+> validator: accepted programs, honest refusals, invalid output. One command,
+> runs offline, and every number we publish comes from a committed result row.
+> If you run a local model, you can put your own row on the table.
+>
+> Second, a gap validation alone cannot close. "Bring me the mug" when the room
+> holds two: the guessed program is perfectly valid, so the validator rightly
+> accepts it, and the mistake only shows up in the world. Clarify mode lets the
+> model ask one short question instead of guessing. One question, budgeted and
+> enforced below the model, off by default. Refuse or ask, never guess.
+>
+> Both are open source and in main. Details: <blog link>
+
+### 5.2 First public bench row (founder runs where ollama lives)
+
+```bash
+pip install -U urml-validator "urml-llm-bridge[ollama]"
+urml bench --corpus bench/corpora/home-en.yaml \
+  --manifest reference/validator/tests/fixtures/manifests/turtlebot4_home.yaml \
+  --provider ollama --model qwen3.5:9b --no-policy \
+  --notes "consumer desktop, ollama" 
+```
+
+Send me the printed table and the row YAML it writes; I commit it under
+`bench/results/` and it becomes the first public row. slowrunner gets the
+invite to add their own row once the GitHub flag lifts.
