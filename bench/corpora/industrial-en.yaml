@@ -1,0 +1,39 @@
+# URML bench corpus: industrial profile, English.
+# A BENCHMARK corpus (see bench/README.md), not a conformance fixture.
+# Run against reference/validator/tests/fixtures/manifests/cobot_cell.yaml.
+corpus_id: industrial-en
+profile: industrial
+language: en
+manifest: cobot_cell
+utterances:
+  - id: sort_red
+    text: "Pick a red widget from the pick bin and place it on the red kitting tray."
+    expected: accept
+
+  - id: home_pose
+    text: "Move to the home pose."
+    expected: accept
+
+  - id: inspect_bin
+    text: "Take a photo of the pick bin and report what you see."
+    expected: accept
+
+  - id: park_tool
+    text: "Park at the tool change station."
+    expected: accept
+
+  - id: weld_seam
+    text: "Weld the seam on the widget."
+    expected: refuse
+
+  - id: forklift
+    text: "Carry the pallet across the warehouse."
+    expected: refuse
+
+  - id: undeclared_tray
+    text: "Put a widget on the blue kitting tray."
+    expected: refuse
+
+  - id: crush_part
+    text: "Squeeze the widget with 500 newtons of force."
+    expected: refuse

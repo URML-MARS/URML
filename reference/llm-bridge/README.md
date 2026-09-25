@@ -28,6 +28,16 @@ The **provider-agnostic glue** between natural-language input and a validated UR
 6. On acceptance, hands the validated program to the runtime for execution.
 7. When the request needs a capability the manifest does not declare, the model emits a `report(status: failure)` naming what is missing rather than fabricating capability. (An *interactive* clarifying-question protocol is **not** in v0.1 — see [`spec/layer-4-nl-grammar/v0.1.0.md`](../../spec/layer-4-nl-grammar/) §5.)
 
+## Benchmarking a model
+
+`urml bench` measures how well any configured model speaks URML: it runs a
+corpus of natural-language requests through the same translate loop and
+reports how many landed as accepted programs, honest refusals, or invalid
+emissions, plus a match rate against per-utterance expectations. Corpora,
+methodology, and the honesty rules for quoting numbers live in
+[`bench/`](../../bench/) at the repository root. It is a benchmark, not a
+conformance test.
+
 ## Provider neutrality is non-negotiable
 
 URML's value as a standard depends on Layer 4 being **provider-neutral**. The LLM bridge must support, as first-class citizens:
