@@ -37,6 +37,8 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
+from urml_llm_bridge.providers.base import build_clarify_union_schema
+
 # Ollama's default port (`ollama serve`).
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
 
@@ -119,13 +121,22 @@ class OllamaProvider:
         user: str,
         schema: dict[str, Any],
         max_tokens: int = 4096,
+        clarify_schema: dict[str, Any] | None = None,
     ) -> str:
         """Send a chat request with the URML schema as ``format``.
 
         On Ollama 0.5+ the schema is honored as a JSON-Schema constraint
         on the decoder. On older builds it degrades to "produce JSON";
         in both cases the validator catches residue.
+
+        RFC-0700 clarify mode: when ``clarify_schema`` is given, ``format``
+        becomes the program-or-clarify union. This is mandatory for a
+        constrained decoder — with the program schema alone a clarify
+        emission would be unrepresentable.
         """
+        fmt: dict[str, Any] = schema
+        if clarify_schema is not None:
+            fmt = build_clarify_union_schema(schema, clarify_schema)
         body: dict[str, Any] = {
             "model": self._model,
             "messages": [
@@ -133,7 +144,7 @@ class OllamaProvider:
                 {"role": "user", "content": user},
             ],
             "stream": False,
-            "format": schema,
+            "format": fmt,
             "options": {
                 "temperature": self._temperature,
                 "num_predict": max_tokens,

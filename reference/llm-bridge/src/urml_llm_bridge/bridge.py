@@ -13,7 +13,15 @@
               calls  v
                   LLMProvider.complete()  --> JSON string
                      |
-                     | parse + validate (urml_validator)
+                     | parse
+                     v
+              clarify object? (RFC-0700 clarify mode only, budget left,
+                     |          no rejection yet)
+                     | yes --> relay question, fold answer into request, loop
+                     |         (or raise BridgeClarificationNeeded)
+                     no
+                     |
+                     | validate (urml_validator)
                      v
               accepted? --yes--> return TranslateResult
                      |
@@ -34,6 +42,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Callable
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -48,6 +57,7 @@ from urml_validator import (
 )
 
 from urml_llm_bridge.errors import (
+    BridgeClarificationNeeded,
     BridgePolicyViolation,
     BridgeRevisionExhausted,
     ProviderError,
@@ -58,7 +68,11 @@ from urml_llm_bridge.prompt import (
     build_system_prompt,
     render_revision_context,
 )
-from urml_llm_bridge.providers.base import LLMProvider
+from urml_llm_bridge.providers.base import CLARIFY_SCHEMA, LLMProvider
+
+#: RFC-0700: the callback that relays a clarifying question to the operator.
+#: Receives (question, options) and returns the operator's answer.
+OnClarify = Callable[[str, list[str]], str]
 
 
 class TranslateResult(BaseModel):
@@ -78,6 +92,11 @@ class TranslateResult(BaseModel):
     revision_count: int = Field(0, ge=0)
     last_validation: ValidationResult
     raw_completions: list[str] = Field(default_factory=list)
+    #: RFC-0700 clarify mode: how many clarifying questions were asked and
+    #: answered on the way to this result (0 with clarify mode off).
+    clarification_count: int = Field(default=0, ge=0)
+    #: The (question, answer) pairs, in order.
+    clarifications: list[tuple[str, str]] = Field(default_factory=list)
 
 
 class Bridge:
@@ -93,6 +112,8 @@ class Bridge:
         few_shots: list[FewShot] | None = None,
         max_revisions: int = 3,
         policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
+        clarify: bool = False,
+        max_clarifications: int = 1,
     ) -> None:
         """Configure a Bridge instance.
 
@@ -112,6 +133,13 @@ class Bridge:
                            uses the bundled US-federal policy; ``None`` skips
                            Pass 5; a dict supplies a specific policy file's
                            parsed content.
+            clarify:       RFC-0700 clarify mode (default off). When on, the
+                           model's FIRST emission may be a
+                           ``{"clarify": {...}}`` question instead of a
+                           program; see ``translate(on_clarify=...)``. Off,
+                           the contract is exactly Layer 4 v0.2.0.
+            max_clarifications: Clarification budget (clarify mode only).
+                           Questions never consume revision attempts.
         """
         self._provider = provider
         self._manifest = manifest
@@ -120,24 +148,56 @@ class Bridge:
         self._few_shots = few_shots if few_shots is not None else few_shots_for(self._profiles)
         self._max_revisions = max_revisions
         self._policy = policy
+        self._clarify = clarify
+        self._max_clarifications = max_clarifications
         self._schema = export_schema("program")
 
-    def translate(self, user_request: str) -> TranslateResult:
+    def translate(
+        self,
+        user_request: str,
+        *,
+        on_clarify: OnClarify | None = None,
+    ) -> TranslateResult:
         """Translate a natural-language request into a validated URML program.
+
+        Args:
+            user_request: The natural-language request.
+            on_clarify:   Clarify mode only (RFC-0700). Called with
+                (question, options) when the model asks a clarifying
+                question; returns the operator's answer, which is folded
+                into the request before the loop continues. When clarify
+                mode is on and this is None, a question raises
+                `BridgeClarificationNeeded` instead — the bridge never
+                invents an answer.
 
         Raises:
             BridgeRevisionExhausted: The validator never accepted the
                 program within `max_revisions` retries. The exception carries
                 the last `ValidationResult` and the attempt count.
+            BridgeClarificationNeeded: Clarify mode, the model asked, and
+                no `on_clarify` callback was supplied.
             ProviderError: The LLM provider misbehaved (non-JSON output,
                 or an unhandled exception bubbled out of `complete()`).
         """
         revision_context: str | None = None
         raw_completions: list[str] = []
         last_result: ValidationResult | None = None
+        clarifications: list[tuple[str, str]] = []
+        effective_request = user_request
+        had_rejection = False
 
         attempts_total = self._max_revisions + 1  # initial + revisions
-        for attempt_idx in range(attempts_total):
+        attempt_idx = 0
+        while attempt_idx < attempts_total:
+            # RFC-0700: a question is allowed only before the first rejection
+            # and while the budget lasts. Outside that window the clarify
+            # branch is withheld from the provider (a constrained decoder
+            # then cannot emit one) and the prompt says to commit.
+            clarify_open = (
+                self._clarify
+                and not had_rejection
+                and len(clarifications) < self._max_clarifications
+            )
             system_prompt = build_system_prompt(
                 schema=self._schema,
                 manifest=self._manifest,
@@ -145,19 +205,50 @@ class Bridge:
                 profiles=self._profiles,
                 few_shots=self._few_shots,
                 revision_context=revision_context,
+                clarify=self._clarify,
+                clarify_budget_spent=self._clarify and not clarify_open,
             )
             try:
-                raw = self._provider.complete(
-                    system=system_prompt,
-                    user=user_request,
-                    schema=self._schema,
-                )
+                if self._clarify:
+                    raw = self._provider.complete(
+                        system=system_prompt,
+                        user=effective_request,
+                        schema=self._schema,
+                        clarify_schema=CLARIFY_SCHEMA if clarify_open else None,
+                    )
+                else:
+                    # Off: call exactly as v0.2.0 did, so providers that
+                    # predate the clarify keyword keep working.
+                    raw = self._provider.complete(
+                        system=system_prompt,
+                        user=effective_request,
+                        schema=self._schema,
+                    )
             except Exception as exc:
                 raise ProviderError(f"provider raised: {type(exc).__name__}: {exc}") from exc
 
             raw_completions.append(raw)
 
             program = _parse_emission(raw)
+
+            if clarify_open and set(program.keys()) == {"clarify"}:
+                question, options = _parse_clarify(program)
+                if on_clarify is None:
+                    raise BridgeClarificationNeeded(
+                        "the model asked a clarifying question and no on_clarify "
+                        "callback was supplied",
+                        question=question,
+                        options=options,
+                        raw_completions=raw_completions,
+                    )
+                answer = on_clarify(question, options)
+                clarifications.append((question, answer))
+                effective_request = user_request + "\n\nClarification:\n" + "\n".join(
+                    f"Q: {q}\nA: {a}" for q, a in clarifications
+                )
+                # A question consumes clarification budget, never a revision.
+                continue
+
             result = validate(
                 program,
                 self._manifest,
@@ -174,6 +265,8 @@ class Bridge:
                     revision_count=attempt_idx,
                     last_validation=result,
                     raw_completions=raw_completions,
+                    clarification_count=len(clarifications),
+                    clarifications=clarifications,
                 )
 
             # RFC-0004: short-circuit revision when ONLY policy.* errors remain.
@@ -189,7 +282,11 @@ class Bridge:
                 )
 
             # Not accepted: prepare for next attempt if any budget remains.
-            if attempt_idx + 1 >= attempts_total:
+            # RFC-0700: after any rejection the clarify window is closed for
+            # the rest of this translation (revision attempts commit).
+            had_rejection = True
+            attempt_idx += 1
+            if attempt_idx >= attempts_total:
                 break
             revision_context = render_revision_context(
                 prior_emission=raw,
@@ -385,6 +482,28 @@ def _parse_emission(raw: str) -> dict[str, Any]:
             f"provider returned a JSON value of type {type(parsed).__name__}; expected an object"
         )
     return parsed
+
+
+def _parse_clarify(program: dict[str, Any]) -> tuple[str, list[str]]:
+    """Validate a `{"clarify": {...}}` emission and return (question, options).
+
+    A malformed clarify object is a provider defect, not a validation
+    failure: the wire shape is fixed by RFC-0700, and constrained decoders
+    cannot even produce a malformed one.
+    """
+    inner = program.get("clarify")
+    if not isinstance(inner, dict):
+        raise ProviderError("clarify emission is not an object")
+    question = inner.get("question")
+    if not isinstance(question, str) or not question.strip():
+        raise ProviderError("clarify emission has no non-empty `question` string")
+    raw_options = inner.get("options", [])
+    if not isinstance(raw_options, list) or not all(isinstance(o, str) for o in raw_options):
+        raise ProviderError("clarify `options` must be a list of strings")
+    extra = set(inner.keys()) - {"question", "options"}
+    if extra:
+        raise ProviderError(f"clarify emission has unknown key(s): {sorted(extra)}")
+    return question.strip(), list(raw_options)
 
 
 def _error_to_dict(err: URMLValidationError) -> dict[str, Any]:

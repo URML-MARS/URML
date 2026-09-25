@@ -45,6 +45,31 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         self.raw_completions: list[str] = raw_completions or []
 
 
+class BridgeClarificationNeeded(BridgeError):  # noqa: N818 - names the state, not an error class.
+    """The model asked a clarifying question and no answer channel exists.
+
+    Raised by ``Bridge.translate()`` in clarify mode (RFC-0700) when the
+    model emits a ``{"clarify": ...}`` object and the caller supplied no
+    ``on_clarify`` callback. The caller should relay ``question`` (and
+    ``options``, when present) to the operator and retry the translation
+    with the answer available — never invent an answer itself.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        question: str,
+        options: list[str] | None = None,
+        raw_completions: list[str] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.question = question
+        self.options: list[str] = options or []
+        #: Every raw model emission so far; the last entry is the clarify object.
+        self.raw_completions: list[str] = raw_completions or []
+
+
 class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads better than "ViolationError".
     """The validator rejected the program for compliance-policy reasons.
 

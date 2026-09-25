@@ -322,6 +322,13 @@ def build_parser() -> argparse.ArgumentParser:
     _add_llm_provider_args(p_translate)
     _add_speech_args(p_translate)
     p_translate.add_argument(
+        "--clarify",
+        action="store_true",
+        help="Experimental (RFC-0700): let the model ask ONE clarifying "
+        "question instead of guessing at an ambiguous request. The question "
+        "is printed and the answer read from stdin. Default: off.",
+    )
+    p_translate.add_argument(
         "--json",
         dest="as_json",
         action="store_true",
@@ -411,6 +418,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_llm_provider_args(p_run)
     _add_speech_args(p_run)
+    p_run.add_argument(
+        "--clarify",
+        action="store_true",
+        help="Experimental (RFC-0700): let the model ask ONE clarifying "
+        "question instead of guessing; answer is read from stdin (typed, "
+        "even when the request came from --audio).",
+    )
     p_run.add_argument(
         "--adapter",
         choices=("mock", "ros2", "px4", "ardupilot"),
@@ -1473,6 +1487,20 @@ def cmd_schema(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _relay_clarification(question: str, options: list[str]) -> str:
+    """RFC-0700: print the model's question, read the operator's answer.
+
+    Works on a TTY and with piped stdin (tests pipe the answer). EOF (no
+    stdin at all) propagates to the caller, which explains and exits 1.
+    """
+    print(f"urml: the model asks: {question}", file=sys.stderr)
+    if options:
+        print(f"urml: options: {', '.join(options)}", file=sys.stderr)
+    answer = input("answer> ").strip()
+    print(f'urml: continuing with answer: "{answer}"', file=sys.stderr)
+    return answer
+
+
 def _save_rejected_emission(
     path: Path | None,
     raw_completions: list[str],
@@ -1511,6 +1539,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     try:
         from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
             Bridge,
+            BridgeClarificationNeeded,
             BridgePolicyViolation,
             BridgeRevisionExhausted,
             ProviderError,
@@ -1570,9 +1599,22 @@ def cmd_run(args: argparse.Namespace) -> int:
         profiles=profiles,
         max_revisions=args.max_revisions,
         policy=policy_arg,
+        clarify=args.clarify,
     )
     try:
-        result = bridge.translate(args.request)
+        result = bridge.translate(
+            args.request, on_clarify=_relay_clarification if args.clarify else None
+        )
+    except EOFError:
+        print(
+            "urml: the model asked a clarifying question but stdin is closed; "
+            "re-run interactively or without --clarify.",
+            file=sys.stderr,
+        )
+        return 1
+    except BridgeClarificationNeeded as exc:  # defensive; the callback is set
+        print(f"urml: the model asks: {exc.question}", file=sys.stderr)
+        return 1
     except ProviderError as exc:
         print(f"urml: provider error: {exc}", file=sys.stderr)
         return 1
@@ -1658,6 +1700,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
     try:
         from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
             Bridge,
+            BridgeClarificationNeeded,
             BridgePolicyViolation,
             BridgeRevisionExhausted,
             ProviderError,
@@ -1707,11 +1750,24 @@ def cmd_translate(args: argparse.Namespace) -> int:
         profiles=tuple(args.profile),
         max_revisions=args.max_revisions,
         policy=policy_arg,
+        clarify=args.clarify,
     )
 
     # ----- Translate -----
     try:
-        result = bridge.translate(args.request)
+        result = bridge.translate(
+            args.request, on_clarify=_relay_clarification if args.clarify else None
+        )
+    except EOFError:
+        print(
+            "urml: the model asked a clarifying question but stdin is closed; "
+            "re-run interactively or without --clarify.",
+            file=sys.stderr,
+        )
+        return 1
+    except BridgeClarificationNeeded as exc:  # defensive; the callback is set
+        print(f"urml: the model asks: {exc.question}", file=sys.stderr)
+        return 1
     except ProviderError as exc:
         print(f"urml: provider error: {exc}", file=sys.stderr)
         return 1
@@ -1931,6 +1987,10 @@ def _build_echo_provider(args: argparse.Namespace) -> Any:
             parsed = yaml.safe_load(raw)
         except yaml.YAMLError as exc:
             raise _CLILoadError(f"echo-response file is neither valid JSON nor YAML: {exc}") from exc
+    # A top-level list scripts successive responses (e.g. a clarify question
+    # followed by the program, RFC-0700); a mapping is the single response.
+    if isinstance(parsed, list) and parsed and all(isinstance(x, dict) for x in parsed):
+        return EchoProvider(scripted=[json.dumps(x) for x in parsed])
     if not isinstance(parsed, dict):
         raise _CLILoadError(
             f"echo-response file did not contain a top-level mapping: {args.echo_response_file}"
