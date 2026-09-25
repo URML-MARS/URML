@@ -26,7 +26,7 @@ The **provider-agnostic glue** between natural-language input and a validated UR
 4. Calls the [validator](../validator/) to statically verify the emission.
 5. On rejection, surfaces the structured error back to the LLM and requests a revision. Repeats up to a configured bound.
 6. On acceptance, hands the validated program to the runtime for execution.
-7. When the request needs a capability the manifest does not declare, the model emits a `report(status: failure)` naming what is missing rather than fabricating capability. (An *interactive* clarifying-question protocol is **not** in v0.1 — see [`spec/layer-4-nl-grammar/v0.1.0.md`](../../spec/layer-4-nl-grammar/) §5.)
+7. When the request needs a capability the manifest does not declare, the model emits a `report(status: failure)` naming what is missing rather than fabricating capability. (An *interactive* clarifying question is opt-in per RFC-0700 and off by default — see [`spec/layer-4-nl-grammar/v0.3.0.md`](../../spec/layer-4-nl-grammar/) §2.6.)
 
 ## Benchmarking a model
 
