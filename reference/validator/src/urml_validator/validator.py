@@ -3625,7 +3625,11 @@ def _check_envelope_bimanual(
         if isinstance(sub, GraspArgs):
             out.extend(
                 _check_grip_force_cap(
-                    "bimanual", sub.force, manifest, envelope, path + [side],
+                    "bimanual",
+                    sub.force,
+                    manifest,
+                    envelope,
+                    [*path, side],
                     label=f"bimanual.{side}.force",
                 )
             )

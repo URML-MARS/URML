@@ -21,6 +21,10 @@ import re
 from pathlib import Path
 
 import pytest
+from urml_validator import ErrorCode, validate
+from urml_validator.schemas.composition import Step
+from urml_validator.schemas.program import URMLProgram
+from urml_validator.validator import walk_program
 
 from urml_conformance.fixtures import (
     load_fixture,
@@ -29,10 +33,6 @@ from urml_conformance.fixtures import (
     resolve_manifest,
     resolve_policy,
 )
-from urml_validator import ErrorCode, validate
-from urml_validator.schemas.composition import Step
-from urml_validator.schemas.program import URMLProgram
-from urml_validator.validator import walk_program
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOC = REPO_ROOT / "docs" / "safety" / "envelope-coverage.md"

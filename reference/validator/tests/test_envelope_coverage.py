@@ -670,7 +670,8 @@ class TestScanArea:
         assert result.accepted, result.codes()
 
     def test_polygon_area_crossing_a_zone_rejected(self) -> None:
-        area = {"polygon": [{"x": -10.0, "y": -1.0}, {"x": 10.0, "y": -1.0}, {"x": 10.0, "y": 1.0}, {"x": -10.0, "y": 1.0}]}
+        strip = [(-10.0, -1.0), (10.0, -1.0), (10.0, 1.0), (-10.0, 1.0)]
+        area = {"polygon": [{"x": x, "y": y} for x, y in strip]}
         result = validate(_scan(area), _drone_manifest(), _zoned(), policy=None)
         assert "envelope.occupancy_zone_intrusion" in _codes_for(result, "scan")
 
