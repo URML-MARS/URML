@@ -1,0 +1,38 @@
+URML: declare a monitorable safety property, check it before dispatch, monitor it at run time.
+RFC-0382. The deployment envelope declares temporal-logic properties over runtime signals.
+The validator parses them and resolves their signals before dispatch; the monitor evaluates
+them over a signal trace at run time. URML declares and checks; it does not run the robot.
+
+Signals available: built-ins speed, altitude, payload, grip_force, person_distance, plus
+the manifest's declared events (here: stop_requested) and declared sensors.
+
+# 1. Validate before dispatch
+
+[VALID] envelope with slow_near_people + bounded_stop
+   Both properties parse and every signal resolves. Dispatch may proceed;
+   a monitor backend enforces them at run time.
+
+[REJECTED] a malformed expression: "always ("
+   -> envelope.monitorable_parse_error
+   monitorable property 'unterminated' failed to parse: expected a signal or number, got 'eof' ('')
+
+[REJECTED] a property on an undeclared signal: battery_temp
+   -> envelope.monitorable_undeclared_signal
+   monitorable property 'battery_guard' references undeclared signal 'battery_temp'.
+   You cannot monitor what the manifest never said the robot can sense.
+
+# 2. Monitor at run time
+
+Property slow_near_people: always (person_distance < 2.0 implies speed <= 0.3)
+
+[SATISFIED] trace: slows to 0.2 m/s as a person closes to 1 m
+[VIOLATED] trace: holds 1.0 m/s with a person at 1 m
+
+# The two layers
+
+The static check is the first line, off-hardware: a malformed or unmonitorable property
+is refused before dispatch, in an LLM planning loop or in CI. The monitor is the last line,
+on-hardware: the ros2 shield (ShieldedAdapter) or `urml validate --rehearse` evaluates the
+property over the live or simulated signal trace and blocks a critical violation. Same
+declaration, checked once and enforced continuously. URML runs neither the planner nor the
+robot; it declares the property and provides the checker and the evaluator.

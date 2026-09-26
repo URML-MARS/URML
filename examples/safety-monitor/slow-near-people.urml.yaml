@@ -1,0 +1,13 @@
+# A minimal home program for the safety-monitor example: drive to the dock.
+# The point of the example is the envelope's monitorable properties, not the
+# program; any valid program carries the same deployment envelope.
+#
+#   urml validate slow-near-people.urml.yaml \
+#     -m slow-near-people.manifest.yaml -e slow-near-people.envelope.yaml --no-policy
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to: { location: charging_dock }

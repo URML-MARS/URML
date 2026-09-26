@@ -1,0 +1,23 @@
+# The deployment safety envelope for the safety-monitor example (RFC-0382).
+# Two runtime-monitorable temporal properties over the robot's signals. The
+# validator parses each and resolves its signals against the manifest before
+# dispatch; a monitor backend (the ros2 shield, or `urml validate --rehearse`)
+# evaluates them at run time. URML declares and checks; it does not run the monitor.
+
+envelope_version: "0.1"
+deployment_id: home_safety_demo
+description: Home envelope with monitorable slow-near-people and bounded-stop properties.
+
+max_velocity: 0.4
+
+monitorable_properties:
+  # Never move faster than 0.3 m/s while a person is within 2 m.
+  - name: slow_near_people
+    severity: critical
+    dialect: stl
+    expression: "always (person_distance < 2.0 implies speed <= 0.3)"
+  # A stop request must bring the robot to rest within half a second.
+  - name: bounded_stop
+    severity: critical
+    dialect: stl
+    expression: "always (stop_requested implies eventually[0, 0.5] (speed == 0))"

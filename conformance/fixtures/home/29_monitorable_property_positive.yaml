@@ -1,0 +1,22 @@
+name: home/monitorable_property_positive
+description: >
+  RFC-0382 positive: the deployment envelope declares a well-formed monitorable
+  temporal property, "always (person_distance < 2.0 implies speed <= 0.3)", over
+  built-in runtime signals. The program validates and the property parses and
+  resolves its signals cleanly at Pass 3. A conformant runtime accepts it and a
+  monitor backend may enforce it at run time; URML does not run the monitor.
+
+manifest: turtlebot4_home
+envelope: home_monitorable_ok
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: true

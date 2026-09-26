@@ -1,0 +1,23 @@
+name: home/monitorable_parse_error_rejected
+description: >
+  RFC-0382 negative: the envelope's monitorable expression is malformed
+  ("always (", an unterminated group). It is a valid string at the schema level,
+  but Pass 3 fails to parse it and rejects the program with
+  envelope.monitorable_parse_error before anything executes.
+
+manifest: turtlebot4_home
+envelope: home_monitorable_parse_error
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.monitorable_parse_error
