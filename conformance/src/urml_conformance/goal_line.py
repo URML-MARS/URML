@@ -124,7 +124,7 @@ def _run_single_case(
     case: FixtureCase, make_adapter: AdapterFactory, make_runtime: RuntimeFactory
 ) -> CaseResult:
     try:
-        assert case.manifest is not None  # guaranteed by FixtureCase validator
+        assert case.manifest is not None  # the FixtureCase validator ensures this
         manifest = resolve_manifest(case.manifest)
         envelope = resolve_envelope(case.envelope) if case.envelope else None
         policy = resolve_policy(case.policy)

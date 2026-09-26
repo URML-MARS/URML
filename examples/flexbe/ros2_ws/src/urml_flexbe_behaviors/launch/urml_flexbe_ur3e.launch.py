@@ -26,7 +26,7 @@ Then load the ``URML UR-3e Pick-Place`` behavior in the FlexBE UI and approve
 the plan to watch the arm execute the validated URML pick-and-place.
 
 Arguments:
-  adapter        "ros2" (default — drives MoveIt 2 / the UR driver) | "mock".
+  adapter        "ros2" (default, drives MoveIt 2 / the UR driver) | "mock".
   llm_provider   "none" (default) | "anthropic" | "openai" (for NL goals).
   manifest_path  Capability manifest the server pins, as an absolute path
                  (examples/flexbe/ur3e.manifest.yaml). Required with adapter:=ros2.

@@ -27,7 +27,7 @@ that adapter.
 ``execute_request`` always runs the full validator before any actuation, and
 refuses (returning ``refused=True`` with the rendered verdict) when the program
 is rejected. The validation verdict is exactly what an operator-in-the-loop
-engine surfaces before approving a state — never bypass it. The runtime then
+engine surfaces before approving a state. Never bypass it. The runtime then
 re-validates with the same manifest, envelope and policy before its first
 adapter call.
 

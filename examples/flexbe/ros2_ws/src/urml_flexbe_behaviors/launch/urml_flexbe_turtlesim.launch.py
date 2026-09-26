@@ -15,7 +15,7 @@ Then load the ``URML Turtle Patrol`` behavior in the FlexBE UI and approve the
 plan to watch the turtle execute the validated URML patrol.
 
 Arguments:
-  adapter        "ros2" (default here — drives the real turtle) | "mock".
+  adapter        "ros2" (default here, drives the real turtle) | "mock".
   llm_provider   "none" (default) | "anthropic" | "openai" (for NL goals).
   manifest_path  Capability manifest the server pins, as an absolute path
                  (examples/flexbe/turtle.manifest.yaml). Required with adapter:=ros2.
