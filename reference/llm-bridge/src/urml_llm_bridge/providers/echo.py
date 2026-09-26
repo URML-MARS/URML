@@ -17,10 +17,11 @@ successive calls — convenient for testing the revision loop, where the
 first response is intentionally invalid and the second is correct.
 
 A `responses` value may also be a list: consecutive calls that match the
-same key get the entries in order, and the last entry repeats. The cursor
-for a key starts over whenever the matched key changes, so each new request
-replays its list from the top. `urml bench` uses this to model an adaptive
-model that reads the validator's feedback and tries another tactic.
+same key get the entries in order, and the last entry repeats. A key's
+cursor starts over whenever a call matches a different key than the call
+before it, so when every request has its own key, each request replays its
+list from the top. `urml bench` uses this to model an adaptive model that
+reads the validator's feedback and tries another tactic.
 """
 
 from __future__ import annotations

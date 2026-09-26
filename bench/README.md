@@ -123,7 +123,8 @@ urml bench --corpus bench/corpora/home-en.yaml -m <manifest> \
 where the script is a YAML map of utterance-substring to canned JSON response.
 A value may also be a list: the bridge asks once per revision attempt, and the
 script answers each attempt with the next entry, repeating the last one. The
-list starts over for each new request.
+list starts over when a request matches a different key than the request
+before it, so give every utterance its own key.
 
 ## The worst-case striker
 
