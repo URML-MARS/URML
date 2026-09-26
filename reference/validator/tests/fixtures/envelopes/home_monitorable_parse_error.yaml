@@ -1,0 +1,11 @@
+# Fixture: a home envelope whose monitorable property has a malformed expression
+# (RFC-0382). It parses as a SafetyEnvelope (the expression is just a string), but
+# Pass 3 rejects it with envelope.monitorable_parse_error. Used by a conformance negative.
+
+envelope_version: "0.1"
+deployment_id: home_monitorable_parse_error
+description: Home envelope with a malformed monitorable expression.
+
+monitorable_properties:
+  - name: unterminated
+    expression: "always ("

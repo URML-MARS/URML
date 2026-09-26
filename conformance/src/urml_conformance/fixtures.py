@@ -237,6 +237,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
 ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_default": _VALIDATOR_FIXTURES / "envelopes" / "home_default.yaml",
     "social_default": _VALIDATOR_FIXTURES / "envelopes" / "social_default.yaml",
+    # RFC-0382: monitorable-property envelopes (well-formed, parse-error, undeclared-signal).
+    "home_monitorable_ok": _VALIDATOR_FIXTURES / "envelopes" / "home_monitorable_ok.yaml",
+    "home_monitorable_parse_error": _VALIDATOR_FIXTURES / "envelopes" / "home_monitorable_parse_error.yaml",
+    "home_monitorable_undeclared_signal": _VALIDATOR_FIXTURES / "envelopes" / "home_monitorable_undeclared_signal.yaml",
     "drone_default": _VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml",
     "drone_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_geofence.yaml",
     "drone_with_altitude_band": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_altitude_band.yaml",

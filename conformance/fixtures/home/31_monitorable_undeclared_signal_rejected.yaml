@@ -1,0 +1,24 @@
+name: home/monitorable_undeclared_signal_rejected
+description: >
+  RFC-0382 negative: the monitorable property references `battery_temp`, which is
+  not a built-in runtime quantity and is not a declared sensor or event on the
+  manifest. The expression parses, but Pass 3 rejects it with
+  envelope.monitorable_undeclared_signal: you cannot monitor what the manifest
+  never said the robot can sense.
+
+manifest: turtlebot4_home
+envelope: home_monitorable_undeclared_signal
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: kitchen }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.monitorable_undeclared_signal

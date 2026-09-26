@@ -1,0 +1,12 @@
+# Fixture: a home envelope whose monitorable property references a signal the
+# manifest never declares (RFC-0382). The expression parses, but Pass 3 rejects it
+# with envelope.monitorable_undeclared_signal: you cannot monitor what the robot
+# never said it can sense. Used by a conformance negative.
+
+envelope_version: "0.1"
+deployment_id: home_monitorable_undeclared_signal
+description: Home envelope referencing an undeclared signal.
+
+monitorable_properties:
+  - name: battery_guard
+    expression: "always (battery_temp < 80)"

@@ -1,0 +1,13 @@
+# Fixture: a home envelope declaring a well-formed monitorable property (RFC-0382).
+# The property uses only built-in signals (person_distance, speed), so it parses
+# and resolves cleanly against any manifest. Used by the conformance positive.
+
+envelope_version: "0.1"
+deployment_id: home_monitorable_ok
+description: Home envelope with a well-formed monitorable property.
+
+monitorable_properties:
+  - name: slow_near_people
+    severity: critical
+    dialect: stl
+    expression: "always (person_distance < 2.0 implies speed <= 0.3)"

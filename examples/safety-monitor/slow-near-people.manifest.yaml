@@ -1,0 +1,26 @@
+# A small home mobile robot for the safety-monitor example (RFC-0382).
+# Nothing special is declared for monitoring: person_distance and speed are
+# built-in runtime signals. `stop_requested` is a declared event so the
+# `bounded_stop` property can reference it.
+
+manifest_version: "0.1"
+robot_id: home_bot
+description: Small home mobile robot; drives in spaces shared with people.
+
+frames:
+  - name: map
+    parent: null
+  - name: base_link
+    parent: map
+
+declared_locations:
+  - name: charging_dock
+    pose: { x: 0.0, y: 0.0 }
+    frame: map
+
+declared_events:
+  - stop_requested
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.5
