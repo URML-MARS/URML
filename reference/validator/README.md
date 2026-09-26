@@ -27,7 +27,7 @@ The validator is **the safety boundary**. Per [`MANIFESTO.md`](../../MANIFESTO.m
 
 > *URML programs are executed only after static verification against the target's capability manifest and active safety envelope. Any "fast path" that skips verification is rejected on review.*
 
-Bypassing the validator is structurally hard because the validator and the runtimes are **separate processes**. A runtime that wanted to skip validation would have to be modified, not merely flagged.
+The validator runs in the same process as the runtime. `URMLRuntime.execute` imports it and re-validates every program, against the manifest, envelope and policy it is given, before its first adapter call. A rejected program raises `ValidationRejectedError` and the adapter receives nothing; `python -m urml_conformance --goal-line` checks this for every rejected conformance fixture. Skipping the check takes an explicit `revalidate=False` in code.
 
 ## What the validator checks
 
