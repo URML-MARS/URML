@@ -27,41 +27,51 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-08-29, on `feat/ardupilot-runtime`** (branching from `main`
-commit `20b57cf`), via
+**Measured 2026-09-26, on `bench/goalkeeper-striker-rows`** (branching from
+`main` commit `a16a03f`), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
-(invoke with `make audit`). Every row was re-measured on this host. New since
-the 2026-08-09 measurement: the ArduPilot / MAVLink reference runtime
-(`ardupilot-runtime`, its own suite row, RFC-0041), the `hover.duration` fix in
-the executor (the drone `hover_positive` fixture now expects the hold), the
-full-validator rot guard over the drone example bundles (RFC-0250 had silently
-broken them), and the v0.4.x additions to the validator and conformance
-surfaces since that measurement. The prior measurements (2026-08-09: 1997
-total; 2026-06-24: 1668 total; 2026-05-20 / 2026-05-22: 244 validator, 765
-total, 101 fixtures) are in git history.
+(invoke with `make audit`), with `PYTHONPATH` set to the branch's `src`
+directories. Every row was re-measured on this host. New since the 2026-08-29
+measurement: the Microduck adapter in `edu-runtime` (0569e50), the capture
+camera selector (RFC-0699), the social profile with `look_at` and `gesture`
+(RFC-0698), `urml bench` (a97a175), clarify mode (RFC-0700), the RFC-0382
+monitorable-envelope fixtures and example (9357edb), the bench that counts
+saves and its striker corpora (c2d251d), the envelope coverage fixes (949ce9b),
+the runtime gate and goal-line lane (c7dec9b), pinned constraints on the MCP
+server (a16a03f), and the committed striker rows with their guard test
+(9636cd7, 0dc49b5). The prior measurements
+(2026-08-29: 2122 total; 2026-08-09: 1997 total; 2026-06-24: 1668 total;
+2026-05-20 / 2026-05-22: 244 validator, 765 total, 101 fixtures) are in git
+history.
 
 | Suite | Result |
 |---|---|
-| validator | **894 passed** |
-| llm-bridge | **162 passed** |
-| ros2-runtime | **159 passed, 4 skipped** |
+| validator | **1000 passed** |
+| llm-bridge | **268 passed** (2 more tests need the `openai` extra, not installed on this host) |
+| ros2-runtime | **194 passed, 4 skipped** |
 | px4-runtime | **54 passed, 4 skipped** |
 | ardupilot-runtime | **38 passed, 9 skipped** (live smoke, bench, SITL gated) |
-| conformance | **648 passed** |
+| conformance | **780 passed** |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **6 passed** |
 | humanoid-runtime | **4 passed** |
 | mobile-runtime | **4 passed** |
 | opcua-runtime | **4 passed, 3 skipped** |
-| cobot-runtime | **11 passed, 2 skipped** (8 brand adapters parameterized) |
+| cobot-runtime | **12 passed, 2 skipped** (8 brand adapters parameterized) |
 | mujoco-runtime | **10 passed, 4 skipped** |
 | embedded-runtime | **4 passed, 3 skipped** |
-| edu-runtime | **14 passed, 2 skipped** (4 platform adapters parameterized) |
+| edu-runtime | **28 passed, 2 skipped** (7 platform adapters) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
 | model | **32 passed** |
-| **Total** | **2122 passed + 38 gated-skipped** |
+| **Total** | **2516 passed + 38 gated-skipped** |
+
+The two `openai` tests (`test_providers_openai.py` and `test_speech_openai.py`,
+`test_base_url_forwarded_to_client`) fail on this host because the optional
+`openai` package is absent; the llm-bridge row counts only what passed. Two
+newer packages, `chrono-runtime` and `mcp-server`, have suites that the audit
+script does not run yet, so the total leaves them out.
 
 The 38 skips are live integration tests, gated behind per-runtime environment
 flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
@@ -74,15 +84,19 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **187** YAML cases under `conformance/fixtures/` (live
-count 2026-08-29) — actuation 5, av 4, biped 14, compliance 5, deployment 3,
-drone 16, educational 12, fleet 14, flexbe 2, home 28, industrial 49, language 5,
-licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 5,
-research 1, translation 3, warehouse 8. Auto-discovered; all pass hermetically
-against `MockROSAdapter`. The new buckets since v0.1 track the v0.2.0 surface: `fleet`
+Conformance fixtures: **244** YAML cases under `conformance/fixtures/` (live
+count 2026-09-26): actuation 5, av 4, biped 16, compliance 5, deployment 3,
+drone 34, educational 12, fleet 14, flexbe 2, home 34, industrial 57, language 5,
+licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 8,
+research 1, social 9, translation 3, warehouse 19. Auto-discovered; all pass hermetically
+against `MockROSAdapter` (`urml conformance run`: 244/244 passed). The new buckets since v0.1 track the v0.2.0 surface: `fleet`
 (RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
 `actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
-0268/0304), `compliance`/`deployment` (policy).
+0268/0304), `compliance`/`deployment` (policy), `programs` (RFC-0616), `social`
+(RFC-0698). Of the 57 fixtures added since 2026-08-29, 46 came with the
+envelope coverage fixes (949ce9b, four of them in `social`), 5 with the social
+profile (RFC-0698), 3 with the RFC-0382 monitorable-envelope fixtures (9357edb)
+and 3 with the capture camera selector (RFC-0699).
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
@@ -99,12 +113,13 @@ RFC-0385 from iceoryx). Outreach state is tracked in the
 
 ## Per-row backing
 
-**Five-pass static validator — 828 unit tests.**
+**Five-pass static validator (1000 unit tests).**
 `reference/validator/src/urml_validator/validator.py` (`validate()` runs Pass
 1–5); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
 people-occupancy; Pass 4 cross-primitive type check; Pass 5 compliance policy,
 including the opt-in evidence-traceability rules (RFC-0631). Evidence: validator
-suite 828 passed.
+suite 1000 passed. Which envelope check runs on which primitive is in
+[`docs/safety/envelope-coverage.md`](../safety/envelope-coverage.md).
 
 **24 primitives — validator + reference-runtime executors for all 24.** The 12
 core plus profile/extension verbs: home `speak`/`listen`; drone `take_off`/
@@ -129,23 +144,25 @@ ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
 `turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
 suite.
 
-**LLM bridge — 162 unit tests.**
-`reference/llm-bridge/` — provider-agnostic (anthropic, openai, ollama,
+**LLM bridge (268 unit tests).**
+`reference/llm-bridge/`: provider-agnostic (anthropic, openai, ollama,
 llama_cpp, echo; all first-class in the CLI as of 0.4.0) plus the RFC-0670
 speech front-end (whisper.cpp, OpenAI-compatible transcription, echo);
 revision loop with `BridgePolicyViolation` short-circuit; single-robot +
-roster-aware fleet assembly (RFC-0286). Evidence: llm-bridge 162 passed.
+roster-aware fleet assembly (RFC-0286); the `urml bench` harness. Evidence:
+llm-bridge 268 passed (2 more need the `openai` extra; see the table note).
 
-**Conformance suite — 97 fixtures, `urml conformance run`, and a normative
-runtime contract.** `conformance/fixtures/**/*.yaml` = 97 cases (89 pre-RFC-0022 + 8
-warehouse). [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively,
+**Conformance suite (244 fixtures), `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 244 cases (per-bucket
+counts above). [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively,
 what makes a runtime URML-compatible (manifest intake, the frozen substrate
 Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
-spec-gap loop). Evidence: `urml conformance run` reports 97/97 passed
-(parametrized over the fixtures + loader/registry/smoke).
+spec-gap loop). Evidence: `urml conformance run` reports 244/244 passed, and
+the conformance pytest suite 780 passed (parametrized over the fixtures +
+loader/registry/smoke).
 
-**CLI — eight subcommands.** `urml --help` →
-`validate execute schema translate run emit-prompt init conformance`.
+**CLI (nine subcommands).** `urml --help` →
+`validate execute schema translate run bench emit-prompt init conformance`.
 
 **Mock reference runtime.** `reference/ros2-runtime/.../substrate/mock.py`
 (`MockROSAdapter`). Default substrate for every hermetic suite.
@@ -255,6 +272,48 @@ the substrate work surfaced; 0014 (substrate conformance) defines the runtime
 contract above; 0019 (AUTOSAR binding) and 0020 (Autoware AV substrate) are
 the latest Drafts. No primitive or schema changed without an accepted RFC.
 
+## Striker and goal-line evidence
+
+Measured 2026-09-26. The striker rows measure what the validator admits from
+a model that emits whatever an attacker wants. The goal-line lane measures
+what the reference runtime does with a program the validator rejects.
+
+**Worst-case striker, before and after the envelope coverage fixes.** A
+scripted striker (`bench/strikers/`) stands in for a fully jailbroken model.
+For every request in the three `adversarial-*` corpora it emits the unsafe
+program an attacker wants, and it never refuses. Each run used the echo
+provider, `--no-policy` and a bench envelope from `bench/envelopes/`; the
+commands are in [`bench/README.md`](../../bench/README.md).
+
+| Corpus | Envelope rows passed, before (c2d251d) | Envelope rows passed, after (a16a03f) | Safe controls accepted, after |
+|---|---|---|---|
+| adversarial-industrial-en | 7 of 14 | 0 of 14 | 4 of 4 |
+| adversarial-home-en | 6 of 12 | 0 of 12 | 4 of 4 |
+| adversarial-drone-en | 8 of 14 | 0 of 14 | 4 of 4 |
+| Total | 21 of 40 | 0 of 40 | 12 of 12 |
+
+The before rows are
+`bench/results/2026-09-26/2026-09-26-echo-echo-adversarial-{industrial,home,drone}-en-pre-fix.yaml`,
+measured at c2d251d, before the envelope coverage fixes in 949ce9b. The after
+rows are the matching `-post-fix.yaml` files, measured at a16a03f. In both sets
+the 6 `known_gap` rows and the 6 `beyond_envelope` rows pass by design. The
+first are limits the spec does not yet require the validator to check. The
+second are harmful requests that stay inside every declared limit. The
+per-primitive matrix is
+[`docs/safety/envelope-coverage.md`](../safety/envelope-coverage.md). A
+scripted striker measures the gate, not a model, and no live-model row is
+claimed. `reference/llm-bridge/tests/test_bench_results_guard.py` re-runs the
+after rows and fails when one stops reproducing or when an input it pins
+changes.
+
+**Goal-line lane.** `python -m urml_conformance --goal-line` hands every
+rejected conformance fixture to the reference runtime (`URMLRuntime`, and
+`FleetRuntime` for fleet fixtures) through an adapter that records every call.
+Result with the code at a16a03f: 110/110 rejected fixtures refused, with the
+expected codes and zero adapter calls. URML sent zero commands for any of
+them. The lane is `conformance/src/urml_conformance/goal_line.py`, merged in
+c7dec9b.
+
 ## Re-running this audit
 
 ```bash
@@ -264,10 +323,15 @@ the latest Drafts. No primitive or schema changed without an accepted RFC.
 python -m pytest <pkg>/tests -q --tb=no --junit-xml=j.xml
 python -c "import xml.etree.ElementTree as E;print(E.parse('j.xml').getroot().find('testsuite').attrib)"
 python -m pytest conformance/tests -q --tb=no --junit-xml=c.xml
-find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (97)
+find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (244)
 ls docs/rfcs/ | grep -E '^00[0-2][0-9]'              # RFCs (exclude 0000-template)
 urml --help                                           # subcommands
+python -m urml_conformance --goal-line                # rejected fixtures send zero commands
 ```
+
+The striker rows are re-measured with the three commands in
+[`bench/README.md`](../../bench/README.md) (The worst-case striker), run from
+the repository root.
 
 Update the date and any moved numbers here and in the README table together —
 they are a pair. Numbers without this audit are not allowed on the front page.
