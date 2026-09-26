@@ -1,0 +1,28 @@
+name: rulebook/take_off_450ft_rejected
+description: >
+  RFC-0702 (Draft). The bundled FAA rulebook caps altitude at 400 feet
+  (121.92 m) above ground level, 14 CFR 107.51(b). A take-off to 450 feet
+  (137.16 m) is refused with rule.cap_exceeded, although the aircraft's own
+  service ceiling is 200 m and no envelope applies. The compliance policy is
+  off (policy: none), which never skips the rulebook pass. No deployment
+  rulebook is loaded, so the missing Remote ID declaration is a warning.
+
+manifest: drone_high_ceiling
+policy: none
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 137.16 }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.cap_exceeded
+  warning_codes:
+    - rule.declaration_missing

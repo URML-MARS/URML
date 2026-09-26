@@ -31,6 +31,7 @@ from urml_conformance._version import __version__
 from urml_conformance.fixtures import (
     ENVELOPE_REGISTRY,
     MANIFEST_REGISTRY,
+    RULEBOOK_REGISTRY,
     AdapterOverrides,
     ExpectedExecution,
     ExpectedValidation,
@@ -40,6 +41,7 @@ from urml_conformance.fixtures import (
     load_fixture,
     resolve_envelope,
     resolve_manifest,
+    resolve_rulebook,
 )
 from urml_conformance.goal_line import RecordedCall, RecordingAdapter, run_goal_line
 from urml_conformance.report import CaseResult, ConformanceReport
@@ -48,6 +50,7 @@ from urml_conformance.runner import ConformanceRunner
 __all__ = [
     "ENVELOPE_REGISTRY",
     "MANIFEST_REGISTRY",
+    "RULEBOOK_REGISTRY",
     "AdapterOverrides",
     "CaseResult",
     "ConformanceReport",
@@ -63,5 +66,6 @@ __all__ = [
     "load_fixture",
     "resolve_envelope",
     "resolve_manifest",
+    "resolve_rulebook",
     "run_goal_line",
 ]

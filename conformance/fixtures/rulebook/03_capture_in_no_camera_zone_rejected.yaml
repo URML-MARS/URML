@@ -1,0 +1,25 @@
+name: rulebook/capture_in_no_camera_zone_rejected
+description: >
+  The Example Logistics rulebook (fictional) forbids capture in the restroom
+  and the HR office. The rulebook names the zones; the manifest's declared
+  areas draw them. After move_to restroom the robot's current place is the
+  restroom, so the capture there is refused with rule.primitive_forbidden.
+
+manifest: warehouse_areas
+policy: none
+profiles: [warehouse]
+rulebooks: [example_warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: restroom }
+      - capture: { media: photo, store_as: snapshot }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.primitive_forbidden

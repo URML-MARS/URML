@@ -101,6 +101,11 @@ def mine_fixture_programs(*, profiles: tuple[str, ...] = ()) -> list[GoldExample
             continue
         if not case.expected_validation.accepted:
             continue
+        if case.uses_rulebook_fields:
+            # RFC-0702: a GoldExample carries no rulebooks, and a program a
+            # deployment rulebook allows (a take-off under a waiver) is not
+            # gold for every deployment.
+            continue
         profile = case.profiles[0] if case.profiles else str(case.program.get("profile", "home"))
         if profiles and profile not in profiles:
             continue

@@ -1,0 +1,28 @@
+name: rulebook/two_aircraft_airborne_rejected
+description: >
+  The bundled FAA rulebook allows one aircraft at a time per remote pilot in
+  command (14 CFR 107.35). No deployment rulebook declares more pilots, so
+  the limit is 1. Drone b takes off before drone a lands, so two aircraft
+  are airborne at once: rule.concurrency_exceeded, reported once for the
+  program.
+
+roster:
+  - { name: a, manifest: utm_drone }
+  - { name: b, manifest: utm_drone }
+policy: none
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    steps:
+      - { type: "on", member: a, body: { take_off: { altitude: 10.0 } } }
+      - { type: "on", member: b, body: { take_off: { altitude: 20.0 } } }
+      - { type: "on", member: a, body: { land: {} } }
+      - { type: "on", member: b, body: { land: {} } }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.concurrency_exceeded

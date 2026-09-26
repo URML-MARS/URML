@@ -1,0 +1,27 @@
+name: rulebook/over_people_override_zone_rejected
+description: >
+  The envelope marks its people zone around roof_north allow_override: true,
+  so the envelope pass accepts the flight: the operator accepted the physical
+  risk. The bundled FAA rulebook still judges the zone, because an override
+  does not change 14 CFR 107.39. The move_to target is inside it, and no
+  operations-over-people category is declared: rule.over_people.
+
+manifest: drone_civilian
+envelope: drone_override_zone
+policy: none
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to: { location: roof_north }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.over_people

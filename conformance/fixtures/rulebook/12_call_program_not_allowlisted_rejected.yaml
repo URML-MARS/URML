@@ -1,0 +1,24 @@
+name: rulebook/call_program_not_allowlisted_rejected
+description: >
+  call_program is opaque to URML. The Example Logistics rulebook (fictional)
+  keeps an allowlist of controller programs. purge_logs is declared in the
+  manifest, so the capability pass accepts it, and it is not on the
+  allowlist, so the rulebook refuses it with rule.primitive_forbidden.
+
+manifest: warehouse_areas
+policy: none
+profiles: [warehouse]
+rulebooks: [example_warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - call_program: { name: purge_logs }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.primitive_forbidden

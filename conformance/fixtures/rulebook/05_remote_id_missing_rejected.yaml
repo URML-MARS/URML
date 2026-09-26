@@ -1,0 +1,27 @@
+name: rulebook/remote_id_missing_rejected
+description: >
+  The bundled FAA rulebook requires the deployment to declare its Remote ID
+  method (14 CFR 89.105). This deployment rulebook declares one remote pilot
+  and no remote_id. With a deployment rulebook loaded, the missing
+  declaration is an error, rule.declaration_missing, and editing the program
+  cannot fix it.
+
+manifest: drone_civilian
+envelope: drone_default
+policy: none
+profiles: [drone]
+rulebooks: [deployment_no_remote_id]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.declaration_missing

@@ -1,0 +1,25 @@
+name: rulebook/default_rulebooks_off_accepted
+description: >
+  default_rulebooks: false switches off the bundled rulebooks, and only them.
+  The 450-foot take-off is accepted, and the result carries
+  rule.defaults_disabled as a warning, because the bundled FAA rulebook
+  would have applied to this program.
+
+manifest: drone_high_ceiling
+policy: none
+profiles: [drone]
+default_rulebooks: false
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 137.16 }
+      - land: {}
+
+expected_validation:
+  accepted: true
+  warning_codes:
+    - rule.defaults_disabled
