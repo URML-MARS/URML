@@ -1,0 +1,24 @@
+name: social/gesture_over_envelope_duration_rejected
+description: >
+  A gesture's declared duration may not exceed the envelope's
+  max_gesture_duration_s (spec/layer-2-primitives/v0.1.0.md §3.17). `curious`
+  is declared at 1.8 s and allowed here, but this envelope caps gestures at
+  1.6 s. Pass 3 rejects with envelope.gesture_duration_exceeded.
+
+manifest: reachy_mini
+envelope: social_tight
+profiles: [social]
+
+program:
+  profile: social
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - gesture:
+          name: curious
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.gesture_duration_exceeded

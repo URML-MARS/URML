@@ -1,0 +1,24 @@
+name: social/gesture_not_allowed_rejected
+description: >
+  When the envelope lists gestures_allowed, a gesture must be on it
+  (spec/layer-2-primitives/v0.1.0.md §3.17). `no` is declared by the manifest
+  and short enough, but this office envelope allows only `yes` and `curious`.
+  Pass 3 rejects with envelope.gesture_not_allowed.
+
+manifest: reachy_mini
+envelope: social_tight
+profiles: [social]
+
+program:
+  profile: social
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - gesture:
+          name: "no"
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.gesture_not_allowed

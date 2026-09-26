@@ -263,6 +263,7 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "warehouse_aisles_a": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_aisles_a.yaml",
     "warehouse_low_reach": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_low_reach.yaml",
     "home_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "home_with_geofence.yaml",
+    "social_tight": _VALIDATOR_FIXTURES / "envelopes" / "social_tight.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

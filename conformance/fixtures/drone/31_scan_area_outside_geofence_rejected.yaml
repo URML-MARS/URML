@@ -1,0 +1,31 @@
+name: drone/scan_area_outside_geofence_rejected
+description: >
+  The scan area must stay within the operational envelope
+  (spec/layer-2-primitives/v0.1.0.md §2.9). The area (0,0) to (100,100)
+  reaches far past the (-5,-5) to (15,15) geofence; three of its corners lie
+  outside. Pass 3 rejects with envelope.geofence_violation attributed to
+  `scan`.
+
+manifest: drone_civilian
+envelope: drone_with_geofence
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - scan:
+          area:
+            bounding_box: { min_x: 0.0, max_x: 100.0, min_y: 0.0, max_y: 100.0 }
+          altitude: 30.0
+          sensor: downward
+          store_as: survey
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

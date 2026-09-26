@@ -1,0 +1,26 @@
+name: social/look_at_beyond_envelope_rejected
+description: >
+  The envelope's expression sub-block tightens the declared head ranges,
+  strictest wins (spec/layer-2-primitives/v0.1.0.md §3.16). A glance to yaw 30
+  is inside the Reachy Mini's declared +/-45 range but outside this office
+  envelope's +/-20. Pass 3 rejects with envelope.head_pose_exceeded.
+
+manifest: reachy_mini
+envelope: social_tight
+profiles: [social]
+
+program:
+  profile: social
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - look_at:
+          target: direction
+          direction: { yaw: 30, pitch: 0 }
+          duration: 1s
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.head_pose_exceeded
