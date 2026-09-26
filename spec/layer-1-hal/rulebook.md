@@ -14,7 +14,7 @@
 
 # Rulebooks: Normative Specification
 
-This document is a Draft, proposed by [RFC-0702](../../docs/rfcs/0702-rulebooks.md). It becomes normative when RFC-0702 is accepted. The reference validator does not implement it yet; the implementation lands in a separate change.
+This document is a Draft, proposed by [RFC-0702](../../docs/rfcs/0702-rulebooks.md). It becomes normative when RFC-0702 is accepted. The reference validator implements it, and the format stays Draft until then.
 
 The decision history is in [RFC-0702](../../docs/rfcs/0702-rulebooks.md). The regulatory frame is [RFC-0003](../../docs/rfcs/0003-us-alignment.md). The model this document mirrors is the compliance policy, [`policy.md`](policy.md).
 
@@ -496,7 +496,7 @@ A URML-compatible validator that implements rulebooks MUST:
 8. Run the rulebook pass regardless of the compliance-policy argument.
 9. Take rulebooks from operator configuration only on any agent-facing surface.
 
-The conformance fixtures under `conformance/fixtures/rulebook/` exercise each point once the implementation lands.
+The conformance fixtures under `conformance/fixtures/rulebook/` exercise points 2, 3, 4, 7 and 8, and the codes of point 5, against the reference validator. The validator's unit tests exercise point 1, point 6 and the `detail` payload of point 5, and the MCP server and ROS 2 action server tests exercise point 9.
 
 ## Future work
 
