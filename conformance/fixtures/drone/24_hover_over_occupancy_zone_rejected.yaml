@@ -1,0 +1,25 @@
+name: drone/hover_over_occupancy_zone_rejected
+description: >
+  Under a no-fly-over-people constraint the hover pose must not overlap a
+  declared people-occupancy zone (spec/layer-2-primitives/v0.1.0.md §2.3).
+  The program hovers over `home` (0, 0), inside the spectator zone. Pass 3
+  rejects with envelope.occupancy_zone_intrusion attributed to `hover`.
+
+manifest: drone_civilian
+envelope: drone_with_occupancy_zone
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - hover: { over: home, duration: 10s }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

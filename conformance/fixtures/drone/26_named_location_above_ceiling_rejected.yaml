@@ -1,0 +1,26 @@
+name: drone/named_location_above_ceiling_rejected
+description: >
+  The move_to target altitude must be under the service ceiling and the
+  active cap (spec/layer-2-primitives/v0.1.0.md §2.1). A named location
+  carries its own altitude: roof_north is declared at 30 m, and this envelope
+  caps altitude at 25 m. Only pose.z used to be checked. Pass 3 rejects with
+  envelope.altitude_exceeded attributed to `move_to`.
+
+manifest: drone_civilian
+envelope: drone_low_ceiling
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - move_to: { location: roof_north }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.altitude_exceeded

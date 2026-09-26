@@ -1,0 +1,30 @@
+name: drone/land_at_home_positive
+description: >
+  Positive twin of land_outside_geofence_rejected. The flight goes to
+  roof_north (10, 5) and lands at `home` (0, 0); both lie inside the
+  (-5,-5) to (15,15) geofence. Accepted and executed.
+
+manifest: drone_civilian
+envelope: drone_with_geofence
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to: { location: roof_north }
+      - land: { at: home }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_takeoff_goal
+    - send_navigation_goal
+    - send_land_goal

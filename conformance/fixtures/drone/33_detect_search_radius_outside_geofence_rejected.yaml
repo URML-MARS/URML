@@ -1,0 +1,30 @@
+name: drone/detect_search_radius_outside_geofence_rejected
+description: >
+  The declared search region must be within the operational area
+  (spec/layer-2-primitives/v0.1.0.md §2.8). With `within`, the region is a
+  disk around the named place. roof_north (10, 5) lies inside the (-5,-5) to
+  (15,15) geofence, 5 m from its edge at x 15, but an 8 m search radius
+  reaches past that edge. Pass 3 rejects with envelope.geofence_violation
+  attributed to `detect`.
+
+manifest: drone_civilian
+envelope: drone_with_geofence
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - detect:
+          object: vehicle
+          where: { near: roof_north, within: 8.0 }
+          store_as: car
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

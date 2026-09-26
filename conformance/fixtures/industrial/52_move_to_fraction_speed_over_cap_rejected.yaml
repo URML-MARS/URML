@@ -1,0 +1,25 @@
+name: industrial/move_to_fraction_speed_over_cap_rejected
+description: >
+  A speed may be a fraction of the manifest maximum
+  (spec/layer-2-primitives/v0.1.0.md §1.1). The program asks for 0.8 of the
+  cell's 0.5 m/s tip speed, which is 0.4 m/s. The hand-loading envelope caps
+  speed at 0.25 m/s, so Pass 3 rejects with envelope.velocity_exceeded.
+
+manifest: industrial_cell
+envelope: industrial_cell_guarded
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: home_pose
+          speed: { value: 0.8, units: fraction }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.velocity_exceeded

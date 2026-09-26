@@ -1,0 +1,24 @@
+name: drone/return_to_home_altitude_exceeded_rejected
+description: >
+  A declared return-to-home altitude must be at or below the envelope's
+  max_altitude and the service ceiling (spec/layer-2-primitives/v0.1.0.md
+  §3.5). The program asks to come home at 40 m under a 25 m cap. Pass 3
+  rejects with envelope.altitude_exceeded attributed to `return_to_home`.
+
+manifest: drone_civilian
+envelope: drone_low_ceiling
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - return_to_home: { altitude: 40.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.altitude_exceeded

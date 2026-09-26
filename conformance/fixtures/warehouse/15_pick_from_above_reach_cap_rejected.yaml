@@ -1,0 +1,27 @@
+name: warehouse/pick_from_above_reach_cap_rejected
+description: >
+  pick_from inherits the move_to altitude check
+  (spec/layer-2-primitives/v0.1.0.md §2.1 and §3.6). In low-reach mode the
+  envelope refuses any target above 0.35 m; shelf_a3 is declared at 0.50 m.
+  Pass 3 rejects with envelope.altitude_exceeded attributed to `pick_from`.
+
+manifest: warehouse_cell
+envelope: warehouse_low_reach
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: shelf_a3
+          object: tote
+          force: gentle
+          store_as: tote_1
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.altitude_exceeded

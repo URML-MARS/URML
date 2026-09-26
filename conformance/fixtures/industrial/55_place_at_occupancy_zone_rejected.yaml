@@ -1,0 +1,33 @@
+name: industrial/place_at_occupancy_zone_rejected
+description: >
+  place_at inherits the move_to checks (spec/layer-2-primitives/v0.1.0.md
+  §3.7), so its target may not sit in a people-occupancy zone. During the
+  hand-loading shift an operator stands at the blue kitting tray; the zone
+  covers x -0.6..-0.2, y -0.4..0.0 and kitting_tray_blue (-0.4, -0.2) lies
+  inside it. Pass 3 rejects with envelope.occupancy_zone_intrusion
+  attributed to `place_at`.
+
+manifest: industrial_cell
+envelope: industrial_cell_guarded
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: pick_bin
+          object: widget_blue
+          force: gentle
+          store_as: part
+      - place_at:
+          target: kitting_tray_blue
+          held: $part
+          mode: place
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

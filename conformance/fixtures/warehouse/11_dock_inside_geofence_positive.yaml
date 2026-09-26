@@ -1,0 +1,27 @@
+name: warehouse/dock_inside_geofence_positive
+description: >
+  Positive twin of dock_outside_geofence_rejected. Under the same aisle fence
+  the AMR docks at handoff_in_1 (2, 0), inside it. Accepted and executed.
+
+manifest: warehouse_cell
+envelope: warehouse_aisles_a
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - dock:
+          at: handoff_in_1
+          service: dock
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 1
+  audit_methods:
+    - send_docking_goal

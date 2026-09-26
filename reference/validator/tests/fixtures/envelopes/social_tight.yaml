@@ -1,0 +1,18 @@
+# Fixture: a social-profile envelope that tightens the Reachy Mini's declared
+# expression ranges (RFC-0698), for a deployment in a small shared office.
+# Head yaw is held to +/-20 degrees (the manifest allows +/-45), no gesture may
+# run longer than 1.6 s, and only `yes` and `curious` are allowed. The
+# manifest declares yes (1.2 s), no (1.5 s) and curious (1.8 s). Used by the
+# envelope-coverage conformance fixtures.
+
+envelope_version: "0.1"
+deployment_id: social_shared_office
+description: Social-profile envelope that tightens head yaw and the gesture set.
+
+expression:
+  head:
+    yaw: { min: -20.0, max: 20.0 }
+  max_gesture_duration_s: 1.6
+  gestures_allowed: ["yes", "curious"]
+
+link_loss_policy: []

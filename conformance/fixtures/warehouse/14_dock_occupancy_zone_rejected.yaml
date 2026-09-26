@@ -1,0 +1,27 @@
+name: warehouse/dock_occupancy_zone_rejected
+description: >
+  Docking drives the robot to the station, so the station may not sit in a
+  people-occupancy zone. Pass 3 applies the zones to every target
+  (spec/layer-2-primitives/v0.1.0.md §1.2), and the warehouse profile makes
+  zones required. The outbound handoff crossing covers x 3.5..4.5,
+  y -0.5..0.5; the handoff_out_1 station at (4, 0) lies inside it. Pass 3
+  rejects with envelope.occupancy_zone_intrusion attributed to `dock`.
+
+manifest: warehouse_cell
+envelope: warehouse_aisles_a
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - dock:
+          at: handoff_out_1
+          service: dock
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

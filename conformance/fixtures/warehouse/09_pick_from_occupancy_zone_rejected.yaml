@@ -1,0 +1,29 @@
+name: warehouse/pick_from_occupancy_zone_rejected
+description: >
+  pick_from inherits the move_to checks (spec/layer-2-primitives/v0.1.0.md
+  §3.6), so its source station may not sit in a people-occupancy zone. The
+  zone covers (4..6, -1..1) in `site`; aisle_3_waypoint (5, 0) lies inside.
+  A move_to there was already refused; the same target through pick_from was
+  not. Pass 3 rejects with envelope.occupancy_zone_intrusion attributed to
+  `pick_from`.
+
+manifest: warehouse_cell
+envelope: warehouse_with_occupancy_zone
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: aisle_3_waypoint
+          object: tote
+          force: gentle
+          store_as: tote_1
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.occupancy_zone_intrusion

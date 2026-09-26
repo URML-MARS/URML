@@ -1,0 +1,28 @@
+name: drone/detect_near_outside_geofence_rejected
+description: >
+  The declared search region must be within the operational area
+  (spec/layer-2-primitives/v0.1.0.md §2.8). The program searches near
+  `dropoff` (40, 20), outside the (-5,-5) to (15,15) geofence. Pass 3 rejects
+  with envelope.geofence_violation attributed to `detect`.
+
+manifest: drone_civilian
+envelope: drone_with_geofence
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - detect:
+          object: vehicle
+          where: { near: dropoff }
+          store_as: car
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

@@ -1,0 +1,29 @@
+name: drone/detect_near_undeclared_location_rejected
+description: >
+  detect.where.near names either a binding or a place
+  (spec/layer-2-primitives/v0.1.0.md §2.8). A place name must resolve against
+  the manifest; `parking_lot` is not declared, so the search region could not
+  be checked against the operational area. Pass 2 rejects with
+  capability.missing_location.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - detect:
+          object: vehicle
+          where: { near: parking_lot }
+          store_as: car
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_location

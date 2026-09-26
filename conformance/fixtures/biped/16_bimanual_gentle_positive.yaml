@@ -1,0 +1,32 @@
+name: biped/bimanual_gentle_positive
+description: >
+  Positive twin of bimanual_force_over_envelope_rejected. The same two-arm
+  lift under the 10 N per-hand cap, with both hands at `gentle` (1.5 N).
+  Accepted; the runtime decomposes it into one manipulation goal per arm.
+
+manifest: digit_bimanual
+envelope: biped_gentle_grip
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: tote, store_as: the_tote }
+      - bimanual:
+          mode: together
+          left: { target: $the_tote, force: gentle }
+          right: { target: $the_tote, force: gentle }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - query_detection
+    - send_manipulation_goal
+    - send_manipulation_goal

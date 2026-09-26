@@ -1,0 +1,26 @@
+# Fixture: the industrial_cell envelope during a hand-loading shift.
+# An operator stands at the blue kitting tray, so the deployment tightens the
+# cell: a slower tip speed, a lower grip-force cap than the gripper's 25 N
+# maximum, and a people-occupancy zone around the blue tray at (-0.4, -0.2).
+# pick_bin (0.4, -0.3), kitting_tray_red (-0.4, 0.2) and home_pose (0, 0) lie
+# outside the zone. Used by the envelope-coverage conformance fixtures.
+
+envelope_version: "0.1"
+deployment_id: cell_a1_hand_loading
+description: Industrial cell during a hand-loading shift; an operator works at the blue tray.
+
+max_velocity: 0.25         # m/s; below the manifest's 0.50 tip speed.
+max_grip_force_n: 15.0     # N; below the gripper's declared 25 N maximum.
+
+people_occupancy_zones:
+  - name: operator_loading_station
+    frame: cell
+    vertices:
+      - [-0.6, -0.4]
+      - [-0.2, -0.4]
+      - [-0.2, 0.0]
+      - [-0.6, 0.0]
+    allow_override: false
+geofences: []
+
+link_loss_policy: []

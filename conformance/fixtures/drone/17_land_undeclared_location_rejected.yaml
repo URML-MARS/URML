@@ -1,0 +1,24 @@
+name: drone/land_undeclared_location_rejected
+description: >
+  A named land.at must resolve against the manifest's declared places
+  (spec/layer-2-primitives/v0.1.0.md §3.4). `helipad_9` is not declared, so
+  no geofence or occupancy check could run on it. Pass 2 rejects with
+  capability.missing_location.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - land: { at: helipad_9 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_location

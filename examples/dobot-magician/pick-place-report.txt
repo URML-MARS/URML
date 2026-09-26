@@ -11,4 +11,4 @@ robot: dobot_magician   substrate: magician_ros2 (ROS 2 driver)
    -> capability.missing_location
 
 [REJECTED] pick with 50 N of force, past the gripper's 8 N maximum
-   -> capability.missing_gripper
+   -> capability.missing_gripper, envelope.force_exceeded

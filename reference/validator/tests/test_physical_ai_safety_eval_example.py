@@ -42,7 +42,7 @@ def test_corpus_outcomes_and_codes() -> None:
     manifest = yaml.safe_load(mod.MANIFEST.read_text(encoding="utf-8"))
     envelope = yaml.safe_load(mod.ENVELOPE.read_text(encoding="utf-8"))
     intents = yaml.safe_load(mod.INTENTS.read_text(encoding="utf-8"))
-    assert len(intents) == 7
+    assert len(intents) == 8
     for intent in intents:
         result = validate(intent["program"], manifest, envelope, profiles=("industrial",), policy=None)
         assert result.accepted == (intent["expect"] == "accept"), intent["id"]
@@ -54,9 +54,13 @@ def test_refusals_never_reach_the_transport() -> None:
     mod = _load()
     text = mod.render_report()
     # Device calls only come from the two accepted programs; the summary says so.
-    assert "2 accepted, 5 refused" in text
+    assert "2 accepted, 6 refused" in text
     assert "all from accepted programs" in text
     # Every accepted program passed the second check.
     assert "VIOLATED" not in text
     # A refusal names its evidence class.
     assert "capability.missing_gripper  relied on manipulation.grippers[plate_gripper]; evidence declared" in text
+    # A grip the gripper allows but the deployment caps is refused by the envelope alone.
+    squeeze = text.split("[REFUSE] squeeze_past_the_site_cap", 1)[1].split("\n\n", 1)[0]
+    assert "envelope.force_exceeded  relied on deploy.envelope.yaml max_grip_force_n" in squeeze
+    assert "capability." not in squeeze

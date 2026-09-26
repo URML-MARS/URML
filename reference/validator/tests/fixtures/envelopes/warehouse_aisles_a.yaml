@@ -1,0 +1,39 @@
+# Fixture: warehouse envelope for a shift that fences the AMR to aisles A1 to
+# A3 and keeps it off a busy handoff crossing.
+#
+# Geofence: x -3..7, y -3..5 in the `site` frame. Inside: shelf_a3 (6, -2),
+# conveyor_a (0, 4), handoff_in_1 (2, 0), handoff_out_1 (4, 0). Outside:
+# shelf_b1 (8, 2) and the charge_dock_1 station (-4, 0).
+#
+# People-occupancy zone: the outbound handoff crossing, x 3.5..4.5,
+# y -0.5..0.5, around the handoff_out_1 station (4, 0).
+#
+# Used by the envelope-coverage conformance fixtures (dock, pick_from and
+# place_at geofence and zone checks).
+
+envelope_version: "0.1"
+deployment_id: warehouse_aisles_a_only
+description: Warehouse shift fenced to aisles A1 to A3, with people at the outbound handoff crossing.
+
+max_velocity: 1.2
+max_grip_force_n: 50.0
+
+geofences:
+  - name: aisles_a1_a3
+    frame: site
+    vertices:
+      - [-3.0, -3.0]
+      - [7.0, -3.0]
+      - [7.0, 5.0]
+      - [-3.0, 5.0]
+people_occupancy_zones:
+  - name: outbound_handoff_crossing
+    frame: site
+    vertices:
+      - [3.5, -0.5]
+      - [4.5, -0.5]
+      - [4.5, 0.5]
+      - [3.5, 0.5]
+    allow_override: false
+
+link_loss_policy: []
