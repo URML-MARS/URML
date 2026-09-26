@@ -32,12 +32,14 @@ before any public update.
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
 (invoke with `make audit`), with `PYTHONPATH` set to the branch's `src`
 directories. Every row was re-measured on this host. New since the 2026-08-29
-measurement: the Microduck adapter in `edu-runtime` (0569e50), the social
-profile with `look_at` and `gesture` (RFC-0698), `urml bench` (a97a175), clarify
-mode (RFC-0700), the bench that counts saves and its striker corpora (c2d251d), the
-envelope coverage fixes (949ce9b), the runtime gate and goal-line lane
-(c7dec9b), pinned constraints on the MCP server (a16a03f), and the committed
-striker rows with their guard test (this branch). The prior measurements
+measurement: the Microduck adapter in `edu-runtime` (0569e50), the capture
+camera selector (RFC-0699), the social profile with `look_at` and `gesture`
+(RFC-0698), `urml bench` (a97a175), clarify mode (RFC-0700), the RFC-0382
+monitorable-envelope fixtures and example (9357edb), the bench that counts
+saves and its striker corpora (c2d251d), the envelope coverage fixes (949ce9b),
+the runtime gate and goal-line lane (c7dec9b), pinned constraints on the MCP
+server (a16a03f), and the committed striker rows with their guard test
+(9636cd7, 0dc49b5). The prior measurements
 (2026-08-29: 2122 total; 2026-08-09: 1997 total; 2026-06-24: 1668 total;
 2026-05-20 / 2026-05-22: 244 validator, 765 total, 101 fixtures) are in git
 history.
@@ -92,7 +94,9 @@ against `MockROSAdapter` (`urml conformance run`: 244/244 passed). The new bucke
 `actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
 0268/0304), `compliance`/`deployment` (policy), `programs` (RFC-0616), `social`
 (RFC-0698). Of the 57 fixtures added since 2026-08-29, 46 came with the
-envelope coverage fixes (949ce9b) and 9 with the social profile.
+envelope coverage fixes (949ce9b, four of them in `social`), 5 with the social
+profile (RFC-0698), 3 with the RFC-0382 monitorable-envelope fixtures (9357edb)
+and 3 with the capture camera selector (RFC-0699).
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
