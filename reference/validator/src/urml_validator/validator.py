@@ -1398,6 +1398,34 @@ def _location_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(a.name == name for a in (manifest.declared_areas or []))
 
 
+def _check_named_place(
+    primitive: str,
+    value: str | None,
+    manifest: CapabilityManifest,
+    path: list[str],
+    field: str,
+) -> list[ValidationError]:
+    """A literal place name must resolve against the manifest (spec §1.1 `<location>`).
+
+    An unresolved name would let the step skip every spatial envelope check,
+    so it is refused here. A ``$ref`` is a binding, checked by the binding
+    pass; ``None`` means the argument is absent.
+    """
+    if value is None or value.startswith("$") or _location_declared(manifest, value):
+        return []
+    return [
+        _err(
+            ErrorCode.CAPABILITY_MISSING_LOCATION,
+            primitive,
+            path,
+            f"{primitive}.{field} references undeclared location {value!r}.",
+            field=field,
+            suggestion=f"Add {value!r} to manifest.declared_locations (or declared_areas), "
+            "or name a declared place.",
+        )
+    ]
+
+
 def _frame_declared(manifest: CapabilityManifest, name: str) -> bool:
     return any(f.name == name for f in manifest.frames)
 
@@ -2175,9 +2203,9 @@ def _check_dock_caps(
 
 
 def _check_hover_caps(
-    _args: HoverArgs, manifest: CapabilityManifest, path: list[str]
+    args: HoverArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
-    out: list[ValidationError] = []
+    out: list[ValidationError] = _check_named_place("hover", args.over, manifest, path, "over")
     if manifest.mobility is None:
         out.append(
             _err(
@@ -2379,7 +2407,7 @@ def _check_grasp_caps(
 def _check_release_caps(
     args: ReleaseArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
-    out: list[ValidationError] = []
+    out: list[ValidationError] = _check_named_place("release", args.at, manifest, path, "at")
     if manifest.manipulation is None or not manifest.manipulation.grippers:
         out.append(
             _err(
@@ -2436,7 +2464,8 @@ def _check_bimanual_caps(
 def _check_detect_caps(
     args: DetectArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
-    out: list[ValidationError] = []
+    near = args.where.near if args.where is not None else None
+    out: list[ValidationError] = _check_named_place("detect", near, manifest, path, "where.near")
     perception = manifest.perception
     if perception is None or (not perception.cameras and not perception.sensors):
         out.append(
@@ -3149,10 +3178,12 @@ def _check_take_off_caps(
 
 
 def _check_land_caps(
-    _args: LandArgs, manifest: CapabilityManifest, path: list[str]
+    args: LandArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
-    """Drone profile: land requires aerial drive_type."""
-    return _check_aerial_caps("land", manifest, path)
+    """Drone profile: land requires aerial drive_type; a named `at` must resolve."""
+    out = _check_aerial_caps("land", manifest, path)
+    out += _check_named_place("land", args.at, manifest, path, "at")
+    return out
 
 
 def _check_return_to_home_caps(

@@ -85,6 +85,48 @@ def _cell_manifest() -> dict[str, Any]:
     }
 
 
+def _drone_manifest() -> dict[str, Any]:
+    """A multirotor with three point locations and one declared area, all in `agl`."""
+    return {
+        "robot_id": "drone",
+        "frames": [{"name": "wgs84"}, {"name": "agl", "parent": "wgs84"}],
+        "declared_locations": [
+            {"name": "home", "pose": {"x": 0.0, "y": 0.0, "z": 0.0}, "frame": "agl"},
+            {"name": "roof", "pose": {"x": 10.0, "y": 5.0, "z": 30.0}, "frame": "agl"},
+            {"name": "far", "pose": {"x": 40.0, "y": 20.0, "z": 30.0}, "frame": "agl"},
+            {"name": "tower_top", "pose": {"x": 5.0, "y": 5.0, "z": 500.0}, "frame": "agl"},
+        ],
+        "declared_areas": [
+            {
+                "name": "field",
+                "frame": "agl",
+                "polygon": [
+                    {"x": 0.0, "y": 0.0},
+                    {"x": 30.0, "y": 0.0},
+                    {"x": 30.0, "y": 10.0},
+                    {"x": 0.0, "y": 10.0},
+                ],
+            }
+        ],
+        "mobility": {
+            "drive_type": "multirotor",
+            "max_velocity": 15.0,
+            "station_keeping": True,
+            "service_ceiling": 120.0,
+        },
+        "substrate": {"autopilot_class": "px4"},
+        "perception": {
+            "cameras": [{"name": "downward", "supports_photo": True}],
+            "sensors": [],
+            "object_vocabulary": ["vehicle"],
+        },
+    }
+
+
+def _flight(*steps: dict[str, Any]) -> dict[str, Any]:
+    return _program({"take_off": {"altitude": 30.0}}, *steps, profile="drone")
+
+
 # ---------------------------------------------------------------------------
 # Grip-force cap: pick_from and each bimanual side (spec L738-740, L895-896)
 # ---------------------------------------------------------------------------
@@ -234,3 +276,77 @@ class TestFractionSpeed:
                 _move_to_tray(speed), _cell_manifest(), {"max_velocity": 0.25}, policy=None
             )
             assert "envelope.velocity_exceeded" in _codes_for(result, "move_to"), speed
+
+
+# ---------------------------------------------------------------------------
+# Named targets resolve before any spatial check can run (Pass 2)
+# ---------------------------------------------------------------------------
+
+
+class TestNamedTargetsResolve:
+    """land.at, hover.over, detect.where.near and release.at must name a declared place."""
+
+    def test_land_at_undeclared_rejected(self) -> None:
+        result = validate(_flight({"land": {"at": "helipad_9"}}), _drone_manifest(), None, policy=None)
+        assert "capability.missing_location" in _codes_for(result, "land")
+
+    def test_land_at_declared_location_and_area_accepted(self) -> None:
+        for at in ("home", "field"):
+            result = validate(_flight({"land": {"at": at}}), _drone_manifest(), None, policy=None)
+            assert result.accepted, (at, result.codes())
+
+    def test_hover_over_undeclared_rejected(self) -> None:
+        program = _flight({"hover": {"over": "helipad_9", "duration": "5s"}})
+        result = validate(program, _drone_manifest(), None, policy=None)
+        assert "capability.missing_location" in _codes_for(result, "hover")
+
+    def test_hover_over_a_binding_is_left_to_the_binding_pass(self) -> None:
+        program = _flight(
+            {"detect": {"object": "vehicle", "store_as": "car"}},
+            {"hover": {"over": "$car", "duration": "5s"}},
+        )
+        result = validate(program, _drone_manifest(), None, policy=None)
+        assert result.accepted, result.codes()
+
+    def test_detect_near_undeclared_rejected(self) -> None:
+        program = _flight({"detect": {"object": "vehicle", "where": {"near": "parking_lot"}}})
+        result = validate(program, _drone_manifest(), None, policy=None)
+        assert "capability.missing_location" in _codes_for(result, "detect")
+
+    def test_detect_near_declared_area_accepted(self) -> None:
+        program = _flight({"detect": {"object": "vehicle", "where": {"near": "field", "within": 5.0}}})
+        result = validate(program, _drone_manifest(), None, policy=None)
+        assert result.accepted, result.codes()
+
+    def test_detect_without_perception_still_reports_the_name(self) -> None:
+        manifest = _drone_manifest()
+        del manifest["perception"]
+        program = _flight({"detect": {"object": "vehicle", "where": {"near": "parking_lot"}}})
+        result = validate(program, manifest, None, policy=None)
+        assert "capability.missing_location" in _codes_for(result, "detect")
+
+    def test_release_at_undeclared_rejected(self) -> None:
+        program = _program({"release": {"mode": "place", "at": "garage_shelf"}})
+        result = validate(program, _cell_manifest(), None, policy=None)
+        assert "capability.missing_location" in _codes_for(result, "release")
+
+    def test_release_at_declared_location_and_area_accepted(self) -> None:
+        for at in ("tray", "bench"):
+            program = _program({"release": {"mode": "place", "at": at}})
+            result = validate(program, _cell_manifest(), None, policy=None)
+            assert result.accepted, (at, result.codes())
+
+    def test_release_side_of_bimanual_resolves_too(self) -> None:
+        program = _program(
+            {"detect": {"object": "widget", "store_as": "w"}},
+            {
+                "bimanual": {
+                    "mode": "independent",
+                    "left": {"target": "$w", "force": "gentle"},
+                    "right": {"mode": "place", "at": "garage_shelf"},
+                }
+            },
+        )
+        result = validate(program, _cell_manifest(), None, policy=None)
+        errs = [e for e in result.errors if e.code == ErrorCode.CAPABILITY_MISSING_LOCATION]
+        assert errs and errs[0].path[-1] == "right"

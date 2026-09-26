@@ -1,0 +1,25 @@
+name: home/release_undeclared_location_rejected
+description: >
+  release(mode: place) moves the held object to `at`
+  (spec/layer-2-primitives/v0.1.0.md §2.7). A place name must resolve against
+  the manifest; `garage_shelf` is not declared in the TurtleBot's home. Pass 2
+  rejects with capability.missing_location.
+
+manifest: turtlebot4_home
+envelope: home_default
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: mug, store_as: mug }
+      - grasp: { target: $mug, force: gentle }
+      - release: { mode: place, at: garage_shelf }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_location
