@@ -15,18 +15,24 @@ from __future__ import annotations
 
 from urml_mcp.tools import (
     AVAILABLE_PROFILES,
+    Pinned,
+    PinnedConfigError,
     describe_manifest,
     execute_program,
     get_contract,
     list_profiles,
+    load_pinned,
     validate_program,
 )
 
 __all__ = [
     "AVAILABLE_PROFILES",
+    "Pinned",
+    "PinnedConfigError",
     "describe_manifest",
     "execute_program",
     "get_contract",
     "list_profiles",
+    "load_pinned",
     "validate_program",
 ]
