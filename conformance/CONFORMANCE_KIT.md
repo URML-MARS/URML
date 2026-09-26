@@ -99,6 +99,28 @@ the right move is the honest not-supported result plus a fixture subset
 that matches your robot's declared capability manifest, exactly as the
 PX4 runtime runs the flight-only subset rather than faking perception.
 
+## The goal line: a rejected program sends nothing
+
+The main run stops a rejected fixture at the validator. The goal-line
+lane hands every rejected fixture to the runtime itself, through a
+recording proxy around your adapter. A case passes only when the runtime
+refuses, the refusal carries the fixture's expected error codes, and the
+adapter saw zero calls:
+
+```bash
+python -m urml_conformance --goal-line                                # reference runtime + mock
+python -m urml_conformance --goal-line --adapter your_pkg:YourAdapter
+python -m urml_conformance --goal-line --runtime your_pkg:make_runtime
+```
+
+`--runtime` takes a callable that receives one adapter and returns your
+runtime. Its `execute(program, manifest, envelope, profiles, *, policy,
+manifest_base_dir)` must refuse by raising an exception whose
+`validation_result` holds the validator's result, the way `URMLRuntime`
+raises `ValidationRejectedError`. Fleet fixtures run through the
+reference `FleetRuntime`. In code, call
+`run_goal_line(adapter_factory=..., runtime_factory=...)`.
+
 ## What "URML-compatible" means
 
 Passing the suite is a factual statement: this runtime reproduces the

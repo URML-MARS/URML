@@ -18,12 +18,16 @@ operator-approves-a-validated-capability shape of Fig. 5 in Conner et al.,
 "Capability-based Robot Controller Synthesis," with URML supplying the typed,
 admissible intent.
 
-The program + manifest are inlined here so the behavior is self-contained; they
-mirror ``examples/flexbe/ur3e-pick-place.urml.yaml`` and
-``examples/flexbe/ur3e.manifest.yaml``. Run the hermetic check with:
+The program is inlined here so the behavior is self-contained; it mirrors
+``examples/flexbe/ur3e-pick-place.urml.yaml``. The goal does not carry the
+manifest or envelope: the action server pins ``examples/flexbe/ur3e.manifest.yaml``
+and ``examples/flexbe/ur3e.envelope.yaml`` at start (launch arguments
+``manifest_path`` and ``envelope_path``), so a goal cannot choose its own
+limits. Run the hermetic check with:
 
     urml execute examples/flexbe/ur3e-pick-place.urml.yaml \\
-      -m examples/flexbe/ur3e.manifest.yaml --profile industrial --adapter mock
+      -m examples/flexbe/ur3e.manifest.yaml -e examples/flexbe/ur3e.envelope.yaml \\
+      --profile industrial --adapter mock
 
 Targets flexbe_behavior_engine on ROS 2 Jazzy / Kilted / Rolling.
 """
@@ -32,52 +36,8 @@ from flexbe_core import Autonomy, Behavior, OperatableStateMachine
 from flexbe_states.operator_decision_state import OperatorDecisionState
 from urml_flexbe_states.execute_urml_state import ExecuteUrmlState
 
-# A Universal Robots UR-3e e-Series arm cell and a one-cycle red-widget
-# pick-and-place. Compact mirrors of the canonical files under examples/flexbe/.
-UR3E_MANIFEST = """
-manifest_version: "0.1"
-robot_id: ur3e_cell_1
-description: A Universal Robots UR-3e e-Series arm cell for the URML FlexBE worked example.
-frames:
-  - { name: cell, parent: null }
-  - { name: base_link, parent: cell }
-declared_locations:
-  - { name: pick_bin, pose: { x: 0.4, y: -0.3, z: 0.10 }, frame: cell }
-  - { name: kitting_tray_red, pose: { x: -0.4, y: 0.2, z: 0.10 }, frame: cell }
-  - { name: home_pose, pose: { x: 0.0, y: 0.0, z: 0.30 }, frame: cell }
-declared_events: [safety_door_closed, line_ready, emergency_stop]
-mobility:
-  drive_type: manipulator_base
-  max_velocity: 0.50
-  station_keeping: true
-manipulation:
-  arm_count: 1
-  grippers:
-    - name: robotiq_2f85
-      kind: servo_electric
-      force_min_n: 1.0
-      force_max_n: 235.0
-      accepted_classes: [widget, widget_red, widget_blue, small_part]
-      movable: true
-  reachable_workspace_m: 0.85
-perception:
-  object_vocabulary: [widget, widget_red, widget_blue, small_part]
-outputs:
-  named_endpoints: [line_controller]
-provenance:
-  manifest_attestation: self_declared
-  components:
-    - id: ur_controller
-      role: critical
-      vendor: universal_robots
-      country_of_origin: DK
-      country_of_final_assembly: DK
-      hbom_ref:
-        format: cyclonedx-1.7
-        uri: ./hbom/ur_controller.cdx.json
-        sha256: "2424242424242424242424242424242424242424242424242424242424242424"
-"""
-
+# A one-cycle red-widget pick-and-place on the UR-3e cell. Compact mirror of
+# the canonical program under examples/flexbe/.
 UR3E_PROGRAM = """
 profile: industrial
 behavior:
@@ -130,10 +90,8 @@ class URMLUr3ePickPlaceSM(Behavior):
             OperatableStateMachine.add(
                 "Run URML Pick-Place",
                 ExecuteUrmlState(
-                    manifest_yaml=UR3E_MANIFEST,
                     program_yaml=UR3E_PROGRAM,
                     profiles=["industrial"],
-                    no_policy=False,
                     action_topic=action_topic,
                 ),
                 transitions={

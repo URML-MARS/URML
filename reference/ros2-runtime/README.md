@@ -60,7 +60,7 @@ The runtime is a thin Layer-0 translator with three responsibilities:
 2. **Translate.** Compile each primitive into its ROS-2 equivalent: `move_to(kitchen)` becomes a Nav2 `NavigateToPose` goal; `grasp(target, force: gentle)` becomes a MoveIt 2 plan with a configured gripper command; `detect(object: mug)` becomes a perception-pipeline query.
 3. **Honor composition.** Implement Layer-3 sequence / branch / parallel / retry / on-error against ROS-2 lifecycle and action semantics.
 
-The validator and the runtime are **separate processes** so that bypassing the validator at runtime is structurally hard, not merely discouraged.
+The validator runs in the same process as the runtime. `URMLRuntime.execute` re-validates every program against the manifest, envelope and policy it is given before its first adapter call, so a rejected program raises `ValidationRejectedError` and the adapter receives nothing. The conformance goal-line lane (`python -m urml_conformance --goal-line`) checks this for every rejected fixture. Skipping the check takes an explicit `revalidate=False` in code.
 
 ## Core Commitment
 

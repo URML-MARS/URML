@@ -196,6 +196,107 @@ def test_execute_rehearse_config_profile(tmp_path: Path, program_file: Path, cap
     assert "gate: PASSED" in captured.err
 
 
+def _spy_on_runtime(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, dict]]:
+    """Record how `urml run` builds and calls URMLRuntime (the real one still runs)."""
+    import urml_ros2_runtime
+
+    seen: list[tuple[str, dict]] = []
+    real = urml_ros2_runtime.URMLRuntime
+
+    class _Spy(real):  # type: ignore[misc,valid-type]
+        def __init__(self, adapter, **kwargs) -> None:
+            seen.append(("init", kwargs))
+            super().__init__(adapter, **kwargs)
+
+        def execute(self, *args, **kwargs):
+            seen.append(("execute", kwargs))
+            return super().execute(*args, **kwargs)
+
+    monkeypatch.setattr(urml_ros2_runtime, "URMLRuntime", _Spy)
+    return seen
+
+
+def test_run_runtime_revalidates_with_the_chosen_policy(
+    echo_response: Path, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    seen = _spy_on_runtime(monkeypatch)
+    code = main(
+        [
+            "run", "Patrol the kitchen and come back to me.",
+            "--manifest", str(MANIFEST),
+            "--profile", "home",
+            "--provider", "echo",
+            "--echo-response-file", str(echo_response),
+            "--no-policy",
+            "--adapter", "mock",
+        ]
+    )
+    assert code == 0, capsys.readouterr().err
+    calls = dict(seen)
+    assert calls["init"].get("revalidate", True) is True
+    assert calls["execute"]["policy"] is None
+    assert calls["execute"]["manifest_base_dir"] == MANIFEST.parent
+
+
+def test_run_refuses_when_the_runtime_check_rejects(tmp_path: Path, capsys) -> None:
+    """The bridge validates without the manifest's directory, so an HBOM-content
+    rule can only warn there. The runtime re-validates with the directory, reads
+    the HBOM, and refuses before any adapter call."""
+    echo = tmp_path / "echo.json"
+    echo.write_text(
+        json.dumps(
+            {
+                "profile": "home",
+                "behavior": {
+                    "type": "sequence",
+                    "on_error": "abort_and_report",
+                    "steps": [{"move_to": {"location": "kitchen"}}],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    code = main(
+        [
+            "run", "Go to the kitchen.",
+            "--manifest", str(FIXTURES / "manifests" / "provenance_hbom_cn_chip.yaml"),
+            "--policy", str(FIXTURES / "policies" / "hbom_no_cn_components.yaml"),
+            "--profile", "home",
+            "--provider", "echo",
+            "--echo-response-file", str(echo),
+            "--adapter", "mock",
+        ]
+    )
+    captured = capsys.readouterr()
+    assert code == 1
+    assert "execution refused" in captured.err
+    assert "policy.hbom_component_country_denied" in captured.err
+    assert "URML execute:" not in captured.out
+
+
+def test_run_real_adapter_without_envelope_warns_first(
+    tmp_path: Path, echo_response: Path, capsys
+) -> None:
+    code = main(
+        [
+            "run", "Patrol the kitchen and come back to me.",
+            "--manifest", str(MANIFEST),
+            "--profile", "home",
+            "--provider", "echo",
+            "--echo-response-file", str(echo_response),
+            "--no-policy",
+            "--adapter", "px4",
+            "--adapter-config", str(tmp_path / "no_such.yaml"),
+        ]
+    )
+    lines = capsys.readouterr().err.splitlines()
+    assert code == 2  # the adapter build fails after the warning
+    warning = [line for line in lines if line.startswith("urml: warning: --adapter px4 runs with no --envelope")]
+    assert len(warning) == 1
+    build_error = next(i for i, line in enumerate(lines) if "adapter-config file not found" in line)
+    assert lines.index(warning[0]) < build_error
+
+
 def test_run_ollama_requires_model(capsys) -> None:
     """The `run` parser carries the shared provider flags: --provider ollama
     without --model exits 2 before any adapter is constructed."""

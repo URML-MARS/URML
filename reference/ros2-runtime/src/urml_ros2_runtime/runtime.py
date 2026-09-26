@@ -34,10 +34,11 @@ both satisfy the substrate-neutral `ROSAdapter` Protocol. Variable bindings
 
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from urml_validator import ValidationResult, validate
+from urml_validator import Policy, ValidationResult, validate
 from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
 from urml_validator.schemas.program import URMLProgram
 
@@ -47,7 +48,7 @@ from urml_ros2_runtime.errors import (
     UnsupportedCompositionError,
     ValidationRejectedError,
 )
-from urml_ros2_runtime.primitives import PrimitiveOutcome, execute_step
+from urml_ros2_runtime.primitives import PrimitiveOutcome, execute_step, manifest_max_velocity
 from urml_ros2_runtime.shield import Shield, ShieldViolationError
 from urml_ros2_runtime.substrate.base import ROSAdapter, TelemetryAdapter
 
@@ -105,6 +106,8 @@ class URMLRuntime:
         self._adapter = adapter
         self._revalidate = revalidate
         self._shield = shield
+        # Set per `execute` call: the manifest maximum fraction speeds scale to.
+        self._max_velocity: float | None = None
 
     def execute(
         self,
@@ -112,8 +115,18 @@ class URMLRuntime:
         manifest: dict[str, Any],
         envelope: dict[str, Any] | None = None,
         profiles: tuple[str, ...] = (),
+        *,
+        policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+        manifest_base_dir: Path | None = None,
     ) -> RuntimeResult:
         """Execute a URML program against the runtime's adapter.
+
+        ``policy`` and ``manifest_base_dir`` are forwarded to the
+        defense-in-depth re-validation, with the same contract as
+        ``validate()``. A caller that validated under ``--no-policy``
+        (``policy=None``), a custom policy, or an HBOM-content policy passes
+        the same choice here, so the runtime's own check enforces what the
+        caller enforced. Skipping the compliance pass never skips validation.
 
         Returns a RuntimeResult. Raises ``ValidationRejectedError`` if the
         program fails defense-in-depth re-validation, or
@@ -122,13 +135,23 @@ class URMLRuntime:
         """
         # Defense-in-depth re-validation.
         if self._revalidate:
-            result: ValidationResult = validate(program, manifest, envelope, profiles=profiles)
+            result: ValidationResult = validate(
+                program,
+                manifest,
+                envelope,
+                profiles=profiles,
+                policy=policy,
+                manifest_base_dir=manifest_base_dir,
+            )
             if not result.accepted:
                 raise ValidationRejectedError(
                     "runtime defense-in-depth re-validation rejected the program; "
                     "see validation_result.errors for the structured cause.",
                     validation_result=result,
                 )
+
+        # A Layer-2 fraction speed is lowered to m/s against this maximum.
+        self._max_velocity = manifest_max_velocity(manifest)
 
         # Normalize to a URMLProgram model.
         program_model: URMLProgram
@@ -246,7 +269,7 @@ class URMLRuntime:
                     primitive=step.primitive_name,
                     path=path,
                 ) from veto
-        outcome = execute_step(step, self._adapter, bindings)
+        outcome = execute_step(step, self._adapter, bindings, max_velocity=self._max_velocity)
         steps_executed += 1
         # Merge any new bindings the step produced into the runtime scope.
         bindings.update(outcome.bindings)

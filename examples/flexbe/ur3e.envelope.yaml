@@ -1,0 +1,16 @@
+# The deployment safety envelope the URML action server pins for the UR-3e
+# worked example. With a real adapter the server will not start without a
+# pinned manifest and envelope, so a FlexBE goal (or any client) cannot
+# choose its own limits. Pass this file as the launch argument envelope_path
+# (see README.md).
+
+envelope_version: "0.1"
+deployment_id: flexbe_ur3e_cell
+description: Site limits for the URML FlexBE UR-3e worked example.
+
+max_velocity: 0.25         # 0.25 m/s; below the manifest's 0.50 max.
+max_grip_force_n: 40.0     # Below the gripper's declared 235 N max.
+
+people_occupancy_zones: []
+geofences: []
+link_loss_policy: []

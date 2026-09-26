@@ -169,6 +169,136 @@ def test_execute_no_policy_lets_compliance_be_skipped(
     assert "RESULT: SUCCESS" in out
 
 
+def _spy_on_runtime(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, dict[str, Any]]]:
+    """Record how the CLI builds and calls URMLRuntime (the real one still runs)."""
+    import urml_ros2_runtime
+
+    seen: list[tuple[str, dict[str, Any]]] = []
+    real = urml_ros2_runtime.URMLRuntime
+
+    class _Spy(real):  # type: ignore[misc,valid-type]
+        def __init__(self, adapter: Any, **kwargs: Any) -> None:
+            seen.append(("init", kwargs))
+            super().__init__(adapter, **kwargs)
+
+        def execute(self, *args: Any, **kwargs: Any) -> Any:
+            seen.append(("execute", kwargs))
+            return super().execute(*args, **kwargs)
+
+    monkeypatch.setattr(urml_ros2_runtime, "URMLRuntime", _Spy)
+    return seen
+
+
+def test_execute_runtime_revalidates_with_the_chosen_policy(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The runtime's own check runs, under the caller's policy and manifest dir."""
+    seen = _spy_on_runtime(monkeypatch)
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(CN_CRITICAL),
+        "--profile",
+        "home",
+        "--no-policy",
+    ])
+    assert rc == 0, capsys.readouterr().err
+    (init_kind, init_kwargs), (exec_kind, exec_kwargs) = seen
+    assert (init_kind, exec_kind) == ("init", "execute")
+    assert init_kwargs.get("revalidate", True) is True
+    assert exec_kwargs["policy"] is None
+    assert exec_kwargs["manifest_base_dir"] == CN_CRITICAL.parent
+
+
+def test_execute_runtime_gets_a_custom_policy_file(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    seen = _spy_on_runtime(monkeypatch)
+    policy_path = FIXTURE_ROOT / "policies" / "permissive.yaml"
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(MANIFEST),
+        "--profile",
+        "home",
+        "--policy",
+        str(policy_path),
+    ])
+    assert rc == 0, capsys.readouterr().err
+    exec_kwargs = dict(seen)["execute"]
+    assert isinstance(exec_kwargs["policy"], dict)
+    assert exec_kwargs["policy"]["policy_id"] == _load_yaml_mapping(policy_path)["policy_id"]
+
+
+def _load_yaml_mapping(path: Path) -> dict[str, Any]:
+    import yaml
+
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert isinstance(data, dict)
+    return data
+
+
+_NO_ENVELOPE_WARNING = "urml: warning: --adapter px4 runs with no --envelope"
+
+
+def test_execute_real_adapter_without_envelope_warns_first(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """One stderr line, printed before the real adapter is built."""
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(MANIFEST),
+        "--no-policy",
+        "--adapter",
+        "px4",
+        "--adapter-config",
+        str(tmp_path / "no_such.yaml"),
+    ])
+    err = capsys.readouterr().err
+    assert rc == 2  # the adapter build fails after the warning
+    lines = err.splitlines()
+    warning = [line for line in lines if line.startswith(_NO_ENVELOPE_WARNING)]
+    assert len(warning) == 1
+    assert "only the manifest's limits apply" in warning[0]
+    build_error = next(i for i, line in enumerate(lines) if "adapter-config file not found" in line)
+    assert lines.index(warning[0]) < build_error
+
+
+def test_execute_real_adapter_with_envelope_does_not_warn(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main([
+        "execute",
+        str(RED_MUG),
+        "--manifest",
+        str(MANIFEST),
+        "--envelope",
+        str(ENVELOPE),
+        "--no-policy",
+        "--adapter",
+        "px4",
+        "--adapter-config",
+        str(tmp_path / "no_such.yaml"),
+    ])
+    err = capsys.readouterr().err
+    assert rc == 2
+    assert "--envelope" not in err
+
+
+def test_execute_mock_adapter_does_not_warn(capsys: pytest.CaptureFixture[str]) -> None:
+    rc = main(["execute", str(RED_MUG), "--manifest", str(MANIFEST), "--no-policy"])
+    assert rc == 0
+    assert "warning" not in capsys.readouterr().err
+
+
 def test_execute_capability_mismatch_refused(
     capsys: pytest.CaptureFixture[str],
 ) -> None:

@@ -3,7 +3,8 @@
 Public API:
 
   URMLRuntime(adapter)
-    .execute(program, manifest, envelope=None, profiles=()) -> RuntimeResult
+    .execute(program, manifest, envelope=None, profiles=(),
+             *, policy="DEFAULT", manifest_base_dir=None) -> RuntimeResult
 
   MockROSAdapter()
     Hermetic substrate for tests and development without ROS.

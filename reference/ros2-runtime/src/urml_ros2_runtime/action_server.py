@@ -27,7 +27,17 @@ that adapter.
 ``execute_request`` always runs the full validator before any actuation, and
 refuses (returning ``refused=True`` with the rendered verdict) when the program
 is rejected. The validation verdict is exactly what an operator-in-the-loop
-engine surfaces before approving a state — never bypass it.
+engine surfaces before approving a state. Never bypass it. The runtime then
+re-validates with the same manifest, envelope and policy before its first
+adapter call.
+
+## Pinned constraints
+
+A goal can carry its own manifest, envelope and ``no_policy`` flag. The
+client sending goals may be an AI agent, so a deployment pins the constraints
+instead (``PinnedConstraints``): the server validates every goal against the
+pinned manifest, envelope and policy, and refuses a goal that tries to set any
+of them before any provider or adapter call.
 
 ## Natural language
 
@@ -41,11 +51,14 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 from urml_validator import ValidationResult, validate
 from urml_validator.schemas.policy import Policy
 
+from urml_ros2_runtime.errors import ValidationRejectedError
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
 from urml_ros2_runtime.substrate.base import ROSAdapter
 
@@ -62,13 +75,14 @@ class ExecuteRequest:
 
     Built from the action goal in the node, or directly in tests. Exactly one
     of ``program`` / ``sentence`` drives the run: a program is executed as-is;
-    a sentence is translated first (requires a provider).
+    a sentence is translated first (requires a provider). ``manifest`` is
+    None when the goal carries none, which is what a pinned server expects.
     """
 
     def __init__(
         self,
         *,
-        manifest: dict[str, Any],
+        manifest: dict[str, Any] | None = None,
         program: dict[str, Any] | None = None,
         sentence: str | None = None,
         envelope: dict[str, Any] | None = None,
@@ -81,6 +95,22 @@ class ExecuteRequest:
         self.envelope = envelope
         self.profiles = tuple(profiles)
         self.no_policy = no_policy
+
+
+@dataclass(frozen=True)
+class PinnedConstraints:
+    """Deployment constraints fixed when the server starts.
+
+    Every goal is validated against these, never against constraints the goal
+    carries. ``policy`` has the ``validate()`` contract (``"DEFAULT"``, None
+    for no compliance pass, or a policy mapping). ``manifest_base_dir`` is the
+    pinned manifest file's directory, for RFC-0005 HBOM-content rules.
+    """
+
+    manifest: dict[str, Any]
+    envelope: dict[str, Any] | None = None
+    policy: PolicyArg = "DEFAULT"
+    manifest_base_dir: Path | None = None
 
 
 def _refused(reason: str) -> dict[str, Any]:
@@ -119,6 +149,7 @@ def execute_request(
     adapter: ROSAdapter,
     provider: Any | None = None,
     feedback: FeedbackSink | None = None,
+    pinned: PinnedConstraints | None = None,
 ) -> dict[str, Any]:
     """Run one URML request through translate? -> validate -> execute.
 
@@ -135,8 +166,40 @@ def execute_request(
         provider: A provider-agnostic ``LLMProvider`` for the NL path. Required
                   iff ``request.sentence`` is set and ``request.program`` is not.
         feedback: Optional sink for phase events (forwarded as action feedback).
+        pinned:   Deployment constraints fixed at server start. When set, the
+                  goal is validated against these, and a goal that sets its own
+                  manifest, envelope or ``no_policy`` is refused before any
+                  provider or adapter call.
     """
-    policy: PolicyArg = None if request.no_policy else "DEFAULT"
+    manifest: dict[str, Any]
+    envelope: dict[str, Any] | None
+    policy: PolicyArg
+    manifest_base_dir: Path | None
+    if pinned is not None:
+        carried = [
+            name
+            for name, is_set in (
+                ("manifest_yaml", request.manifest is not None),
+                ("envelope_yaml", request.envelope is not None),
+                ("no_policy", request.no_policy),
+            )
+            if is_set
+        ]
+        if carried:
+            return _refused(
+                "this action server pins its manifest, envelope and policy; the goal "
+                f"may not set {', '.join(carried)}. Send only the program or sentence "
+                "and the profiles."
+            )
+        manifest = pinned.manifest
+        envelope = pinned.envelope
+        policy = pinned.policy
+        manifest_base_dir = pinned.manifest_base_dir
+    else:
+        manifest = request.manifest or {}
+        envelope = request.envelope
+        policy = None if request.no_policy else "DEFAULT"
+        manifest_base_dir = None
 
     def emit(phase: str, detail: str) -> None:
         if feedback is not None:
@@ -160,8 +223,8 @@ def execute_request(
 
         bridge = Bridge(
             provider=provider,
-            manifest=request.manifest,
-            envelope=request.envelope,
+            manifest=manifest,
+            envelope=envelope,
             profiles=request.profiles,
             policy=policy,
         )
@@ -178,19 +241,33 @@ def execute_request(
     emit("validating", "validating program against manifest + envelope")
     verdict = validate(
         program,
-        request.manifest,
-        request.envelope,
+        manifest,
+        envelope,
         profiles=request.profiles,
         policy=policy,
+        manifest_base_dir=manifest_base_dir,
     )
     if not verdict.accepted:
         return _refused(_render_verdict(verdict))
 
-    # 3. Execute. The runtime is already-validated input, so skip its
-    #    defense-in-depth re-validation pass (we just ran it here).
+    # 3. Execute. The runtime re-validates with the same manifest, envelope
+    #    and policy before its first adapter call (defense in depth).
     emit("executing", f"executing {len(program.get('behavior', {}).get('steps', []))} step(s)")
-    runtime = URMLRuntime(adapter, revalidate=False)
-    result = runtime.execute(program, request.manifest, request.envelope, request.profiles)
+    runtime = URMLRuntime(adapter)
+    try:
+        result = runtime.execute(
+            program,
+            manifest,
+            envelope,
+            request.profiles,
+            policy=policy,
+            manifest_base_dir=manifest_base_dir,
+        )
+    except ValidationRejectedError as exc:
+        rejected = exc.validation_result
+        if isinstance(rejected, ValidationResult):
+            return _refused(_render_verdict(rejected))
+        return _refused(f"validation refused: {exc}")
     emit("done", "execution complete" if result.success else "execution finished with failure")
     return _serialize(result)
 
@@ -226,6 +303,97 @@ def _yaml_or_none(text: str) -> dict[str, Any] | None:
     return parsed if isinstance(parsed, dict) else None
 
 
+def _goal_constraint(text: str) -> dict[str, Any] | None:
+    """A goal's manifest or envelope field: None when blank, else its mapping.
+
+    A non-blank field that is not a YAML mapping becomes an empty mapping, so
+    it still counts as set: a pinned server refuses it, and an unpinned
+    server's validator rejects it.
+    """
+    if not text or not text.strip():
+        return None
+    return _yaml_or_none(text) or {}
+
+
+def request_from_goal(goal: Any) -> ExecuteRequest:
+    """Normalize an ``ExecuteURML`` goal (or any object with its fields)."""
+    return ExecuteRequest(
+        manifest=_goal_constraint(goal.manifest_yaml),
+        program=_yaml_or_none(goal.program_yaml),
+        sentence=goal.sentence or None,
+        envelope=_goal_constraint(goal.envelope_yaml),
+        profiles=tuple(goal.profiles),
+        no_policy=bool(goal.no_policy),
+    )
+
+
+def _load_mapping(path: str, param: str) -> dict[str, Any]:
+    """Load a YAML mapping named by a node parameter, or raise ValueError."""
+    file = Path(path)
+    if not file.is_file():
+        raise ValueError(f"{param} not found: {path}")
+    import yaml
+
+    with file.open(encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        raise ValueError(f"{param} {path} is not a YAML mapping")
+    return data
+
+
+def load_pinned(manifest_path: str, envelope_path: str, policy_path: str) -> PinnedConstraints | None:
+    """Build the server's pinned constraints from its node parameters.
+
+    Returns None when ``manifest_path`` is empty: nothing is pinned and each
+    goal carries its own constraints, which only the mock adapter allows.
+    ``policy_path`` is empty for the bundled default policy, ``none`` to skip
+    the compliance pass, or a policy file. ``envelope_path`` and
+    ``policy_path`` pin nothing without ``manifest_path``, so setting either
+    one alone is a configuration error.
+    """
+    if not manifest_path:
+        if envelope_path or policy_path:
+            raise ValueError(
+                "envelope_path and policy_path are pinned together with "
+                "manifest_path; set manifest_path as well."
+            )
+        return None
+    policy: PolicyArg
+    if not policy_path:
+        policy = "DEFAULT"
+    elif policy_path == "none":
+        policy = None
+    else:
+        policy = _load_mapping(policy_path, "policy_path")
+    return PinnedConstraints(
+        manifest=_load_mapping(manifest_path, "manifest_path"),
+        envelope=_load_mapping(envelope_path, "envelope_path") if envelope_path else None,
+        policy=policy,
+        manifest_base_dir=Path(manifest_path).parent,
+    )
+
+
+def require_pinned_for_adapter(adapter_kind: str, pinned: PinnedConstraints | None) -> None:
+    """Refuse to start a real-adapter server whose goals could pick their own limits.
+
+    The mock adapter moves nothing, so it may run unpinned. Any other adapter
+    drives a robot and needs a pinned manifest and envelope.
+    """
+    if adapter_kind == "mock":
+        return
+    missing: list[str] = []
+    if pinned is None:
+        missing = ["manifest_path", "envelope_path"]
+    elif pinned.envelope is None:
+        missing = ["envelope_path"]
+    if missing:
+        raise RuntimeError(
+            f"the {adapter_kind!r} adapter drives a real robot, so the action server "
+            f"will not start without pinned constraints: set {' and '.join(missing)}. "
+            "Goals then cannot choose their own manifest, envelope or policy."
+        )
+
+
 def main(args: list[str] | None = None) -> None:
     """Console entry point: spin a URML ``ExecuteURML`` action server.
 
@@ -233,6 +401,15 @@ def main(args: list[str] | None = None) -> None:
         adapter        "mock" (default) | "ros2" — substrate backing.
         llm_provider   "none" (default) | "echo" | "anthropic" | "openai".
         ros2_namespace optional namespace forwarded to RclpyAdapter.
+        manifest_path  capability manifest file to pin. When set, goals may
+                       not carry manifest_yaml, envelope_yaml or no_policy.
+        envelope_path  safety envelope file to pin (needs manifest_path).
+        policy_path    "" (default) for the bundled policy, "none" to skip
+                       the compliance pass, or a policy file (needs
+                       manifest_path).
+
+    With any adapter other than "mock", the server will not start unless
+    manifest_path and envelope_path are both set.
     """
     rclpy = _require_rclpy()
     from rclpy.action import ActionServer  # type: ignore[import-not-found,unused-ignore]
@@ -250,13 +427,29 @@ def main(args: list[str] | None = None) -> None:
             self.declare_parameter("adapter", "mock")
             self.declare_parameter("llm_provider", "none")
             self.declare_parameter("ros2_namespace", "")
+            self.declare_parameter("manifest_path", "")
+            self.declare_parameter("envelope_path", "")
+            self.declare_parameter("policy_path", "")
+            # Pinned once, before the server accepts any goal.
+            self._pinned = load_pinned(
+                self._string_param("manifest_path"),
+                self._string_param("envelope_path"),
+                self._string_param("policy_path"),
+            )
+            require_pinned_for_adapter(self._string_param("adapter"), self._pinned)
             self._action_server = ActionServer(
                 self,
                 ExecuteURML,
                 "execute_urml",
                 self._on_goal,
             )
-            self.get_logger().info("URML ExecuteURML action server ready.")
+            self.get_logger().info(
+                "URML ExecuteURML action server ready"
+                + (" (constraints pinned)." if self._pinned is not None else ".")
+            )
+
+        def _string_param(self, name: str) -> str:
+            return str(self.get_parameter(name).get_parameter_value().string_value)
 
         def _build_adapter(self) -> ROSAdapter:
             kind = self.get_parameter("adapter").get_parameter_value().string_value
@@ -290,15 +483,7 @@ def main(args: list[str] | None = None) -> None:
             )
 
         def _on_goal(self, goal_handle: Any) -> Any:
-            g = goal_handle.request
-            req = ExecuteRequest(
-                manifest=_yaml_or_none(g.manifest_yaml) or {},
-                program=_yaml_or_none(g.program_yaml),
-                sentence=g.sentence or None,
-                envelope=_yaml_or_none(g.envelope_yaml),
-                profiles=tuple(g.profiles),
-                no_policy=bool(g.no_policy),
-            )
+            req = request_from_goal(goal_handle.request)
 
             def feedback(event: dict[str, Any]) -> None:
                 fb = ExecuteURML.Feedback()
@@ -313,6 +498,7 @@ def main(args: list[str] | None = None) -> None:
                     adapter=adapter,
                     provider=self._build_provider(),
                     feedback=feedback,
+                    pinned=self._pinned,
                 )
             finally:
                 close = getattr(adapter, "close", None)
@@ -335,7 +521,12 @@ def main(args: list[str] | None = None) -> None:
             return result
 
     rclpy.init(args=args)
-    node = URMLActionServerNode()
+    try:
+        node = URMLActionServerNode()
+    except (RuntimeError, ValueError) as exc:
+        # Unpinned real adapter or a bad pinned file: refuse to start.
+        rclpy.shutdown()
+        raise SystemExit(f"urml-ros2-action-server: {exc}") from exc
     try:
         rclpy.spin(node)
     finally:

@@ -72,14 +72,14 @@ Vendor lock-in here is explicitly prohibited by [`CLAUDE.md`](../../CLAUDE.md) �
                    │                  │
                    ▼                  │
               providers/           validator
-              (anthropic.py,       (separate
-               openai.py,           process)
+              (anthropic.py,       (in-process
+               openai.py,           call)
                ollama.py,
                llama_cpp.py,
                echo.py)
 ```
 
-The bridge is small. The intelligence lives in the LLM (which is configured, not built here) and in the validator (which is a separate process). The bridge orchestrates.
+The bridge is small. The intelligence lives in the LLM (which is configured, not built here) and in the validator, which the bridge imports and calls in-process on every emission. The bridge orchestrates.
 
 ## Language
 
