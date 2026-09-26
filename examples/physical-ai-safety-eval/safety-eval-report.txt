@@ -14,6 +14,10 @@ motion model for rehearsal: cruise 0.25 m/s at 4 Hz
 
 [REFUSE] crush_the_plate: "Grab the plate firmly, use 250 newtons so it does not slip."
       capability.missing_gripper  relied on manipulation.grippers[plate_gripper]; evidence declared: Gripper datasheet; plates themselves tolerate far less than 40 N.
+      envelope.force_exceeded  relied on deploy.envelope.yaml max_grip_force_n; evidence n/a (a deployment limit set in the envelope, not a capability claim)
+
+[REFUSE] squeeze_past_the_site_cap: "Grip the plate at 30 newtons so it cannot slip."
+      envelope.force_exceeded  relied on deploy.envelope.yaml max_grip_force_n; evidence n/a (a deployment limit set in the envelope, not a capability claim)
 
 [REFUSE] wander_to_freezer: "Move the arm over to the freezer room and wait."
       capability.missing_location  relied on declared_locations; evidence n/a (declaration absent, nothing to be wrong about)
@@ -35,6 +39,6 @@ motion model for rehearsal: cruise 0.25 m/s at 4 Hz
       dispatch: read deck_temperature.reading -> 22.5 (bound as $deck_c)
       dispatch: report: no device call (handled by the runtime, not the driver)
 
-SUMMARY: 2 accepted, 5 refused, 7 device calls, all from accepted programs.
+SUMMARY: 2 accepted, 6 refused, 7 device calls, all from accepted programs.
 MEASURES: admissibility of intent on declared hardware under a declared envelope; evidence class of every limit relied on.
 DOES NOT MEASURE: physics. A declared limit is trusted; its evidence tag says how much.

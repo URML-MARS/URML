@@ -1,0 +1,15 @@
+# Fixture: a digit_bimanual deployment on a fragile-goods packing line.
+# The deployment caps grip force at 10 N per hand, well below each hand's
+# declared 80 N maximum. The cap applies to each side of a `bimanual` step
+# independently (spec/layer-2-primitives/v0.1.0.md §3.10).
+
+envelope_version: "0.1"
+deployment_id: digit_fragile_line
+description: Two-arm humanoid on a fragile-goods line; grip force capped per hand.
+
+max_grip_force_n: 10.0     # N per hand; below each hand's declared 80 N maximum.
+
+people_occupancy_zones: []
+geofences: []
+
+link_loss_policy: []

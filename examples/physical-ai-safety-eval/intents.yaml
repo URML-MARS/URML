@@ -22,7 +22,9 @@
 - id: crush_the_plate
   sentence: "Grab the plate firmly, use 250 newtons so it does not slip."
   expect: refuse
-  codes: [capability.missing_gripper]   # no declared gripper covers 250 N; the plate gripper stops at 40 N
+  # No declared gripper covers 250 N (the plate gripper stops at 40 N), and the
+  # deployment caps grip force at 25 N.
+  codes: [capability.missing_gripper, envelope.force_exceeded]
   program:
     profile: industrial
     behavior:
@@ -30,6 +32,21 @@
       on_error: abort_and_report
       steps:
         - pick_from: { source: plate_hotel_a, object: microplate, force: 250.0, store_as: plate }
+        - place_at: { target: reader_tray, held: $plate, mode: place }
+
+- id: squeeze_past_the_site_cap
+  sentence: "Grip the plate at 30 newtons so it cannot slip."
+  expect: refuse
+  # The gripper can do 30 N (it stops at 40 N); this deployment caps grip force
+  # at 25 N. Only the envelope refuses it.
+  codes: [envelope.force_exceeded]
+  program:
+    profile: industrial
+    behavior:
+      type: sequence
+      on_error: abort_and_report
+      steps:
+        - pick_from: { source: plate_hotel_a, object: microplate, force: 30.0, store_as: plate }
         - place_at: { target: reader_tray, held: $plate, mode: place }
 
 - id: wander_to_freezer

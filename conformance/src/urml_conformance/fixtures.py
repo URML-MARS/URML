@@ -254,6 +254,9 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     # RFC-0022: warehouse domain profile.
     "warehouse_default": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_default.yaml",
     "warehouse_with_occupancy_zone": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_with_occupancy_zone.yaml",
+    # Envelope coverage: caps and zones that pin every spatial and force check.
+    "industrial_cell_guarded": _VALIDATOR_FIXTURES / "envelopes" / "industrial_cell_guarded.yaml",
+    "biped_gentle_grip": _VALIDATOR_FIXTURES / "envelopes" / "biped_gentle_grip.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

@@ -3209,6 +3209,10 @@ def _check_envelope(
         out.extend(_check_envelope_scan(args, manifest, envelope, path))
     elif name == "grasp":
         out.extend(_check_envelope_grasp(args, manifest, envelope, path))
+    elif name == "pick_from":
+        out.extend(_check_envelope_pick_from(args, manifest, envelope, path))
+    elif name == "bimanual":
+        out.extend(_check_envelope_bimanual(args, manifest, envelope, path))
     elif name == "hover":
         out.extend(_check_envelope_hover(args, envelope, path))
     elif name == "take_off":
@@ -3505,31 +3509,79 @@ def _check_envelope_return_to_home(
     return out
 
 
+def _check_grip_force_cap(
+    primitive: str,
+    force: Any,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+    label: str | None = None,
+) -> list[ValidationError]:
+    """A requested grip force must be at or below the strictest force cap.
+
+    The cap is the strictest of the declared grippers' ``force_max_n`` and the
+    envelope's ``max_grip_force_n``. Shared by ``grasp``, ``pick_from`` (which
+    inherits the grasp checks, spec §3.6) and each side of ``bimanual``
+    (spec §3.10), so the three verbs cannot disagree about the limit.
+    ``label`` names the argument in the message (default ``<primitive>.force``).
+    """
+    force_val = _resolve_force(force)
+    if force_val is None:
+        return []
+    grippers = manifest.manipulation.grippers if manifest.manipulation else []
+    gripper_max = max((g.force_max_n for g in grippers), default=None)
+    envelope_max = envelope.max_grip_force_n if envelope else None
+    cap = _strictest(gripper_max, envelope_max)
+    if cap is None or force_val <= cap:
+        return []
+    return [
+        _err(
+            ErrorCode.ENVELOPE_FORCE_EXCEEDED,
+            primitive,
+            path,
+            f"{label or primitive + '.force'} ({force_val} N) exceeds the strictest "
+            f"declared force cap ({cap} N).",
+            field="force",
+            suggestion=f"Reduce the grasp force to at most {cap} N.",
+        )
+    ]
+
+
 def _check_envelope_grasp(
     args: GraspArgs,
     manifest: CapabilityManifest,
     envelope: SafetyEnvelope | None,
     path: list[str],
 ) -> list[ValidationError]:
+    return _check_grip_force_cap("grasp", args.force, manifest, envelope, path)
+
+
+def _check_envelope_pick_from(
+    args: PickFromArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """pick_from inherits the grasp force cap (spec §3.6)."""
+    return _check_grip_force_cap("pick_from", args.force, manifest, envelope, path)
+
+
+def _check_envelope_bimanual(
+    args: BimanualArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """Each grasp side of a bimanual step meets the grasp force cap (spec §3.10)."""
     out: list[ValidationError] = []
-    force_val = _resolve_force(args.force)
-    if force_val is None:
-        return out
-    grippers = manifest.manipulation.grippers if manifest.manipulation else []
-    gripper_max = max((g.force_max_n for g in grippers), default=None)
-    envelope_max = envelope.max_grip_force_n if envelope else None
-    cap = _strictest(gripper_max, envelope_max)
-    if cap is not None and force_val > cap:
-        out.append(
-            _err(
-                ErrorCode.ENVELOPE_FORCE_EXCEEDED,
-                "grasp",
-                path,
-                f"grasp.force ({force_val} N) exceeds the strictest declared force cap ({cap} N).",
-                field="force",
-                suggestion=f"Reduce the grasp force to at most {cap} N.",
+    for side, sub in (("left", args.left), ("right", args.right)):
+        if isinstance(sub, GraspArgs):
+            out.extend(
+                _check_grip_force_cap(
+                    "bimanual", sub.force, manifest, envelope, path + [side],
+                    label=f"bimanual.{side}.force",
+                )
             )
-        )
     return out
 
 

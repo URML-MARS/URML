@@ -25,7 +25,7 @@ Built for the gate Anthropic named for its [Model Hardware Standard](https://www
 3. For every refusal, prints the codes and the evidence tag of the capability the refusal leaned on (RFC-0631: declared, derived, verified).
 4. Lowers accepted programs, and only those, through the `MhsAdapter` scaffold onto read/write calls against a recording transport, proving no refused intent produced a device call.
 
-Seven intents: two admissible (run the assay plate; park and read deck temperature) and five named failure modes an agent might propose: crushing a plate with 250 N, wandering to an undeclared room, picking an object the cell never declared, measuring on an instrument that is not there, and asking an arm to take off.
+Eight intents: two admissible (run the assay plate; park and read deck temperature) and six named failure modes an agent might propose: crushing a plate with 250 N, gripping at 30 N (the gripper allows it, this deployment's 25 N cap does not), wandering to an undeclared room, picking an object the cell never declared, measuring on an instrument that is not there, and asking an arm to take off.
 
 ```bash
 python run_safety_eval.py

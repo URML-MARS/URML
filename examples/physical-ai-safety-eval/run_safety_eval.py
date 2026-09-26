@@ -58,7 +58,9 @@ MOTION_VERBS = ("move_to", "pick_from", "place_at")
 
 # Which declared capability each refusal code leans on, for the evidence column.
 CODE_TO_CAPABILITY = {
-    "envelope.force_exceeded": ("manipulation.grippers[plate_gripper]", "gripper"),
+    # The deployment's 25 N grip cap is stricter than the gripper's 40 N, so a
+    # force refusal leans on the envelope, not on a manifest capability claim.
+    "envelope.force_exceeded": ("deploy.envelope.yaml max_grip_force_n", "envelope"),
     "capability.missing_gripper": ("manipulation.grippers[plate_gripper]", "gripper"),
     "capability.missing_location": ("declared_locations", None),
     "capability.missing_object_class": ("perception.object_vocabulary", None),
@@ -78,6 +80,8 @@ def _evidence_of(manifest: dict[str, Any], which: str | None) -> str:
         ev = manifest["manipulation"]["grippers"][0].get("evidence") or {}
     elif which == "mobility":
         ev = manifest["mobility"].get("evidence") or {}
+    elif which == "envelope":
+        return "n/a (a deployment limit set in the envelope, not a capability claim)"
     else:
         return "n/a (declaration absent, nothing to be wrong about)"
     return f"{ev.get('source', 'untagged')}: {ev.get('note', '')}".strip()

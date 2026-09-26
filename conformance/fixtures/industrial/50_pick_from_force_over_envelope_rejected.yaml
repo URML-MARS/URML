@@ -1,0 +1,27 @@
+name: industrial/pick_from_force_over_envelope_rejected
+description: >
+  pick_from inherits the grasp force checks (spec/layer-2-primitives/v0.1.0.md
+  §3.6). The program asks for 20 N. The gripper covers 1 to 25 N, so the
+  capability check passes, but the hand-loading envelope caps grip force at
+  15 N. Pass 3 rejects with envelope.force_exceeded before anything moves.
+
+manifest: industrial_cell
+envelope: industrial_cell_guarded
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: pick_bin
+          object: widget
+          force: 20.0
+          store_as: part
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.force_exceeded
