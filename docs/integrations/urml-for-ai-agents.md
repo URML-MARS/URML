@@ -31,6 +31,8 @@ You hold the language work. URML guarantees the result is *checkable* against a 
 
 The safety boundary is step 3, not your model. A program that asks for a capability the robot has not declared, or that violates the safety envelope, is rejected. It cannot revise its way out of a hardware-provenance failure. Nothing reaches an actuator until the validator accepts it.
 
+The rules step 3 checks against belong to the operator, not to your agent. Through the [MCP server](../../reference/mcp-server/README.md#pin-the-deployment), the operator pins the robot's manifest and the site's envelope when the server starts: your agent proposes the program, and the pinned files decide. A call that passes a different manifest or envelope is refused, and the real adapters do not run without the pins, so an agent cannot pick a permissive manifest or drop the envelope.
+
 ## Prove it offline first (no API key, no network, no robot)
 
 Start here. URML ships a hermetic path: a built-in `echo` provider that returns a canned emission instead of calling a model, and a `mock` adapter that records calls instead of touching hardware. The whole loop runs deterministically, offline, against files already committed in this repository.
