@@ -275,9 +275,10 @@ Links every draft uses:
 
 ### 6.1 LinkedIn post (founder profile; lead with the refusal demo and the before/after numbers; link to the blog)
 
-> I pointed a compromised AI model at three robots: a cobot arm beside an
+> I pointed a scripted stand-in for a compromised AI model at three simulated
+> robots (a recording adapter in place of each): a cobot arm beside an
 > operator, a home robot near a nursery, and a drone near a spectator stand.
-> It tried seven unsafe commands. All seven were refused, and URML sent zero
+> It tried seven unsafe programs. All seven were refused, and URML sent zero
 > commands for them.
 >
 > The checkpoint that refused them is not another model. It is deterministic
@@ -297,7 +298,7 @@ Links every draft uses:
 > targets, people outside the declared zones, harm that stays inside every
 > limit. Emergency stops and safety-rated controllers stay.
 >
-> Open source, runs offline in seconds: <blog link>
+> Open source, pre-stable (v0.x), runs offline in seconds: <blog link>
 
 ### 6.2 Show HN (founder posts; title + first comment)
 
@@ -328,8 +329,8 @@ First comment:
 > Known limits: it checks the targets a program names, not the path between
 > them; zones are static; our ROS 2 and PX4 adapters drop the requested speed
 > today; code that calls an adapter directly skips it. It is not a safety
-> function, so e-stops and safety-rated controls stay. Apache 2.0, runs
-> offline. An attack that gets through is the most useful reply.
+> function, so e-stops and safety-rated controls stay. Apache 2.0, pre-stable
+> (v0.x), runs offline. An attack that gets through is the most useful reply.
 
 ### 6.3 Email to the RoboGuard authors (founder sends from greenvh@gmail.com)
 
@@ -340,8 +341,8 @@ To: Zachary Ravichandran and colleagues, University of Pennsylvania
 >
 > Hi Zachary,
 >
-> I read RoboGuard and RoboPAIR with real interest. I maintain URML, an open
-> language for robot programs. Its validator checks every program against
+> I read RoboGuard and RoboPAIR with real interest. I maintain URML, an open,
+> pre-stable (v0.x) language for robot programs. Its validator checks every program against
 > limits people declared (the maker's capability manifest, and the site's
 > force, speed and altitude caps, fences and people zones) before any command.
 > It is plain deterministic code, with no model in the trust path.
@@ -349,7 +350,7 @@ To: Zachary Ravichandran and colleagues, University of Pennsylvania
 > This week we attacked it with a scripted, fully jailbroken model. Before our
 > fixes, 21 of 40 attacks got through. After them, 0 of 40. Six harmful
 > requests that stay inside every declared limit still pass. That is the
-> contextual ground RoboGuard covers and a limit check cannot. The write-up,
+> kind of contextual ground RoboGuard targets and a limit check cannot. The write-up,
 > with the demo and the committed rows: <blog link>
 >
 > My one question: would a declared-limit gate like this be useful below

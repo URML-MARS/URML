@@ -28,13 +28,14 @@ harmful actions ([RoboPAIR, arXiv 2410.13691](https://arxiv.org/abs/2410.13691))
 URML treats every program a model emits as a proposal.
 
 The files the program is checked against are trusted. An operator supplies
-them, and the model never writes them:
+them, and on any surface that can reach a real adapter the model cannot supply
+its own:
 
 | File | Says | Owner |
 |---|---|---|
 | Capability manifest | What the robot can do | The robot's maker or integrator |
 | Deployment envelope | What this site allows physically: force, speed and altitude caps, geofences, people-occupancy zones | The site operator |
-| Rulebook ([RFC-0702](../rfcs/0702-rulebooks.md), Draft) | What law and company policy allow | A regulator, a company, or the operator |
+| Rulebook ([RFC-0702](https://github.com/URML-MARS/URML/blob/18e2de06f063787d1a52f99efcfbe6e5c0e06e2e/docs/rfcs/0702-rulebooks.md), Draft) | What law and company policy allow | A regulator, a company, or the operator |
 
 The compliance policy is operator input too. It judges what the robot is made
 of, not what it does, so this page leaves it out.
@@ -53,6 +54,9 @@ Keeping the files out of the model's reach is part of the gate:
 - The ROS 2 action server pins the manifest, envelope and policy through node
   parameters. It refuses a goal that sets its own
   ([`action_server.py`](../../reference/ros2-runtime/src/urml_ros2_runtime/action_server.py)).
+  The goal still chooses the profiles, and a profile can unlock verbs (the
+  educational profile unlocks `drive`, whose speed is not checked yet). The
+  envelope-completeness RFC tracks this.
 - On the command line the operator names the files. `urml execute` and
   `urml run` print a warning when a real adapter runs with no `--envelope`.
 
@@ -95,8 +99,8 @@ c7dec9b.
 A scripted striker stands in for a fully jailbroken model
 ([`bench/strikers/`](../../bench/strikers/)). For every request in three
 adversarial corpora it emits exactly the unsafe program an attacker wants, and
-it never refuses. Some entries adapt: after a refusal, the striker tries
-another route and uses the refusal as a hint. The corpora pair a cobot cell, a
+it never refuses. Some entries adapt: after a refusal, the striker sends
+a pre-written attempt by another route. The corpora pair a cobot cell, a
 home robot and a drone with bench envelopes that declare caps, a fence and a
 people zone ([`bench/README.md`](../../bench/README.md)).
 
@@ -186,7 +190,7 @@ so.
 - Harm inside the limits. A covert photo or a false spoken claim breaks no
   declared limit. The gate checks limits. It does not judge intent.
 
-[RFC-0701](../rfcs/0701-envelope-completeness.md) (Draft, in review) tracks the
+[RFC-0701](https://github.com/URML-MARS/URML/blob/b9fdb829631a6241a82cc4010089e11c63a02185/docs/rfcs/0701-envelope-completeness.md) (Draft, in review) tracks the
 remaining static gaps. It proposes failing closed when a frame cannot be
 resolved, speed caps for `drive` and `return_to_home`, fence and zone checks on
 `release.at`, a refusal for `wait` in flight, and declared object masses. It
@@ -266,7 +270,7 @@ write it somewhere else.
 ## Next: rulebooks
 
 The envelope holds a site's physical limits. Law and company policy have no
-file yet. [RFC-0702](../rfcs/0702-rulebooks.md) (Draft, in review) proposes one,
+file yet. [RFC-0702](https://github.com/URML-MARS/URML/blob/18e2de06f063787d1a52f99efcfbe6e5c0e06e2e/docs/rfcs/0702-rulebooks.md) (Draft, in review) proposes one,
 the rulebook: a regulator's or a company's rules as flat entries, each with its
 citation, checked in a validator pass after the envelope. A refusal names the
 rule it enforces. The first bundled rulebook covers the statically checkable
