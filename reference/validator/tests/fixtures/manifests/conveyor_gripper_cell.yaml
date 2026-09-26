@@ -1,0 +1,76 @@
+# Fixture: a manipulation cell whose (non-dexterous) parallel-jaw gripper
+# declares an `interception` block limited to `tracked` (RFC-0671). It can pick
+# a part off a moving conveyor, but it cannot catch a ballistic object. This is
+# the RFC's point that interception is not restricted to dexterous hands. US
+# provenance so the bundled US-federal default policy accepts it.
+
+manifest_version: "0.1"
+robot_id: conveyor_gripper_cell_1
+description: Arm with a fast parallel-jaw gripper that declares tracked interception (RFC-0671).
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: conveyor_pick
+    pose: { x: 0.50, y: 0.0, z: 0.15 }
+    frame: cell
+    description: Pick point over the moving conveyor.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - line_ready
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: fast_jaw
+      kind: servo_electric
+      force_min_n: 5.0
+      force_max_n: 60.0
+      accepted_classes: [part, ball]
+      movable: true
+      interception:
+        modes: [tracked]
+        closing_time_ms: 45
+        reaction_latency_ms: 30
+        max_target_speed_m_s: 2.0
+  reachable_workspace_m: 0.85
+
+perception:
+  cameras:
+    - name: line_cam
+      movable: false
+      supports_photo: true
+  object_vocabulary:
+    - part
+    - ball
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: gripper_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/gripper_controller.cdx.json
+        sha256: "5858585858585858585858585858585858585858585858585858585858585858"

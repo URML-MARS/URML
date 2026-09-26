@@ -201,6 +201,19 @@ GraspType = Literal[
 ]
 
 
+# How the target of a `grasp` is moving (RFC-0671). `static` (the default)
+# preserves pre-RFC-0671 behavior: the target is at rest or quasi-static.
+# `tracked` is a continuous observable path (a conveyor part, a hand-over);
+# `ballistic` is free flight (a thrown object). A non-`static` motion is an
+# interception, admissible only on a gripper that declares it can intercept.
+TargetMotion = Literal["static", "tracked", "ballistic"]
+
+# The interception motion classes a gripper can declare (RFC-0671): the
+# non-static subset of `TargetMotion`. `static` is not an interception, so it
+# is never declared.
+InterceptionMode = Literal["tracked", "ballistic"]
+
+
 # RFC-0631: how a capability claim was established. A manifest line ("this robot
 # has a movable camera", "this gripper closes to 40 N", "this reach limit is 0.8
 # m") is otherwise an unverifiable assertion the validator is forced to trust.

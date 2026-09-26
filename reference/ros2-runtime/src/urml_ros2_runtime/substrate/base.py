@@ -230,6 +230,7 @@ class ROSAdapter(Protocol):
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
         grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         """Grasp or release. Used by `grasp`, `release`.
 
@@ -241,6 +242,11 @@ class ROSAdapter(Protocol):
         `grasp_type` (RFC-0586) is the dexterous-hand grasp strategy selected by
         the intent, or `None` for an ordinary gripper; the runtime records it in
         the audit and a dexterous substrate may map it to a hand preset.
+
+        `target_motion` (RFC-0671) is `static` (or `None`) for an ordinary grasp,
+        or `tracked`/`ballistic` for an interception; the validator has already
+        confirmed the addressed gripper declares that mode, so an interception
+        substrate dispatches on it and any other records it and proceeds.
         """
         ...
 

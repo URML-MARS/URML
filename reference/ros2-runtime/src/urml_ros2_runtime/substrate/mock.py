@@ -186,6 +186,7 @@ class MockROSAdapter:
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
         grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self.call_log.append(
             {
@@ -197,6 +198,7 @@ class MockROSAdapter:
                 "release_mode": release_mode,
                 "release_at": release_at,
                 "grasp_type": grasp_type,
+                "target_motion": target_motion,
             }
         )
         if self._manipulation_override is not None:

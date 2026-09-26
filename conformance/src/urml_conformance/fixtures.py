@@ -208,6 +208,9 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "optimus_biped": _VALIDATOR_FIXTURES / "manifests" / "optimus_biped.yaml",
     # RFC-0586: dexterous (multi-fingered) hand + grasp_type selector.
     "leap_hand_cell": _VALIDATOR_FIXTURES / "manifests" / "leap_hand_cell.yaml",
+    # RFC-0671: dynamic-target grasping (interception-declaring grippers).
+    "interception_hand_cell": _VALIDATOR_FIXTURES / "manifests" / "interception_hand_cell.yaml",
+    "conveyor_gripper_cell": _VALIDATOR_FIXTURES / "manifests" / "conveyor_gripper_cell.yaml",
     "figure_biped": _VALIDATOR_FIXTURES / "manifests" / "figure_biped.yaml",
     "apollo_biped": _VALIDATOR_FIXTURES / "manifests" / "apollo_biped.yaml",
     "neo_biped": _VALIDATOR_FIXTURES / "manifests" / "neo_biped.yaml",

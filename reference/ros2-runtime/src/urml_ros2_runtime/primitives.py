@@ -405,6 +405,7 @@ def exec_grasp(
         release_at=None,
         arm=args.arm,
         grasp_type=args.grasp_type,
+        target_motion=args.target_motion,
     )
     return PrimitiveOutcome(success=result.success, reason=result.reason, raw=result)
 
@@ -449,6 +450,7 @@ def exec_bimanual(
                     release_at=None,
                     arm=side,
                     grasp_type=sub.grasp_type,
+                    target_motion=sub.target_motion,
                 )
             )
         else:

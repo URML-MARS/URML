@@ -1,0 +1,27 @@
+name: manipulation/target_motion_mode_not_declared_rejected
+description: >
+  RFC-0671 negative: a grasp requests target_motion `ballistic` on the conveyor
+  gripper, whose `interception` block declares only `tracked`. The gripper can
+  intercept a moving conveyor part but not catch a thrown object, so Pass 2
+  rejects the program with capability.target_motion_mode_not_declared. A
+  non-dexterous gripper being a legitimate tracked interceptor is the point.
+
+manifest: conveyor_gripper_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: ball, store_as: incoming_ball }
+      - grasp:
+          target: $incoming_ball
+          force: firm
+          target_motion: ballistic
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.target_motion_mode_not_declared
