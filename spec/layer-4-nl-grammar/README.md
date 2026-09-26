@@ -14,7 +14,7 @@
 
 # Layer 4 — Natural Language Interface
 
-**Status:** Drafted. The normative specification is [`v0.2.0.md`](v0.2.0.md) — the published prompt contract: the system-prompt surface, the few-shot library, the bounded validator-feedback revision loop, the provider-neutral interface, and (v0.2.0, RFC-0286) the roster-aware fleet (multi-member) assembly (Layer 4 has no dedicated RFC; the contract is the shipped `reference/llm-bridge/`). This README is the orientation; `v0.2.0.md` is what an integration must implement. The prior [`v0.1.0.md`](v0.1.0.md) is retained for history.
+**Status:** Drafted. The normative specification is [`v0.3.0.md`](v0.3.0.md) — the published prompt contract: the system-prompt surface, the few-shot library, the bounded validator-feedback revision loop, the provider-neutral interface, (v0.2.0, RFC-0286) the roster-aware fleet (multi-member) assembly, and (v0.3.0, RFC-0700) the opt-in clarify mode, off by default (Layer 4 has no dedicated RFC; the contract is the shipped `reference/llm-bridge/`). This README is the orientation; `v0.3.0.md` is what an integration must implement. The prior [`v0.1.0.md`](v0.1.0.md) and [`v0.2.0.md`](v0.2.0.md) are retained for history.
 
 ## Purpose
 
@@ -38,10 +38,11 @@ Layer 4 must **not** include:
 
 ## What the normative document specifies
 
-[`v0.2.0.md`](v0.2.0.md) carries the items below. Note its §5: the interactive
-disambiguation protocol described next is **not** in v0.1 — ambiguity is
-resolved by a manifest-grounded default or a `report(status: failure)`, and
-the only loop is the deterministic validator-feedback loop.
+[`v0.3.0.md`](v0.3.0.md) carries the items below. Its §2.6 (RFC-0700) is the
+accepted shape of the disambiguation protocol: one operator-enabled,
+budgeted clarifying question, off by default. With the mode off, ambiguity
+is resolved by a manifest-grounded default or a `report(status: failure)`,
+and the only loop is the deterministic validator-feedback loop.
 
 - The JSON Schema for a complete URML program.
 - The few-shot example library: at least three examples per supported profile, demonstrating the common cases plus at least one error-handling case.
