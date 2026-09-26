@@ -3835,7 +3835,8 @@ class _SpatialTarget:
     geofence altitude bands; ``None`` judges the footprint only. ``occupancy``
     is ``"point"`` (the point may not lie in a zone), ``"overlap"`` (the region
     may not share any point with a zone) or ``"none"``. ``check_ceiling``
-    compares ``z`` with the strictest altitude cap.
+    compares ``z`` with the strictest altitude cap. ``radius`` widens every
+    point into a disk that must fit inside a geofence (detect.where.within).
     """
 
     label: str
@@ -3845,6 +3846,7 @@ class _SpatialTarget:
     z: float | None = None
     occupancy: Literal["point", "overlap", "none"] = "point"
     check_ceiling: bool = False
+    radius: float | None = None
 
 
 def _place_target(
@@ -3857,6 +3859,7 @@ def _place_target(
     footprint_only: bool = False,
     occupancy: bool = True,
     bare_label: bool = False,
+    radius: float | None = None,
 ) -> _SpatialTarget | None:
     """The spatial target for a place argument, or None when the name does not resolve.
 
@@ -3868,7 +3871,8 @@ def _place_target(
     An area is judged vertex by vertex against the geofences only, because the
     runtime may stop anywhere inside it; occupancy for an area target is not
     specified yet. ``bare_label`` keeps the ``move_to.location`` message wording
-    that predates the resolver.
+    that predates the resolver. ``radius`` widens each point into a disk that
+    must fit inside a geofence.
     """
     place = _resolve_place(name, manifest, station=station)
     if place is None:
@@ -3884,6 +3888,7 @@ def _place_target(
                 for i, vertex in enumerate(place.vertices)
             ),
             occupancy="none",
+            radius=radius,
         )
     point_label = f"{primitive}.{field}" if bare_label else label
     return _SpatialTarget(
@@ -3894,6 +3899,7 @@ def _place_target(
         z=None if footprint_only else place.z,
         occupancy="point" if occupancy else "none",
         check_ceiling=not footprint_only,
+        radius=radius,
     )
 
 
@@ -3981,7 +3987,8 @@ def _collect_spatial_targets(
     - dock: the station named by ``at``, or the default first station (§2.2);
     - hover.over: a named place; a ``$ref`` is a runtime binding (§2.3);
     - land.at: the landing footprint and occupancy, no altitude (§3.4);
-    - detect.where.near: the search region against the geofences (§2.8);
+    - detect.where.near: the search region against the geofences, a disk of
+      radius ``where.within`` when one is given (§2.8);
     - scan: the area as one region (§2.9).
     """
     name = step.primitive_name
@@ -4024,7 +4031,13 @@ def _collect_spatial_targets(
         if near is not None and not near.startswith("$"):
             found.append(
                 _place_target(
-                    "detect", "where.near", near, manifest, footprint_only=True, occupancy=False
+                    "detect",
+                    "where.near",
+                    near,
+                    manifest,
+                    footprint_only=True,
+                    occupancy=False,
+                    radius=args.where.within,
                 )
             )
     elif name == "scan":
@@ -4098,6 +4111,50 @@ def _points_in_frame(
     return out
 
 
+def _point_segment_distance(
+    p: tuple[float, float], a: tuple[float, float], b: tuple[float, float]
+) -> float:
+    """Distance from point ``p`` to the closed segment a-b."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length_sq = dx * dx + dy * dy
+    if length_sq == 0.0:
+        return hypot(p[0] - a[0], p[1] - a[1])
+    t = max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length_sq))
+    return hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy))
+
+
+def _disk_in_any_geofence(
+    center: tuple[float, float],
+    radius: float,
+    frame: str,
+    envelope: SafetyEnvelope,
+    frames: Mapping[str, Frame],
+) -> tuple[bool, list[str]]:
+    """True iff the disk fits inside the footprint of at least one applicable geofence.
+
+    A disk fits when its center is inside the polygon and no edge comes closer
+    than ``radius``. Geofences in another frame apply through the frame graph
+    (RFC-0290); when none applies, the check abstains and returns True.
+    """
+    applicable: list[str] = []
+    for g in envelope.geofences:
+        if g.frame == frame:
+            gpoint = center
+        else:
+            resolved = transform_point_between((center[0], center[1], 0.0), frame, g.frame, frames)
+            if resolved is None:
+                continue
+            gpoint = (resolved[0], resolved[1])
+        applicable.append(g.name)
+        vertices = g.vertices
+        if _point_in_polygon(gpoint, vertices) and all(
+            _point_segment_distance(gpoint, vertices[i], vertices[(i + 1) % len(vertices)]) >= radius
+            for i in range(len(vertices))
+        ):
+            return True, [g.name]
+    return not applicable, applicable
+
+
 def _check_envelope_place_altitude(
     name: str,
     targets: list[_SpatialTarget],
@@ -4162,6 +4219,26 @@ def _check_envelope_geofence(
             ok, applicable, reason = _check_point_in_any_geofence(
                 point, target.frame, envelope, frames_by_name, z=target.z
             )
+            if ok and target.radius:
+                # The point is inside; its search disk must fit inside too.
+                fits, fences = _disk_in_any_geofence(
+                    point, target.radius, target.frame, envelope, frames_by_name
+                )
+                if not fits:
+                    out.append(
+                        _err(
+                            ErrorCode.ENVELOPE_GEOFENCE_VIOLATION,
+                            name,
+                            path,
+                            f"{label} ({point[0]}, {point[1]}) with search radius "
+                            f"{target.radius} m in frame {target.frame!r} reaches outside "
+                            f"every declared geofence ({fences!r}).",
+                            field=field,
+                            suggestion="Reduce the search radius, search near a place farther "
+                            "from the fence, or widen the geofence.",
+                        )
+                    )
+                continue
             if ok:
                 continue
             if reason == "altitude":

@@ -588,6 +588,44 @@ class TestFlightPlaces:
         result = validate(program, _drone_manifest(), _zoned(), policy=None)
         assert result.accepted, result.codes()
 
+    def test_detect_search_radius_inside_geofence_accepted(self) -> None:
+        # roof (10, 5) is 5 m from the fence edge at x 15; a 3 m radius fits.
+        where = {"near": "roof", "within": 3.0}
+        program = _flight({"detect": {"object": "vehicle", "where": where}})
+        result = validate(program, _drone_manifest(), _geofenced(), policy=None)
+        assert result.accepted, result.codes()
+
+    def test_detect_search_radius_crossing_the_fence_rejected(self) -> None:
+        # An 8 m radius around roof reaches x 18, past the fence edge at x 15.
+        where = {"near": "roof", "within": 8.0}
+        program = _flight({"detect": {"object": "vehicle", "where": where}})
+        result = validate(program, _drone_manifest(), _geofenced(), policy=None)
+        assert "envelope.geofence_violation" in _codes_for(result, "detect")
+
+    def test_detect_search_radius_without_geofence_accepted(self) -> None:
+        where = {"near": "roof", "within": 8.0}
+        program = _flight({"detect": {"object": "vehicle", "where": where}})
+        assert validate(program, _drone_manifest(), None, policy=None).accepted
+
+    def test_detect_search_radius_abstains_without_a_transform(self) -> None:
+        manifest = _drone_manifest()
+        manifest["frames"].append({"name": "cam", "parent": "agl"})
+        manifest["declared_locations"].append(
+            {"name": "gate", "pose": {"x": 0.0, "y": 0.0}, "frame": "cam"}
+        )
+        where = {"near": "gate", "within": 500.0}
+        program = _flight({"detect": {"object": "vehicle", "where": where}})
+        assert validate(program, manifest, _geofenced(), policy=None).accepted
+
+    def test_detect_search_radius_around_an_area_checks_each_vertex(self) -> None:
+        # field spans x 0..30; with a fence out to x 32, a 1 m radius fits, 3 m does not.
+        wide = [[-5.0, -5.0], [32.0, -5.0], [32.0, 15.0], [-5.0, 15.0]]
+        fits = _flight({"detect": {"object": "vehicle", "where": {"near": "field", "within": 1.0}}})
+        assert validate(fits, _drone_manifest(), _geofenced(vertices=wide), policy=None).accepted
+        spills = _flight({"detect": {"object": "vehicle", "where": {"near": "field", "within": 3.0}}})
+        result = validate(spills, _drone_manifest(), _geofenced(vertices=wide), policy=None)
+        assert "envelope.geofence_violation" in _codes_for(result, "detect")
+
     def test_move_to_named_location_above_the_ceiling_rejected(self) -> None:
         program = _flight({"move_to": {"location": "tower_top"}})
         result = validate(program, _drone_manifest(), None, policy=None)
