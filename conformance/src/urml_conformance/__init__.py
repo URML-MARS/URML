@@ -17,6 +17,10 @@ bring-your-own-adapter entrypoint wraps this:
 ``python -m urml_conformance --adapter your_pkg:YourAdapter`` (see
 ``conformance/CONFORMANCE_KIT.md``).
 
+The goal-line lane (``run_goal_line``, ``python -m urml_conformance
+--goal-line``) hands every rejected fixture to the runtime itself and
+requires a refusal with the expected codes and zero adapter calls.
+
 The fixtures themselves are Apache 2.0 and part of the URML Core
 Commitment — they're the contract a runtime claims compatibility with.
 """
@@ -37,6 +41,7 @@ from urml_conformance.fixtures import (
     resolve_envelope,
     resolve_manifest,
 )
+from urml_conformance.goal_line import RecordedCall, RecordingAdapter, run_goal_line
 from urml_conformance.report import CaseResult, ConformanceReport
 from urml_conformance.runner import ConformanceRunner
 
@@ -50,10 +55,13 @@ __all__ = [
     "ExpectedExecution",
     "ExpectedValidation",
     "FixtureCase",
+    "RecordedCall",
+    "RecordingAdapter",
     "__version__",
     "discover_fixtures",
     "fixtures_root",
     "load_fixture",
     "resolve_envelope",
     "resolve_manifest",
+    "run_goal_line",
 ]

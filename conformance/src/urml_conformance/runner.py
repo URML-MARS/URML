@@ -75,6 +75,38 @@ def _apply_overrides(adapter: MockROSAdapter, overrides: AdapterOverrides | None
         adapter.set_listen_result(overrides.listen)
 
 
+def fleet_inputs(
+    case: FixtureCase,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, dict[str, Any]] | None]:
+    """Resolve a fleet fixture (RFC-0286) into ``(roster, member_manifests, member_envelopes)``.
+
+    Raises ``KeyError`` / ``ValueError`` for an unregistered or malformed
+    manifest or envelope, like the single-robot resolvers.
+    """
+    assert case.roster is not None
+    members = {m.name: resolve_manifest(m.manifest) for m in case.roster}
+    roster: dict[str, Any] = {
+        "roster_version": "0.1",
+        "members": [
+            {
+                "name": m.name,
+                "manifest": m.manifest,
+                **({"anchor": m.anchor} if m.anchor is not None else {}),
+            }
+            for m in case.roster
+        ],
+        "shared_frames": case.shared_frames,
+    }
+    if case.world_frame is not None:
+        roster["world_frame"] = case.world_frame
+    member_envelopes = (
+        {k: resolve_envelope(v) for k, v in case.member_envelopes.items()}
+        if case.member_envelopes
+        else None
+    )
+    return roster, members, member_envelopes
+
+
 # ---------------------------------------------------------------------------
 # Diagnostic helpers
 # ---------------------------------------------------------------------------
@@ -244,11 +276,15 @@ class ConformanceRunner:
             _apply_overrides(adapter, case.adapter_overrides)
         runtime = URMLRuntime(adapter)
         try:
+            # The runtime re-validates with the fixture's policy and manifest
+            # dir, exactly as the validation pass above did.
             runtime_result = runtime.execute(
                 case.program,
                 manifest,
                 envelope,
                 profiles=tuple(case.profiles),
+                policy=policy,
+                manifest_base_dir=base_dir,
             )
         except Exception as exc:
             diagnostics.append(f"runtime raised: {type(exc).__name__}: {exc}")
@@ -270,26 +306,7 @@ class ConformanceRunner:
         and (when execution is expected) FleetRuntime."""
         assert case.roster is not None
         try:
-            members = {m.name: resolve_manifest(m.manifest) for m in case.roster}
-            roster: dict[str, Any] = {
-                "roster_version": "0.1",
-                "members": [
-                    {
-                        "name": m.name,
-                        "manifest": m.manifest,
-                        **({"anchor": m.anchor} if m.anchor is not None else {}),
-                    }
-                    for m in case.roster
-                ],
-                "shared_frames": case.shared_frames,
-            }
-            if case.world_frame is not None:
-                roster["world_frame"] = case.world_frame
-            member_envelopes = (
-                {k: resolve_envelope(v) for k, v in case.member_envelopes.items()}
-                if case.member_envelopes
-                else None
-            )
+            roster, members, member_envelopes = fleet_inputs(case)
             policy = resolve_policy(case.policy)
         except (KeyError, ValueError) as exc:
             return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])

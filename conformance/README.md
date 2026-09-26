@@ -63,7 +63,7 @@ The most important category. Confirms that the runtime correctly **rejects** pro
 - Programs that violate profile-specific constraints (drone `move_to` missing altitude, industrial program requiring motion with safety-door open, home program requiring motion into a declared people-only zone).
 - Programs that violate Layer-3 invariants (untyped variable references, unbounded retries, type-mismatched arguments).
 
-A runtime that *executes* one of these programs has a critical conformance bug. The suite makes that bug visible.
+A runtime that *executes* one of these programs has a critical conformance bug. The suite makes that bug visible. The goal-line lane (`python -m urml_conformance --goal-line`) hands every rejected fixture to the runtime itself and requires a refusal with the expected codes and zero adapter calls.
 
 ## What the suite does NOT test
 
@@ -105,6 +105,12 @@ from urml_conformance import ConformanceRunner
 runner = ConformanceRunner()
 report = runner.run()
 assert report.all_passed, report.render()
+```
+
+Check that every rejected fixture sends zero commands through the runtime:
+
+```bash
+python -m urml_conformance --goal-line
 ```
 
 ## Authoring a new fixture
