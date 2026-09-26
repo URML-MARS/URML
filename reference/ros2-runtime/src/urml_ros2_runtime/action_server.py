@@ -27,7 +27,17 @@ that adapter.
 ``execute_request`` always runs the full validator before any actuation, and
 refuses (returning ``refused=True`` with the rendered verdict) when the program
 is rejected. The validation verdict is exactly what an operator-in-the-loop
-engine surfaces before approving a state — never bypass it.
+engine surfaces before approving a state — never bypass it. The runtime then
+re-validates with the same manifest, envelope and policy before its first
+adapter call.
+
+## Pinned constraints
+
+A goal can carry its own manifest, envelope and ``no_policy`` flag. The
+client sending goals may be an AI agent, so a deployment pins the constraints
+instead (``PinnedConstraints``): the server validates every goal against the
+pinned manifest, envelope and policy, and refuses a goal that tries to set any
+of them before any provider or adapter call.
 
 ## Natural language
 
@@ -41,11 +51,14 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 from urml_validator import ValidationResult, validate
 from urml_validator.schemas.policy import Policy
 
+from urml_ros2_runtime.errors import ValidationRejectedError
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
 from urml_ros2_runtime.substrate.base import ROSAdapter
 
@@ -62,13 +75,14 @@ class ExecuteRequest:
 
     Built from the action goal in the node, or directly in tests. Exactly one
     of ``program`` / ``sentence`` drives the run: a program is executed as-is;
-    a sentence is translated first (requires a provider).
+    a sentence is translated first (requires a provider). ``manifest`` is
+    None when the goal carries none, which is what a pinned server expects.
     """
 
     def __init__(
         self,
         *,
-        manifest: dict[str, Any],
+        manifest: dict[str, Any] | None = None,
         program: dict[str, Any] | None = None,
         sentence: str | None = None,
         envelope: dict[str, Any] | None = None,
@@ -81,6 +95,22 @@ class ExecuteRequest:
         self.envelope = envelope
         self.profiles = tuple(profiles)
         self.no_policy = no_policy
+
+
+@dataclass(frozen=True)
+class PinnedConstraints:
+    """Deployment constraints fixed when the server starts.
+
+    Every goal is validated against these, never against constraints the goal
+    carries. ``policy`` has the ``validate()`` contract (``"DEFAULT"``, None
+    for no compliance pass, or a policy mapping). ``manifest_base_dir`` is the
+    pinned manifest file's directory, for RFC-0005 HBOM-content rules.
+    """
+
+    manifest: dict[str, Any]
+    envelope: dict[str, Any] | None = None
+    policy: PolicyArg = "DEFAULT"
+    manifest_base_dir: Path | None = None
 
 
 def _refused(reason: str) -> dict[str, Any]:
@@ -119,6 +149,7 @@ def execute_request(
     adapter: ROSAdapter,
     provider: Any | None = None,
     feedback: FeedbackSink | None = None,
+    pinned: PinnedConstraints | None = None,
 ) -> dict[str, Any]:
     """Run one URML request through translate? -> validate -> execute.
 
@@ -135,8 +166,40 @@ def execute_request(
         provider: A provider-agnostic ``LLMProvider`` for the NL path. Required
                   iff ``request.sentence`` is set and ``request.program`` is not.
         feedback: Optional sink for phase events (forwarded as action feedback).
+        pinned:   Deployment constraints fixed at server start. When set, the
+                  goal is validated against these, and a goal that sets its own
+                  manifest, envelope or ``no_policy`` is refused before any
+                  provider or adapter call.
     """
-    policy: PolicyArg = None if request.no_policy else "DEFAULT"
+    manifest: dict[str, Any]
+    envelope: dict[str, Any] | None
+    policy: PolicyArg
+    manifest_base_dir: Path | None
+    if pinned is not None:
+        carried = [
+            name
+            for name, is_set in (
+                ("manifest_yaml", request.manifest is not None),
+                ("envelope_yaml", request.envelope is not None),
+                ("no_policy", request.no_policy),
+            )
+            if is_set
+        ]
+        if carried:
+            return _refused(
+                "this action server pins its manifest, envelope and policy; the goal "
+                f"may not set {', '.join(carried)}. Send only the program or sentence "
+                "and the profiles."
+            )
+        manifest = pinned.manifest
+        envelope = pinned.envelope
+        policy = pinned.policy
+        manifest_base_dir = pinned.manifest_base_dir
+    else:
+        manifest = request.manifest or {}
+        envelope = request.envelope
+        policy = None if request.no_policy else "DEFAULT"
+        manifest_base_dir = None
 
     def emit(phase: str, detail: str) -> None:
         if feedback is not None:
@@ -160,8 +223,8 @@ def execute_request(
 
         bridge = Bridge(
             provider=provider,
-            manifest=request.manifest,
-            envelope=request.envelope,
+            manifest=manifest,
+            envelope=envelope,
             profiles=request.profiles,
             policy=policy,
         )
@@ -178,19 +241,33 @@ def execute_request(
     emit("validating", "validating program against manifest + envelope")
     verdict = validate(
         program,
-        request.manifest,
-        request.envelope,
+        manifest,
+        envelope,
         profiles=request.profiles,
         policy=policy,
+        manifest_base_dir=manifest_base_dir,
     )
     if not verdict.accepted:
         return _refused(_render_verdict(verdict))
 
-    # 3. Execute. The runtime is already-validated input, so skip its
-    #    defense-in-depth re-validation pass (we just ran it here).
+    # 3. Execute. The runtime re-validates with the same manifest, envelope
+    #    and policy before its first adapter call (defense in depth).
     emit("executing", f"executing {len(program.get('behavior', {}).get('steps', []))} step(s)")
-    runtime = URMLRuntime(adapter, revalidate=False)
-    result = runtime.execute(program, request.manifest, request.envelope, request.profiles)
+    runtime = URMLRuntime(adapter)
+    try:
+        result = runtime.execute(
+            program,
+            manifest,
+            envelope,
+            request.profiles,
+            policy=policy,
+            manifest_base_dir=manifest_base_dir,
+        )
+    except ValidationRejectedError as exc:
+        rejected = exc.validation_result
+        if isinstance(rejected, ValidationResult):
+            return _refused(_render_verdict(rejected))
+        return _refused(f"validation refused: {exc}")
     emit("done", "execution complete" if result.success else "execution finished with failure")
     return _serialize(result)
 
