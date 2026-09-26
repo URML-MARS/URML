@@ -516,7 +516,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
                 "the ros2 adapter requires a ROS 2 environment (rclpy is not importable). "
                 "Source a ROS 2 install, or use adapter='mock'."
             ) from exc
-        from urml_ros2_runtime import RclpyAdapter, load_adapter_config  # type: ignore[attr-defined]
+        from urml_ros2_runtime import RclpyAdapter, load_adapter_config
 
         config = load_adapter_config(Path(config_path)) if config_path else None
         rclpy.init()
@@ -527,7 +527,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
 
     if adapter == "ardupilot":
         try:
-            from urml_ardupilot_runtime import (  # type: ignore[import-not-found]
+            from urml_ardupilot_runtime import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
                 ArduCopterAdapter,
                 load_ardupilot_config,
             )
@@ -546,15 +546,18 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
 
     # adapter == "px4"
     try:
-        from urml_px4_runtime import PX4Adapter, load_px4_config  # type: ignore[import-not-found]
+        from urml_px4_runtime import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            PX4Adapter,
+            load_px4_config,
+        )
     except ImportError as exc:
         raise RuntimeError(
             "the px4 adapter requires urml-px4-runtime (pip install urml-px4-runtime), "
             "plus a reachable PX4 SITL/autopilot."
         ) from exc
 
-    config = load_px4_config(Path(config_path)) if config_path else None
-    px4_adapter = PX4Adapter(config)
+    px4_config = load_px4_config(Path(config_path)) if config_path else None
+    px4_adapter = PX4Adapter(px4_config)
     close = getattr(px4_adapter, "close", None)
     if callable(close):
         cleanup.append(close)
