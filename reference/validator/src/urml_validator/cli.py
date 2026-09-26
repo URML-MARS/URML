@@ -1134,11 +1134,10 @@ def cmd_execute(args: argparse.Namespace) -> int:
 
     The runtime (``urml_ros2_runtime``) is an optional dependency of the
     validator; the import is lazy so ``urml validate`` works without it.
-    Because this command validates explicitly with the requested policy, the
-    runtime is constructed with ``revalidate=False`` — re-running the
-    runtime's own default-policy re-validation would silently defeat
-    ``--no-policy`` / ``--policy``. Skipping the validator entirely is still
-    prohibited (CLAUDE.md); the validation happens here instead.
+    The runtime then re-validates before its first adapter call, with the
+    same policy and manifest directory this command used, so ``--no-policy``
+    and ``--policy`` mean the same thing at both checks. Skipping the
+    validator is prohibited (CLAUDE.md).
     """
     try:
         from urml_ros2_runtime import (  # type: ignore[import-not-found,unused-ignore]
@@ -1199,6 +1198,7 @@ def cmd_execute(args: argparse.Namespace) -> int:
             return gate
 
     # ----- Build the substrate adapter -----
+    _warn_if_no_envelope(args)
     cleanup: list[Any] = []
     try:
         adapter = _build_execute_adapter(args, cleanup)
@@ -1206,13 +1206,21 @@ def cmd_execute(args: argparse.Namespace) -> int:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
 
-    # ----- Execute -----
+    # ----- Execute (the runtime re-validates first, with the same inputs) -----
     try:
-        runtime = URMLRuntime(adapter, revalidate=False)
+        runtime = URMLRuntime(adapter)
         try:
-            rr = runtime.execute(program, manifest, envelope, profiles=profiles)
+            rr = runtime.execute(
+                program,
+                manifest,
+                envelope,
+                profiles=profiles,
+                policy=policy_arg,
+                manifest_base_dir=Path(args.manifest).parent,
+            )
         except ValidationRejectedError as exc:
-            # Should not happen (revalidate=False) — surface defensively.
+            # Should not happen: the runtime re-validates the inputs this
+            # command just accepted. Nothing was dispatched.
             print(f"urml: internal error: runtime rejected a pre-validated program: {exc}", file=sys.stderr)
             return 64
         except UnsupportedCompositionError as exc:
@@ -1234,6 +1242,21 @@ def cmd_execute(args: argparse.Namespace) -> int:
         _emit_execute_pretty(rr, args.adapter, program_path=args.program)
 
     return 0 if rr.success else 1
+
+
+def _warn_if_no_envelope(args: argparse.Namespace) -> None:
+    """One stderr line when a real adapter is about to run with no envelope.
+
+    Printed before the adapter is built. With no deployment envelope the
+    validator checks the program against the manifest alone, so the robot's
+    own limits apply and no site limits do.
+    """
+    if args.adapter != "mock" and args.envelope is None:
+        print(
+            f"urml: warning: --adapter {args.adapter} runs with no --envelope; "
+            "only the manifest's limits apply.",
+            file=sys.stderr,
+        )
 
 
 def _build_execute_adapter(args: argparse.Namespace, cleanup: list[Any]) -> Any:
@@ -1558,6 +1581,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             PrimitiveExecutionError,
             UnsupportedCompositionError,
             URMLRuntime,
+            ValidationRejectedError,
         )
     except ImportError:
         print(
@@ -1658,6 +1682,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             return gate
 
     # ----- Execute -----
+    _warn_if_no_envelope(args)
     cleanup: list[Any] = []
     try:
         adapter = _build_execute_adapter(args, cleanup)
@@ -1665,11 +1690,28 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
     try:
-        # The bridge validated with the chosen policy; revalidate=False for
-        # the same reason cmd_execute passes it (see that docstring).
-        runtime = URMLRuntime(adapter, revalidate=False)
+        # The bridge validated with the chosen policy. The runtime
+        # re-validates with the same policy plus the manifest's directory,
+        # which the bridge does not have, so HBOM-content rules are read here.
+        runtime = URMLRuntime(adapter)
         try:
-            rr = runtime.execute(program, manifest, envelope, profiles=profiles)
+            rr = runtime.execute(
+                program,
+                manifest,
+                envelope,
+                profiles=profiles,
+                policy=policy_arg,
+                manifest_base_dir=Path(args.manifest).parent,
+            )
+        except ValidationRejectedError as exc:
+            print(
+                "urml: execution refused: the runtime's re-validation rejected the "
+                "program. Nothing was sent to the adapter.",
+                file=sys.stderr,
+            )
+            for issue in getattr(exc.validation_result, "errors", []) or []:
+                _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+            return 1
         except UnsupportedCompositionError as exc:
             print(f"urml: execution error: {exc}", file=sys.stderr)
             return 1
