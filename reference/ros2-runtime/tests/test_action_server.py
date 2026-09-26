@@ -29,6 +29,9 @@ from urml_ros2_runtime.action_server import (
     ExecuteRequest,
     PinnedConstraints,
     execute_request,
+    load_pinned,
+    request_from_goal,
+    require_pinned_for_adapter,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -255,3 +258,116 @@ def test_pinned_policy_and_manifest_dir_are_enforced() -> None:
     assert out["refused"] is True
     assert "policy.hbom_component_country_denied" in out["reason"]
     assert adapter.call_log == []
+
+
+# ---------------------------------------------------------------------------
+# Node support: node parameters -> PinnedConstraints, startup rule, goal parsing
+# (the rclpy node calls these; they are tested here without ROS 2)
+# ---------------------------------------------------------------------------
+
+
+def test_load_pinned_is_none_when_nothing_is_pinned() -> None:
+    assert load_pinned("", "", "") is None
+
+
+def test_load_pinned_reads_the_example_files() -> None:
+    manifest_path = FLEXBE / "turtle.manifest.yaml"
+    pinned = load_pinned(str(manifest_path), str(FLEXBE / "turtle.envelope.yaml"), "")
+    assert pinned is not None
+    assert pinned.manifest == _manifest()
+    assert pinned.envelope is not None and pinned.envelope["max_velocity"] > 0
+    assert pinned.policy == "DEFAULT"
+    assert pinned.manifest_base_dir == manifest_path.parent
+
+
+def test_load_pinned_policy_path_forms() -> None:
+    manifest = str(FLEXBE / "turtle.manifest.yaml")
+    no_policy = load_pinned(manifest, "", "none")
+    assert no_policy is not None and no_policy.policy is None
+    policy_file = VALIDATOR_FIXTURES / "policies" / "permissive.yaml"
+    custom = load_pinned(manifest, "", str(policy_file))
+    assert custom is not None and custom.policy == _load(policy_file)
+
+
+def test_load_pinned_needs_the_manifest_for_any_pin() -> None:
+    with pytest.raises(ValueError, match="manifest_path"):
+        load_pinned("", str(FLEXBE / "turtle.envelope.yaml"), "")
+    with pytest.raises(ValueError, match="manifest_path"):
+        load_pinned("", "", "none")
+
+
+def test_load_pinned_rejects_missing_or_malformed_files(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="not found"):
+        load_pinned(str(tmp_path / "missing.yaml"), "", "")
+    not_a_mapping = tmp_path / "list.yaml"
+    not_a_mapping.write_text("- a\n- b\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="mapping"):
+        load_pinned(str(not_a_mapping), "", "")
+
+
+def test_real_adapter_needs_a_pinned_manifest_and_envelope() -> None:
+    with pytest.raises(RuntimeError, match="manifest_path"):
+        require_pinned_for_adapter("ros2", None)
+    with pytest.raises(RuntimeError, match="envelope_path"):
+        require_pinned_for_adapter("ros2", PinnedConstraints(manifest=_manifest()))
+    require_pinned_for_adapter("ros2", _pinned())  # manifest + envelope: starts
+    require_pinned_for_adapter("mock", None)  # the mock moves nothing: starts
+
+
+class _Goal:
+    """Stand-in for the generated ExecuteURML.Goal (same field names)."""
+
+    def __init__(self, **fields: Any) -> None:
+        self.program_yaml = ""
+        self.sentence = ""
+        self.manifest_yaml = ""
+        self.envelope_yaml = ""
+        self.profiles = ["home"]
+        self.no_policy = False
+        for key, value in fields.items():
+            setattr(self, key, value)
+
+
+def test_request_from_goal_blank_fields_are_unset() -> None:
+    program_yaml = (FLEXBE / "turtle-patrol.urml.yaml").read_text(encoding="utf-8")
+    req = request_from_goal(_Goal(program_yaml=program_yaml, manifest_yaml="  \n"))
+    assert req.manifest is None and req.envelope is None and req.no_policy is False
+    assert req.program == _program()
+    assert req.profiles == ("home",)
+
+
+def test_request_from_goal_counts_a_non_mapping_field_as_set() -> None:
+    """A pinned server refuses a goal that sets manifest_yaml, even to garbage."""
+    req = request_from_goal(_Goal(program_yaml="{}", manifest_yaml="- not\n- a mapping\n"))
+    assert req.manifest == {}
+    adapter = MockROSAdapter()
+    out = execute_request(req, adapter=adapter, pinned=_pinned())
+    assert out["refused"] is True and "manifest_yaml" in out["reason"]
+    assert adapter.call_log == []
+
+
+def test_pinned_example_goal_runs_end_to_end() -> None:
+    """The FlexBE worked example, minus ROS 2: files pinned, goal sends the program only."""
+    pinned = load_pinned(
+        str(FLEXBE / "turtle.manifest.yaml"), str(FLEXBE / "turtle.envelope.yaml"), ""
+    )
+    program_yaml = (FLEXBE / "turtle-patrol.urml.yaml").read_text(encoding="utf-8")
+    adapter = MockROSAdapter()
+    out = execute_request(
+        request_from_goal(_Goal(program_yaml=program_yaml)), adapter=adapter, pinned=pinned
+    )
+    assert out["success"] is True, out["reason"]
+    assert len(adapter.call_log) == 3
+
+
+def test_pinned_ur3e_example_goal_runs_end_to_end() -> None:
+    pinned = load_pinned(
+        str(FLEXBE / "ur3e.manifest.yaml"), str(FLEXBE / "ur3e.envelope.yaml"), ""
+    )
+    program_yaml = (FLEXBE / "ur3e-pick-place.urml.yaml").read_text(encoding="utf-8")
+    out = execute_request(
+        request_from_goal(_Goal(program_yaml=program_yaml, profiles=["industrial"])),
+        adapter=MockROSAdapter(),
+        pinned=pinned,
+    )
+    assert out["success"] is True, out["reason"]

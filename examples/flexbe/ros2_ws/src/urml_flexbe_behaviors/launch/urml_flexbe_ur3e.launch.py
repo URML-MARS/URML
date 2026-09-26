@@ -13,8 +13,11 @@ A typical session brings up three things in three sourced terminals:
     # 1. The UR-3e (mock hardware shown; swap for bringup_arm_hardware.launch.py).
     ros2 launch chris_ur3e_bringup bringup_arm_mock.launch.py
 
-    # 2. The URML action server (this file). adapter:=ros2 drives MoveIt 2.
-    ros2 launch urml_flexbe_behaviors urml_flexbe_ur3e.launch.py adapter:=ros2
+    # 2. The URML action server (this file), run from the repository root.
+    #    adapter:=ros2 drives MoveIt 2; the manifest and envelope are pinned.
+    ros2 launch urml_flexbe_behaviors urml_flexbe_ur3e.launch.py adapter:=ros2 \\
+      manifest_path:=$(realpath examples/flexbe/ur3e.manifest.yaml) \\
+      envelope_path:=$(realpath examples/flexbe/ur3e.envelope.yaml)
 
     # 3. FlexBE itself.
     ros2 launch flexbe_app flexbe_full.launch.py
@@ -23,8 +26,17 @@ Then load the ``URML UR-3e Pick-Place`` behavior in the FlexBE UI and approve
 the plan to watch the arm execute the validated URML pick-and-place.
 
 Arguments:
-  adapter       "ros2" (default — drives MoveIt 2 / the UR driver) | "mock".
-  llm_provider  "none" (default) | "anthropic" | "openai" (for NL goals).
+  adapter        "ros2" (default — drives MoveIt 2 / the UR driver) | "mock".
+  llm_provider   "none" (default) | "anthropic" | "openai" (for NL goals).
+  manifest_path  Capability manifest the server pins, as an absolute path
+                 (examples/flexbe/ur3e.manifest.yaml). Required with adapter:=ros2.
+  envelope_path  Safety envelope the server pins, as an absolute path
+                 (examples/flexbe/ur3e.envelope.yaml). Required with adapter:=ros2.
+  policy_path    "" (default) for the bundled compliance policy, "none" to skip
+                 it, or a policy file.
+
+The server refuses a goal that sets its own manifest, envelope or no_policy,
+so the behavior sends only the program.
 """
 
 from launch import LaunchDescription
@@ -35,11 +47,17 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     adapter = LaunchConfiguration("adapter")
     llm_provider = LaunchConfiguration("llm_provider")
+    manifest_path = LaunchConfiguration("manifest_path")
+    envelope_path = LaunchConfiguration("envelope_path")
+    policy_path = LaunchConfiguration("policy_path")
 
     return LaunchDescription(
         [
             DeclareLaunchArgument("adapter", default_value="ros2"),
             DeclareLaunchArgument("llm_provider", default_value="none"),
+            DeclareLaunchArgument("manifest_path", default_value=""),
+            DeclareLaunchArgument("envelope_path", default_value=""),
+            DeclareLaunchArgument("policy_path", default_value=""),
             # The URML action server is a pip console-script entry point
             # (urml-ros2-action-server), not an ament executable, so launch it
             # as a process and pass ROS params via --ros-args.
@@ -51,6 +69,13 @@ def generate_launch_description():
                     ["adapter:=", adapter],
                     "-p",
                     ["llm_provider:=", llm_provider],
+                    # Quoted so an empty value still parses as a string.
+                    "-p",
+                    ["manifest_path:='", manifest_path, "'"],
+                    "-p",
+                    ["envelope_path:='", envelope_path, "'"],
+                    "-p",
+                    ["policy_path:='", policy_path, "'"],
                 ],
                 output="screen",
             ),

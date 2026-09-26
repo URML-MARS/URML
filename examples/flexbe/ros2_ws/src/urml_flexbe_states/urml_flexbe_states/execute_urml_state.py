@@ -16,7 +16,10 @@ Outcomes:
 
 The state is parameterized so a behavior can either ship a fixed program
 (``program_yaml``) or a natural-language sentence (``sentence``, translated by
-the server's configured provider). The manifest is required.
+the server's configured provider). Against a server that pins its manifest,
+envelope and policy (required to drive a real robot), leave ``manifest_yaml``,
+``envelope_yaml`` and ``no_policy`` unset: a pinned server refuses a goal that
+sets them.
 """
 
 from __future__ import annotations
@@ -30,18 +33,20 @@ class ExecuteUrmlState(EventState):
     """Send one URML goal to the ExecuteURML action server and map its result.
 
     Parameters:
-        manifest_yaml  The robot's capability manifest (YAML/JSON string). Required.
+        manifest_yaml  The robot's capability manifest (YAML/JSON string).
+                       Leave empty for a server that pins its manifest.
         program_yaml   A URML program (YAML/JSON string). Use this OR ``sentence``.
         sentence       A natural-language request (translated server-side).
-        envelope_yaml  Optional safety envelope (YAML/JSON string).
+        envelope_yaml  Optional safety envelope (YAML/JSON string). Leave
+                       empty for a server that pins its envelope.
         profiles       List of active URML profiles, e.g. ["home"].
-        no_policy      Skip the compliance-policy pass (hero-demo path).
+        no_policy      Skip the compliance-policy pass. A pinned server refuses it.
         action_topic   The ExecuteURML action name (default "execute_urml").
     """
 
     def __init__(
         self,
-        manifest_yaml,
+        manifest_yaml="",
         program_yaml="",
         sentence="",
         envelope_yaml="",

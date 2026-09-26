@@ -303,6 +303,97 @@ def _yaml_or_none(text: str) -> dict[str, Any] | None:
     return parsed if isinstance(parsed, dict) else None
 
 
+def _goal_constraint(text: str) -> dict[str, Any] | None:
+    """A goal's manifest or envelope field: None when blank, else its mapping.
+
+    A non-blank field that is not a YAML mapping becomes an empty mapping, so
+    it still counts as set: a pinned server refuses it, and an unpinned
+    server's validator rejects it.
+    """
+    if not text or not text.strip():
+        return None
+    return _yaml_or_none(text) or {}
+
+
+def request_from_goal(goal: Any) -> ExecuteRequest:
+    """Normalize an ``ExecuteURML`` goal (or any object with its fields)."""
+    return ExecuteRequest(
+        manifest=_goal_constraint(goal.manifest_yaml),
+        program=_yaml_or_none(goal.program_yaml),
+        sentence=goal.sentence or None,
+        envelope=_goal_constraint(goal.envelope_yaml),
+        profiles=tuple(goal.profiles),
+        no_policy=bool(goal.no_policy),
+    )
+
+
+def _load_mapping(path: str, param: str) -> dict[str, Any]:
+    """Load a YAML mapping named by a node parameter, or raise ValueError."""
+    file = Path(path)
+    if not file.is_file():
+        raise ValueError(f"{param} not found: {path}")
+    import yaml
+
+    with file.open(encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        raise ValueError(f"{param} {path} is not a YAML mapping")
+    return data
+
+
+def load_pinned(manifest_path: str, envelope_path: str, policy_path: str) -> PinnedConstraints | None:
+    """Build the server's pinned constraints from its node parameters.
+
+    Returns None when ``manifest_path`` is empty: nothing is pinned and each
+    goal carries its own constraints, which only the mock adapter allows.
+    ``policy_path`` is empty for the bundled default policy, ``none`` to skip
+    the compliance pass, or a policy file. ``envelope_path`` and
+    ``policy_path`` pin nothing without ``manifest_path``, so setting either
+    one alone is a configuration error.
+    """
+    if not manifest_path:
+        if envelope_path or policy_path:
+            raise ValueError(
+                "envelope_path and policy_path are pinned together with "
+                "manifest_path; set manifest_path as well."
+            )
+        return None
+    policy: PolicyArg
+    if not policy_path:
+        policy = "DEFAULT"
+    elif policy_path == "none":
+        policy = None
+    else:
+        policy = _load_mapping(policy_path, "policy_path")
+    return PinnedConstraints(
+        manifest=_load_mapping(manifest_path, "manifest_path"),
+        envelope=_load_mapping(envelope_path, "envelope_path") if envelope_path else None,
+        policy=policy,
+        manifest_base_dir=Path(manifest_path).parent,
+    )
+
+
+def require_pinned_for_adapter(adapter_kind: str, pinned: PinnedConstraints | None) -> None:
+    """Refuse to start a real-adapter server whose goals could pick their own limits.
+
+    The mock adapter moves nothing, so it may run unpinned. Any other adapter
+    drives a robot and needs a pinned manifest and envelope.
+    """
+    if adapter_kind == "mock":
+        return
+    missing: list[str] = []
+    if pinned is None:
+        missing = ["manifest_path", "envelope_path"]
+    elif pinned.envelope is None:
+        missing = ["envelope_path"]
+    if missing:
+        raise RuntimeError(
+            f"the {adapter_kind!r} adapter drives a real robot, so the action server "
+            f"will not start without pinned constraints: set {' and '.join(missing)}. "
+            "Goals then cannot choose their own manifest, envelope or policy."
+        )
+
+
 def main(args: list[str] | None = None) -> None:
     """Console entry point: spin a URML ``ExecuteURML`` action server.
 
@@ -310,6 +401,15 @@ def main(args: list[str] | None = None) -> None:
         adapter        "mock" (default) | "ros2" — substrate backing.
         llm_provider   "none" (default) | "echo" | "anthropic" | "openai".
         ros2_namespace optional namespace forwarded to RclpyAdapter.
+        manifest_path  capability manifest file to pin. When set, goals may
+                       not carry manifest_yaml, envelope_yaml or no_policy.
+        envelope_path  safety envelope file to pin (needs manifest_path).
+        policy_path    "" (default) for the bundled policy, "none" to skip
+                       the compliance pass, or a policy file (needs
+                       manifest_path).
+
+    With any adapter other than "mock", the server will not start unless
+    manifest_path and envelope_path are both set.
     """
     rclpy = _require_rclpy()
     from rclpy.action import ActionServer  # type: ignore[import-not-found,unused-ignore]
@@ -327,13 +427,29 @@ def main(args: list[str] | None = None) -> None:
             self.declare_parameter("adapter", "mock")
             self.declare_parameter("llm_provider", "none")
             self.declare_parameter("ros2_namespace", "")
+            self.declare_parameter("manifest_path", "")
+            self.declare_parameter("envelope_path", "")
+            self.declare_parameter("policy_path", "")
+            # Pinned once, before the server accepts any goal.
+            self._pinned = load_pinned(
+                self._string_param("manifest_path"),
+                self._string_param("envelope_path"),
+                self._string_param("policy_path"),
+            )
+            require_pinned_for_adapter(self._string_param("adapter"), self._pinned)
             self._action_server = ActionServer(
                 self,
                 ExecuteURML,
                 "execute_urml",
                 self._on_goal,
             )
-            self.get_logger().info("URML ExecuteURML action server ready.")
+            self.get_logger().info(
+                "URML ExecuteURML action server ready"
+                + (" (constraints pinned)." if self._pinned is not None else ".")
+            )
+
+        def _string_param(self, name: str) -> str:
+            return str(self.get_parameter(name).get_parameter_value().string_value)
 
         def _build_adapter(self) -> ROSAdapter:
             kind = self.get_parameter("adapter").get_parameter_value().string_value
@@ -367,15 +483,7 @@ def main(args: list[str] | None = None) -> None:
             )
 
         def _on_goal(self, goal_handle: Any) -> Any:
-            g = goal_handle.request
-            req = ExecuteRequest(
-                manifest=_yaml_or_none(g.manifest_yaml) or {},
-                program=_yaml_or_none(g.program_yaml),
-                sentence=g.sentence or None,
-                envelope=_yaml_or_none(g.envelope_yaml),
-                profiles=tuple(g.profiles),
-                no_policy=bool(g.no_policy),
-            )
+            req = request_from_goal(goal_handle.request)
 
             def feedback(event: dict[str, Any]) -> None:
                 fb = ExecuteURML.Feedback()
@@ -390,6 +498,7 @@ def main(args: list[str] | None = None) -> None:
                     adapter=adapter,
                     provider=self._build_provider(),
                     feedback=feedback,
+                    pinned=self._pinned,
                 )
             finally:
                 close = getattr(adapter, "close", None)
@@ -412,7 +521,12 @@ def main(args: list[str] | None = None) -> None:
             return result
 
     rclpy.init(args=args)
-    node = URMLActionServerNode()
+    try:
+        node = URMLActionServerNode()
+    except (RuntimeError, ValueError) as exc:
+        # Unpinned real adapter or a bad pinned file: refuse to start.
+        rclpy.shutdown()
+        raise SystemExit(f"urml-ros2-action-server: {exc}") from exc
     try:
         rclpy.spin(node)
     finally:

@@ -1,0 +1,15 @@
+# The deployment safety envelope the URML action server pins for the
+# turtlesim worked example. With a real adapter the server will not start
+# without a pinned manifest and envelope, so a FlexBE goal (or any client)
+# cannot choose its own limits. Pass this file as the launch argument
+# envelope_path (see README.md).
+
+envelope_version: "0.1"
+deployment_id: flexbe_turtlesim
+description: Site limits for the URML FlexBE turtlesim worked example.
+
+max_velocity: 0.8          # 0.8 m/s; below the manifest's 1.0 max.
+
+people_occupancy_zones: []
+geofences: []
+link_loss_policy: []

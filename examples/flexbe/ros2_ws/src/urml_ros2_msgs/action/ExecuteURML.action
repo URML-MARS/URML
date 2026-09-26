@@ -10,14 +10,19 @@
 # executed as-is; a sentence is translated to URML first (requires an LLM
 # provider configured on the server). YAML payloads are passed as strings so
 # this interface needs no URML-specific message types.
+#
+# A server can pin the manifest, envelope and policy at start (node parameters
+# manifest_path, envelope_path, policy_path); it must, to drive a real robot.
+# A pinned server refuses a goal that sets manifest_yaml, envelope_yaml or
+# no_policy, so the client sending goals cannot choose its own limits.
 
 # --- Goal ---
 string program_yaml        # a URML program (YAML/JSON). Empty if using `sentence`.
 string sentence            # natural-language request. Empty if using `program_yaml`.
-string manifest_yaml       # the robot's capability manifest (YAML/JSON). Required.
-string envelope_yaml       # optional safety envelope (YAML/JSON). Empty for none.
+string manifest_yaml       # the robot's capability manifest (YAML/JSON). Empty for a pinned server.
+string envelope_yaml       # optional safety envelope (YAML/JSON). Empty for none or a pinned server.
 string[] profiles          # active URML profiles (e.g. ["home"]).
-bool no_policy             # skip the compliance policy pass (hero-demo path).
+bool no_policy             # skip the compliance policy pass. A pinned server refuses it.
 ---
 # --- Result ---
 bool success               # true iff every step executed successfully.

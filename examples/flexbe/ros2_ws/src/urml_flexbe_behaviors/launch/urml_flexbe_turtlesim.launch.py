@@ -15,8 +15,17 @@ Then load the ``URML Turtle Patrol`` behavior in the FlexBE UI and approve the
 plan to watch the turtle execute the validated URML patrol.
 
 Arguments:
-  adapter       "ros2" (default here — drives the real turtle) | "mock".
-  llm_provider  "none" (default) | "anthropic" | "openai" (for NL goals).
+  adapter        "ros2" (default here — drives the real turtle) | "mock".
+  llm_provider   "none" (default) | "anthropic" | "openai" (for NL goals).
+  manifest_path  Capability manifest the server pins, as an absolute path
+                 (examples/flexbe/turtle.manifest.yaml). Required with adapter:=ros2.
+  envelope_path  Safety envelope the server pins, as an absolute path
+                 (examples/flexbe/turtle.envelope.yaml). Required with adapter:=ros2.
+  policy_path    "" (default) for the bundled compliance policy, "none" to skip
+                 it, or a policy file.
+
+The server refuses a goal that sets its own manifest, envelope or no_policy,
+so the behavior sends only the program.
 """
 
 from launch import LaunchDescription
@@ -28,11 +37,17 @@ from launch_ros.actions import Node
 def generate_launch_description():
     adapter = LaunchConfiguration("adapter")
     llm_provider = LaunchConfiguration("llm_provider")
+    manifest_path = LaunchConfiguration("manifest_path")
+    envelope_path = LaunchConfiguration("envelope_path")
+    policy_path = LaunchConfiguration("policy_path")
 
     return LaunchDescription(
         [
             DeclareLaunchArgument("adapter", default_value="ros2"),
             DeclareLaunchArgument("llm_provider", default_value="none"),
+            DeclareLaunchArgument("manifest_path", default_value=""),
+            DeclareLaunchArgument("envelope_path", default_value=""),
+            DeclareLaunchArgument("policy_path", default_value=""),
             Node(
                 package="turtlesim",
                 executable="turtlesim_node",
@@ -50,6 +65,13 @@ def generate_launch_description():
                     ["adapter:=", adapter],
                     "-p",
                     ["llm_provider:=", llm_provider],
+                    # Quoted so an empty value still parses as a string.
+                    "-p",
+                    ["manifest_path:='", manifest_path, "'"],
+                    "-p",
+                    ["envelope_path:='", envelope_path, "'"],
+                    "-p",
+                    ["policy_path:='", policy_path, "'"],
                 ],
                 output="screen",
             ),

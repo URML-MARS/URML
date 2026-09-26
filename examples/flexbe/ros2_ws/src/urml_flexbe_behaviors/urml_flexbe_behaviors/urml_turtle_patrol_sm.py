@@ -13,12 +13,16 @@ Fig. 5 of Conner et al., "Capability-based Robot Controller Synthesis" — an
 operator approving a plan before actuation — with URML supplying the validated,
 typed intent.
 
-The program + manifest are inlined here so the behavior is self-contained; they
-mirror ``examples/flexbe/turtle-patrol.urml.yaml`` and
-``examples/flexbe/turtle.manifest.yaml``. Run the hermetic check with:
+The program is inlined here so the behavior is self-contained; it mirrors
+``examples/flexbe/turtle-patrol.urml.yaml``. The goal does not carry the
+manifest or envelope: the action server pins ``examples/flexbe/turtle.manifest.yaml``
+and ``examples/flexbe/turtle.envelope.yaml`` at start (launch arguments
+``manifest_path`` and ``envelope_path``), so a goal cannot choose its own
+limits. Run the hermetic check with:
 
     urml execute examples/flexbe/turtle-patrol.urml.yaml \\
-      -m examples/flexbe/turtle.manifest.yaml --profile home --no-policy --adapter mock
+      -m examples/flexbe/turtle.manifest.yaml -e examples/flexbe/turtle.envelope.yaml \\
+      --profile home --adapter mock
 
 Targets flexbe_behavior_engine on ROS 2 Jazzy / Kilted / Rolling.
 """
@@ -27,37 +31,8 @@ from flexbe_core import Autonomy, Behavior, OperatableStateMachine
 from flexbe_states.operator_decision_state import OperatorDecisionState
 from urml_flexbe_states.execute_urml_state import ExecuteUrmlState
 
-# A 2D mobile base ("the turtle") and a two-waypoint patrol. Compact mirrors of
-# the canonical files under examples/flexbe/.
-TURTLE_MANIFEST = """
-manifest_version: "0.1"
-robot_id: turtlesim_1
-description: A turtlesim 2D mobile base for the URML FlexBE worked example.
-frames:
-  - { name: site, parent: null }
-  - { name: base_link, parent: site }
-declared_locations:
-  - { name: waypoint_a, pose: { x: 8.0, y: 3.0, z: 0.0 }, frame: site }
-  - { name: waypoint_b, pose: { x: 3.0, y: 8.0, z: 0.0 }, frame: site }
-  - { name: home, pose: { x: 5.5, y: 5.5, z: 0.0 }, frame: site }
-mobility:
-  drive_type: differential
-  max_velocity: 1.0
-  station_keeping: false
-provenance:
-  manifest_attestation: self_declared
-  components:
-    - id: turtlesim_base
-      role: critical
-      vendor: open_robotics
-      country_of_origin: US
-      country_of_final_assembly: US
-      hbom_ref:
-        format: cyclonedx-1.7
-        uri: ./hbom/turtlesim_base.cdx.json
-        sha256: "5555555555555555555555555555555555555555555555555555555555555555"
-"""
-
+# A two-waypoint patrol for the turtle (a 2D mobile base). Compact mirror of
+# the canonical program under examples/flexbe/.
 TURTLE_PROGRAM = """
 profile: home
 behavior:
@@ -100,10 +75,8 @@ class URMLTurtlePatrolSM(Behavior):
             OperatableStateMachine.add(
                 "Run URML Patrol",
                 ExecuteUrmlState(
-                    manifest_yaml=TURTLE_MANIFEST,
                     program_yaml=TURTLE_PROGRAM,
                     profiles=["home"],
-                    no_policy=True,
                     action_topic=action_topic,
                 ),
                 transitions={

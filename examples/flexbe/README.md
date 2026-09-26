@@ -40,8 +40,19 @@ FlexBE HFSM (operator approves)
 | `ExecuteUrmlState` FlexBE state | [`ros2_ws/src/urml_flexbe_states/`](ros2_ws/src/urml_flexbe_states/) |
 | `URML Turtle Patrol` behavior + launch | [`ros2_ws/src/urml_flexbe_behaviors/`](ros2_ws/src/urml_flexbe_behaviors/) |
 | `URML UR-3e Pick-Place` behavior + launch | [`ros2_ws/src/urml_flexbe_behaviors/`](ros2_ws/src/urml_flexbe_behaviors/) |
-| The turtlesim program / manifest | [`turtle-patrol.urml.yaml`](turtle-patrol.urml.yaml), [`turtle.manifest.yaml`](turtle.manifest.yaml) |
-| The UR-3e program / manifest | [`ur3e-pick-place.urml.yaml`](ur3e-pick-place.urml.yaml), [`ur3e.manifest.yaml`](ur3e.manifest.yaml) |
+| The turtlesim program / manifest / envelope | [`turtle-patrol.urml.yaml`](turtle-patrol.urml.yaml), [`turtle.manifest.yaml`](turtle.manifest.yaml), [`turtle.envelope.yaml`](turtle.envelope.yaml) |
+| The UR-3e program / manifest / envelope | [`ur3e-pick-place.urml.yaml`](ur3e-pick-place.urml.yaml), [`ur3e.manifest.yaml`](ur3e.manifest.yaml), [`ur3e.envelope.yaml`](ur3e.envelope.yaml) |
+
+## Who sets the limits
+
+The action server pins the manifest, the envelope and the compliance policy
+when it starts (node parameters `manifest_path`, `envelope_path` and
+`policy_path`, exposed as launch arguments). A goal that sets its own
+`manifest_yaml`, `envelope_yaml` or `no_policy` is refused before anything
+runs, so whoever sends goals, an operator or an AI agent, cannot pick looser
+limits. With a real adapter (`adapter:=ros2`) the server will not start unless
+both the manifest and the envelope are pinned. The behaviors below send only
+the program and its profiles.
 
 ## Run the URML side hermetically (no ROS 2 needed)
 
@@ -83,7 +94,10 @@ source install/setup.bash
 sudo apt install ros-$ROS_DISTRO-flexbe-behavior-engine ros-$ROS_DISTRO-flexbe-app ros-$ROS_DISTRO-turtlesim
 
 # 4. Bring up turtlesim + the URML action server (adapter:=ros2 drives the turtle).
-ros2 launch urml_flexbe_behaviors urml_flexbe_turtlesim.launch.py adapter:=ros2
+#    The server pins the example's manifest and envelope.
+ros2 launch urml_flexbe_behaviors urml_flexbe_turtlesim.launch.py adapter:=ros2 \
+  manifest_path:=$(realpath ../turtle.manifest.yaml) \
+  envelope_path:=$(realpath ../turtle.envelope.yaml)
 
 # 5. In another sourced terminal, start FlexBE and load "URML Turtle Patrol".
 ros2 launch flexbe_app flexbe_full.launch.py
@@ -91,9 +105,10 @@ ros2 launch flexbe_app flexbe_full.launch.py
 
 Approve the plan in the FlexBE operator UI. `ExecuteUrmlState` sends the program
 to the URML action server, which validates it (you see the verdict), then drives
-the turtle through the patrol. Change a waypoint in
-[`turtle.manifest.yaml`](turtle.manifest.yaml) to an undeclared location and the
-server returns `refused` with the validator's reason instead of moving.
+the turtle through the patrol. Rename a waypoint in
+[`turtle.manifest.yaml`](turtle.manifest.yaml) and restart the server (it reads
+the pinned files at start): the program now names an undeclared location, and
+the server returns `refused` with the validator's reason instead of moving.
 
 ## A second robot: the UR-3e arm (`CNURobotics/flexbe_ur_demo`)
 
@@ -127,8 +142,11 @@ three sourced terminals:
 # 1. The UR-3e (mock hardware shown; swap for bringup_arm_hardware.launch.py).
 ros2 launch chris_ur3e_bringup bringup_arm_mock.launch.py
 
-# 2. The URML action server (adapter:=ros2 drives MoveIt 2 / the UR driver).
-ros2 launch urml_flexbe_behaviors urml_flexbe_ur3e.launch.py adapter:=ros2
+# 2. The URML action server (adapter:=ros2 drives MoveIt 2 / the UR driver),
+#    run from the repository root. The server pins the cell's manifest and envelope.
+ros2 launch urml_flexbe_behaviors urml_flexbe_ur3e.launch.py adapter:=ros2 \
+  manifest_path:=$(realpath examples/flexbe/ur3e.manifest.yaml) \
+  envelope_path:=$(realpath examples/flexbe/ur3e.envelope.yaml)
 
 # 3. FlexBE itself.
 ros2 launch flexbe_app flexbe_full.launch.py
