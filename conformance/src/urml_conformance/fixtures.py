@@ -48,6 +48,8 @@ _EXAMPLES_FLEET = _REPO_ROOT / "examples" / "fleet"
 #: against the validator's canonical fixtures.
 MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home.yaml",
+    # Envelope coverage: the home manifest plus RFC-0615 declared areas.
+    "turtlebot4_home_areas": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_areas.yaml",
     "industrial_cell": _VALIDATOR_FIXTURES / "manifests" / "industrial_cell.yaml",
     "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
     "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
@@ -257,6 +259,10 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     # Envelope coverage: caps and zones that pin every spatial and force check.
     "industrial_cell_guarded": _VALIDATOR_FIXTURES / "envelopes" / "industrial_cell_guarded.yaml",
     "biped_gentle_grip": _VALIDATOR_FIXTURES / "envelopes" / "biped_gentle_grip.yaml",
+    "drone_low_ceiling": _VALIDATOR_FIXTURES / "envelopes" / "drone_low_ceiling.yaml",
+    "warehouse_aisles_a": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_aisles_a.yaml",
+    "warehouse_low_reach": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_low_reach.yaml",
+    "home_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "home_with_geofence.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under

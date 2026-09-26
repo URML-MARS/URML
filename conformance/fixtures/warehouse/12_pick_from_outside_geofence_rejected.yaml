@@ -1,0 +1,27 @@
+name: warehouse/pick_from_outside_geofence_rejected
+description: >
+  pick_from inherits the move_to geofence check
+  (spec/layer-2-primitives/v0.1.0.md §3.6). The aisle fence covers x -3..7;
+  shelf_b1 at (8, 2) lies in aisle B, outside it. Pass 3 rejects with
+  envelope.geofence_violation attributed to `pick_from`.
+
+manifest: warehouse_cell
+envelope: warehouse_aisles_a
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: shelf_b1
+          object: tote
+          force: gentle
+          store_as: tote_1
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

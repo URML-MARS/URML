@@ -1,0 +1,24 @@
+name: home/move_to_area_outside_geofence_rejected
+description: >
+  A move_to may name a declared area (RFC-0615), and the runtime may stop
+  anywhere inside it, so every vertex must lie within the geofence
+  (spec/layer-2-primitives/v0.1.0.md §2.1). The apartment fence covers
+  x -1..6; the garden area reaches x 9. Area targets used to skip the check.
+  Pass 3 rejects with envelope.geofence_violation attributed to `move_to`.
+
+manifest: turtlebot4_home_areas
+envelope: home_with_geofence
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: garden }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

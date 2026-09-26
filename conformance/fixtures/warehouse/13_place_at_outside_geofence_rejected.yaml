@@ -1,0 +1,31 @@
+name: warehouse/place_at_outside_geofence_rejected
+description: >
+  place_at inherits the move_to geofence check
+  (spec/layer-2-primitives/v0.1.0.md §3.7). The pick from shelf_a3 (6, -2)
+  is inside the aisle fence; the place on shelf_b1 (8, 2) is outside it.
+  Pass 3 rejects with envelope.geofence_violation attributed to `place_at`.
+
+manifest: warehouse_cell
+envelope: warehouse_aisles_a
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: shelf_a3
+          object: tote
+          force: gentle
+          store_as: tote_1
+      - place_at:
+          target: shelf_b1
+          held: $tote_1
+          mode: place
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.geofence_violation

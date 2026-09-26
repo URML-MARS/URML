@@ -1,0 +1,26 @@
+name: drone/hover_over_above_ceiling_rejected
+description: >
+  hover.over flies to the named place, so the place's altitude must be under
+  the strictest altitude cap (spec/layer-2-primitives/v0.1.0.md §2.3, the
+  operational area). roof_north is declared at 30 m; this envelope caps
+  altitude at 25 m. Pass 3 rejects with envelope.altitude_exceeded attributed
+  to `hover`.
+
+manifest: drone_civilian
+envelope: drone_low_ceiling
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - hover: { over: roof_north, duration: 10s }
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.altitude_exceeded

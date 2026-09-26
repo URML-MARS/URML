@@ -1,0 +1,23 @@
+# Fixture: home envelope with a geofence around the apartment. The fence covers
+# x -1..6, y -3..4 in the `map` frame. The turtlebot4_home_areas manifest's
+# living_room area lies inside; its garden area reaches x 9, outside the fence.
+# Used by the envelope-coverage conformance fixtures (area targets).
+
+envelope_version: "0.1"
+deployment_id: home_apartment_fence
+description: Home envelope that keeps the robot inside the apartment.
+
+max_velocity: 0.4
+max_grip_force_n: 3.0
+
+geofences:
+  - name: apartment
+    frame: map
+    vertices:
+      - [-1.0, -3.0]
+      - [6.0, -3.0]
+      - [6.0, 4.0]
+      - [-1.0, 4.0]
+people_occupancy_zones: []
+
+link_loss_policy: []

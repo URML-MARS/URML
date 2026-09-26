@@ -1,0 +1,42 @@
+name: warehouse/low_reach_cycle_positive
+description: >
+  Positive twin of the low-reach rejections. Every target stays at or under
+  the 0.35 m cap: pick at handoff_in_1 (0.30 m), place at handoff_out_1
+  (0.30 m), park at the charge_dock_1 station (0.0 m). Accepted and executed.
+
+manifest: warehouse_cell
+envelope: warehouse_low_reach
+profiles: [warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - pick_from:
+          source: handoff_in_1
+          object: tote
+          force: gentle
+          store_as: tote_1
+      - place_at:
+          target: handoff_out_1
+          held: $tote_1
+          mode: place
+      - dock:
+          at: charge_dock_1
+          service: park
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal      # pick_from: navigate to source
+    - query_detection           # pick_from: detect
+    - send_manipulation_goal    # pick_from: grasp
+    - send_navigation_goal      # place_at: navigate to target (carrying)
+    - send_manipulation_goal    # place_at: release
+    - send_docking_goal

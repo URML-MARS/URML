@@ -1,0 +1,18 @@
+# Fixture: warehouse envelope in a low-reach mode. The deployment refuses any
+# target above 0.35 m (max_altitude applies to the height of every target a
+# step names). Within the cap: handoff_in_1 and handoff_out_1 (0.30 m) and the
+# charge_dock_1 station (0.0 m). Above it: shelf_a3 and shelf_b1 (0.50 m) and
+# conveyor_a (0.40 m). Used by the envelope-coverage conformance fixtures.
+
+envelope_version: "0.1"
+deployment_id: warehouse_low_reach
+description: Warehouse envelope in low-reach mode; no target above 0.35 m.
+
+max_velocity: 1.2
+max_altitude: 0.35         # m; the height cap for every target a step names.
+max_grip_force_n: 50.0
+
+people_occupancy_zones: []
+geofences: []
+
+link_loss_policy: []

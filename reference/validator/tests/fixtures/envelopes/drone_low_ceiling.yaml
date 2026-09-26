@@ -1,0 +1,12 @@
+# Fixture: a drone envelope with a 25 m altitude cap (for example, a site next
+# to a helicopter approach path). The drone_civilian manifest declares
+# roof_north at 30 m AGL, above this cap, so any step that flies to roof_north
+# must be refused with envelope.altitude_exceeded. Used by the
+# envelope-coverage conformance fixtures.
+
+envelope_version: "0.1"
+deployment_id: drone_low_ceiling
+description: Drone envelope with a 25 m altitude cap.
+
+max_velocity: 10.0
+max_altitude: 25.0          # m AGL; below roof_north's declared 30 m.
