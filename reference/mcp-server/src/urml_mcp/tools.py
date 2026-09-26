@@ -10,6 +10,13 @@ server starts (``load_pinned``). Every tool takes those pins as ``pinned=``: a
 pinned value is used on every call, and an agent value that differs from it is
 refused with ``PermissionError`` before any runtime or adapter is built. The
 agent proposes the program; the operator's rules decide whether it runs.
+
+Rulebooks (RFC-0702, Draft) are operator configuration only. No tool takes a
+rulebook or the switch for the bundled rulebooks as an argument: a deployment
+rulebook can carry exceptions, so an agent that could supply one could grant
+itself a waiver. The operator sets them with ``URML_MCP_RULEBOOKS`` and
+``URML_MCP_DEFAULT_RULEBOOKS`` (or the matching flags), and every validation,
+including the runtime's re-validation, uses them.
 """
 
 from __future__ import annotations
@@ -20,6 +27,7 @@ import json
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -32,6 +40,7 @@ from urml_validator import Policy, ValidationResult, validate
 from urml_validator.schema_export import export_schema
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import CapabilityManifest
+from urml_validator.schemas.rulebook import Rulebook
 
 #: Profiles the bridge ships few-shot libraries for.
 AVAILABLE_PROFILES: tuple[str, ...] = ("home", "industrial", "drone", "educational", "fleet")
@@ -54,6 +63,10 @@ _MANIFEST_ENV = "URML_MCP_MANIFEST"
 _ENVELOPE_ENV = "URML_MCP_ENVELOPE"
 _PROFILES_ENV = "URML_MCP_PROFILES"
 _POLICY_ENV = "URML_MCP_POLICY"
+#: RFC-0702 (Draft): rulebook files, separated by ``os.pathsep``.
+_RULEBOOKS_ENV = "URML_MCP_RULEBOOKS"
+#: RFC-0702 (Draft): ``on`` (default) or ``off`` for the bundled rulebooks.
+_DEFAULT_RULEBOOKS_ENV = "URML_MCP_DEFAULT_RULEBOOKS"
 
 #: Every adapter ``execute_program`` accepts. All but ``mock`` drive hardware.
 _ADAPTERS: tuple[str, ...] = ("mock", "ros2", "px4", "ardupilot")
@@ -70,6 +83,10 @@ class Pinned:
     before. A pinned value is used on every tool call, and an agent value that
     differs from it is refused. ``policy`` is ``"DEFAULT"`` (the bundled
     US-federal policy), ``"none"`` (no compliance pass), or a policy mapping.
+
+    ``rulebooks`` and ``default_rulebooks`` (RFC-0702, Draft) are never agent
+    values: no tool has an argument for them. With nothing set, every call
+    applies the bundled rulebooks and nothing else.
     """
 
     manifest: dict[str, Any] | None = None
@@ -79,6 +96,9 @@ class Pinned:
     profiles: tuple[str, ...] | None = None
     policy: str | dict[str, Any] | None = None
     policy_path: Path | None = None
+    rulebooks: tuple[dict[str, Any], ...] = ()
+    rulebook_paths: tuple[Path, ...] = ()
+    default_rulebooks: bool = True
 
     @property
     def names(self) -> tuple[str, ...]:
@@ -88,6 +108,8 @@ class Pinned:
             ("envelope", self.envelope),
             ("profiles", self.profiles),
             ("policy", self.policy),
+            ("rulebooks", self.rulebooks or None),
+            ("default_rulebooks", None if self.default_rulebooks else False),
         )
         return tuple(name for name, value in values if value is not None)
 
@@ -150,6 +172,19 @@ def _arg_parser() -> argparse.ArgumentParser:
         metavar="PATH|DEFAULT|none",
         help=f"compliance policy YAML, DEFAULT for the bundled US-federal policy, or none ({_POLICY_ENV})",
     )
+    parser.add_argument(
+        "--rulebooks",
+        metavar="PATHS",
+        help=(
+            f"rulebook YAML files separated by {os.pathsep!r}, applied after the bundled "
+            f"rulebooks ({_RULEBOOKS_ENV})"
+        ),
+    )
+    parser.add_argument(
+        "--default-rulebooks",
+        metavar="on|off",
+        help=f"off switches off the bundled rulebooks; on is the default ({_DEFAULT_RULEBOOKS_ENV})",
+    )
     return parser
 
 
@@ -181,8 +216,11 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
     ``URML_MCP_ENVELOPE`` take a YAML path. ``--profiles`` /
     ``URML_MCP_PROFILES`` take comma-separated names. ``--policy`` /
     ``URML_MCP_POLICY`` take a policy YAML path, ``DEFAULT`` for the bundled
-    US-federal policy, or ``none`` for no compliance pass. A flag wins over its
-    env var, and a blank value pins nothing.
+    US-federal policy, or ``none`` for no compliance pass. ``--rulebooks`` /
+    ``URML_MCP_RULEBOOKS`` take rulebook YAML paths separated by
+    ``os.pathsep``, and ``--default-rulebooks`` / ``URML_MCP_DEFAULT_RULEBOOKS``
+    take ``on`` or ``off`` (RFC-0702, Draft). A flag wins over its env var,
+    and a blank value pins nothing.
 
     Each pinned file is read once, here, and checked against its schema, so a
     bad pin stops the server at startup instead of failing every call. Raises
@@ -223,6 +261,25 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
         else:
             policy, policy_path = _load_pinned_file(raw, source, kind="policy", schema=Policy)
 
+    rulebooks: list[dict[str, Any]] = []
+    rulebook_paths: list[Path] = []
+    picked = _pick(args.rulebooks, "--rulebooks", environ, _RULEBOOKS_ENV)
+    if picked is not None:
+        raw, source = picked
+        for entry in (part.strip() for part in raw.split(os.pathsep)):
+            if entry:
+                data, path = _load_pinned_file(entry, source, kind="rulebook", schema=Rulebook)
+                rulebooks.append(data)
+                rulebook_paths.append(path)
+
+    default_rulebooks = True
+    picked = _pick(args.default_rulebooks, "--default-rulebooks", environ, _DEFAULT_RULEBOOKS_ENV)
+    if picked is not None:
+        raw, source = picked
+        if raw.lower() not in {"on", "off"}:
+            raise PinnedConfigError(f"{source}: expected on or off, got {raw!r}")
+        default_rulebooks = raw.lower() == "on"
+
     return Pinned(
         manifest=manifest,
         manifest_path=manifest_path,
@@ -231,6 +288,9 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
         profiles=profiles,
         policy=policy,
         policy_path=policy_path,
+        rulebooks=tuple(rulebooks),
+        rulebook_paths=tuple(rulebook_paths),
+        default_rulebooks=default_rulebooks,
     )
 
 
@@ -302,6 +362,11 @@ def _policy_arg(policy: str | dict[str, Any]) -> dict[str, Any] | Literal["DEFAU
 def _manifest_base_dir(pins: Pinned) -> Path | None:
     """The pinned manifest's directory, for relative HBOM references, as the CLI resolves them."""
     return pins.manifest_path.parent if pins.manifest_path is not None else None
+
+
+def _rulebooks(pins: Pinned) -> list[dict[str, Any]]:
+    """Fresh copies of the operator's rulebooks for one validation (RFC-0702)."""
+    return [copy.deepcopy(book) for book in pins.rulebooks]
 
 
 def _require_real_adapter_pins(adapter: str, pins: Pinned) -> None:
@@ -403,6 +468,8 @@ def validate_program(
         profiles=prof,
         policy=_policy_arg(resolved_policy),
         manifest_base_dir=_manifest_base_dir(pins),
+        rulebooks=_rulebooks(pins),
+        default_rulebooks=pins.default_rulebooks,
     )
     return result.model_dump(mode="json")
 
@@ -451,7 +518,9 @@ def execute_program(
 
     # Validate before anything is built: a rejected program never gets a
     # runtime or an adapter. This pass also applies a pinned policy, which the
-    # runtime's own re-validation below does not take.
+    # runtime's own re-validation below does not take. The runtime does take
+    # the operator's rulebooks and the same validation date (RFC-0702).
+    as_of = datetime.now(UTC).date()
     check = validate(
         program_d,
         manifest_d,
@@ -459,6 +528,9 @@ def execute_program(
         profiles=prof,
         policy=_policy_arg(policy),
         manifest_base_dir=_manifest_base_dir(pins),
+        rulebooks=_rulebooks(pins),
+        default_rulebooks=pins.default_rulebooks,
+        as_of=as_of,
     )
     if not check.accepted:
         from urml_ros2_runtime import ValidationRejectedError  # local import: keeps tools import light
@@ -467,7 +539,15 @@ def execute_program(
 
     runtime, cleanup = _build_runtime(adapter)
     try:
-        result = runtime.execute(program_d, manifest_d, envelope=envelope_d, profiles=prof)
+        result = runtime.execute(
+            program_d,
+            manifest_d,
+            envelope=envelope_d,
+            profiles=prof,
+            rulebooks=_rulebooks(pins),
+            default_rulebooks=pins.default_rulebooks,
+            as_of=as_of,
+        )
         out: dict[str, Any] = result.model_dump(mode="json")
         return out
     finally:

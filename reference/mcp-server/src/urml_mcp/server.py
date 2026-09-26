@@ -6,7 +6,8 @@ tool docstrings become the tool descriptions an agent reads.
 
 Run it directly with ``urml-mcp`` (installed console script) or
 ``python -m urml_mcp.server``. The operator pins the manifest, envelope,
-profiles and policy with flags or ``URML_MCP_*`` env vars (see ``main``).
+profiles, policy and rulebooks with flags or ``URML_MCP_*`` env vars (see
+``main``). No tool takes a rulebook as an argument.
 """
 
 from __future__ import annotations
@@ -54,7 +55,9 @@ def urml_validate(
     structured errors and warnings. policy is 'DEFAULT' (bundled US-federal
     compliance, the default) or 'none' to skip compliance. If the operator
     pinned the manifest, envelope, profiles or policy, omit them: the pinned
-    values are used and a different value is refused."""
+    values are used and a different value is refused. Rulebooks (government
+    and company rules, rule.* codes) are set by the operator only and apply to
+    every call; the result lists them with their obligations."""
     return tools.validate_program(program, manifest, envelope, profiles, policy, pinned=_PINNED)
 
 
@@ -74,7 +77,7 @@ def urml_execute(
     and the runtime re-validates before running; nothing reaches an actuator
     without passing the validator. If the operator pinned the manifest, envelope
     or profiles, omit them: the pinned values are used and a different value is
-    refused."""
+    refused. The operator's rulebooks apply to both checks."""
     return tools.execute_program(program, manifest, envelope, profiles, adapter, pinned=_PINNED)
 
 
@@ -96,10 +99,10 @@ def urml_describe_manifest(manifest: dict[str, Any] | None = None) -> dict[str, 
 def main(argv: Sequence[str] | None = None) -> None:
     """Console-script entry point: load the operator's pins, then serve over stdio.
 
-    Pins come from ``--manifest``, ``--envelope``, ``--profiles`` and
-    ``--policy``, or the matching ``URML_MCP_*`` env vars; a flag wins over its
-    env var. A pinned file that does not load stops the server before it
-    serves a single call.
+    Pins come from ``--manifest``, ``--envelope``, ``--profiles``,
+    ``--policy``, ``--rulebooks`` and ``--default-rulebooks``, or the matching
+    ``URML_MCP_*`` env vars; a flag wins over its env var. A pinned file that
+    does not load stops the server before it serves a single call.
     """
     global _PINNED
     try:
