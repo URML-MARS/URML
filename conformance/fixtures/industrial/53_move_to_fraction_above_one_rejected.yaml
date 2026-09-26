@@ -1,0 +1,24 @@
+name: industrial/move_to_fraction_above_one_rejected
+description: >
+  A fraction above 1.0 asks for more than the manifest maximum. With no
+  deployment envelope, 1.5 of the cell's 0.5 m/s tip speed is 0.75 m/s, above
+  the robot's own declared limit. Pass 3 rejects with
+  envelope.velocity_exceeded.
+
+manifest: industrial_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to:
+          location: home_pose
+          speed: { value: 1.5, units: fraction }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.velocity_exceeded

@@ -170,7 +170,7 @@ class TestGripForceCap:
         result = validate(program, _cell_manifest(), {"max_grip_force_n": 10.0}, policy=None)
         assert result.accepted, result.codes()
 
-    def test_grasp_cap_unchanged(self) -> None:
+    def test_grasp_cap_unchanged_by_the_helper(self) -> None:
         """The single-arm grasp check keeps its behavior after the helper refactor."""
         program = _program(
             {"detect": {"object": "widget", "store_as": "w"}},
@@ -181,3 +181,56 @@ class TestGripForceCap:
         ok = copy.deepcopy(program)
         ok["behavior"]["steps"][1]["grasp"]["force"] = 9.0
         assert validate(ok, _cell_manifest(), {"max_grip_force_n": 10.0}, policy=None).accepted
+
+
+# ---------------------------------------------------------------------------
+# Fraction speeds (spec L88: a fraction of the manifest maximum; L147-148)
+# ---------------------------------------------------------------------------
+
+
+def _move_to_tray(speed: Any) -> dict[str, Any]:
+    return _program({"move_to": {"location": "tray", "speed": speed}})
+
+
+class TestFractionSpeed:
+    """A fraction is of mobility.max_velocity (0.5 m/s in the cell manifest)."""
+
+    def test_fraction_within_cap_accepted(self) -> None:
+        # 0.4 x 0.5 m/s = 0.2 m/s, under the 0.25 m/s deployment cap.
+        speed = {"value": 0.4, "units": "fraction"}
+        result = validate(_move_to_tray(speed), _cell_manifest(), {"max_velocity": 0.25}, policy=None)
+        assert result.accepted, result.codes()
+
+    def test_fraction_over_envelope_cap_rejected(self) -> None:
+        # 0.8 x 0.5 m/s = 0.4 m/s, over the 0.25 m/s deployment cap.
+        speed = {"value": 0.8, "units": "fraction"}
+        result = validate(_move_to_tray(speed), _cell_manifest(), {"max_velocity": 0.25}, policy=None)
+        assert not result.accepted
+        assert "envelope.velocity_exceeded" in _codes_for(result, "move_to")
+
+    def test_fraction_above_one_exceeds_the_manifest_maximum(self) -> None:
+        # 1.5 x 0.5 m/s = 0.75 m/s, over the manifest's own 0.5 m/s, with no envelope.
+        speed = {"value": 1.5, "units": "fraction"}
+        result = validate(_move_to_tray(speed), _cell_manifest(), None, policy=None)
+        assert not result.accepted
+        assert "envelope.velocity_exceeded" in _codes_for(result, "move_to")
+
+    def test_fraction_of_exactly_one_accepted(self) -> None:
+        speed = {"value": 1.0, "units": "fraction"}
+        result = validate(_move_to_tray(speed), _cell_manifest(), None, policy=None)
+        assert result.accepted, result.codes()
+
+    def test_fraction_without_mobility_reports_only_the_capability_gap(self) -> None:
+        manifest = _cell_manifest()
+        del manifest["mobility"]
+        speed = {"value": 1.5, "units": "fraction"}
+        result = validate(_move_to_tray(speed), manifest, None, policy=None)
+        assert ErrorCode.CAPABILITY_MISSING_MOBILITY in {e.code for e in result.errors}
+        assert ErrorCode.ENVELOPE_VELOCITY_EXCEEDED not in {e.code for e in result.errors}
+
+    def test_absolute_speeds_unchanged(self) -> None:
+        for speed in ({"value": 0.3, "units": "m_per_s"}, 0.3):
+            result = validate(
+                _move_to_tray(speed), _cell_manifest(), {"max_velocity": 0.25}, policy=None
+            )
+            assert "envelope.velocity_exceeded" in _codes_for(result, "move_to"), speed

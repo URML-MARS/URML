@@ -3383,21 +3383,44 @@ def _check_envelope_move_to(
     envelope_max = envelope.max_velocity if envelope else None
     cap = _strictest(manifest_max, envelope_max)
     declared_speed: float | None = None
+    fraction: float | None = None
     if isinstance(args.speed, (int, float)):
         declared_speed = float(args.speed)
     elif args.speed is not None and getattr(args.speed, "units", None) == "m_per_s":
         declared_speed = float(args.speed.value)
+    elif args.speed is not None and manifest_max is not None:
+        # A fraction is of the manifest maximum (spec §1.1 `<speed>`), so it
+        # declares value x max_velocity m/s. Above 1.0 it exceeds the manifest.
+        fraction = float(args.speed.value)
+        declared_speed = fraction * manifest_max
     if declared_speed is not None and cap is not None and declared_speed > cap:
+        if fraction is not None and manifest_max:
+            message = (
+                f"move_to.speed (fraction {fraction} of the manifest maximum "
+                f"{manifest_max} m/s = {declared_speed:.4g} m/s) exceeds the strictest "
+                f"declared cap ({cap} m/s)."
+            )
+            suggestion = (
+                f"Use a fraction of at most {cap / manifest_max:.4g}, or an absolute "
+                f"speed of at most {cap} m/s."
+            )
+        else:
+            message = (
+                f"move_to.speed ({declared_speed} m/s) exceeds the strictest "
+                f"declared cap ({cap} m/s)."
+            )
+            suggestion = (
+                f"Reduce speed to at most {cap} m/s, "
+                "or relax the manifest/envelope cap if the deployment allows."
+            )
         out.append(
             _err(
                 ErrorCode.ENVELOPE_VELOCITY_EXCEEDED,
                 "move_to",
                 path,
-                f"move_to.speed ({declared_speed} m/s) exceeds the strictest "
-                f"declared cap ({cap} m/s).",
+                message,
                 field="speed",
-                suggestion=f"Reduce speed to at most {cap} m/s, "
-                "or relax the manifest/envelope cap if the deployment allows.",
+                suggestion=suggestion,
             )
         )
     # Altitude cap (drone profile-ish; applies if `pose.z` is set).
