@@ -426,6 +426,59 @@ def test_echo_provider_requires_at_least_one_mode() -> None:
         EchoProvider()
 
 
+def _ask(provider: EchoProvider, user: str) -> str:
+    return provider.complete(system="...", user=user, schema={})
+
+
+def test_echo_provider_list_value_steps_then_repeats_last() -> None:
+    """A list value answers consecutive calls in order; the last entry repeats."""
+    provider = EchoProvider(responses={"grip": ["a", "b", "c"]}, match_substrings=True)
+    assert [_ask(provider, "grip it") for _ in range(5)] == ["a", "b", "c", "c", "c"]
+
+
+def test_echo_provider_list_cursor_resets_when_matched_key_changes() -> None:
+    provider = EchoProvider(responses={"grip": ["a", "b"], "go": "g"}, match_substrings=True)
+    assert _ask(provider, "grip") == "a"
+    assert _ask(provider, "grip") == "b"
+    assert _ask(provider, "go") == "g"
+    assert _ask(provider, "grip") == "a"  # a new request starts the list again
+
+
+def test_echo_provider_list_value_exact_match() -> None:
+    provider = EchoProvider(responses={"grip": ("a", "b")})
+    assert [_ask(provider, "grip") for _ in range(3)] == ["a", "b", "b"]
+
+
+def test_echo_provider_rejects_empty_or_non_string_list() -> None:
+    with pytest.raises(ValueError, match="non-empty list of strings"):
+        EchoProvider(responses={"grip": []})
+    with pytest.raises(ValueError, match="non-empty list of strings"):
+        EchoProvider(responses={"grip": ["a", 1]})  # type: ignore[list-item]
+
+
+def test_list_valued_script_drives_the_revision_loop(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    """An adaptive scripted model: refused once, it switches to its next emission."""
+    bad_program = json.loads(json.dumps(RED_MUG_PROGRAM))
+    bad_program["behavior"]["steps"][0]["move_to"]["location"] = "the_moon"
+    provider = EchoProvider(
+        responses={"red mug": [json.dumps(bad_program), json.dumps(RED_MUG_PROGRAM)]},
+        match_substrings=True,
+    )
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=3,
+    )
+    result = bridge.translate("Bring me the red mug from the kitchen.")
+    assert result.revision_count == 1
+    assert result.program == RED_MUG_PROGRAM
+
+
 # ---------------------------------------------------------------------------
 # Policy short-circuit (RFC-0004)
 # ---------------------------------------------------------------------------

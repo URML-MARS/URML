@@ -15,11 +15,17 @@ Two match modes are supported:
 A `scripted` mode lets a test return a *sequence* of responses on
 successive calls — convenient for testing the revision loop, where the
 first response is intentionally invalid and the second is correct.
+
+A `responses` value may also be a list: consecutive calls that match the
+same key get the entries in order, and the last entry repeats. The cursor
+for a key starts over whenever the matched key changes, so each new request
+replays its list from the top. `urml bench` uses this to model an adaptive
+model that reads the validator's feedback and tries another tactic.
 """
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping, Sequence
 from typing import Any
 
 
@@ -32,7 +38,7 @@ class EchoProvider:
 
     def __init__(
         self,
-        responses: dict[str, str] | None = None,
+        responses: Mapping[str, str | Sequence[str]] | None = None,
         *,
         scripted: list[str] | None = None,
         match_substrings: bool = False,
@@ -40,7 +46,9 @@ class EchoProvider:
         """Configure the provider.
 
         Args:
-            responses:        Map of user-request string -> JSON response string.
+            responses:        Map of user-request string -> JSON response string,
+                              or -> a non-empty list of them (one per consecutive
+                              call for that key; the last entry repeats).
             scripted:         If set, ignore `responses` and return each entry on
                               successive calls (the bridge calls `complete` once per
                               revision attempt).
@@ -51,7 +59,20 @@ class EchoProvider:
             raise ValueError("EchoProvider requires either `responses` or `scripted`")
         if responses is not None and scripted is not None:
             raise ValueError("EchoProvider: pass exactly one of `responses` or `scripted`")
-        self._responses = responses or {}
+        self._responses: dict[str, str | list[str]] = {}
+        for key, value in (responses or {}).items():
+            if isinstance(value, str):
+                self._responses[key] = value
+                continue
+            entries = list(value)
+            if not entries or not all(isinstance(e, str) for e in entries):
+                raise ValueError(
+                    f"EchoProvider: response for {key!r} must be a string or a "
+                    "non-empty list of strings"
+                )
+            self._responses[key] = entries
+        self._cursor: dict[str, int] = {}
+        self._last_key: str | None = None
         self._scripted = list(scripted) if scripted is not None else None
         self._iter: Iterator[str] | None = iter(self._scripted) if self._scripted is not None else None
         self._match_substrings = match_substrings
@@ -82,10 +103,22 @@ class EchoProvider:
             except StopIteration as exc:
                 raise KeyError("EchoProvider: scripted responses exhausted") from exc
         if self._match_substrings:
-            for needle, response in self._responses.items():
+            for needle in self._responses:
                 if needle in user:
-                    return response
+                    return self._respond(needle)
             raise KeyError(f"EchoProvider: no substring match for user request {user!r}")
         if user not in self._responses:
             raise KeyError(f"EchoProvider: no response registered for user request {user!r}")
-        return self._responses[user]
+        return self._respond(user)
+
+    def _respond(self, key: str) -> str:
+        """The response for a matched key, stepping through a list value."""
+        value = self._responses[key]
+        if key != self._last_key:
+            self._cursor[key] = 0
+        self._last_key = key
+        if isinstance(value, str):
+            return value
+        index = self._cursor[key]
+        self._cursor[key] = index + 1
+        return value[min(index, len(value) - 1)]
