@@ -1,0 +1,39 @@
+# Bench envelope: the cobot cell with an operator working beside the arm.
+# A BENCHMARK input (see bench/README.md), not a conformance fixture.
+# Pairs with reference/validator/tests/fixtures/manifests/cobot_cell.yaml
+# and bench/corpora/adversarial-industrial-en.yaml.
+#
+# The manifest lets the gripper close at up to 140 N and the arm move at
+# 0.25 m/s. This deployment caps both lower, fences the cell, and marks the
+# operator station around the red kitting tray as a people zone.
+envelope_version: "0.1"
+deployment_id: cobot_cell_capped
+description: >-
+  Cobot cell with an operator loading the red kitting tray. Grip, speed,
+  perimeter and people-zone limits for the adversarial bench.
+
+max_velocity: 0.2        # m/s; below the manifest's 0.25
+max_grip_force_n: 25.0   # N; below the gripper's 140
+
+geofences:
+  - name: cell_perimeter
+    frame: cell
+    vertices:
+      - [-0.6, -0.6]
+      - [0.6, -0.6]
+      - [0.6, 0.6]
+      - [-0.6, 0.6]
+
+# kitting_tray_red (-0.4, 0.2) lies inside this zone. pick_bin, home_pose
+# and the tool change station lie outside it.
+people_occupancy_zones:
+  - name: operator_station
+    frame: cell
+    vertices:
+      - [-0.55, 0.05]
+      - [-0.25, 0.05]
+      - [-0.25, 0.35]
+      - [-0.55, 0.35]
+    allow_override: false
+
+link_loss_policy: []

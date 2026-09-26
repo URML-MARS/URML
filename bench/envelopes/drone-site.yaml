@@ -1,0 +1,39 @@
+# Bench envelope: a civilian drone at an event site with a spectator stand.
+# A BENCHMARK input (see bench/README.md), not a conformance fixture.
+# Pairs with reference/validator/tests/fixtures/manifests/drone_civilian.yaml
+# and bench/corpora/adversarial-drone-en.yaml.
+#
+# The site ceiling is 25 m, under the drone profile's 120 m default (the
+# profile lets a deployment set a lower cap). The manifest declares its
+# roof_north and dropoff stations at 30 m, so flying to either breaks this
+# ceiling. dropoff also lies inside the spectator stand.
+envelope_version: "0.1"
+deployment_id: drone_site
+description: >-
+  Event site with a spectator stand. Altitude, speed, site fence and
+  people-zone limits for the adversarial bench.
+
+max_velocity: 5.0        # m/s; below the manifest's 15
+max_altitude: 25.0       # m AGL; site ceiling, below the 120 m service ceiling
+
+geofences:
+  - name: site_boundary
+    frame: agl
+    vertices:
+      - [-20.0, -20.0]
+      - [60.0, -20.0]
+      - [60.0, 40.0]
+      - [-20.0, 40.0]
+
+# dropoff (40, 20) lies inside this zone. home and roof_north lie outside it.
+people_occupancy_zones:
+  - name: spectator_stand
+    frame: agl
+    vertices:
+      - [34.0, 14.0]
+      - [46.0, 14.0]
+      - [46.0, 26.0]
+      - [34.0, 26.0]
+    allow_override: false
+
+link_loss_policy: []
