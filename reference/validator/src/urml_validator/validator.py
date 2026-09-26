@@ -17,6 +17,12 @@
      against the manifest's `provenance` block. Produces `policy.*` errors
      and warnings. Default policy is the bundled US-federal rule set.
 
+The rulebook pass (RFC-0702, Draft; `rulebook_engine.py`) runs after Pass 3
+and before Pass 4. It judges the program against the government and company
+rulebooks that apply to it and produces `rule.*` errors and warnings. The
+bundled rulebooks apply by default; `policy=None` never skips the pass. The
+pass keeps its own name so the existing pass numbers do not change.
+
 The passes are best-effort sequential: argument failure short-circuits the
 later passes (because the program tree is invalid); capability/envelope/
 binding/policy errors all collect into the same result so authors get full
@@ -42,7 +48,9 @@ Scope of this milestone:
 from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
+from collections.abc import Sequence as SequenceABC
 from dataclasses import dataclass
+from datetime import date
 from importlib import resources
 from math import hypot, radians
 from pathlib import Path
@@ -81,6 +89,7 @@ from urml_validator.schemas.manifest import (
 )
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.roster import FleetRoster, FrameAnchor
+from urml_validator.schemas.rulebook import Rulebook
 from urml_validator.transforms import resolve_to_world, transform_point_between
 from urml_validator.schemas.primitives import (
     BimanualArgs,
@@ -155,6 +164,9 @@ def validate(
     policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
     *,
     manifest_base_dir: Path | None = None,
+    rulebooks: SequenceABC[Mapping[str, Any] | Rulebook] = (),
+    default_rulebooks: bool = True,
+    as_of: date | None = None,
 ) -> ValidationResult:
     """Validate a URML program against a manifest and (optionally) an envelope.
 
@@ -178,9 +190,20 @@ def validate(
                     resolution; HBOM-content rules then degrade to a
                     ``policy.hbom_uri_unreachable`` warning. The CLI passes the
                     manifest file's parent directory automatically.
+        rulebooks:  RFC-0702 (Draft): organization and deployment rulebooks, as
+                    parsed YAML mappings or ``Rulebook`` models, applied in
+                    order after the bundled rulebooks.
+        default_rulebooks: False switches off the bundled rulebooks (the FAA
+                    Part 107 subset for aircraft) and reports
+                    ``rule.defaults_disabled`` for each one that would apply.
+                    It never switches off ``rulebooks``.
+        as_of:      The date deployment exceptions are checked against for
+                    expiry. None means today in UTC.
 
     Returns:
-        A `ValidationResult` with `accepted=True` iff no error-severity errors fired.
+        A `ValidationResult` with `accepted=True` iff no error-severity errors
+        fired. ``rulebooks`` lists the rulebooks that applied, with their
+        obligations.
     """
     errors: list[ValidationError] = []
     warnings: list[ValidationError] = []
@@ -275,6 +298,22 @@ def validate(
     for issue in _check_learned_policy(manifest_model, envelope_model):
         (warnings if issue.severity == "warning" else errors).append(issue)
 
+    # ----- Rulebook pass (RFC-0702, Draft): after Pass 3, before Pass 4 -----
+    # Independent of the compliance policy: policy=None never skips it.
+    from urml_validator.rulebook_engine import run_rulebook_pass
+
+    rulebook_pass = run_rulebook_pass(
+        program_model,
+        {None: (manifest_model, envelope_model)},
+        fleet=False,
+        profiles=profiles,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        as_of=as_of,
+    )
+    errors.extend(rulebook_pass.errors)
+    warnings.extend(rulebook_pass.warnings)
+
     # ----- Pass 4: variable bindings -----
     errors.extend(_check_bindings(program_model))
 
@@ -305,6 +344,7 @@ def validate(
         accepted=not errors,
         errors=errors,
         warnings=warnings,
+        rulebooks=rulebook_pass.reports,
     )
 
 
@@ -829,6 +869,10 @@ def validate_fleet(
     member_envelopes: Mapping[str, dict[str, Any] | SafetyEnvelope] | None = None,
     profiles: tuple[str, ...] = (),
     policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+    *,
+    rulebooks: SequenceABC[Mapping[str, Any] | Rulebook] = (),
+    default_rulebooks: bool = True,
+    as_of: date | None = None,
 ) -> ValidationResult:
     """Validate a multi-robot fleet program against a roster of member manifests.
 
@@ -844,6 +888,11 @@ def validate_fleet(
         policy:           Compliance policy for Pass 5; evaluated per member
                           manifest. ``"DEFAULT"`` / ``None`` / dict / `Policy`,
                           same contract as `validate`.
+        rulebooks, default_rulebooks, as_of: the rulebook pass (RFC-0702,
+                          Draft), same contract as `validate`. Each step is
+                          judged against its member's manifest and envelope,
+                          and ``max_concurrent_aircraft`` rules are judged
+                          here only.
 
     Returns:
         A `ValidationResult` aggregating single-robot passes (re-keyed by member)
@@ -1004,6 +1053,22 @@ def validate_fleet(
                 )
             )
 
+    # ----- Rulebook pass (RFC-0702, Draft): per member, before Pass 4 -----
+    from urml_validator.rulebook_engine import run_rulebook_pass
+
+    rulebook_pass = run_rulebook_pass(
+        program_model,
+        {name: (members[name], envelopes.get(name)) for name in members},
+        fleet=True,
+        sole_member=sole_member,
+        profiles=profiles,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        as_of=as_of,
+    )
+    errors.extend(rulebook_pass.errors)
+    warnings.extend(rulebook_pass.warnings)
+
     # ----- Pass 4: bindings across the whole fleet tree -----
     errors.extend(_check_bindings(program_model))
 
@@ -1018,7 +1083,9 @@ def validate_fleet(
                 else:
                     errors.append(issue)
 
-    return ValidationResult(accepted=not errors, errors=errors, warnings=warnings)
+    return ValidationResult(
+        accepted=not errors, errors=errors, warnings=warnings, rulebooks=rulebook_pass.reports
+    )
 
 
 # =============================================================================

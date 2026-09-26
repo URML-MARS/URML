@@ -1,0 +1,24 @@
+# Fixture: a drone envelope whose people-occupancy zone the operator marked
+# allow_override: true. The zone covers roof_north (10, 5) of drone_civilian.
+#
+# The envelope pass skips an allow_override zone: the operator accepted the
+# physical risk. The bundled FAA rulebook (RFC-0702, Draft) still judges it,
+# because an override does not change 14 CFR 107.39. Used by the rulebook
+# conformance fixtures.
+
+envelope_version: "0.1"
+deployment_id: drone_roof_crew
+description: Drone envelope with an overridden people zone around roof_north.
+
+max_velocity: 10.0
+max_altitude: 120.0
+
+people_occupancy_zones:
+  - name: roof_crew
+    frame: agl
+    vertices:
+      - [8.0, 3.0]
+      - [12.0, 3.0]
+      - [12.0, 7.0]
+      - [8.0, 7.0]
+    allow_override: true

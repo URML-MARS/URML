@@ -33,8 +33,15 @@ EXAMPLES_ROOT = REPO_ROOT / "examples"
 
 
 def test_registry_lists_all_expected_artifacts() -> None:
-    """The exporter knows about program, manifest, envelope, policy, and roster."""
-    assert set(SCHEMA_REGISTRY.keys()) == {"program", "manifest", "envelope", "policy", "roster"}
+    """The exporter knows about program, manifest, envelope, policy, roster and rulebook."""
+    assert set(SCHEMA_REGISTRY.keys()) == {
+        "program",
+        "manifest",
+        "envelope",
+        "policy",
+        "roster",
+        "rulebook",  # RFC-0702 (Draft)
+    }
 
 
 @pytest.mark.parametrize("name", sorted(SCHEMA_REGISTRY.keys()))

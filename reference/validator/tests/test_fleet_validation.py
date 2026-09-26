@@ -343,9 +343,14 @@ def test_geometric_ground_footprint_overlap_rejected():
 
 
 def test_geometric_air_vertical_separation_accepted():
+    # The deconfliction check alone. Two aircraft airborne at once draw
+    # rule.concurrency_exceeded under the bundled FAA rulebook (RFC-0702);
+    # test_rulebooks.py covers that.
     a = _geo_manifest("a", "multirotor", "agl", [_loc("low", 0.0, 0.0, 0.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
     b = _geo_manifest("b", "multirotor", "agl", [_loc("high", 0.0, 0.0, 30.0, "agl")], 0.5, 5.0, ceiling=120, autopilot="px4")
-    result = _geo_fleet(a, b, _parallel2("low", "high"), ["agl"])
+    result = validate_fleet(
+        _roster2(["agl"]), {"a": a, "b": b}, _parallel2("low", "high"), policy=None, default_rulebooks=False
+    )
     assert result.accepted, result.codes()
 
 

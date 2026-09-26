@@ -665,8 +665,12 @@ class TestScanArea:
         assert result.accepted, result.codes()
 
     def test_zone_with_override_is_not_judged(self) -> None:
+        # The envelope pass alone. The bundled FAA rulebook (RFC-0702) judges
+        # allow_override zones on purpose; test_rulebooks.py covers that.
         area = {"bounding_box": {"min_x": -10.0, "max_x": 10.0, "min_y": -10.0, "max_y": 10.0}}
-        result = validate(_scan(area), _drone_manifest(), _zoned(allow_override=True), policy=None)
+        result = validate(
+            _scan(area), _drone_manifest(), _zoned(allow_override=True), policy=None, default_rulebooks=False
+        )
         assert result.accepted, result.codes()
 
     def test_polygon_area_crossing_a_zone_rejected(self) -> None:
@@ -683,7 +687,12 @@ class TestScanArea:
         assert "envelope.occupancy_zone_intrusion" in _codes_for(result, "scan")
 
     def test_named_region_that_is_not_a_declared_area_is_not_judged(self) -> None:
-        result = validate(_scan({"named_region": "somewhere_else"}), _drone_manifest(), _zoned(), policy=None)
+        # The envelope pass alone. The bundled FAA rulebook (RFC-0702) fails
+        # closed on a scan area it cannot place; test_rulebooks.py covers that.
+        result = validate(
+            _scan({"named_region": "somewhere_else"}), _drone_manifest(), _zoned(), policy=None,
+            default_rulebooks=False,
+        )
         assert result.accepted, result.codes()
 
     def test_corner_labels_unchanged(self) -> None:

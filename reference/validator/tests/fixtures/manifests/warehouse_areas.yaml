@@ -1,0 +1,60 @@
+# Fixture: a warehouse AMR with a camera and declared areas (RFC-0615).
+#
+# The rulebook fixtures (RFC-0702) load the Example Logistics rulebook
+# (examples/rulebooks/example-warehouse.yaml), whose rules name zones. A
+# rulebook never draws geometry: the zone names resolve against these
+# declared areas. The camera and the controller programs let the fixtures
+# exercise the no-camera zones and the program allowlist. max_velocity is
+# 2.0 m/s, above the rulebook's 1.5 m/s cap, so the cap is the rulebook's.
+
+manifest_version: "0.1"
+robot_id: warehouse_patrol_amr
+description: Warehouse AMR with a camera, for the rulebook conformance fixtures.
+
+frames:
+  - name: site
+
+declared_locations:
+  - name: dock_a
+    pose: { x: 1.0, y: 1.0, z: 0.0 }
+    frame: site
+    description: Parking spot inside the packing area.
+
+declared_areas:
+  - name: packing_area
+    frame: site
+    polygon: [{ x: 0.0, y: 0.0 }, { x: 10.0, y: 0.0 }, { x: 10.0, y: 10.0 }, { x: 0.0, y: 10.0 }]
+  - name: restroom
+    frame: site
+    polygon: [{ x: 20.0, y: 0.0 }, { x: 24.0, y: 0.0 }, { x: 24.0, y: 4.0 }, { x: 20.0, y: 4.0 }]
+  - name: hr_office
+    frame: site
+    polygon: [{ x: 20.0, y: 6.0 }, { x: 24.0, y: 6.0 }, { x: 24.0, y: 10.0 }, { x: 20.0, y: 10.0 }]
+  - name: server_room
+    frame: site
+    polygon: [{ x: 30.0, y: 0.0 }, { x: 34.0, y: 0.0 }, { x: 34.0, y: 4.0 }, { x: 30.0, y: 4.0 }]
+  - name: hazmat_cage
+    frame: site
+    polygon: [{ x: 30.0, y: 6.0 }, { x: 34.0, y: 6.0 }, { x: 34.0, y: 10.0 }, { x: 30.0, y: 10.0 }]
+
+mobility:
+  drive_type: differential
+  max_velocity: 2.0
+
+perception:
+  cameras:
+    - name: front_camera
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "1080p"
+  object_vocabulary:
+    - tote
+
+programs:
+  - name: pallet_wrap_cycle
+    description: Wrap the pallet at the packing station.
+  - name: conveyor_home
+    description: Return the conveyor to its home position.
+  - name: purge_logs
+    description: Delete the controller's local logs (not on the approved list).
