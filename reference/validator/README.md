@@ -27,7 +27,7 @@ The validator is **the safety boundary**. Per [`MANIFESTO.md`](../../MANIFESTO.m
 
 > *URML programs are executed only after static verification against the target's capability manifest and active safety envelope. Any "fast path" that skips verification is rejected on review.*
 
-The validator runs in the same process as the runtime. `URMLRuntime.execute` imports it and re-validates every program, against the manifest, envelope and policy it is given, before its first adapter call. A rejected program raises `ValidationRejectedError` and the adapter receives nothing; `python -m urml_conformance --goal-line` checks this for every rejected conformance fixture. Skipping the check takes an explicit `revalidate=False` in code.
+The validator runs in the same process as the runtime. `URMLRuntime.execute` imports it and re-validates every program, against the manifest, envelope, policy and rulebooks it is given, before its first adapter call. A rejected program raises `ValidationRejectedError` and the adapter receives nothing; `python -m urml_conformance --goal-line` checks this for every rejected conformance fixture. Skipping the check takes an explicit `revalidate=False` in code.
 
 ## What the validator checks
 
@@ -55,6 +55,19 @@ When fully implemented, the validator runs these checks against every URML progr
 
 - Every declared limit is honored: max velocity, max payload, max force, max altitude, geofence, force ceilings, no-go zones, link-loss policy.
 - Profile-specific envelope checks (drone people-occupancy, industrial cell perimeter, home people-only zones) are applied for whichever profiles the program declares.
+
+### Rulebook checks (RFC-0702, Draft)
+
+- A rulebook states what law or a company allows: caps, forbidden primitives, forbidden zones, no flight over declared people zones, required deployment declarations, and how many aircraft fly at once. The format is [`spec/layer-1-hal/rulebook.md`](../../spec/layer-1-hal/rulebook.md).
+- The rulebook pass runs after the envelope checks and cites the rule it enforces, with `rule.*` codes. `--no-policy` does not skip it.
+- The bundled rulebook, the statically checkable subset of 14 CFR Part 107 and Part 89, applies by default to drone programs and aircraft. `--rulebook PATH` adds organization and deployment rulebooks; `--no-default-rulebooks` switches the bundled one off, with a warning.
+- A deployment rulebook records declarations (such as the Remote ID method) and exceptions that name their basis (such as a waiver number). An exception turns a violation into a warning that names the basis. URML records these and does not verify them.
+- Every report lists the rules a static check cannot see as obligations. A program that passes a rulebook is not a legal compliance determination.
+
+```bash
+urml validate flight.urml.yaml -m drone.manifest.yaml \
+  --rulebook examples/rulebooks/example-deployment.yaml
+```
 
 ## What the validator does NOT do
 
