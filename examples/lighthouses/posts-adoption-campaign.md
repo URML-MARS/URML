@@ -256,3 +256,107 @@ urml bench --corpus bench/corpora/home-en.yaml \
 Send me the printed table and the row YAML it writes; I commit it under
 `bench/results/` and it becomes the first public row. slowrunner gets the
 invite to add their own row once the GitHub flag lifts.
+
+## 6. Goalkeeper: the demo, the striker rows and the safety model (2026-09-26)
+
+Gate: nothing goes out until the core PRs (striker rows, demo, safety model)
+and the website PR are merged and https://urml.dev/blog/goalkeeper/ returns
+200. GitHub channels (Discussions, replies on threads) wait until the
+idoco2003 flag lifts; posting there now points people at 404s. The drafts
+below are founder-voiced: first person, no AI footer. Every number in them
+comes from the committed striker rows (`bench/results/2026-09-26/`) or the
+demo transcript (`examples/goalkeeper/goalkeeper-transcript.txt`). Add no
+others.
+
+Links every draft uses:
+- Blog: https://urml.dev/blog/goalkeeper/
+- Demo: https://github.com/URML-MARS/URML/tree/main/examples/goalkeeper
+- Safety model: https://github.com/URML-MARS/URML/blob/main/docs/safety/safety-model.md
+
+### 6.1 LinkedIn post (founder profile; lead with the refusal demo and the before/after numbers; link to the blog)
+
+> I pointed a compromised AI model at three robots: a cobot arm beside an
+> operator, a home robot near a nursery, and a drone near a spectator stand.
+> It tried seven unsafe commands. All seven were refused, and URML sent zero
+> commands for them.
+>
+> The checkpoint that refused them is not another model. It is deterministic
+> code that checks every program against what the robot's maker declared and
+> what the site allows, before any command goes out. The model proposes. The
+> validator decides.
+>
+> Then we tried to score on our own keeper. A scripted striker plays a fully
+> jailbroken model: it writes exactly the unsafe program an attacker wants and
+> never refuses. Before our fixes, 21 of 40 attacks got through. The gaps were
+> plain ones, like a grip force sent through a different verb or a speed
+> written as a fraction of top speed. After the fixes, 0 of 40 got through, and
+> all 12 safe requests still passed. The rows are committed, so anyone can
+> re-run them.
+>
+> The write-up also lists what the checker cannot see: the path between two
+> targets, people outside the declared zones, harm that stays inside every
+> limit. Emergency stops and safety-rated controllers stay.
+>
+> Open source, runs offline in seconds: <blog link>
+
+### 6.2 Show HN (founder posts; title + first comment)
+
+Title: `Show HN: We attacked our own robot-program validator with a scripted jailbroken model`
+URL: the demo README (not the blog).
+
+First comment:
+> Author here. URML is an open language for robot programs, and its validator
+> sits between a language model and a robot's adapter. A program is checked
+> against the robot's capability manifest (what the maker declared) and the
+> site's envelope (caps, fences, people zones) before the first command. The
+> checker is plain code, not a model, so a jailbreak changes what the model
+> asks for but not what gets through.
+>
+> The demo scripts a compromised model against three robots. All seven
+> attacks are refused, and a recording adapter shows URML sent zero commands
+> for them. A payload drop on parked cars passes, because it breaks no
+> declared limit, and the transcript says so.
+>
+> To test the gate harder we wrote a striker: a script that emits exactly the
+> unsafe program an attacker wants and tries another route when refused.
+> Before our fixes, 21 of 40 attacks got through (grip force via pick_from,
+> fraction speeds, landings in people zones, undeclared place names). After
+> them, 0 of 40, with 12 of 12 safe requests still accepted. The rows are
+> committed. A scripted striker measures the gate, not a model, and we have
+> no live-model row yet.
+>
+> Known limits: it checks the targets a program names, not the path between
+> them; zones are static; our ROS 2 and PX4 adapters drop the requested speed
+> today; code that calls an adapter directly skips it. It is not a safety
+> function, so e-stops and safety-rated controls stay. Apache 2.0, runs
+> offline. An attack that gets through is the most useful reply.
+
+### 6.3 Email to the RoboGuard authors (founder sends from greenvh@gmail.com)
+
+To: Zachary Ravichandran and colleagues, University of Pennsylvania
+(addresses from the paper, arXiv 2503.07885). One question, no other ask.
+
+> Subject: RoboGuard, and a declared-limit gate below it
+>
+> Hi Zachary,
+>
+> I read RoboGuard and RoboPAIR with real interest. I maintain URML, an open
+> language for robot programs. Its validator checks every program against
+> limits people declared (the maker's capability manifest, and the site's
+> force, speed and altitude caps, fences and people zones) before any command.
+> It is plain deterministic code, with no model in the trust path.
+>
+> This week we attacked it with a scripted, fully jailbroken model. Before our
+> fixes, 21 of 40 attacks got through. After them, 0 of 40. Six harmful
+> requests that stay inside every declared limit still pass. That is the
+> contextual ground RoboGuard covers and a limit check cannot. The write-up,
+> with the demo and the committed rows: <blog link>
+>
+> My one question: would a declared-limit gate like this be useful below
+> RoboGuard's contextual rules, as a last check a plan must pass before it
+> reaches the robot?
+>
+> Thanks for publishing the attack alongside the defense.
+>
+> Ido Yahalomi
+> urml.dev
