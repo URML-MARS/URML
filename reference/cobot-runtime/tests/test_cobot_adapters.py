@@ -384,6 +384,40 @@ def test_missing_extras_are_actionable(monkeypatch: pytest.MonkeyPatch) -> None:
         KassowKrAdapter().send_navigation_goal(pose={"x": 0.0})
 
 
+def test_fraction_speed_reaches_move_l_in_mps(fake_sdks: None) -> None:
+    """0.9 of cobot_cell's 0.25 m/s maximum reaches moveL as 0.225 m/s, not 0.9."""
+    from pathlib import Path
+
+    import yaml
+    from urml_ros2_runtime import URMLRuntime
+
+    from urml_cobot_runtime import CobotConfig, UrRtdeAdapter
+    from urml_cobot_runtime.adapter import Pose
+
+    manifest_path = (
+        Path(__file__).resolve().parents[3]
+        / "reference" / "validator" / "tests" / "fixtures" / "manifests" / "cobot_cell.yaml"
+    )
+    manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    program = {
+        "profile": "industrial",
+        "behavior": {
+            "type": "sequence",
+            "on_error": "abort_and_report",
+            "steps": [
+                {"move_to": {"location": "pick_bin", "speed": {"value": 0.9, "units": "fraction"}}}
+            ],
+        },
+    }
+    vec = [0.4, -0.3, 0.1, 0.0, 3.14, 0.0]
+    cfg = CobotConfig(location_to_pose={"pick_bin": Pose(vector=vec)})
+    with UrRtdeAdapter(cfg) as ur:
+        result = URMLRuntime(ur).execute(program, manifest, None, ("industrial",), policy=None)
+        ctrl, _ = ur._open()
+    assert result.success is True
+    assert ctrl.moves == [(vec, pytest.approx(0.9 * 0.25))]
+
+
 def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:
     from urml_conformance import ConformanceRunner
 

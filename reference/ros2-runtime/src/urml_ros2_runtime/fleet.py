@@ -45,7 +45,7 @@ from urml_ros2_runtime.errors import (
     UnsupportedCompositionError,
     ValidationRejectedError,
 )
-from urml_ros2_runtime.primitives import PrimitiveOutcome, execute_step
+from urml_ros2_runtime.primitives import PrimitiveOutcome, execute_step, manifest_max_velocity
 from urml_ros2_runtime.substrate.base import ROSAdapter
 
 
@@ -96,6 +96,9 @@ class FleetRuntime:
         self._adapters = dict(adapters)
         self._revalidate = revalidate
         self._sequential = sequential
+        # Set per `execute` call: each member's manifest maximum, the m/s a
+        # Layer-2 fraction speed on that member scales to.
+        self._member_max_velocity: dict[str, float | None] = {}
 
     def execute(
         self,
@@ -132,6 +135,10 @@ class FleetRuntime:
         program_model = (
             program if isinstance(program, URMLProgram) else URMLProgram.model_validate(program)
         )
+        self._member_max_velocity = {
+            member: manifest_max_velocity(member_manifests.get(member))
+            for member in self._adapters
+        }
 
         # A fleet of one resolves an unaddressed root to the sole member; a
         # multi-member fleet always enters through an `on:` node (the validator
@@ -196,7 +203,9 @@ class FleetRuntime:
                     "member). The validator should have rejected this; pass a "
                     "validated program."
                 )
-            outcome = execute_step(node, adapter, bindings)
+            outcome = execute_step(
+                node, adapter, bindings, max_velocity=self._max_velocity_for(adapter)
+            )
             bindings.update(outcome.bindings)
             return steps_executed + 1, outcome
         if isinstance(node, Sequence):
@@ -425,6 +434,13 @@ class FleetRuntime:
                 success=False, reason="retry.until_unsatisfied_after_max_attempts"
             )
         return steps_executed, last_outcome
+
+    def _max_velocity_for(self, adapter: ROSAdapter) -> float | None:
+        """The manifest maximum of the member that owns `adapter`, or None."""
+        for member, candidate in self._adapters.items():
+            if candidate is adapter:
+                return self._member_max_velocity.get(member)
+        return None
 
     def _audit_snapshot(self) -> dict[str, list[dict[str, Any]]]:
         """One adapter call-log per member, keyed by member handle."""

@@ -13,11 +13,12 @@ in the adapter implementation, not here.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from math import radians
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict
+from urml_validator.schemas.common import Speed
 from urml_validator.schemas.composition import Step
 from urml_validator.schemas.primitives import (
     BimanualArgs,
@@ -144,6 +145,42 @@ def _duration_seconds(value: float | str | None) -> float | None:
     raise ValueError(f"unrecognized duration string: {value!r}")
 
 
+def manifest_max_velocity(manifest: Any) -> float | None:
+    """The manifest's declared ``mobility.max_velocity`` in m/s, or None.
+
+    Accepts a raw manifest dict or a ``CapabilityManifest`` model. None means
+    the manifest declares no maximum, so a fractional speed has nothing to
+    scale against.
+    """
+    if isinstance(manifest, Mapping):
+        mobility = manifest.get("mobility")
+    else:
+        mobility = getattr(manifest, "mobility", None)
+    if isinstance(mobility, Mapping):
+        value = mobility.get("max_velocity")
+    else:
+        value = getattr(mobility, "max_velocity", None)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _speed_mps(speed: Speed | float | None) -> float | None:
+    """The m/s value an executor hands the adapter for a Layer-2 speed.
+
+    ``execute_step`` lowers a fraction to m/s before dispatch. A fraction that
+    reaches an executor un-lowered (a direct call with no manifest) becomes
+    None, the substrate default: a fraction is never sent as if it were m/s.
+    """
+    if speed is None:
+        return None
+    if isinstance(speed, (int, float)):
+        return float(speed)
+    if speed.units == "fraction":
+        return None
+    return float(speed.value) or None
+
+
 def _force_newtons(force: Any) -> float | None:
     """Normalize a Force (`gentle`/`firm`/number/Force model) into newtons."""
     if force is None:
@@ -198,11 +235,7 @@ def exec_move_to(
             v = getattr(args.pose, field)
             if v is not None:
                 pose[field] = v
-    speed_value: float | None = None
-    if isinstance(args.speed, (int, float)):
-        speed_value = float(args.speed)
-    elif args.speed is not None:
-        speed_value = float(getattr(args.speed, "value", 0.0)) or None
+    speed_value = _speed_mps(args.speed)
     # `carrying` is always a $ref per the schema (VarRef). Resolve it.
     carrying_resolved: dict[str, Any] | None = None
     if args.carrying is not None:
@@ -229,11 +262,7 @@ def exec_drive(
             reason="not_supported: this substrate has no relative motion "
             "(drive requires a RelativeMotionAdapter, RFC-0630).",
         )
-    speed_value: float | None = None
-    if isinstance(args.speed, (int, float)):
-        speed_value = float(args.speed)
-    elif args.speed is not None:
-        speed_value = float(getattr(args.speed, "value", 0.0)) or None
+    speed_value = _speed_mps(args.speed)
     # RFC-0665: resolve the radius form to the arc-length the adapter lowers.
     # `distance = radius x radians(arc)`; the schema guarantees a non-zero `arc`
     # here, so no division and no factor-of-2 arithmetic is asked of any caller.
@@ -909,14 +938,40 @@ PRIMITIVE_EXECUTORS: dict[
 }
 
 
-def execute_step(step: Step, adapter: ROSAdapter, bindings: dict[str, Any]) -> PrimitiveOutcome:
+def execute_step(
+    step: Step,
+    adapter: ROSAdapter,
+    bindings: dict[str, Any],
+    *,
+    max_velocity: float | None = None,
+) -> PrimitiveOutcome:
     """Dispatch one Step through the right executor.
 
     `bindings` is the runtime's current variable scope. Executors resolve
     `$ref` arguments against it before calling the adapter so the adapter
     only sees concrete data.
+
+    `max_velocity` is the manifest's `mobility.max_velocity` (see
+    `manifest_max_velocity`). A `speed` stated as a fraction of the manifest
+    maximum is lowered here to fraction x max_velocity m/s, before any
+    adapter call. With no declared maximum it becomes None, the substrate
+    default. A fraction outside 0..1 fails the step and the adapter is not
+    called.
     """
     name = step.primitive_name
     executor = PRIMITIVE_EXECUTORS[name]  # KeyError here = unknown primitive => bug
     args = getattr(step, name)
+    speed = getattr(args, "speed", None)
+    if isinstance(speed, Speed) and speed.units == "fraction":
+        if not 0.0 <= speed.value <= 1.0:
+            return PrimitiveOutcome(
+                success=False,
+                reason=(
+                    f"speed_out_of_range: {name}.speed is a fraction of {speed.value:g}; "
+                    "a fraction of the manifest maximum must be between 0 and 1. "
+                    "Nothing was sent to the adapter."
+                ),
+            )
+        mps = speed.value * max_velocity if max_velocity is not None else None
+        args = args.model_copy(update={"speed": mps or None})
     return executor(args, adapter, bindings)
