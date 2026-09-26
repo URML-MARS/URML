@@ -103,6 +103,22 @@ def test_the_lane_skips_accepted_fixtures() -> None:
     assert run_goal_line(accepted).results == []
 
 
+def test_recording_adapter_answers_capability_checks_statically() -> None:
+    """Python 3.12+ checks runtime Protocols with inspect.getattr_static, which
+    skips __getattr__. The proxy binds its methods up front so those checks see
+    the same capabilities the wrapped adapter has, on every Python version."""
+    import inspect
+
+    from urml_ros2_runtime.substrate.base import RelativeMotionAdapter, ROSAdapter
+
+    recorder = RecordingAdapter(MockROSAdapter())
+    for name in ("send_navigation_goal", "drive_by", "turn_by", "sample_signals"):
+        inspect.getattr_static(recorder, name)  # AttributeError if not bound
+    assert isinstance(recorder, ROSAdapter)
+    assert isinstance(recorder, RelativeMotionAdapter)
+    assert recorder.calls == []  # binding is not calling
+
+
 def test_recording_adapter_records_calls_and_forwards_them() -> None:
     inner = MockROSAdapter()
     recorder = RecordingAdapter(inner)
