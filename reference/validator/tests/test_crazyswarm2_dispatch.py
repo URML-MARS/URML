@@ -75,6 +75,22 @@ def test_two_drones_to_same_corner_is_refused() -> None:
         gen.render_dispatch_plan(roster, members, program)
 
 
+def test_the_lab_rulebook_switches_the_faa_rulebook_off() -> None:
+    """RFC-0702: the swarm flies indoors, and the plan says why Part 107 does not apply."""
+    gen = _load_gen()
+    plan = gen.render_swarm_formation()
+    assert "  example_crazyswarm2_flight_lab: declares indoor: true" in plan
+    assert "  us_faa_part107: switched off: the deployment declares indoor: true" in plan
+
+
+def test_without_the_lab_rulebook_three_aircraft_at_once_are_refused() -> None:
+    """RFC-0702: under the bundled FAA rulebook alone, one remote pilot flies one aircraft (14 CFR 107.35)."""
+    gen = _load_gen()
+    roster, members, program = gen._load_fleet()
+    with pytest.raises(ValueError, match=r"rule\.concurrency_exceeded"):
+        gen.render_dispatch_plan(roster, members, program, rulebooks=[])
+
+
 def test_goto_duration_respects_max_velocity() -> None:
     """@whoenig #864: GoTo needs a duration long enough for the max-velocity limit.
 

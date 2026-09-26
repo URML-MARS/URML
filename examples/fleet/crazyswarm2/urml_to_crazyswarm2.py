@@ -13,6 +13,11 @@ volumes) is built to carry. So this maps the two together, and only that:
      checked against each Crazyflie's operational-clearance volume; send two
      drones to the same corner and the program is rejected
      (``fleet.concurrent_shared_workspace``) before a single command goes out.
+     The validation loads the lab's deployment rulebook,
+     ``flight-lab.rulebook.yaml`` (RFC-0702, Draft). It declares
+     ``indoor: true``, which switches the bundled FAA Part 107 rulebook off;
+     without it, three Crazyflies airborne at once are refused
+     (``rule.concurrency_exceeded``, 14 CFR 107.35).
 
   2. For each validated per-UAV primitive it emits the concrete Crazyswarm2
      interface (the real crazyflie_interfaces services):
@@ -40,14 +45,40 @@ to the per-CF service clients is the natural next step.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
 import yaml
-from urml_validator import validate_fleet
+from urml_validator import ValidationResult, validate_fleet
 
 _HERE = Path(__file__).resolve().parent
 DEFAULT_FLEET = _HERE / "swarm-formation.fleet.yaml"
+#: The lab's deployment rulebook (RFC-0702, Draft): it declares `indoor: true`.
+DEFAULT_RULEBOOK = _HERE / "flight-lab.rulebook.yaml"
+
+
+def _load_rulebook(path: Path = DEFAULT_RULEBOOK) -> dict[str, Any]:
+    """Load the deployment rulebook the swarm flies under."""
+    rulebook: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return rulebook
+
+
+def _rulebook_lines(result: ValidationResult) -> list[str]:
+    """Which rulebooks the validation loaded, and what each one did."""
+    lines = ["rulebooks (RFC-0702, Draft):"]
+    for report in result.rulebooks:
+        if report.declarations is not None:  # a deployment rulebook
+            declared = ", ".join(
+                f"{key}: {str(value).lower() if isinstance(value, bool) else value}"
+                for key, value in report.declarations.items()
+            )
+            lines.append(f"  {report.rulebook_id}: declares {declared}")
+        elif report.applied:
+            lines.append(f"  {report.rulebook_id}: applied")
+        else:
+            lines.append(f"  {report.rulebook_id}: {report.reason}")
+    return lines
 
 
 def _load_fleet(path: Path = DEFAULT_FLEET) -> tuple[dict[str, Any], dict[str, dict[str, Any]], dict[str, Any]]:
@@ -120,14 +151,21 @@ def render_dispatch_plan(
     roster_doc: dict[str, Any],
     members: dict[str, dict[str, Any]],
     program_doc: dict[str, Any],
+    rulebooks: Sequence[dict[str, Any]] | None = None,
 ) -> str:
     """Validate the fleet program, then render the Crazyswarm2 dispatch plan.
 
-    Raises ``ValueError`` if ``validate_fleet`` rejects (a deconfliction conflict,
-    a member that can't satisfy a primitive, a barrier without ``peer_link``).
-    No Crazyswarm2 command is emitted for a rejected program.
+    ``rulebooks`` are the caller's rulebooks (RFC-0702, Draft); None loads the
+    lab's ``flight-lab.rulebook.yaml``. Raises ``ValueError`` if
+    ``validate_fleet`` rejects (a deconfliction conflict, a member that can't
+    satisfy a primitive, a barrier without ``peer_link``, a rulebook
+    violation). No Crazyswarm2 command is emitted for a rejected program.
     """
-    result = validate_fleet(roster_doc, members, program_doc, policy=None)
+    if rulebooks is None:
+        rulebooks = [_load_rulebook()]
+    result = validate_fleet(
+        roster_doc, members, program_doc, policy=None, rulebooks=list(rulebooks)
+    )
     if not result.accepted:
         codes = ", ".join(e.code_str for e in result.errors)
         raise ValueError(f"fleet program does not validate; no Crazyswarm2 command dispatched. Errors: {codes}")
@@ -139,6 +177,7 @@ def render_dispatch_plan(
         "validate_fleet: ACCEPTED",
         "  (cross-robot static gate: the formation corners are deconflicted against each drone's",
         "   clearance volume; no command goes out for a rejected program)",
+        *_rulebook_lines(result),
         "",
     ]
     # Track each member's position so a GoTo duration can be derived from the

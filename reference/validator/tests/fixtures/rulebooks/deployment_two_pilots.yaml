@@ -1,0 +1,20 @@
+# Test rulebook (RFC-0702, Draft): a deployment with two remote pilots in
+# command and standard Remote ID aircraft. With it loaded, the bundled FAA
+# rulebook allows two aircraft airborne at once (14 CFR 107.35: one aircraft
+# per remote pilot in command), and its Remote ID rule is satisfied. Used by
+# conformance/fixtures/fleet/08_air_vertical_separation_accepted.
+
+rulebook_version: "0.1"
+rulebook_id: test_deployment_two_pilots
+title: Test deployment with two remote pilots in command
+issuer:
+  kind: deployment
+  name: URML conformance fixtures
+source_status: deployment_declaration
+description: >-
+  Two remote pilots in command, one per aircraft, and standard Remote ID
+  aircraft. Fictional, for the conformance fixtures only.
+
+declarations:
+  remote_pilots_in_command: 2
+  remote_id: standard_remote_id

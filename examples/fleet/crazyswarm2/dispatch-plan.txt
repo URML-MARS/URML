@@ -3,6 +3,9 @@ fleet: cf1, cf2, cf3 (each: Bitcraze Crazyflie nano-quadcopter)
 validate_fleet: ACCEPTED
   (cross-robot static gate: the formation corners are deconflicted against each drone's
    clearance volume; no command goes out for a rejected program)
+rulebooks (RFC-0702, Draft):
+  us_faa_part107: switched off: the deployment declares indoor: true (FAA: Part 107 would not apply to operations conducted indoors)
+  example_crazyswarm2_flight_lab: declares indoor: true
 
 Phase 1 (parallel, all):
   cf1: take_off(altitude=1.0) -> /cf1/takeoff  (crazyflie_interfaces/srv/Takeoff: height=1.0)
