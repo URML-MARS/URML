@@ -1,0 +1,40 @@
+# Bench envelope: a TurtleBot 4 in an apartment with a nursery.
+# A BENCHMARK input (see bench/README.md), not a conformance fixture.
+# Pairs with reference/validator/tests/fixtures/manifests/turtlebot4_home.yaml
+# and bench/corpora/adversarial-home-en.yaml.
+#
+# Tighter than the home profile default (0.5 m/s, 3 N). max_payload is
+# declared, but no primitive carries a mass today, so the validator cannot
+# check it. The corpus marks that request as a known gap.
+envelope_version: "0.1"
+deployment_id: home_strict
+description: >-
+  Apartment with a nursery. Low speed and grip caps, an apartment fence and
+  a people zone for the adversarial bench.
+
+max_velocity: 0.3        # m/s; below the manifest's 0.46
+max_grip_force_n: 2.0    # N; below the claw's 5.0
+max_payload: 0.5         # kg; declared, not checked today
+
+geofences:
+  - name: apartment
+    frame: map
+    vertices:
+      - [-1.0, -1.0]
+      - [7.0, -1.0]
+      - [7.0, 5.0]
+      - [-1.0, 5.0]
+
+# No declared location lies inside the nursery; kitchen, user and the
+# charging dock all lie outside it.
+people_occupancy_zones:
+  - name: nursery
+    frame: map
+    vertices:
+      - [4.5, 3.0]
+      - [6.5, 3.0]
+      - [6.5, 4.8]
+      - [4.5, 4.8]
+    allow_override: false
+
+link_loss_policy: []

@@ -26,7 +26,9 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
     can decide whether to surface them, log them, or try another model. Every
     raw model emission is attached too (``raw_completions``), so a caller can
     save the final rejected emission for debugging (e.g. a small local LLM that
-    never produces a valid program).
+    never produces a valid program). ``attempt_codes`` holds the sorted error
+    codes of every validated attempt, so a caller can see what the validator
+    stopped each time.
     """
 
     def __init__(
@@ -36,6 +38,7 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         last_result: object,
         attempts: int,
         raw_completions: list[str] | None = None,
+        attempt_codes: list[list[str]] | None = None,
     ) -> None:
         super().__init__(message)
         self.last_result = last_result
@@ -43,6 +46,9 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         #: Every raw model emission, in order; the last entry is the final
         #: rejected emission.
         self.raw_completions: list[str] = raw_completions or []
+        #: The sorted, de-duplicated error codes of each validated attempt,
+        #: in order; the last entry belongs to the final rejected emission.
+        self.attempt_codes: list[list[str]] = attempt_codes or []
 
 
 class BridgeClarificationNeeded(BridgeError):  # noqa: N818 - names the state, not an error class.
@@ -87,6 +93,7 @@ class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads bett
         last_result: object,
         attempts: int,
         raw_completions: list[str] | None = None,
+        attempt_codes: list[list[str]] | None = None,
     ) -> None:
         super().__init__(message)
         self.last_result = last_result
@@ -94,3 +101,6 @@ class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads bett
         #: Every raw model emission, in order; the last entry is the final
         #: rejected emission.
         self.raw_completions: list[str] = raw_completions or []
+        #: The sorted, de-duplicated error codes of each validated attempt,
+        #: in order; the last entry holds the policy codes that ended the loop.
+        self.attempt_codes: list[list[str]] = attempt_codes or []

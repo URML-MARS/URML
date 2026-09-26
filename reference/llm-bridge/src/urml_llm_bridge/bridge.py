@@ -97,6 +97,9 @@ class TranslateResult(BaseModel):
     clarification_count: int = Field(default=0, ge=0)
     #: The (question, answer) pairs, in order.
     clarifications: list[tuple[str, str]] = Field(default_factory=list)
+    #: The sorted, de-duplicated error codes of each validated attempt, in
+    #: order. The accepted attempt is last, with no codes.
+    attempt_codes: list[list[str]] = Field(default_factory=list)
 
 
 class Bridge:
@@ -181,6 +184,7 @@ class Bridge:
         """
         revision_context: str | None = None
         raw_completions: list[str] = []
+        attempt_codes: list[list[str]] = []
         last_result: ValidationResult | None = None
         clarifications: list[tuple[str, str]] = []
         effective_request = user_request
@@ -257,6 +261,7 @@ class Bridge:
                 policy=self._policy,
             )
             last_result = result
+            attempt_codes.append(_error_codes(result))
 
             if result.accepted:
                 return TranslateResult(
@@ -267,6 +272,7 @@ class Bridge:
                     raw_completions=raw_completions,
                     clarification_count=len(clarifications),
                     clarifications=clarifications,
+                    attempt_codes=attempt_codes,
                 )
 
             # RFC-0004: short-circuit revision when ONLY policy.* errors remain.
@@ -279,6 +285,7 @@ class Bridge:
                     last_result=result,
                     attempts=attempt_idx + 1,
                     raw_completions=raw_completions,
+                    attempt_codes=attempt_codes,
                 )
 
             # Not accepted: prepare for next attempt if any budget remains.
@@ -301,6 +308,7 @@ class Bridge:
             last_result=last_result,
             attempts=attempts_total,
             raw_completions=raw_completions,
+            attempt_codes=attempt_codes,
         )
 
 
@@ -344,6 +352,7 @@ class FleetBridge:
         """
         revision_context: str | None = None
         raw_completions: list[str] = []
+        attempt_codes: list[list[str]] = []
         last_result: ValidationResult | None = None
 
         attempts_total = self._max_revisions + 1
@@ -377,6 +386,7 @@ class FleetBridge:
                 policy=self._policy,
             )
             last_result = result
+            attempt_codes.append(_error_codes(result))
 
             if result.accepted:
                 return TranslateResult(
@@ -385,6 +395,7 @@ class FleetBridge:
                     revision_count=attempt_idx,
                     last_validation=result,
                     raw_completions=raw_completions,
+                    attempt_codes=attempt_codes,
                 )
 
             non_policy_errors = [e for e in result.errors if not _is_policy_error(e)]
@@ -395,6 +406,7 @@ class FleetBridge:
                     last_result=result,
                     attempts=attempt_idx + 1,
                     raw_completions=raw_completions,
+                    attempt_codes=attempt_codes,
                 )
 
             if attempt_idx + 1 >= attempts_total:
@@ -410,6 +422,7 @@ class FleetBridge:
             last_result=last_result,
             attempts=attempts_total,
             raw_completions=raw_completions,
+            attempt_codes=attempt_codes,
         )
 
 
@@ -521,3 +534,8 @@ def _error_to_dict(err: URMLValidationError) -> dict[str, Any]:
 def _is_policy_error(err: URMLValidationError) -> bool:
     """Return True iff the error is in the `policy.*` namespace."""
     return str(err.code).startswith("policy.")
+
+
+def _error_codes(result: ValidationResult) -> list[str]:
+    """The sorted, de-duplicated error codes of one validation (warnings excluded)."""
+    return sorted({str(e.code) for e in result.errors})

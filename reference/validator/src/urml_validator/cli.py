@@ -465,10 +465,11 @@ def build_parser() -> argparse.ArgumentParser:
         description=(
             "Run a YAML corpus of natural-language utterances through the LLM "
             "bridge against one manifest and report where each landed: accepted, "
-            "honest refusal (report-only program), invalid emission, provider "
-            "error, or policy block. Writes a machine-readable row YAML and "
-            "prints a markdown table. This is a benchmark, not a conformance "
-            "test. Requires the urml-llm-bridge package."
+            "honest refusal (report-only program), blocked (the safety envelope "
+            "stopped it), invalid emission, provider error, or policy block. "
+            "Writes a machine-readable row YAML and prints a markdown table, plus "
+            "a gate table when corpus rows carry hazard labels. This is a "
+            "benchmark, not a conformance test. Requires the urml-llm-bridge package."
         ),
     )
     p_bench.add_argument(
@@ -529,6 +530,8 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="Bench-only alternative to --echo-response-file: a YAML map of "
         "utterance-substring -> canned JSON response, matched per request. "
+        "A list value answers consecutive attempts in order, the last entry "
+        "repeating (a scripted model that adapts to refusals). "
         "Used only with --provider echo.",
     )
     p_bench.add_argument(
@@ -545,7 +548,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="DIR",
         help="Aggregate mode: read every row YAML in DIR and print the "
-        "comparison table. No provider or corpus needed.",
+        "comparison table, then the gate table for hazard-labeled rows. "
+        "No provider or corpus needed.",
     )
     p_bench.add_argument(
         "--tag",
@@ -1849,6 +1853,9 @@ def cmd_bench(args: argparse.Namespace) -> int:
             print(f"urml: {exc}", file=sys.stderr)
             return 1
         sys.stdout.write(bench.render_table(rows))
+        gate_table = bench.render_gate_table(rows)
+        if gate_table:
+            sys.stdout.write("\n" + gate_table)
         return 0
 
     # ----- Measurement mode -----
@@ -1875,6 +1882,18 @@ def cmd_bench(args: argparse.Namespace) -> int:
         args.provider, args.provider
     )
 
+    # Pin what each row was measured against, so a published number can be
+    # reproduced (or shown stale) from the row alone.
+    if args.no_policy:
+        policy_label = "none"
+    elif args.policy_path is not None:
+        policy_label = args.policy_path.as_posix()
+    else:
+        policy_label = "default"
+    manifest_ref = bench.file_ref(args.manifest)
+    envelope_ref = bench.file_ref(args.envelope) if args.envelope is not None else None
+    script_ref = bench.file_ref(args.echo_script) if args.echo_script is not None else None
+
     worst_match = 1.0
     for corpus in corpora:
         profiles = tuple(args.profile) or ((corpus.profile,) if corpus.profile else ())
@@ -1893,6 +1912,16 @@ def cmd_bench(args: argparse.Namespace) -> int:
             model_id=model_id,
             tag=args.tag,
             notes=args.notes,
+            setup=bench.BenchSetup(
+                manifest=manifest_ref,
+                envelope=envelope_ref,
+                policy=policy_label,
+                profiles=profiles,
+                max_revisions=args.max_revisions,
+                provider=args.provider,
+                model=model_id,
+                echo_script=script_ref,
+            ),
         )
         out = args.out
         if out is None:
@@ -1919,7 +1948,9 @@ def _build_bench_provider(args: argparse.Namespace) -> Any:
 
     A single canned response (--echo-response-file) cannot drive a whole
     corpus, so bench adds a YAML map of utterance-substring -> response,
-    built into `EchoProvider(responses=..., match_substrings=True)`.
+    built into `EchoProvider(responses=..., match_substrings=True)`. A value
+    may be a list: one response per consecutive attempt for that request,
+    the last one repeating (an adaptive scripted model).
     """
     if args.echo_script is not None:
         if args.provider != "echo":
@@ -1934,9 +1965,18 @@ def _build_bench_provider(args: argparse.Namespace) -> Any:
                 "echo-script must be a non-empty YAML map of "
                 "utterance-substring -> canned JSON response string."
             )
-        responses = {
-            str(k): v if isinstance(v, str) else json.dumps(v) for k, v in data.items()
-        }
+
+        def as_text(value: Any) -> str:
+            return value if isinstance(value, str) else json.dumps(value)
+
+        responses: dict[str, str | list[str]] = {}
+        for key, value in data.items():
+            if isinstance(value, list):
+                if not value:
+                    raise _CLILoadError(f"echo-script entry {str(key)!r} is an empty list.")
+                responses[str(key)] = [as_text(v) for v in value]
+            else:
+                responses[str(key)] = as_text(value)
         return EchoProvider(responses=responses, match_substrings=True)
     return _build_provider(args)
 

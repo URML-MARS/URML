@@ -426,6 +426,59 @@ def test_echo_provider_requires_at_least_one_mode() -> None:
         EchoProvider()
 
 
+def _ask(provider: EchoProvider, user: str) -> str:
+    return provider.complete(system="...", user=user, schema={})
+
+
+def test_echo_provider_list_value_steps_then_repeats_last() -> None:
+    """A list value answers consecutive calls in order; the last entry repeats."""
+    provider = EchoProvider(responses={"grip": ["a", "b", "c"]}, match_substrings=True)
+    assert [_ask(provider, "grip it") for _ in range(5)] == ["a", "b", "c", "c", "c"]
+
+
+def test_echo_provider_list_cursor_resets_when_matched_key_changes() -> None:
+    provider = EchoProvider(responses={"grip": ["a", "b"], "go": "g"}, match_substrings=True)
+    assert _ask(provider, "grip") == "a"
+    assert _ask(provider, "grip") == "b"
+    assert _ask(provider, "go") == "g"
+    assert _ask(provider, "grip") == "a"  # a new request starts the list again
+
+
+def test_echo_provider_list_value_exact_match() -> None:
+    provider = EchoProvider(responses={"grip": ("a", "b")})
+    assert [_ask(provider, "grip") for _ in range(3)] == ["a", "b", "b"]
+
+
+def test_echo_provider_rejects_empty_or_non_string_list() -> None:
+    with pytest.raises(ValueError, match="non-empty list of strings"):
+        EchoProvider(responses={"grip": []})
+    with pytest.raises(ValueError, match="non-empty list of strings"):
+        EchoProvider(responses={"grip": ["a", 1]})  # type: ignore[list-item]
+
+
+def test_list_valued_script_drives_the_revision_loop(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    """An adaptive scripted model: refused once, it switches to its next emission."""
+    bad_program = json.loads(json.dumps(RED_MUG_PROGRAM))
+    bad_program["behavior"]["steps"][0]["move_to"]["location"] = "the_moon"
+    provider = EchoProvider(
+        responses={"red mug": [json.dumps(bad_program), json.dumps(RED_MUG_PROGRAM)]},
+        match_substrings=True,
+    )
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=3,
+    )
+    result = bridge.translate("Bring me the red mug from the kitchen.")
+    assert result.revision_count == 1
+    assert result.program == RED_MUG_PROGRAM
+
+
 # ---------------------------------------------------------------------------
 # Policy short-circuit (RFC-0004)
 # ---------------------------------------------------------------------------
@@ -562,3 +615,83 @@ def test_parse_emission_does_not_fabricate_broken_json() -> None:
         _parse_emission("this is not json at all")
     with pytest.raises(ProviderError, match="expected an object"):
         _parse_emission("[1, 2, 3]")
+
+
+# ---------------------------------------------------------------------------
+# attempt_codes: the sorted error codes of every validated attempt
+# ---------------------------------------------------------------------------
+
+# Two grasps above home_default's 3 N cap (Pass 3) on an unbound target
+# (Pass 4). Emission order is envelope, envelope, binding, binding; the
+# recorded codes are sorted and de-duplicated.
+_OVER_FORCE_UNBOUND_PROGRAM = {
+    "profile": "home",
+    "behavior": {
+        "type": "sequence",
+        "on_error": "abort_and_report",
+        "steps": [
+            {"grasp": {"target": "$ghost", "force": 4.0}},
+            {"grasp": {"target": "$ghost", "force": 4.5}},
+        ],
+    },
+}
+
+
+def test_attempt_codes_on_accepted_result(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    bad_program = json.loads(json.dumps(RED_MUG_PROGRAM))
+    bad_program["behavior"]["steps"][0]["move_to"]["location"] = "the_moon"
+    provider = EchoProvider(scripted=[json.dumps(bad_program), json.dumps(RED_MUG_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=3,
+    )
+    result = bridge.translate("Bring me the red mug from the kitchen.")
+    assert result.accepted is True
+    assert result.attempt_codes == [["capability.missing_location"], []]
+
+
+def test_attempt_codes_on_revision_exhausted_are_sorted_and_unique(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    provider = EchoProvider(scripted=[json.dumps(_OVER_FORCE_UNBOUND_PROGRAM)] * 3)
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=2,
+        policy=None,
+    )
+    with pytest.raises(BridgeRevisionExhausted) as excinfo:
+        bridge.translate("Grip it hard.")
+    expected = ["binding.unresolved_reference", "envelope.force_exceeded"]
+    assert excinfo.value.attempt_codes == [expected, expected, expected]
+    assert len(excinfo.value.attempt_codes) == excinfo.value.attempts
+
+
+def test_attempt_codes_on_policy_violation() -> None:
+    provider = EchoProvider(scripted=[json.dumps(_WAIT_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=_manifest_with_provenance(country="CN"),
+        profiles=("home",),
+        max_revisions=3,
+    )
+    with pytest.raises(BridgePolicyViolation) as excinfo:
+        bridge.translate("ignored request")
+    (only,) = excinfo.value.attempt_codes
+    assert only and all(code.startswith("policy.") for code in only)
+    assert only == sorted(set(only))
+
+
+def test_bridge_errors_default_to_no_attempt_codes() -> None:
+    """Callers that raise the bridge errors themselves need not pass codes."""
+    assert BridgeRevisionExhausted("x", last_result=None, attempts=1).attempt_codes == []
+    assert BridgePolicyViolation("x", last_result=None, attempts=1).attempt_codes == []

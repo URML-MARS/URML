@@ -82,6 +82,10 @@ def test_fleet_bridge_revises_after_bad_emission():
     result = bridge.translate("Move both robots to their starts, then sync.")
     assert result.accepted
     assert result.revision_count == 1
+    # One entry per validated attempt: the rejected one, then the accepted one.
+    assert len(result.attempt_codes) == 2
+    assert result.attempt_codes[0] and result.attempt_codes[1] == []
+    assert result.attempt_codes[0] == sorted(set(result.attempt_codes[0]))
 
 
 def test_fleet_prompt_summarizes_every_member():
