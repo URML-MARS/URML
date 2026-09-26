@@ -34,10 +34,11 @@ both satisfy the substrate-neutral `ROSAdapter` Protocol. Variable bindings
 
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from urml_validator import ValidationResult, validate
+from urml_validator import Policy, ValidationResult, validate
 from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
 from urml_validator.schemas.program import URMLProgram
 
@@ -112,8 +113,18 @@ class URMLRuntime:
         manifest: dict[str, Any],
         envelope: dict[str, Any] | None = None,
         profiles: tuple[str, ...] = (),
+        *,
+        policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+        manifest_base_dir: Path | None = None,
     ) -> RuntimeResult:
         """Execute a URML program against the runtime's adapter.
+
+        ``policy`` and ``manifest_base_dir`` are forwarded to the
+        defense-in-depth re-validation, with the same contract as
+        ``validate()``. A caller that validated under ``--no-policy``
+        (``policy=None``), a custom policy, or an HBOM-content policy passes
+        the same choice here, so the runtime's own check enforces what the
+        caller enforced. Skipping the compliance pass never skips validation.
 
         Returns a RuntimeResult. Raises ``ValidationRejectedError`` if the
         program fails defense-in-depth re-validation, or
@@ -122,7 +133,14 @@ class URMLRuntime:
         """
         # Defense-in-depth re-validation.
         if self._revalidate:
-            result: ValidationResult = validate(program, manifest, envelope, profiles=profiles)
+            result: ValidationResult = validate(
+                program,
+                manifest,
+                envelope,
+                profiles=profiles,
+                policy=policy,
+                manifest_base_dir=manifest_base_dir,
+            )
             if not result.accepted:
                 raise ValidationRejectedError(
                     "runtime defense-in-depth re-validation rejected the program; "
