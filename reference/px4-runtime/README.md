@@ -168,7 +168,7 @@ report = runner.run()
 - Gated `.github/workflows/px4-integration.yml` with three jobs: `px4-smoke` (real pymavlink, no SITL — the `rclpy-smoke` analog), `px4-sitl-e2e` (the flight e2e — the `gazebo-e2e` analog), and `px4-arm64-build` (the hermetic suite under linux/arm64 QEMU emulation — the pre-hardware Jetson-class signal).
 
 **Follow-ups (not yet):**
-- First run of `px4-sitl-e2e` on a Linux runner. The workflow still boots `make px4_sitl jmavsim`; the local run used `make px4_sitl sihsim_quadx` (no external simulator), which is the invocation to carry into CI.
+- First run of `px4-sitl-e2e` on a Linux runner. The job follows the local recipe (PX4 v1.17.0 cloned shallow and recursive, PX4's Python requirements in a venv, the build-only `make px4_sitl_default`, then `sleep infinity | HEADLESS=1 make px4_sitl sihsim_quadx`), but it has not run: the maintainer's GitHub account is flagged, and founder-triggered runs do not start.
 - Real Jetson + real-robot hardware-in-the-loop. QEMU emulation is a faithful proxy for our pure-Python + pymavlink code, not a hardware-verification claim.
 - A fly-and-capture `scan` (waypoint expansion and a capture at each waypoint) for an autopilot with a camera. Until then `scan` returns not-supported on a bare autopilot, and `CompositeAdapter` routes it to the companion.
 

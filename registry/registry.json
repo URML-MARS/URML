@@ -219,7 +219,7 @@
       },
       "limits": [
         "Simulation only. No PX4 hardware has flown a URML program.",
-        "The run was local, in WSL2 on the maintainer's machine. The px4-sitl-e2e CI job has not run, and it still boots jMAVSim rather than SIH.",
+        "The run was local, in WSL2 on the maintainer's machine. The px4-sitl-e2e CI job follows the same SIH recipe but has not run.",
         "One conformance program (drone/flight_only_positive) was flown end to end. The rest of the drone profile has not run against `PX4Adapter`, so there is no compatibility claim.",
         "Before 2026-09-27 the PX4 gate test passed on command acknowledgements alone and the vehicle never armed; that earlier green does not count. The adapter now waits for telemetry to confirm each step (commit 9ff518c), and this run is the first real flight.",
         "Perception, manipulation, docking and `scan` are not available on a bare PX4 autopilot; the adapter returns a documented not-supported result for them. `wait_for(emergency_stop)` reads the autopilot's HEARTBEAT system_status; it is not part of the flown program and is not covered by this listing.",

@@ -205,7 +205,8 @@ No earlier green claim stands: earlier the same day the same gate passed in
 2.37 s while PX4's log showed no arming and no take-off, because the adapter
 then reported every COMMAND_ACK as success. The adapter now reports a flight
 primitive as done only when telemetry shows it. The GitHub `px4-sitl-e2e` job
-has not run and still boots jMAVSim. No hardware flight is claimed.
+now follows the same SIH recipe but has not run: the maintainer's account is
+flagged and founder-triggered runs do not start. No hardware flight is claimed.
 
 **ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
 on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`

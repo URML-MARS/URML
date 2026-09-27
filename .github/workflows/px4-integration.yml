@@ -12,8 +12,9 @@
 #
 #   px4-sitl-e2e    — the real end-to-end: the drone/flight_only_positive
 #   conformance fixture run through ConformanceRunner with a live
-#   PX4Adapter flying a PX4 SITL autopilot over MAVLink. Heavy,
-#   best-effort. The PX4 analog of ros2-integration's gazebo-e2e job.
+#   PX4Adapter flying PX4 v1.17.0 SITL (SIH, PX4's built-in simulator)
+#   over MAVLink, checked by a listen-only witness. Heavy, best-effort.
+#   The PX4 analog of ros2-integration's gazebo-e2e job.
 #
 #   px4-arm64-build — the Jetson-relevant signal: under linux/arm64
 #   QEMU emulation, pip-install the URML + [px4] stack and run the
@@ -23,17 +24,21 @@
 #   deferred until hardware exists; this is the honest pre-hardware
 #   ARM64 gate, not a hardware-verification claim.
 #
-# HONESTY NOTE: the SITL boot invocation below was authored on a
-# Windows box with no ability to run PX4 SITL. The PX4-Autopilot build
-# and `make px4_sitl jmavsim` target names match the PX4 user guide but
-# the FIRST real run may need a target-name, port, or arming-sequence
-# tweak (PX4 may require an explicit mode/arm step before it acks
-# MAV_CMD_NAV_TAKEOFF). That is expected and designed for: every
-# diagnostic (the SITL log, the pytest output) is uploaded as an
-# artifact on `always()`, so a red first run tells you exactly what to
-# pin rather than failing opaquely. Do not treat the first
-# px4-sitl-e2e run as a regression signal; treat it as the calibration
-# run, exactly as the ros2-integration gazebo-e2e job was treated.
+# HONESTY NOTE: CI has not run px4-sitl-e2e. The maintainer's GitHub
+# account is flagged, and founder-triggered runs (manual dispatch and
+# cron) do not start. The job's steps mirror the recipe that flew PX4
+# v1.17.0 SITL locally in WSL2 (Ubuntu 24.04) on 2026-09-27, recorded in
+# reference/px4-runtime/tests/integration/sitl-runs/: the same clone
+# (v1.17.0, shallow, recursive, shallow submodules), PX4's Python
+# requirements in a venv (Ubuntu 24.04 blocks system pip), the
+# build-only `make px4_sitl_default` (on v1.17, `DONT_RUN=1 make px4_sitl
+# sihsim_quadx` still starts the pxh shell and exits with an error), and
+# `sleep infinity | HEADLESS=1 make px4_sitl sihsim_quadx` to boot (the
+# pipe keeps the pxh shell's stdin open). The clone, venv and build steps
+# were rehearsed from scratch in WSL2 on 2026-09-27. A GitHub runner can
+# still differ: every diagnostic (SITL log, pytest output, PX4 ULog) is
+# uploaded on `always()`, so treat the first run as the calibration run,
+# exactly as the ros2-integration gazebo-e2e job was treated.
 
 name: px4-integration
 
@@ -92,61 +97,124 @@ jobs:
 
   px4-sitl-e2e:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
+    defaults:
+      run:
+        # bash -eo pipefail: a failing command in a `| tee` pipe fails the step.
+        shell: bash
+    env:
+      # PX4's `stable` branch pointed at v1.17.0 (d6f12ad) for the local
+      # run that flew; the tag pins that commit.
+      PX4_REF: v1.17.0
     steps:
       - uses: actions/checkout@v4
 
+      - name: Paths
+        run: |
+          {
+            echo "PX4_DIR=$HOME/PX4-Autopilot"
+            echo "PX4_VENV=$HOME/px4-venv"
+            echo "URML_VENV=$HOME/urml-venv"
+            echo "LOGS=$HOME/e2e-logs"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$HOME/e2e-logs"
+
       - name: Install PX4 build toolchain
         run: |
-          set -eux
+          set -x
           sudo apt-get update
-          sudo apt-get install -y git python3-pip openjdk-17-jre ant build-essential cmake
+          sudo apt-get install -y --no-install-recommends \
+            build-essential ccache cmake git ninja-build python3-dev python3-pip python3-venv \
+            astyle lcov libxml2-utils rsync unzip zip
 
-      - name: Clone + build PX4 SITL
+      - name: Clone PX4-Autopilot v1.17.0 (shallow, recursive, shallow submodules)
         run: |
-          set -eux
-          git clone --recursive --depth 1 https://github.com/PX4/PX4-Autopilot.git "$HOME/PX4-Autopilot"
-          cd "$HOME/PX4-Autopilot"
-          # PX4's own dependency installer (no simulator GUI, no NuttX).
-          bash ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
-          # Pre-build the SITL target so the boot step below is fast and
-          # so a build failure is isolated from a boot/flight failure.
-          DONT_RUN=1 make px4_sitl jmavsim
+          set -x
+          git clone --branch "$PX4_REF" --depth 1 --recursive --shallow-submodules \
+            https://github.com/PX4/PX4-Autopilot.git "$PX4_DIR"
+          { git -C "$PX4_DIR" describe --tags --always; git -C "$PX4_DIR" rev-parse --short HEAD; } \
+            | tee "$LOGS/px4-version.txt"
+
+      - name: Install PX4's Python requirements in a venv
+        run: |
+          set -x
+          # Ubuntu 24.04 blocks pip on the system Python (PEP 668), so PX4's
+          # build requirements go in a venv that the build and boot steps
+          # put first on PATH.
+          python3 -m venv "$PX4_VENV"
+          "$PX4_VENV/bin/pip" install -r "$PX4_DIR/Tools/setup/requirements.txt"
+
+      - name: Build PX4 SITL (build only)
+        run: |
+          set -x
+          export PATH="$PX4_VENV/bin:$PATH"
+          cd "$PX4_DIR"
+          # Build without running. On v1.17, `DONT_RUN=1 make px4_sitl
+          # sihsim_quadx` still starts the pxh shell and ends in an error.
+          make px4_sitl_default < /dev/null
 
       - name: Install URML packages
         run: |
-          # jMAVSim needs no ROS; a plain venv is enough. pymavlink is an
-          # extra of urml-px4-runtime; install it explicitly for the
-          # adapter's MAVLink transport and the test's heartbeat probe.
-          python3 -m pip install --break-system-packages \
+          set -x
+          # urml-px4-runtime imports the substrate-neutral Protocol from
+          # urml-ros2-runtime; install every package editable so pip never
+          # reaches for a published dist. pymavlink is the [px4] extra.
+          python3 -m venv "$URML_VENV"
+          "$URML_VENV/bin/pip" install \
             -e reference/validator \
+            -e reference/ros2-runtime \
             -e reference/px4-runtime \
             -e conformance \
             pymavlink \
             "pytest>=8"
 
-      - name: Launch PX4 SITL (jMAVSim, headless)
+      - name: Boot PX4 SITL (SIH quadrotor, headless)
         run: |
-          set -eux
-          mkdir -p "$HOME/e2e-logs"
-          cd "$HOME/PX4-Autopilot"
-          # HEADLESS=1 keeps jMAVSim from opening a window on a
-          # display-less runner. SITL exposes MAVLink on udp:14540 (the
-          # standard offboard port the adapter config targets).
-          nohup env HEADLESS=1 make px4_sitl jmavsim \
-            > "$HOME/e2e-logs/sitl.log" 2>&1 &
-          echo $! > "$HOME/e2e-logs/sitl.pid"
-          # Give SITL + jMAVSim a head start; the test itself also waits
-          # on the MAVLink heartbeat (60s bound).
-          sleep 90
+          set -x
+          export PATH="$PX4_VENV/bin:$PATH"
+          cd "$PX4_DIR"
+          # `sleep infinity |` keeps the pxh shell's stdin open, so SITL
+          # keeps running in the background instead of exiting on EOF.
+          nohup bash -c 'sleep infinity | HEADLESS=1 make px4_sitl sihsim_quadx' \
+            > "$LOGS/sitl.log" 2>&1 &
 
-      - name: Run the PX4 SITL end-to-end conformance test
+      - name: Wait for a PX4 heartbeat on udp 14540
+        run: |
+          "$URML_VENV/bin/python" - <<'PY' | tee "$LOGS/heartbeat.log"
+          import sys
+
+          from pymavlink import mavutil
+
+          conn = mavutil.mavlink_connection("udp:127.0.0.1:14540")
+          heartbeat = conn.wait_heartbeat(timeout=300)
+          conn.close()
+          print("HEARTBEAT", heartbeat)
+          sys.exit(0 if heartbeat is not None else 1)
+          PY
+
+      - name: Run the PX4 SITL end-to-end test (with the listen-only witness)
         env:
           URML_PX4_SITL: "1"
         run: |
           cd reference/px4-runtime
-          python3 -m pytest tests/integration/test_px4_sitl_e2e.py -v \
-            | tee "$HOME/e2e-logs/pytest.log"
+          "$URML_VENV/bin/python" -m pytest tests/integration/test_px4_sitl_e2e.py \
+            -v -s -p no:cacheprovider | tee "$LOGS/pytest.log"
+
+      - name: Stop PX4 SITL and collect its logs
+        if: always()
+        run: |
+          # PX4 logs "Connection to ground station lost" 10 s after the
+          # adapter's heartbeat stops; wait so the log shows it.
+          sleep 15
+          pkill -f "px4_sitl_default/bin/px4" || true
+          pkill -f "sleep infinity" || true
+          sleep 2
+          if [ -f "$LOGS/sitl.log" ]; then
+            sed 's/\x1b\[[0-9;]*[A-Za-z]//g' "$LOGS/sitl.log" > "$LOGS/sitl.clean.log"
+          fi
+          if [ -d "$PX4_DIR/build/px4_sitl_default/rootfs/log" ]; then
+            cp -r "$PX4_DIR/build/px4_sitl_default/rootfs/log" "$LOGS/ulog"
+          fi
 
       - name: Upload diagnostics
         if: always()
