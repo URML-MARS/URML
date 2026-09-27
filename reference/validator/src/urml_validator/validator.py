@@ -2470,6 +2470,43 @@ def _check_grasp_caps(
                     "hand's dexterity.grasp_types.",
                 )
             )
+    if args.target_motion is not None and args.target_motion != "static":
+        candidates = _grippers_for_arm(args.arm, manifest.manipulation)
+        interceptors = [g for g in candidates if g.interception is not None]
+        if not interceptors:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_TARGET_MOTION_NOT_SUPPORTED,
+                    "grasp",
+                    path,
+                    f"target_motion {args.target_motion!r} requires a gripper that declares an "
+                    f"`interception` block, but no addressed gripper does "
+                    f"(candidates: {[g.name for g in candidates]!r}).",
+                    field="target_motion",
+                    suggestion="Use target_motion: static, or declare an `interception` block on "
+                    "the gripper.",
+                )
+            )
+        elif not any(
+            args.target_motion in g.interception.modes
+            for g in interceptors
+            if g.interception is not None
+        ):
+            declared = sorted(
+                {m for g in interceptors if g.interception is not None for m in g.interception.modes}
+            )
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_TARGET_MOTION_MODE_NOT_DECLARED,
+                    "grasp",
+                    path,
+                    f"target_motion {args.target_motion!r} is not declared by the addressed "
+                    f"gripper(s); declared interception modes: {declared!r}.",
+                    field="target_motion",
+                    suggestion="Use a declared interception mode, or add this one to the gripper's "
+                    "interception.modes.",
+                )
+            )
     out += _check_arm_addressable(args.arm, manifest, "grasp", path)
     return out
 

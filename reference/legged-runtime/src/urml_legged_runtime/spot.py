@@ -318,6 +318,7 @@ class SpotAdapter:
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
         grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         """Grasp or release with the Spot Arm.
 

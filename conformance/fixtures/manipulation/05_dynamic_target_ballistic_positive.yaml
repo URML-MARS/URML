@@ -1,0 +1,27 @@
+name: manipulation/dynamic_target_ballistic_positive
+description: >
+  RFC-0671 positive: a grasp requests target_motion `ballistic` (catch a thrown
+  ball) on a dexterous hand whose `interception` block declares both tracked and
+  ballistic. The addressed gripper declares the requested mode, so the attempt is
+  admissible and validates. URML admits the attempt on declared hardware; the
+  millisecond catch itself is a runtime skill.
+
+manifest: interception_hand_cell
+profiles: [industrial]
+
+program:
+  profile: industrial
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - detect: { object: ball, store_as: incoming_ball }
+      - grasp:
+          target: $incoming_ball
+          force: firm
+          grasp_type: spherical
+          target_motion: ballistic
+
+expected_validation:
+  accepted: true
+  error_codes: []

@@ -18,6 +18,8 @@ Runnable demonstrations of URML, organized per profile. Examples are how new rea
 
 New here? Start with [`WALKTHROUGH.md`](WALKTHROUGH.md): the full path from a natural-language sentence to a verified robot action, reproducible on any machine in under a minute, no robot or install beyond the open packages.
 
+To see what the gate stops, run [`goalkeeper/`](goalkeeper/): a scripted compromised model attacks three robots, and a recording adapter counts the commands URML sends.
+
 ## Layout
 
 ```

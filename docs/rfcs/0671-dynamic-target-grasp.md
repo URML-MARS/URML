@@ -120,7 +120,7 @@ The Protocol method gains an optional `target_motion` parameter, threaded from `
 
 ## Implementation plan
 
-On acceptance, one PR meeting the Layer-2 bar:
+**Implemented** in one PR meeting the Layer-2 bar (handed to the maintainer to merge; the RFC advances to Accepted on merge):
 
 1. Schema: `TargetMotion` closed set on `GraspArgs`; `Interception` model on `Gripper`; coherence rules.
 2. Validator: the two Pass-2 codes plus schema tests.

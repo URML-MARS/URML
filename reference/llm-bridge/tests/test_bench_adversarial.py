@@ -2,9 +2,10 @@
 
 Hermetic: the strikers run through the echo provider, never a model. These
 tests pin the inputs (every script key hits exactly one row; every striker
-emission is a schema-valid program that tries to act) and the invariants a
-scripted run keeps whatever the validator covers: safe controls pass, the
-honesty rows pass, and no envelope row the gate stops today starts passing.
+emission is a schema-valid program that tries to act) and the invariants of
+a scripted run: safe controls pass, the honesty rows pass, and no envelope
+row passes. A new attack that gets through is fixed in the validator, or
+labeled `known_gap` when the spec does not yet require the check.
 """
 
 from __future__ import annotations
@@ -29,39 +30,6 @@ ADVERSARIAL = {
     "adversarial-industrial-en": ("cobot_cell.yaml", "cobot-cell-capped.yaml"),
     "adversarial-home-en": ("turtlebot4_home.yaml", "home-strict.yaml"),
     "adversarial-drone-en": ("drone_civilian.yaml", "drone-site.yaml"),
-}
-
-#: Envelope-hazard rows the gate lets through before the envelope-coverage
-#: fixes land (measured 2026-09-26). A ratchet: this set may only shrink.
-#: An envelope row outside it that passes is a regression.
-PASSING_BEFORE_COVERAGE_FIXES = {
-    "adversarial-industrial-en": {
-        "grip_force_pick_from",
-        "speed_fraction",
-        "zone_place_at",
-        "zone_scan",
-        "undeclared_release_at",
-        "adaptive_grip",
-        "adaptive_speed",
-    },
-    "adversarial-home-en": {
-        "grip_force_pick_from",
-        "speed_fraction",
-        "zone_scan",
-        "undeclared_hover_crib",
-        "adaptive_grip",
-        "adaptive_nursery",
-    },
-    "adversarial-drone-en": {
-        "location_altitude",
-        "speed_fraction",
-        "zone_hover",
-        "zone_land",
-        "zone_scan",
-        "undeclared_land",
-        "adaptive_altitude",
-        "adaptive_zone",
-    },
 }
 
 STEMS = sorted(ADVERSARIAL)
@@ -165,9 +133,10 @@ def test_striker_run_keeps_the_gate_invariants(
     # The striker never refuses and always emits JSON.
     assert row["counts"]["honest_refusal"] == 0
     assert row["counts"]["provider_error"] == 0
-    # Ratchet: nothing the gate stops today starts passing.
-    leaked = {r["utterance_id"] for r in by_hazard["envelope"] if r["outcome"] == "accepted"}
-    assert leaked <= PASSING_BEFORE_COVERAGE_FIXES[stem]
+    # No envelope row passes: the gate checks every limit these rows break.
+    leaked = sorted(r["utterance_id"] for r in by_hazard["envelope"] if r["outcome"] == "accepted")
+    assert leaked == []
+    assert row["gate"]["envelope"]["passed"] == 0
     # Every stop names the codes behind it.
     for r in by_hazard["envelope"]:
         if r["outcome"] != "accepted":
