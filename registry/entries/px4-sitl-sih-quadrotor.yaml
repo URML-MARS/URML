@@ -1,0 +1,74 @@
+# URML registry entry. The fields are explained in registry/README.md and
+# described by registry/entry.schema.json. Check with:
+#   python -m urml_conformance.registry check
+registry_version: "1"
+id: px4-sitl-sih-quadrotor
+title: PX4 autopilot in software-in-the-loop simulation (SIH quadrotor), through the URML PX4 runtime
+status: listed
+listed: "2026-09-27"
+last_verified: "2026-09-27"
+submitted_by: URML maintainers
+
+robot:
+  name: PX4 v1.17.0 SITL with the SIH quadrotor model (a simulated vehicle)
+  class: multirotor autopilot, simulated
+  maker: PX4 open-source project
+  manifest: reference/validator/tests/fixtures/manifests/drone_civilian.yaml
+
+runtime:
+  package: urml-px4-runtime
+  version: "0.4.0"
+  adapter: urml_px4_runtime:PX4Adapter
+  substrate: PX4 v1.17.0 SITL (SIH simulator, headless) over MAVLink (pymavlink), no ROS
+
+profiles: [drone]
+
+field_evidence:
+  - kind: simulation_run
+    date: "2026-09-27"
+    by: URML maintainers
+    summary: >-
+      PX4 v1.17.0 SITL (the SIH quadrotor, headless) in WSL2 on the
+      maintainer's machine. The drone/flight_only_positive conformance program
+      (take-off to 30 m, a waypoint 15 m north, return to launch, land) ran
+      through the validator, the conformance runner and `PX4Adapter` over
+      MAVLink. PX4's own log records "Armed by external command", "Takeoff
+      detected", "Returning to launch", "Landing detected" and "Disarmed by
+      landing". A listen-only witness on PX4's ground-station link measured a
+      maximum relative altitude of 31.79 m and a closest approach of 0.92 m to
+      the waypoint, and saw the vehicle end on the ground, disarmed. Four runs
+      on the final adapter code all passed. The same day's runs found and fixed
+      three adapter defects: PX4 moves home when it arms, DO_REPOSITION needs
+      its change-mode flag, and the old take-off sent a 0,0 position.
+    sources:
+      - reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md
+      - reference/px4-runtime/tests/integration/test_px4_sitl_e2e.py
+      - docs/launch/claims-audit.md
+      - https://github.com/URML-MARS/URML/commit/9ff518cc1314765d9b6f84da30aa7a490446959f
+      - https://github.com/URML-MARS/URML/commit/9530a2f7d9c064b1f915e62e7f21904ae8e1b832
+
+validation_records:
+  path: registry/evidence/px4-sitl-sih-quadrotor/validation-records.jsonl
+  sha256: 362c87eb32e3d82d9304e4a0045c57dda88e43dd047f49014fbafadfa6b4a9ad
+  summary: >-
+    Produced for this listing on 2026-09-27 with the urml_validator.evidence
+    API, by validating against the listed manifest and the default drone
+    envelope the program flown in SITL (flight_only) and the hover conformance
+    program, both accepted, and four refusal cases (a take-off to 150 m, a
+    25 m/s leg, a flight to an undeclared place, a grasp on a vehicle with no
+    gripper), with the compliance policy pass off and the bundled FAA Part 107
+    rulebook on. Every record carries the Remote ID warning, because no
+    deployment rulebook declares a Remote ID method. The records show the
+    gate's verdicts on this manifest; they are not flight logs.
+  inputs:
+    manifest: reference/validator/tests/fixtures/manifests/drone_civilian.yaml
+    envelope: reference/validator/tests/fixtures/envelopes/drone_default.yaml
+    policy: none
+
+limits:
+  - Simulation only. No PX4 hardware has flown a URML program.
+  - The run was local, in WSL2 on the maintainer's machine. The px4-sitl-e2e CI job has not run, and it still boots jMAVSim rather than SIH.
+  - One conformance program (drone/flight_only_positive) was flown end to end. The rest of the drone profile has not run against `PX4Adapter`, so there is no compatibility claim.
+  - Before 2026-09-27 the PX4 gate test passed on command acknowledgements alone and the vehicle never armed; that earlier green does not count. The adapter now waits for telemetry to confirm each step (commit 9ff518c), and this run is the first real flight.
+  - Perception, manipulation and docking are not available on a bare PX4 autopilot; the adapter returns a documented not-supported result for them. `run_scan` and `wait_for(emergency_stop)` still report without real telemetry and are not covered by this listing.
+  - The validation records were judged with the compliance policy pass off. This listing makes no compliance statement.

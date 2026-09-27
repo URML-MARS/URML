@@ -32,12 +32,13 @@ Entries hold names, never email addresses. The registry collects no contact deta
 
 - [`ardupilot-arducopter-pixhawk`](entries/ardupilot-arducopter-pixhawk.yaml): a Pixhawk-class flight controller running ArduCopter, through `urml-ardupilot-runtime`. A bench run on the board (propellers off) and an ArduCopter SITL run, both on 2026-08-29.
 - [`gopigo3-example-adapter`](entries/gopigo3-example-adapter.yaml): a GoPiGo3 educational robot, through the example adapter in [`examples/gopigo3/`](../examples/gopigo3/). Hardware runs by an independent user, @slowrunner, in June and July 2026.
+- [`px4-sitl-sih-quadrotor`](entries/px4-sitl-sih-quadrotor.yaml): PX4 v1.17.0 in software-in-the-loop simulation (the SIH quadrotor), through `urml-px4-runtime`. A simulated flight on 2026-09-27: armed, took off to 30 m, flew a waypoint, returned and landed.
 
 Neither entry carries a compatibility claim. Each one says why in its limits.
 
-## Why PX4 is not listed
+## How PX4 was listed
 
-The PX4 runtime (`urml-px4-runtime`) passes its hermetic tests, but its SITL job has never run green: the first run is a calibration run, and no green run is claimed ([docs/launch/claims-audit.md](../docs/launch/claims-audit.md)). A listing follows recorded evidence, so PX4 is listed once a SITL or hardware run is recorded. The ArduPilot entry covers a different runtime.
+A listing follows recorded evidence, so PX4 was not in the first cut. The first PX4 SITL run on 2026-09-27 showed why: the gate test passed in seconds because the adapter reported success on command acknowledgements, and PX4's log showed the vehicle never armed. The adapter was changed to confirm each step from telemetry (commit 9ff518c), the test gained a listen-only witness that checks altitude and touchdown, and the next runs flew. The run record is [`reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md`](../reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md). PX4 hardware has not flown a URML program; the entry is simulation evidence only.
 
 ## Evidence kinds
 
