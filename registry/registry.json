@@ -196,6 +196,16 @@
             "https://github.com/URML-MARS/URML/commit/9ff518cc1314765d9b6f84da30aa7a490446959f",
             "https://github.com/URML-MARS/URML/commit/9530a2f7d9c064b1f915e62e7f21904ae8e1b832"
           ]
+        },
+        {
+          "kind": "simulation_run",
+          "date": "2026-09-27",
+          "by": "URML maintainers",
+          "summary": "The same program on the same PX4 build, flown again later the same day with the adapter that sends a ground-station heartbeat once a second (commit 3d6f5fa). The witness measured a maximum relative altitude of 31.778 m and a closest approach of 0.95 m to the waypoint, and saw the vehicle end on the ground, disarmed. With the heartbeat, PX4 sent its STATUSTEXT narration of the flight to the adapter's link, and a separate no-flight probe got PX4's own text in a refused arm's reason (\"Arming denied: Resolve system health failures first\"). Five flights that day with the heartbeat adapter passed, one of them a from-scratch rehearsal of the CI job's recipe.",
+          "sources": [
+            "https://github.com/URML-MARS/URML/blob/main/reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md",
+            "https://github.com/URML-MARS/URML/commit/3d6f5fa8986a7c0a3587265ba46d406842f5fa5d"
+          ]
         }
       ],
       "validation_records": {

@@ -24,9 +24,8 @@
 #   deferred until hardware exists; this is the honest pre-hardware
 #   ARM64 gate, not a hardware-verification claim.
 #
-# HONESTY NOTE: CI has not run px4-sitl-e2e. The maintainer's GitHub
-# account is flagged, and founder-triggered runs (manual dispatch and
-# cron) do not start. The job's steps mirror the recipe that flew PX4
+# HONESTY NOTE: CI has not run px4-sitl-e2e yet. The job's steps
+# mirror the recipe that flew PX4
 # v1.17.0 SITL locally in WSL2 (Ubuntu 24.04) on 2026-09-27, recorded in
 # reference/px4-runtime/tests/integration/sitl-runs/: the same clone
 # (v1.17.0, shallow, recursive, shallow submodules), PX4's Python

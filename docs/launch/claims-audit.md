@@ -209,9 +209,8 @@ flew the fixture again with the adapter's ground-station heartbeat, showed
 PX4's STATUSTEXT reaching the adapter and PX4's own text in a refused arm's
 reason, and checked `wait_for(emergency_stop)` against a flight termination:
 [`reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md`](../../reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md).
-The GitHub `px4-sitl-e2e` job now follows the same SIH recipe but has not run:
-the maintainer's account is flagged and founder-triggered runs do not start.
-No hardware flight is claimed.
+The GitHub `px4-sitl-e2e` job now follows the same SIH recipe but has not run
+yet. No hardware flight is claimed.
 
 **ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
 on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`
