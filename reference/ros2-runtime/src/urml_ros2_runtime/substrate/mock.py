@@ -577,6 +577,27 @@ class MockROSAdapter:
             return self._set_output_override
         return SubstrateResult(success=True)
 
+    # ---- PayloadAdapter (RFC-0684) ----
+
+    def send_payload_release(
+        self,
+        *,
+        mode: Literal["winch", "latch"],
+        mechanism: str,
+        latch: str | None = None,
+        height: float | None = None,
+    ) -> SubstrateResult:
+        self.call_log.append(
+            {
+                "method": "send_payload_release",
+                "mode": mode,
+                "mechanism": mechanism,
+                "latch": latch,
+                "height": height,
+            }
+        )
+        return SubstrateResult(success=True)
+
     # ---- RelativeMotionAdapter (RFC-0630) ----
 
     def drive_by(

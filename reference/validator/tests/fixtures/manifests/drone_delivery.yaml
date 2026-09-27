@@ -1,0 +1,72 @@
+# Fixture: a civilian delivery multirotor with declared payload mechanisms
+# (RFC-0684). Based on drone_civilian, with a winch and a latch under the new
+# top-level `payload_mechanisms` block (not manipulation) and a higher payload
+# cap. US-compliant provenance so the bundled default policy passes.
+
+manifest_version: "0.1"
+robot_id: delivery_multirotor
+description: Civilian multirotor for parcel delivery.
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: dropoff
+    pose: { x: 40.0, y: 20.0, z: 30.0 }
+    frame: agl
+    description: Parcel drop-off station at cruise height.
+
+declared_events:
+  - emergency_stop
+  - low_battery
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 120.0
+  max_payload: 1.5
+
+substrate:
+  autopilot_class: px4
+
+payload_mechanisms:
+  - name: winch
+    kind: winch
+    max_line_m: 20.0
+    rate_m_s: 0.5
+    max_payload_kg: 1.5
+  - name: latch
+    kind: latch
+    max_payload_kg: 1.5
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  object_vocabulary:
+    - person
+    - parcel
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: flight_controller
+      role: critical
+      vendor: example_fc_vendor
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/flight_controller.cdx.json
+        sha256: "0000000000000000000000000000000000000000000000000000000000000000"

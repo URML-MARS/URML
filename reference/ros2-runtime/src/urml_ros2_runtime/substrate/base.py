@@ -492,6 +492,34 @@ class RelativeMotionAdapter(Protocol):
 
 
 @runtime_checkable
+class PayloadAdapter(Protocol):
+    """Optional aerial payload-delivery surface (RFC-0684): winch / latch release.
+
+    Kept separate from the frozen `ROSAdapter` Protocol (RFC-0014): only drone
+    substrates with a payload mechanism implement it. The runtime checks
+    ``isinstance(adapter, PayloadAdapter)`` and returns an unsuccessful result
+    for substrates that do not. `MockROSAdapter` implements it so the hermetic
+    suite can exercise `release(mode: winch | latch)`.
+
+    The validator has already confirmed the manifest declares the named
+    mechanism and that it covers the requested mode, so the adapter runs the
+    deliver / open / retract sequence and owns the wait, using the mechanism's
+    declared `max_line_m` / `rate_m_s`. The program no longer hand-times it.
+    """
+
+    def send_payload_release(
+        self,
+        *,
+        mode: Literal["winch", "latch"],
+        mechanism: str,
+        latch: str | None = None,
+        height: float | None = None,
+    ) -> SubstrateResult:
+        """Release a payload via a declared mechanism. Used by `release(mode: winch | latch)`."""
+        ...
+
+
+@runtime_checkable
 class ExpressionAdapter(Protocol):
     """Optional expressive-platform surface (RFC-0698): gaze + gesture.
 

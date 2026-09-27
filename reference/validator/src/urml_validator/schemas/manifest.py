@@ -771,6 +771,43 @@ class Outputs(BaseModel):
         return self
 
 
+class PayloadMechanism(BaseModel):
+    """A drone-profile payload-delivery mechanism (RFC-0684).
+
+    Deliberately not `manipulation`: a winch, a servo-driven latch, or a
+    parachute is not an arm, and the drone profile keeps `manipulation` off its
+    manifests. A `release(mode: winch | latch)` names the mechanism it drives;
+    the numbers here let the validator check drop height and payload mass.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    kind: Literal["winch", "latch", "parachute"]
+    max_line_m: float | None = Field(
+        None, gt=0, description="Tether length a winch can pay out, metres. Required for `winch`."
+    )
+    rate_m_s: float | None = Field(
+        None, gt=0, description="Winch line rate, m/s. Required for `winch`."
+    )
+    max_payload_kg: float | None = Field(
+        None, gt=0, description="Heaviest payload the mechanism handles, kg."
+    )
+
+    @model_validator(mode="after")
+    def _kind_coherence(self) -> "PayloadMechanism":
+        if self.kind == "winch":
+            if self.max_line_m is None or self.rate_m_s is None:
+                raise ValueError(
+                    f"payload mechanism {self.name!r}: a winch must declare `max_line_m` and `rate_m_s`."
+                )
+        elif self.max_line_m is not None or self.rate_m_s is not None:
+            raise ValueError(
+                f"payload mechanism {self.name!r}: `max_line_m` / `rate_m_s` apply only to a winch."
+            )
+        return self
+
+
 class HBOMRef(BaseModel):
     """Reference to a Hardware Bill of Materials document.
 
@@ -1974,6 +2011,10 @@ class CapabilityManifest(BaseModel):
     # RFC-0698: optional expressive-platform envelope (head/body pose ranges +
     # declared gesture vocabulary) for the social profile's look_at / gesture.
     expression: Expression | None = None
+
+    # RFC-0684: optional drone-profile payload-delivery mechanisms (winch / latch
+    # / parachute) that a `release(mode: winch | latch)` drives. Not manipulation.
+    payload_mechanisms: list[PayloadMechanism] = Field(default_factory=list)
 
     # RFC-0260: optional Layer-4 NL-infrastructure engine declarations
     # (speech-to-text / text-to-speech / translation engine classes).

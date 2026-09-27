@@ -62,6 +62,21 @@ outputs:
       kind: digital
       safe_state: false
 
+# RFC-0684: the same hardware, declared as delivery mechanisms so a program can
+# say `release(mode: winch)` (see parcel-delivery-release.urml.yaml) instead of
+# driving the output lines directly. Both declarations coexist: the set_output
+# variant (parcel-delivery.urml.yaml) uses `outputs.lines`, the release variant
+# uses these.
+payload_mechanisms:
+  - name: winch
+    kind: winch
+    max_line_m: 20.0
+    rate_m_s: 0.5
+    max_payload_kg: 1.5
+  - name: latch
+    kind: latch
+    max_payload_kg: 1.5
+
 connectivity:
   links:
     - role: command_link

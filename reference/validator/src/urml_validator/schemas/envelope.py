@@ -152,6 +152,9 @@ class SafetyEnvelope(BaseModel):
     max_altitude: float | None = Field(None, ge=0)
     max_payload: float | None = Field(None, ge=0)
     max_grip_force_n: float | None = Field(None, ge=0)
+    # RFC-0684: ceiling on the height a payload is released from (metres). Checked
+    # against a winch release's `height` and a latch release's current altitude.
+    max_drop_height: float | None = Field(None, ge=0)
 
     # Spatial constraints.
     geofences: list[GeofencePolygon] = Field(default_factory=list)

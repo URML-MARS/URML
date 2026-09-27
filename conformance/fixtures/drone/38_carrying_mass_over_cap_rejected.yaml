@@ -1,0 +1,31 @@
+name: drone/carrying_mass_over_cap_rejected
+description: >
+  RFC-0684 negative: the drone flies to the drop-off carrying a 5 kg parcel,
+  declared inline on `carrying`. That exceeds the strictest payload cap (the
+  envelope's 1.5 kg), so Pass 3 rejects with envelope.payload_exceeded. Before
+  RFC-0684 a carried object had no mass and the cap was never checked against it.
+
+manifest: drone_delivery
+envelope: drone_delivery_envelope
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to:
+          location: dropoff
+          carrying: { name: parcel, mass_kg: 5.0 }
+      - release:
+          mode: winch
+          mechanism: winch
+          height: 0.5
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.payload_exceeded

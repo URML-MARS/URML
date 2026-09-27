@@ -1,0 +1,14 @@
+# Fixture: the deployment envelope for a delivery multirotor (RFC-0684). Adds a
+# drop-height ceiling and a payload cap on top of the manifest.
+
+envelope_version: "0.1"
+deployment_id: drone_delivery_demo
+description: Delivery-drone envelope with a drop-height ceiling.
+
+max_altitude: 120.0
+max_payload: 1.5
+max_drop_height: 3.0
+
+geofences: []
+people_occupancy_zones: []
+link_loss_policy: []
