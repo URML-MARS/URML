@@ -53,7 +53,7 @@ The programs, envelopes and manifests are the ones the [bench](../../bench/READM
 | home robot | [`turtlebot4_home.yaml`](../../reference/validator/tests/fixtures/manifests/turtlebot4_home.yaml) | [`home-strict.yaml`](../../bench/envelopes/home-strict.yaml) | [`adversarial-home-en.yaml`](../../bench/strikers/adversarial-home-en.yaml) |
 | drone | [`drone_civilian.yaml`](../../reference/validator/tests/fixtures/manifests/drone_civilian.yaml) | [`drone-site.yaml`](../../bench/envelopes/drone-site.yaml) | [`adversarial-drone-en.yaml`](../../bench/strikers/adversarial-drone-en.yaml) |
 
-The compliance policy is off (`policy=None`, the same as `--no-policy`), so every refusal comes from the manifest and the envelope.
+The compliance policy is off (`policy=None`, the same as `--no-policy`), so every refusal comes from the manifest and the envelope. On the drone landing, the bundled FAA Part 107 rulebook ([RFC-0702](../../docs/rfcs/0702-rulebooks.md), on by default for drone programs and untouched by `--no-policy`) adds a second reason, flight over people (14 CFR 107.39); the transcript shows it as "(and 1 more)".
 
 ## How the transcript stays honest
 
