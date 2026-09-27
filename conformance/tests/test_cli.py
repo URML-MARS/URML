@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import sys
+from pathlib import Path
 from types import ModuleType
 
 import pytest
 from urml_ros2_runtime import URMLRuntime
 
+from urml_conformance import DEFAULT_ADAPTER, ConformanceReport
 from urml_conformance.__main__ import _load_adapter_factory, _load_runtime_factory, main
 
 
@@ -37,6 +40,41 @@ def test_unimportable_adapter_module_is_actionable() -> None:
 def test_non_callable_attribute_is_rejected() -> None:
     with pytest.raises(SystemExit, match="not callable"):
         _load_adapter_factory("urml_conformance:__doc__")
+
+
+def test_bad_adapter_spec_on_the_command_line_exits_with_the_reason() -> None:
+    with pytest.raises(SystemExit, match="module:attribute"):
+        main(["--adapter", "notacolonspec"])
+
+
+# ---------------------------------------------------------------------------
+# --report
+# ---------------------------------------------------------------------------
+
+
+def test_report_writes_the_json_report(tmp_path: Path) -> None:
+    target = tmp_path / "nested" / "report.json"
+    assert main(["--filter", "quadruped", "--report", str(target)]) == 0
+    raw = target.read_bytes()
+    assert b"\r\n" not in raw and raw.endswith(b"\n")
+    payload = json.loads(raw)
+    assert payload["format"] == "urml.conformance-report/1"
+    assert payload["adapter"] == DEFAULT_ADAPTER
+    assert payload["filter"] == "quadruped"
+    assert payload["all_passed"] is True
+    assert ConformanceReport.model_validate(payload).all_passed
+
+
+def test_report_names_the_adapter_spec(tmp_path: Path) -> None:
+    target = tmp_path / "report.json"
+    spec = "urml_ros2_runtime:MockROSAdapter"
+    assert main(["--adapter", spec, "--filter", "quadruped", "--report", str(target)]) == 0
+    assert json.loads(target.read_text(encoding="utf-8"))["adapter"] == spec
+
+
+def test_report_is_not_for_the_goal_line(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit):
+        main(["--goal-line", "--report", str(tmp_path / "report.json")])
 
 
 # ---------------------------------------------------------------------------

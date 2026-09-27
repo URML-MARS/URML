@@ -12,6 +12,8 @@ so authors don't have to inline the full manifest in every case.
 
 from __future__ import annotations
 
+import hashlib
+from collections.abc import Sequence
 from datetime import date
 from pathlib import Path
 from typing import Any, Literal
@@ -543,18 +545,38 @@ def load_fixture(path: Path) -> FixtureCase:
     return FixtureCase.model_validate(data)
 
 
+def fixture_paths(root: Path | None = None) -> list[Path]:
+    """Every fixture file under the fixtures directory, sorted by path."""
+    base = root or fixtures_root()
+    if not base.is_dir():
+        return []
+    return sorted(base.rglob("*.yaml"))
+
+
 def discover_fixtures(root: Path | None = None) -> list[FixtureCase]:
     """Walk the fixtures directory and return every parsed case.
 
     Order is stable: sorted by file path (so test reports are deterministic).
     """
+    return [load_fixture(path) for path in fixture_paths(root)]
+
+
+def fixtures_sha256(paths: Sequence[Path], root: Path | None = None) -> str:
+    """A sha256 that pins a set of fixture files, content and names.
+
+    The digest is taken over a listing with one line per file, sorted by the
+    file's path relative to the fixtures directory: the sha256 of the file's
+    bytes, two spaces, the relative path with forward slashes, and a newline
+    (the ``sha256sum`` line format). Fixture files are stored with LF line
+    endings, so the digest is the same on every platform.
+    """
     base = root or fixtures_root()
-    if not base.is_dir():
-        return []
-    cases: list[FixtureCase] = []
-    for path in sorted(base.rglob("*.yaml")):
-        cases.append(load_fixture(path))
-    return cases
+    lines = sorted(
+        (path.relative_to(base).as_posix(), hashlib.sha256(path.read_bytes()).hexdigest())
+        for path in paths
+    )
+    listing = "".join(f"{digest}  {relative}\n" for relative, digest in lines)
+    return hashlib.sha256(listing.encode("utf-8")).hexdigest()
 
 
 def resolve_manifest(name: str) -> dict[str, Any]:

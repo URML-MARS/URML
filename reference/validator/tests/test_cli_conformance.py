@@ -35,6 +35,48 @@ def test_conformance_run_passes_with_bundled_fixtures(
         f"expected all cases to pass; failures: "
         f"{[c['name'] for c in payload['results'] if not c['passed']]}"
     )
+    # urml.conformance-report/1: the summary is written out with the results.
+    assert payload["format"] == "urml.conformance-report/1"
+    assert payload["all_passed"] is True
+    assert payload["passed"] == len(payload["results"]) == payload["fixture_count"]
+    assert payload["failed"] == 0
+    assert payload["adapter"] == "urml_ros2_runtime:MockROSAdapter"
+    assert payload["filter"] is None
+    assert len(payload["fixtures_sha256"]) == 64
+
+
+def test_conformance_run_records_the_adapter_and_filter(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--adapter and --filter reach the report, so it says what ran."""
+    output = tmp_path / "report.json"
+    spec = "urml_ros2_runtime:MockROSAdapter"
+    rc = main(["conformance", "run", "--adapter", spec, "--filter", "quadruped", "--output", str(output)])
+    captured = capsys.readouterr()
+    assert rc == 0, f"stderr={captured.err}"
+    raw = output.read_bytes()
+    assert b"\r\n" not in raw, "the report is written with LF line endings"
+    payload = json.loads(raw)
+    assert payload["adapter"] == spec
+    assert payload["filter"] == "quadruped"
+    assert payload["results"] and all(c["name"].startswith("quadruped/") for c in payload["results"])
+
+
+def test_conformance_run_bad_adapter_is_a_usage_error(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main(["conformance", "run", "--adapter", "notacolonspec"])
+    assert rc == 2
+    assert "module:attribute" in capsys.readouterr().err
+
+
+def test_conformance_run_filter_without_match_is_a_usage_error(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main(["conformance", "run", "--filter", "no-such-fixture-zzz"])
+    assert rc == 2
+    assert "no fixtures match" in capsys.readouterr().err
 
 
 def test_conformance_run_without_output_still_succeeds(
