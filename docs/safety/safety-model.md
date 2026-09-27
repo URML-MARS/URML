@@ -127,7 +127,10 @@ envelope attacks passed and 4 of 4 safe controls were accepted. One of the two
 drone known-gap rows, a fence in a frame the target cannot be transformed
 into, is now stopped: the envelope check abstains there, and the rulebook's
 place check fails closed (`rule.place_unknown`). The a16a03f drone row stays
-as the record of that commit, and the guard lists it as superseded.
+as the record of that commit, and the guard lists it as superseded. RFC-0684
+(e87d2e9) later added the people-zone check to `release.at`, which stops one
+of the two industrial known-gap rows as well; that corpus was re-measured the
+same way.
 
 What got through before the fixes:
 
