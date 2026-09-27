@@ -1,0 +1,63 @@
+# A research-profile manipulation cell (RFC-0012). The research profile is
+# reproducibility-first: it requires provenance and an explicit error policy, and
+# it permits pose-based motion (a lab rig is placed by exact pose, not a named
+# room). US-compliant provenance so the bundled default policy passes.
+
+manifest_version: "0.1"
+robot_id: research_assay_arm
+description: Single research arm over a fixed assay bench; pose-addressed sampling.
+
+frames:
+  - name: bench
+    parent: null
+  - name: base_link
+    parent: bench
+
+declared_locations:
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: bench
+
+declared_events:
+  - run_complete
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: sampler
+      kind: servo_electric
+      force_min_n: 0.5
+      force_max_n: 15.0
+      accepted_classes: [vial]
+  reachable_workspace_m: 0.75
+
+perception:
+  sensors:
+    - name: bench_scale
+      measurement_type: weight
+      range_min: 0.0
+      range_max: 500.0
+      units: g
+  object_vocabulary:
+    - vial
+
+outputs:
+  named_endpoints: [run_log]
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: arm_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/arm_controller.cdx.json
+        sha256: "5858585858585858585858585858585858585858585858585858585858585858"
