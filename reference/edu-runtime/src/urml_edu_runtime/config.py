@@ -87,6 +87,15 @@ class EduConfig(BaseModel):
         default="main",
         description="Pybricks/VEX/Thymio program name the firmware exposes.",
     )
+    wheel_diameter_mm: float = Field(
+        default=66.5,
+        gt=0,
+        description=(
+            "Drive-wheel diameter, used by the GoPiGo3 adapter to convert a URML "
+            "`drive` speed (m/s) into the SDK's degrees-per-second. 66.5 mm is the "
+            "GoPiGo3 default wheel."
+        ),
+    )
 
     #: location name -> the firmware-mapped command (string or richer call).
     location_to_command: dict[str, EduCommand] = Field(default_factory=dict)

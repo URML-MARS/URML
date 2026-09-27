@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "URML Maintainers" }]
-keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "marty", "robotical", "petoi", "bittle", "nybble", "opencat", "microduck", "pollen", "urml", "runtime"]
+keywords = ["robotics", "education", "vex", "lego", "mindstorms", "spike", "thymio", "gopigo", "gopigo3", "marty", "robotical", "petoi", "bittle", "nybble", "opencat", "microduck", "pollen", "urml", "runtime"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -78,6 +78,14 @@ petoi = [
 # CircuitPython skill methods or a generic send_command(token, *args).
 circuitpython = [
   "pyserial>=3.5",
+]
+# Dexter Industries / Modular Robotics GoPiGo3 (Boulder, CO, US), the
+# canonical frameless classroom buggy. `easygopigo3` is the official
+# Raspberry-Pi-side Python API (`drive_cm` / `turn_degrees` / `orbit`),
+# talking to the GoPiGo3 hat over SPI. It is the first substrate to
+# implement URML's relative-motion surface (RFC-0630).
+gopigo = [
+  "easygopigo3>=1.0",
 ]
 dev = [
   "pytest>=8",

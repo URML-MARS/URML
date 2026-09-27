@@ -26,6 +26,7 @@ minimal-MCU manifest → RFC-0018, already Draft.
 
 from __future__ import annotations
 
+import math
 from contextlib import suppress
 from typing import Any, Literal
 
@@ -51,6 +52,7 @@ __all__ = [
     "EduCommand",
     "EduConfig",
     "EduSkillCall",
+    "GoPiGo3Adapter",
     "LegoSpikeAdapter",
     "PetoiAdapter",
     "RoboticalMartyAdapter",
@@ -971,6 +973,174 @@ class ThymioAdapter(_EduBase):
         client = self._open()
         value = float(client.read_variable(sensor or "default"))
         return MeasurementResult(success=True, payload={"value": value, "what": what})
+
+    def call_named_program(
+        self,
+        *,
+        name: str,
+        args: dict[str, Any] | None = None,
+    ) -> ProgramCallResult:
+        """``call_program``: this substrate exposes no named programs (RFC-0015)."""
+        return unsupported_program_call('edu')
+
+
+class GoPiGo3Adapter(_EduBase):
+    """Dexter Industries / Modular Robotics GoPiGo3 via ``easygopigo3`` — zero ROS.
+
+    The GoPiGo3 is the canonical frameless classroom buggy: a two-motor
+    differential-drive robot with wheel encoders and no map. It has no
+    ``move_to`` target, so it is URML's first substrate that implements the
+    relative-motion surface (RFC-0630): ``drive`` and ``turn`` map straight
+    onto the ``easygopigo3`` odometric API (``drive_cm`` / ``turn_degrees`` /
+    ``orbit``), which closes the loop on the wheel encoders itself.
+
+    ``easygopigo3.EasyGoPiGo3()`` talks to the GoPiGo3 hat over the Raspberry
+    Pi's SPI bus, so there is no connection string; ``config.device`` is
+    ignored (kept on :class:`EduConfig` for parity with the other adapters).
+    Unit conventions the adapter converts at the boundary:
+
+    - URML ``drive`` distance is metres, signed (+ forward); the SDK's
+      ``drive_cm`` takes centimetres, so the adapter multiplies by 100.
+    - URML ``turn`` angle is degrees, ``+`` counterclockwise (the manifest
+      convention); the SDK's ``turn_degrees`` is ``+`` clockwise, so the
+      adapter negates.
+    - URML ``drive`` speed is m/s; the SDK's ``set_speed`` is
+      degrees-per-second of wheel rotation, converted through the configured
+      ``wheel_diameter_mm``.
+
+    Manipulation (``grasp`` / ``release``) and ``measure`` dispatch a named
+    ``easygopigo3`` method the same way the Marty / Petoi adapters do, so a
+    servo gripper or a distance-sensor getter is reachable from the config
+    without widening the base. United States (Modular Robotics, Boulder CO) —
+    passes the default US-federal policy.
+    """
+
+    BRAND = "gopigo3"
+
+    def _open(self) -> Any:
+        if self._conn is not None:
+            return self._conn
+        try:
+            import easygopigo3  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "easygopigo3 is not installed. GoPiGo3Adapter requires the [gopigo] extra.\n"
+                "  Install with: pip install urml-edu-runtime[gopigo]\n"
+                "  (easygopigo3 talks to the GoPiGo3 hat over the Raspberry Pi SPI bus.)"
+            ) from exc
+        self._conn = easygopigo3.EasyGoPiGo3()
+        return self._conn
+
+    def _send(self, command: EduCommand) -> None:
+        """Dispatch a named ``easygopigo3`` method (grasp / release / measure).
+
+        Same two shapes as the Marty / Petoi adapters: a bare string calls a
+        no-arg method (``"stop"`` -> ``gpg.stop()``), an :class:`EduSkillCall`
+        passes args (a servo-gripper wrapper, say). Unknown names raise a typed
+        RuntimeError so the executor surfaces a clean not-configured result.
+        """
+        method_name, args, kwargs = _resolve_call(command)
+        gpg = self._open()
+        skill = getattr(gpg, method_name, None)
+        if not callable(skill):
+            raise RuntimeError(
+                f"gopigo_skill_not_found: EasyGoPiGo3 has no callable named {method_name!r}. "
+                "Map the manipulation/location entry to an easygopigo3 method (e.g. 'stop', or "
+                "an EduSkillCall over a servo-gripper wrapper) in edu_adapter.yaml."
+            )
+        skill(*args, **kwargs)
+
+    def _apply_speed(self, gpg: Any, speed: float | None) -> None:
+        if speed is None:
+            return
+        circumference_m = math.pi * (self._config.wheel_diameter_mm / 1000.0)
+        dps = round(abs(speed) / circumference_m * 360.0)
+        gpg.set_speed(dps)
+
+    # ---- RelativeMotionAdapter (RFC-0630) ----
+
+    def drive_by(
+        self,
+        *,
+        distance: float,
+        arc: float | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        gpg = self._open()
+        self._apply_speed(gpg, speed)
+        if arc is not None and arc != 0.0:
+            # Sweep `arc` degrees over a path length of `distance`: the circle
+            # radius is distance / arc(in radians). easygopigo3.orbit takes
+            # degrees + radius in centimetres.
+            radius_cm = distance / math.radians(abs(arc)) * 100.0
+            gpg.orbit(arc, radius_cm)
+        else:
+            gpg.drive_cm(distance * 100.0)
+        return NavigationResult(success=True, final_pose=None, frame="gopigo_body")
+
+    def turn_by(self, *, angle: float) -> NavigationResult:
+        gpg = self._open()
+        # URML: + counterclockwise. easygopigo3.turn_degrees: + clockwise.
+        gpg.turn_degrees(-angle)
+        return NavigationResult(success=True, final_pose=None, frame="gopigo_body")
+
+    # ---- base surface ----
+
+    def send_navigation_goal(
+        self,
+        *,
+        location: str | None = None,
+        pose: dict[str, float] | None = None,
+        frame: str | None = None,
+        carrying: dict[str, Any] | None = None,
+        speed: float | None = None,
+    ) -> NavigationResult:
+        return NavigationResult(
+            success=False,
+            reason=(
+                "gopigo_is_frameless: the GoPiGo3 has no map to `move_to`. Drive it with "
+                "relative `drive` / `turn` (RFC-0630); the manifest needs "
+                "`mobility.supports_relative_motion`."
+            ),
+        )
+
+    def send_manipulation_goal(
+        self,
+        *,
+        action: Literal["grasp", "release"],
+        target: dict[str, Any] | None = None,
+        force_n: float | None = None,
+        approach: Literal["top", "side", "front", "auto"] = "auto",
+        release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
+        release_at: dict[str, Any] | str | None = None,
+        arm: str | None = None,
+    ) -> ManipulationResult:
+        return _grasp(self, action, force_n)
+
+    def take_measurement(self, *, what: str, target: str | None, sensor: str | None) -> MeasurementResult:
+        gpg = self._open()
+        # EasyGoPiGo3 exposes battery voltage directly (`get_voltage`); a
+        # distance sensor is a separate object, reachable through a configured
+        # wrapper method. Treat `sensor` as the getter name, default voltage.
+        getter_name = sensor or "get_voltage"
+        getter = getattr(gpg, getter_name, None)
+        if not callable(getter):
+            return MeasurementResult(
+                success=False,
+                reason=(
+                    f"gopigo_sensor_not_found: EasyGoPiGo3 has no callable named {getter_name!r}. "
+                    "Use a published getter (get_voltage) or a URML-side wrapper over an "
+                    "init_distance_sensor() reading."
+                ),
+            )
+        raw = getter()
+        if isinstance(raw, (tuple, list)):
+            payload_value: Any = list(raw)
+        elif isinstance(raw, dict):
+            payload_value = raw
+        else:
+            payload_value = raw if isinstance(raw, int) else float(raw)
+        return MeasurementResult(success=True, payload={"value": payload_value, "what": what})
 
     def call_named_program(
         self,

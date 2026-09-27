@@ -7,6 +7,7 @@ and ``_open`` runs against controllable doubles.
 
 from __future__ import annotations
 
+import math
 import sys
 from collections.abc import Callable, Iterator
 from types import ModuleType
@@ -214,6 +215,36 @@ class _FakeCircuitPythonBoard:
         pass
 
 
+class _FakeGoPiGo3:
+    """Stand-in for ``easygopigo3.EasyGoPiGo3`` recording the odometric calls."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, tuple[object, ...]]] = []
+        self.speed: int | None = None
+
+    def drive_cm(self, dist: float, blocking: bool = True) -> None:
+        self.calls.append(("drive_cm", (dist,)))
+
+    def turn_degrees(self, degrees: float, blocking: bool = True) -> None:
+        self.calls.append(("turn_degrees", (degrees,)))
+
+    def orbit(self, degrees: float, radius_cm: float, blocking: bool = True) -> None:
+        self.calls.append(("orbit", (degrees, radius_cm)))
+
+    def set_speed(self, dps: int) -> None:
+        self.speed = dps
+        self.calls.append(("set_speed", (dps,)))
+
+    def stop(self) -> None:
+        self.calls.append(("stop", ()))
+
+    def get_voltage(self) -> float:
+        return 9.6
+
+    def close(self) -> None:
+        pass
+
+
 @pytest.fixture
 def fake_edu_sdks() -> Iterator[None]:
     vex = ModuleType("pyvex")
@@ -227,7 +258,12 @@ def fake_edu_sdks() -> Iterator[None]:
     pet = _fake_petoi_robot()
     cpy = ModuleType("circuitpython_host")
     cpy.Board = _FakeCircuitPythonBoard  # type: ignore[attr-defined]
-    keys = ("pyvex", "pybricksdev", "tdmclient", "martypy", "PetoiRobot", "circuitpython_host")
+    gpg = ModuleType("easygopigo3")
+    gpg.EasyGoPiGo3 = _FakeGoPiGo3  # type: ignore[attr-defined]
+    keys = (
+        "pyvex", "pybricksdev", "tdmclient", "martypy", "PetoiRobot",
+        "circuitpython_host", "easygopigo3",
+    )
     saved = {k: sys.modules.get(k) for k in keys}
     sys.modules["pyvex"] = vex
     sys.modules["pybricksdev"] = lego
@@ -235,6 +271,7 @@ def fake_edu_sdks() -> Iterator[None]:
     sys.modules["martypy"] = mar
     sys.modules["PetoiRobot"] = pet
     sys.modules["circuitpython_host"] = cpy
+    sys.modules["easygopigo3"] = gpg
     try:
         yield
     finally:
@@ -294,6 +331,55 @@ def test_thymio_adapter_lifecycle(fake_edu_sdks: None) -> None:
         assert thy.send_manipulation_goal(action="release").success
         meas = thy.take_measurement(what="prox", target=None, sensor="prox.horizontal[0]")
         assert meas.success and meas.payload is not None and meas.payload["value"] == 7.0
+
+
+def test_gopigo3_relative_motion(fake_edu_sdks: None) -> None:
+    """GoPiGo3Adapter maps `drive` / `turn` onto the easygopigo3 odometric API.
+
+    First substrate to implement the relative-motion surface (RFC-0630).
+    Boundary conversions: metres -> cm, URML CCW-positive -> SDK CW-positive
+    turn, m/s -> degrees-per-second wheel speed.
+    """
+    from urml_ros2_runtime.substrate.base import RelativeMotionAdapter
+
+    from urml_edu_runtime import EduConfig, GoPiGo3Adapter
+
+    with GoPiGo3Adapter(EduConfig()) as gpg:
+        assert isinstance(gpg, ROSAdapter)
+        assert isinstance(gpg, RelativeMotionAdapter)
+        assert gpg.drive_by(distance=0.5).success  # 0.5 m -> drive_cm(50)
+        assert gpg.turn_by(angle=90).success  # +90 CCW -> turn_degrees(-90)
+        assert gpg.drive_by(distance=0.2, speed=0.1).success  # sets wheel speed first
+        assert gpg.drive_by(distance=1.0, arc=90).success  # sweeps an arc via orbit
+        fake = gpg._open()
+        assert ("drive_cm", (50.0,)) in fake.calls
+        assert ("turn_degrees", (-90,)) in fake.calls
+        assert fake.speed is not None and fake.speed > 0
+        orbit = next(c for c in fake.calls if c[0] == "orbit")
+        assert orbit[1][0] == 90
+        assert orbit[1][1] == pytest.approx(1.0 / math.radians(90) * 100.0)
+
+
+def test_gopigo3_move_to_is_a_frameless_failure(fake_edu_sdks: None) -> None:
+    from urml_edu_runtime import EduConfig, GoPiGo3Adapter
+
+    with GoPiGo3Adapter(EduConfig()) as gpg:
+        result = gpg.send_navigation_goal(location="kitchen")
+        assert result.success is False
+        assert result.reason is not None and result.reason.startswith("gopigo_is_frameless")
+
+
+def test_gopigo3_measure_and_manipulation(fake_edu_sdks: None) -> None:
+    from urml_edu_runtime import EduConfig, GoPiGo3Adapter
+
+    cfg = EduConfig(manipulation_commands={"grasp": "stop", "release": "stop"})
+    with GoPiGo3Adapter(cfg) as gpg:
+        meas = gpg.take_measurement(what="battery", target=None, sensor=None)
+        assert meas.success and meas.payload is not None and meas.payload["value"] == 9.6
+        missing = gpg.take_measurement(what="range", target=None, sensor="no_such_getter")
+        assert missing.success is False
+        assert missing.reason is not None and missing.reason.startswith("gopigo_sensor_not_found")
+        assert gpg.send_manipulation_goal(action="grasp").success
 
 
 def test_marty_adapter_lifecycle(fake_edu_sdks: None) -> None:

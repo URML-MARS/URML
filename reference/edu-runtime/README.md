@@ -14,7 +14,7 @@
 
 # urml-edu-runtime
 
-**Educational-platform reference runtime for URML** — `VexV5Adapter`, `LegoSpikeAdapter`, `ThymioAdapter`, `RoboticalMartyAdapter`, **zero ROS**.
+**Educational-platform reference runtime for URML** — `VexV5Adapter`, `LegoSpikeAdapter`, `ThymioAdapter`, `GoPiGo3Adapter`, `RoboticalMartyAdapter`, **zero ROS**.
 
 The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `pyvex`), LEGO SPIKE Prime / Mindstorms hub (BLE via `pybricksdev`), Thymio (Aseba TDM via `tdmclient`), Robotical Marty v1/v2 (USB-serial / socket via `martypy`, per maintainer engagement on [robotical/martypy#52](https://github.com/robotical/martypy/issues/52), 2026-05-25). Each platform's native SDK is imported lazily by its adapter. This module loads on every host without any `[vex]`/`[lego]`/`[thymio]`/`[marty]` extra. Built against the frozen substrate Protocol per [RFC-0014](../../docs/rfcs/0014-substrate-conformance.md). Mirrors `cobot-runtime`'s `_CobotBase` shape.
 
@@ -23,6 +23,7 @@ The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `
 | URML primitive | v0.1 |
 |---|---|
 | `move_to` / `hover` | write the configured firmware command (VEX `run_command` / LEGO `send_command` / Thymio `send_event`) |
+| `drive` / `turn` (RFC-0630) | `GoPiGo3Adapter` only: odometric `drive_cm` / `turn_degrees` / `orbit` on a frameless buggy. The first substrate to implement the relative-motion surface |
 | `grasp` / `release` | write the configured claw-servo command |
 | `wait` | hold (success) |
 | `measure` / `wait_for` | one telemetry read |
@@ -45,6 +46,7 @@ See [`SPEC-GAPS.md`](SPEC-GAPS.md).
 pip install -e reference/edu-runtime[vex]      # VEX V5 (pyvex)
 pip install -e reference/edu-runtime[lego]     # LEGO Pybricks (pybricksdev BLE)
 pip install -e reference/edu-runtime[thymio]   # Thymio (tdmclient)
+pip install -e reference/edu-runtime[gopigo]   # GoPiGo3 buggy (easygopigo3, relative drive/turn)
 pip install -e reference/edu-runtime[marty]    # Robotical Marty v1/v2 (martypy)
 pip install -e reference/edu-runtime           # Microduck (stdlib JSON-RPC, no extra)
 ```
