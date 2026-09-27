@@ -136,6 +136,15 @@ class ArduPilotAdapterConfig(PX4AdapterConfig):
         default_factory=dict,
         description="Map manifest `outputs.lines` names to gripper / winch / servo mechanisms.",
     )
+    payload_mechanisms: dict[str, OutputLineBinding] = Field(
+        default_factory=dict,
+        description=(
+            "Map manifest `payload_mechanisms` names (RFC-0684) to the hardware that "
+            "delivers them: a `winch` binding for a winch mechanism, a `gripper` / `servo` "
+            "binding for a latch. A winch release drives this to lower and retract; a latch "
+            "release opens it. A named `latch` on a winch release resolves against this map too."
+        ),
+    )
 
     def effective_connection_url(self) -> str:
         """The URL handed to pymavlink: serial ports get `,<baud>` appended."""

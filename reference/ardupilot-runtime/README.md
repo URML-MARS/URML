@@ -46,8 +46,9 @@ Nothing in this package disables `ARMING_CHECK` or any pre-arm gate. On a bench 
 | `return_to_home` | `DO_SET_MODE(RTL)` | clears any ROI first |
 | `capture` (photo) | `DO_DIGICAM_CONTROL` or `DO_SET_SERVO` pulse | image stays on the camera; payload has `camera://shot/N` and the trigger-time position |
 | `set_output` | `DO_GRIPPER` / `DO_WINCH` / `DO_SET_SERVO` | per `output_lines` binding in the config; winch uses relative-length control (+length deliver, -length retract) because ArduCopter 4.6 rejects the `WINCH_DELIVER` / `WINCH_RETRACT` actions |
+| `release` (`mode: winch` / `latch`, RFC-0684) | `DO_WINCH` / `DO_GRIPPER` / `DO_SET_SERVO` | per `payload_mechanisms` binding; a winch lowers the payload (`height` metres, capped at `deliver_length_m`), opens a named `latch` at the bottom, then retracts the empty hook; a latch just opens |
 | `measure` (distance, voltage), `wait_for`, `report`, `wait` | inherited from PX4Adapter | `wait_for(event: emergency_stop)` fires on the autopilot's `HEARTBEAT.system_status` `MAV_STATE_FLIGHT_TERMINATION` or `MAV_STATE_EMERGENCY`; not yet checked against ArduCopter |
-| `dock`, `grasp`, `release`, `detect`, `scan`, `speak`, `listen`, video capture | not supported | documented `not_supported` result, never raised |
+| `release` (`mode: drop` / `place` / `hand_to_user`), `dock`, `grasp`, `detect`, `scan`, `speak`, `listen`, video capture | not supported | documented `not_supported` result, never raised |
 
 ## Install
 
@@ -93,6 +94,10 @@ camera:
 output_lines:
   payload_latch: { kind: gripper, instance: 1 }
   winch:         { kind: winch, instance: 1, deliver_length_m: 15.0, rate_m_s: 0.5 }
+
+payload_mechanisms:        # RFC-0684 `release(mode: winch | latch)`
+  delivery_winch: { kind: winch, instance: 1, deliver_length_m: 15.0, rate_m_s: 0.5 }
+  drop_hook:      { kind: gripper, instance: 2 }
 ```
 
 `location_to_global` is written by [`tools/scripts/geocode_locations.py`](../../tools/scripts/geocode_locations.py) at configuration time. The runtime never geocodes and never touches the network.

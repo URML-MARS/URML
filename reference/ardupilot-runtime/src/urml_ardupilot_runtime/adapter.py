@@ -721,6 +721,90 @@ class ArduCopterAdapter(PX4Adapter):
         return self._send_command_long(MAV_CMD_DO_SET_SERVO, float(binding.channel), float(pwm))
 
     # ------------------------------------------------------------------
+    # Aerial payload delivery (RFC-0684): PayloadAdapter
+    # ------------------------------------------------------------------
+
+    def send_payload_release(
+        self,
+        *,
+        mode: Literal["winch", "latch"],
+        mechanism: str,
+        latch: str | None = None,
+        height: float | None = None,
+    ) -> SubstrateResult:
+        """Deliver a payload via a declared mechanism (RFC-0684).
+
+        The validator has already confirmed the manifest declares `mechanism`
+        and that it covers `mode`; this maps the name to hardware through the
+        adapter config and owns the deliver / open / retract sequence.
+
+        `winch`: pay out line to lower the payload (`height` metres, capped by
+        the binding's `deliver_length_m`), open a named `latch` at the bottom if
+        one is given, then retract the empty hook. `latch`: open the mechanism
+        (a `DO_GRIPPER` release, or a servo driven to its on-pwm).
+        """
+        binding = self._ap_config.payload_mechanisms.get(mechanism)
+        if binding is None:
+            return SubstrateResult(
+                success=False,
+                reason=(
+                    f"payload_mechanism_not_configured: {mechanism!r} has no entry in the "
+                    "adapter config `payload_mechanisms`."
+                ),
+            )
+        if mode == "latch":
+            ok, reason = self._drive_line(binding, on=True)
+            if not ok:
+                return SubstrateResult(success=False, reason=f"latch_open_rejected: {mechanism} {reason}")
+            return SubstrateResult(success=True)
+
+        # mode == "winch"
+        if binding.kind != "winch":
+            return SubstrateResult(
+                success=False,
+                reason=f"payload_mechanism_kind_mismatch: {mechanism!r} is a {binding.kind}, not a winch.",
+            )
+        length = binding.deliver_length_m
+        if height is not None:
+            length = min(float(height), binding.deliver_length_m)
+        # Lower the payload.
+        ok, reason = self._send_command_long(
+            MAV_CMD_DO_WINCH,
+            float(binding.instance),
+            float(WINCH_RELATIVE_LENGTH_CONTROL),
+            length,
+            binding.rate_m_s,
+        )
+        if not ok:
+            return SubstrateResult(success=False, reason=f"winch_deliver_rejected: {mechanism} {reason}")
+        time.sleep(length / binding.rate_m_s)
+        # Release the payload at the bottom, if a latch was named.
+        if latch is not None:
+            latch_binding = self._ap_config.payload_mechanisms.get(latch)
+            if latch_binding is None:
+                return SubstrateResult(
+                    success=False,
+                    reason=(
+                        f"payload_mechanism_not_configured: latch {latch!r} has no entry in the "
+                        "adapter config `payload_mechanisms`."
+                    ),
+                )
+            ok, reason = self._drive_line(latch_binding, on=True)
+            if not ok:
+                return SubstrateResult(success=False, reason=f"latch_open_rejected: {latch} {reason}")
+        # Retract the empty hook.
+        ok, reason = self._send_command_long(
+            MAV_CMD_DO_WINCH,
+            float(binding.instance),
+            float(WINCH_RELATIVE_LENGTH_CONTROL),
+            -length,
+            binding.rate_m_s,
+        )
+        if not ok:
+            return SubstrateResult(success=False, reason=f"winch_retract_rejected: {mechanism} {reason}")
+        return SubstrateResult(success=True)
+
+    # ------------------------------------------------------------------
     # Read-only identity probe
     # ------------------------------------------------------------------
 
