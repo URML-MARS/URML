@@ -20,6 +20,7 @@ from urml_validator.schemas.common import (
     FirmwareToken,
     GraspType,
     Identifier,
+    InterceptionMode,
     Pose,
     Transform,
 )
@@ -194,6 +195,39 @@ class Dexterity(BaseModel):
     supports_in_hand_manipulation: bool = False
 
 
+class Interception(BaseModel):
+    """A gripper's declared ability to intercept a moving target (RFC-0671).
+
+    Present on any `Gripper` that can close on something in motion, not only a
+    dexterous hand: a fast parallel-jaw gripper picking from a moving conveyor is
+    a legitimate `tracked` interceptor. The numbers make the claim falsifiable by
+    inspection. Trusted, not verified, like every manifest field.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    modes: list[InterceptionMode] = Field(
+        ...,
+        min_length=1,
+        description="Interception motion classes this gripper supports (from tracked/ballistic).",
+    )
+    closing_time_ms: float = Field(
+        ..., gt=0, description="Commanded-open to commanded-closed, milliseconds."
+    )
+    reaction_latency_ms: float = Field(
+        ..., gt=0, description="Perception-to-actuation latency budget, milliseconds."
+    )
+    max_target_speed_m_s: float | None = Field(
+        None, gt=0, description="Optional: fastest target the gripper can intercept, m/s."
+    )
+
+    @model_validator(mode="after")
+    def _unique_modes(self) -> Interception:
+        if len(set(self.modes)) != len(self.modes):
+            raise ValueError("interception.modes must not repeat a mode")
+        return self
+
+
 class Gripper(BaseModel):
     """A gripper declared in the manifest's manipulation block.
 
@@ -215,6 +249,10 @@ class Gripper(BaseModel):
     dexterity: Dexterity | None = Field(
         None,
         description="Articulation of a multi-fingered hand; required iff kind is `dexterous` (RFC-0586).",
+    )
+    interception: Interception | None = Field(
+        None,
+        description="Declared ability to intercept a moving target (RFC-0671); any kind may declare it.",
     )
     # RFC-0631: how this gripper's claims (force range, accepted classes) were
     # established. Advisory traceability.

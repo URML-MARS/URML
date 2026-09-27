@@ -1,0 +1,36 @@
+URML: a catch is a grasp whose target refuses to sit still, checked before dispatch.
+RFC-0671 adds an optional target_motion (static | tracked | ballistic) to `grasp`, and an
+`interception` block on a gripper declaring which motion classes it can catch. The validator
+admits an interception only on a hand that declared it. It never answers whether the catch
+will succeed, only whether the attempt is admissible on the declared hardware.
+
+Program: catch the ball -> grasp(target: $incoming_ball, target_motion: ballistic).
+
+# 1. A hand that declares ballistic interception
+
+[VALID] phantom_hand declares interception modes [tracked, ballistic]
+   Admissible: the addressed hand declares the ballistic mode. Dispatch may proceed;
+   the millisecond perception-prediction-closure loop is the runtime's job.
+
+# 2. The same hand with no interception block
+
+[REJECTED] phantom_hand declares no interception
+   -> capability.target_motion_not_supported
+   target_motion 'ballistic' requires a gripper that declares an `interception` block, but no addressed gripper does (candidates: ['phantom_hand']).
+   A hand that never declared it can intercept cannot be asked to catch.
+
+# 3. A gripper that declares only tracked interception
+
+[REJECTED] interception modes [tracked], ballistic requested
+   -> capability.target_motion_mode_not_declared
+   target_motion 'ballistic' is not declared by the addressed gripper(s); declared interception modes: ['tracked'].
+   A conveyor-tracking gripper is a real interceptor, but not for a thrown ball.
+
+# What the declaration buys
+
+Without target_motion and interception, "catch the ball" either validated on a parallel-jaw
+gripper that has no hope of executing it, or was refused everywhere, depending on how a bridge
+phrased it. Now the language distinguishes hardware that declares the capability from hardware
+that does not. No new primitive: a catch is a grasp. URML declares and statically checks the
+attempt; the runtime (an RFC-0383 learned policy) does the catch. The declaration is trusted,
+not verified, and the numbers make it falsifiable by inspection.
