@@ -184,7 +184,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_execute.add_argument(
         "--adapter",
-        choices=("mock", "ros2", "px4", "ardupilot"),
+        choices=("mock", "ros2", "px4", "ardupilot", "autoware"),
         default="mock",
         metavar="NAME",
         help=(
@@ -192,7 +192,8 @@ def build_parser() -> argparse.ArgumentParser:
             "hermetic simulation that moves nothing. `ros2` dispatches to a "
             "live ROS 2 graph; `px4` to a connected PX4 autopilot (SITL or "
             "hardware); `ardupilot` to a connected ArduCopter (Pixhawk on "
-            "USB / telemetry, or ArduCopter SITL)."
+            "USB / telemetry, or ArduCopter SITL); `autoware` to a connected "
+            "Autoware stack via the AD API (simulation or vehicle)."
         ),
     )
     p_execute.add_argument(
@@ -201,8 +202,9 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="PATH",
         help=(
-            "Adapter configuration file (YAML). Used by the ros2, px4, and "
-            "ardupilot adapters for connection/topic settings; ignored by mock."
+            "Adapter configuration file (YAML). Used by the ros2, px4, "
+            "ardupilot, and autoware adapters for connection/topic settings; "
+            "ignored by mock."
         ),
     )
     p_execute_policy = p_execute.add_mutually_exclusive_group()
@@ -443,7 +445,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_run.add_argument(
         "--adapter",
-        choices=("mock", "ros2", "px4", "ardupilot"),
+        choices=("mock", "ros2", "px4", "ardupilot", "autoware"),
         default="mock",
         metavar="NAME",
         help=(
@@ -456,7 +458,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         metavar="PATH",
-        help="Adapter configuration file (YAML) for the ros2/px4/ardupilot adapters.",
+        help="Adapter configuration file (YAML) for the ros2/px4/ardupilot/autoware adapters.",
     )
     p_run.add_argument(
         "--out",
@@ -1349,6 +1351,12 @@ _SUBSTRATE_NOTE = {
         "ArduCopter (SITL or hardware). The vehicle will enter GUIDED, arm, "
         "and act; the autopilot's own pre-arm checks still apply."
     ),
+    "autoware": (
+        "Autoware AD API. plan_path sets a route and follow_trajectory "
+        "engages autonomous driving on the connected Autoware stack "
+        "(simulation or vehicle). The vehicle will move under Autoware's "
+        "own planning and safety layers. Research-grade; not safety-certified."
+    ),
 }
 
 
@@ -1605,6 +1613,43 @@ def _build_execute_adapter(args: argparse.Namespace, cleanup: list[Any]) -> Any:
         close = getattr(adapter, "close", None)
         if callable(close):
             cleanup.append(close)
+        return adapter
+
+    if adapter_name == "autoware":
+        try:
+            import rclpy  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise _CLILoadError(
+                "the autoware adapter requires a ROS 2 + Autoware environment (rclpy "
+                "is not importable). Source a ROS 2/Autoware install on Linux, or use "
+                "--adapter mock for a hermetic run."
+            ) from exc
+        try:
+            from urml_av_runtime import (  # type: ignore[import-not-found,unused-ignore]
+                AutowareAdapter,
+                load_av_config,
+            )
+        except ImportError as exc:
+            raise _CLILoadError(
+                "the autoware adapter requires urml-av-runtime. Install with: "
+                "pip install urml-av-runtime (or use --adapter mock)."
+            ) from exc
+
+        config = None
+        if args.adapter_config is not None:
+            if not args.adapter_config.is_file():
+                raise _CLILoadError(f"adapter-config file not found: {args.adapter_config}")
+            config = load_av_config(args.adapter_config)
+        rclpy.init()
+        cleanup.append(rclpy.shutdown)
+        try:
+            adapter = AutowareAdapter(config)
+        except Exception as exc:
+            raise _CLILoadError(
+                f"could not construct the autoware adapter: {exc} "
+                f"(a reachable Autoware stack is also required to execute)."
+            ) from exc
+        cleanup.append(adapter.close)
         return adapter
 
     raise _CLILoadError(f"unknown adapter: {adapter_name!r}")
