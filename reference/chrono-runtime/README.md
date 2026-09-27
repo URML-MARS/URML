@@ -31,7 +31,7 @@ The primitive → driver-input altitude follows Project Chrono lead Dan Negrut's
 | `measure` | return the accumulated dynamics evidence (`value`=contacts, `sim_time`, `driver`, `backend`) |
 | `wait_for` | step-then-check (a sim has no external event bus) |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** (mirrors `PX4Adapter.run_scan`) |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `grasp`/`release`, `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_in_base_sim` (a Chrono::Sensor or articulated-model companion supplies them under the unchanged program, manifest, and validator). The drone trio returns `not_applicable_sim`.
 
@@ -61,7 +61,7 @@ Without `pychrono` installed, `ChronoAdapter()` raises a clear error pointing at
 **v0.1 (this release):**
 - `ChronoAdapter` + `ChronoConfig` (PyChrono, no ROS). `chrono_vehicle_cell` manifest + `conformance/fixtures/home/21_chrono_vehicle_terrain_positive.yaml` verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `ChronoAdapter`).
 - **Terramechanics scene** (`scene: terramechanics`): a rig on Chrono SCM deformable terrain, selected by the manifest's `validation.terrain_fidelity: deformable` hint (RFC-0381). The validation-evidence payload gains **sinkage, peak contact force, and a tip-stability margin** alongside the base dynamics — the richer evidence Project Chrono lead Dan Negrut pointed at on [#746](https://github.com/projectchrono/chrono/issues/746). See [`terramechanics.py`](src/urml_chrono_runtime/terramechanics.py) and [`chrono_adapter.terramechanics.yaml`](chrono_adapter.terramechanics.yaml).
-- Hermetic unit tests: navigation (configured + unmapped), the NSC/SMC system-type switch, measure (validation-evidence payload), scan-stub, lifecycle, the not-supported / not-applicable-sim sentinels, the missing-`pychrono` (conda-pointing) error, the conformance hook, and the **terramechanics scene** (sinkage / contact-force / tip-margin evidence, driver-force application, bare-path regression) — no pychrono install required (a fake `pychrono`, with a `vehicle`/SCM surface, is injected into `sys.modules`).
+- Hermetic unit tests: navigation (configured + unmapped), the NSC/SMC system-type switch, measure (validation-evidence payload), scan (not supported), lifecycle, the not-supported / not-applicable-sim sentinels, the missing-`pychrono` (conda-pointing) error, the conformance hook, and the **terramechanics scene** (sinkage / contact-force / tip-margin evidence, driver-force application, bare-path regression); no pychrono install required (a fake `pychrono`, with a `vehicle`/SCM surface, is injected into `sys.modules`).
 - Gated `.github/workflows/chrono-integration.yml`: `chrono-smoke` (real pychrono from conda-forge + the hermetic suite + the live smoke) and `chrono-sitl-e2e` against a real Chrono::Vehicle scene (first run is a calibration run by design — the established px4 / mujoco / opcua convention). The live SCM scene is that calibration target: its physics reads are version-sensitive, so each degrades to an honest `unavailable` note rather than crashing.
 - [`SPEC-GAPS.md`](SPEC-GAPS.md): the two manifest gaps the mapping surfaced (terrain-fidelity + simulator-target-class hints) shipped as RFC-0381; the terramechanics scene now reads the terrain-fidelity hint.
 

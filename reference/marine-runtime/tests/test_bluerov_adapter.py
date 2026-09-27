@@ -77,9 +77,10 @@ def test_navigation_measure_scan_lifecycle(fake_pymavlink: _FakeConn) -> None:
         assert rov.wait_passively(duration_seconds=0.1).success
         meas = rov.take_measurement(what="depth", target=None, sensor=None)
         assert meas.success and meas.payload is not None and meas.payload["value"] == 1013.0
-        assert rov.run_scan(
+        scan = rov.run_scan(
             area={}, pattern="serpentine", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success  # documented stub success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
     assert fake_pymavlink.closed is True
 
 

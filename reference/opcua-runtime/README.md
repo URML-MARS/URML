@@ -28,7 +28,7 @@ OPC UA Robotics is the universal factory-floor / PLC companion spec. This adapte
 | `wait` | hold (success) |
 | `measure` / `wait_for` | read the configured variable node |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `detect`, `capture`, `speak`, `listen` return `not_supported_on_opcua_cell` (pair a vision/HMI companion). The drone trio returns `not_applicable_opcua`.
 
@@ -54,7 +54,7 @@ with OpcUaAdapter(cfg) as cell:
 
 **v0.1 (this release):**
 - `OpcUaAdapter` + `OpcUaConfig` (asyncua, no ROS). `opcua_cell` US-provenance manifest + `conformance/fixtures/industrial/07_opcua_cell_positive.yaml` (RFC-0013 `pick_from`/`place_at`) verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `OpcUaAdapter`).
-- Hermetic unit tests: nav (configured + unmapped), dock/swap_tool, grasp, measure, scan-stub, lifecycle, the unconfigured / not-supported / not-applicable sentinels, the missing-`[opcua]`-extra error, the conformance hook — no asyncua install required.
+- Hermetic unit tests: nav (configured + unmapped), dock/swap_tool, grasp, measure, scan (not supported), lifecycle, the unconfigured / not-supported / not-applicable sentinels, the missing-`[opcua]`-extra error, the conformance hook; no asyncua install required.
 - Gated `.github/workflows/opcua-integration.yml`: `opcua-smoke` (real asyncua), `opcua-arm64-build` (the Jetson-class QEMU signal), `opcua-server-e2e` against a local asyncua server (first run is a calibration run by design — the established px4/ros2/marine convention).
 
 **Follow-ups (not yet):** RFC-0015/0016 outcomes; a bundled asyncua demo server for the e2e.

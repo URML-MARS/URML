@@ -24,6 +24,7 @@ from urml_humanoid_runtime import DigitAdapter, HUMANOID_ADAPTERS
 class _RecordingInner:
     def __init__(self) -> None:
         self.calls: list[str] = []
+        self.manipulation_kwargs: list[dict[str, Any]] = []
         self.closed = False
 
     def send_navigation_goal(self, **kw: Any) -> NavigationResult:
@@ -34,6 +35,7 @@ class _RecordingInner:
         # Record the addressed arm so the delegation test can assert the
         # RFC-0010 `arm` selector reaches the composed adapter unchanged.
         self.calls.append(f"send_manipulation_goal[{kw.get('arm')}]")
+        self.manipulation_kwargs.append(kw)
         return ManipulationResult(success=True)
 
     def take_measurement(self, **kw: Any) -> SubstrateResult:
@@ -85,6 +87,17 @@ def test_locomotion_subset_delegates() -> None:
         "send_manipulation_goal[left]",
     ]
     assert inner.closed is True
+
+
+def test_grasp_type_and_target_motion_reach_the_composed_adapter() -> None:
+    """RFC-0586 and RFC-0671 pass through like `arm`; Digit could not take them before 2026-09-27."""
+    inner = _RecordingInner()
+    with DigitAdapter(inner_factory=lambda: inner) as digit:
+        assert digit.send_manipulation_goal(
+            action="grasp", arm="left", grasp_type="power", target_motion="static"
+        ).success
+    (kw,) = inner.manipulation_kwargs
+    assert (kw["arm"], kw["grasp_type"], kw["target_motion"]) == ("left", "power", "static")
 
 
 def test_non_locomotion_returns_v01_sentinel() -> None:

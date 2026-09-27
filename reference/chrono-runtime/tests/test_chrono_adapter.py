@@ -97,9 +97,10 @@ def test_navigation_measure_scan_lifecycle(fake_pychrono: _FakePychrono) -> None
         assert meas.payload["what"] == "dynamics"
         assert meas.payload["sim_time"] > 0.0  # time accumulated across the prior steps
 
-        assert sim.run_scan(
+        scan = sim.run_scan(
             area={}, pattern="serpentine", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success  # documented stub success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_smc_system_type_is_honored(fake_pychrono: _FakePychrono) -> None:

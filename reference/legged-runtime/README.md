@@ -33,7 +33,7 @@ Two vendors, two substrates, the same `ROSAdapter` Protocol:
 | `measure` | robot-state telemetry (battery / e-stop) — *partial* |
 | `wait_for` | robot-state poll — *partial* |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** (waypoint expansion is a follow-up) |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 Not supported on a bare Spot — `grasp`/`release` (needs the Spot Arm SDK), `detect`, `capture`, `speak`, `listen`, and the drone trio — return `not_supported_on_spot: ...` (returned, not raised).
 
@@ -69,7 +69,7 @@ runner = ConformanceRunner(adapter_factory=lambda: LEGGED_ADAPTERS["spot"]())
 
 **v0.1 (this release):**
 - `SpotAdapter` (standalone bosdyn) + `AnymalAdapter` (composes `RclpyAdapter`) + `LEGGED_ADAPTERS` registry.
-- Hermetic unit tests: Spot against an injected fake `bosdyn` (navigation, dock, wait, measure, scan-stub, every not-supported sentinel, lifecycle power-off, the missing-`[spot]`-extra error); ANYmal against an injected fake inner (delegation + not-supported + conformance hook + `runtime_checkable`).
+- Hermetic unit tests: Spot against an injected fake `bosdyn` (navigation, dock, wait, measure, scan (not supported), every not-supported sentinel, lifecycle power-off, the missing-`[spot]`-extra error); ANYmal against an injected fake inner (delegation + not-supported + conformance hook + `runtime_checkable`).
 - Gated `.github/workflows/legged-integration.yml`: `spot-smoke` (real bosdyn wheels), `spot-arm64-build` (the bosdyn stack under `linux/arm64` QEMU — the Jetson-companion signal, mirroring `px4-arm64-build`), and a gated `legged-sim-e2e` matrix that skips cleanly without a sim/credential.
 
 **Follow-ups (not yet):**

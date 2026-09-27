@@ -261,9 +261,10 @@ def test_vex_adapter_lifecycle(fake_edu_sdks: None) -> None:
         assert vex.send_manipulation_goal(action="grasp", force_n=2.0).success
         meas = vex.take_measurement(what="light", target=None, sensor="light_sensor")
         assert meas.success and meas.payload is not None and meas.payload["value"] == 17.5
-        assert vex.run_scan(
+        scan = vex.run_scan(
             area={}, pattern="grid", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_lego_adapter_lifecycle(fake_edu_sdks: None) -> None:

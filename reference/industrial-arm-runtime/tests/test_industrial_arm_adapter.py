@@ -147,6 +147,18 @@ def test_supported_primitives_delegate(cls: type[IndustrialArmAdapter]) -> None:
 
 
 @pytest.mark.parametrize("cls", BRAND_CLASSES, ids=BRAND_IDS)
+def test_grasp_passes_arm_grasp_type_and_target_motion_on(cls: type[IndustrialArmAdapter]) -> None:
+    """The adapter dropped `arm` on the way to the ROS 2 adapter and could not take the other two."""
+    adapter, inner = _make(cls)
+    assert adapter.send_manipulation_goal(
+        action="grasp", arm="left", grasp_type="precision", target_motion="tracked"
+    ).success
+    name, kw = inner.calls[-1]
+    assert name == "send_manipulation_goal"
+    assert (kw["arm"], kw["grasp_type"], kw["target_motion"]) == ("left", "precision", "tracked")
+
+
+@pytest.mark.parametrize("cls", BRAND_CLASSES, ids=BRAND_IDS)
 def test_unsupported_primitives_return_branded_sentinel(cls: type[IndustrialArmAdapter]) -> None:
     adapter, inner = _make(cls)
     tag = f"not_supported_on_industrial_arm[{cls.BRAND}]"

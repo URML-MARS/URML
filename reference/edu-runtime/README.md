@@ -27,7 +27,7 @@ The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `
 | `wait` | hold (success) |
 | `measure` / `wait_for` | one telemetry read |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_on_edu_platform`. The drone trio returns `not_applicable_edu`.
 

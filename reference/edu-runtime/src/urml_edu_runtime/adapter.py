@@ -12,7 +12,8 @@ adoption flywheel for the classroom/maker community.
 Supported: ``move_to``/``hover`` (drive to a configured firmware
 command), ``grasp``/``release`` (claw servo command), ``wait``,
 ``measure`` (one telemetry read), ``wait_for`` (read-once), ``report``
-(local sink, no cloud), ``scan`` (documented stub).
+(local sink, no cloud). ``scan`` returns a documented not-supported
+result.
 
 Not supported on a classroom platform (returned, not raised):
 ``dock``, ``detect``, ``capture``, ``speak``, ``listen``. The drone
@@ -147,10 +148,10 @@ class _EduBase:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 edu scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     def send_docking_goal(self, *, station: str, service: str, until: str | None = None) -> NavigationResult:
         return NavigationResult(success=False, reason=_NOT_SUPPORTED.format(capability="docking station"))
@@ -304,6 +305,8 @@ class VexV5Adapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -377,6 +380,8 @@ class LegoSpikeAdapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -500,6 +505,8 @@ class RoboticalMartyAdapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -705,6 +712,8 @@ class PetoiAdapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -869,6 +878,8 @@ class CircuitPythonAdapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 
@@ -964,6 +975,8 @@ class ThymioAdapter(_EduBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return _grasp(self, action, force_n)
 

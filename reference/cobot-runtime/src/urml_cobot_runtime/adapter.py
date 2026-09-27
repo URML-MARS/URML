@@ -145,10 +145,10 @@ class _CobotBase:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 cobot scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     def send_docking_goal(self, *, station: str, service: str, until: str | None = None) -> NavigationResult:
         return NavigationResult(success=False, reason=_NOT_SUPPORTED.format(capability="docking station"))
@@ -272,6 +272,8 @@ class UrRtdeAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         # v0.1: a gripper open/close command. Scalar force_n is honoured;
@@ -349,6 +351,8 @@ class FrankaFciAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -429,6 +433,8 @@ class DoosanDrflAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -509,6 +515,8 @@ class TechmanTmflowAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -593,6 +601,8 @@ class KinovaKortexAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -674,6 +684,8 @@ class MecademicMeca500Adapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -753,6 +765,8 @@ class NeuraMairaAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)
@@ -842,6 +856,8 @@ class KassowKrAdapter(_CobotBase):
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         self._open()
         return ManipulationResult(success=True, grip_force_n=force_n)

@@ -78,9 +78,10 @@ def test_buggy_lifecycle(fake_serial: _FakeSerial) -> None:
         meas = buggy.take_measurement(what="light", target=None, sensor=None)
         assert meas.success and meas.payload is not None and meas.payload["value"] == 21.5
         assert buggy.wait_passively(duration_seconds=0.1).success
-        assert buggy.run_scan(
+        scan = buggy.run_scan(
             area={}, pattern="grid", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_unsupported_and_not_applicable_sentinels(fake_serial: _FakeSerial) -> None:
