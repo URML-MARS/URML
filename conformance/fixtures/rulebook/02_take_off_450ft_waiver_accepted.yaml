@@ -1,0 +1,37 @@
+name: rulebook/take_off_450ft_waiver_accepted
+description: >
+  The same 450-foot take-off, with the example deployment rulebook loaded.
+  Its exception names a fictional certificate of waiver with a 500-foot
+  (152.4 m) limit that expires on 2027-03-31. The violation keeps its code,
+  rule.cap_exceeded, and becomes a warning that names the basis. The
+  deployment also declares a Remote ID broadcast module, so the Remote ID
+  rule is satisfied. as_of pins the validation date, so the fixture does not
+  change meaning with the calendar. The runtime re-validates with the same
+  rulebooks and then runs the program.
+
+manifest: drone_high_ceiling
+policy: none
+profiles: [drone]
+rulebooks: [example_deployment]
+as_of: "2026-09-26"
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 137.16 }
+      - land: {}
+
+expected_validation:
+  accepted: true
+  warning_codes:
+    - rule.cap_exceeded
+
+expected_execution:
+  success: true
+  steps_executed: 2
+  audit_methods:
+    - send_takeoff_goal
+    - send_land_goal

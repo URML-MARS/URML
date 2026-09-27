@@ -1,0 +1,19 @@
+# Test rulebook (RFC-0702, Draft): a deployment rulebook that declares its
+# remote pilots and no Remote ID method. With it loaded, the bundled FAA
+# rulebook's remote_identification rule is an error, not a warning, because
+# the operator has declared a deployment and left out a declaration the rule
+# requires. Used by conformance/fixtures/rulebook/.
+
+rulebook_version: "0.1"
+rulebook_id: test_deployment_no_remote_id
+title: Test deployment with no Remote ID declaration
+issuer:
+  kind: deployment
+  name: URML conformance fixtures
+source_status: deployment_declaration
+description: >-
+  One remote pilot in command and no remote_id declaration. Fictional, for
+  the conformance fixtures only.
+
+declarations:
+  remote_pilots_in_command: 1

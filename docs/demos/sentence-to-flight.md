@@ -106,14 +106,38 @@ Expected:
 
 ```
 Validation passed: /tmp/flight.generated.yaml
+  (1 warning(s))
+
+  WARN  [rule.declaration_missing] <rulebook>/us_faa_part107
+    14 CFR 89.105, 89.110 and 89.115: remote identification by one of the means of 14 CFR Part 89. No deployment rulebook is loaded, so nothing declares remote_id; a deployment rulebook must declare it (allowed: standard_remote_id, broadcast_module, faa_recognized_identification_area).
+    suggestion: Declare remote_id in the deployment rulebook.
+    rule: us_faa_part107/remote_identification (Federal Aviation Administration, US)
+    source: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-89/subpart-B/section-89.105
+
+  rulebooks (a program that passes is not a legal compliance determination):
+    us_faa_part107: 14 CFR Part 107 and Part 89, statically checkable subset
+      issued by Federal Aviation Administration, US (final_rule, reviewed 2026-09-26)
+      obligations URML lists and does not check:
+        - 14 CFR 107.12: A remote pilot certificate with a small UAS rating
+        - 14 CFR 107.31: Visual line of sight for the whole flight
+        - 14 CFR 107.29: Anti-collision lighting at night and in civil twilight
+        - 14 CFR 107.41: ATC authorization in controlled airspace
+        - 14 CFR 107.51(c): Flight visibility of at least 3 statute miles
+        - 14 CFR 107.51(d): At least 500 feet below and 2,000 feet horizontally from clouds
+        - 14 CFR 107.39: People and flight paths the validator cannot see
 ```
 
 Capability and envelope checks confirmed the drone manifest declares takeoff,
 navigation, and return-to-home, and that 30m is inside the declared altitude
-envelope, before anything is allowed to fly. `--no-policy` skips the
-compliance pass for the same reason as in the mock demo: the language is the
-story here. See [compliance-walkthrough.md](compliance-walkthrough.md) for
-that pass on its own.
+envelope, before anything is allowed to fly. The bundled FAA Part 107
+rulebook ([RFC-0702](../rfcs/0702-rulebooks.md)), on by default for drone
+programs, clears the flight too. It adds one warning, because no deployment
+rulebook declares how the drone meets Remote ID, and it lists the Part 107
+obligations URML cannot check. `--no-policy` skips the compliance pass (what
+the robot is made of) for the same reason as in the mock demo: the language is
+the story here. It does not turn rulebooks off. See
+[compliance-walkthrough.md](compliance-walkthrough.md) for the compliance pass
+on its own.
 
 ## Scene 3: the simulated autopilot flies it
 

@@ -30,6 +30,19 @@ _POLICY_FIXTURES = {
     "compliance/evidence_required_rejected",
 }
 
+# RFC-0702: the rejected rulebook fixtures refused by a rulebook the fixture
+# loads. A runtime that drops the caller's rulebooks accepts them. (The other
+# rejected rulebook fixtures rest on the bundled FAA rulebook, which a runtime
+# that drops the keywords still applies by default.)
+_CALLER_RULEBOOK_FIXTURES = {
+    "rulebook/capture_in_no_camera_zone_rejected",
+    "rulebook/restricted_zone_entry_rejected",
+    "rulebook/remote_id_missing_rejected",
+    "rulebook/policy_none_still_enforced_rejected",
+    "rulebook/capture_at_unknown_place_rejected",
+    "rulebook/call_program_not_allowlisted_rejected",
+}
+
 
 def test_every_rejected_fixture_is_refused_with_zero_adapter_calls() -> None:
     cases = discover_fixtures()
@@ -40,6 +53,8 @@ def test_every_rejected_fixture_is_refused_with_zero_adapter_calls() -> None:
     assert sorted(r.name for r in report.results) == sorted(rejected)
     names = {r.name for r in report.results}
     assert _POLICY_FIXTURES <= names
+    assert _CALLER_RULEBOOK_FIXTURES <= names
+    assert "rulebook/two_aircraft_airborne_rejected" in names  # a fleet rulebook fixture
     assert any(n.startswith("fleet/") for n in names), "the fleet lane must be covered"
 
 
@@ -71,9 +86,41 @@ class _DefaultPolicyRuntime:
 
 
 def test_the_lane_fails_a_runtime_that_drops_the_policy() -> None:
-    """Exactly the three policy fixtures leak through a default-policy runtime."""
+    """The three policy fixtures leak through a runtime that drops its keywords,
+    and so do the rulebook fixtures that load their own rulebooks."""
     report = run_goal_line(runtime_factory=_DefaultPolicyRuntime)
-    assert {r.name for r in report.failed_cases()} == _POLICY_FIXTURES
+    assert {r.name for r in report.failed_cases()} == _POLICY_FIXTURES | _CALLER_RULEBOOK_FIXTURES
+
+
+class _DropsRulebooksRuntime:
+    """A runtime that keeps the policy but re-validates with the bundled rulebooks only."""
+
+    def __init__(self, adapter: Any) -> None:
+        self._runtime = URMLRuntime(adapter)
+
+    def execute(
+        self,
+        program: Any,
+        manifest: Any,
+        envelope: Any = None,
+        profiles: tuple[str, ...] = (),
+        *,
+        policy: Any = "DEFAULT",
+        manifest_base_dir: Any = None,
+        **_dropped: Any,
+    ) -> Any:
+        return self._runtime.execute(
+            program, manifest, envelope, profiles, policy=policy, manifest_base_dir=manifest_base_dir
+        )
+
+
+def test_the_lane_fails_a_runtime_that_drops_the_rulebooks() -> None:
+    """RFC-0702: a runtime re-check that drops the caller's rulebooks sends commands."""
+    report = run_goal_line(runtime_factory=_DropsRulebooksRuntime)
+    failed = {r.name: r.diagnostics for r in report.failed_cases()}
+    assert set(failed) == _CALLER_RULEBOOK_FIXTURES
+    zone = " ".join(failed["rulebook/restricted_zone_entry_rejected"])
+    assert "did not refuse" in zone and "send_navigation_goal" in zone
 
 
 def test_the_lane_requires_the_expected_codes() -> None:

@@ -29,6 +29,7 @@ from urml_conformance.fixtures import (
     resolve_envelope,
     resolve_manifest,
     resolve_policy,
+    rulebook_kwargs,
 )
 from urml_conformance.report import CaseResult, ConformanceReport
 
@@ -127,6 +128,14 @@ def _diag_validation(case: FixtureCase, result: Any) -> list[str]:
             diagnostics.append(
                 f"validation did not emit expected error codes: missing={missing!r}, "
                 f"emitted={sorted(emitted)!r}"
+            )
+    if expected.warning_codes:
+        warned = {str(w.code) for w in result.warnings}
+        missing = [c for c in expected.warning_codes if c not in warned]
+        if missing:
+            diagnostics.append(
+                f"validation did not emit expected warning codes: missing={missing!r}, "
+                f"emitted={sorted(warned)!r}"
             )
     return diagnostics
 
@@ -244,6 +253,7 @@ class ConformanceRunner:
             envelope = resolve_envelope(case.envelope) if case.envelope else None
             policy = resolve_policy(case.policy)
             base_dir = manifest_base_dir(case.manifest)
+            rulebook_args = rulebook_kwargs(case)
         except (KeyError, ValueError) as exc:
             return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -259,6 +269,7 @@ class ConformanceRunner:
             # RFC-0005: resolve a component's relative hbom_ref.uri against the
             # manifest fixture's own directory for HBOM-content policy rules.
             manifest_base_dir=base_dir,
+            **rulebook_args,
         )
         diagnostics.extend(_diag_validation(case, validation))
 
@@ -276,8 +287,8 @@ class ConformanceRunner:
             _apply_overrides(adapter, case.adapter_overrides)
         runtime = URMLRuntime(adapter)
         try:
-            # The runtime re-validates with the fixture's policy and manifest
-            # dir, exactly as the validation pass above did.
+            # The runtime re-validates with the fixture's policy, manifest dir
+            # and rulebooks, exactly as the validation pass above did.
             runtime_result = runtime.execute(
                 case.program,
                 manifest,
@@ -285,6 +296,7 @@ class ConformanceRunner:
                 profiles=tuple(case.profiles),
                 policy=policy,
                 manifest_base_dir=base_dir,
+                **(rulebook_args if case.uses_rulebook_fields else {}),
             )
         except Exception as exc:
             diagnostics.append(f"runtime raised: {type(exc).__name__}: {exc}")
@@ -308,6 +320,7 @@ class ConformanceRunner:
         try:
             roster, members, member_envelopes = fleet_inputs(case)
             policy = resolve_policy(case.policy)
+            rulebook_args = rulebook_kwargs(case)
         except (KeyError, ValueError) as exc:
             return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -319,6 +332,7 @@ class ConformanceRunner:
             member_envelopes,
             profiles=tuple(case.profiles),
             policy=policy,
+            **rulebook_args,
         )
         diagnostics.extend(_diag_validation(case, validation))
 
@@ -335,6 +349,7 @@ class ConformanceRunner:
                 member_envelopes,
                 profiles=tuple(case.profiles),
                 policy=policy,
+                **(rulebook_args if case.uses_rulebook_fields else {}),
             )
         except Exception as exc:
             diagnostics.append(f"fleet runtime raised: {type(exc).__name__}: {exc}")

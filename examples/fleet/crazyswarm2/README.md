@@ -59,6 +59,23 @@ Errors: fleet.concurrent_shared_workspace
 That is the difference from issuing setpoints directly: the conflicting swarm
 intent never reaches the `go_to` services.
 
+## The lab's rulebook
+
+The validator applies the bundled FAA Part 107 rulebook to drone programs by
+default ([RFC-0702](../../../docs/rfcs/0702-rulebooks.md), Draft). That
+rulebook allows one aircraft airborne at a time per remote pilot in command
+(14 CFR 107.35), so it refuses the formation, three Crazyflies in the air at
+once, with `rule.concurrency_exceeded`.
+
+This swarm flies in an indoor lab. The generator loads the lab's deployment
+rulebook, [`flight-lab.rulebook.yaml`](flight-lab.rulebook.yaml), which declares
+`indoor: true`. The FAA states that Part 107 would not apply to operations
+conducted indoors, so that declaration switches the FAA rulebook off, and the
+dispatch plan prints the switch and its reason. A swarm flown outdoors needs a
+deployment rulebook with its own facts instead: its remote pilots in command,
+its Remote ID method, and any waiver
+([`examples/rulebooks/`](../../rulebooks/)).
+
 ## Run it
 
 ```bash

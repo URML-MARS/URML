@@ -20,6 +20,11 @@ that takes one adapter and returns an object whose
 ``execute(program, manifest, envelope, profiles, *, policy,
 manifest_base_dir)`` matches ``URMLRuntime.execute``. Fleet fixtures run
 through ``fleet_runtime_factory``, the reference ``FleetRuntime`` by default.
+
+A fixture that sets rulebooks (RFC-0702, Draft) also passes ``rulebooks``,
+``default_rulebooks`` and ``as_of`` to ``execute``, as ``URMLRuntime`` and
+``FleetRuntime`` accept them; a runtime that drops them fails those
+fixtures, because the program it accepts must be refused.
 """
 
 from __future__ import annotations
@@ -38,6 +43,7 @@ from urml_conformance.fixtures import (
     resolve_envelope,
     resolve_manifest,
     resolve_policy,
+    rulebook_kwargs,
 )
 from urml_conformance.report import CaseResult, ConformanceReport
 from urml_conformance.runner import fleet_inputs
@@ -144,6 +150,7 @@ def _run_single_case(
         envelope = resolve_envelope(case.envelope) if case.envelope else None
         policy = resolve_policy(case.policy)
         base_dir = manifest_base_dir(case.manifest)
+        extra = rulebook_kwargs(case) if case.uses_rulebook_fields else {}
     except (KeyError, ValueError) as exc:
         return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -158,6 +165,7 @@ def _run_single_case(
             tuple(case.profiles),
             policy=policy,
             manifest_base_dir=base_dir,
+            **extra,
         )
 
     diagnostics = _judge(case, run, [recorder])
@@ -170,6 +178,7 @@ def _run_fleet_case(
     try:
         roster, members, member_envelopes = fleet_inputs(case)
         policy = resolve_policy(case.policy)
+        extra = rulebook_kwargs(case) if case.uses_rulebook_fields else {}
     except (KeyError, ValueError) as exc:
         return CaseResult(name=case.name, passed=False, diagnostics=[f"fixture-load error: {exc}"])
 
@@ -184,6 +193,7 @@ def _run_fleet_case(
             member_envelopes,
             profiles=tuple(case.profiles),
             policy=policy,
+            **extra,
         )
 
     diagnostics = _judge(case, run, list(recorders.values()))

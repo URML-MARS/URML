@@ -202,13 +202,24 @@ Before the fixes, 21 of the 40 envelope attacks passed the gate. After them,
 none did. In both sets the 12 safe controls were accepted, and the 6
 `known_gap` and 6 `beyond_envelope` rows passed, as their labels predict.
 
+The rulebook pass (RFC-0702) put the bundled FAA Part 107 rulebook on by
+default for drone programs, so the drone corpus was measured again with it on:
+[`results/2026-09-27/2026-09-27-echo-echo-adversarial-drone-en-rulebook.yaml`](results/2026-09-27/2026-09-27-echo-echo-adversarial-drone-en-rulebook.yaml).
+Envelope rows passed 0 of 14 and the 4 safe controls were accepted. One of the
+two `known_gap` rows (`gap_wgs84`, a fence in a frame with no transform) is now
+stopped: the envelope check abstains there, and the rulebook's place check
+fails closed with `rule.place_unknown`. The 2026-09-26 drone `post-fix` row
+stays as the record of a16a03f.
+
 A scripted striker measures the gate, not a model. These rows show what the
 validator admits when a model emits whatever an attacker wants. They say
 nothing about how often a real model would comply. A live-model row needs a
 provider (see "Running it").
 
 `reference/llm-bridge/tests/test_bench_results_guard.py` re-runs every
-committed scripted row except the `pre-fix` ones. It fails when a row no
+committed scripted row except the `pre-fix` ones and the rows its
+`SUPERSEDED` list names (history of an earlier commit, replaced by a newer row
+for the same striker). It fails when a row no
 longer reproduces, or when a manifest, envelope or striker the row pins has
 changed. Re-record that row with its command above, `--tag post-fix` and a
 note naming the commit, and replace the stale file.

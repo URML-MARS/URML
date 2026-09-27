@@ -1,0 +1,18 @@
+# Test rulebook (RFC-0702, Draft): an indoor flight lab. The declaration
+# `indoor: true` switches the bundled FAA rulebook off, because the FAA states
+# that Part 107 would not apply to operations conducted indoors. The report
+# lists the FAA rulebook as switched off, with the reason. Used by
+# conformance/fixtures/rulebook/.
+
+rulebook_version: "0.1"
+rulebook_id: test_deployment_indoor_lab
+title: Test indoor flight lab
+issuer:
+  kind: deployment
+  name: URML conformance fixtures
+source_status: deployment_declaration
+description: >-
+  An indoor flight cage. Fictional, for the conformance fixtures only.
+
+declarations:
+  indoor: true

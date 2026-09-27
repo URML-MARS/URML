@@ -34,6 +34,9 @@ both satisfy the substrate-neutral `ROSAdapter` Protocol. Variable bindings
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from collections.abc import Sequence as SequenceABC
+from datetime import date
 from pathlib import Path
 from typing import Any, Literal
 
@@ -118,15 +121,21 @@ class URMLRuntime:
         *,
         policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
         manifest_base_dir: Path | None = None,
+        rulebooks: SequenceABC[Mapping[str, Any]] = (),
+        default_rulebooks: bool = True,
+        as_of: date | None = None,
     ) -> RuntimeResult:
         """Execute a URML program against the runtime's adapter.
 
-        ``policy`` and ``manifest_base_dir`` are forwarded to the
+        ``policy``, ``manifest_base_dir``, ``rulebooks``,
+        ``default_rulebooks`` and ``as_of`` are forwarded to the
         defense-in-depth re-validation, with the same contract as
         ``validate()``. A caller that validated under ``--no-policy``
-        (``policy=None``), a custom policy, or an HBOM-content policy passes
-        the same choice here, so the runtime's own check enforces what the
-        caller enforced. Skipping the compliance pass never skips validation.
+        (``policy=None``), a custom policy, an HBOM-content policy, or its
+        own rulebooks (RFC-0702, Draft) passes the same choices here, so the
+        runtime's own check enforces what the caller enforced. Skipping the
+        compliance pass never skips validation, and the rulebook pass runs
+        whatever the policy.
 
         Returns a RuntimeResult. Raises ``ValidationRejectedError`` if the
         program fails defense-in-depth re-validation, or
@@ -142,6 +151,9 @@ class URMLRuntime:
                 profiles=profiles,
                 policy=policy,
                 manifest_base_dir=manifest_base_dir,
+                rulebooks=rulebooks,
+                default_rulebooks=default_rulebooks,
+                as_of=as_of,
             )
             if not result.accepted:
                 raise ValidationRejectedError(

@@ -1,0 +1,23 @@
+name: rulebook/restricted_zone_entry_rejected
+description: >
+  The Example Logistics rulebook (fictional) keeps robots out of the server
+  room and the hazmat cage. A move_to whose target is the server room's
+  declared area is refused with rule.zone_forbidden.
+
+manifest: warehouse_areas
+policy: none
+profiles: [warehouse]
+rulebooks: [example_warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: server_room }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.zone_forbidden

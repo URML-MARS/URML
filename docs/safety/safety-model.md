@@ -35,7 +35,7 @@ its own:
 |---|---|---|
 | Capability manifest | What the robot can do | The robot's maker or integrator |
 | Deployment envelope | What this site allows physically: force, speed and altitude caps, geofences, people-occupancy zones | The site operator |
-| Rulebook ([RFC-0702](https://github.com/URML-MARS/URML/blob/18e2de06f063787d1a52f99efcfbe6e5c0e06e2e/docs/rfcs/0702-rulebooks.md), Draft) | What law and company policy allow | A regulator, a company, or the operator |
+| Rulebook ([RFC-0702](../rfcs/0702-rulebooks.md), Draft) | What law and company policy allow | A regulator, a company, or the operator |
 
 The compliance policy is operator input too. It judges what the robot is made
 of, not what it does, so this page leaves it out.
@@ -65,9 +65,10 @@ substrate and hardware below them.
 
 ## What the gate enforces
 
-The validator runs five passes: argument types, capabilities, the safety
-envelope, variable bindings, and the compliance policy. For each numeric limit
-it applies the strictest of the manifest value and the envelope value.
+The validator runs six passes: argument types, capabilities, the safety
+envelope, rulebooks (RFC-0702), variable bindings, and the compliance policy.
+For each numeric limit it applies the strictest of the manifest value, the
+envelope value and any rulebook cap.
 
 [`envelope-coverage.md`](envelope-coverage.md) lists, for every primitive, what
 the spec requires, what the validator enforces, and what it does not check and
@@ -117,7 +118,16 @@ The rows are in
 `-post-fix.yaml` rows were measured at a16a03f, after them. The bench inputs
 are the same at both commits, and each row pins them by sha256.
 [`test_bench_results_guard.py`](../../reference/llm-bridge/tests/test_bench_results_guard.py)
-re-runs the post-fix rows and fails when one stops reproducing.
+re-runs the current rows and fails when one stops reproducing.
+
+The rulebook pass (RFC-0702) then put the bundled FAA Part 107 rulebook on by
+default for drone programs, so the drone row was measured again with it on
+([`bench/results/2026-09-27/`](../../bench/results/2026-09-27/)): 0 of 14
+envelope attacks passed and 4 of 4 safe controls were accepted. One of the two
+drone known-gap rows, a fence in a frame the target cannot be transformed
+into, is now stopped: the envelope check abstains there, and the rulebook's
+place check fails closed (`rule.place_unknown`). The a16a03f drone row stays
+as the record of that commit, and the guard lists it as superseded.
 
 What got through before the fixes:
 
@@ -190,7 +200,7 @@ so.
 - Harm inside the limits. A covert photo or a false spoken claim breaks no
   declared limit. The gate checks limits. It does not judge intent.
 
-[RFC-0701](https://github.com/URML-MARS/URML/blob/b9fdb829631a6241a82cc4010089e11c63a02185/docs/rfcs/0701-envelope-completeness.md) (Draft, in review) tracks the
+[RFC-0701](../rfcs/0701-envelope-completeness.md) (Draft, in review) tracks the
 remaining static gaps. It proposes failing closed when a frame cannot be
 resolved, speed caps for `drive` and `return_to_home`, fence and zone checks on
 `release.at`, a refusal for `wait` in flight, and declared object masses. It
@@ -267,15 +277,16 @@ python -m pytest reference/llm-bridge/tests/test_bench_results_guard.py
 `urml bench` writes its row under `bench/results/<date>/`. Pass `--out` to
 write it somewhere else.
 
-## Next: rulebooks
+## Rulebooks
 
-The envelope holds a site's physical limits. Law and company policy have no
-file yet. [RFC-0702](https://github.com/URML-MARS/URML/blob/18e2de06f063787d1a52f99efcfbe6e5c0e06e2e/docs/rfcs/0702-rulebooks.md) (Draft, in review) proposes one,
-the rulebook: a regulator's or a company's rules as flat entries, each with its
-citation, checked in a validator pass after the envelope. A refusal names the
-rule it enforces. The first bundled rulebook covers the statically checkable
-subset of 14 CFR Part 107 and Part 89. Once the implementation lands, it is on
-by default for drone programs, and `--no-policy` does not turn it off. Rules no
-static check can see, such as visual line of sight and weather minima, are
+The envelope holds a site's physical limits. Law and company policy go in a
+rulebook ([RFC-0702](../rfcs/0702-rulebooks.md), Draft): a regulator's or a
+company's rules as flat entries, each with its citation, checked in a
+validator pass after the envelope. A refusal names the rule it enforces. The
+bundled rulebook covers the statically checkable subset of 14 CFR Part 107 and
+Part 89. It is on by default for drone programs; `--no-policy` does not turn it
+off, and `--no-default-rulebooks` does, with a warning. A company adds its own
+with `--rulebook` ([`examples/rulebooks/`](../../examples/rulebooks/)). Rules
+no static check can see, such as visual line of sight and weather minima, are
 listed as obligations in every report. A rulebook refusal is not a legal
 compliance determination.

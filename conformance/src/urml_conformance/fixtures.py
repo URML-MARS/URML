@@ -12,11 +12,12 @@ so authors don't have to inline the full manifest in every case.
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from urml_ros2_runtime.substrate import (
     CaptureResult,
     DetectionResult,
@@ -239,6 +240,10 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "utm_rov": _VALIDATOR_FIXTURES / "manifests" / "utm_rov.yaml",
     # RFC-0631: per-capability evidence of mixed strength (derived/verified/declared/inferred).
     "evidence_mixed": _VALIDATOR_FIXTURES / "manifests" / "evidence_mixed.yaml",
+    # RFC-0702 (Draft): an aircraft that can climb above 400 feet, and a
+    # warehouse AMR whose declared areas carry the example rulebook's zones.
+    "drone_high_ceiling": _VALIDATOR_FIXTURES / "manifests" / "drone_high_ceiling.yaml",
+    "warehouse_areas": _VALIDATOR_FIXTURES / "manifests" / "warehouse_areas.yaml",
 }
 
 ENVELOPE_REGISTRY: dict[str, Path] = {
@@ -271,6 +276,9 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "warehouse_low_reach": _VALIDATOR_FIXTURES / "envelopes" / "warehouse_low_reach.yaml",
     "home_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "home_with_geofence.yaml",
     "social_tight": _VALIDATOR_FIXTURES / "envelopes" / "social_tight.yaml",
+    # RFC-0702 (Draft): a people zone the operator overrode, which the FAA
+    # rulebook still judges.
+    "drone_override_zone": _VALIDATOR_FIXTURES / "envelopes" / "drone_override_zone.yaml",
 }
 
 #: Compliance policies (RFC-0004). Names map to YAML files under
@@ -284,6 +292,23 @@ POLICY_REGISTRY: dict[str, Path] = {
     "hbom_no_cn_components": _VALIDATOR_FIXTURES / "policies" / "hbom_no_cn_components.yaml",
     # RFC-0631: an opt-in evidence policy requiring derived/verified sensor claims.
     "require_evidence_derived": _VALIDATOR_FIXTURES / "policies" / "require_evidence_derived.yaml",
+}
+
+_EXAMPLES_RULEBOOKS = _REPO_ROOT / "examples" / "rulebooks"
+
+#: Rulebooks (RFC-0702, Draft) a fixture can load by name, applied in the
+#: order the fixture lists them, after the bundled rulebooks. The test
+#: rulebooks live next to the validator's other fixtures; the two examples
+#: are the published ones, so the fixtures exercise exactly what ships.
+RULEBOOK_REGISTRY: dict[str, Path] = {
+    # A deployment that declares its remote pilots but no Remote ID method.
+    "deployment_no_remote_id": _VALIDATOR_FIXTURES / "rulebooks" / "deployment_no_remote_id.yaml",
+    # An indoor lab: `indoor: true` switches the bundled FAA rulebook off.
+    "deployment_indoor_lab": _VALIDATOR_FIXTURES / "rulebooks" / "deployment_indoor_lab.yaml",
+    # Two remote pilots in command and standard Remote ID: two aircraft may
+    # be airborne at once under the bundled FAA rulebook (14 CFR 107.35).
+    "example_warehouse": _EXAMPLES_RULEBOOKS / "example-warehouse.yaml",
+    "example_deployment": _EXAMPLES_RULEBOOKS / "example-deployment.yaml",
 }
 
 
@@ -303,6 +328,15 @@ class ExpectedValidation(BaseModel):
         description=(
             "Required when `accepted` is False. Every code listed must appear "
             "in the validator's emitted errors. Extra emitted codes are tolerated."
+        ),
+    )
+    warning_codes: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Optional. Every code listed must appear in the validator's emitted "
+            "warnings, whether or not the program is accepted (RFC-0702: a rule "
+            "violation an exception covers keeps its code as a warning). Extra "
+            "emitted warnings are tolerated."
         ),
     )
 
@@ -395,6 +429,24 @@ class FixtureCase(BaseModel):
         ),
     )
     profiles: list[str] = Field(default_factory=list)
+    rulebooks: list[str] = Field(
+        default_factory=list,
+        description=(
+            "RFC-0702 (Draft): names in RULEBOOK_REGISTRY, applied in order after "
+            "the bundled rulebooks."
+        ),
+    )
+    default_rulebooks: bool = Field(
+        True, description="RFC-0702: False switches off the bundled rulebooks."
+    )
+    as_of: str | None = Field(
+        None,
+        description=(
+            "RFC-0702: the validation date (ISO-8601) for exception expiry. "
+            "Required when a loaded exception carries `expires`, so the fixture "
+            "does not change meaning with the calendar."
+        ),
+    )
 
     program: dict[str, Any] = Field(..., description="The URML program (inline).")
 
@@ -420,6 +472,23 @@ class FixtureCase(BaseModel):
         if (self.manifest is None) == (self.roster is None):
             raise ValueError("a fixture must set exactly one of `manifest` or `roster`")
         return self
+
+    @field_validator("as_of")
+    @classmethod
+    def _iso_date(cls, value: str | None) -> str | None:
+        if value is not None:
+            date.fromisoformat(value)
+        return value
+
+    @property
+    def as_of_date(self) -> date | None:
+        """``as_of`` as a date, or None."""
+        return date.fromisoformat(self.as_of) if self.as_of is not None else None
+
+    @property
+    def uses_rulebook_fields(self) -> bool:
+        """True when the fixture sets any RFC-0702 field away from its default."""
+        return bool(self.rulebooks) or not self.default_rulebooks or self.as_of is not None
 
 
 class AdapterOverrides(BaseModel):
@@ -549,3 +618,30 @@ def resolve_policy(name: str | None) -> dict[str, Any] | None | Literal["DEFAULT
     if not isinstance(result, dict):
         raise ValueError(f"policy {name!r} did not parse as a mapping")
     return result
+
+
+def resolve_rulebook(name: str) -> dict[str, Any]:
+    """Load a registered rulebook (RFC-0702) by name, as a parsed mapping."""
+    if name not in RULEBOOK_REGISTRY:
+        raise KeyError(
+            f"unknown rulebook {name!r}; registered: {sorted(RULEBOOK_REGISTRY.keys())!r}"
+        )
+    with RULEBOOK_REGISTRY[name].open(encoding="utf-8") as fh:
+        result = yaml.safe_load(fh)
+    if not isinstance(result, dict):
+        raise ValueError(f"rulebook {name!r} did not parse as a mapping")
+    return result
+
+
+def rulebook_kwargs(case: FixtureCase) -> dict[str, Any]:
+    """The rulebook keywords (RFC-0702) for one fixture's validation and runtime calls.
+
+    ``validate`` and ``validate_fleet`` always take them. A runtime gets them
+    only when the fixture sets one (``case.uses_rulebook_fields``), so a
+    third-party runtime that predates rulebooks still runs every other fixture.
+    """
+    return {
+        "rulebooks": [resolve_rulebook(name) for name in case.rulebooks],
+        "default_rulebooks": case.default_rulebooks,
+        "as_of": case.as_of_date,
+    }

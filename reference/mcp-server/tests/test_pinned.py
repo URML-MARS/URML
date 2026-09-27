@@ -280,6 +280,7 @@ def test_execute_hands_the_pinned_values_to_the_runtime(
     monkeypatch: pytest.MonkeyPatch, pinned: tools.Pinned
 ) -> None:
     calls: list[tuple[Any, Any, Any]] = []
+    rulebook_kwargs: list[dict[str, Any]] = []
 
     class _RecordingRuntime:
         def execute(
@@ -288,13 +289,20 @@ def test_execute_hands_the_pinned_values_to_the_runtime(
             manifest: Any,
             envelope: Any = None,
             profiles: tuple[str, ...] = (),
+            **kwargs: Any,
         ) -> RuntimeResult:
             calls.append((manifest, envelope, profiles))
+            rulebook_kwargs.append(kwargs)
             return RuntimeResult(success=True)
 
     monkeypatch.setattr(tools, "_build_runtime", lambda adapter: (_RecordingRuntime(), []))
     assert tools.execute_program(str(PROGRAM), pinned=pinned)["success"] is True
     assert calls == [(_load(MANIFEST), _load(ENVELOPE), ("home",))]
+    # RFC-0702: the runtime re-validates with the operator's rulebooks (none
+    # pinned here) and the bundled ones on.
+    (kwargs,) = rulebook_kwargs
+    assert kwargs["rulebooks"] == [] and kwargs["default_rulebooks"] is True
+    assert kwargs["as_of"] is not None
 
 
 def test_execute_mock_runs_with_pins(pinned: tools.Pinned) -> None:

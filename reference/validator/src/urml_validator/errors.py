@@ -5,8 +5,8 @@ revise emissions. Stability here matters: any code surfaced by a returned
 ``ValidationError`` is a part of the public API.
 
 Error codes are namespaced: ``argument.*``, ``capability.*``, ``envelope.*``,
-``binding.*``, ``policy.*``, ``fleet.*``. New codes may be added between minor
-versions; existing codes do not change meaning.
+``binding.*``, ``policy.*``, ``fleet.*``, ``rule.*``. New codes may be added
+between minor versions; existing codes do not change meaning.
 """
 
 from __future__ import annotations
@@ -14,7 +14,16 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    StrictBool,
+    StrictInt,
+    StrictStr,
+    model_serializer,
+)
 
 
 class ErrorCode(StrEnum):
@@ -258,6 +267,32 @@ class ErrorCode(StrEnum):
     # so its targets won't resolve to the world.
     FLEET_ANCHOR_FRAME_UNDECLARED = "fleet.anchor_frame_undeclared"
 
+    # Rulebook pass (RFC-0702, Draft; spec/layer-1-hal/rulebook.md). The
+    # `rule.*` namespace is reserved: rulebook authors never choose codes.
+    # A violation covered by a deployment exception keeps its code and is
+    # reported as a warning.
+    # A value the program states is above a `cap` rule.
+    RULE_CAP_EXCEEDED = "rule.cap_exceeded"
+    # A step uses a primitive a `forbid_primitive` rule forbids.
+    RULE_PRIMITIVE_FORBIDDEN = "rule.primitive_forbidden"
+    # A step's target lies in a zone a `forbid_zone_entry` rule names.
+    RULE_ZONE_FORBIDDEN = "rule.zone_forbidden"
+    # An aircraft's target lies in a people-occupancy zone the envelope declares.
+    RULE_OVER_PEOPLE = "rule.over_people"
+    # A `require_declared` rule is not satisfied (a warning when no deployment
+    # rulebook is loaded).
+    RULE_DECLARATION_MISSING = "rule.declaration_missing"
+    # A fleet program can have more aircraft airborne at once than the limit.
+    RULE_CONCURRENCY_EXCEEDED = "rule.concurrency_exceeded"
+    # A zone rule cannot place a step it must judge (fails closed).
+    RULE_PLACE_UNKNOWN = "rule.place_unknown"
+    # Warning: a rule names a zone no declared area or envelope zone declares.
+    RULE_ZONE_UNDECLARED = "rule.zone_undeclared"
+    # A rulebook file, or the set of loaded rulebooks, breaks the format.
+    RULE_RULEBOOK_INVALID = "rule.rulebook_invalid"
+    # Warning: a bundled rulebook that would apply was switched off by the caller.
+    RULE_DEFAULTS_DISABLED = "rule.defaults_disabled"
+
     # Internal / programmer-error categories.
     INTERNAL = "internal.error"
 
@@ -311,7 +346,9 @@ class ValidationError(BaseModel):
         description=(
             "Optional structured detail for the error. Populated by Pass 5 (policy) "
             "with rule_id, policy_id, offending_value, allowed/denied lists, and a "
-            "remediation_hint. Existing Pass 1-4 errors do not populate this field."
+            "remediation_hint, and by the rulebook pass (RFC-0702) with rulebook_id, "
+            "rule_id, rule_kind, cite, issuer, exception and remediation_hint. "
+            "Pass 1-4 errors do not populate this field."
         ),
     )
 
@@ -326,6 +363,40 @@ class ValidationError(BaseModel):
         return str(self.code)
 
 
+class RulebookReport(BaseModel):
+    """One rulebook in a validation report (RFC-0702, Draft).
+
+    The report lists every loaded rulebook that is in scope for the
+    validation, applied or switched off by a declaration, and every loaded
+    deployment rulebook, in load order. Obligations are the rules a static
+    check cannot judge; they appear in every report of an applied rulebook,
+    whether the program was accepted or refused.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    rulebook_id: str
+    title: str
+    issuer: dict[str, str | None] = Field(
+        ..., description="{kind, name, jurisdiction} as the rulebook declares them."
+    )
+    source_status: str
+    effective: str | None = None
+    reviewed: str | None = None
+    bundled: bool = False
+    applied: bool = True
+    reason: str | None = Field(None, description="Why an in-scope rulebook was switched off.")
+    obligations: list[dict[str, Any]] = Field(
+        default_factory=list, description="[{id, title, text, cite}], never checked."
+    )
+    declarations: dict[str, StrictStr | StrictInt | StrictBool] | None = Field(
+        None, description="The declarations of a deployment rulebook."
+    )
+    exceptions: list[dict[str, Any]] | None = Field(
+        None, description="The exceptions of a deployment rulebook."
+    )
+
+
 class ValidationResult(BaseModel):
     """The top-level result of validating a program against a manifest+envelope."""
 
@@ -334,6 +405,21 @@ class ValidationResult(BaseModel):
     accepted: bool = Field(..., description="True iff no `error`-severity errors fired.")
     errors: list[ValidationError] = Field(default_factory=list)
     warnings: list[ValidationError] = Field(default_factory=list)
+    rulebooks: list[RulebookReport] = Field(
+        default_factory=list,
+        description=(
+            "RFC-0702 (Draft): the rulebooks that applied to this validation, with "
+            "their obligations. Omitted from serialized output when empty, so a "
+            "result with no applicable rulebook serializes exactly as before."
+        ),
+    )
+
+    @model_serializer(mode="wrap")
+    def _omit_empty_rulebooks(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if not self.rulebooks:
+            data.pop("rulebooks", None)
+        return data
 
     @property
     def all_issues(self) -> list[ValidationError]:

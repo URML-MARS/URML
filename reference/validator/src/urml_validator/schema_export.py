@@ -32,6 +32,7 @@ from urml_validator.schemas.manifest import CapabilityManifest
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.program import URMLProgram
 from urml_validator.schemas.roster import FleetRoster
+from urml_validator.schemas.rulebook import Rulebook
 
 #: The named schemas this module knows how to export.
 SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
@@ -41,6 +42,8 @@ SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
     "policy": Policy,
     # RFC-0286: the fleet roster, the multi-robot analogue of the manifest.
     "roster": FleetRoster,
+    # RFC-0702 (Draft): government and company rulebooks.
+    "rulebook": Rulebook,
 }
 
 
@@ -48,7 +51,8 @@ def export_schema(name: str) -> dict[str, Any]:
     """Return the JSON Schema for a single named artifact as a Python dict.
 
     Args:
-        name: One of "program", "manifest", "envelope".
+        name: A key of SCHEMA_REGISTRY ("program", "manifest", "envelope",
+            "policy", "roster", "rulebook").
 
     Returns:
         A Draft 2020-12 JSON Schema document.

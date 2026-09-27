@@ -1,0 +1,28 @@
+# Deployment rulebook (RFC-0702, Draft) for this example: the swarm flies in
+# an indoor flight lab.
+#
+# The bundled FAA rulebook (us_faa_part107) applies to drone programs by
+# default. It allows one aircraft airborne at a time per remote pilot in
+# command (14 CFR 107.35), so without this file the three-Crazyflie formation
+# is refused with rule.concurrency_exceeded. The declaration `indoor: true`
+# switches that rulebook off, because the FAA states that Part 107 would not
+# apply to operations conducted indoors. The dispatch plan prints the switch
+# and its reason.
+#
+# A swarm flown outdoors needs a deployment rulebook that states its real
+# facts instead: remote_pilots_in_command, a remote_id method, and any waiver
+# as an exception with its basis. See examples/rulebooks/.
+
+rulebook_version: "0.1"
+rulebook_id: example_crazyswarm2_flight_lab
+title: Crazyswarm2 example, indoor flight lab
+issuer:
+  kind: deployment
+  name: URML Crazyswarm2 example
+source_status: deployment_declaration
+description: >-
+  An indoor flight lab where three Crazyflies fly a triangle formation.
+  Fictional, for this example only.
+
+declarations:
+  indoor: true

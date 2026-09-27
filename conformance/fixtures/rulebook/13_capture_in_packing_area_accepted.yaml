@@ -1,0 +1,33 @@
+name: rulebook/capture_in_packing_area_accepted
+description: >
+  The positive twin of the no-camera and allowlist fixtures. The robot moves
+  to the packing area, where capture is allowed, and runs a program on the
+  allowlist. Every zone the rulebook names is declared, so there is no
+  warning, and the runtime re-validates with the same rulebook and runs the
+  program.
+
+manifest: warehouse_areas
+policy: none
+profiles: [warehouse]
+rulebooks: [example_warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - move_to: { location: packing_area }
+      - capture: { media: photo, store_as: snapshot }
+      - call_program: { name: pallet_wrap_cycle }
+
+expected_validation:
+  accepted: true
+
+expected_execution:
+  success: true
+  steps_executed: 3
+  audit_methods:
+    - send_navigation_goal
+    - capture_media
+    - call_named_program

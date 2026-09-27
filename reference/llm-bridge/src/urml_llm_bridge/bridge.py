@@ -25,10 +25,19 @@
                      v
               accepted? --yes--> return TranslateResult
                      |
+                     no, a rulebook error only the deployment can fix?
+                     |          --yes--> raise BridgeDeploymentViolation
+                     |
+                     no, only policy.* errors? --yes--> raise BridgePolicyViolation
+                     |
                      no, revisions left? --yes--> add revision_context, loop
                      |
                      no --> raise BridgeRevisionExhausted
 ```
+
+Rulebook violations (RFC-0702, Draft) the program can fix, such as an
+altitude above a cap, go through the normal revision loop like envelope
+errors: the model can lower an altitude or pick another place.
 
 The bridge does NOT execute URML. It only produces validated programs;
 handing them to a runtime is the caller's job.
@@ -42,7 +51,8 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
+from datetime import date
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -58,6 +68,7 @@ from urml_validator import (
 
 from urml_llm_bridge.errors import (
     BridgeClarificationNeeded,
+    BridgeDeploymentViolation,
     BridgePolicyViolation,
     BridgeRevisionExhausted,
     ProviderError,
@@ -117,6 +128,9 @@ class Bridge:
         policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
         clarify: bool = False,
         max_clarifications: int = 1,
+        rulebooks: Sequence[Mapping[str, Any]] = (),
+        default_rulebooks: bool = True,
+        as_of: date | None = None,
     ) -> None:
         """Configure a Bridge instance.
 
@@ -143,6 +157,12 @@ class Bridge:
                            the contract is exactly Layer 4 v0.2.0.
             max_clarifications: Clarification budget (clarify mode only).
                            Questions never consume revision attempts.
+            rulebooks:     RFC-0702 (Draft) organization and deployment
+                           rulebooks, passed to the validator on every attempt.
+                           They come from the operator, never from the model.
+            default_rulebooks: False switches off the bundled rulebooks.
+            as_of:         The validation date for rulebook exceptions; None
+                           is today in UTC.
         """
         self._provider = provider
         self._manifest = manifest
@@ -153,6 +173,9 @@ class Bridge:
         self._policy = policy
         self._clarify = clarify
         self._max_clarifications = max_clarifications
+        self._rulebooks = list(rulebooks)
+        self._default_rulebooks = default_rulebooks
+        self._as_of = as_of
         self._schema = export_schema("program")
 
     def translate(
@@ -179,6 +202,10 @@ class Bridge:
                 the last `ValidationResult` and the attempt count.
             BridgeClarificationNeeded: Clarify mode, the model asked, and
                 no `on_clarify` callback was supplied.
+            BridgeDeploymentViolation: A rulebook error only the deployment
+                can fix (RFC-0702): a missing declaration or an invalid
+                rulebook. Raised at once, without further revisions.
+            BridgePolicyViolation: Only compliance-policy errors remain.
             ProviderError: The LLM provider misbehaved (non-JSON output,
                 or an unhandled exception bubbled out of `complete()`).
         """
@@ -259,6 +286,9 @@ class Bridge:
                 self._envelope,
                 profiles=self._profiles,
                 policy=self._policy,
+                rulebooks=self._rulebooks,
+                default_rulebooks=self._default_rulebooks,
+                as_of=self._as_of,
             )
             last_result = result
             attempt_codes.append(_error_codes(result))
@@ -274,6 +304,9 @@ class Bridge:
                     clarifications=clarifications,
                     attempt_codes=attempt_codes,
                 )
+
+            # RFC-0702: stop on a rulebook error only the deployment can fix.
+            _raise_if_deployment(result, attempt_idx + 1, raw_completions, attempt_codes)
 
             # RFC-0004: short-circuit revision when ONLY policy.* errors remain.
             # Programs cannot fix hardware; another revision will not help.
@@ -333,6 +366,9 @@ class FleetBridge:
         few_shots: list[FewShot] | None = None,
         max_revisions: int = 3,
         policy: dict[str, Any] | None | Literal["DEFAULT"] = "DEFAULT",
+        rulebooks: Sequence[Mapping[str, Any]] = (),
+        default_rulebooks: bool = True,
+        as_of: date | None = None,
     ) -> None:
         self._provider = provider
         self._roster = roster
@@ -342,13 +378,16 @@ class FleetBridge:
         self._few_shots = few_shots if few_shots is not None else fleet_few_shots()
         self._max_revisions = max_revisions
         self._policy = policy
+        self._rulebooks = list(rulebooks)
+        self._default_rulebooks = default_rulebooks
+        self._as_of = as_of
         self._schema = export_schema("program")
 
     def translate(self, user_request: str) -> TranslateResult:
         """Translate a natural-language request into a validated fleet program.
 
-        Same contract as `Bridge.translate` — raises `BridgeRevisionExhausted`,
-        `BridgePolicyViolation`, or `ProviderError`.
+        Same contract as `Bridge.translate`: raises `BridgeRevisionExhausted`,
+        `BridgeDeploymentViolation`, `BridgePolicyViolation`, or `ProviderError`.
         """
         revision_context: str | None = None
         raw_completions: list[str] = []
@@ -384,6 +423,9 @@ class FleetBridge:
                 self._member_envelopes,
                 profiles=self._profiles,
                 policy=self._policy,
+                rulebooks=self._rulebooks,
+                default_rulebooks=self._default_rulebooks,
+                as_of=self._as_of,
             )
             last_result = result
             attempt_codes.append(_error_codes(result))
@@ -397,6 +439,8 @@ class FleetBridge:
                     raw_completions=raw_completions,
                     attempt_codes=attempt_codes,
                 )
+
+            _raise_if_deployment(result, attempt_idx + 1, raw_completions, attempt_codes)
 
             non_policy_errors = [e for e in result.errors if not _is_policy_error(e)]
             if not non_policy_errors:
@@ -534,6 +578,37 @@ def _error_to_dict(err: URMLValidationError) -> dict[str, Any]:
 def _is_policy_error(err: URMLValidationError) -> bool:
     """Return True iff the error is in the `policy.*` namespace."""
     return str(err.code).startswith("policy.")
+
+
+def _is_deployment_error(err: URMLValidationError) -> bool:
+    """True for a `rule.*` error only the deployment can fix (RFC-0702).
+
+    The rulebook pass marks those with ``remediation_hint: fix_deployment``:
+    a missing declaration, or a rulebook file that breaks the format.
+    """
+    return (
+        str(err.code).startswith("rule.")
+        and err.detail is not None
+        and err.detail.get("remediation_hint") == "fix_deployment"
+    )
+
+
+def _raise_if_deployment(
+    result: ValidationResult,
+    attempts: int,
+    raw_completions: list[str],
+    attempt_codes: list[list[str]],
+) -> None:
+    """Stop the revision loop when the refusal needs a deployment change."""
+    if any(_is_deployment_error(e) for e in result.errors):
+        raise BridgeDeploymentViolation(
+            "validation rejected for a reason only the deployment can fix (a rulebook "
+            "declaration or file); revising the program cannot resolve it",
+            last_result=result,
+            attempts=attempts,
+            raw_completions=raw_completions,
+            attempt_codes=attempt_codes,
+        )
 
 
 def _error_codes(result: ValidationResult) -> list[str]:

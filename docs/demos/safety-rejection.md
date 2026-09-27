@@ -16,7 +16,7 @@
 
 The one-line story behind URML: *a language model can propose an unsafe action, and the system statically refuses it before a single actuator moves — handing back a structured error precise enough to drive an automated correction.*
 
-This walkthrough makes that concrete. A drone is asked to fly an inspection waypoint that sits directly over a declared spectator area. URML rejects the program at validation time, emits a machine-readable error, and the re-routed program validates clean. No simulator, no API key, fully deterministic — every command below was run to produce the output shown.
+This walkthrough makes that concrete. A drone is asked to fly an inspection waypoint that sits directly over a declared spectator area. URML rejects the program at validation time and emits a machine-readable error. The re-routed program clears the envelope, and the bundled FAA Part 107 rulebook (RFC-0702, on by default for drone programs) still refuses it, because its return-to-home point sits inside the spectator area. No simulator, no API key, fully deterministic: every command below was run to produce the output shown.
 
 Useful for: video demos, slide decks, the "why not just let the LLM drive the robot" conversation, blog posts. Fits on one screen at presentation zoom.
 
@@ -56,18 +56,34 @@ urml validate unsafe-flight.urml.yaml \
     --profile drone
 ```
 
-Expected (exit code 1):
+Expected (exit code 1), the errors first:
 
 ```
-Validation failed: unsafe-flight.urml.yaml (1 error(s))
+Validation failed: unsafe-flight.urml.yaml (3 error(s), 2 warning(s))
 
   ERROR [envelope.occupancy_zone_intrusion] behavior/steps/1
     field: pose
     move_to.pose (0.0, 0.0) in frame 'agl' enters the declared people-occupancy zone 'spectator_area'. Programs that route the robot through people-occupancy zones are rejected by default.
     suggestion: Re-route the target around the occupancy zone, OR mark the zone with `allow_override: true` in the envelope if the deployment has explicitly accepted the risk.
+
+  ERROR [rule.over_people] behavior/steps/1
+    field: pose
+    14 CFR 107.39: no flight over human beings unless the operation meets a Subpart D category. move_to.pose (0, 0) in frame 'agl' is over the people-occupancy zone 'spectator_area'.
+    suggestion: Choose a target outside the people-occupancy zone 'spectator_area'.
+    rule: us_faa_part107/over_human_beings (Federal Aviation Administration, US)
+    source: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.39
+
+  ERROR [rule.over_people] behavior/steps/3
+    field: home
+    14 CFR 107.39: no flight over human beings unless the operation meets a Subpart D category. return_to_home 'home' is over the people-occupancy zone 'spectator_area'.
+    suggestion: Choose a target outside the people-occupancy zone 'spectator_area'.
+    rule: us_faa_part107/over_human_beings (Federal Aviation Administration, US)
+    source: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.39
 ```
 
-One error, and it is the right one. The drone's provenance is US-compliant, so the compliance pass stays silent — the *only* thing wrong with this program is that it would fly over people, and the validator's safety-envelope pass (Pass 3) catches it. **The rejection happens before takeoff.** There is no runtime geofence the operator might forget to arm; the validator is the gate.
+Two warnings follow: no deployment rulebook declares how the drone meets Remote ID (14 CFR Part 89), and the manifest's provenance is self-declared. Then the rulebook report lists the Part 107 obligations URML cannot check, such as visual line of sight and weather minima.
+
+Three errors, and they are the right ones. The safety-envelope pass (Pass 3) refuses the waypoint over the spectator area. The rulebook pass refuses the same waypoint under 14 CFR 107.39, and also the return to the home point at (0, 0), which sits inside the area. Each rulebook error cites the regulation it enforces. **The rejection happens before takeoff.** There is no runtime geofence the operator might forget to arm; the validator is the gate.
 
 ## Scene 2 — the structured error the model gets back
 
@@ -92,12 +108,28 @@ The relevant slice:
       "field": "pose",
       "message": "move_to.pose (0.0, 0.0) in frame 'agl' enters the declared people-occupancy zone 'spectator_area'. Programs that route the robot through people-occupancy zones are rejected by default.",
       "suggestion": "Re-route the target around the occupancy zone, OR mark the zone with `allow_override: true` in the envelope if the deployment has explicitly accepted the risk."
+    },
+    {
+      "code": "rule.over_people",
+      "path": ["behavior", "steps", "1"],
+      "field": "pose",
+      "message": "14 CFR 107.39: no flight over human beings unless the operation meets a Subpart D category. move_to.pose (0, 0) in frame 'agl' is over the people-occupancy zone 'spectator_area'.",
+      "suggestion": "Choose a target outside the people-occupancy zone 'spectator_area'."
+    },
+    {
+      "code": "rule.over_people",
+      "path": ["behavior", "steps", "3"],
+      "field": "home",
+      "message": "14 CFR 107.39: no flight over human beings unless the operation meets a Subpart D category. return_to_home 'home' is over the people-occupancy zone 'spectator_area'.",
+      "suggestion": "Choose a target outside the people-occupancy zone 'spectator_area'."
     }
   ]
 }
 ```
 
-The `code` (`envelope.occupancy_zone_intrusion`) is a **stable string — part of the validator's public API**. The `path` points at the exact offending step. The `suggestion` states the fix in words. This is enough for a model to revise without a human in the loop: the LLM bridge's revision loop consumes precisely this payload, re-prompts the model with it, and re-validates the new emission — automatically, up to a bounded number of attempts (see [RFC-0004](../rfcs/0004-compliance-policy.md) and the 77 bridge tests under `reference/llm-bridge/tests/`).
+The JSON also carries the warnings and a `rulebooks` report: each rulebook applied, with its obligations.
+
+The codes (`envelope.occupancy_zone_intrusion`, `rule.over_people`) are **stable strings, part of the validator's public API**. The `path` points at the exact offending step. The `suggestion` states the fix in words. This is enough for a model to revise without a human in the loop: the LLM bridge's revision loop consumes precisely this payload, re-prompts the model with it, and re-validates the new emission, automatically, up to a bounded number of attempts (see [RFC-0004](../rfcs/0004-compliance-policy.md) and the bridge tests under `reference/llm-bridge/tests/`).
 
 ## Scene 3 — the corrected program
 
@@ -125,13 +157,22 @@ urml validate safe-flight.urml.yaml \
     --profile drone
 ```
 
-Expected (exit code 0):
+Expected (exit code 1), the error first:
 
 ```
-Validation passed: safe-flight.urml.yaml
+Validation failed: safe-flight.urml.yaml (1 error(s), 2 warning(s))
+
+  ERROR [rule.over_people] behavior/steps/3
+    field: home
+    14 CFR 107.39: no flight over human beings unless the operation meets a Subpart D category. return_to_home 'home' is over the people-occupancy zone 'spectator_area'.
+    suggestion: Choose a target outside the people-occupancy zone 'spectator_area'.
+    rule: us_faa_part107/over_human_beings (Federal Aviation Administration, US)
+    source: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.39
 ```
 
-Same drone, same deployment, same five-step shape — one coordinate moved out of the spectator area, and the program is cleared. The boundary between "rejected" and "cleared" is exactly the declared safety envelope, checked statically.
+The same two warnings and the rulebook report follow, as in Scene 1.
+
+The envelope is satisfied now: the waypoint is clear of the zone, and Pass 3 has nothing left to say. The program is still refused, this time by the law. `return_to_home` flies back to the home point at (0, 0), inside the spectator area, and 14 CFR 107.39 forbids flight over people unless the operation meets a Subpart D category. The fix is a deployment decision the model cannot make on its own: move the home point out of the zone, or declare an operations-over-people category in the operator's deployment rulebook. This walkthrough keeps the refusal. The envelope held the site's limit, the rulebook held the law, and both acted before takeoff.
 
 To see this same loop run *with a live model* instead of a hand-edited fix, point `urml translate` at a provider (`--provider anthropic`, requires a key): the bridge runs validate → structured error → re-prompt → re-validate for you. The walkthrough above shows the deterministic core that makes that loop trustworthy.
 
@@ -147,9 +188,9 @@ In four commands you saw:
 
 - A model's program rejected for an *intent-level safety violation* (flying over people), not a syntax error — caught by static analysis before any motor turned.
 - The rejection delivered as a stable, structured payload designed for a machine to act on, not just a human to read.
-- The corrected program accepted, with the safety envelope as the precise, declared boundary.
+- The corrected program cleared the envelope and was still refused by the FAA rulebook for returning over the spectator area: two declared boundaries, the site's and the law's, checked before takeoff.
 
-This is the load-bearing claim of the whole project: an LLM in the loop does not mean an unsafe robot, because the proposal and the verification are separated, and the verifier is not optional. The strategic case is in [`MANIFESTO.md`](../../MANIFESTO.md); the envelope mechanism is the validator's Pass 3.
+This is the load-bearing claim of the whole project: an LLM in the loop does not mean an unsafe robot, because the proposal and the verification are separated, and the verifier is not optional. The strategic case is in [`MANIFESTO.md`](../../MANIFESTO.md); the envelope mechanism is the validator's Pass 3, and the rulebook pass is specified in [RFC-0702](../rfcs/0702-rulebooks.md) and [`spec/layer-1-hal/rulebook.md`](../../spec/layer-1-hal/rulebook.md).
 
 ## What this is NOT
 
@@ -157,7 +198,8 @@ The walkthrough is illustrative. The occupancy-zone polygon, the drone manifest,
 
 ## Files used in this walkthrough
 
-- `reference/validator/tests/fixtures/manifests/drone_civilian.yaml` — the civilian-drone manifest (US-compliant provenance, so Pass 5 stays silent and the envelope rejection is the only error).
+- `reference/validator/tests/fixtures/manifests/drone_civilian.yaml`: the civilian-drone manifest (US-compliant provenance, so Pass 5 raises no error; it flags the self-declared attestation as a warning).
+- [`reference/validator/src/urml_validator/rulebooks/us_faa_part107.yaml`](../../reference/validator/src/urml_validator/rulebooks/us_faa_part107.yaml): the bundled FAA Part 107 rulebook, loaded by default for drone programs.
 - [`reference/validator/tests/fixtures/envelopes/drone_with_occupancy_zone.yaml`](../../reference/validator/tests/fixtures/envelopes/drone_with_occupancy_zone.yaml) — the safety envelope declaring `spectator_area`.
 - `unsafe-flight.urml.yaml` / `safe-flight.urml.yaml` — created inline by the commands above; deleted at the end. No new committed files.
 

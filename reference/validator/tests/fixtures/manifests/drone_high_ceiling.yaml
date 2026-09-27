@@ -1,0 +1,47 @@
+# Fixture: a civilian multirotor whose airframe can climb to 200 m.
+#
+# The rulebook fixtures (RFC-0702) need an aircraft whose own service ceiling
+# sits above the FAA's 400-foot limit (121.92 m), so that a take-off to
+# 450 feet (137.16 m) is refused by the rulebook alone: no envelope cap and
+# no manifest ceiling stands in the way. Otherwise the same aircraft as
+# drone_civilian.yaml, without the provenance block.
+
+manifest_version: "0.1"
+robot_id: civilian_high_ceiling
+description: Civilian multirotor with a 200 m service ceiling (rulebook fixtures).
+
+frames:
+  - name: wgs84
+    parent: null
+  - name: agl
+    parent: wgs84
+
+declared_locations:
+  - name: home
+    pose: { x: 0.0, y: 0.0, z: 0.0 }
+    frame: agl
+    description: Takeoff / landing position.
+  - name: tower_top
+    pose: { x: 20.0, y: 10.0, z: 140.0 }
+    frame: agl
+    description: Top of a 140 m tower, above the FAA's 400-foot limit.
+
+mobility:
+  drive_type: multirotor
+  max_velocity: 15.0
+  station_keeping: true
+  service_ceiling: 200.0
+
+substrate:
+  autopilot_class: px4
+
+perception:
+  cameras:
+    - name: downward
+      movable: false
+      supports_photo: true
+      supports_video: true
+      max_resolution: "4k"
+  object_vocabulary:
+    - person
+    - vehicle

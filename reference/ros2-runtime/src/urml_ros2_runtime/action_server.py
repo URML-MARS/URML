@@ -39,6 +39,12 @@ instead (``PinnedConstraints``): the server validates every goal against the
 pinned manifest, envelope and policy, and refuses a goal that tries to set any
 of them before any provider or adapter call.
 
+Rulebooks (RFC-0702, Draft) come from the operator only. A goal has no field
+for them: a deployment rulebook can carry exceptions, so an agent that could
+supply one could grant itself a waiver. The pinned constraints carry the
+operator's rulebooks and the switch for the bundled ones; an unpinned server
+applies the bundled rulebooks and nothing else.
+
 ## Natural language
 
 The NL path is provider-agnostic per CLAUDE.md: ``execute_request`` takes an
@@ -50,13 +56,16 @@ configured, exactly like ``urml translate``.
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
+from pydantic import ValidationError as PydanticValidationError
 from urml_validator import ValidationResult, validate
 from urml_validator.schemas.policy import Policy
+from urml_validator.schemas.rulebook import Rulebook
 
 from urml_ros2_runtime.errors import ValidationRejectedError
 from urml_ros2_runtime.runtime import RuntimeResult, URMLRuntime
@@ -105,12 +114,16 @@ class PinnedConstraints:
     carries. ``policy`` has the ``validate()`` contract (``"DEFAULT"``, None
     for no compliance pass, or a policy mapping). ``manifest_base_dir`` is the
     pinned manifest file's directory, for RFC-0005 HBOM-content rules.
+    ``rulebooks`` are the operator's rulebooks (RFC-0702, Draft) and
+    ``default_rulebooks`` switches the bundled ones; a goal can set neither.
     """
 
     manifest: dict[str, Any]
     envelope: dict[str, Any] | None = None
     policy: PolicyArg = "DEFAULT"
     manifest_base_dir: Path | None = None
+    rulebooks: tuple[dict[str, Any], ...] = ()
+    default_rulebooks: bool = True
 
 
 def _refused(reason: str) -> dict[str, Any]:
@@ -175,6 +188,10 @@ def execute_request(
     envelope: dict[str, Any] | None
     policy: PolicyArg
     manifest_base_dir: Path | None
+    # Rulebooks come from the operator only (RFC-0702): the goal has no field
+    # for them, and an unpinned server applies the bundled rulebooks.
+    rulebooks: tuple[dict[str, Any], ...] = pinned.rulebooks if pinned is not None else ()
+    default_rulebooks = pinned.default_rulebooks if pinned is not None else True
     if pinned is not None:
         carried = [
             name
@@ -227,6 +244,8 @@ def execute_request(
             envelope=envelope,
             profiles=request.profiles,
             policy=policy,
+            rulebooks=rulebooks,
+            default_rulebooks=default_rulebooks,
         )
         try:
             translated = bridge.translate(request.sentence)
@@ -239,6 +258,7 @@ def execute_request(
     # 2. Validate before any actuation. This is the safety boundary; the
     #    verdict is what an operator-in-the-loop engine approves.
     emit("validating", "validating program against manifest + envelope")
+    as_of = datetime.now(UTC).date()
     verdict = validate(
         program,
         manifest,
@@ -246,12 +266,15 @@ def execute_request(
         profiles=request.profiles,
         policy=policy,
         manifest_base_dir=manifest_base_dir,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        as_of=as_of,
     )
     if not verdict.accepted:
         return _refused(_render_verdict(verdict))
 
-    # 3. Execute. The runtime re-validates with the same manifest, envelope
-    #    and policy before its first adapter call (defense in depth).
+    # 3. Execute. The runtime re-validates with the same manifest, envelope,
+    #    policy and rulebooks before its first adapter call (defense in depth).
     emit("executing", f"executing {len(program.get('behavior', {}).get('steps', []))} step(s)")
     runtime = URMLRuntime(adapter)
     try:
@@ -262,6 +285,9 @@ def execute_request(
             request.profiles,
             policy=policy,
             manifest_base_dir=manifest_base_dir,
+            rulebooks=rulebooks,
+            default_rulebooks=default_rulebooks,
+            as_of=as_of,
         )
     except ValidationRejectedError as exc:
         rejected = exc.validation_result
@@ -341,21 +367,43 @@ def _load_mapping(path: str, param: str) -> dict[str, Any]:
     return data
 
 
-def load_pinned(manifest_path: str, envelope_path: str, policy_path: str) -> PinnedConstraints | None:
+def _load_rulebook(path: str) -> dict[str, Any]:
+    """Load one pinned rulebook file and check it against the rulebook format."""
+    data = _load_mapping(path, "rulebooks")
+    try:
+        Rulebook.model_validate(data)
+    except PydanticValidationError as exc:
+        raise ValueError(
+            f"rulebooks {path} does not follow the rulebook format: {exc.error_count()} problem(s)"
+        ) from exc
+    return data
+
+
+def load_pinned(
+    manifest_path: str,
+    envelope_path: str,
+    policy_path: str,
+    rulebook_paths: Sequence[str] = (),
+    default_rulebooks: bool = True,
+) -> PinnedConstraints | None:
     """Build the server's pinned constraints from its node parameters.
 
     Returns None when ``manifest_path`` is empty: nothing is pinned and each
     goal carries its own constraints, which only the mock adapter allows.
     ``policy_path`` is empty for the bundled default policy, ``none`` to skip
-    the compliance pass, or a policy file. ``envelope_path`` and
-    ``policy_path`` pin nothing without ``manifest_path``, so setting either
-    one alone is a configuration error.
+    the compliance pass, or a policy file. ``rulebook_paths`` are the
+    operator's rulebook files (RFC-0702, Draft), each checked against the
+    rulebook format here, and ``default_rulebooks`` False switches off the
+    bundled rulebooks. ``envelope_path``, ``policy_path`` and the rulebook
+    settings pin nothing without ``manifest_path``, so setting any of them
+    alone is a configuration error.
     """
+    paths = [path for path in rulebook_paths if path]
     if not manifest_path:
-        if envelope_path or policy_path:
+        if envelope_path or policy_path or paths or not default_rulebooks:
             raise ValueError(
-                "envelope_path and policy_path are pinned together with "
-                "manifest_path; set manifest_path as well."
+                "envelope_path, policy_path, rulebooks and default_rulebooks are pinned "
+                "together with manifest_path; set manifest_path as well."
             )
         return None
     policy: PolicyArg
@@ -370,6 +418,8 @@ def load_pinned(manifest_path: str, envelope_path: str, policy_path: str) -> Pin
         envelope=_load_mapping(envelope_path, "envelope_path") if envelope_path else None,
         policy=policy,
         manifest_base_dir=Path(manifest_path).parent,
+        rulebooks=tuple(_load_rulebook(path) for path in paths),
+        default_rulebooks=default_rulebooks,
     )
 
 
@@ -407,9 +457,14 @@ def main(args: list[str] | None = None) -> None:
         policy_path    "" (default) for the bundled policy, "none" to skip
                        the compliance pass, or a policy file (needs
                        manifest_path).
+        rulebooks      string array of rulebook files to pin (RFC-0702,
+                       Draft; needs manifest_path). Empty entries are ignored.
+        default_rulebooks  bool, default true. False switches off the bundled
+                       rulebooks (needs manifest_path).
 
     With any adapter other than "mock", the server will not start unless
-    manifest_path and envelope_path are both set.
+    manifest_path and envelope_path are both set. Goals can never set the
+    rulebooks or the default switch.
     """
     rclpy = _require_rclpy()
     from rclpy.action import ActionServer  # type: ignore[import-not-found,unused-ignore]
@@ -430,11 +485,17 @@ def main(args: list[str] | None = None) -> None:
             self.declare_parameter("manifest_path", "")
             self.declare_parameter("envelope_path", "")
             self.declare_parameter("policy_path", "")
+            # A one-empty-string default declares a string array; empty
+            # entries are ignored when the pins load.
+            self.declare_parameter("rulebooks", [""])
+            self.declare_parameter("default_rulebooks", True)
             # Pinned once, before the server accepts any goal.
             self._pinned = load_pinned(
                 self._string_param("manifest_path"),
                 self._string_param("envelope_path"),
                 self._string_param("policy_path"),
+                list(self.get_parameter("rulebooks").get_parameter_value().string_array_value),
+                bool(self.get_parameter("default_rulebooks").get_parameter_value().bool_value),
             )
             require_pinned_for_adapter(self._string_param("adapter"), self._pinned)
             self._action_server = ActionServer(
