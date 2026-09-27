@@ -71,6 +71,18 @@ def test_main_pins_then_serves(monkeypatch: pytest.MonkeyPatch) -> None:
     assert server.urml_describe_manifest() == tools.describe_manifest(str(MANIFEST))
 
 
+def test_main_names_the_evidence_log_and_the_tools_write_to_it(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(server.mcp, "run", lambda *a, **k: None)
+    monkeypatch.delenv("URML_MCP_EVIDENCE_LOG", raising=False)
+    log = tmp_path / "evidence.jsonl"
+    server.main(["--manifest", str(MANIFEST), "--evidence-log", str(log)])
+    assert f"urml-mcp: evidence log {log.resolve()}" in capsys.readouterr().err
+    server.urml_validate(program=_load(PROGRAM), profiles=["home"])
+    assert len(log.read_text(encoding="utf-8").splitlines()) == 1
+
+
 def test_refusal_reaches_the_agent_as_a_tool_error(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(server, "_PINNED", tools.load_pinned({"URML_MCP_MANIFEST": str(MANIFEST)}, []))
 

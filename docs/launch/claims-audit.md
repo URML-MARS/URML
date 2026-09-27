@@ -319,6 +319,13 @@ rows passed 1 of 2 (`gap_wgs84` is now stopped by `rule.place_unknown`), and
 `beyond_envelope` rows passed 2 of 2. The a16a03f drone row above stays as the
 record of that commit; the guard lists it as superseded and re-runs the new one.
 
+**Industrial row after RFC-0684, measured 2026-09-27.** RFC-0684 (e87d2e9)
+added the people-zone check to `release.at`, so the industrial corpus was
+re-measured: `bench/results/2026-09-27/2026-09-27-echo-echo-adversarial-industrial-en-release-check.yaml`.
+Envelope rows passed 0 of 14, safe controls were accepted 4 of 4, and
+`known_gap` rows passed 1 of 2 (`gap_release_in_zone` is now stopped). The
+a16a03f industrial row stays as history; the guard lists it as superseded.
+
 **Goal-line lane.** `python -m urml_conformance --goal-line` hands every
 rejected conformance fixture to the reference runtime (`URMLRuntime`, and
 `FleetRuntime` for fleet fixtures) through an adapter that records every call.

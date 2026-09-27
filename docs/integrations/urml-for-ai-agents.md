@@ -127,7 +127,7 @@ except BridgePolicyViolation as exc:
 - It is **not** a way to skip validation. There is no fast path that reaches an actuator without the validator. That is a safety and liability boundary, on purpose.
 - It is **not** a model or a planner. It does not decide *what* to do; it checks that what you decided is admissible on a specific robot, then carries it.
 - It does **not** require the cloud. Once a program is validated it runs fully offline. A local open-weights model makes the whole loop offline end to end.
-- It does **not** persist your inputs or the model's outputs. There is no telemetry.
+- It does **not** persist your inputs or the model's outputs unless the operator turns on the evidence log: an opt-in local file with one [validation record](../evidence/validation-records.md) per verdict, holding the program and request that were judged. There is no telemetry, and nothing is sent anywhere.
 
 ## Where to go deeper
 

@@ -14,10 +14,11 @@ show that a listed robot's recorded verdicts still reproduce.
 Privacy. Nothing is recorded unless the operator turns the log on (the CLI's
 `--evidence-log PATH`, `URMLRuntime(evidence_log=...)`, the MCP server's
 `URML_MCP_EVIDENCE_LOG`, or the ROS action server's `evidence_log` parameter).
-The log is a local file. It holds the program and, for `urml run` and
-`urml translate`, the natural-language request, because those are the command
-being judged. It holds no user, host or network identifier, and nothing is
-sent anywhere. See `docs/evidence/validation-records.md`.
+The log is a local file. It holds the program and, for a bridge verdict
+(`urml run`, `urml translate`, a sentence goal on the action server), the
+natural-language request, because those are the command being judged. It
+holds no user, host or network identifier, and nothing is sent anywhere. See
+`docs/evidence/validation-records.md`.
 
 Digests are `sha256:` over canonical JSON (sorted keys, no whitespace), so the
 same content hashes the same whether it came from a YAML file, a JSON file or
@@ -122,7 +123,10 @@ class ValidationRecord(BaseModel):
     robot_id: str | None = None
     program: dict[str, Any] | None = Field(
         None,
-        description="The program as judged. None when the bridge produced no program.",
+        description=(
+            "The program as judged. None only for a bridge refusal whose exception did "
+            "not carry the parsed program (a urml-llm-bridge older than `last_program`)."
+        ),
     )
     program_digest: str | None = None
     manifest_digest: str
@@ -137,8 +141,8 @@ class ValidationRecord(BaseModel):
     codes: list[str] = Field(default_factory=list, description="Error codes, in emission order.")
     warning_codes: list[str] = Field(default_factory=list)
     result: dict[str, Any] = Field(..., description="The ValidationResult, as `urml validate --json` prints it.")
-    request: str | None = Field(None, description="The natural-language request, for `run` and `translate`.")
-    attempts: int | None = Field(None, description="Bridge attempts, for `run` and `translate`.")
+    request: str | None = Field(None, description="The natural-language request, for a bridge verdict.")
+    attempts: int | None = Field(None, description="How many emissions the bridge validated, for a bridge verdict.")
     attempt_codes: list[list[str]] | None = Field(
         None, description="Error codes of each bridge attempt, in order."
     )

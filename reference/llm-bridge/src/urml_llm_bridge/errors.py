@@ -10,6 +10,8 @@ These are surfaced by `Bridge.translate()` for failures that are not
 
 from __future__ import annotations
 
+from typing import Any
+
 
 class BridgeError(Exception):
     """Base class for bridge-specific failures."""
@@ -22,13 +24,13 @@ class ProviderError(BridgeError):
 class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads better than "ExhaustedError" here.
     """The validator never accepted the program within the configured revision budget.
 
-    The last attempted program and ValidationResult are attached so the caller
-    can decide whether to surface them, log them, or try another model. Every
-    raw model emission is attached too (``raw_completions``), so a caller can
-    save the final rejected emission for debugging (e.g. a small local LLM that
-    never produces a valid program). ``attempt_codes`` holds the sorted error
-    codes of every validated attempt, so a caller can see what the validator
-    stopped each time.
+    The last attempted program (``last_program``) and ValidationResult are
+    attached so the caller can decide whether to surface them, log them, or
+    try another model. Every raw model emission is attached too
+    (``raw_completions``), so a caller can save the final rejected emission for
+    debugging (e.g. a small local LLM that never produces a valid program).
+    ``attempt_codes`` holds the sorted error codes of every validated attempt,
+    so a caller can see what the validator stopped each time.
     """
 
     def __init__(
@@ -39,6 +41,7 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         attempts: int,
         raw_completions: list[str] | None = None,
         attempt_codes: list[list[str]] | None = None,
+        last_program: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.last_result = last_result
@@ -49,6 +52,9 @@ class BridgeRevisionExhausted(BridgeError):  # noqa: N818 - "Exhausted" reads be
         #: The sorted, de-duplicated error codes of each validated attempt,
         #: in order; the last entry belongs to the final rejected emission.
         self.attempt_codes: list[list[str]] = attempt_codes or []
+        #: The parsed program of the final attempt: the one ``last_result``
+        #: judged. None only when a caller built the exception without it.
+        self.last_program: dict[str, Any] | None = last_program
 
 
 class BridgeClarificationNeeded(BridgeError):  # noqa: N818 - names the state, not an error class.
@@ -96,6 +102,7 @@ class BridgeDeploymentViolation(BridgeError):  # noqa: N818 - "Violation" reads 
         attempts: int,
         raw_completions: list[str] | None = None,
         attempt_codes: list[list[str]] | None = None,
+        last_program: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.last_result = last_result
@@ -106,6 +113,9 @@ class BridgeDeploymentViolation(BridgeError):  # noqa: N818 - "Violation" reads 
         #: The sorted, de-duplicated error codes of each validated attempt,
         #: in order; the last entry holds the codes that ended the loop.
         self.attempt_codes: list[list[str]] = attempt_codes or []
+        #: The parsed program of the final attempt: the one ``last_result``
+        #: judged. None only when a caller built the exception without it.
+        self.last_program: dict[str, Any] | None = last_program
 
 
 class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads better than "ViolationError".
@@ -126,6 +136,7 @@ class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads bett
         attempts: int,
         raw_completions: list[str] | None = None,
         attempt_codes: list[list[str]] | None = None,
+        last_program: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.last_result = last_result
@@ -136,3 +147,6 @@ class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads bett
         #: The sorted, de-duplicated error codes of each validated attempt,
         #: in order; the last entry holds the policy codes that ended the loop.
         self.attempt_codes: list[list[str]] = attempt_codes or []
+        #: The parsed program of the final attempt: the one ``last_result``
+        #: judged. None only when a caller built the exception without it.
+        self.last_program: dict[str, Any] | None = last_program

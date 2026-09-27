@@ -295,7 +295,7 @@ def test_execute_hands_the_pinned_values_to_the_runtime(
             rulebook_kwargs.append(kwargs)
             return RuntimeResult(success=True)
 
-    monkeypatch.setattr(tools, "_build_runtime", lambda adapter: (_RecordingRuntime(), []))
+    monkeypatch.setattr(tools, "_build_runtime", lambda adapter, **_: (_RecordingRuntime(), []))
     assert tools.execute_program(str(PROGRAM), pinned=pinned)["success"] is True
     assert calls == [(_load(MANIFEST), _load(ENVELOPE), ("home",))]
     # RFC-0702: the runtime re-validates with the operator's rulebooks (none
@@ -437,7 +437,7 @@ def test_real_adapter_runs_with_pins_and_opt_in(monkeypatch: pytest.MonkeyPatch,
     # The recording mock stands in for the substrate: the gate is under test.
     built: list[str] = []
 
-    def _build(adapter: str) -> tuple[Any, list[Any]]:
+    def _build(adapter: str, **_: Any) -> tuple[Any, list[Any]]:
         built.append(adapter)
         return URMLRuntime(MockROSAdapter()), []
 

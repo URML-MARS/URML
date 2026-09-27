@@ -50,6 +50,10 @@ SUPERSEDED: dict[str, str] = {
         "measured at a16a03f, before the RFC-0702 rulebook pass; the FAA Part 107 "
         "rulebook, on by default for drones, adds rule.* stops to this corpus"
     ),
+    "2026-09-26-echo-echo-adversarial-industrial-en-post-fix": (
+        "measured at a16a03f, before RFC-0684 added the people-zone check to "
+        "release.at; gap_release_in_zone is now stopped"
+    ),
 }
 
 #: Setup entries that pin an input file by sha256.

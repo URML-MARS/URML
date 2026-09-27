@@ -25,7 +25,9 @@ Scope (Layer-3 v0.1.0 — see spec/layer-3-behavior/v0.1.0.md):
 - All 20 primitives (12 core + 8 profile-scoped) dispatch through the
   executors in `primitives.py`.
 - Defense-in-depth: the runtime re-validates the program before executing.
-  Bypassing the validator at runtime is prohibited per CLAUDE.md.
+  Bypassing the validator at runtime is prohibited per CLAUDE.md. With an
+  evidence log set, a refusal at that check is appended to it as a
+  validation record (`urml_validator.evidence`) before the error is raised.
 
 Substrate: the real `rclpy`-backed adapter ships alongside `MockROSAdapter`;
 both satisfy the substrate-neutral `ROSAdapter` Protocol. Variable bindings
@@ -42,6 +44,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from urml_validator import Policy, ValidationResult, validate
+from urml_validator.evidence import append_record, build_record
 from urml_validator.schemas.composition import Branch, Parallel, Retry, Sequence, Step
 from urml_validator.schemas.program import URMLProgram
 
@@ -82,6 +85,7 @@ class URMLRuntime:
         *,
         revalidate: bool = True,
         shield: Shield | None = None,
+        evidence_log: Path | str | None = None,
     ) -> None:
         """Construct a runtime bound to a substrate adapter.
 
@@ -105,10 +109,18 @@ class URMLRuntime:
                         program through the normal `_ExecutionHalt` path, so
                         `RuntimeResult` reports the failure and the audit
                         log carries the violation entries.
+            evidence_log: Optional JSON Lines file (opt-in, local). When set,
+                        a refusal at the defense-in-depth re-validation is
+                        appended to it as one validation record before
+                        ``ValidationRejectedError`` is raised. Accepted
+                        programs are not recorded here: the entry point that
+                        validated first records its own verdicts. See
+                        ``docs/evidence/validation-records.md``.
         """
         self._adapter = adapter
         self._revalidate = revalidate
         self._shield = shield
+        self._evidence_log = Path(evidence_log) if evidence_log else None
         # Set per `execute` call: the manifest maximum fraction speeds scale to.
         self._max_velocity: float | None = None
 
@@ -156,11 +168,34 @@ class URMLRuntime:
                 as_of=as_of,
             )
             if not result.accepted:
-                raise ValidationRejectedError(
+                rejection = ValidationRejectedError(
                     "runtime defense-in-depth re-validation rejected the program; "
                     "see validation_result.errors for the structured cause.",
                     validation_result=result,
                 )
+                if self._evidence_log is not None:
+                    try:
+                        append_record(
+                            self._evidence_log,
+                            build_record(
+                                surface="runtime",
+                                stage="revalidation",
+                                result=result,
+                                program=program,
+                                manifest=manifest,
+                                envelope=envelope,
+                                policy=policy,
+                                rulebooks=rulebooks,
+                                default_rulebooks=default_rulebooks,
+                                as_of=as_of,
+                                profiles=profiles,
+                            ),
+                        )
+                    except OSError as exc:
+                        # The refusal stands whether or not its record was
+                        # written; the note says which.
+                        rejection.add_note(f"the evidence log {self._evidence_log} was not written: {exc}")
+                raise rejection
 
         # A Layer-2 fraction speed is lowered to m/s against this maximum.
         self._max_velocity = manifest_max_velocity(manifest)

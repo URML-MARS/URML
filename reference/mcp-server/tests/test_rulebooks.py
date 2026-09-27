@@ -118,7 +118,7 @@ def test_execute_hands_the_pinned_rulebooks_to_the_runtime(monkeypatch: pytest.M
             seen.append(kwargs)
             return RuntimeResult(success=True)
 
-    monkeypatch.setattr(tools, "_build_runtime", lambda adapter: (_RecordingRuntime(), []))
+    monkeypatch.setattr(tools, "_build_runtime", lambda adapter, **_: (_RecordingRuntime(), []))
     pins = tools.load_pinned(
         {"URML_MCP_MANIFEST": str(WAREHOUSE), "URML_MCP_RULEBOOKS": str(WAREHOUSE_RULES), "URML_MCP_DEFAULT_RULEBOOKS": "off"},
         [],

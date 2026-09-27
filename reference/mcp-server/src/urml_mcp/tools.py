@@ -17,6 +17,12 @@ rulebook can carry exceptions, so an agent that could supply one could grant
 itself a waiver. The operator sets them with ``URML_MCP_RULEBOOKS`` and
 ``URML_MCP_DEFAULT_RULEBOOKS`` (or the matching flags), and every validation,
 including the runtime's re-validation, uses them.
+
+The evidence log is operator configuration too (``URML_MCP_EVIDENCE_LOG`` or
+``--evidence-log``). When it is set, ``validate_program`` and
+``execute_program`` append one validation record per verdict to that local
+file, and the runtime appends its own refusals. No tool takes it as an
+argument, so an agent can neither turn it off nor point it elsewhere.
 """
 
 from __future__ import annotations
@@ -27,7 +33,7 @@ import json
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -37,6 +43,7 @@ from pydantic import BaseModel
 from urml_llm_bridge import build_system_prompt
 from urml_llm_bridge.few_shot import few_shots_for
 from urml_validator import Policy, ValidationResult, validate
+from urml_validator.evidence import append_record, build_record
 from urml_validator.schema_export import export_schema
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import CapabilityManifest
@@ -67,6 +74,8 @@ _POLICY_ENV = "URML_MCP_POLICY"
 _RULEBOOKS_ENV = "URML_MCP_RULEBOOKS"
 #: RFC-0702 (Draft): ``on`` (default) or ``off`` for the bundled rulebooks.
 _DEFAULT_RULEBOOKS_ENV = "URML_MCP_DEFAULT_RULEBOOKS"
+#: Optional JSON Lines file that receives one validation record per verdict.
+_EVIDENCE_LOG_ENV = "URML_MCP_EVIDENCE_LOG"
 
 #: Every adapter ``execute_program`` accepts. All but ``mock`` drive hardware.
 _ADAPTERS: tuple[str, ...] = ("mock", "ros2", "px4", "ardupilot")
@@ -87,6 +96,9 @@ class Pinned:
     ``rulebooks`` and ``default_rulebooks`` (RFC-0702, Draft) are never agent
     values: no tool has an argument for them. With nothing set, every call
     applies the bundled rulebooks and nothing else.
+
+    ``evidence_log`` is the operator's validation-record file, or None for no
+    records. It is not a constraint, so ``names`` leaves it out.
     """
 
     manifest: dict[str, Any] | None = None
@@ -99,6 +111,7 @@ class Pinned:
     rulebooks: tuple[dict[str, Any], ...] = ()
     rulebook_paths: tuple[Path, ...] = ()
     default_rulebooks: bool = True
+    evidence_log: Path | None = None
 
     @property
     def names(self) -> tuple[str, ...]:
@@ -185,6 +198,14 @@ def _arg_parser() -> argparse.ArgumentParser:
         metavar="on|off",
         help=f"off switches off the bundled rulebooks; on is the default ({_DEFAULT_RULEBOOKS_ENV})",
     )
+    parser.add_argument(
+        "--evidence-log",
+        metavar="PATH",
+        help=(
+            "append one validation record per verdict, accepted or refused, to this JSON Lines "
+            f"file; opt-in, local ({_EVIDENCE_LOG_ENV})"
+        ),
+    )
     return parser
 
 
@@ -219,8 +240,10 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
     US-federal policy, or ``none`` for no compliance pass. ``--rulebooks`` /
     ``URML_MCP_RULEBOOKS`` take rulebook YAML paths separated by
     ``os.pathsep``, and ``--default-rulebooks`` / ``URML_MCP_DEFAULT_RULEBOOKS``
-    take ``on`` or ``off`` (RFC-0702, Draft). A flag wins over its env var,
-    and a blank value pins nothing.
+    take ``on`` or ``off`` (RFC-0702, Draft). ``--evidence-log`` /
+    ``URML_MCP_EVIDENCE_LOG`` take the path of the JSON Lines file that
+    receives the validation records; the file is created on the first
+    record. A flag wins over its env var, and a blank value pins nothing.
 
     Each pinned file is read once, here, and checked against its schema, so a
     bad pin stops the server at startup instead of failing every call. Raises
@@ -280,6 +303,14 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
             raise PinnedConfigError(f"{source}: expected on or off, got {raw!r}")
         default_rulebooks = raw.lower() == "on"
 
+    evidence_log: Path | None = None
+    picked = _pick(args.evidence_log, "--evidence-log", environ, _EVIDENCE_LOG_ENV)
+    if picked is not None:
+        raw, source = picked
+        evidence_log = Path(raw).expanduser().resolve()
+        if evidence_log.is_dir():
+            raise PinnedConfigError(f"{source}: the evidence log {evidence_log} is a directory; name a file")
+
     return Pinned(
         manifest=manifest,
         manifest_path=manifest_path,
@@ -291,6 +322,7 @@ def load_pinned(environ: Mapping[str, str], argv: Sequence[str]) -> Pinned:
         rulebooks=tuple(rulebooks),
         rulebook_paths=tuple(rulebook_paths),
         default_rulebooks=default_rulebooks,
+        evidence_log=evidence_log,
     )
 
 
@@ -398,6 +430,42 @@ def _rejection_message(result: ValidationResult) -> str:
     )
 
 
+def _record_verdict(
+    pins: Pinned,
+    result: ValidationResult,
+    *,
+    program: dict[str, Any],
+    manifest: dict[str, Any],
+    envelope: dict[str, Any] | None,
+    profiles: tuple[str, ...],
+    policy: dict[str, Any] | Literal["DEFAULT"] | None,
+    as_of: date | None = None,
+) -> None:
+    """Append one verdict to the operator's evidence log, when one is set.
+
+    Called before the verdict is returned or acted on: a log that cannot be
+    written fails the call, and nothing runs.
+    """
+    if pins.evidence_log is None:
+        return
+    append_record(
+        pins.evidence_log,
+        build_record(
+            surface="mcp",
+            stage="validation",
+            result=result,
+            program=program,
+            manifest=manifest,
+            envelope=envelope,
+            policy=policy,
+            rulebooks=pins.rulebooks,
+            default_rulebooks=pins.default_rulebooks,
+            as_of=as_of,
+            profiles=profiles,
+        ),
+    )
+
+
 # --- Tools --------------------------------------------------------------------
 
 
@@ -452,7 +520,8 @@ def validate_program(
     operator's pinned policy, else ``"DEFAULT"``. Returns the
     ``ValidationResult`` as a dict: ``accepted`` plus structured ``errors`` and
     ``warnings`` (each ``{code, severity, primitive, path, field, message,
-    suggestion, detail}``).
+    suggestion, detail}``). With the operator's evidence log set, the verdict
+    is also appended to it as a validation record.
     """
     pins = pinned if pinned is not None else Pinned()
     manifest_d = _resolve_manifest(manifest, pins)
@@ -470,6 +539,15 @@ def validate_program(
         manifest_base_dir=_manifest_base_dir(pins),
         rulebooks=_rulebooks(pins),
         default_rulebooks=pins.default_rulebooks,
+    )
+    _record_verdict(
+        pins,
+        result,
+        program=program_d,
+        manifest=manifest_d,
+        envelope=envelope_d,
+        profiles=prof,
+        policy=_policy_arg(resolved_policy),
     )
     return result.model_dump(mode="json")
 
@@ -497,7 +575,9 @@ def execute_program(
     the runtime re-validates before running (defense in depth). There is no
     path that reaches an actuator without the validator. Returns the
     ``RuntimeResult`` as a dict. Raises ``ValidationRejectedError`` when the
-    validator rejects the program.
+    validator rejects the program. With the operator's evidence log set, the
+    first check's verdict is appended to it before anything is built, and the
+    runtime appends a record if its own check refuses.
     """
     pins = pinned if pinned is not None else Pinned()
     if adapter not in _ADAPTERS:
@@ -532,12 +612,22 @@ def execute_program(
         default_rulebooks=pins.default_rulebooks,
         as_of=as_of,
     )
+    _record_verdict(
+        pins,
+        check,
+        program=program_d,
+        manifest=manifest_d,
+        envelope=envelope_d,
+        profiles=prof,
+        policy=_policy_arg(policy),
+        as_of=as_of,
+    )
     if not check.accepted:
         from urml_ros2_runtime import ValidationRejectedError  # local import: keeps tools import light
 
         raise ValidationRejectedError(_rejection_message(check), validation_result=check)
 
-    runtime, cleanup = _build_runtime(adapter)
+    runtime, cleanup = _build_runtime(adapter, evidence_log=pins.evidence_log)
     try:
         result = runtime.execute(
             program_d,
@@ -558,14 +648,15 @@ def execute_program(
                 pass
 
 
-def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
+def _build_runtime(adapter: str, *, evidence_log: Path | None = None) -> tuple[Any, list[Any]]:
     """Construct (runtime, cleanup-callables) for the chosen adapter.
 
     Mirrors the CLI's adapter selection. ``mock`` is always available;
     ``ros2``, ``px4`` and ``ardupilot`` are gated behind
     ``URML_MCP_ALLOW_REAL_EXECUTE`` and their respective runtime dependencies.
     ``execute_program`` also requires the operator's pinned manifest and
-    envelope before it gets here.
+    envelope before it gets here. ``evidence_log`` is handed to the runtime,
+    which records its own refusals there.
     """
     from urml_ros2_runtime import URMLRuntime  # local import: keeps tools import light
 
@@ -574,7 +665,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
     if adapter == "mock":
         from urml_ros2_runtime import MockROSAdapter
 
-        return URMLRuntime(MockROSAdapter()), cleanup
+        return URMLRuntime(MockROSAdapter(), evidence_log=evidence_log), cleanup
 
     if adapter not in {"ros2", "px4", "ardupilot"}:
         raise ValueError(f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', or 'ardupilot')")
@@ -603,7 +694,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
         cleanup.append(rclpy.shutdown)
         ros_adapter = RclpyAdapter(config)
         cleanup.append(ros_adapter.close)
-        return URMLRuntime(ros_adapter), cleanup
+        return URMLRuntime(ros_adapter, evidence_log=evidence_log), cleanup
 
     if adapter == "ardupilot":
         try:
@@ -622,7 +713,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
         ap_close = getattr(ap_adapter, "close", None)
         if callable(ap_close):
             cleanup.append(ap_close)
-        return URMLRuntime(ap_adapter), cleanup
+        return URMLRuntime(ap_adapter, evidence_log=evidence_log), cleanup
 
     # adapter == "px4"
     try:
@@ -641,7 +732,7 @@ def _build_runtime(adapter: str) -> tuple[Any, list[Any]]:
     close = getattr(px4_adapter, "close", None)
     if callable(close):
         cleanup.append(close)
-    return URMLRuntime(px4_adapter), cleanup
+    return URMLRuntime(px4_adapter, evidence_log=evidence_log), cleanup
 
 
 def list_profiles() -> dict[str, Any]:
