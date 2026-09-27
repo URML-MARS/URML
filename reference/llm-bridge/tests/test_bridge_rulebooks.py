@@ -70,6 +70,7 @@ def test_a_deployment_problem_stops_the_loop_at_once() -> None:
     assert exc.value.attempt_codes == [["rule.declaration_missing"]]
     (error,) = exc.value.last_result.errors
     assert error.detail["remediation_hint"] == "fix_deployment"
+    assert exc.value.last_program == json.loads(_flight(30.0))
 
 
 def test_an_invalid_rulebook_stops_the_loop_at_once() -> None:
@@ -115,6 +116,7 @@ def test_the_fleet_bridge_judges_concurrency() -> None:
     with pytest.raises(BridgeRevisionExhausted) as exc:
         bridge.translate("Fly both.")
     assert exc.value.attempt_codes == [["rule.concurrency_exceeded"]]
+    assert exc.value.last_program == json.loads(both)
     two_pilots = {
         "rulebook_version": "0.1",
         "rulebook_id": "two_pilots",

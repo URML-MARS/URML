@@ -695,3 +695,45 @@ def test_bridge_errors_default_to_no_attempt_codes() -> None:
     """Callers that raise the bridge errors themselves need not pass codes."""
     assert BridgeRevisionExhausted("x", last_result=None, attempts=1).attempt_codes == []
     assert BridgePolicyViolation("x", last_result=None, attempts=1).attempt_codes == []
+    assert BridgeRevisionExhausted("x", last_result=None, attempts=1).last_program is None
+
+
+# ---------------------------------------------------------------------------
+# last_program: the parsed program the final verdict judged
+# ---------------------------------------------------------------------------
+
+
+def test_revision_exhausted_carries_the_last_parsed_program(
+    turtlebot_manifest: dict,
+    home_envelope: dict,
+) -> None:
+    """The final emission, fenced here, is attached as the dict the validator judged."""
+    first = json.loads(json.dumps(RED_MUG_PROGRAM))
+    first["behavior"]["steps"][0]["move_to"]["location"] = "the_moon"
+    fenced_last = "```json\n" + json.dumps(_OVER_FORCE_UNBOUND_PROGRAM) + "\n```"
+    provider = EchoProvider(scripted=[json.dumps(first), fenced_last])
+    bridge = Bridge(
+        provider=provider,
+        manifest=turtlebot_manifest,
+        envelope=home_envelope,
+        profiles=("home",),
+        max_revisions=1,
+        policy=None,
+    )
+    with pytest.raises(BridgeRevisionExhausted) as excinfo:
+        bridge.translate("Grip it hard.")
+    assert excinfo.value.last_program == _OVER_FORCE_UNBOUND_PROGRAM
+    assert excinfo.value.raw_completions[-1] == fenced_last
+
+
+def test_policy_violation_carries_the_last_parsed_program() -> None:
+    provider = EchoProvider(scripted=[json.dumps(_WAIT_PROGRAM)])
+    bridge = Bridge(
+        provider=provider,
+        manifest=_manifest_with_provenance(country="CN"),
+        profiles=("home",),
+        max_revisions=3,
+    )
+    with pytest.raises(BridgePolicyViolation) as excinfo:
+        bridge.translate("ignored request")
+    assert excinfo.value.last_program == _WAIT_PROGRAM

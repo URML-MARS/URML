@@ -83,6 +83,7 @@ Pin them when you start the server, with env vars or the matching flags. A flag 
 | `URML_MCP_POLICY` | `--policy` | Path to a compliance policy, `DEFAULT` for the bundled US-federal policy, or `none` |
 | `URML_MCP_RULEBOOKS` | `--rulebooks` | Rulebook files (RFC-0702, Draft), separated by the OS path separator (`;` on Windows, `:` elsewhere) |
 | `URML_MCP_DEFAULT_RULEBOOKS` | `--default-rulebooks` | `on` (the default) or `off` for the bundled rulebooks, such as the FAA Part 107 subset for aircraft |
+| `URML_MCP_EVIDENCE_LOG` | `--evidence-log` | Path to a local JSON Lines file that receives one [validation record](../../docs/evidence/validation-records.md) per `urml_validate` and `urml_execute` verdict. Off when unset; no tool can change it |
 
 ```json
 {

@@ -40,7 +40,7 @@ python bootstrap.py
 urml --version
 ```
 
-Nothing after this step needs the internet. There is no account, no sign-in, and no telemetry: URML does not phone home, and it records nothing about who runs it. You can run the whole lesson on an air-gapped laptop.
+Nothing after this step needs the internet. There is no account, no sign-in, and no telemetry: URML does not phone home, and it records nothing about who runs it. It keeps no log of what you run unless you turn on the opt-in [evidence log](../evidence/validation-records.md), a local file that never leaves your machine. You can run the whole lesson on an air-gapped laptop.
 
 ## Moment 1 — a program that runs (10 minutes)
 

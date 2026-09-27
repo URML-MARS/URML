@@ -1,0 +1,26 @@
+# URML v0.1: a deliberately refused variant of the red-mug program
+#
+# Scenario: home/red-mug, grasp at 4 N.
+#
+# 4 N is inside the gripper's declared 5 N range, so the manifest alone would
+# accept it, and above the 3 N cap in `red-mug.envelope.yaml`, so the
+# deployment envelope refuses it with `envelope.force_exceeded`:
+#
+#   urml validate red-mug.grasp-4n.urml.yaml -m red-mug.manifest.yaml \
+#     -e red-mug.envelope.yaml --profile home --no-policy \
+#     --evidence-log evidence.jsonl
+#
+# `docs/evidence/validation-records.md` shows the validation record that
+# command appends to `evidence.jsonl`.
+
+profile: home
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: mug
+        store_as: target
+    - grasp:
+        target: $target
+        force: 4.0

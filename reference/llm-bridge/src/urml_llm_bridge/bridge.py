@@ -199,7 +199,8 @@ class Bridge:
         Raises:
             BridgeRevisionExhausted: The validator never accepted the
                 program within `max_revisions` retries. The exception carries
-                the last `ValidationResult` and the attempt count.
+                the last `ValidationResult`, the parsed program it judged
+                (`last_program`) and the attempt count.
             BridgeClarificationNeeded: Clarify mode, the model asked, and
                 no `on_clarify` callback was supplied.
             BridgeDeploymentViolation: A rulebook error only the deployment
@@ -213,6 +214,7 @@ class Bridge:
         raw_completions: list[str] = []
         attempt_codes: list[list[str]] = []
         last_result: ValidationResult | None = None
+        last_program: dict[str, Any] | None = None
         clarifications: list[tuple[str, str]] = []
         effective_request = user_request
         had_rejection = False
@@ -291,6 +293,7 @@ class Bridge:
                 as_of=self._as_of,
             )
             last_result = result
+            last_program = program
             attempt_codes.append(_error_codes(result))
 
             if result.accepted:
@@ -306,7 +309,7 @@ class Bridge:
                 )
 
             # RFC-0702: stop on a rulebook error only the deployment can fix.
-            _raise_if_deployment(result, attempt_idx + 1, raw_completions, attempt_codes)
+            _raise_if_deployment(result, program, attempt_idx + 1, raw_completions, attempt_codes)
 
             # RFC-0004: short-circuit revision when ONLY policy.* errors remain.
             # Programs cannot fix hardware; another revision will not help.
@@ -319,6 +322,7 @@ class Bridge:
                     attempts=attempt_idx + 1,
                     raw_completions=raw_completions,
                     attempt_codes=attempt_codes,
+                    last_program=program,
                 )
 
             # Not accepted: prepare for next attempt if any budget remains.
@@ -342,6 +346,7 @@ class Bridge:
             attempts=attempts_total,
             raw_completions=raw_completions,
             attempt_codes=attempt_codes,
+            last_program=last_program,
         )
 
 
@@ -393,6 +398,7 @@ class FleetBridge:
         raw_completions: list[str] = []
         attempt_codes: list[list[str]] = []
         last_result: ValidationResult | None = None
+        last_program: dict[str, Any] | None = None
 
         attempts_total = self._max_revisions + 1
         for attempt_idx in range(attempts_total):
@@ -428,6 +434,7 @@ class FleetBridge:
                 as_of=self._as_of,
             )
             last_result = result
+            last_program = program
             attempt_codes.append(_error_codes(result))
 
             if result.accepted:
@@ -440,7 +447,7 @@ class FleetBridge:
                     attempt_codes=attempt_codes,
                 )
 
-            _raise_if_deployment(result, attempt_idx + 1, raw_completions, attempt_codes)
+            _raise_if_deployment(result, program, attempt_idx + 1, raw_completions, attempt_codes)
 
             non_policy_errors = [e for e in result.errors if not _is_policy_error(e)]
             if not non_policy_errors:
@@ -451,6 +458,7 @@ class FleetBridge:
                     attempts=attempt_idx + 1,
                     raw_completions=raw_completions,
                     attempt_codes=attempt_codes,
+                    last_program=program,
                 )
 
             if attempt_idx + 1 >= attempts_total:
@@ -467,6 +475,7 @@ class FleetBridge:
             attempts=attempts_total,
             raw_completions=raw_completions,
             attempt_codes=attempt_codes,
+            last_program=last_program,
         )
 
 
@@ -595,6 +604,7 @@ def _is_deployment_error(err: URMLValidationError) -> bool:
 
 def _raise_if_deployment(
     result: ValidationResult,
+    program: dict[str, Any],
     attempts: int,
     raw_completions: list[str],
     attempt_codes: list[list[str]],
@@ -608,6 +618,7 @@ def _raise_if_deployment(
             attempts=attempts,
             raw_completions=raw_completions,
             attempt_codes=attempt_codes,
+            last_program=program,
         )
 
 
