@@ -1,0 +1,42 @@
+# URML v0.1
+#
+# Scenario: drone/parcel-delivery (release-verb variant, RFC-0684)
+# Source NL: "Deliver the parcel to the drop-off point and come back."
+#
+# The same delivery as parcel-delivery.urml.yaml, expressed as intent: one
+# `release(mode: winch)` instead of the set_output / hover-timed line writes.
+# The manifest declares the winch under `payload_mechanisms` (not manipulation),
+# the validator checks the mechanism is declared and the set-down height is
+# within the envelope's max_drop_height, and the runtime owns the deliver /
+# open / retract wait using the mechanism's declared line length and rate. The
+# operator says "let the parcel go", not "drive line `winch` true".
+#
+# The set_output variant (parcel-delivery.urml.yaml) is kept as the RFC-0017
+# example; both validate against the same manifest.
+#
+#   urml validate parcel-delivery-release.urml.yaml \
+#     -m parcel-delivery.manifest.yaml -e parcel-delivery.envelope.yaml \
+#     --profile drone --no-policy
+
+profile: drone
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - take_off:
+        altitude: 30.0
+    - move_to:
+        location: dropoff
+        carrying: { name: parcel, mass_kg: 0.8 }
+    - release:
+        mode: winch
+        mechanism: winch
+        latch: latch
+        height: 0.5
+    - report:
+        to: user
+        facts:
+          delivered_to: dropoff
+          mechanism: winch
+    - return_to_home: {}
+    - land: {}

@@ -33,6 +33,20 @@ from urml_validator.schemas.common import (
 # ---------------------------------------------------------------------------
 
 
+class CarriedObject(BaseModel):
+    """An object the robot carries, declared inline with its mass (RFC-0684).
+
+    An alternative to a `$ref` on `move_to.carrying`: it names the object and its
+    `mass_kg`, so the validator can reject a mass above the strictest payload cap
+    (mobility, envelope, or a delivery mechanism) before the move.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Identifier
+    mass_kg: float = Field(..., gt=0)
+
+
 class MoveToArgs(BaseModel):
     """Go to a named location or a pose."""
 
@@ -41,7 +55,7 @@ class MoveToArgs(BaseModel):
     location: Identifier | None = None
     pose: Pose | None = None
     frame: Identifier | None = None
-    carrying: VarRef | None = None
+    carrying: VarRef | CarriedObject | None = None
     speed: Speed | float | None = None
 
     @model_validator(mode="after")
@@ -266,16 +280,30 @@ class ReleaseArgs(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    mode: Literal["drop", "place", "hand_to_user"]
+    mode: Literal["drop", "place", "hand_to_user", "winch", "latch"]
     at: VarRef | Identifier | None = None
     height: float | None = Field(None, ge=0)
     arm: Literal["left", "right", "any"] | Identifier = "any"
     """Which arm performs the release (RFC-0010). See `GraspArgs.arm`."""
+    mechanism: Identifier | None = None
+    """The declared `payload_mechanisms` entry a winch/latch release drives
+    (RFC-0684). Required for `mode: winch | latch`, forbidden otherwise."""
+    latch: Identifier | None = None
+    """Optional: for `mode: winch`, the latch mechanism that opens at the bottom
+    of the lower (RFC-0684)."""
 
     @model_validator(mode="after")
-    def _place_requires_at(self) -> ReleaseArgs:
+    def _mode_coherence(self) -> ReleaseArgs:
         if self.mode == "place" and self.at is None:
             raise ValueError("release(mode: place) requires `at`")
+        if self.mode in ("winch", "latch"):
+            if self.mechanism is None:
+                raise ValueError(f"release(mode: {self.mode}) requires `mechanism`")
+        else:
+            if self.mechanism is not None:
+                raise ValueError("release.mechanism is only valid for mode winch or latch")
+        if self.latch is not None and self.mode != "winch":
+            raise ValueError("release.latch is only valid for mode winch")
         return self
 
 

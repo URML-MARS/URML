@@ -66,6 +66,9 @@ class ErrorCode(StrEnum):
     CAPABILITY_MISSING_SPEECH_OUTPUT = "capability.missing_speech_output"
     CAPABILITY_MISSING_SPEECH_INPUT = "capability.missing_speech_input"
     CAPABILITY_DRIVE_TYPE_NOT_AERIAL = "capability.drive_type_not_aerial"
+    # RFC-0684: aerial-delivery release modes (winch / latch).
+    CAPABILITY_RELEASE_MECHANISM_NOT_DECLARED = "capability.release_mechanism_not_declared"
+    CAPABILITY_RELEASE_MODE_MECHANISM_MISMATCH = "capability.release_mode_mechanism_mismatch"
     CAPABILITY_MISSING_SERVICE_CEILING = "capability.missing_service_ceiling"
     # RFC-0518: base-level mobility bounds coherence.
     CAPABILITY_TERRAIN_BOUND_NOT_APPLICABLE = "capability.terrain_bound_not_applicable"
@@ -168,6 +171,8 @@ class ErrorCode(StrEnum):
     ENVELOPE_VELOCITY_EXCEEDED = "envelope.velocity_exceeded"
     ENVELOPE_ALTITUDE_EXCEEDED = "envelope.altitude_exceeded"
     ENVELOPE_PAYLOAD_EXCEEDED = "envelope.payload_exceeded"
+    # RFC-0684: payload release above the deployment's drop-height ceiling.
+    ENVELOPE_DROP_HEIGHT_EXCEEDED = "envelope.drop_height_exceeded"
     ENVELOPE_FORCE_EXCEEDED = "envelope.force_exceeded"
     ENVELOPE_GEOFENCE_VIOLATION = "envelope.geofence_violation"
     ENVELOPE_OCCUPANCY_ZONE_INTRUSION = "envelope.occupancy_zone_intrusion"

@@ -2,9 +2,9 @@
 rfc: 0684
 title: Aerial-delivery extension for the drone profile
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-27
 supersedes: —
 superseded-by: —
 ---
@@ -113,6 +113,10 @@ Pass 3 rejects a `release(mode: latch)` whose preceding altitude exceeds it, and
 - [`examples/drone/parcel-delivery.urml.yaml`](../../examples/drone/parcel-delivery.urml.yaml): the program this RFC would simplify.
 
 ## Implementation plan
+
+**Implemented 2026-09-27.** Landed: `PayloadMechanism` + `payload_mechanisms`; `release` modes `winch`/`latch` with `mechanism`/`latch`; inline `CarriedObject` on `carrying`; `envelope.max_drop_height`. Pass-2 gates winch/latch on an aerial `drive_type` + a declared mechanism (`capability.release_mechanism_not_declared`, `capability.release_mode_mechanism_mismatch`); Pass-3 adds the drop-height check (`envelope.drop_height_exceeded`) and the carried-mass check (`envelope.payload_exceeded`, strictest of mobility / envelope caps). The envelope pass now walks the program threading **nav-state** (last-known position + altitude, reset to unknown at a control-flow join), so `release` / `set_output` / a bare `hover` contribute the aircraft's current position to the geofence and people-occupancy passes, and a `latch` release is judged against the current altitude. Runtime: an optional `PayloadAdapter` (`send_payload_release`), implemented by `MockROSAdapter` and dispatched from `exec_release`; the hardware `ArduCopterAdapter.send_payload_release` (winch-deliver / latch-open / retract over MAVLink) is a noted field follow-up, since the ArduPilot winch/latch path already ships as the RFC-0017 `set_output` lowering. Conformance: four `drone/` fixtures (accepted delivery, mechanism-not-declared, drop-height-exceeded, mass-over-cap). Example: `examples/drone/parcel-delivery-release.urml.yaml` beside the kept `set_output` variant.
+
+Original plan:
 
 1. Schema: `PayloadMechanism`, `payload_mechanisms` on the manifest; `release.mechanism`, `release.latch`, new modes; inline `carrying` object; `max_drop_height` on the envelope.
 2. Validator: Pass 2 mechanism / mass checks; Pass 3 drop-height and the widened `_spatial_targets`.

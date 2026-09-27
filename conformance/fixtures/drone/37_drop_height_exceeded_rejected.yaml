@@ -1,0 +1,28 @@
+name: drone/drop_height_exceeded_rejected
+description: >
+  RFC-0684 negative: a winch release asks to set the parcel down from 10 m, above
+  the envelope's max_drop_height of 3 m. Pass 3 rejects with
+  envelope.drop_height_exceeded before the drop.
+
+manifest: drone_delivery
+envelope: drone_delivery_envelope
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to: { location: dropoff }
+      - release:
+          mode: winch
+          mechanism: winch
+          height: 10.0
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.drop_height_exceeded

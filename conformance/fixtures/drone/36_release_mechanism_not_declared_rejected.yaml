@@ -1,0 +1,29 @@
+name: drone/release_mechanism_not_declared_rejected
+description: >
+  RFC-0684 negative: a winch release on the roof-inspection drone, whose manifest
+  declares no `payload_mechanisms` (its winch/latch are RFC-0017 output lines, not
+  a delivery mechanism). A mechanism that was never declared cannot be driven, so
+  Pass 2 rejects with capability.release_mechanism_not_declared.
+
+manifest: drone_civilian
+envelope: drone_default
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to: { location: dropoff }
+      - release:
+          mode: winch
+          mechanism: winch
+          height: 0.5
+      - land: {}
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.release_mechanism_not_declared

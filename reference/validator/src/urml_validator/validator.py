@@ -52,6 +52,12 @@ import yaml
 from pydantic import ValidationError as PydanticValidationError
 
 from urml_validator.errors import ErrorCode, ValidationError, ValidationResult
+from urml_validator.monitorable import (
+    MonitorableParseError,
+    parse_property,
+    referenced_signals,
+    referenced_signals_custom,
+)
 from urml_validator.policy_engine import evaluate_policy
 from urml_validator.schemas.composition import (
     Barrier,
@@ -63,12 +69,6 @@ from urml_validator.schemas.composition import (
     Step,
 )
 from urml_validator.schemas.connectivity import LinkLossAction, LinkRole
-from urml_validator.monitorable import (
-    MonitorableParseError,
-    parse_property,
-    referenced_signals,
-    referenced_signals_custom,
-)
 from urml_validator.schemas.envelope import SafetyEnvelope
 from urml_validator.schemas.manifest import (
     LICENSE_RESTRICTIVENESS,
@@ -80,12 +80,11 @@ from urml_validator.schemas.manifest import (
     Sensor,
 )
 from urml_validator.schemas.policy import Policy
-from urml_validator.schemas.roster import FleetRoster, FrameAnchor
-from urml_validator.transforms import resolve_to_world, transform_point_between
 from urml_validator.schemas.primitives import (
     BimanualArgs,
     CallProgramArgs,
     CaptureArgs,
+    CarriedObject,
     DetectArgs,
     DockArgs,
     DriveArgs,
@@ -110,6 +109,8 @@ from urml_validator.schemas.primitives import (
     WaitForArgs,
 )
 from urml_validator.schemas.program import URMLProgram
+from urml_validator.schemas.roster import FleetRoster, FrameAnchor
+from urml_validator.transforms import resolve_to_world, transform_point_between
 
 # =============================================================================
 # Default-policy sentinel
@@ -265,8 +266,14 @@ def validate(
         (warnings if issue.severity == "warning" else errors).append(issue)
 
     # ----- Pass 3: envelope checks -----
-    for path, step in walk_program(program_model):
-        errors.extend(_check_envelope(step, manifest_model, envelope_model, path))
+    # RFC-0684: walk in execution order threading nav-state, so the position- and
+    # altitude-dependent checks (release / set_output / bare hover geofence,
+    # drop-height) see the aircraft's last-known position. A control-flow join
+    # resets the position to unknown, so those checks never guess across branches.
+    env_errors, _ = _walk_env(
+        program_model.behavior, ["behavior"], manifest_model, envelope_model, _NavState()
+    )
+    errors.extend(env_errors)
     # RFC-0006: link-loss policy coherence is a whole-envelope check.
     errors.extend(_check_link_loss_coherence(manifest_model, envelope_model))
     # RFC-0382: monitorable temporal-logic properties parse + resolve signals.
@@ -2448,6 +2455,52 @@ def _check_release_caps(
     args: ReleaseArgs, manifest: CapabilityManifest, path: list[str]
 ) -> list[ValidationError]:
     out: list[ValidationError] = _check_named_place("release", args.at, manifest, path, "at")
+    if args.mode in ("winch", "latch"):
+        # RFC-0684: aerial payload delivery. Gated on an aerial drive_type and a
+        # declared payload mechanism (NOT manipulation, which the drone profile
+        # keeps off its manifests).
+        out += _check_aerial_caps("release", manifest, path)
+        mechs = {pm.name: pm for pm in manifest.payload_mechanisms}
+        pm = mechs.get(args.mechanism) if args.mechanism is not None else None
+        if pm is None:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_RELEASE_MECHANISM_NOT_DECLARED,
+                    "release",
+                    path,
+                    f"release(mode: {args.mode}) names mechanism {args.mechanism!r}, which is not "
+                    "declared in manifest.payload_mechanisms.",
+                    field="mechanism",
+                    suggestion="Declare the mechanism under `payload_mechanisms`, or name a declared one.",
+                )
+            )
+        elif pm.kind != args.mode:
+            out.append(
+                _err(
+                    ErrorCode.CAPABILITY_RELEASE_MODE_MECHANISM_MISMATCH,
+                    "release",
+                    path,
+                    f"release(mode: {args.mode}) requires a {args.mode!r} mechanism; "
+                    f"{args.mechanism!r} is kind {pm.kind!r}.",
+                    field="mechanism",
+                    suggestion=f"Name a {args.mode!r} mechanism, or match the mode to the mechanism kind.",
+                )
+            )
+        if args.latch is not None:
+            latch_pm = mechs.get(args.latch)
+            if latch_pm is None or latch_pm.kind != "latch":
+                out.append(
+                    _err(
+                        ErrorCode.CAPABILITY_RELEASE_MECHANISM_NOT_DECLARED,
+                        "release",
+                        path,
+                        f"release.latch names {args.latch!r}, which is not a declared latch mechanism.",
+                        field="latch",
+                        suggestion="Name a `payload_mechanisms` entry of kind `latch`.",
+                    )
+                )
+        return out
+    # drop / place / hand_to_user: unchanged, requires manipulation.
     if manifest.manipulation is None or not manifest.manipulation.grippers:
         out.append(
             _err(
@@ -3264,11 +3317,171 @@ def _check_return_to_home_caps(
 # =============================================================================
 
 
+@dataclass
+class _NavState:
+    """The aircraft's last-known position/altitude as the envelope pass walks a
+    program in execution order (RFC-0684). `xy`/`frame` are None until a
+    positioning primitive sets them; a branch/parallel/retry join resets them to
+    unknown, so a position-dependent check never guesses across control flow."""
+
+    frame: str | None = None
+    xy: tuple[float, float] | None = None
+    altitude: float | None = None
+
+
+def _advance_nav(step: Step, manifest: CapabilityManifest, nav: _NavState) -> _NavState:
+    """The nav-state after `step` executes, for the next step's checks (RFC-0684)."""
+    name = step.primitive_name
+    args = getattr(step, name)
+    if name == "move_to":
+        if args.pose is not None and args.frame is not None:
+            alt = float(args.pose.z) if args.pose.z is not None else nav.altitude
+            return _NavState(args.frame, (float(args.pose.x), float(args.pose.y)), alt)
+        if args.location is not None:
+            place = _resolve_place(args.location, manifest)
+            if place is not None:
+                alt = place.z if place.z is not None else nav.altitude
+                return _NavState(place.frame, place.vertices[0], alt)
+        return nav
+    if name == "take_off":
+        return _NavState(nav.frame, nav.xy, float(args.altitude))
+    if name == "land":
+        if args.at is not None:
+            place = _resolve_place(args.at, manifest)
+            if place is not None:
+                return _NavState(place.frame, place.vertices[0], 0.0)
+        return _NavState(nav.frame, nav.xy, 0.0)
+    if name == "hover" and args.over is not None and not args.over.startswith("$"):
+        place = _resolve_place(args.over, manifest)
+        if place is not None:
+            return _NavState(place.frame, place.vertices[0], nav.altitude)
+    return nav
+
+
+def _walk_env(
+    node: object,
+    path: list[str],
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    nav: _NavState,
+) -> tuple[list[ValidationError], _NavState]:
+    """Walk the behavior tree in execution order, threading nav-state so the
+    position-dependent envelope checks (RFC-0684) see the aircraft's last-known
+    position/altitude. A control-flow join resets the position to unknown."""
+    if isinstance(node, Step):
+        return (
+            _check_envelope(node, manifest, envelope, path, nav),
+            _advance_nav(node, manifest, nav),
+        )
+    if isinstance(node, Sequence):
+        out: list[ValidationError] = []
+        cur = nav
+        for idx, sub in enumerate(node.steps):
+            errs, cur = _walk_env(sub, [*path, "steps", str(idx)], manifest, envelope, cur)
+            out.extend(errs)
+        return out, cur
+    if isinstance(node, Branch):
+        out = []
+        e, _ = _walk_env(node.if_true, [*path, "if_true"], manifest, envelope, nav)
+        out.extend(e)
+        if node.if_false is not None:
+            e2, _ = _walk_env(node.if_false, [*path, "if_false"], manifest, envelope, nav)
+            out.extend(e2)
+        return out, _NavState()
+    if isinstance(node, Parallel):
+        out = []
+        for idx, sub in enumerate(node.branches):
+            e, _ = _walk_env(sub, [*path, "branches", str(idx)], manifest, envelope, nav)
+            out.extend(e)
+        return out, _NavState()
+    if isinstance(node, Retry):
+        e, _ = _walk_env(node.behavior, [*path, "behavior"], manifest, envelope, nav)
+        return e, _NavState()
+    if isinstance(node, OnMember):
+        return _walk_env(node.body, [*path, "body"], manifest, envelope, nav)
+    if isinstance(node, Barrier):
+        return [], nav
+    raise TypeError(f"unexpected behavior node type: {type(node).__name__!r}")
+
+
+def _check_envelope_carrying(
+    args: MoveToArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+) -> list[ValidationError]:
+    """RFC-0684: an inline carried object's mass must be within the strictest of
+    mobility.max_payload and envelope.max_payload."""
+    carried = args.carrying
+    if not isinstance(carried, CarriedObject):
+        return []
+    mob = manifest.mobility.max_payload if manifest.mobility is not None else None
+    env = envelope.max_payload if envelope is not None else None
+    cap = _strictest(mob, env)
+    if cap is not None and carried.mass_kg > cap:
+        return [
+            _err(
+                ErrorCode.ENVELOPE_PAYLOAD_EXCEEDED,
+                "move_to",
+                path,
+                f"move_to.carrying {carried.name!r} mass {carried.mass_kg} kg exceeds the strictest "
+                f"declared payload cap ({cap} kg).",
+                field="carrying",
+                suggestion="Reduce the carried mass, or raise mobility.max_payload / envelope.max_payload.",
+            )
+        ]
+    return []
+
+
+def _check_envelope_release(
+    args: ReleaseArgs,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+    nav: _NavState | None,
+) -> list[ValidationError]:
+    """RFC-0684: a payload release may not exceed the envelope's max_drop_height.
+    A winch release is judged by its declared `height`; a latch release by the
+    aircraft's current altitude (unknown outside a linear flight, then skipped)."""
+    if envelope is None or envelope.max_drop_height is None or args.mode not in ("winch", "latch"):
+        return []
+    cap = envelope.max_drop_height
+    if args.mode == "winch":
+        if args.height is not None and args.height > cap:
+            return [
+                _err(
+                    ErrorCode.ENVELOPE_DROP_HEIGHT_EXCEEDED,
+                    "release",
+                    path,
+                    f"release(mode: winch) height {args.height} m exceeds the envelope's "
+                    f"max_drop_height ({cap} m).",
+                    field="height",
+                    suggestion=f"Lower the payload from at most {cap} m.",
+                )
+            ]
+        return []
+    alt = nav.altitude if nav is not None else None
+    if alt is not None and alt > cap:
+        return [
+            _err(
+                ErrorCode.ENVELOPE_DROP_HEIGHT_EXCEEDED,
+                "release",
+                path,
+                f"release(mode: latch) at altitude {alt} m exceeds the envelope's "
+                f"max_drop_height ({cap} m).",
+                field="mode",
+                suggestion=f"Descend to at most {cap} m before a latch release, or use a winch.",
+            )
+        ]
+    return []
+
+
 def _check_envelope(
     step: Step,
     manifest: CapabilityManifest,
     envelope: SafetyEnvelope | None,
     path: list[str],
+    nav: _NavState | None = None,
 ) -> list[ValidationError]:
     name = step.primitive_name
     args = getattr(step, name)
@@ -3276,6 +3489,9 @@ def _check_envelope(
 
     if name == "move_to":
         out.extend(_check_envelope_move_to(args, manifest, envelope, path))
+        out.extend(_check_envelope_carrying(args, manifest, envelope, path))
+    elif name == "release":
+        out.extend(_check_envelope_release(args, manifest, envelope, path, nav))
     elif name == "scan":
         out.extend(_check_envelope_scan(args, manifest, envelope, path))
     elif name == "grasp":
@@ -3301,7 +3517,7 @@ def _check_envelope(
     # _collect_spatial_targets says which checks apply to which target; the
     # geofence and zone checks return nothing when the envelope declares none.
     if name in _SPATIAL_PRIMITIVES:
-        targets = _collect_spatial_targets(step, manifest, envelope)
+        targets = _collect_spatial_targets(step, manifest, envelope, nav)
         out.extend(_check_envelope_place_altitude(name, targets, manifest, envelope, path))
         out.extend(_check_envelope_geofence(name, targets, manifest, envelope, path))
         out.extend(_check_envelope_occupancy_zones(name, targets, manifest, envelope, path))
@@ -3819,7 +4035,8 @@ def _location_pose_in_manifest(
 
 #: Verbs whose targets go through the spatial checks below.
 _SPATIAL_PRIMITIVES = frozenset(
-    {"move_to", "scan", "pick_from", "place_at", "dock", "hover", "land", "detect"}
+    {"move_to", "scan", "pick_from", "place_at", "dock", "hover", "land", "detect",
+     "release", "set_output"}
 )
 
 
@@ -4012,10 +4229,30 @@ def _scan_targets(
     ]
 
 
+def _current_position_target(primitive: str, field: str, nav: _NavState | None) -> _SpatialTarget | None:
+    """A spatial target at the aircraft's current position (RFC-0684).
+
+    Used by verbs that act where the robot is rather than at a named place
+    (release without `at`, set_output, a bare hover). None when the position is
+    not statically known (no prior positioning primitive, or after a control-flow
+    join)."""
+    if nav is None or nav.xy is None or nav.frame is None:
+        return None
+    return _SpatialTarget(
+        label=f"{primitive} (current position)",
+        field=field,
+        frame=nav.frame,
+        points=((f"{primitive} (current position)", field, nav.xy),),
+        z=nav.altitude,
+        occupancy="point",
+    )
+
+
 def _collect_spatial_targets(
     step: Step,
     manifest: CapabilityManifest,
     envelope: SafetyEnvelope | None,
+    nav: _NavState | None = None,
 ) -> list[_SpatialTarget]:
     """Every spatial target a step names, with the checks that apply to it.
 
@@ -4064,6 +4301,19 @@ def _collect_spatial_targets(
     elif name == "hover":
         if args.over is not None and not args.over.startswith("$"):
             found.append(_place_target("hover", "over", args.over, manifest))
+        else:
+            # RFC-0684: a bare hover holds the current position.
+            found.append(_current_position_target("hover", "over", nav))
+    elif name == "release":
+        # RFC-0684: a release happens at a declared drop point (`at`) or, absent
+        # one, wherever the aircraft currently is.
+        if args.at is not None and not str(args.at).startswith("$"):
+            found.append(_place_target("release", "at", args.at, manifest, footprint_only=True))
+        else:
+            found.append(_current_position_target("release", "at", nav))
+    elif name == "set_output":
+        # RFC-0684: an output line is driven wherever the robot currently is.
+        found.append(_current_position_target("set_output", "output", nav))
     elif name == "land":
         if args.at is not None:
             found.append(_place_target("land", "at", args.at, manifest, footprint_only=True))

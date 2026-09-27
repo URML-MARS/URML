@@ -1,0 +1,29 @@
+name: drone/payload_winch_delivery_positive
+description: >
+  RFC-0684 positive: a delivery multirotor flies to the drop-off and lowers a
+  parcel on the winch. The manifest declares the `winch` payload mechanism, the
+  release names it, and the winch set-down height (0.5 m) is within the
+  envelope's max_drop_height (3 m). Delivery is expressed as intent, not a
+  boolean line write.
+
+manifest: drone_delivery
+envelope: drone_delivery_envelope
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 30.0 }
+      - move_to: { location: dropoff }
+      - release:
+          mode: winch
+          mechanism: winch
+          height: 0.5
+      - return_to_home: {}
+      - land: {}
+
+expected_validation:
+  accepted: true

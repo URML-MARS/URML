@@ -5,9 +5,11 @@
 # outside it, so the program passes; a `move_to` into the path would be
 # rejected), a payload cap, and return-to-home on command-link loss.
 #
-# Known validator blind spot, recorded rather than hidden: `set_output`
-# and a `hover` without `over` contribute no spatial target, so the drop
-# point is checked only through the preceding `move_to`.
+# RFC-0684 closed the former blind spot: `set_output`, a bare `hover`, and a
+# `release` now contribute the aircraft's current position as a spatial target,
+# so the geofence and people-occupancy passes cover the moment the payload
+# leaves the aircraft, not only the preceding `move_to`. `max_drop_height` caps
+# how high a payload may be released from.
 
 envelope_version: "0.1"
 deployment_id: parcel_delivery_test
@@ -16,6 +18,7 @@ description: Short delivery hop with a winch, inside a fenced footprint.
 max_velocity: 10.0
 max_altitude: 60.0
 max_payload: 1.5
+max_drop_height: 5.0
 
 geofences:
   - name: delivery_corridor

@@ -62,6 +62,7 @@ from urml_ros2_runtime.substrate.base import (
     MeasurementResult,
     NavigationResult,
     OutputAdapter,
+    PayloadAdapter,
     ProgramCallResult,
     RelativeMotionAdapter,
     ROSAdapter,
@@ -442,6 +443,19 @@ def exec_grasp(
 def exec_release(
     args: ReleaseArgs, adapter: ROSAdapter, bindings: dict[str, Any]
 ) -> PrimitiveOutcome:
+    # RFC-0684: winch/latch payload delivery goes through the PayloadAdapter,
+    # which owns the deliver/open/retract wait, not send_manipulation_goal.
+    if args.mode in ("winch", "latch"):
+        if not isinstance(adapter, PayloadAdapter):
+            return PrimitiveOutcome(
+                success=False,
+                reason="not_supported: this substrate has no payload mechanism "
+                "(release winch/latch requires a PayloadAdapter, RFC-0684).",
+            )
+        payload = adapter.send_payload_release(
+            mode=args.mode, mechanism=args.mechanism or "", latch=args.latch, height=args.height
+        )
+        return PrimitiveOutcome(success=payload.success, reason=payload.reason, raw=payload)
     release_at = _resolve_target_field(args.at, bindings)
     result = adapter.send_manipulation_goal(
         action="release",

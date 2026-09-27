@@ -54,6 +54,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "turtlebot4_home_cn_critical": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_cn_critical.yaml",
     "turtlebot4_home_dji_vendor": _VALIDATOR_FIXTURES / "manifests" / "turtlebot4_home_dji_vendor.yaml",
     "drone_civilian": _VALIDATOR_FIXTURES / "manifests" / "drone_civilian.yaml",
+    # RFC-0684: delivery multirotor with declared payload_mechanisms.
+    "drone_delivery": _VALIDATOR_FIXTURES / "manifests" / "drone_delivery.yaml",
     # RFC-0250: substrate.autopilot_class negative-fixture manifests.
     "drone_no_autopilot_class": _VALIDATOR_FIXTURES / "manifests" / "drone_no_autopilot_class.yaml",
     "drone_autopilot_custom_no_note": _VALIDATOR_FIXTURES / "manifests" / "drone_autopilot_custom_no_note.yaml",
@@ -248,6 +250,8 @@ ENVELOPE_REGISTRY: dict[str, Path] = {
     "home_monitorable_undeclared_signal": _VALIDATOR_FIXTURES / "envelopes" / "home_monitorable_undeclared_signal.yaml",
     "drone_default": _VALIDATOR_FIXTURES / "envelopes" / "drone_default.yaml",
     "drone_with_geofence": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_geofence.yaml",
+    # RFC-0684: delivery envelope with a drop-height ceiling.
+    "drone_delivery_envelope": _VALIDATOR_FIXTURES / "envelopes" / "drone_delivery_envelope.yaml",
     "drone_with_altitude_band": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_altitude_band.yaml",
     "drone_with_occupancy_zone": _VALIDATOR_FIXTURES / "envelopes" / "drone_with_occupancy_zone.yaml",
     # RFC-0006: structured link-loss policies.
