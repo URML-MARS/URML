@@ -1,0 +1,38 @@
+# URML v0.1
+#
+# Scenario: research/reproducible-assay
+# Source NL: "Pick the vial at the sample pose, weigh it, log the result, go home."
+#
+# The research-profile example (RFC-0012). Research is reproducibility-first:
+# the sample site is addressed by an exact pose in the bench frame (pose-based
+# motion, which the profile permits), the manifest carries required provenance,
+# and the behavior declares an explicit on_error policy. A `measure` reads the
+# declared bench scale; `report` writes the run log.
+#
+#   urml validate reproducible-assay.urml.yaml \
+#     -m reproducible-assay.manifest.yaml --profile research --no-policy
+
+profile: research
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - move_to:
+        pose: { x: 0.42, y: -0.18, z: 0.12 }
+        frame: bench
+    - detect:
+        object: vial
+        store_as: sample
+    - grasp:
+        target: $sample
+        force: gentle
+    - measure:
+        what: weight
+        store_as: sample_mass
+    - report:
+        to: run_log
+        facts:
+          site: sample_pose
+          mass: $sample_mass
+    - move_to:
+        location: home_pose
