@@ -1,0 +1,224 @@
+# URML bundled rulebook: 14 CFR Part 107 (small unmanned aircraft systems)
+# and 14 CFR Part 89 (remote identification), the statically checkable subset.
+#
+# Status: Draft. The format is specified in spec/layer-1-hal/rulebook.md and
+# proposed by RFC-0702 (Draft). The reference validator does not read this
+# file until the RFC-0702 implementation lands. From then on it applies by
+# default to drone-profile programs and to any robot whose manifest declares
+# an aircraft drive type, and --no-policy does not switch it off.
+#
+# Sources. Every rule and obligation below was checked on 2026-09-26 against
+# the text of 14 CFR in the eCFR (Title 14 up to date as of 2026-09-24, read
+# through the eCFR versioner API). Each entry carries the eCFR URL of the
+# section or paragraph it encodes. Part 107 took effect on 2016-08-29
+# (81 FR 42064). The eCFR shows the current text of 107.29, 107.35 and 107.39
+# from 2021-04-21 (Amdt. 107-8). Part 89 is Amdt. 89-1 (86 FR 4505); its
+# operating requirement, 89.105, applies to operations after 2023-09-16.
+#
+# What this file is not. Passing this rulebook is not a legal compliance
+# determination. It encodes the part of Part 107 and Part 89 that a static
+# check of a program can see. The remote pilot in command remains responsible
+# for every requirement of 14 CFR, including the obligations at the end of
+# this file, which URML lists and does not check. Verify this file against
+# the current eCFR before relying on it.
+#
+# Final rules only. Bundled government rulebooks track final rules and enacted
+# statutes. Part 108 (normalizing beyond-visual-line-of-sight operations) is
+# excluded: on 2026-09-26 it exists only as a proposed rule (90 FR 38212,
+# 2025-08-07, RIN 2120-AL82), and the OIRA list of rules under review shows
+# the final rule as received on 2026-07-10. It joins by RFC once the final
+# rule is published.
+#
+# Units. 400 feet x 0.3048 = 121.92 m. 107.51(a) states "87 knots (100 miles
+# per hour)". 87 knots = 87 x 1852 / 3600 = 44.757 m/s; 100 mph = 100 x
+# 1609.344 / 3600 = 44.704 m/s. This file uses the stricter value, 44.704 m/s.
+#
+# Scope. Part 107 governs civil small unmanned aircraft operated in the
+# National Airspace System. The FAA states that Part 107 does not apply to
+# operations conducted indoors, so a deployment rulebook that declares
+# `indoor: true` switches this rulebook off. Flights under 49 U.S.C. 44809
+# (recreational) are outside Part 107 (14 CFR 107.1(b)(2)); this file does
+# not encode 44809.
+
+rulebook_version: "0.1"
+rulebook_id: us_faa_part107
+title: 14 CFR Part 107 and Part 89, statically checkable subset
+issuer:
+  kind: government
+  name: Federal Aviation Administration
+  jurisdiction: US
+maintained_by: URML maintainers
+source_status: final_rule
+reviewed: "2026-09-26"
+description: >-
+  The limits of 14 CFR Part 107 and the Remote ID requirement of Part 89 that
+  a validator can check in a program before any command is sent: altitude
+  above ground level, groundspeed, flight over declared people zones, aircraft
+  per remote pilot, and the declared Remote ID method. The rest of Part 107
+  is listed as obligations. Not legal advice.
+
+applies_to:
+  profiles: [drone]
+  drive_types: [multirotor, fixed_wing, vtol]
+  unless_declared:
+    - key: indoor
+      allowed: [true]
+      cite:
+        text: "FAA: Part 107 would not apply to operations conducted indoors"
+        url: "https://www.faa.gov/faq/do-faa-rules-and-regulations-apply-commercial-uas-or-drone-operations-conducted-indoors-only"
+
+rules:
+  - id: altitude_400ft_agl
+    title: Maximum altitude 400 feet (121.92 m) above ground level
+    cite:
+      text: "14 CFR 107.51(b)"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51#p-107.51(b)"
+    exceptable: true
+    note: >-
+      Exceptable for the structure allowance in 107.51(b)(1) and (2): within a
+      400-foot radius of a structure, up to 400 feet above its immediate
+      uppermost limit. Also exceptable under a certificate of waiver, since
+      14 CFR 107.205(i) lists 107.51. The exception states the new limit in
+      meters.
+    cap:
+      quantity: altitude_agl_m
+      max: 121.92
+
+  - id: groundspeed_100mph
+    title: Maximum groundspeed 87 knots (100 miles per hour); the stricter 44.704 m/s is used
+    cite:
+      text: "14 CFR 107.51(a)"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51#p-107.51(a)"
+    exceptable: true
+    note: >-
+      URML compares the speed a program commands. Wind can make the
+      groundspeed higher than the commanded speed. Exceptable under a
+      certificate of waiver (14 CFR 107.205(i)).
+    cap:
+      quantity: speed_m_per_s
+      max: 44.704
+
+  - id: over_human_beings
+    title: No flight over human beings unless the operation meets a Subpart D category
+    cite:
+      text: "14 CFR 107.39"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.39"
+    exceptable: true
+    note: >-
+      URML judges flight targets against the people-occupancy zones the
+      envelope declares, including zones marked allow_override. It does not
+      model 107.39(a) and (b), people directly participating in the operation
+      or sheltered under a covered structure or in a stationary vehicle.
+      Declaring a category is the operator's statement that the aircraft and
+      the operation meet Subpart D; URML records it and does not check it.
+      Exceptable under a certificate of waiver (14 CFR 107.205(g)).
+    forbid_over_people:
+      unless_declared:
+        - key: operations_over_people_category
+          allowed: [category_1, category_2, category_3, category_4]
+          cite:
+            text: "14 CFR 107.39(c) and Part 107 Subpart D"
+            url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-D"
+
+  - id: one_aircraft_per_pilot
+    title: One unmanned aircraft at a time per remote pilot in command
+    cite:
+      text: "14 CFR 107.35"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.35"
+    exceptable: true
+    note: >-
+      Judged in fleet programs. The number of remote pilots in command is the
+      deployment declaration remote_pilots_in_command (1 when undeclared).
+      Exceptable under a certificate of waiver (14 CFR 107.205(e)); the
+      exception states the number of aircraft the waiver allows.
+    max_concurrent_aircraft:
+      max_per_remote_pilot: 1
+
+  - id: remote_identification
+    title: Remote identification by one of the means of 14 CFR Part 89
+    cite:
+      text: "14 CFR 89.105, 89.110 and 89.115"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-89/subpart-B/section-89.105"
+    exceptable: true
+    note: >-
+      standard_remote_id is a standard remote identification unmanned aircraft
+      (89.110). broadcast_module is a remote identification broadcast module
+      (89.115(a)). faa_recognized_identification_area is an operation that
+      stays inside an FAA-recognized identification area (89.115(b)). An FAA
+      authorization under 89.105 or 89.120 is declared as an exception with
+      its basis.
+    require_declared:
+      key: remote_id
+      allowed: [standard_remote_id, broadcast_module, faa_recognized_identification_area]
+
+obligations:
+  - id: remote_pilot_certificate
+    title: A remote pilot certificate with a small UAS rating
+    text: >-
+      The remote pilot in command holds a remote pilot certificate with a small
+      UAS rating. Anyone else at the flight controls is under the direct
+      supervision of that pilot, who can take direct control immediately.
+    cite:
+      text: "14 CFR 107.12"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.12"
+
+  - id: visual_line_of_sight
+    title: Visual line of sight for the whole flight
+    text: >-
+      The remote pilot in command, the person at the controls and any visual
+      observer are able to see the aircraft throughout the flight with vision
+      unaided by any device other than corrective lenses, and either the two
+      pilots or a visual observer keep watching it.
+    cite:
+      text: "14 CFR 107.31"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.31"
+
+  - id: night_and_twilight_lighting
+    title: Anti-collision lighting at night and in civil twilight
+    text: >-
+      At night, the remote pilot in command has completed an initial knowledge
+      test or training under 107.65 after April 6, 2021, and the aircraft shows
+      lighted anti-collision lighting visible for at least 3 statute miles. The
+      same lighting is required during civil twilight.
+    cite:
+      text: "14 CFR 107.29"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.29"
+
+  - id: controlled_airspace_authorization
+    title: ATC authorization in controlled airspace
+    text: >-
+      Operations in Class B, Class C or Class D airspace, or within the lateral
+      boundaries of the surface area of Class E airspace designated for an
+      airport, have prior authorization from Air Traffic Control.
+    cite:
+      text: "14 CFR 107.41"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.41"
+
+  - id: flight_visibility
+    title: Flight visibility of at least 3 statute miles
+    text: >-
+      The minimum flight visibility, observed from the control station, is at
+      least 3 statute miles.
+    cite:
+      text: "14 CFR 107.51(c)"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51#p-107.51(c)"
+
+  - id: cloud_clearance
+    title: At least 500 feet below and 2,000 feet horizontally from clouds
+    text: >-
+      The aircraft stays at least 500 feet below clouds and at least 2,000 feet
+      horizontally from them.
+    cite:
+      text: "14 CFR 107.51(d)"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51#p-107.51(d)"
+
+  - id: people_outside_declared_zones
+    title: People and flight paths the validator cannot see
+    text: >-
+      URML checks flight targets against the people-occupancy zones the
+      deployment declares. People outside those zones, and the path the
+      aircraft flies between targets, are for the remote pilot in command to
+      watch.
+    cite:
+      text: "14 CFR 107.39"
+      url: "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.39"

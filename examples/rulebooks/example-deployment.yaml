@@ -1,0 +1,42 @@
+# Example deployment rulebook: a fictional drone operator's site.
+#
+# A deployment rulebook is the operator's record of the facts a rule depends
+# on. It carries declarations and exceptions, and no rules.
+#
+# The waiver below is fictional. 107W-EXAMPLE-0001 is not a real FAA
+# certificate of waiver. A real deployment names its own waiver, and the
+# operator keeps the certificate on file. URML records the basis and does not
+# verify it.
+#
+# With this file loaded next to the bundled us_faa_part107 rulebook, a
+# take_off to 450 feet (137.16 m) draws rule.cap_exceeded as a warning that
+# names the waiver, instead of an error. Above the exception's limit of
+# 500 feet (152.4 m) it is an error again. The manifest's service ceiling and
+# the envelope's max_altitude still apply on their own.
+#
+# Draft: the format is specified in spec/layer-1-hal/rulebook.md (RFC-0702).
+# The reference validator reads rulebooks once the RFC-0702 implementation
+# lands.
+
+rulebook_version: "0.1"
+rulebook_id: example_aerial_survey_north_tower
+title: Example Aerial Survey, north tower inspection (fictional)
+issuer:
+  kind: deployment
+  name: Example Aerial Survey LLC (a fictional operator)
+source_status: deployment_declaration
+reviewed: "2026-09-26"
+description: >-
+  A tower inspection flown by one remote pilot, with a Remote ID broadcast
+  module, under a fictional certificate of waiver for altitude.
+
+declarations:
+  remote_id: broadcast_module
+
+exceptions:
+  - rule: us_faa_part107/altitude_400ft_agl
+    basis: >-
+      Certificate of waiver 107W-EXAMPLE-0001 (fictional, for illustration
+      only), a deviation from 14 CFR 107.51(b) under 14 CFR 107.205(i)
+    limit: 152.4          # meters: the waiver's 500 feet x 0.3048
+    expires: "2027-03-31"

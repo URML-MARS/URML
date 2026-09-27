@@ -1,0 +1,95 @@
+# Example organization rulebook: Example Logistics, a fictional company.
+#
+# An organization rulebook states a company's own operating rules. It names
+# zones and never draws them. Each zone name resolves against the robot
+# manifest's declared_areas (RFC-0615), then the envelope's
+# people_occupancy_zones, then its geofences. A site with no hr_office area
+# gets a rule.zone_undeclared warning for that name, not a silent pass.
+#
+# There is no applies_to block on purpose. When an operator loads this file
+# with --rulebook, it applies to every program, whatever profile the program
+# names.
+#
+# Draft: the format is specified in spec/layer-1-hal/rulebook.md (RFC-0702).
+# The reference validator reads rulebooks once the RFC-0702 implementation
+# lands.
+
+rulebook_version: "0.1"
+rulebook_id: example_logistics_operations
+title: Example Logistics robot operating rules (fictional)
+issuer:
+  kind: organization
+  name: Example Logistics (a fictional company)
+source_status: organization_policy
+effective: "2026-10-01"
+reviewed: "2026-09-26"
+description: >-
+  Rules every Example Logistics robot follows in every building, taken from
+  the company's robot operating policy. The company and its policy are
+  fictional; the file shows the shape of an organization rulebook.
+
+rules:
+  - id: no_capture_in_private_rooms
+    title: No photos or video in the restrooms or the HR office
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 4.2 (fictional)"
+    note: >-
+      Covers capture, and any scan that records photos or video. A capture
+      happens where the robot is, and also at its target when the target
+      names a declared place. A capture before the program names any place is
+      refused with rule.place_unknown: move to a named place first.
+    forbid_primitive:
+      primitives: [capture]
+      in_zones: [restroom, hr_office]
+
+  - id: restricted_rooms
+    title: No robot enters the server room or the hazmat cage
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 4.3 (fictional)"
+    exceptable: true
+    note: >-
+      Exceptable with a facilities work order. A deployment rulebook names the
+      work order as the exception's basis.
+    forbid_zone_entry:
+      zones: [server_room, hazmat_cage]
+
+  - id: approved_programs_only
+    title: Only programs on the approved list run through call_program
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 5.1 (fictional)"
+    note: >-
+      call_program is opaque: URML cannot see what a controller program does.
+      This allowlist is the only check on it. A program joins the list after
+      its own safety review.
+    forbid_primitive:
+      primitives: [call_program]
+      except_names: [pallet_wrap_cycle, conveyor_home]
+
+  - id: shared_aisle_speed
+    title: Robots move no faster than 1.5 m/s
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 3.1 (fictional)"
+    note: >-
+      The company's shared-aisle limit, applied everywhere because v0.1 has no
+      zone-scoped caps. The strictest of the manifest, the envelope and this
+      cap wins.
+    cap:
+      quantity: speed_m_per_s
+      max: 1.5
+
+obligations:
+  - id: trained_operators
+    title: Only trained staff start robot programs
+    text: >-
+      A person who starts a robot program has completed the company's robot
+      operator training.
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 2.1 (fictional)"
+
+  - id: report_near_misses
+    title: Report every near miss within 24 hours
+    text: >-
+      Staff report every near miss involving a robot to the site safety lead
+      within 24 hours.
+    cite:
+      text: "Example Logistics Robot Operating Policy, section 6.4 (fictional)"

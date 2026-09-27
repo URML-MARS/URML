@@ -1,0 +1,136 @@
+# Template: an integrator's rulebook for an industrial robot cell, shaped
+# after ISO 10218-1:2025, ISO 10218-2:2025 and ISO/TS 15066:2016.
+#
+# This file carries no values. ISO standards are copyrighted, and a cell's
+# limits come from its risk assessment and the integrator's licensed copy of
+# each standard, not from this repository. Every FILL_IN is deliberately
+# invalid: a validator refuses to load this file (rule.rulebook_invalid) until
+# each one is replaced, so an unfilled template never runs.
+#
+# How to use it:
+#   1. Copy the file. Give it your own rulebook_id, title, issuer and
+#      reviewed date.
+#   2. Fill each value from your risk assessment and your licensed copy of the
+#      standard its cite names. Write the clause you used into the cite.
+#   3. Declare every named zone in the robot manifest's declared_areas.
+#   4. Keep the safety functions in safety-rated hardware and software. A
+#      rulebook refuses a program before it runs; it does not stop a robot
+#      that is already moving.
+#
+# Editions checked on iso.org on 2026-09-26: ISO 10218-1:2025 (Robotics,
+# Safety requirements, Part 1: Industrial robots) and ISO 10218-2:2025
+# (Part 2: Industrial robot applications and robot cells), both published in
+# 2025-02, and ISO/TS 15066:2016 (Robots and robotic devices, Collaborative
+# robots), which ISO lists as current (last confirmed in 2022). Check which
+# edition your contract names.
+#
+# An ISO standard is not law, so an integrator who adopts one writes it as an
+# organization rulebook.
+#
+# Draft: the format is specified in spec/layer-1-hal/rulebook.md (RFC-0702).
+
+rulebook_version: "0.1"
+rulebook_id: FILL_IN
+title: "FILL_IN (for example: Cell 7 robot rules, from the 2026 risk assessment)"
+issuer:
+  kind: organization
+  name: "FILL_IN (the integrator or the plant)"
+source_status: organization_policy
+reviewed: FILL_IN
+description: >-
+  Operating rules for one robot cell, taken from the cell's risk assessment
+  and the ISO 10218 series. Every value comes from the integrator's licensed
+  copy of the standard named in its cite.
+
+rules:
+  - id: collaborative_speed
+    title: Maximum robot speed in the collaborative application
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN; the cell's risk assessment"
+    note: >-
+      The speed the risk assessment allows where people and the robot share
+      the workspace. A global cap: v0.1 has no zone-scoped caps. Speed and
+      separation monitoring stays in the safety-rated controller.
+    cap:
+      quantity: speed_m_per_s
+      max: FILL_IN
+
+  - id: gripper_contact_force
+    title: Maximum gripper force where a hand can be caught
+    cite:
+      text: "ISO/TS 15066:2016 or ISO 10218-2:2025, clause FILL_IN; the cell's risk assessment"
+    note: >-
+      Derived from the quasi-static contact limit for the hand and fingers in
+      the licensed standard, with the integrator's own margin. URML compares
+      the force a program requests. Force limiting during contact stays in
+      the safety-rated controller.
+    cap:
+      quantity: grip_force_n
+      max: FILL_IN
+
+  - id: validated_programs_only
+    title: Only controller programs covered by the risk assessment run
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN; the cell's risk assessment"
+    note: >-
+      call_program is opaque to URML. List the controller programs the risk
+      assessment covered.
+    forbid_primitive:
+      primitives: [call_program]
+      except_names: [FILL_IN]
+
+  - id: safety_outputs_untouched
+    title: Programs never write safety-related output lines
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN; the cell's risk assessment"
+    note: >-
+      Name the output lines the risk assessment marks safety-related, such as
+      a muting or bypass signal.
+    forbid_primitive:
+      primitives: [set_output]
+      names: [FILL_IN]
+
+  - id: outside_cell_layout
+    title: The robot never targets a place outside the validated cell layout
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN; the cell layout"
+    note: >-
+      Name the floor areas the cell layout keeps the robot out of, and declare
+      them in the manifest's declared_areas.
+    forbid_zone_entry:
+      zones: [FILL_IN]
+
+obligations:
+  - id: risk_assessment
+    title: A current risk assessment for the robot application
+    text: >-
+      The cell has a risk assessment that covers every task these programs
+      perform, repeated whenever the cell changes.
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN"
+
+  - id: safety_rated_functions
+    title: Stop functions in safety-rated control
+    text: >-
+      Emergency stop, protective stop, and any speed and separation monitoring
+      or power and force limiting run in safety-rated hardware and software,
+      not in URML.
+    cite:
+      text: "ISO 10218-1:2025 and ISO 10218-2:2025, clauses FILL_IN"
+
+  - id: contact_verification
+    title: Measured contact forces for power and force limiting
+    text: >-
+      Where the application relies on power and force limiting, contact forces
+      and pressures are measured in the installed cell and stay within the
+      limits the risk assessment sets.
+    cite:
+      text: "ISO/TS 15066:2016 or ISO 10218-2:2025, clause FILL_IN"
+
+  - id: cell_validation
+    title: The installed cell is validated before production use
+    text: >-
+      The integrator verifies and validates the safety functions of the
+      installed cell before it runs production programs.
+    cite:
+      text: "ISO 10218-2:2025, clause FILL_IN"
