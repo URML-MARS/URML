@@ -42,11 +42,11 @@ Skip this step unless you claim the self-reported URML-compatible tier. The repo
 
 ```bash
 pip install -e reference/validator -e reference/ros2-runtime -e conformance
-urml conformance run --adapter your_pkg.substrate:YourAdapter \
+urml conformance run --adapter your_pkg.substrate:YourAdapter --profile <profile> \
     --output registry/evidence/<id>/conformance-report.json
 ```
 
-`python -m urml_conformance --adapter your_pkg.substrate:YourAdapter --report <path>` writes the same report. Use `--filter` to run only the fixtures your robot can serve (a flight controller with no camera runs the flight-only drone fixtures, as the PX4 runtime does); the report records the filter, the number of fixtures, and a sha256 over the fixture files. Claim only profiles whose fixtures ran and passed. Do not edit the report or the fixtures. The checker requires `all_passed: true`, your `runtime.adapter` as the report's adapter, and the urml-conformance version of this repository.
+`python -m urml_conformance --adapter your_pkg.substrate:YourAdapter --profile <profile> --report <path>` writes the same report. A claim covers a whole profile: `--profile` (repeatable) runs every fixture that lists that profile, wherever it lives in the suite, and the checker refuses a claim whose report skips any of them. A runtime that serves only part of a profile (a flight controller with no camera, for example) does not claim that profile; it lists recorded runs as field evidence instead, as the PX4 entry does. The report records the profiles, the number of fixtures, and a sha256 over the fixture files. Do not edit the report or the fixtures. The checker requires `all_passed: true`, your `runtime.adapter` as the report's adapter, and the urml-conformance version of this repository.
 
 ### 4. Produce validation records (optional)
 

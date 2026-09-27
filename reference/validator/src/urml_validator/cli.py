@@ -714,6 +714,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only run fixtures whose name contains SUBSTR (e.g. 'drone').",
     )
     p_conformance_run.add_argument(
+        "--profile",
+        dest="profiles",
+        action="append",
+        default=None,
+        metavar="NAME",
+        help=(
+            "Only run fixtures that list this profile (repeatable). A registry "
+            "compatibility claim for a profile needs every one of them to pass."
+        ),
+    )
+    p_conformance_run.add_argument(
         "--output",
         "-o",
         type=Path,
@@ -2656,12 +2667,19 @@ def cmd_conformance_run(args: argparse.Namespace) -> int:
         return 2
 
     try:
-        report = run_suite(args.adapter, filter=args.filter)
+        report = run_suite(args.adapter, filter=args.filter, profiles=getattr(args, "profiles", None))
     except AdapterSpecError as exc:
         print(f"urml: error: {exc}", file=sys.stderr)
         return 2
     if not report.results:
-        found = "no fixtures match --filter " + repr(args.filter) if args.filter else "no fixtures found"
+        profiles = getattr(args, "profiles", None)
+        found = (
+            "no fixtures match --filter " + repr(args.filter)
+            if args.filter
+            else "no fixtures list --profile " + repr(profiles)
+            if profiles
+            else "no fixtures found"
+        )
         print(f"urml: error: {found}", file=sys.stderr)
         return 2
 

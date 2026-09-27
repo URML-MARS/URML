@@ -24,7 +24,7 @@ A listing records facts a reader can check: which manifest the robot declares, w
 
 A listing is not an endorsement. URML has not tested the robot beyond what the entry's evidence shows, the listing grants no mark, and it says nothing about fitness for production, safety-critical, or regulated use ([TRADEMARK.md](../TRADEMARK.md)). The maintainer reviews a submission for completeness only ([GOVERNANCE.md](../GOVERNANCE.md)) and does not re-run a third party's hardware.
 
-Nothing here is URML-Certified. [TRADEMARK.md](../TRADEMARK.md) reserves that mark for a program that does not exist yet and, if it is created, runs outside this repository ([spec/conformance/v0.1.0.md](../spec/conformance/v0.1.0.md), section 3). The one compatibility tier an entry can carry is the self-reported URML-compatible tier: the runtime's authors ran the unmodified, current public suite against the runtime's own adapter, and every fixture they ran passed. There are no levels, scores, or star ratings.
+Nothing here is URML-Certified. [TRADEMARK.md](../TRADEMARK.md) reserves that mark for a program that does not exist yet and, if it is created, runs outside this repository ([spec/conformance/v0.1.0.md](../spec/conformance/v0.1.0.md), section 3). The one compatibility tier an entry can carry is the self-reported URML-compatible tier: the runtime's authors ran every fixture of each claimed profile, from the unmodified, current public suite, against the runtime's own adapter, and every one passed. A claim covers a whole profile or nothing. There are no levels, scores, or star ratings.
 
 Entries hold names, never email addresses. The registry collects no contact details and keeps no analytics.
 
@@ -60,7 +60,7 @@ The kinds describe what happened. They are not ranked, and the registry computes
 | `robot` | `name`, `class`, optional `maker`, `manifest` | The manifest exists and parses as a URML capability manifest. |
 | `runtime` | `package`, `version`, optional `adapter` (`module:attribute`), `substrate` | A `package` that is a repository path exists. |
 | `profiles` | The URML profiles the robot is listed for | At least one, none twice. |
-| `compatibility` | Optional: `tier: self_reported`, `profiles`, `report` (`path`, `sha256`) | The report's sha256 matches. It parses as a `urml.conformance-report/1` report whose results agree with its summary, and every fixture passed. It names the entry's `runtime.adapter`, not the mock, and came from this repository's urml-conformance version. Each claimed profile has fixtures in it. |
+| `compatibility` | Optional: `tier: self_reported`, `profiles`, `report` (`path`, `sha256`) | The report's sha256 matches. It parses as a `urml.conformance-report/1` report whose results agree with its summary, and every fixture passed. It names the entry's `runtime.adapter`, not the mock, and came from this repository's urml-conformance version. It ran every fixture that lists each claimed profile, wherever the fixture lives in the suite (a drone fixture can sit under `fleet/` or `rulebook/`). |
 | `field_evidence` | `kind`, `date`, `by`, `summary`, `sources` | Repository paths exist. URLs are `https`. |
 | `validation_records` | Optional: `path`, `sha256`, `summary`, `inputs` | The file's sha256 matches. `inputs.manifest` is the robot's manifest. Every record replays (below). |
 | `limits` | What the listing does not show | At least one. |

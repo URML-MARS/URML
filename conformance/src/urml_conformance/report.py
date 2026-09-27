@@ -89,6 +89,13 @@ class ConformanceReport(BaseModel):
         ),
     )
     filter: str | None = Field(None, description="The --filter substring, if one was given.")
+    profiles: list[str] | None = Field(
+        None,
+        description=(
+            "The --profile selection, if one was given: every fixture that lists any "
+            "of these profiles ran."
+        ),
+    )
     results: list[CaseResult] = Field(default_factory=list)
 
     @model_validator(mode="before")

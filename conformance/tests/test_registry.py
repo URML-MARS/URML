@@ -31,6 +31,7 @@ from urml_conformance.registry import (
     RegistryCheckError,
     check_registry,
     main,
+    profile_fixtures,
     render_export,
     render_schema,
 )
@@ -42,6 +43,8 @@ AS_OF = date(2026, 9, 27)
 MANIFEST_REL = "examples/bot/bot.manifest.yaml"
 RECORDS_REL = "registry/evidence/bot/validation-records.jsonl"
 REPORT_REL = "registry/evidence/bot/conformance-report.json"
+# Every fixture that lists the educational profile: a claim covers all of them.
+EDUCATIONAL = sorted(profile_fixtures(REPO_ROOT)["educational"])
 
 
 def _program(*steps: dict[str, Any]) -> dict[str, Any]:
@@ -354,10 +357,10 @@ def _report(**overrides: Any) -> dict[str, Any]:
         "adapter": "bot_runtime:BotAdapter",
         "urml_conformance_version": conformance_version,
         "urml_validator_version": validator_version,
-        "fixture_count": 1,
+        "fixture_count": len(EDUCATIONAL),
         "fixtures_sha256": "a" * 64,
-        "filter": "educational",
-        "results": [{"name": "educational/drive_positive", "passed": True, "diagnostics": []}],
+        "profiles": ["educational"],
+        "results": [{"name": name, "passed": True, "diagnostics": []} for name in EDUCATIONAL],
     }
     report.update(overrides)
     return report
@@ -370,19 +373,20 @@ def test_a_self_report_from_the_runtimes_own_adapter_is_accepted(mini: Mini) -> 
     assert entry["compatibility"] == {
         "tier": "self_reported",
         "profiles": ["educational"],
-        "fixtures_run": 1,
-        "filter": "educational",
+        "fixtures_run": len(EDUCATIONAL),
+        "filter": None,
         "report_url": f"https://github.com/URML-MARS/URML/blob/main/{REPORT_REL}",
     }
 
 
 def test_a_report_with_a_failed_fixture_is_refused(mini: Mini) -> None:
-    mini.add_report(_report(results=[{"name": "educational/drive_positive", "passed": False, "diagnostics": ["x"]}]))
+    failing = [{"name": name, "passed": name != EDUCATIONAL[0], "diagnostics": [] if name != EDUCATIONAL[0] else ["x"]} for name in EDUCATIONAL]
+    mini.add_report(_report(results=failing))
     _one(mini.problems(), "all_passed is false")
 
 
 def test_a_report_whose_all_passed_lies_is_refused(mini: Mini) -> None:
-    lying = _report(results=[{"name": "educational/drive_positive", "passed": False, "diagnostics": []}])
+    lying = _report(results=[{"name": name, "passed": name != EDUCATIONAL[0], "diagnostics": []} for name in EDUCATIONAL])
     lying["all_passed"] = True
     mini.add_report(lying)
     _one(mini.problems(), "is not a urml.conformance-report/1 report")
@@ -412,7 +416,24 @@ def test_a_report_from_another_suite_version_is_refused(mini: Mini) -> None:
 def test_a_claimed_profile_the_report_does_not_run_is_refused(mini: Mini) -> None:
     mini.entry["profiles"] = ["educational", "home"]
     mini.add_report(_report(), profiles=["educational", "home"])
-    _one(mini.problems(), "runs no 'home' fixture")
+    _one(mini.problems(), "does not run every 'home' fixture")
+
+
+def test_a_claim_needs_every_fixture_of_the_profile(mini: Mini) -> None:
+    short = [{"name": name, "passed": True, "diagnostics": []} for name in EDUCATIONAL[1:]]
+    mini.add_report(_report(results=short, fixture_count=len(short)))
+    _one(mini.problems(), f"does not run every 'educational' fixture: 1 of {len(EDUCATIONAL)} are missing")
+
+
+def test_the_profile_selector_runs_the_whole_profile() -> None:
+    report = run_suite(profiles=["educational"])
+    assert sorted(result.name for result in report.results) == EDUCATIONAL
+    assert report.profiles == ["educational"]
+
+
+def test_a_profile_lives_across_suite_folders() -> None:
+    drone = profile_fixtures(REPO_ROOT)["drone"]
+    assert {name.split("/", 1)[0] for name in drone} >= {"drone", "fleet", "rulebook"}
 
 
 def test_a_compatibility_claim_needs_the_runtime_adapter(mini: Mini) -> None:
