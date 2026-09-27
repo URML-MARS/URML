@@ -105,6 +105,8 @@ Every `✅` below maps to a shipped file and a passing test or recorded CI run; 
 
 **In the wild.** The sentence-to-motion loop above runs on a hermetic mock in CI, deliberately, so it stays deterministic and honest. It has also been reproduced on a real robot: a community member ran a validated, LLM-translated URML program on a GoPiGo3 (Raspberry Pi, offline), with a local model doing the English-to-intent translation and the validator gating every action before a wheel turned. The [field note](https://urml.dev/blog/field-notes-first-robot-runs-urml) tells the story, including the actuation-safety bug it surfaced in our own demo and the same-day fix.
 
+The [URML registry](registry/README.md) lists each robot with recorded runs, the evidence behind it, and what that evidence does not show.
+
 ---
 
 ## Regulatory alignment

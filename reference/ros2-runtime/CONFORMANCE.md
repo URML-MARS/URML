@@ -14,7 +14,7 @@
 
 # Conformance Declaration
 
-The `urml-ros2-runtime` package declares the following URML spec versions covered by the public conformance suite. This file is the format every URML-compatible runtime ships at the root of its repository; see [`docs/registry/SUBMISSION.md`](../../docs/registry/SUBMISSION.md) in the main URML repo for the submission flow.
+The `urml-ros2-runtime` package declares the following URML spec versions covered by the public conformance suite. This file is the format every URML-compatible runtime ships at the root of its repository; see [`docs/registry/SUBMISSION.md`](../../docs/registry/SUBMISSION.md) in the main URML repo for how a runtime's result reaches the [URML registry](../../registry/README.md).
 
 ```yaml
 declares:
@@ -38,7 +38,7 @@ pip install -e conformance
 urml conformance run --output conformance-report.json
 ```
 
-A passing run produces a JSON `ConformanceReport` with `all_passed: true` and one `CaseResult` per fixture. The bundled fixture set covers home, drone, and one industrial case (driven through the core primitives).
+A passing run writes a `urml.conformance-report/1` JSON report with `all_passed: true`, the `passed` and `failed` counts, the adapter it ran against (`urml_ros2_runtime:MockROSAdapter` unless `--adapter` names another), the urml-conformance and urml-validator versions, the fixture count and a sha256 over the fixture files, and one result per fixture. The bundled fixture set covers every profile; `--filter` selects a subset, and the report records it.
 
 ## Substrate
 
@@ -54,4 +54,4 @@ Phase 1 in flight. This declaration tracks the runtime's actual coverage; if a f
 
 ## Registry status
 
-This runtime is the reference runtime and is intentionally **not** listed in [`docs/compatible-runtimes.md`](../../docs/compatible-runtimes.md) during Phase 0. The registry exists for third-party runtimes; listing the reference runtime as the only entry would defeat the purpose. The reference runtime will be added once at least one third-party submission is merged.
+This runtime is listed with the first-party reference runtimes in [`docs/compatible-runtimes.md`](../../docs/compatible-runtimes.md). It has no entry in the [URML registry](../../registry/README.md): the hermetic run above uses `MockROSAdapter`, which describes the mock, and a registry compatibility claim needs a report produced with a runtime's own adapter.
