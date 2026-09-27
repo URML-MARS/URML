@@ -3,6 +3,7 @@
   VexV5Adapter         — VEX V5 brain via host-side Python SDK.
   LegoSpikeAdapter     — LEGO SPIKE Prime / Mindstorms hub over Pybricks BLE.
   ThymioAdapter        — Thymio over the Aseba TDM (Thymio Device Manager).
+  GoPiGo3Adapter       — Dexter/Modular Robotics GoPiGo3 buggy via easygopigo3 (relative drive/turn).
   RoboticalMartyAdapter — Robotical Marty v1/v2 via the martypy skill library.
   PetoiAdapter         — Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library.
   MicroduckAdapter     — Pollen Robotics / Hugging Face Microduck via its JSON-RPC contract.
@@ -28,6 +29,7 @@ from urml_edu_runtime.adapter import (
     EduCommand,
     EduConfig,
     EduSkillCall,
+    GoPiGo3Adapter,
     LegoSpikeAdapter,
     PetoiAdapter,
     RoboticalMartyAdapter,
@@ -41,6 +43,7 @@ BRAND_ADAPTERS = {
     "vex": VexV5Adapter,
     "lego_spike": LegoSpikeAdapter,
     "thymio": ThymioAdapter,
+    "gopigo3": GoPiGo3Adapter,
     "marty": RoboticalMartyAdapter,
     "petoi": PetoiAdapter,
     "microduck": MicroduckAdapter,
@@ -53,6 +56,7 @@ __all__ = [
     "EduCommand",
     "EduConfig",
     "EduSkillCall",
+    "GoPiGo3Adapter",
     "LegoSpikeAdapter",
     "MicroduckAdapter",
     "PetoiAdapter",
