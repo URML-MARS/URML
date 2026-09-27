@@ -850,9 +850,11 @@ def test_takeoff_arm_rejected(fake_pymavlink: dict[str, Any]) -> None:
 def test_arm_refusal_reason_quotes_px4_statustext(fake_pymavlink: dict[str, Any]) -> None:
     """PX4 v1.17 explains a refused arm in STATUSTEXT, and only to a link with a ground station.
 
-    These are PX4 v1.17's texts for an arm refused by COM_ARMABLE = 0. The
-    first is exactly 50 characters (one chunk, no terminator); the second
-    is 52, so PX4 splits it in two. Both arrive after the ack.
+    Both are PX4 v1.17's own texts for an arm refused by COM_ARMABLE = 0.
+    The first is exactly 50 characters (one chunk, no terminator); the
+    second is 52, so PX4 splits it in two. Here both arrive after the ack;
+    in SITL PX4 sent the first when the parameter changed, before the arm,
+    and the reason then carried only the second.
     """
     from urml_px4_runtime import PX4Adapter
 
@@ -871,6 +873,32 @@ def test_arm_refusal_reason_quotes_px4_statustext(fake_pymavlink: dict[str, Any]
         '"Arming denied: Resolve system health failures first"'
     )
     assert 22 not in _long_commands(fake_pymavlink)
+
+
+def test_reason_leaves_out_warnings_from_before_the_command(fake_pymavlink: dict[str, Any]) -> None:
+    """A warning already on the link may no longer hold, so only what PX4 says from the command on counts.
+
+    This is what PX4 v1.17 SITL did with COM_ARMABLE = 0: it sent the
+    50-character "Preflight Fail" text (one chunk, no terminator, so the
+    adapter holds it open until the next text) when the parameter changed,
+    and only "Arming denied" in reply to the arm. The held-open text keeps
+    its place in the read order from before the command.
+    """
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [
+        _Msg("STATUSTEXT", severity=2, text="an older warning", id=8, chunk_seq=0),
+        _Msg("STATUSTEXT", severity=2, text="Preflight Fail: Vehicle is in safety configuration", id=9, chunk_seq=0),
+    ]
+    _FakePX4.ack = {400: 1}
+    _FakePX4.statustext = {400: [(2, "Arming denied: Resolve system health failures first\t")]}
+    adapter = PX4Adapter()
+    result = adapter.send_takeoff_goal(altitude=30.0)
+    assert result.reason == (
+        'arm_rejected: mav_result_temporarily_rejected; PX4 said: "Arming denied: Resolve system health failures first"'
+    )
+    kept = [entry.text for entry in adapter._statustext_log]
+    assert kept[:2] == ["an older warning", "Preflight Fail: Vehicle is in safety configuration"]  # read, not quoted
 
 
 def test_ack_timeout_reason_quotes_px4_statustext(fake_pymavlink: dict[str, Any]) -> None:

@@ -48,13 +48,13 @@ Each flight primitive sends its command, then reads telemetry until the action i
 - **return_to_home** succeeds when the vehicle is within `arrival_radius_m` of home. PX4's own RTL then descends and lands. On the ground at home it reports `already_at_home` without commanding anything.
 - **land** reports `already_on_ground` (success, no command) when PX4 already says ON_GROUND, for example after an RTL that landed by itself. `land(at=...)` flies to that location at the current altitude first. `precision` is not mapped; PX4 lands the way it is configured to.
 
-Refusal and timeout reasons carry PX4's `MAV_RESULT` or what telemetry last showed, followed by the warnings PX4 sent about it as `STATUSTEXT` (severity WARNING or worse; PX4's INFO lines such as "Takeoff detected" narrate and stay out). For example, an arm refused because `COM_ARMABLE` is 0 reads:
+Refusal and timeout reasons carry PX4's `MAV_RESULT` or what telemetry last showed, followed by the warnings PX4 sent about it as `STATUSTEXT` (severity WARNING or worse; PX4's INFO lines such as "Takeoff detected" narrate and stay out). For example, a take-off requested before PX4 v1.17 SITL had passed its pre-arm checks returned:
 
 ```
-arm_rejected: mav_result_temporarily_rejected; PX4 said: "Preflight Fail: Vehicle is in safety configuration"; "Arming denied: Resolve system health failures first"
+arm_rejected: mav_result_temporarily_rejected; PX4 said: "Arming denied: Resolve system health failures first"
 ```
 
-After a refusal the adapter listens for up to a second, because PX4 can send its explanation just after the `COMMAND_ACK`. It joins texts PX4 splits into 50-character chunks.
+A reason quotes only what PX4 sent from the command on. After a refusal the adapter listens for up to a second, because PX4 can send its explanation just after the `COMMAND_ACK`, and it joins texts PX4 splits into 50-character chunks. PX4 names a failing pre-arm check ("Preflight Fail: ...") when the check starts failing, which can be before the arm command; the adapter reads that text but leaves it out of the reason, because it cannot tell whether an older warning still holds.
 
 The adapter talks to PX4 only: it refuses an autopilot whose heartbeat is not `MAV_AUTOPILOT_PX4`, because ArduPilot reads the same take-off parameter as a relative altitude. Use `ArduCopterAdapter` for ArduPilot.
 

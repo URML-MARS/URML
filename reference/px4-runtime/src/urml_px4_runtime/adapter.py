@@ -286,9 +286,9 @@ def _emergency_state(msg: Any) -> str | None:
 
 @dataclass(frozen=True)
 class _StatusText:
-    """A STATUSTEXT from the vehicle, whole, and when the adapter read it."""
+    """A STATUSTEXT from the vehicle, whole, and where it came in the read order."""
 
-    received: float  # time.monotonic() when read
+    seq: int  # counts texts in the order their first chunk was read
     severity: int  # MAV_SEVERITY: 0 emergency .. 7 debug
     text: str
 
@@ -348,6 +348,10 @@ class PX4Adapter:
         # (ArduCopterAdapter keeps its own `_statustext`; these names differ.)
         self._statustext_log: deque[_StatusText] = deque(maxlen=64)
         self._statustext_partial: tuple[tuple[int, int, int], _StatusText] | None = None
+        # Texts started so far. A command takes this as its mark; texts from
+        # the mark on came after the command (read order, not clock time,
+        # so a coarse clock cannot let an older text in).
+        self._statustext_seen = 0
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -503,7 +507,8 @@ class PX4Adapter:
         """Keep a STATUSTEXT, joining a text PX4 sent as 50-character chunks.
 
         Chunks of one text share an ``id`` and count up ``chunk_seq``; a
-        chunk shorter than 50 characters ends the text.
+        chunk shorter than 50 characters ends the text. A text takes its
+        place in the read order from its first chunk.
         """
         chunk = _statustext_chunk(msg)
         get_system = getattr(msg, "get_srcSystem", None)
@@ -518,7 +523,8 @@ class PX4Adapter:
             self._keep_statustext()
             partial = None
         if partial is None:
-            joined = _StatusText(time.monotonic(), int(getattr(msg, "severity", MAV_SEVERITY_INFO)), chunk)
+            joined = _StatusText(self._statustext_seen, int(getattr(msg, "severity", MAV_SEVERITY_INFO)), chunk)
+            self._statustext_seen += 1
         else:
             joined = replace(partial[1], text=partial[1].text + chunk)
         self._statustext_partial = (key, joined)
@@ -534,9 +540,11 @@ class PX4Adapter:
         if text:
             self._statustext_log.append(replace(partial[1], text=text))
 
-    def _px4_said(self, since: float) -> str:
-        """PX4's warnings read since ``since``, as a suffix for a failure reason.
+    def _px4_said(self, mark: int) -> str:
+        """PX4's warnings read from ``mark`` on, as a suffix for a failure reason.
 
+        ``mark`` is ``_statustext_seen`` taken just before the command, so
+        a text already on the link, which may no longer hold, stays out.
         Only STATUSTEXT of severity WARNING or worse counts; PX4's
         narration ("Takeoff detected") is INFO and stays out. Returns ""
         when PX4 said nothing of the kind.
@@ -544,7 +552,7 @@ class PX4Adapter:
         self._keep_statustext()
         texts: list[str] = []
         for entry in self._statustext_log:
-            if entry.received >= since and entry.severity <= MAV_SEVERITY_WARNING and entry.text not in texts:
+            if entry.seq >= mark and entry.severity <= MAV_SEVERITY_WARNING and entry.text not in texts:
                 texts.append(entry.text)
         if not texts:
             return ""
@@ -601,7 +609,7 @@ class PX4Adapter:
             if msg.get_type() == msg_type and self._from_target(msg) and predicate(msg):
                 return msg
 
-    def _wait_ack(self, command: int, sent_at: float) -> tuple[bool, str | None]:
+    def _wait_ack(self, command: int, mark: int) -> tuple[bool, str | None]:
         """Wait for the COMMAND_ACK of ``command`` (matched on its id).
 
         A refusal or a missing ack carries PX4's explanation when it sent
@@ -615,12 +623,12 @@ class PX4Adapter:
             self._config.ack_timeout_seconds,
         )
         if ack is None:
-            return False, "ack_timeout" + self._px4_said(sent_at)
+            return False, "ack_timeout" + self._px4_said(mark)
         result = int(getattr(ack, "result", -1))
         if result == MAV_RESULT_ACCEPTED:
             return True, None
         self._listen(_REFUSAL_LISTEN_SECONDS)
-        return False, f"mav_result_{_MAV_RESULT_NAMES.get(result, result)}" + self._px4_said(sent_at)
+        return False, f"mav_result_{_MAV_RESULT_NAMES.get(result, result)}" + self._px4_said(mark)
 
     def _send_command_long(self, command: int, *params: float) -> tuple[bool, str | None]:
         """Send a MAV_CMD_* via COMMAND_LONG; wait for its COMMAND_ACK.
@@ -635,10 +643,10 @@ class PX4Adapter:
             return False, f"connection_failed: {exc}"
         padded = [float(p) for p in params] + [0.0] * (7 - len(params))
         target_system, target_component = self._target_ids()
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         with self._send_lock:
             conn.mav.command_long_send(target_system, target_component, command, 0, *padded[:7])
-        return self._wait_ack(command, sent_at)
+        return self._wait_ack(command, mark)
 
     def _send_command_int(
         self,
@@ -655,12 +663,12 @@ class PX4Adapter:
         except Exception as exc:
             return False, f"connection_failed: {exc}"
         target_system, target_component = self._target_ids()
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         with self._send_lock:
             conn.mav.command_int_send(
                 target_system, target_component, frame, command, 0, 0, *params, x, y, float(z)
             )
-        return self._wait_ack(command, sent_at)
+        return self._wait_ack(command, mark)
 
     def _recv_message(
         self,
@@ -745,7 +753,7 @@ class PX4Adapter:
 
     def _arm(self) -> tuple[bool, str | None]:
         """Arm and confirm the armed bit on a heartbeat. Never forces past PX4's checks."""
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         ok, reason = self._send_command_long(MAV_CMD_COMPONENT_ARM_DISARM, 1.0)
         if not ok:
             return False, f"arm_rejected: {reason}"
@@ -753,7 +761,7 @@ class PX4Adapter:
         if armed is None:
             return False, (
                 f"arm_rejected: armed flag not seen on HEARTBEAT within {self._config.arm_timeout_seconds:.0f}s"
-                + self._px4_said(sent_at)
+                + self._px4_said(mark)
             )
         return True, None
 
@@ -795,7 +803,7 @@ class PX4Adapter:
 
         # MAV_CMD_NAV_TAKEOFF: param4 yaw, param5/6 lat/lon (NaN = keep
         # current heading and position), param7 altitude AMSL on PX4.
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         ok, reason = self._send_command_long(
             MAV_CMD_NAV_TAKEOFF, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, home.alt_amsl + target
         )
@@ -819,7 +827,7 @@ class PX4Adapter:
             return NavigationResult(
                 success=False,
                 reason=f"takeoff_timeout: relative altitude {now} after "
-                f"{self._config.takeoff_timeout_seconds:.0f}s, target {target:.1f} m" + self._px4_said(sent_at),
+                f"{self._config.takeoff_timeout_seconds:.0f}s, target {target:.1f} m" + self._px4_said(mark),
             )
         return NavigationResult(
             success=True,
@@ -856,7 +864,7 @@ class PX4Adapter:
                 reason="already_on_ground: PX4 reports landed_state ON_GROUND; no LAND command sent.",
             )
 
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         ok, reason = self._send_command_long(
             MAV_CMD_NAV_LAND, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, math.nan
         )
@@ -872,7 +880,7 @@ class PX4Adapter:
             return NavigationResult(
                 success=False,
                 reason=f"landing_timeout: landed_state {state} after {self._config.land_timeout_seconds:.0f}s"
-                + self._px4_said(sent_at),
+                + self._px4_said(mark),
             )
         return NavigationResult(success=True)
 
@@ -908,7 +916,7 @@ class PX4Adapter:
                 "return_to_home needs an airborne vehicle.",
             )
 
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         ok, reason = self._send_command_long(MAV_CMD_NAV_RETURN_TO_LAUNCH)
         if not ok:
             return NavigationResult(success=False, reason=f"rtl_rejected: {reason}")
@@ -923,7 +931,7 @@ class PX4Adapter:
             return NavigationResult(
                 success=False,
                 reason=f"rtl_timeout: {away} from home after {self._config.arrival_timeout_seconds:.0f}s"
-                + self._px4_said(sent_at),
+                + self._px4_said(mark),
             )
         return NavigationResult(
             success=True,
@@ -1009,7 +1017,7 @@ class PX4Adapter:
         # MAV_DO_REPOSITION_FLAGS_CHANGE_MODE (PX4 answers UNSUPPORTED
         # without it), param4 yaw (NaN = keep heading).
         ground_speed = float(speed) if speed is not None and speed > 0 else -1.0
-        sent_at = time.monotonic()
+        mark = self._statustext_seen
         ok, reason = self._send_command_int(
             MAV_CMD_DO_REPOSITION,
             MAV_FRAME_GLOBAL,
@@ -1038,7 +1046,7 @@ class PX4Adapter:
             return NavigationResult(
                 success=False,
                 reason=f"arrival_timeout: {where} after {self._config.arrival_timeout_seconds:.0f}s"
-                + self._px4_said(sent_at),
+                + self._px4_said(mark),
             )
         return NavigationResult(
             success=True,
