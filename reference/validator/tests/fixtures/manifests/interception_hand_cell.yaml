@@ -1,0 +1,83 @@
+# Fixture: a manipulation cell whose dexterous hand declares an `interception`
+# block (RFC-0671). The hand can intercept both tracked and ballistic targets,
+# with the closing-time and reaction-latency numbers that make the claim honest.
+# Based on leap_hand_cell (RFC-0586), plus a `ball` class and the interception
+# declaration. US provenance so the bundled US-federal default policy accepts it.
+
+manifest_version: "0.1"
+robot_id: interception_hand_cell_1
+description: Research arm with a dexterous hand that declares interception (RFC-0671).
+
+frames:
+  - name: cell
+    parent: null
+  - name: base_link
+    parent: cell
+
+declared_locations:
+  - name: catch_zone
+    pose: { x: 0.40, y: 0.0, z: 0.60 }
+    frame: cell
+    description: Where an incoming object is intercepted.
+  - name: home_pose
+    pose: { x: 0.0, y: 0.0, z: 0.30 }
+    frame: cell
+
+declared_events:
+  - safety_door_closed
+
+mobility:
+  drive_type: manipulator_base
+  max_velocity: 0.25
+  station_keeping: true
+
+manipulation:
+  arm_count: 1
+  grippers:
+    - name: phantom_hand
+      kind: dexterous
+      force_min_n: 0.5
+      force_max_n: 30.0
+      accepted_classes: [small_part, ball]
+      movable: true
+      dexterity:
+        dof: 21
+        finger_count: 5
+        grasp_types: [power, precision, spherical]
+        supports_in_hand_manipulation: true
+      interception:
+        modes: [tracked, ballistic]
+        closing_time_ms: 80
+        reaction_latency_ms: 40
+        max_target_speed_m_s: 12.0
+  reachable_workspace_m: 0.80
+
+perception:
+  cameras:
+    - name: wrist_rgb
+      movable: true
+      supports_photo: true
+      supports_video: true
+      max_resolution: "1080p"
+  object_vocabulary:
+    - small_part
+    - ball
+
+docking_stations: []
+
+outputs:
+  named_endpoints:
+    - line_controller
+
+provenance:
+  manifest_attestation: self_declared
+  components:
+    - id: dexterous_hand_controller
+      role: critical
+      vendor: research_lab
+      country_of_origin: US
+      country_of_final_assembly: US
+      hbom_ref:
+        format: cyclonedx-1.7
+        uri: ./hbom/dexterous_hand_controller.cdx.json
+        sha256: "5858585858585858585858585858585858585858585858585858585858585858"

@@ -42,6 +42,9 @@ class ErrorCode(StrEnum):
     CAPABILITY_GRASP_TYPE_REQUIRES_DEXTEROUS = "capability.grasp_type_requires_dexterous"
     # RFC-0586: a dexterous hand was addressed but does not declare the grasp_type.
     CAPABILITY_GRASP_TYPE_NOT_DECLARED = "capability.grasp_type_not_declared"
+    # RFC-0671: dynamic-target grasping (target_motion + interception declaration).
+    CAPABILITY_TARGET_MOTION_NOT_SUPPORTED = "capability.target_motion_not_supported"
+    CAPABILITY_TARGET_MOTION_MODE_NOT_DECLARED = "capability.target_motion_mode_not_declared"
     CAPABILITY_MISSING_CAMERA = "capability.missing_camera"
     CAPABILITY_MISSING_SENSOR = "capability.missing_sensor"
     CAPABILITY_MISSING_FRAME = "capability.missing_frame"

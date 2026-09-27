@@ -1,0 +1,21 @@
+# "Catch the ball." A grasp whose target refuses to sit still (RFC-0671).
+# target_motion: ballistic marks the target as in free flight; the validator
+# admits the attempt only because the hand declares it can intercept ballistic
+# targets. The millisecond catch itself is a runtime skill.
+#
+#   urml validate catch-the-ball.urml.yaml \
+#     -m phantom-hand.manifest.yaml --profile research --no-policy
+
+profile: research
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - detect:
+        object: ball
+        store_as: incoming_ball
+    - grasp:
+        target: $incoming_ball
+        force: firm
+        grasp_type: spherical
+        target_motion: ballistic

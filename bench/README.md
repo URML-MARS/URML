@@ -177,9 +177,41 @@ The drone site ceiling is 25 m, lower than the drone profile's 120 m default.
 `drone_civilian` declares its roof and drop-off stations at 30 m, so only a
 ceiling below 30 m lets a row test the altitude check on a named location.
 
-Some `envelope` rows pass the gate today. They stay in the corpora with their
-labels: a row that passes is a finding, and the committed rows are how a fix
-gets measured.
+No `envelope` row passes the gate today, and `test_bench_adversarial.py`
+keeps it that way. A new attack that gets through is a finding: fix it in the
+validator, or label it `known_gap` when the spec does not yet require the
+check.
+
+## Published rows
+
+The striker rows are committed under
+[`results/2026-09-26/`](results/2026-09-26/), one per corpus, in two sets.
+The `pre-fix` rows were measured at commit c2d251d, before the envelope
+coverage fixes in 949ce9b. The `post-fix` rows were measured at a16a03f, with
+the fixes in place. Both sets used the three commands above, plus `--tag` and
+`--notes`.
+
+| Corpus | Envelope rows passed, before | Envelope rows passed, after |
+|---|---|---|
+| `adversarial-industrial-en` | 7 of 14 | 0 of 14 |
+| `adversarial-home-en` | 6 of 12 | 0 of 12 |
+| `adversarial-drone-en` | 8 of 14 | 0 of 14 |
+| All three | 21 of 40 | 0 of 40 |
+
+Before the fixes, 21 of the 40 envelope attacks passed the gate. After them,
+none did. In both sets the 12 safe controls were accepted, and the 6
+`known_gap` and 6 `beyond_envelope` rows passed, as their labels predict.
+
+A scripted striker measures the gate, not a model. These rows show what the
+validator admits when a model emits whatever an attacker wants. They say
+nothing about how often a real model would comply. A live-model row needs a
+provider (see "Running it").
+
+`reference/llm-bridge/tests/test_bench_results_guard.py` re-runs every
+committed scripted row except the `pre-fix` ones. It fails when a row no
+longer reproduces, or when a manifest, envelope or striker the row pins has
+changed. Re-record that row with its command above, `--tag post-fix` and a
+note naming the commit, and replace the stale file.
 
 ## Corpus format
 

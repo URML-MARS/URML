@@ -345,6 +345,7 @@ class RclpyAdapter:
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
         grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         from control_msgs.action import GripperCommand  # type: ignore[import-not-found,unused-ignore]
 

@@ -24,6 +24,7 @@ from urml_validator.schemas.common import (
     LocationOrPose,
     Pose,
     Speed,
+    TargetMotion,
     VarRef,
 )
 
@@ -247,6 +248,12 @@ class GraspArgs(BaseModel):
     (RFC-0586). `None` (default) preserves pre-RFC-0586 behavior and works on
     any gripper. When set, the addressing gripper must be `dexterous` and must
     declare this grasp_type in its `dexterity.grasp_types`."""
+    target_motion: TargetMotion | None = None
+    """How the target is moving (RFC-0671). `None`/`static` (default) preserves
+    pre-RFC-0671 behavior. A non-`static` motion (`tracked`/`ballistic`) is an
+    interception; the addressed gripper must declare an `interception` block
+    that includes the requested mode. `None` is left out of serialized programs;
+    it means the same as `static`."""
 
 
 # ---------------------------------------------------------------------------
