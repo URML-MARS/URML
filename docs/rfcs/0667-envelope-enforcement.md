@@ -2,9 +2,9 @@
 rfc: 0667
 title: Envelope enforcement, evaluation semantics and a reference shield for monitorable properties
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-09-27
 supersedes: —
 superseded-by: —
 ---

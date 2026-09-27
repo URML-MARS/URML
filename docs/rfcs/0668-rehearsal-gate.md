@@ -2,9 +2,9 @@
 rfc: 0668
 title: Rehearsal, a simulated pre-execution gate (urml run and execute --rehearse)
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-09-27
 supersedes: —
 superseded-by: —
 ---

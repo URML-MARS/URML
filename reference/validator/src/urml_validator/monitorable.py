@@ -359,10 +359,14 @@ def _bound_str(bound: tuple[float, float] | None) -> str:
 
 
 def compile_to_stl(node: Node) -> str:
-    """Compile the non-spatial core to STL notation (RTAMT / Reelay dialect).
+    """Compile a property to STL / STREL notation (RTAMT / Reelay / MoonLight dialect).
 
-    Raises NotImplementedError on spatial (STREL) operators; STREL and Copilot
-    compilation are documented follow-ons in RFC-0382.
+    The non-spatial temporal core compiles to STL (`G`/`F`/`U`, `&`/`|`/`->`/`!`,
+    bracketed time bounds). The spatial operators (`somewhere`/`everywhere`/
+    `surround`, dialect `stl_strel`) compile to canonical STREL text, with the
+    bound rendered as a distance band; this is the MoonLight surface (RFC-0382).
+    The compiled string is advisory: the runtime monitor evaluates the AST
+    directly and does not consume this form.
     """
     if isinstance(node, Const):
         return "true" if node.value else "false"
@@ -381,9 +385,15 @@ def compile_to_stl(node: Node) -> str:
             return f"G{_bound_str(node.bound)} {compile_to_stl(node.operand)}"
         if node.op == "eventually":
             return f"F{_bound_str(node.bound)} {compile_to_stl(node.operand)}"
-        raise NotImplementedError(f"spatial operator {node.op!r} has no STL form (STREL is a follow-on)")
+        # STREL spatial quantifiers (dialect stl_strel): the bound is a distance
+        # band in metres. Emitted as canonical STREL text (MoonLight surface).
+        if node.op in ("somewhere", "everywhere"):
+            return f"{node.op}{_bound_str(node.bound)} {compile_to_stl(node.operand)}"
+        raise NotImplementedError(f"unknown temporal operator {node.op!r}")
     if isinstance(node, Binary):
         if node.op == "until":
             return f"({compile_to_stl(node.left)} U{_bound_str(node.bound)} {compile_to_stl(node.right)})"
-        raise NotImplementedError("spatial operator 'surround' has no STL form (STREL is a follow-on)")
+        if node.op == "surround":
+            return f"({compile_to_stl(node.left)} surround{_bound_str(node.bound)} {compile_to_stl(node.right)})"
+        raise NotImplementedError(f"unknown binary operator {node.op!r}")
     raise NotImplementedError(f"unknown node type {type(node).__name__}")
