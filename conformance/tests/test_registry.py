@@ -68,7 +68,7 @@ def test_committed_entries_pass_the_check() -> None:
     result = check_registry(REPO_ROOT)
     assert result.ok, "\n".join(result.problems)
     ids = {checked.entry.id for checked in result.entries if checked.entry is not None}
-    assert ids == {"ardupilot-arducopter-pixhawk", "gopigo3-example-adapter"}
+    assert ids == {"ardupilot-arducopter-pixhawk", "gopigo3-example-adapter", "px4-sitl-sih-quadrotor"}
     for checked in result.entries:
         assert checked.records is not None and checked.records.replayed
 
