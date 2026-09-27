@@ -76,12 +76,15 @@ Useful flags:
 ```bash
 python -m urml_conformance                       # hermetic self-test (MockROSAdapter)
 python -m urml_conformance --filter quadruped    # one family
+python -m urml_conformance --profile drone       # every fixture that lists a profile
 python -m urml_conformance --adapter p:A -v       # full per-case report
 python -m urml_conformance --adapter p:A --report report.json   # JSON report
 ```
 
-`urml conformance run --adapter p:A --filter drone --output report.json`
-does the same from the `urml` command line.
+`urml conformance run --adapter p:A --profile drone --output report.json`
+does the same from the `urml` command line. A registry compatibility claim
+for a profile needs a report that ran every fixture of that profile, which
+is what `--profile` selects.
 
 Or wire it in code, the same hook the reference runtimes' gated CI
 uses:
@@ -108,7 +111,8 @@ PX4 runtime runs the flight-only subset rather than faking perception.
 The JSON report (`urml.conformance-report/1`) says what ran:
 `all_passed`, the `passed` and `failed` counts, the `adapter` spec
 (`urml_ros2_runtime:MockROSAdapter` when you pass none), the
-urml-conformance and urml-validator versions, the `--filter`, the number
+urml-conformance and urml-validator versions, the `--filter` and `--profile`
+selection, the number
 of fixtures, and a sha256 over the fixture files, followed by one result
 per fixture. A report read back must agree with its own results, so an
 edited `all_passed` does not parse.

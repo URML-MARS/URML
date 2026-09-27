@@ -19,7 +19,7 @@ and returns a ``urml.conformance-report/1`` report that says what ran.
 from __future__ import annotations
 
 import importlib
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -445,16 +445,19 @@ def run_suite(
     adapter: str | None = None,
     *,
     filter: str | None = None,
+    profiles: Sequence[str] | None = None,
     root: Path | None = None,
 ) -> ConformanceReport:
     """Run the published fixture set and return a report that says what ran.
 
     ``adapter`` is a ``module:attribute`` spec (a class or a zero-argument
     factory); None runs the hermetic ``MockROSAdapter``. ``filter`` keeps the
-    fixtures whose name contains it. The report records the adapter spec, the
-    package versions, the fixture count, a sha256 over the fixture files that
-    ran, and the filter. No fixture matching the filter gives a report with no
-    results.
+    fixtures whose name contains it. ``profiles`` keeps the fixtures that list
+    any of those profiles: every such fixture, wherever it lives in the suite,
+    which is what a whole-profile compatibility claim needs. The report records
+    the adapter spec, the package versions, the fixture count, a sha256 over the
+    fixture files that ran, the filter and the profiles. No fixture matching the
+    selection gives a report with no results.
 
     Raises ``AdapterSpecError`` when the spec does not resolve.
     """
@@ -463,6 +466,9 @@ def run_suite(
     selected = [(path, load_fixture(path)) for path in fixture_paths(base)]
     if filter is not None:
         selected = [(path, case) for path, case in selected if filter in case.name]
+    wanted = sorted(set(profiles)) if profiles else None
+    if wanted:
+        selected = [(path, case) for path, case in selected if set(case.profiles) & set(wanted)]
     runner = ConformanceRunner(
         cases=[case for _, case in selected], adapter_factory=factory, adapter=adapter
     )
@@ -471,5 +477,6 @@ def run_suite(
         update={
             "fixtures_sha256": fixtures_sha256([path for path, _ in selected], base),
             "filter": filter,
+            "profiles": wanted,
         }
     )

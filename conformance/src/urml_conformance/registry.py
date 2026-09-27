@@ -18,7 +18,7 @@ checker that keeps entries honest::
   ``spec/conformance/v0.1.0.md`` section 3) points at a
   ``urml.conformance-report/1`` report in which every fixture passed, run with
   the entry's own adapter (not the mock) and this repository's
-  urml-conformance version, covering each claimed profile;
+  urml-conformance version, running every fixture of each claimed profile;
 - every validation record replays: the validator, run again on the recorded
   program against the declared inputs, reaches the same verdict with the same
   error codes (``urml_validator.evidence.reverify``);
@@ -54,6 +54,7 @@ from urml_validator.evidence import ValidationRecord, read_records, reverify
 from urml_validator.schemas.manifest import CapabilityManifest
 
 from urml_conformance._version import __version__ as _conformance_version
+from urml_conformance.fixtures import fixture_paths, fixtures_root, load_fixture
 from urml_conformance.report import ConformanceReport
 
 __all__ = [
@@ -558,9 +559,22 @@ class _EntryCheck:
             self.fail("compatibility.report does not record the sha256 of its fixture set")
         if report.fixture_count != len(report.results):
             self.fail("compatibility.report: fixture_count does not match its results")
+        suite = profile_fixtures(self.root)
+        ran = {result.name for result in report.results}
         for profile in claim.profiles:
-            if not any(result.name.startswith(f"{profile}/") for result in report.results):
-                self.fail(f"compatibility.report runs no {profile!r} fixture, but the entry claims that profile")
+            expected = suite.get(profile, set())
+            if not expected:
+                self.fail(f"the conformance suite has no {profile!r} fixture, so a claim for it cannot be checked")
+                continue
+            missing = sorted(expected - ran)
+            if missing:
+                shown = ", ".join(missing[:5]) + (", ..." if len(missing) > 5 else "")
+                self.fail(
+                    f"compatibility.report does not run every {profile!r} fixture: "
+                    f"{len(missing)} of {len(expected)} are missing ({shown}). A claim covers "
+                    f"the whole profile: run `urml conformance run --adapter ... --profile "
+                    f"{profile} --output ...`"
+                )
 
     def check_records(self, entry: Entry) -> None:
         assert entry.validation_records is not None
@@ -644,6 +658,23 @@ def _summarize(records: list[ValidationRecord], *, replayed: bool) -> RecordSumm
         warning_codes=dict(sorted(warnings.items())),
         replayed=replayed,
     )
+
+
+def profile_fixtures(root: Path) -> dict[str, set[str]]:
+    """Every fixture name in the suite, by each profile the fixture lists.
+
+    A compatibility claim for a profile covers all of them, wherever they live
+    in the suite (a drone fixture can sit under `fleet/` or `rulebook/`).
+    """
+    base = root / "conformance" / "fixtures"
+    if not base.is_dir():
+        base = fixtures_root()
+    by_profile: dict[str, set[str]] = {}
+    for path in fixture_paths(base):
+        case = load_fixture(path)
+        for profile in case.profiles:
+            by_profile.setdefault(profile, set()).add(case.name)
+    return by_profile
 
 
 def check_registry(root: Path | None = None) -> CheckResult:

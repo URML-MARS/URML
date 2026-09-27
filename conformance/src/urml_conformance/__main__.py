@@ -109,6 +109,17 @@ def main(argv: list[str] | None = None) -> int:
         help="Only run fixtures whose name contains SUBSTR (e.g. 'quadruped').",
     )
     parser.add_argument(
+        "--profile",
+        dest="profiles",
+        action="append",
+        default=None,
+        metavar="NAME",
+        help=(
+            "Only run fixtures that list this profile (repeatable). A registry "
+            "compatibility claim for a profile needs every one of them to pass."
+        ),
+    )
+    parser.add_argument(
         "--goal-line",
         action="store_true",
         help="Run the goal-line lane instead: hand every rejected fixture to the "
@@ -151,11 +162,17 @@ def main(argv: list[str] | None = None) -> int:
         return _run_goal_line(cases, factory, args.runtime, target, args.verbose)
 
     try:
-        report = run_suite(args.adapter, filter=args.filter)
+        report = run_suite(args.adapter, filter=args.filter, profiles=args.profiles)
     except AdapterSpecError as exc:
         raise SystemExit(str(exc)) from exc
     if not report.results:
-        found = f"no fixtures match --filter {args.filter!r}" if args.filter else "no fixtures found"
+        found = (
+            f"no fixtures match --filter {args.filter!r}"
+            if args.filter
+            else f"no fixtures list --profile {args.profiles!r}"
+            if args.profiles
+            else "no fixtures found"
+        )
         print(found, file=sys.stderr)
         return 2
 

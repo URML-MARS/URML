@@ -63,6 +63,29 @@ def test_conformance_run_records_the_adapter_and_filter(
     assert payload["results"] and all(c["name"].startswith("quadruped/") for c in payload["results"])
 
 
+def test_conformance_run_selects_a_whole_profile(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--profile runs every fixture that lists the profile, and the report says so."""
+    output = tmp_path / "report.json"
+    rc = main(["conformance", "run", "--profile", "drone", "--output", str(output)])
+    captured = capsys.readouterr()
+    assert rc == 0, f"stderr={captured.err}"
+    payload = json.loads(output.read_bytes())
+    assert payload["profiles"] == ["drone"]
+    folders = {c["name"].split("/", 1)[0] for c in payload["results"]}
+    assert {"drone", "fleet", "rulebook"} <= folders
+
+
+def test_conformance_run_unknown_profile_is_a_usage_error(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = main(["conformance", "run", "--profile", "no-such-profile"])
+    assert rc == 2
+    assert "no fixtures list --profile" in capsys.readouterr().err
+
+
 def test_conformance_run_bad_adapter_is_a_usage_error(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
