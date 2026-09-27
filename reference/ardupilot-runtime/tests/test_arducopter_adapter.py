@@ -547,6 +547,53 @@ def test_output_rejected_ack(fake: dict[str, Any]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Payload delivery (RFC-0684): PayloadAdapter.send_payload_release
+# ---------------------------------------------------------------------------
+
+
+def test_payload_release_latch_opens_the_gripper(fake: dict[str, Any]) -> None:
+    a = _adapter(payload_mechanisms={"drop_hook": {"kind": "gripper", "instance": 3}})
+    assert a.send_payload_release(mode="latch", mechanism="drop_hook").success is True
+    calls = [c["params"][:2] for c in fake["connections"][0].mav.command_long_calls if c["command"] == 211]
+    assert calls == [(3.0, 0.0)]  # DO_GRIPPER RELEASE
+
+
+def test_payload_release_winch_lowers_opens_latch_and_retracts(fake: dict[str, Any]) -> None:
+    a = _adapter(
+        payload_mechanisms={
+            "delivery_winch": {"kind": "winch", "deliver_length_m": 12.0, "rate_m_s": 0.5},
+            "hook": {"kind": "gripper", "instance": 1},
+        }
+    )
+    result = a.send_payload_release(mode="winch", mechanism="delivery_winch", latch="hook", height=8.0)
+    assert result.success is True
+    winch = [c["params"][:4] for c in fake["connections"][0].mav.command_long_calls if c["command"] == 42600]
+    assert winch == [(1.0, 1.0, 8.0, 0.5), (1.0, 1.0, -8.0, 0.5)]  # lower 8 m, retract 8 m
+    latch = [c["params"][:2] for c in fake["connections"][0].mav.command_long_calls if c["command"] == 211]
+    assert latch == [(1.0, 0.0)]  # DO_GRIPPER RELEASE at the bottom
+
+
+def test_payload_release_winch_caps_height_at_line_length(fake: dict[str, Any]) -> None:
+    a = _adapter(payload_mechanisms={"w": {"kind": "winch", "deliver_length_m": 5.0, "rate_m_s": 1.0}})
+    assert a.send_payload_release(mode="winch", mechanism="w", height=40.0).success is True
+    winch = [c["params"][:4] for c in fake["connections"][0].mav.command_long_calls if c["command"] == 42600]
+    assert winch == [(1.0, 1.0, 5.0, 1.0), (1.0, 1.0, -5.0, 1.0)]  # capped at deliver_length_m
+
+
+def test_payload_release_unconfigured_mechanism_is_clean_failure(fake: dict[str, Any]) -> None:
+    result = _adapter().send_payload_release(mode="latch", mechanism="ghost")
+    assert result.success is False
+    assert "payload_mechanism_not_configured" in (result.reason or "")
+
+
+def test_payload_release_winch_mode_needs_a_winch_binding(fake: dict[str, Any]) -> None:
+    a = _adapter(payload_mechanisms={"m": {"kind": "gripper"}})
+    result = a.send_payload_release(mode="winch", mechanism="m")
+    assert result.success is False
+    assert "payload_mechanism_kind_mismatch" in (result.reason or "")
+
+
+# ---------------------------------------------------------------------------
 # Probe
 # ---------------------------------------------------------------------------
 
