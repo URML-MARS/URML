@@ -1,0 +1,21 @@
+name: home/listen_without_speech_input_rejected
+description: >
+  Capability negative: `listen` needs a declared speech-input sensor
+  (`perception.sensors` with measurement_type `speech`). A cell without one
+  cannot be asked to listen, so Pass 2 rejects with capability.missing_speech_input.
+
+manifest: industrial_cell
+profiles: [home]
+
+program:
+  profile: home
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - listen: { prompt: "Say a command.", store_as: reply }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.missing_speech_input

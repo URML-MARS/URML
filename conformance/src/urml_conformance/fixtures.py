@@ -146,6 +146,8 @@ MANIFEST_REGISTRY: dict[str, Path] = {
     "cobot_cell": _VALIDATOR_FIXTURES / "manifests" / "cobot_cell.yaml",
     # Educational micro:bit/Arduino buggy (zero ROS, serial).
     "microbit_edu": _VALIDATOR_FIXTURES / "manifests" / "microbit_edu.yaml",
+    # RFC-0630: relative-motion (drive/turn) educational buggy.
+    "educational_buggy": _VALIDATOR_FIXTURES / "manifests" / "educational_buggy.yaml",
     # Track C — compliant parts (grippers, FT sensor, vision, safety lidar).
     "schunk_mpg_cell": _VALIDATOR_FIXTURES / "manifests" / "schunk_mpg_cell.yaml",
     "piab_vacuum_cell": _VALIDATOR_FIXTURES / "manifests" / "piab_vacuum_cell.yaml",

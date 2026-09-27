@@ -1,0 +1,22 @@
+name: educational/drive_distance_exceeded_rejected
+description: >
+  RFC-0630 / RFC-0665 negative: a drive of 10 m exceeds the buggy's declared
+  `mobility.max_relative_distance` of 5 m. A dead-reckoning move is bounded so it
+  cannot run open-loop past its declared range; Pass 2 rejects with
+  capability.relative_distance_exceeded.
+
+manifest: educational_buggy
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - drive: { distance: 10.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - capability.relative_distance_exceeded
