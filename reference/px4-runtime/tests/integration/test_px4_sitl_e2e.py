@@ -22,8 +22,8 @@ show that
   - the vehicle armed,
   - the highest relative altitude reached at least 90 percent of the
     fixture's take-off altitude,
-  - the vehicle travelled at least 90 percent of the way to the waypoint
-    (horizontal distance from home), and
+  - the vehicle came within twice the adapter's acceptance radius of the
+    waypoint (horizontally, from the witness's own view of home), and
   - the vehicle ended on the ground (EXTENDED_SYS_STATE ON_GROUND).
 
 The witness numbers are printed (run pytest with ``-s``) so a run can be
@@ -98,6 +98,18 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2 * _EARTH_RADIUS_M * math.asin(math.sqrt(min(1.0, a)))
 
 
+def _offset(lat: float, lon: float, north: float, east: float) -> tuple[float, float]:
+    """A point ``north`` / ``east`` metres from ``(lat, lon)`` (flat earth; fine at waypoint scale).
+
+    Deliberately not the adapter's projection, so the witness checks the
+    flight with its own arithmetic.
+    """
+    return (
+        lat + math.degrees(north / _EARTH_RADIUS_M),
+        lon + math.degrees(east / (_EARTH_RADIUS_M * math.cos(math.radians(lat)))),
+    )
+
+
 @dataclass
 class _Seen:
     """What the witness has seen of the vehicle so far."""
@@ -111,6 +123,7 @@ class _Seen:
     landed_states: list[int] = field(default_factory=list)
     max_relative_alt_m: float | None = None
     max_distance_from_home_m: float = 0.0
+    closest_to_waypoint_m: float | None = None
     last_relative_alt_m: float | None = None
 
 
@@ -118,13 +131,15 @@ class _Witness:
     """Listens to PX4 SITL's ground-station link and records what the vehicle did.
 
     It never sends a message, so it cannot influence the flight; it only
-    reads what the autopilot streams on its own.
+    reads what the autopilot streams on its own. ``waypoint`` is the
+    (north, east) offset from home whose closest approach it records.
     """
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, waypoint: tuple[float, float]) -> None:
         from pymavlink import mavutil
 
         self._conn = mavutil.mavlink_connection(url)
+        self._waypoint = waypoint
         self._seen = _Seen()
         self._lock = threading.Lock()
         self._stop = threading.Event()
@@ -179,8 +194,13 @@ class _Witness:
                             rel if seen.max_relative_alt_m is None else max(seen.max_relative_alt_m, rel)
                         )
                     if seen.home is not None:
-                        d = _haversine_m(msg.lat / 1e7, msg.lon / 1e7, *seen.home)
+                        lat, lon = msg.lat / 1e7, msg.lon / 1e7
+                        d = _haversine_m(lat, lon, *seen.home)
                         seen.max_distance_from_home_m = max(seen.max_distance_from_home_m, d)
+                        w = _haversine_m(lat, lon, *_offset(*seen.home, *self._waypoint))
+                        seen.closest_to_waypoint_m = (
+                            w if seen.closest_to_waypoint_m is None else min(seen.closest_to_waypoint_m, w)
+                        )
 
 
 def _wait_for_px4_heartbeat(connection_url: str, timeout_s: float) -> bool:
@@ -225,8 +245,9 @@ def test_flight_only_fixture_flies_px4_sitl() -> None:
     waypoint = config.resolve_location(str(_step_args(cases[0].program, "move_to")["location"]))
     assert waypoint is not None, "the adapter config does not bind the fixture's waypoint"
     waypoint_distance = math.hypot(waypoint.north, waypoint.east)
+    reach = 2 * config.arrival_radius_m
 
-    witness = _Witness(_WITNESS_URL)
+    witness = _Witness(_WITNESS_URL, (waypoint.north, waypoint.east))
     witness.start()
     adapters: list[PX4Adapter] = []
     started = time.monotonic()
@@ -266,7 +287,8 @@ def test_flight_only_fixture_flies_px4_sitl() -> None:
         "\nPX4 SITL witness (udp 14550, listen-only): "
         f"samples={seen.samples} armed_seen={seen.armed_seen} "
         f"max_relative_alt_m={seen.max_relative_alt_m} (take-off target {takeoff_alt:.1f}) "
-        f"max_distance_from_home_m={seen.max_distance_from_home_m:.2f} (waypoint {waypoint_distance:.1f}) "
+        f"max_distance_from_home_m={seen.max_distance_from_home_m:.2f} "
+        f"closest_to_waypoint_m={seen.closest_to_waypoint_m} (waypoint {waypoint_distance:.1f} m from home) "
         f"landed_states={seen.landed_states} final_landed_state={seen.landed_state} "
         f"armed_at_end={seen.armed_now} fixture_seconds={flown_s:.1f}"
     )
@@ -278,9 +300,9 @@ def test_flight_only_fixture_flies_px4_sitl() -> None:
         f"the fixture passed but the vehicle only reached {seen.max_relative_alt_m} m "
         f"of a {takeoff_alt:.1f} m take-off"
     )
-    assert seen.max_distance_from_home_m >= 0.9 * waypoint_distance, (
-        f"the fixture passed but the vehicle only got {seen.max_distance_from_home_m:.1f} m "
-        f"from home toward a {waypoint_distance:.1f} m waypoint"
+    assert seen.closest_to_waypoint_m is not None and seen.closest_to_waypoint_m <= reach, (
+        f"the fixture passed but the vehicle came no closer than {seen.closest_to_waypoint_m} m "
+        f"to the waypoint ({reach:.1f} m allowed)"
     )
     assert seen.landed_state == _MAV_LANDED_STATE_ON_GROUND, (
         f"the vehicle did not end on the ground (landed_state={seen.landed_state})"

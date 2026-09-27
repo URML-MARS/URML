@@ -139,7 +139,7 @@ report = runner.run()
 **v0.1 (this release):**
 - Adapter loads on every host (lazy pymavlink import; clear actionable error if `pymavlink` is missing).
 - Unit tests with a scripted fake PX4 cover all 15 Protocol methods (including the not-applicable ones). The fake arms, climbs, repositions and lands on a simulated clock, so each flight primitive's success and failure paths (arm refused, take-off timeout, reposition never arriving, landing timeout) are tested against vehicle state, not against acks.
-- Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`, gated by `URML_PX4_SITL=1`). A listen-only witness on PX4's ground-station port checks that the vehicle armed, climbed to at least 90 percent of the take-off altitude, travelled toward the waypoint and ended on the ground.
+- Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`, gated by `URML_PX4_SITL=1`). A listen-only witness on PX4's ground-station port checks that the vehicle armed, climbed to at least 90 percent of the take-off altitude, came within twice the acceptance radius of the waypoint, and ended on the ground.
 
 **Landed since v0.1:**
 - `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).
