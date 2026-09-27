@@ -1,10 +1,11 @@
 # Deployment-side PX4 adapter config for the PX4 SITL end-to-end test.
 #
 # The validator resolves location names against the manifest; the
-# adapter resolves those names to local-NED coordinates in the running
-# autopilot's frame via this file. The coordinates below place
-# roof_north 15m north of launch at 30m AGL and home back at the launch
-# point, which suits a default PX4 SITL world.
+# adapter resolves those names to offsets from PX4's home position via
+# this file, converts them to WGS84, and flies them with
+# MAV_CMD_DO_REPOSITION. The coordinates below place roof_north 15m north
+# of home at 30m above home, and home back at the launch point, which
+# suits a default PX4 SITL world.
 #
 # IMPORTANT: these poses are sim-specific. Running against different
 # SITL terrain or a real aircraft means editing location_to_pose. This
@@ -12,7 +13,9 @@
 # the pose binding lives here, at the deployment boundary.
 #
 # A stock PX4 SITL exposes MAVLink on UDP 14540 (the standard offboard
-# port), so the connection defaults are left unchanged.
+# port), so the connection defaults are left unchanged. The flight
+# timeouts and acceptance values keep their defaults too (see the
+# runtime README).
 
 connection_url: "udp:127.0.0.1:14540"
 

@@ -6,11 +6,20 @@ The adapter imports pymavlink lazily. These tests install a fake
   - The test file collects on every host (Linux, Windows, CI runners).
   - Every adapter code path is exercised against a controllable fake.
   - Real MAVLink behavior is verified separately under live integration
-    tests (PX4 SITL; documented follow-up in the README).
+    tests (PX4 SITL: ``tests/integration/test_px4_sitl_e2e.py``).
+
+The fake is a small scripted PX4 multicopter, not an ACK echo. It keeps
+the state a flight primitive has to confirm (the armed bit, altitude
+above home, position, landed state), moves when the adapter's commands
+would move a real vehicle, and streams HEARTBEAT, GLOBAL_POSITION_INT,
+EXTENDED_SYS_STATE and HOME_POSITION on a simulated clock. Class-level
+knobs make it refuse, stall or never arrive, so every failure path is a
+test: an ACK alone never produces a success.
 """
 
 from __future__ import annotations
 
+import math
 import sys
 from collections.abc import Iterator
 from pathlib import Path
@@ -19,21 +28,80 @@ from typing import Any
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Fake pymavlink machinery
 # ---------------------------------------------------------------------------
+
+HOME_LAT = 47.397742
+HOME_LON = 8.545594
+HOME_ALT = 488.0  # metres AMSL
+EARTH_RADIUS_M = 6_371_000.0
+
+PX4_SYSID = 1
+PX4_COMPID = 1
+
+DT = 0.05  # simulated seconds per blocking read
+
+ON_GROUND, IN_AIR, TAKEOFF, LANDING = 1, 2, 3, 4
+
+
+class _Msg(SimpleNamespace):
+    """A MAVLink message stand-in with ``get_type()`` and a source."""
+
+    def __init__(self, mtype: str, *, src: tuple[int, int] = (PX4_SYSID, PX4_COMPID), **fields: Any) -> None:
+        super().__init__(**fields)
+        self._mtype = mtype
+        self._src = src
+
+    def get_type(self) -> str:
+        return self._mtype
+
+    def get_srcSystem(self) -> int:  # noqa: N802 (pymavlink API name)
+        return self._src[0]
+
+    def get_srcComponent(self) -> int:  # noqa: N802 (pymavlink API name)
+        return self._src[1]
+
+
+class _SimClock:
+    """Stands in for the adapter module's ``time``; reads advance it."""
+
+    def __init__(self) -> None:
+        self.now = 1000.0
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += max(0.0, seconds)
+
+
+_CLOCK = _SimClock()
+
+
+def _north_east(lat: float, lon: float) -> tuple[float, float]:
+    north = math.radians(lat - HOME_LAT) * EARTH_RADIUS_M
+    east = math.radians(lon - HOME_LON) * EARTH_RADIUS_M * math.cos(math.radians(HOME_LAT))
+    return north, east
+
+
+def _lat_lon(north: float, east: float) -> tuple[float, float]:
+    lat = HOME_LAT + math.degrees(north / EARTH_RADIUS_M)
+    lon = HOME_LON + math.degrees(east / (EARTH_RADIUS_M * math.cos(math.radians(HOME_LAT))))
+    return lat, lon
 
 
 class _FakeMavLink:
     """Stand-in for the `mav` attribute of a pymavlink connection.
 
-    Records every command_long_send / set_position_target_local_ned_send /
-    statustext_send call so tests can assert on them.
+    Records every command so tests can assert on ids and parameters, and
+    hands commands to the simulated vehicle.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, px4: _FakePX4) -> None:
+        self._px4 = px4
         self.command_long_calls: list[dict[str, Any]] = []
+        self.command_int_calls: list[dict[str, Any]] = []
         self.set_position_target_calls: list[dict[str, Any]] = []
         self.statustext_calls: list[dict[str, Any]] = []
 
@@ -43,106 +111,308 @@ class _FakeMavLink:
         target_component: int,
         command: int,
         confirmation: int,
+        *params: float,
+    ) -> None:
+        self.command_long_calls.append(
+            {"target": (target_system, target_component), "command": command, "params": tuple(params)}
+        )
+        self._px4.on_command(command, tuple(params))
+
+    def command_int_send(
+        self,
+        target_system: int,
+        target_component: int,
+        frame: int,
+        command: int,
+        current: int,
+        autocontinue: int,
         p1: float,
         p2: float,
         p3: float,
         p4: float,
-        p5: float,
-        p6: float,
-        p7: float,
-    ) -> None:
-        self.command_long_calls.append(
-            {
-                "target_system": target_system,
-                "target_component": target_component,
-                "command": command,
-                "confirmation": confirmation,
-                "params": (p1, p2, p3, p4, p5, p6, p7),
-            }
-        )
-
-    def set_position_target_local_ned_send(
-        self,
-        time_boot_ms: int,
-        target_system: int,
-        target_component: int,
-        coordinate_frame: int,
-        type_mask: int,
-        x: float,
-        y: float,
+        x: int,
+        y: int,
         z: float,
-        vx: float,
-        vy: float,
-        vz: float,
-        afx: float,
-        afy: float,
-        afz: float,
-        yaw: float,
-        yaw_rate: float,
     ) -> None:
-        self.set_position_target_calls.append(
+        self.command_int_calls.append(
             {
-                "frame": coordinate_frame,
-                "type_mask": type_mask,
-                "position": (x, y, z),
-                "velocity": (vx, vy, vz),
-                "yaw": yaw,
+                "target": (target_system, target_component),
+                "frame": frame,
+                "command": command,
+                "params": (p1, p2, p3, p4),
+                "x": x,
+                "y": y,
+                "z": z,
             }
         )
+        self._px4.on_command_int(command, (p1, p2, p3, p4), x, y, z)
+
+    def set_position_target_local_ned_send(self, *args: Any) -> None:
+        self.set_position_target_calls.append({"args": args})
 
     def statustext_send(self, severity: int, text: bytes) -> None:
         self.statustext_calls.append({"severity": severity, "text": text})
 
 
-class _FakeConnection:
-    """Configurable fake pymavlink connection.
+class _FakePX4:
+    """Scripted PX4 multicopter behind a fake pymavlink connection.
 
-    Tests set:
-      - ``ack_result`` (int): MAV_RESULT value to return from
-        command_long → COMMAND_ACK. 0 = ACCEPTED. -1 = no ACK (timeout).
-      - ``recv_match_responses``: queue of messages to deliver for
-        recv_match calls. Each entry is a dict {"type": ..., "msg": ...}
-        or ``None`` to simulate a timeout.
+    The vehicle streams one telemetry message per ``DT`` of simulated
+    time and moves by ``DT`` of flight per message. Like a UDP socket, the
+    link holds everything streamed while nobody read it: a non-blocking
+    read replays that backlog (the flight included) up to the current
+    clock, a blocking read that has caught up waits ``DT`` for the next
+    message.
+
+    Class-level knobs (reset per test by the fixture):
+      - ``ack``: {command_id: MAV_RESULT}; missing -> accepted (0);
+        ``-1`` -> never acked.
+      - ``stray_ack``: every command is preceded on the link by an
+        ACCEPTED ack for a different command.
+      - ``arm_sticks``: an accepted arm sets the armed bit.
+      - ``climb_rate`` / ``cruise_speed`` / ``descent_rate``: m/s; 0 means
+        the vehicle never climbs / never moves / never descends.
+      - ``rtl_lands``: PX4's RTL descends and lands after reaching home.
+      - ``home_known``: HOME_POSITION is streamed.
+      - ``home_shift_on_arm``: metres PX4's home altitude moves when it
+        arms (PX4 re-sets home to the vehicle's estimate at arming).
+      - ``autopilot``: MAV_AUTOPILOT of the vehicle heartbeat.
+      - ``gcs_heartbeat_first``: a ground station's heartbeat arrives
+        before the autopilot's, and ground-station heartbeats keep
+        arriving in the stream.
+      - ``start_armed_in_air``: the vehicle starts armed at 30 m, 15 m north.
+      - ``queued``: messages delivered first for a matching type
+        (measurement / wait tests).
     """
 
-    ack_result: int = 0
-    recv_match_responses: list[Any] = []  # noqa: RUF012  — shared, reset per test
+    ack: dict[int, int] = {}  # noqa: RUF012
+    stray_ack: bool = False
+    arm_sticks: bool = True
+    climb_rate: float = 3.0
+    cruise_speed: float = 5.0
+    descent_rate: float = 1.5
+    rtl_lands: bool = True
+    home_known: bool = True
+    home_shift_on_arm: float = 0.0
+    autopilot: int = 12
+    heartbeat_answers: bool = True
+    gcs_heartbeat_first: bool = False
+    start_armed_in_air: bool = False
+    queued: list[Any] = []  # noqa: RUF012
 
-    def __init__(self, *_: Any, **__: Any) -> None:
-        self.target_system = 1
-        self.target_component = 1
-        self.mav = _FakeMavLink()
-        self.heartbeat_waits: int = 0
+    def __init__(self, url: str, *_: Any, **kwargs: Any) -> None:
+        self.url = url
+        self.kwargs = kwargs
+        self.target_system = PX4_SYSID
+        self.target_component = PX4_COMPID
+        self.mav = _FakeMavLink(self)
+        self.heartbeat_waits = 0
         self._closed = False
+        self.armed = False
+        self.north = 0.0
+        self.east = 0.0
+        self.up = 0.0
+        self.home_alt = HOME_ALT
+        self.mode = "hold"
+        self.goal: tuple[float, float, float] | None = None
+        self.touchdown_at: float | None = None
+        self.max_up = 0.0
+        self.pending: list[_Msg] = []
+        self.t_emit = _CLOCK.now  # simulated time the link has streamed up to
+        self._cycle = 0
+        self._gcs_sent = False
+        if _FakePX4.start_armed_in_air:
+            self.armed = True
+            self.up = 30.0
+            self.north = 15.0
+            self.goal = (15.0, 0.0, 30.0)
+            self.max_up = 30.0
 
-    def wait_heartbeat(self, *, timeout: float = 5.0) -> None:
+    # -- pymavlink surface ------------------------------------------------
+
+    def wait_heartbeat(self, *, timeout: float = 5.0) -> Any:
         self.heartbeat_waits += 1
+        if not _FakePX4.heartbeat_answers:
+            _CLOCK.sleep(timeout)
+            return None
+        if _FakePX4.gcs_heartbeat_first and not self._gcs_sent:
+            self._gcs_sent = True
+            return self._gcs_heartbeat()
+        return self._telemetry("HEARTBEAT")
 
     def recv_match(
         self,
         *,
-        type: str | None = None,  # noqa: A002 — pymavlink uses `type`
+        type: Any = None,  # pymavlink's keyword
         blocking: bool = False,
-        timeout: float = 0.0,
+        timeout: float | None = None,
     ) -> Any:
-        # Always-on responder for COMMAND_ACK: return the configured ack
-        # result. (Tests set ack_result before sending the command.)
-        if type == "COMMAND_ACK":
-            if _FakeConnection.ack_result < 0:
+        wanted = None if type is None else ({type} if isinstance(type, str) else set(type))
+        # Queued test messages behave like data already on the socket.
+        while _FakePX4.queued:
+            msg = _FakePX4.queued.pop(0)
+            if msg is None:
+                _CLOCK.sleep(timeout or 0.0)
                 return None
-            return SimpleNamespace(result=_FakeConnection.ack_result)
-        # For other types, drain from the queued responses.
-        if _FakeConnection.recv_match_responses:
-            response = _FakeConnection.recv_match_responses.pop(0)
-            if response is None:
+            if isinstance(msg, dict):
+                if wanted is None or msg["type"] in wanted:
+                    return msg["msg"]
+                continue
+            if wanted is None or msg.get_type() in wanted:
+                return msg
+        # Like a socket, a read consumes what it skips.
+        while self.pending:
+            msg = self.pending.pop(0)
+            if wanted is None or msg.get_type() in wanted:
+                return msg
+        kinds = self._streamed(wanted)
+        if not kinds:  # nothing this vehicle streams matches: the read times out
+            if blocking:
+                _CLOCK.sleep(timeout or 0.0)
+            return None
+        if self.t_emit + DT > _CLOCK.now + 1e-9:  # caught up with the clock
+            if not blocking:
                 return None
-            if isinstance(response, dict):
-                return response.get("msg") if response.get("type") == type else None
-            return response
-        return None
+            _CLOCK.sleep(DT)
+        self.t_emit += DT
+        self._step(DT)
+        kind = kinds[self._cycle % len(kinds)]
+        self._cycle += 1
+        if kind == "GCS_HEARTBEAT":
+            return self._gcs_heartbeat()
+        return self._telemetry(kind)
 
     def close(self) -> None:
         self._closed = True
+
+    # -- vehicle ----------------------------------------------------------
+
+    def _streamed(self, wanted: set[str] | None) -> list[str]:
+        kinds = ["GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "HEARTBEAT"]
+        if _FakePX4.home_known:
+            kinds.append("HOME_POSITION")
+        if _FakePX4.gcs_heartbeat_first:
+            kinds.append("GCS_HEARTBEAT")
+        return [k for k in kinds if wanted is None or (k if k != "GCS_HEARTBEAT" else "HEARTBEAT") in wanted]
+
+    def _ack(self, command: int, result: int) -> None:
+        # PX4 sends STATUSTEXT only to links with a ground-station heartbeat;
+        # the adapter sends none, so a refusal is the ack alone.
+        if result >= 0:
+            self.pending.append(_Msg("COMMAND_ACK", command=command, result=result))
+
+    def on_command(self, command: int, params: tuple[float, ...]) -> None:
+        if _FakePX4.stray_ack:
+            self.pending.append(_Msg("COMMAND_ACK", command=command + 1, result=0))
+        result = _FakePX4.ack.get(command, 0)
+        if command == 512:  # REQUEST_MESSAGE
+            self._ack(command, result)
+            if int(params[0]) == 242 and _FakePX4.home_known:
+                self.pending.append(self._telemetry("HOME_POSITION"))
+            return
+        if result == 0:
+            if command == 400:  # ARM_DISARM
+                if params[0] == 1.0 and _FakePX4.arm_sticks:
+                    self.armed = True
+                    self.home_alt += _FakePX4.home_shift_on_arm
+                elif params[0] == 0.0 and self.up <= 0.05:
+                    self.armed = False
+            elif command == 22:  # NAV_TAKEOFF, param7 AMSL
+                self.mode = "takeoff"
+                self.goal = (self.north, self.east, params[6] - self.home_alt)
+            elif command == 20:  # RTL
+                self.mode = "rtl"
+                self.goal = (0.0, 0.0, self.up)
+            elif command == 21:  # LAND
+                self.mode = "land"
+                self.goal = (self.north, self.east, 0.0)
+        self._ack(command, result)
+
+    def on_command_int(self, command: int, params: tuple[float, ...], x: int, y: int, z: float) -> None:
+        result = _FakePX4.ack.get(command, 0)
+        if command == 192 and result == 0 and int(params[1]) != 1:
+            result = 3  # PX4 v1.17: UNSUPPORTED without the change-mode flag
+        if command == 192 and result == 0 and self.armed:
+            north, east = _north_east(x / 1e7, y / 1e7)
+            up = self.up if math.isnan(z) else z - self.home_alt
+            self.mode = "hold"
+            self.goal = (north, east, up)
+        self._ack(command, result)
+
+    def _step(self, dt: float) -> None:
+        if self.touchdown_at is not None and self.armed and self.t_emit - self.touchdown_at >= 2.0:
+            self.armed = False  # PX4 disarms after landing (COM_DISARM_LAND)
+        if not self.armed or self.goal is None:
+            return
+        goal_n, goal_e, goal_up = self.goal
+        if self.mode == "takeoff":
+            if self.climb_rate > 0:
+                self.up = min(goal_up, self.up + self.climb_rate * dt)
+            if self.up >= goal_up:
+                self.mode = "hold"  # PX4 switches to Hold when the take-off completes
+        elif self.mode in ("hold", "rtl"):
+            dn, de = goal_n - self.north, goal_e - self.east
+            dist = math.hypot(dn, de)
+            step = self.cruise_speed * dt
+            if dist <= step:
+                self.north, self.east = goal_n, goal_e
+                if self.mode == "rtl" and self.rtl_lands:
+                    self.mode = "land"
+                    self.goal = (goal_n, goal_e, 0.0)
+            elif step > 0:
+                self.north += dn / dist * step
+                self.east += de / dist * step
+            if self.mode == "hold":
+                rate = self.climb_rate if goal_up > self.up else self.descent_rate
+                delta = goal_up - self.up
+                self.up += max(-rate * dt, min(rate * dt, delta))
+        elif self.mode == "land" and self.descent_rate > 0:
+            self.up = max(0.0, self.up - self.descent_rate * dt)
+            if self.up == 0.0 and self.touchdown_at is None:
+                self.touchdown_at = self.t_emit
+        self.max_up = max(self.max_up, self.up)
+
+    def landed_state(self) -> int:
+        if self.up <= 0.05:
+            return ON_GROUND
+        if self.mode == "land":
+            return LANDING
+        if self.mode == "takeoff":
+            return TAKEOFF
+        return IN_AIR
+
+    def _gcs_heartbeat(self) -> _Msg:
+        return _Msg("HEARTBEAT", src=(255, 190), type=6, autopilot=8, base_mode=0, custom_mode=0)
+
+    def _telemetry(self, kind: str) -> _Msg:
+        if kind == "HEARTBEAT":
+            return _Msg(
+                "HEARTBEAT",
+                type=2,
+                autopilot=_FakePX4.autopilot,
+                base_mode=(128 if self.armed else 0) | 29,
+                custom_mode=0,
+                system_status=4 if self.armed else 3,
+            )
+        if kind == "GLOBAL_POSITION_INT":
+            lat, lon = _lat_lon(self.north, self.east)
+            return _Msg(
+                "GLOBAL_POSITION_INT",
+                lat=round(lat * 1e7),
+                lon=round(lon * 1e7),
+                alt=round((self.home_alt + self.up) * 1000),
+                relative_alt=round(self.up * 1000),
+            )
+        if kind == "EXTENDED_SYS_STATE":
+            return _Msg("EXTENDED_SYS_STATE", vtol_state=0, landed_state=self.landed_state())
+        if kind == "HOME_POSITION":
+            return _Msg(
+                "HOME_POSITION",
+                latitude=round(HOME_LAT * 1e7),
+                longitude=round(HOME_LON * 1e7),
+                altitude=round(self.home_alt * 1000),
+            )
+        raise AssertionError(kind)
 
 
 def _make_fake_module(name: str, **attrs: Any) -> ModuleType:
@@ -154,13 +424,26 @@ def _make_fake_module(name: str, **attrs: Any) -> ModuleType:
 
 def _install_fake_pymavlink(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     """Install fake pymavlink into sys.modules; return shared state."""
-    _FakeConnection.ack_result = 0
-    _FakeConnection.recv_match_responses = []
+    _FakePX4.ack = {}
+    _FakePX4.stray_ack = False
+    _FakePX4.arm_sticks = True
+    _FakePX4.climb_rate = 3.0
+    _FakePX4.cruise_speed = 5.0
+    _FakePX4.descent_rate = 1.5
+    _FakePX4.rtl_lands = True
+    _FakePX4.home_known = True
+    _FakePX4.home_shift_on_arm = 0.0
+    _FakePX4.autopilot = 12
+    _FakePX4.heartbeat_answers = True
+    _FakePX4.gcs_heartbeat_first = False
+    _FakePX4.start_armed_in_air = False
+    _FakePX4.queued = []
+    _CLOCK.now = 1000.0
 
     captured: dict[str, Any] = {"connections": []}
 
-    def _mavlink_connection(*args: Any, **kwargs: Any) -> _FakeConnection:
-        conn = _FakeConnection(*args, **kwargs)
+    def _mavlink_connection(url: str, *args: Any, **kwargs: Any) -> _FakePX4:
+        conn = _FakePX4(url, *args, **kwargs)
         captured["connections"].append(conn)
         return conn
 
@@ -172,12 +455,46 @@ def _install_fake_pymavlink(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
 
     monkeypatch.setitem(sys.modules, "pymavlink", pymavlink)
     monkeypatch.setitem(sys.modules, "pymavlink.mavutil", mavutil)
+    # The adapter's deadlines read the simulated clock, not the wall clock.
+    monkeypatch.setattr("urml_px4_runtime.adapter.time", _CLOCK)
     return captured
 
 
 @pytest.fixture
 def fake_pymavlink(monkeypatch: pytest.MonkeyPatch) -> Iterator[dict[str, Any]]:
     yield _install_fake_pymavlink(monkeypatch)
+
+
+def _vehicle(fake: dict[str, Any]) -> _FakePX4:
+    conn: _FakePX4 = fake["connections"][0]
+    return conn
+
+
+def _long_commands(fake: dict[str, Any]) -> list[int]:
+    return [c["command"] for c in _vehicle(fake).mav.command_long_calls if c["command"] != 512]
+
+
+def _cfg(**kwargs: Any) -> Any:
+    from urml_px4_runtime import PX4AdapterConfig
+    from urml_px4_runtime.config import NEDPosition
+
+    base: dict[str, Any] = {
+        "location_to_pose": {
+            "roof_north": NEDPosition(north=15.0, east=0.0, alt=30.0),
+            "pad_east": NEDPosition(north=0.0, east=12.0, alt=10.0),
+        }
+    }
+    base.update(kwargs)
+    return PX4AdapterConfig(**base)
+
+
+def _airborne(fake: dict[str, Any], **cfg: Any) -> Any:
+    """An adapter whose vehicle has already taken off to 30 m."""
+    from urml_px4_runtime import PX4Adapter
+
+    adapter = PX4Adapter(_cfg(**cfg))
+    assert adapter.send_takeoff_goal(altitude=30.0).success
+    return adapter
 
 
 # ---------------------------------------------------------------------------
@@ -237,90 +554,271 @@ def test_context_manager_closes(fake_pymavlink: dict[str, Any]) -> None:
     assert fake_pymavlink["connections"][0]._closed is True
 
 
-# ---------------------------------------------------------------------------
-# Drone-profile dispatch
-# ---------------------------------------------------------------------------
-
-
-def test_takeoff_sends_mav_cmd_nav_takeoff(fake_pymavlink: dict[str, Any]) -> None:
+def test_no_heartbeat_is_a_connection_failure(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    adapter = PX4Adapter()
-    result = adapter.send_takeoff_goal(altitude=30.0)
-    assert result.success is True
-    assert result.final_pose == {"x": 0.0, "y": 0.0, "z": 30.0}
-    cmd = fake_pymavlink["connections"][0].mav.command_long_calls[0]
-    assert cmd["command"] == 22  # MAV_CMD_NAV_TAKEOFF
-    assert cmd["params"][6] == 30.0  # param7 = altitude
-
-
-def test_takeoff_failure_on_ack_reject(fake_pymavlink: dict[str, Any]) -> None:
-    from urml_px4_runtime import PX4Adapter
-
-    _FakeConnection.ack_result = 3  # MAV_RESULT_DENIED
-    adapter = PX4Adapter()
-    result = adapter.send_takeoff_goal(altitude=30.0)
+    _FakePX4.heartbeat_answers = False
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
     assert result.success is False
-    assert result.reason == "mav_result_3"
+    assert (result.reason or "").startswith("connection_failed: heartbeat_timeout")
+    assert _vehicle(fake_pymavlink).mav.command_long_calls == []
 
 
-def test_takeoff_failure_on_ack_timeout(fake_pymavlink: dict[str, Any]) -> None:
+def test_non_px4_autopilot_is_refused(fake_pymavlink: dict[str, Any]) -> None:
+    """ArduPilot reads NAV_TAKEOFF param7 as relative; never send it PX4's AMSL."""
     from urml_px4_runtime import PX4Adapter
 
-    _FakeConnection.ack_result = -1  # simulate no ACK
+    _FakePX4.autopilot = 3  # MAV_AUTOPILOT_ARDUPILOTMEGA
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert "not_a_px4_autopilot" in (result.reason or "")
+    assert _vehicle(fake_pymavlink).mav.command_long_calls == []
+
+
+def test_ground_station_heartbeat_is_not_the_vehicle(fake_pymavlink: dict[str, Any]) -> None:
+    """A GCS heartbeat (disarmed, autopilot INVALID) must not stand in for PX4's."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.gcs_heartbeat_first = True
+    adapter = PX4Adapter()
+    result = adapter.send_takeoff_goal(altitude=10.0)
+    assert result.success is True, result.reason
+    assert _long_commands(fake_pymavlink) == [400, 22]
+    assert {c["target"] for c in _vehicle(fake_pymavlink).mav.command_long_calls} == {(PX4_SYSID, PX4_COMPID)}
+    # Ground-station heartbeats kept arriving; the vehicle is still seen as armed.
+    assert adapter._is_armed() is True
+
+
+# ---------------------------------------------------------------------------
+# take_off
+# ---------------------------------------------------------------------------
+
+
+def test_takeoff_arms_climbs_and_confirms_altitude(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
     adapter = PX4Adapter()
     result = adapter.send_takeoff_goal(altitude=30.0)
+    assert result.success is True, result.reason
+    assert result.frame == "agl"
+    assert result.final_pose is not None and result.final_pose["z"] >= 29.0
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.armed is True
+    assert vehicle.up >= 29.0
+    assert _long_commands(fake_pymavlink) == [400, 22]  # arm, then take off
+    arm = next(c for c in vehicle.mav.command_long_calls if c["command"] == 400)
+    assert arm["params"][0] == 1.0
+    assert arm["params"][1] == 0.0  # never the force-arm magic number
+
+
+def test_takeoff_altitude_is_amsl_from_home(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 reads NAV_TAKEOFF param7 as AMSL; lat / lon / yaw are NaN (keep current)."""
+    from urml_px4_runtime import PX4Adapter
+
+    PX4Adapter().send_takeoff_goal(altitude=30.0)
+    takeoff = next(c for c in _vehicle(fake_pymavlink).mav.command_long_calls if c["command"] == 22)
+    params = takeoff["params"]
+    assert params[6] == pytest.approx(HOME_ALT + 30.0)
+    assert math.isnan(params[3]) and math.isnan(params[4]) and math.isnan(params[5])
+
+
+def test_takeoff_aims_from_the_home_px4_sets_at_arming(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 re-sets home when it arms; a pre-arm home would aim 1.4 m low and never arrive."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.home_shift_on_arm = 1.4
+    result = PX4Adapter(_cfg(takeoff_timeout_seconds=60.0)).send_takeoff_goal(altitude=30.0)
+    assert result.success is True, result.reason
+    takeoff = next(c for c in _vehicle(fake_pymavlink).mav.command_long_calls if c["command"] == 22)
+    assert takeoff["params"][6] == pytest.approx(HOME_ALT + 1.4 + 30.0)
+
+
+def test_takeoff_requests_home_when_not_streamed(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.home_known = False
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
     assert result.success is False
-    assert result.reason == "ack_timeout"
+    assert (result.reason or "").startswith("home_unknown")
+    calls = _vehicle(fake_pymavlink).mav.command_long_calls
+    assert [c["command"] for c in calls] == [512]  # asked for HOME_POSITION, never armed
+    assert calls[0]["params"][0] == 242.0
 
 
-def test_land_sends_mav_cmd_nav_land(fake_pymavlink: dict[str, Any]) -> None:
+def test_takeoff_skips_arming_when_already_armed(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    adapter = PX4Adapter()
-    result = adapter.send_land_goal()
+    _FakePX4.start_armed_in_air = True
+    result = PX4Adapter().send_takeoff_goal(altitude=40.0)
     assert result.success is True
-    assert fake_pymavlink["connections"][0].mav.command_long_calls[0]["command"] == 21
+    assert _long_commands(fake_pymavlink) == [22]
 
 
-def test_return_to_home_sends_mav_cmd_nav_rtl(fake_pymavlink: dict[str, Any]) -> None:
+def test_takeoff_arm_rejected(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    adapter = PX4Adapter()
-    result = adapter.send_return_to_home_goal()
-    assert result.success is True
-    assert fake_pymavlink["connections"][0].mav.command_long_calls[0]["command"] == 20
+    _FakePX4.ack = {400: 1}  # TEMPORARILY_REJECTED
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == "arm_rejected: mav_result_temporarily_rejected"
+    assert 22 not in _long_commands(fake_pymavlink)  # no take-off after a refused arm
+    assert _vehicle(fake_pymavlink).up == 0.0
 
 
-# ---------------------------------------------------------------------------
-# Navigation
-# ---------------------------------------------------------------------------
+def test_takeoff_arm_accepted_but_never_armed(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.arm_sticks = False
+    result = PX4Adapter(_cfg(arm_timeout_seconds=3.0)).send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert "armed flag not seen on HEARTBEAT" in (result.reason or "")
+    assert 22 not in _long_commands(fake_pymavlink)
 
 
-def test_send_navigation_goal_uses_location_from_config(fake_pymavlink: dict[str, Any]) -> None:
-    from urml_px4_runtime import PX4Adapter, PX4AdapterConfig
-    from urml_px4_runtime.config import NEDPosition
+def test_takeoff_rejected_disarms_the_vehicle_it_armed(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
 
-    cfg = PX4AdapterConfig(
-        location_to_pose={"roof_north": NEDPosition(north=10.0, east=5.0, alt=30.0)}
+    _FakePX4.ack = {22: 4}  # FAILED
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == "takeoff_rejected: mav_result_failed"
+    assert _long_commands(fake_pymavlink) == [400, 22, 400]
+    assert _vehicle(fake_pymavlink).armed is False
+
+
+def test_takeoff_timeout_when_the_vehicle_never_climbs(fake_pymavlink: dict[str, Any]) -> None:
+    """Accepted and armed is not airborne: no climb, no success."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.climb_rate = 0.0
+    result = PX4Adapter(_cfg(takeoff_timeout_seconds=20.0)).send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert (result.reason or "").startswith("takeoff_timeout: relative altitude 0.0 m after 20s")
+
+
+def test_takeoff_ack_timeout(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.ack = {22: -1}  # no ack at all
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert (result.reason or "").startswith("takeoff_rejected: ack_timeout")
+
+
+def test_ack_for_another_command_is_not_ours(fake_pymavlink: dict[str, Any]) -> None:
+    """A stray ACCEPTED ack for a different command must not satisfy the arm wait."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.ack = {400: -1}
+    _FakePX4.stray_ack = True
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert (result.reason or "").startswith("arm_rejected: ack_timeout")
+    assert 22 not in _long_commands(fake_pymavlink)
+
+
+def test_low_takeoff_still_has_to_leave_the_ground(fake_pymavlink: dict[str, Any]) -> None:
+    """The tolerance is capped at half the target, so 1 m never passes on the ground."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.climb_rate = 0.0
+    result = PX4Adapter(_cfg(arrival_alt_tolerance_m=5.0, takeoff_timeout_seconds=5.0)).send_takeoff_goal(
+        altitude=1.0
     )
-    adapter = PX4Adapter(cfg)
-    result = adapter.send_navigation_goal(location="roof_north")
-    assert result.success is True
-    assert result.final_pose == {"x": 10.0, "y": 5.0, "z": 30.0}
-    target = fake_pymavlink["connections"][0].mav.set_position_target_calls[0]
-    # NED down = -alt (we store alt positive-up, send NED down).
-    assert target["position"] == (10.0, 5.0, -30.0)
+    assert result.success is False
 
 
-def test_send_navigation_goal_uses_pose_directly(fake_pymavlink: dict[str, Any]) -> None:
+def test_takeoff_rejects_non_positive_altitude(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    adapter = PX4Adapter()
-    result = adapter.send_navigation_goal(pose={"x": 5.0, "y": 3.0, "z": 20.0}, frame="ned")
-    assert result.success is True
-    target = fake_pymavlink["connections"][0].mav.set_position_target_calls[0]
-    assert target["position"] == (5.0, 3.0, -20.0)
+    result = PX4Adapter().send_takeoff_goal(altitude=0.0)
+    assert result.success is False
+    assert (result.reason or "").startswith("invalid_altitude")
+    assert fake_pymavlink["connections"] == []
+
+
+# ---------------------------------------------------------------------------
+# move_to
+# ---------------------------------------------------------------------------
+
+
+def test_move_to_location_repositions_and_confirms_arrival(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_navigation_goal(location="roof_north")
+    assert result.success is True, result.reason
+    assert result.final_pose == {"x": 15.0, "y": 0.0, "z": 30.0}
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.north == pytest.approx(15.0, abs=1.5)
+    assert vehicle.up == pytest.approx(30.0, abs=1.0)
+    # The fire-and-forget offboard setpoint is gone.
+    assert vehicle.mav.set_position_target_calls == []
+
+
+def test_move_to_sends_do_reposition_as_command_int(fake_pymavlink: dict[str, Any]) -> None:
+    """COMMAND_INT carries lat / lon as degE7 integers; z is AMSL; PX4 needs the mode flag."""
+    from urml_px4_runtime.adapter import _offset_to_global
+
+    adapter = _airborne(fake_pymavlink)
+    adapter.send_navigation_goal(location="pad_east", speed=3.0)
+    (call,) = _vehicle(fake_pymavlink).mav.command_int_calls
+    assert call["command"] == 192
+    assert call["frame"] == 0  # MAV_FRAME_GLOBAL: altitude AMSL
+    assert call["target"] == (PX4_SYSID, PX4_COMPID)
+    lat, lon = _offset_to_global(HOME_LAT, HOME_LON, 0.0, 12.0)
+    assert isinstance(call["x"], int) and isinstance(call["y"], int)
+    assert call["x"] == round(lat * 1e7)
+    assert call["y"] == round(lon * 1e7)
+    assert call["z"] == pytest.approx(HOME_ALT + 10.0)
+    speed, flags, _, yaw = call["params"]
+    assert speed == 3.0
+    assert flags == 1.0  # MAV_DO_REPOSITION_FLAGS_CHANGE_MODE
+    assert math.isnan(yaw)
+
+
+def test_move_to_pose_uses_the_pose(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_navigation_goal(pose={"x": 5.0, "y": 3.0, "z": 20.0}, frame="agl")
+    assert result.success is True, result.reason
+    assert result.final_pose == {"x": 5.0, "y": 3.0, "z": 20.0}
+    assert result.frame == "agl"
+    vehicle = _vehicle(fake_pymavlink)
+    assert (vehicle.north, vehicle.east) == (pytest.approx(5.0, abs=1.5), pytest.approx(3.0, abs=1.5))
+    assert vehicle.up == pytest.approx(20.0, abs=1.0)
+
+
+def test_move_to_pose_without_z_keeps_the_current_altitude(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_navigation_goal(pose={"x": 8.0, "y": 0.0})
+    assert result.success is True, result.reason
+    (call,) = _vehicle(fake_pymavlink).mav.command_int_calls
+    assert math.isnan(call["z"])
+    assert result.final_pose is not None and result.final_pose["z"] == pytest.approx(30.0, abs=1.0)
+
+
+def test_move_to_that_never_arrives_is_a_failure(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink, arrival_timeout_seconds=15.0)
+    _FakePX4.cruise_speed = 0.0
+    result = adapter.send_navigation_goal(location="roof_north")
+    assert result.success is False
+    assert (result.reason or "").startswith("arrival_timeout: 15.0 m from the target at 30.0 m altitude after 15s")
+
+
+def test_move_to_rejected_reposition(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    _FakePX4.ack = {192: 1}
+    result = adapter.send_navigation_goal(location="roof_north")
+    assert result.success is False
+    assert result.reason == "reposition_rejected: mav_result_temporarily_rejected"
+
+
+def test_move_to_while_disarmed_fails_without_commanding(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 ignores DO_REPOSITION while disarmed; the adapter says so up front."""
+    from urml_px4_runtime import PX4Adapter
+
+    result = PX4Adapter(_cfg()).send_navigation_goal(location="roof_north")
+    assert result.success is False
+    assert (result.reason or "").startswith("not_airborne")
+    assert _vehicle(fake_pymavlink).mav.command_int_calls == []
 
 
 def test_send_navigation_goal_unmapped_location_returns_failure(
@@ -343,6 +841,167 @@ def test_send_navigation_goal_without_args_returns_failure(
     result = adapter.send_navigation_goal()
     assert result.success is False
     assert "without location or pose" in (result.reason or "")
+
+
+def test_offset_to_global_round_trips_with_haversine() -> None:
+    from urml_px4_runtime.adapter import _haversine_m, _offset_to_global
+
+    lat, lon = _offset_to_global(HOME_LAT, HOME_LON, 15.0, 0.0)
+    assert lon == pytest.approx(HOME_LON)
+    assert lat > HOME_LAT
+    assert _haversine_m(HOME_LAT, HOME_LON, lat, lon) == pytest.approx(15.0, abs=1e-6)
+    lat2, lon2 = _offset_to_global(HOME_LAT, HOME_LON, -30.0, 40.0)
+    assert _haversine_m(HOME_LAT, HOME_LON, lat2, lon2) == pytest.approx(50.0, abs=1e-3)
+
+
+# ---------------------------------------------------------------------------
+# return_to_home
+# ---------------------------------------------------------------------------
+
+
+def test_return_to_home_waits_until_home(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    assert adapter.send_navigation_goal(location="roof_north").success
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.north == pytest.approx(15.0, abs=1.5)  # away from home before the RTL
+    result = adapter.send_return_to_home_goal()
+    assert result.success is True, result.reason
+    assert math.hypot(vehicle.north, vehicle.east) <= 1.5
+    assert vehicle.up > 20.0  # home reached in the air; PX4 lands on its own afterwards
+    assert 20 in _long_commands(fake_pymavlink)
+
+
+def test_return_to_home_that_never_arrives_is_a_failure(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink, arrival_timeout_seconds=10.0)
+    assert adapter.send_navigation_goal(location="roof_north").success
+    _FakePX4.cruise_speed = 0.0
+    result = adapter.send_return_to_home_goal()
+    assert result.success is False
+    reason = result.reason or ""
+    assert reason.startswith("rtl_timeout: 1")  # 13.5 to 15 m, wherever move_to called it arrived
+    assert "m from home after 10s" in reason
+
+
+def test_return_to_home_rejected(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    _FakePX4.ack = {20: 2}
+    result = adapter.send_return_to_home_goal()
+    assert result.success is False
+    assert result.reason == "rtl_rejected: mav_result_denied"
+
+
+def test_return_to_home_on_the_ground_at_home_says_so(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    result = PX4Adapter().send_return_to_home_goal()
+    assert result.success is True
+    assert (result.reason or "").startswith("already_at_home")
+    assert _long_commands(fake_pymavlink) == []
+
+
+def test_return_to_home_disarmed_away_from_home_fails(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    adapter = PX4Adapter()
+    adapter._connect()
+    _vehicle(fake_pymavlink).north = 20.0  # on the ground, disarmed, 20 m from home
+    result = adapter.send_return_to_home_goal()
+    assert result.success is False
+    assert (result.reason or "").startswith("not_airborne")
+    assert _long_commands(fake_pymavlink) == []
+
+
+# ---------------------------------------------------------------------------
+# land
+# ---------------------------------------------------------------------------
+
+
+def test_land_waits_for_on_ground(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_land_goal()
+    assert result.success is True, result.reason
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.up == 0.0
+    assert vehicle.landed_state() == ON_GROUND
+    land = next(c for c in vehicle.mav.command_long_calls if c["command"] == 21)
+    assert all(math.isnan(p) for p in land["params"][3:])  # land where it is
+
+
+def test_land_on_the_ground_reports_it_without_commanding(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    result = PX4Adapter().send_land_goal()
+    assert result.success is True
+    assert (result.reason or "").startswith("already_on_ground")
+    assert 21 not in _long_commands(fake_pymavlink)
+
+
+def test_landing_timeout(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink, land_timeout_seconds=12.0)
+    _FakePX4.descent_rate = 0.0
+    result = adapter.send_land_goal()
+    assert result.success is False
+    assert (result.reason or "").startswith("landing_timeout: landed_state landing after 12s")
+
+
+def test_land_rejected(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    _FakePX4.ack = {21: 1}
+    result = adapter.send_land_goal()
+    assert result.success is False
+    assert (result.reason or "").startswith("land_rejected: mav_result_temporarily_rejected")
+
+
+def test_land_at_flies_there_first(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_land_goal(at="pad_east")
+    assert result.success is True, result.reason
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.east == pytest.approx(12.0, abs=1.5)
+    assert vehicle.landed_state() == ON_GROUND
+
+
+def test_land_at_unmapped_location(fake_pymavlink: dict[str, Any]) -> None:
+    adapter = _airborne(fake_pymavlink)
+    result = adapter.send_land_goal(at="nowhere")
+    assert result.success is False
+    assert "location_not_configured" in (result.reason or "")
+
+
+def test_rtl_that_lands_by_itself_then_land_reports_on_ground(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 RTL lands on its own; `land` afterwards sees ON_GROUND and sends nothing."""
+    import urml_px4_runtime.adapter as adapter_module
+
+    adapter = _airborne(fake_pymavlink)
+    assert adapter.send_navigation_goal(location="roof_north").success
+    assert adapter.send_return_to_home_goal().success
+    adapter_module.time.sleep(60.0)  # PX4 finishes its RTL descent while nothing reads
+    result = adapter.send_land_goal()
+    assert result.success is True
+    assert (result.reason or "").startswith("already_on_ground")
+    assert 21 not in _long_commands(fake_pymavlink)
+
+
+# ---------------------------------------------------------------------------
+# The flight-only conformance program, end to end against the fake
+# ---------------------------------------------------------------------------
+
+
+def test_flight_only_program_flies_the_fake_vehicle(fake_pymavlink: dict[str, Any]) -> None:
+    """take_off, move_to, return_to_home, land: every step confirmed by telemetry."""
+    from urml_px4_runtime import PX4Adapter
+
+    adapter = PX4Adapter(_cfg())
+    steps = [
+        adapter.send_takeoff_goal(altitude=30.0),
+        adapter.send_navigation_goal(location="roof_north"),
+        adapter.send_return_to_home_goal(),
+        adapter.send_land_goal(),
+    ]
+    assert [s.success for s in steps] == [True, True, True, True], [s.reason for s in steps]
+    vehicle = _vehicle(fake_pymavlink)
+    assert vehicle.max_up >= 29.0
+    assert vehicle.landed_state() == ON_GROUND
 
 
 # ---------------------------------------------------------------------------
@@ -383,7 +1042,7 @@ def test_measure_distance_reads_distance_sensor(fake_pymavlink: dict[str, Any]) 
     from urml_px4_runtime import PX4Adapter
 
     # DISTANCE_SENSOR.current_distance is cm; 1500 cm = 15 m.
-    _FakeConnection.recv_match_responses = [
+    _FakePX4.queued = [
         {"type": "DISTANCE_SENSOR", "msg": SimpleNamespace(current_distance=1500, time_boot_ms=12000)}
     ]
     adapter = PX4Adapter()
@@ -396,7 +1055,7 @@ def test_measure_voltage_reads_battery_status(fake_pymavlink: dict[str, Any]) ->
     from urml_px4_runtime import PX4Adapter
 
     # voltages[0] is mV; 12400 mV = 12.4 V.
-    _FakeConnection.recv_match_responses = [
+    _FakePX4.queued = [
         {"type": "BATTERY_STATUS", "msg": SimpleNamespace(voltages=[12400], time_boot_ms=5000)}
     ]
     adapter = PX4Adapter()
@@ -433,9 +1092,7 @@ def test_measure_timeout(fake_pymavlink: dict[str, Any]) -> None:
 def test_wait_for_battery_threshold(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    _FakeConnection.recv_match_responses = [
-        {"type": "BATTERY_STATUS", "msg": SimpleNamespace(voltages=[10000])}
-    ]
+    _FakePX4.queued = [{"type": "BATTERY_STATUS", "msg": SimpleNamespace(voltages=[10000])}]
     adapter = PX4Adapter()
     result = adapter.wait_for_condition(
         kind="sensor_threshold",
@@ -451,9 +1108,7 @@ def test_wait_for_battery_threshold(fake_pymavlink: dict[str, Any]) -> None:
 def test_wait_for_emergency_stop_event(fake_pymavlink: dict[str, Any]) -> None:
     from urml_px4_runtime import PX4Adapter
 
-    _FakeConnection.recv_match_responses = [
-        {"type": "SYS_STATUS", "msg": SimpleNamespace()}
-    ]
+    _FakePX4.queued = [{"type": "SYS_STATUS", "msg": SimpleNamespace()}]
     adapter = PX4Adapter()
     result = adapter.wait_for_condition(
         kind="event",
@@ -532,6 +1187,8 @@ def test_config_loader(tmp_path: Path) -> None:
 connection_url: "udp:127.0.0.1:14540"
 system_id: 255
 component_id: 1
+takeoff_timeout_seconds: 90
+arrival_radius_m: 2.0
 location_to_pose:
   roof_north: { north: 10.0, east: 5.0, alt: 30.0 }
 """,
@@ -541,3 +1198,28 @@ location_to_pose:
     assert cfg.connection_url == "udp:127.0.0.1:14540"
     assert cfg.location_to_pose["roof_north"].north == 10.0
     assert cfg.location_to_pose["roof_north"].alt == 30.0
+    assert cfg.takeoff_timeout_seconds == 90.0
+    assert cfg.arrival_radius_m == 2.0
+
+
+def test_config_flight_defaults() -> None:
+    from urml_px4_runtime import PX4AdapterConfig
+
+    cfg = PX4AdapterConfig()
+    assert cfg.arm_timeout_seconds == 10.0
+    assert cfg.takeoff_timeout_seconds == 120.0
+    assert cfg.arrival_radius_m == 1.5
+    assert cfg.arrival_alt_tolerance_m == 1.0
+    assert cfg.arrival_timeout_seconds == 120.0
+    assert cfg.land_timeout_seconds == 180.0
+
+
+def test_config_rejects_non_positive_flight_limits() -> None:
+    from pydantic import ValidationError
+
+    from urml_px4_runtime import PX4AdapterConfig
+
+    with pytest.raises(ValidationError):
+        PX4AdapterConfig(arrival_radius_m=0.0)
+    with pytest.raises(ValidationError):
+        PX4AdapterConfig(land_timeout_seconds=-1.0)

@@ -16,20 +16,41 @@ construction time so:
   for spec / test purposes).
 - The error when pymavlink is missing is clear and actionable.
 
-## MAVLink dispatch pattern
+## Flight: success means the vehicle did it
 
-Each Protocol method:
+A ``COMMAND_ACK`` only says PX4 accepted a command, not that the vehicle
+flew. Each flight primitive therefore sends its command and then reads
+telemetry until the action is complete, or returns a failure:
 
-1. Establishes a heartbeat connection on first use (cached on the
-   adapter instance).
-2. Constructs the right MAVLink command (`command_long_send`,
-   `set_position_target_local_ned_send`, etc.).
-3. Optionally waits for an ACK or a follow-up message.
-4. Maps the substrate response into the URML ``SubstrateResult`` shape.
+- ``take_off``: arms if disarmed (``MAV_CMD_COMPONENT_ARM_DISARM``, then
+  the armed bit on ``HEARTBEAT``), sends ``MAV_CMD_NAV_TAKEOFF`` with an
+  AMSL altitude (home altitude from ``HOME_POSITION`` plus the requested
+  height; PX4 reads param 7 as AMSL), and waits until
+  ``GLOBAL_POSITION_INT.relative_alt`` reaches the target.
+- ``move_to`` / ``hover`` over a place: converts the NED offset from home
+  to WGS84 and sends ``MAV_CMD_DO_REPOSITION`` as ``COMMAND_INT``
+  (degE7 integers, so no float precision loss), then waits until the
+  vehicle is inside the acceptance radius and altitude band.
+- ``return_to_home``: ``MAV_CMD_NAV_RETURN_TO_LAUNCH``, then waits until
+  the vehicle is within the acceptance radius of home, in the air or
+  landed (PX4 RTL lands on its own).
+- ``land``: reports an already-grounded vehicle as such; otherwise
+  ``MAV_CMD_NAV_LAND`` and a wait for ``EXTENDED_SYS_STATE`` ON_GROUND.
 
-Failures are *returned*, not raised — same contract as RclpyAdapter and
-MockROSAdapter. Only unrecoverable substrate errors (broken connection
-that can't be reopened) raise.
+A rejected command, a refused arm, or a timeout returns a failure whose
+reason names PX4's ``MAV_RESULT`` or what telemetry last showed (the
+altitude reached, the distance left). PX4 sends its ``STATUSTEXT``
+explanations only on links where it sees a ground-station heartbeat;
+this adapter sends none, so the explanation is on the autopilot console
+or the ground station, not in the reason. Failures are *returned*, not
+raised, the same contract as RclpyAdapter and MockROSAdapter. A
+connection that cannot be opened is reported as ``connection_failed``.
+
+The adapter reads a PX4 autopilot only: the first autopilot heartbeat
+must say ``MAV_AUTOPILOT_PX4``. PX4 and ArduPilot read the same
+MAVLink commands differently (take-off altitude is AMSL on PX4 and
+relative on ArduPilot), so pointing this adapter at another autopilot is
+refused rather than guessed at. ``ArduCopterAdapter`` covers ArduPilot.
 
 ## What's not supported on a bare autopilot
 
@@ -39,31 +60,80 @@ The corresponding methods (`grasp`, `release`, `detect`, `capture`,
 `speak`, `listen`, `dock`) return ``NavigationResult(success=False,
 reason="not_supported_on_bare_autopilot: ...")``. Programs that need
 both flight control *and* perception/manipulation should pair PX4Adapter
-with RclpyAdapter via a composite adapter (future PR).
+with RclpyAdapter via ``CompositeAdapter``.
 """
 
 from __future__ import annotations
 
+import math
+import time
+from collections.abc import Callable
 from contextlib import suppress
+from dataclasses import dataclass
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
-    ProgramCallResult,
-    unsupported_program_call,
     CaptureResult,
     DetectionResult,
     ListenResult,
     ManipulationResult,
     MeasurementResult,
     NavigationResult,
+    ProgramCallResult,
     ScanResult,
     SubstrateResult,
     WaitResult,
+    unsupported_program_call,
 )
 
 from urml_px4_runtime.config import PX4AdapterConfig
 
 DEFAULT_HEARTBEAT_TIMEOUT_SECONDS = 5.0
+
+# MAVLink constants (common.xml). Spelled out so the module needs no
+# pymavlink import to load, and so tests can assert on ids.
+MAV_AUTOPILOT_PX4 = 12
+MAV_AUTOPILOT_INVALID = 8
+
+MAV_CMD_NAV_RETURN_TO_LAUNCH = 20
+MAV_CMD_NAV_LAND = 21
+MAV_CMD_NAV_TAKEOFF = 22
+MAV_CMD_DO_REPOSITION = 192
+MAV_CMD_COMPONENT_ARM_DISARM = 400
+MAV_CMD_REQUEST_MESSAGE = 512
+
+MAV_DO_REPOSITION_FLAGS_CHANGE_MODE = 1
+MAV_FRAME_GLOBAL = 0
+MAV_MODE_FLAG_SAFETY_ARMED = 128
+MAV_RESULT_ACCEPTED = 0
+MAV_RESULT_IN_PROGRESS = 5
+
+MAV_LANDED_STATE_UNDEFINED = 0
+MAV_LANDED_STATE_ON_GROUND = 1
+
+MSG_ID_HOME_POSITION = 242
+
+_MAV_RESULT_NAMES = {
+    0: "accepted",
+    1: "temporarily_rejected",
+    2: "denied",
+    3: "unsupported",
+    4: "failed",
+    5: "in_progress",
+    6: "cancelled",
+}
+_LANDED_STATE_NAMES = {0: "undefined", 1: "on_ground", 2: "in_air", 3: "takeoff", 4: "landing"}
+
+# The telemetry every flight wait keeps current while it reads.
+_STATE_TYPES = ("HEARTBEAT", "GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "HOME_POSITION")
+
+# Upper bound on messages read when catching up with the link. PX4 streams
+# a few hundred messages a second on the onboard link; this is minutes of
+# backlog, and it keeps a flooded link from pinning the adapter.
+_DRAIN_MAX_MESSAGES = 50_000
+
+# PX4's CONSTANTS_RADIUS_OF_EARTH; the projection below matches PX4's own.
+_EARTH_RADIUS_M = 6_371_000.0
 
 
 def _require_pymavlink() -> Any:
@@ -87,6 +157,63 @@ _NOT_SUPPORTED_REASON = (
 )
 
 
+@dataclass(frozen=True)
+class _Home:
+    """PX4's home position, from ``HOME_POSITION``."""
+
+    lat: float  # degrees
+    lon: float  # degrees
+    alt_amsl: float  # metres above mean sea level
+
+
+def _offset_to_global(lat0: float, lon0: float, north: float, east: float) -> tuple[float, float]:
+    """WGS84 point ``north`` / ``east`` metres from ``(lat0, lon0)``.
+
+    Azimuthal equidistant reprojection, the same projection PX4 uses
+    between its local frame and WGS84 (``MapProjection::reproject``), so
+    an offset in the adapter config lands where PX4's local frame says.
+    """
+    x = north / _EARTH_RADIUS_M
+    y = east / _EARTH_RADIUS_M
+    c = math.hypot(x, y)
+    if c == 0.0:
+        return lat0, lon0
+    lat0_r = math.radians(lat0)
+    sin_c, cos_c = math.sin(c), math.cos(c)
+    lat = math.asin(cos_c * math.sin(lat0_r) + x * sin_c * math.cos(lat0_r) / c)
+    lon = math.radians(lon0) + math.atan2(
+        y * sin_c, c * math.cos(lat0_r) * cos_c - x * math.sin(lat0_r) * sin_c
+    )
+    return math.degrees(lat), math.degrees(lon)
+
+
+def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle distance in metres between two WGS84 points."""
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = p2 - p1
+    dlmb = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * _EARTH_RADIUS_M * math.asin(math.sqrt(min(1.0, a)))
+
+
+def _deg_e7(degrees: float) -> int:
+    return round(degrees * 1e7)
+
+
+def _relative_alt_m(msg: Any) -> float:
+    """``GLOBAL_POSITION_INT.relative_alt`` (mm above home) in metres."""
+    return float(getattr(msg, "relative_alt", 0)) / 1000.0
+
+
+def _distance_to(msg: Any, lat: float, lon: float) -> float:
+    """Horizontal distance from a ``GLOBAL_POSITION_INT`` fix to a point."""
+    return _haversine_m(float(getattr(msg, "lat", 0)) / 1e7, float(getattr(msg, "lon", 0)) / 1e7, lat, lon)
+
+
+def _is_armed_heartbeat(msg: Any) -> bool:
+    return bool(int(getattr(msg, "base_mode", 0)) & MAV_MODE_FLAG_SAFETY_ARMED)
+
+
 class PX4Adapter:
     """MAVLink-based URML substrate adapter."""
 
@@ -95,24 +222,66 @@ class PX4Adapter:
         self._config = config or PX4AdapterConfig()
         self._connection: Any = None
         self._closed = False
+        # The autopilot this adapter talks to, locked from its heartbeat.
+        self._target: tuple[int, int] | None = None
+        # Latest telemetry, refreshed by every read (see _observe).
+        self._heartbeat: Any = None
+        self._global_position: Any = None
+        self._extended_state: Any = None
+        self._home: _Home | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 
     def _connect(self) -> Any:
-        """Open the MAVLink connection lazily; cache for reuse."""
+        """Open the MAVLink connection lazily; cache for reuse.
+
+        Waits for the autopilot's heartbeat (other components on the link,
+        such as a ground station, are skipped), checks it is PX4, and locks
+        the command target to that autopilot. Raises ``RuntimeError`` when
+        no PX4 heartbeat arrives; callers turn that into a failure result.
+        """
         if self._connection is not None:
             return self._connection
+        url = self._config.connection_url
         conn = self._mavutil.mavlink_connection(
-            self._config.connection_url,
+            url,
             source_system=self._config.system_id,
             source_component=self._config.component_id,
         )
-        # Wait for the autopilot's first heartbeat so we know it's there.
-        # pymavlink's wait_heartbeat returns the heartbeat message or
-        # raises on timeout. We catch and surface as a clean failure.
-        conn.wait_heartbeat(timeout=self._config.heartbeat_timeout_seconds)
+        wait = self._config.heartbeat_timeout_seconds
+        deadline = time.monotonic() + wait
+        heartbeat: Any = None
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            msg = conn.wait_heartbeat(timeout=remaining)
+            if msg is None:
+                break
+            if int(getattr(msg, "autopilot", MAV_AUTOPILOT_INVALID)) != MAV_AUTOPILOT_INVALID:
+                heartbeat = msg
+                break
+        if heartbeat is None:
+            with suppress(Exception):
+                conn.close()
+            raise RuntimeError(f"heartbeat_timeout: no autopilot heartbeat on {url!r} within {wait:.0f}s")
+        autopilot = int(getattr(heartbeat, "autopilot", -1))
+        if autopilot != MAV_AUTOPILOT_PX4:
+            with suppress(Exception):
+                conn.close()
+            raise RuntimeError(
+                f"not_a_px4_autopilot: heartbeat autopilot={autopilot} (expected {MAV_AUTOPILOT_PX4} = "
+                "MAV_AUTOPILOT_PX4). PX4Adapter sends PX4 command semantics; use ArduCopterAdapter for ArduPilot."
+            )
+        get_system = getattr(heartbeat, "get_srcSystem", None)
+        get_component = getattr(heartbeat, "get_srcComponent", None)
+        if callable(get_system) and callable(get_component):
+            self._target = (int(get_system()), int(get_component()))
+        else:
+            self._target = (int(conn.target_system), int(conn.target_component))
+        self._heartbeat = heartbeat
         self._connection = conn
         return conn
 
@@ -135,35 +304,145 @@ class PX4Adapter:
     # Helpers
     # ------------------------------------------------------------------
 
+    def _target_ids(self) -> tuple[int, int]:
+        if self._target is not None:
+            return self._target
+        conn = self._connection
+        return int(conn.target_system), int(conn.target_component)
+
+    def _from_target(self, msg: Any) -> bool:
+        """True when ``msg`` came from the locked autopilot.
+
+        Heartbeats must match system and component (a ground station's
+        heartbeat says "disarmed" and must not stand in for the vehicle's);
+        other messages must match the system.
+        """
+        if self._target is None:
+            return True
+        get_system = getattr(msg, "get_srcSystem", None)
+        if callable(get_system) and int(get_system()) != self._target[0]:
+            return False
+        if msg.get_type() == "HEARTBEAT":
+            get_component = getattr(msg, "get_srcComponent", None)
+            if callable(get_component) and int(get_component()) != self._target[1]:
+                return False
+        return True
+
+    def _observe(self, msg: Any) -> None:
+        """Keep the latest vehicle state from any message read."""
+        kind = msg.get_type() if hasattr(msg, "get_type") else None
+        if kind is None or not self._from_target(msg):
+            return
+        if kind == "HEARTBEAT":
+            self._heartbeat = msg
+        elif kind == "GLOBAL_POSITION_INT":
+            self._global_position = msg
+        elif kind == "EXTENDED_SYS_STATE":
+            self._extended_state = msg
+        elif kind == "HOME_POSITION":
+            self._home = _Home(
+                lat=float(getattr(msg, "latitude", 0)) / 1e7,
+                lon=float(getattr(msg, "longitude", 0)) / 1e7,
+                alt_amsl=float(getattr(msg, "altitude", 0)) / 1000.0,
+            )
+
+    def _drain(self) -> None:
+        """Read everything already queued on the link.
+
+        UDP backlog builds up whenever the adapter is not reading (between
+        primitives, during ``wait``). Draining before a decision keeps the
+        cached state current instead of seconds old.
+        """
+        conn = self._connection
+        if conn is None:
+            return
+        for _ in range(_DRAIN_MAX_MESSAGES):
+            msg = conn.recv_match(blocking=False)
+            if msg is None:
+                return
+            self._observe(msg)
+
+    def _begin(self) -> str | None:
+        """Start a flight primitive: connect and catch up with the link."""
+        try:
+            self._connect()
+        except Exception as exc:
+            return f"connection_failed: {exc}"
+        self._drain()
+        return None
+
+    def _await(self, msg_type: str, predicate: Callable[[Any], bool], timeout_seconds: float) -> Any | None:
+        """Read until a ``msg_type`` message from the vehicle satisfies ``predicate``.
+
+        Returns that message, or None on timeout. Every state message read
+        on the way is observed, so the caches stay current.
+        """
+        conn = self._connection
+        if conn is None:
+            return None
+        types = [msg_type, *(t for t in _STATE_TYPES if t != msg_type)]
+        deadline = time.monotonic() + timeout_seconds
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return None
+            msg = conn.recv_match(type=types, blocking=True, timeout=remaining)
+            if msg is None:
+                return None
+            self._observe(msg)
+            if msg.get_type() == msg_type and self._from_target(msg) and predicate(msg):
+                return msg
+
+    def _wait_ack(self, command: int) -> tuple[bool, str | None]:
+        """Wait for the COMMAND_ACK of ``command`` (matched on its id)."""
+        ack = self._await(
+            "COMMAND_ACK",
+            lambda m: int(getattr(m, "command", -1)) == command
+            and int(getattr(m, "result", -1)) != MAV_RESULT_IN_PROGRESS,
+            self._config.ack_timeout_seconds,
+        )
+        if ack is None:
+            return False, "ack_timeout"
+        result = int(getattr(ack, "result", -1))
+        if result == MAV_RESULT_ACCEPTED:
+            return True, None
+        return False, f"mav_result_{_MAV_RESULT_NAMES.get(result, result)}"
+
     def _send_command_long(self, command: int, *params: float) -> tuple[bool, str | None]:
-        """Send a MAV_CMD_* via COMMAND_LONG; wait for COMMAND_ACK.
+        """Send a MAV_CMD_* via COMMAND_LONG; wait for its COMMAND_ACK.
 
         Returns ``(success, reason)``. params are MAVLink params 1-7;
-        missing trailing params default to 0.
+        missing trailing params default to 0. An ack only says PX4 took
+        the command; the flight primitives confirm the outcome separately.
         """
         try:
             conn = self._connect()
         except Exception as exc:
             return False, f"connection_failed: {exc}"
-        padded = list(params) + [0.0] * (7 - len(params))
-        conn.mav.command_long_send(
-            conn.target_system,
-            conn.target_component,
-            command,
-            0,  # confirmation
-            *padded[:7],
+        padded = [float(p) for p in params] + [0.0] * (7 - len(params))
+        target_system, target_component = self._target_ids()
+        conn.mav.command_long_send(target_system, target_component, command, 0, *padded[:7])
+        return self._wait_ack(command)
+
+    def _send_command_int(
+        self,
+        command: int,
+        frame: int,
+        params: tuple[float, float, float, float],
+        x: int,
+        y: int,
+        z: float,
+    ) -> tuple[bool, str | None]:
+        """Send a MAV_CMD_* via COMMAND_INT (integer lat / lon); wait for its ack."""
+        try:
+            conn = self._connect()
+        except Exception as exc:
+            return False, f"connection_failed: {exc}"
+        target_system, target_component = self._target_ids()
+        conn.mav.command_int_send(
+            target_system, target_component, frame, command, 0, 0, *params, x, y, float(z)
         )
-        ack = conn.recv_match(
-            type="COMMAND_ACK",
-            blocking=True,
-            timeout=self._config.ack_timeout_seconds,
-        )
-        if ack is None:
-            return False, "ack_timeout"
-        # MAV_RESULT_ACCEPTED = 0. Any other result is a failure.
-        if int(getattr(ack, "result", -1)) != 0:
-            return False, f"mav_result_{int(getattr(ack, 'result', -1))}"
-        return True, None
+        return self._wait_ack(command)
 
     def _recv_message(
         self,
@@ -197,6 +476,81 @@ class PX4Adapter:
         return None, True
 
     # ------------------------------------------------------------------
+    # Vehicle state
+    # ------------------------------------------------------------------
+
+    def _is_armed(self) -> bool:
+        return self._heartbeat is not None and _is_armed_heartbeat(self._heartbeat)
+
+    def _ensure_home(self) -> _Home | None:
+        """PX4's home position: the latest one streamed, else requested."""
+        if self._home is not None:
+            return self._home
+        return self._request_home()
+
+    def _request_home(self) -> _Home | None:
+        """Ask PX4 for its current home position (MAV_CMD_REQUEST_MESSAGE) and wait for it.
+
+        PX4 moves home to the vehicle's position when it arms, so a take-off
+        re-reads home after arming instead of trusting the pre-arm value.
+        """
+        conn = self._connection
+        target_system, target_component = self._target_ids()
+        conn.mav.command_long_send(
+            target_system,
+            target_component,
+            MAV_CMD_REQUEST_MESSAGE,
+            0,
+            float(MSG_ID_HOME_POSITION),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        )
+        self._await("HOME_POSITION", lambda _m: True, self._config.message_timeout_seconds)
+        return self._home
+
+    def _home_unknown(self) -> NavigationResult:
+        return NavigationResult(
+            success=False,
+            reason=f"home_unknown: no HOME_POSITION from PX4 within {self._config.message_timeout_seconds:.0f}s. "
+            "PX4 sets home once it has a global position estimate.",
+        )
+
+    def _current_position(self) -> Any | None:
+        """The latest GLOBAL_POSITION_INT, waiting briefly if none has arrived."""
+        if self._global_position is None:
+            self._await("GLOBAL_POSITION_INT", lambda _m: True, self._config.message_timeout_seconds)
+        return self._global_position
+
+    def _landed_state(self) -> int:
+        """EXTENDED_SYS_STATE.landed_state, waiting briefly if none has arrived."""
+        if self._extended_state is None:
+            self._await("EXTENDED_SYS_STATE", lambda _m: True, self._config.message_timeout_seconds)
+        if self._extended_state is None:
+            return MAV_LANDED_STATE_UNDEFINED
+        return int(getattr(self._extended_state, "landed_state", MAV_LANDED_STATE_UNDEFINED))
+
+    def _arm(self) -> tuple[bool, str | None]:
+        """Arm and confirm the armed bit on a heartbeat. Never forces past PX4's checks."""
+        ok, reason = self._send_command_long(MAV_CMD_COMPONENT_ARM_DISARM, 1.0)
+        if not ok:
+            return False, f"arm_rejected: {reason}"
+        armed = self._await("HEARTBEAT", _is_armed_heartbeat, self._config.arm_timeout_seconds)
+        if armed is None:
+            return False, (
+                f"arm_rejected: armed flag not seen on HEARTBEAT within {self._config.arm_timeout_seconds:.0f}s"
+            )
+        return True, None
+
+    def _disarm_on_ground(self) -> None:
+        """Best effort: disarm a vehicle this adapter armed and could not fly."""
+        with suppress(Exception):
+            self._send_command_long(MAV_CMD_COMPONENT_ARM_DISARM, 0.0)
+
+    # ------------------------------------------------------------------
     # Drone-profile dispatch (the substantive PX4 surface)
     # ------------------------------------------------------------------
 
@@ -206,13 +560,58 @@ class PX4Adapter:
         altitude: float,
         climb_rate: float | None = None,
     ) -> NavigationResult:
-        # MAV_CMD_NAV_TAKEOFF = 22. param7 = altitude (m AGL).
-        success, reason = self._send_command_long(22, 0, 0, 0, 0, 0, 0, float(altitude))
+        # climb_rate has no MAVLink take-off parameter; PX4 climbs at its
+        # MPC_TKO_SPEED. The target altitude is what the program states.
+        target = float(altitude)
+        if not (math.isfinite(target) and target > 0.0):
+            return NavigationResult(success=False, reason=f"invalid_altitude: {altitude!r}")
+        failure = self._begin()
+        if failure is not None:
+            return NavigationResult(success=False, reason=failure)
+        home = self._ensure_home()
+        if home is None:
+            return self._home_unknown()
+
+        armed_here = False
+        if not self._is_armed():
+            ok, reason = self._arm()
+            if not ok:
+                return NavigationResult(success=False, reason=reason)
+            armed_here = True
+            # Arming moved home to where the vehicle stands; aim from there.
+            home = self._request_home() or home
+
+        # MAV_CMD_NAV_TAKEOFF: param4 yaw, param5/6 lat/lon (NaN = keep
+        # current heading and position), param7 altitude AMSL on PX4.
+        ok, reason = self._send_command_long(
+            MAV_CMD_NAV_TAKEOFF, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, home.alt_amsl + target
+        )
+        if not ok:
+            if armed_here:
+                self._disarm_on_ground()
+            return NavigationResult(success=False, reason=f"takeoff_rejected: {reason}")
+
+        # Airborne once within the altitude tolerance of the target (never
+        # more than half the target, so a low take-off still has to leave
+        # the ground).
+        threshold = target - min(self._config.arrival_alt_tolerance_m, 0.5 * target)
+        reached = self._await(
+            "GLOBAL_POSITION_INT",
+            lambda m: _relative_alt_m(m) >= threshold,
+            self._config.takeoff_timeout_seconds,
+        )
+        if reached is None:
+            last = self._global_position
+            now = f"{_relative_alt_m(last):.1f} m" if last is not None else "unknown"
+            return NavigationResult(
+                success=False,
+                reason=f"takeoff_timeout: relative altitude {now} after "
+                f"{self._config.takeoff_timeout_seconds:.0f}s, target {target:.1f} m",
+            )
         return NavigationResult(
-            success=success,
-            reason=reason,
-            final_pose={"x": 0.0, "y": 0.0, "z": float(altitude)} if success else None,
-            frame="agl" if success else None,
+            success=True,
+            final_pose={"x": 0.0, "y": 0.0, "z": round(_relative_alt_m(reached), 2)},
+            frame="agl",
         )
 
     def send_land_goal(
@@ -221,11 +620,46 @@ class PX4Adapter:
         at: str | None = None,
         precision: Literal["standard", "precise"] = "standard",
     ) -> NavigationResult:
-        # MAV_CMD_NAV_LAND = 21. Precision-landing is a PX4-parameter
-        # concern; v0.1 ignores `precision` (the autopilot uses whichever
-        # landing mode it's configured for).
-        success, reason = self._send_command_long(21)
-        return NavigationResult(success=success, reason=reason)
+        # Precision landing is a PX4 mode and parameter concern (a landing
+        # target is needed); `precision` is not mapped and PX4 lands the
+        # way it is configured to.
+        failure = self._begin()
+        if failure is not None:
+            return NavigationResult(success=False, reason=failure)
+        if at is not None:
+            ned = self._config.resolve_location(at)
+            if ned is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"location_not_configured: land at {at!r} is not mapped to a NED pose in px4_adapter.yaml.",
+                )
+            moved = self._fly_to(ned.north, ned.east, None, speed=None, frame=None)
+            if not moved.success:
+                return NavigationResult(success=False, reason=f"land_at_failed: {moved.reason}")
+
+        if self._landed_state() == MAV_LANDED_STATE_ON_GROUND:
+            return NavigationResult(
+                success=True,
+                reason="already_on_ground: PX4 reports landed_state ON_GROUND; no LAND command sent.",
+            )
+
+        ok, reason = self._send_command_long(
+            MAV_CMD_NAV_LAND, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, math.nan
+        )
+        if not ok:
+            return NavigationResult(success=False, reason=f"land_rejected: {reason}")
+        down = self._await(
+            "EXTENDED_SYS_STATE",
+            lambda m: int(getattr(m, "landed_state", -1)) == MAV_LANDED_STATE_ON_GROUND,
+            self._config.land_timeout_seconds,
+        )
+        if down is None:
+            state = _LANDED_STATE_NAMES.get(self._landed_state(), "unknown")
+            return NavigationResult(
+                success=False,
+                reason=f"landing_timeout: landed_state {state} after {self._config.land_timeout_seconds:.0f}s",
+            )
+        return NavigationResult(success=True)
 
     def send_return_to_home_goal(
         self,
@@ -233,12 +667,52 @@ class PX4Adapter:
         speed: float | None = None,
         altitude: float | None = None,
     ) -> NavigationResult:
-        # MAV_CMD_NAV_RETURN_TO_LAUNCH = 20. Speed/altitude are PX4
-        # parameters set ahead of time, not part of the RTL command itself
-        # (per the MAVLink spec). v0.1 takes the autopilot's configured
-        # defaults; a future RFC may add a param-set step here.
-        success, reason = self._send_command_long(20)
-        return NavigationResult(success=success, reason=reason)
+        # MAV_CMD_NAV_RETURN_TO_LAUNCH has no parameters. Return speed and
+        # altitude are PX4 parameters (MPC_XY_CRUISE, RTL_RETURN_ALT) set
+        # on the autopilot ahead of time.
+        failure = self._begin()
+        if failure is not None:
+            return NavigationResult(success=False, reason=failure)
+        home = self._ensure_home()
+        if home is None:
+            return self._home_unknown()
+        radius = self._config.arrival_radius_m
+
+        if not self._is_armed():
+            here = self._current_position()
+            if here is not None and _distance_to(here, home.lat, home.lon) <= radius:
+                return NavigationResult(
+                    success=True,
+                    reason=f"already_at_home: disarmed within {radius:.1f} m of home; no RTL command sent.",
+                    final_pose={"x": 0.0, "y": 0.0, "z": round(_relative_alt_m(here), 2)},
+                    frame="agl",
+                )
+            return NavigationResult(
+                success=False,
+                reason=f"not_airborne: PX4 reports the vehicle disarmed and not within {radius:.1f} m of home; "
+                "return_to_home needs an airborne vehicle.",
+            )
+
+        ok, reason = self._send_command_long(MAV_CMD_NAV_RETURN_TO_LAUNCH)
+        if not ok:
+            return NavigationResult(success=False, reason=f"rtl_rejected: {reason}")
+        home_reached = self._await(
+            "GLOBAL_POSITION_INT",
+            lambda m: _distance_to(m, home.lat, home.lon) <= radius,
+            self._config.arrival_timeout_seconds,
+        )
+        if home_reached is None:
+            last = self._global_position
+            away = f"{_distance_to(last, home.lat, home.lon):.1f} m" if last is not None else "an unknown distance"
+            return NavigationResult(
+                success=False,
+                reason=f"rtl_timeout: {away} from home after {self._config.arrival_timeout_seconds:.0f}s",
+            )
+        return NavigationResult(
+            success=True,
+            final_pose={"x": 0.0, "y": 0.0, "z": round(_relative_alt_m(home_reached), 2)},
+            frame="agl",
+        )
 
     # ------------------------------------------------------------------
     # Core navigation
@@ -253,9 +727,10 @@ class PX4Adapter:
         carrying: dict[str, Any] | None = None,
         speed: float | None = None,
     ) -> NavigationResult:
-        # Resolve to NED. URML's `pose` is x/y/z; PX4 uses
-        # north/east/down. We treat x→north, y→east, z (positive up, AGL)
-        # → down=-z.
+        # Resolve to an offset from home. URML's `pose` is x/y/z; we treat
+        # x -> north, y -> east, z -> metres above home (positive up). A
+        # pose without z keeps the current altitude.
+        alt: float | None
         if location is not None:
             ned = self._config.resolve_location(location)
             if ned is None:
@@ -268,38 +743,87 @@ class PX4Adapter:
         elif pose is not None:
             north = float(pose.get("x", 0.0))
             east = float(pose.get("y", 0.0))
-            alt = float(pose.get("z", 0.0))
+            alt = float(pose["z"]) if pose.get("z") is not None else None
         else:
             return NavigationResult(
                 success=False,
                 reason="send_navigation_goal called without location or pose",
             )
+        return self._fly_to(north, east, alt, speed=speed, frame=frame)
 
-        try:
-            conn = self._connect()
-        except Exception as exc:
-            return NavigationResult(success=False, reason=f"connection_failed: {exc}")
+    def _fly_to(
+        self,
+        north: float,
+        east: float,
+        alt: float | None,
+        *,
+        speed: float | None,
+        frame: str | None,
+    ) -> NavigationResult:
+        """Reposition to an offset from home and wait for arrival."""
+        failure = self._begin()
+        if failure is not None:
+            return NavigationResult(success=False, reason=failure)
+        home = self._ensure_home()
+        if home is None:
+            return self._home_unknown()
+        if not self._is_armed():
+            return NavigationResult(
+                success=False,
+                reason="not_airborne: PX4 reports the vehicle disarmed. PX4 only executes a reposition "
+                "while armed; take off first.",
+            )
 
-        # SET_POSITION_TARGET_LOCAL_NED. type_mask bit 0xDF8 ignores
-        # velocity/accel/yaw — we only set position. (0xDF8 = ignore
-        # velocity (3 bits) + accel (3 bits) + yaw + yaw rate.)
-        type_mask = 0b0000_1111_1111_1000
-        conn.mav.set_position_target_local_ned_send(
-            0,  # time_boot_ms
-            conn.target_system,
-            conn.target_component,
-            1,  # MAV_FRAME_LOCAL_NED
-            type_mask,
-            north,
-            east,
-            -alt,  # NED down is negative-up
-            0.0, 0.0, 0.0,  # velocity
-            0.0, 0.0, 0.0,  # accel
-            0.0, 0.0,  # yaw, yaw_rate
+        lat, lon = _offset_to_global(home.lat, home.lon, north, east)
+        if alt is None:
+            here = self._current_position()
+            if here is None:
+                return NavigationResult(
+                    success=False,
+                    reason=f"no_position: no GLOBAL_POSITION_INT within {self._config.message_timeout_seconds:.0f}s",
+                )
+            target_alt = _relative_alt_m(here)
+            z = math.nan  # PX4 keeps the current altitude
+        else:
+            target_alt = float(alt)
+            z = home.alt_amsl + target_alt
+
+        # DO_REPOSITION: param1 ground speed (-1 = PX4 default), param2
+        # MAV_DO_REPOSITION_FLAGS_CHANGE_MODE (PX4 answers UNSUPPORTED
+        # without it), param4 yaw (NaN = keep heading).
+        ground_speed = float(speed) if speed is not None and speed > 0 else -1.0
+        ok, reason = self._send_command_int(
+            MAV_CMD_DO_REPOSITION,
+            MAV_FRAME_GLOBAL,
+            (ground_speed, float(MAV_DO_REPOSITION_FLAGS_CHANGE_MODE), 0.0, math.nan),
+            _deg_e7(lat),
+            _deg_e7(lon),
+            z,
         )
+        if not ok:
+            return NavigationResult(success=False, reason=f"reposition_rejected: {reason}")
+
+        radius = self._config.arrival_radius_m
+        alt_tolerance = self._config.arrival_alt_tolerance_m
+        arrived = self._await(
+            "GLOBAL_POSITION_INT",
+            lambda m: _distance_to(m, lat, lon) <= radius and abs(_relative_alt_m(m) - target_alt) <= alt_tolerance,
+            self._config.arrival_timeout_seconds,
+        )
+        if arrived is None:
+            last = self._global_position
+            where = (
+                f"{_distance_to(last, lat, lon):.1f} m from the target at {_relative_alt_m(last):.1f} m altitude"
+                if last is not None
+                else "position unknown"
+            )
+            return NavigationResult(
+                success=False,
+                reason=f"arrival_timeout: {where} after {self._config.arrival_timeout_seconds:.0f}s",
+            )
         return NavigationResult(
             success=True,
-            final_pose={"x": north, "y": east, "z": alt},
+            final_pose={"x": north, "y": east, "z": target_alt},
             frame=frame or "ned",
         )
 
@@ -313,12 +837,10 @@ class PX4Adapter:
         return NavigationResult(success=False, reason=_NOT_SUPPORTED_REASON)
 
     # ------------------------------------------------------------------
-    # Hover: same MAVLink message as move_to but with zero velocity and
-    # current position (kept here for explicitness; the URML executor
-    # dispatches hover through send_navigation_goal).
-    #
-    # No-op as a distinct method because the Protocol already routes
-    # hover through send_navigation_goal.
+    # Hover: the executor dispatches hover through send_navigation_goal
+    # (speed 0). Hover over a place flies there like move_to; PX4 then
+    # holds position in Hold mode. Hover with no place is not mapped and
+    # fails cleanly.
     # ------------------------------------------------------------------
 
     # ------------------------------------------------------------------
@@ -493,12 +1015,10 @@ class PX4Adapter:
         )
 
     def wait_passively(self, *, duration_seconds: float) -> SubstrateResult:
-        # MAVLink doesn't have a "pause-but-keep-station" command on its
-        # own — PX4 in offboard mode requires continuous setpoints to
-        # hold position. A correct implementation would re-send the
-        # current setpoint at 10 Hz for `duration_seconds`. v0.1 uses a
-        # simple time.sleep — deployers running offboard mode should hold
-        # position via send_navigation_goal first.
+        # PX4 holds position on its own in Hold mode, which is where
+        # take_off and move_to leave the vehicle, so waiting is a plain
+        # sleep. The next flight primitive drains the telemetry that
+        # queued up meanwhile before it decides anything.
         import time as _time
 
         _time.sleep(max(0.0, float(duration_seconds)))
