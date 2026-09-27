@@ -70,7 +70,14 @@ A listed entry carries at least one piece of evidence: a compatibility claim, a 
 
 A validation record (`urml.validation-record/1`, [`urml_validator/evidence.py`](../reference/validator/src/urml_validator/evidence.py)) is one verdict of the validator: the program it judged, sha256 content digests of the program, manifest, envelope, policy and rulebooks, the verdict, the error and warning codes, and the validator version. The check replays each one with `reverify()`: the inputs named in the entry must hash to the digests the record carries, and the validator, run again on the recorded program, must reach the same verdict with the same error codes. When a URML release changes a verdict, the check fails, and the entry's records are produced again for that release.
 
-Records for a listing come from the Python API. Validate each program against the listed manifest with the same inputs the entry declares, then append a record:
+Records for a listing are made by validating each program against the listed manifest, with the same inputs the entry declares. From the command line, `--evidence-log` appends one record per verdict:
+
+```bash
+urml validate examples/drone/bench-hop.urml.yaml -m examples/drone/pixhawk-ardupilot.manifest.yaml \
+    --profile drone --no-policy --evidence-log registry/evidence/<id>/validation-records.jsonl
+```
+
+The two entries here were made with the Python API instead (`surface: api`), with `as_of` pinned to the day the records were made:
 
 ```python
 from datetime import date
@@ -92,7 +99,7 @@ record = build_record(surface="api", stage="validation", result=result, program=
 append_record("registry/evidence/<id>/validation-records.jsonl", record)
 ```
 
-`policy=None` matches `policy: none` in the entry's inputs; `policy="DEFAULT"` matches `policy: default`. Pass `as_of` so a replay judges rulebook dates against the day the record was made.
+`policy=None` (or `--no-policy`) matches `policy: none` in the entry's inputs; `policy="DEFAULT"` (no flag) matches `policy: default`. With `as_of` set, a replay judges rulebook dates against the day the record was made; without it, against the day of the replay. The record format and the other entry points that write records are in [docs/evidence/validation-records.md](../docs/evidence/validation-records.md).
 
 ## Run it yourself
 

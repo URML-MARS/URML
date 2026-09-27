@@ -50,7 +50,14 @@ urml conformance run --adapter your_pkg.substrate:YourAdapter \
 
 ### 4. Produce validation records (optional)
 
-Validate the programs you ran on the robot, plus a few refusal cases a reader grasps at once (an altitude above the manifest ceiling, a speed above the declared maximum, a primitive the robot does not declare), against the listed manifest. The [registry README](../../registry/README.md#validation-records) shows the Python calls. The checker replays every record, so a record is evidence only while it still reproduces.
+Validate the programs you ran on the robot, plus a few refusal cases a reader grasps at once (an altitude above the manifest ceiling, a speed above the declared maximum, a primitive the robot does not declare), against the listed manifest:
+
+```bash
+urml validate program.urml.yaml -m registry/evidence/<id>/robot.manifest.yaml \
+    --profile <profile> --no-policy --evidence-log registry/evidence/<id>/validation-records.jsonl
+```
+
+Use the same manifest, envelope, policy and rulebooks the entry's `validation_records.inputs` declare; the [registry README](../../registry/README.md#validation-records) shows the Python calls as well. The checker replays every record, so a record is evidence only while it still reproduces.
 
 ### 5. Write the entry
 
