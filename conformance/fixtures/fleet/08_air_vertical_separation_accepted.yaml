@@ -1,25 +1,24 @@
 # RFC-0291, AIR: two drones at the same (x,y) but 30 m apart in altitude. Their
 # vertical bands (±5 m) are disjoint -> strategically deconflicted -> ACCEPT.
 #
-# RFC-0702 (Draft): the bundled FAA rulebook applies to drone programs by
-# default and allows one aircraft airborne at a time per remote pilot in
-# command (14 CFR 107.35). Both drones fly at once, so without a deployment
-# rulebook the program is refused with rule.concurrency_exceeded. RFC-0702
-# names two ways to keep this fixture accepted: declare two remote pilots in
-# command, or set `default_rulebooks: false`. This fixture declares the
-# pilots, plus the Remote ID method a deployment rulebook must declare.
+# RFC-0702: the bundled FAA rulebook applies to drone programs by default and
+# allows one aircraft airborne at a time per remote pilot in command
+# (14 CFR 107.35). Both drones fly at once, so with the default on the
+# program is refused with rule.concurrency_exceeded. This fixture tests the
+# RFC-0291 air deconfliction pass, not the rulebook pass, so it turns the
+# bundled rulebooks off (founder decision, 2026-09-27). The rulebook side of
+# two drones in one program is pinned by the rulebook fixtures.
 name: fleet/08_air_vertical_separation_accepted
 description: >
-  Two drones vertically separated by altitude; no conflict. The deployment
-  declares two remote pilots in command, so the FAA one-aircraft-per-pilot
-  rule allows both in the air.
+  Two drones vertically separated by altitude; no conflict. Bundled
+  rulebooks are off so the fixture tests deconfliction alone.
 roster:
   - { name: a, manifest: utm_drone }
   - { name: b, manifest: utm_drone }
 shared_frames: [agl]
 policy: none
 profiles: [drone]
-rulebooks: [deployment_two_pilots]
+default_rulebooks: false
 program:
   profile: drone
   behavior:

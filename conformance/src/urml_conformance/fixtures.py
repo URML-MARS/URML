@@ -303,7 +303,6 @@ RULEBOOK_REGISTRY: dict[str, Path] = {
     "deployment_indoor_lab": _VALIDATOR_FIXTURES / "rulebooks" / "deployment_indoor_lab.yaml",
     # Two remote pilots in command and standard Remote ID: two aircraft may
     # be airborne at once under the bundled FAA rulebook (14 CFR 107.35).
-    "deployment_two_pilots": _VALIDATOR_FIXTURES / "rulebooks" / "deployment_two_pilots.yaml",
     "example_warehouse": _EXAMPLES_RULEBOOKS / "example-warehouse.yaml",
     "example_deployment": _EXAMPLES_RULEBOOKS / "example-deployment.yaml",
 }
