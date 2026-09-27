@@ -204,8 +204,13 @@ passed. Record:
 No earlier green claim stands: earlier the same day the same gate passed in
 2.37 s while PX4's log showed no arming and no take-off, because the adapter
 then reported every COMMAND_ACK as success. The adapter now reports a flight
-primitive as done only when telemetry shows it. The GitHub `px4-sitl-e2e` job
-has not run and still boots jMAVSim. No hardware flight is claimed.
+primitive as done only when telemetry shows it. A second record the same day
+flew the fixture again with the adapter's ground-station heartbeat, showed
+PX4's STATUSTEXT reaching the adapter and PX4's own text in a refused arm's
+reason, and checked `wait_for(emergency_stop)` against a flight termination:
+[`reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md`](../../reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md).
+The GitHub `px4-sitl-e2e` job now follows the same SIH recipe but has not run
+yet. No hardware flight is claimed.
 
 **ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
 on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`

@@ -37,8 +37,9 @@ actually executing a sentence, reproducible by a developer with no aircraft.
 - A running PX4 SITL on the standard offboard port. The shortest path is the
   PX4 user guide's SITL setup; the gated CI in
   [`.github/workflows/px4-integration.yml`](../../.github/workflows/px4-integration.yml)
-  shows the exact headless boot invocation this demo was written against
-  (`make px4_sitl jmavsim`, MAVLink on `udp:127.0.0.1:14540`). Edit
+  shows the headless boot invocation that flew PX4 v1.17.0 SITL locally
+  (`sleep infinity | HEADLESS=1 make px4_sitl sihsim_quadx`, MAVLink on
+  `udp:127.0.0.1:14540`). Edit
   [`examples/drone/flight-only.px4.yaml`](../../examples/drone/flight-only.px4.yaml)
   if your SITL world or ports differ.
 

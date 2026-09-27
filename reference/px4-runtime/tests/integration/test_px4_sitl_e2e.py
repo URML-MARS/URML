@@ -26,8 +26,12 @@ show that
     waypoint (horizontally, from the witness's own view of home), and
   - the vehicle ended on the ground (EXTENDED_SYS_STATE ON_GROUND).
 
-The witness numbers are printed (run pytest with ``-s``) so a run can be
-recorded as evidence.
+The adapter sends a ground-station heartbeat, and PX4 sends STATUSTEXT
+only to links where it sees one, so the test also checks that the
+adapter's own link received STATUSTEXT from PX4 during the flight.
+
+The witness numbers and the adapter's STATUSTEXT are printed (run pytest
+with ``-s``) so a run can be recorded as evidence.
 
 ## Gating
 
@@ -292,6 +296,11 @@ def test_flight_only_fixture_flies_px4_sitl() -> None:
         f"landed_states={seen.landed_states} final_landed_state={seen.landed_state} "
         f"armed_at_end={seen.armed_now} fixture_seconds={flown_s:.1f}"
     )
+    # What PX4 told the adapter's own link (udp 14540). PX4 sends STATUSTEXT
+    # only to a link with a ground-station heartbeat, so an empty list means
+    # the adapter's heartbeat did not register.
+    texts = [entry.text for adapter in adapters for entry in adapter._statustext_log]
+    print(f"PX4 STATUSTEXT on the adapter's link (udp 14540): {texts}")
 
     assert report.all_passed, "flight-only fixture failed against live PX4 SITL:\n" + report.render()
     assert seen.samples > 0, f"the witness on {_WITNESS_URL} received no GLOBAL_POSITION_INT"
@@ -306,4 +315,8 @@ def test_flight_only_fixture_flies_px4_sitl() -> None:
     )
     assert seen.landed_state == _MAV_LANDED_STATE_ON_GROUND, (
         f"the vehicle did not end on the ground (landed_state={seen.landed_state})"
+    )
+    assert texts, (
+        "the adapter's link received no STATUSTEXT from PX4; PX4 sends it only to links with a "
+        "ground-station heartbeat, so the adapter's heartbeat did not register"
     )

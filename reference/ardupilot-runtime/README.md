@@ -46,8 +46,8 @@ Nothing in this package disables `ARMING_CHECK` or any pre-arm gate. On a bench 
 | `return_to_home` | `DO_SET_MODE(RTL)` | clears any ROI first |
 | `capture` (photo) | `DO_DIGICAM_CONTROL` or `DO_SET_SERVO` pulse | image stays on the camera; payload has `camera://shot/N` and the trigger-time position |
 | `set_output` | `DO_GRIPPER` / `DO_WINCH` / `DO_SET_SERVO` | per `output_lines` binding in the config; winch uses relative-length control (+length deliver, -length retract) because ArduCopter 4.6 rejects the `WINCH_DELIVER` / `WINCH_RETRACT` actions |
-| `measure` (distance, voltage), `wait_for`, `report`, `wait` | inherited from PX4Adapter | |
-| `dock`, `grasp`, `release`, `detect`, `speak`, `listen`, video capture | not supported | documented `not_supported` result, never raised |
+| `measure` (distance, voltage), `wait_for`, `report`, `wait` | inherited from PX4Adapter | `wait_for(event: emergency_stop)` fires on the autopilot's `HEARTBEAT.system_status` `MAV_STATE_FLIGHT_TERMINATION` or `MAV_STATE_EMERGENCY`; not yet checked against ArduCopter |
+| `dock`, `grasp`, `release`, `detect`, `scan`, `speak`, `listen`, video capture | not supported | documented `not_supported` result, never raised |
 
 ## Install
 

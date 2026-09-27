@@ -581,3 +581,28 @@ def test_manipulation_still_not_supported(fake: dict[str, Any]) -> None:
     result = _adapter().send_manipulation_goal(action="grasp")
     assert result.success is False
     assert "not_supported_on_bare_autopilot" in (result.reason or "")
+
+
+def test_scan_is_not_supported(fake: dict[str, Any]) -> None:
+    """Inherited from PX4Adapter: no waypoint expansion or capture, so no success claimed."""
+    result = _adapter().run_scan(
+        area={"bounding_box": {"min_x": 0, "max_x": 10, "min_y": 0, "max_y": 10}},
+        pattern="serpentine",
+        overlap=0.3,
+        altitude=30.0,
+        media="photo",
+        sensor=None,
+    )
+    assert result.success is False
+    assert "not_supported_on_bare_autopilot" in (result.reason or "")
+    assert fake["connections"] == []
+
+
+def test_close_without_a_heartbeat_thread(fake: dict[str, Any]) -> None:
+    """ArduCopterAdapter opens its own link and sends no ground-station heartbeat; close() still works."""
+    a = _adapter()
+    assert a.send_return_to_home_goal().success is True
+    a.close()
+    conn = fake["connections"][0]
+    assert conn._closed is True
+    assert a._gcs_thread is None
