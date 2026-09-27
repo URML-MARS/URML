@@ -12,98 +12,127 @@
 
 ---
 
-# Submitting a Runtime to the Compatible Runtimes Registry
+# Submitting to the URML registry
 
-This page is for runtime authors who want their project listed in [docs/compatible-runtimes.md](../compatible-runtimes.md).
+This page is for anyone who wants a robot listed in the [URML registry](../../registry/README.md): a robot maker, a runtime author, or a user with a recorded run. URML is in Phase 1 and takes outside contributions ([CONTRIBUTING.md](../../CONTRIBUTING.md)). A submission is one pull request that adds one entry file and one evidence folder.
 
-The registry is self-reported. You run the public conformance suite against your runtime, publish the report from your own repo, and open a PR adding a row. The maintainer reviews the PR for completeness and merges it.
+Read [TRADEMARK.md](../../TRADEMARK.md) first. A listing grants no mark. You may call a runtime "URML-compatible" only if it passes the unmodified, current public conformance suite, and you may never call anything "URML-Certified": that mark is reserved for a future program run outside this repository.
 
-Before you start, read [TRADEMARK.md](../../TRADEMARK.md). The short version: listing does not grant a license to the URML or URML-Certified marks. Calling yourself "URML-compatible" is fine if you pass the suite. Calling yourself "URML-Certified" is not, and won't be until the Phase 4 certification program launches.
+## What an entry needs
 
-## The five steps
+A capability manifest for the robot, committed in this repository. If it is not already under `examples/`, put it in the entry's evidence folder.
 
-### 1. Install the conformance suite
+At least one piece of evidence: a recorded run with public sources (`hardware_run` or `simulation_run`), validation records, or a conformance report produced with your runtime's own adapter. The [registry README](../../registry/README.md) explains each kind and what the checker verifies.
+
+Limits: at least one sentence on what your evidence does not show. Every entry has them. A reader trusts an entry that says where it stops.
+
+## Step by step
+
+### 1. Fork and branch
+
+Fork `URML-MARS/URML` and create a branch. Pick an id: lowercase words joined by hyphens, naming the robot and the runtime (`acme-rover-ros2`). The id is the entry's file name.
+
+### 2. Add the evidence folder
+
+Create `registry/evidence/<id>/` with what your entry points at: the manifest (unless it is already in the repository), any envelope, policy or rulebook your validation records use, `validation-records.jsonl`, and `conformance-report.json` if you claim the self-reported tier.
+
+### 3. Run the conformance suite against your own adapter (optional)
+
+Skip this step unless you claim the self-reported URML-compatible tier. The report must come from your runtime's own adapter; a report from the built-in mock describes the mock, and the checker refuses it.
 
 ```bash
-pip install urml-conformance
+pip install -e reference/validator -e reference/ros2-runtime -e conformance
+urml conformance run --adapter your_pkg.substrate:YourAdapter \
+    --output registry/evidence/<id>/conformance-report.json
 ```
 
-This pulls `urml-validator` and `urml-ros2-runtime` as dependencies. See the [conformance README](../../conformance/README.md) for setup detail and the editable-install path for development.
+`python -m urml_conformance --adapter your_pkg.substrate:YourAdapter --report <path>` writes the same report. Use `--filter` to run only the fixtures your robot can serve (a flight controller with no camera runs the flight-only drone fixtures, as the PX4 runtime does); the report records the filter, the number of fixtures, and a sha256 over the fixture files. Claim only profiles whose fixtures ran and passed. Do not edit the report or the fixtures. The checker requires `all_passed: true`, your `runtime.adapter` as the report's adapter, and the urml-conformance version of this repository.
 
-### 2. Add CONFORMANCE.md to your runtime repo
+### 4. Produce validation records (optional)
 
-Drop a file at the root of your runtime repository declaring which URML spec versions you claim to support. The format follows the convention in [conformance/README.md](../../conformance/README.md):
+Validate the programs you ran on the robot, plus a few refusal cases a reader grasps at once (an altitude above the manifest ceiling, a speed above the declared maximum, a primitive the robot does not declare), against the listed manifest:
+
+```bash
+urml validate program.urml.yaml -m registry/evidence/<id>/robot.manifest.yaml \
+    --profile <profile> --no-policy --evidence-log registry/evidence/<id>/validation-records.jsonl
+```
+
+Use the same manifest, envelope, policy and rulebooks the entry's `validation_records.inputs` declare; the [registry README](../../registry/README.md#validation-records) shows the Python calls as well. The checker replays every record, so a record is evidence only while it still reproduces.
+
+### 5. Write the entry
+
+Create `registry/entries/<id>.yaml`. Quote every date, or YAML reads it as a date object and the checker refuses it.
 
 ```yaml
-declares:
-  layer-1-hal: 0.1.0
-  layer-2-primitives: 0.1.0
-  layer-3-behavior: 0.1.0
-  layer-4-nl-grammar: 0.1.0
-  profiles:
-    home: 0.1.0
+registry_version: "1"
+id: acme-rover-ros2
+title: Acme Rover through the Acme URML runtime
+status: listed
+listed: "2026-10-01"
+last_verified: "2026-10-01"
+submitted_by: Acme Robotics
+robot:
+  name: Acme Rover
+  class: four-wheel ground robot
+  maker: Acme Robotics
+  manifest: registry/evidence/acme-rover-ros2/acme-rover.manifest.yaml
+runtime:
+  package: acme-urml-runtime
+  version: "1.2.0"
+  adapter: acme_urml.substrate:AcmeAdapter
+  substrate: ROS 2 Jazzy with Nav2
+profiles: [home]
+compatibility:
+  tier: self_reported
+  profiles: [home]
+  report:
+    path: registry/evidence/acme-rover-ros2/conformance-report.json
+    sha256: <sha256 of the report file>
+field_evidence:
+  - kind: hardware_run
+    date: "2026-09-30"
+    by: Acme Robotics
+    summary: What ran, on which robot, and what happened, in the words of the sources.
+    sources:
+      - https://github.com/acme/rover/blob/v1.2.0/docs/urml-run.md
+validation_records:
+  path: registry/evidence/acme-rover-ros2/validation-records.jsonl
+  sha256: <sha256 of the records file>
+  summary: How and when the records were produced, and what they show.
+  inputs:
+    manifest: registry/evidence/acme-rover-ros2/acme-rover.manifest.yaml
+    policy: none
+limits:
+  - What the evidence does not show.
 ```
 
-Only declare the versions you actually pass. A partial claim is fine ("Layer 2 only, no profile coverage yet"). An overclaim that fails the suite gets rejected during review.
+`sha256` is the hex digest of the file's bytes: `sha256sum <file>` on Linux, `shasum -a 256 <file>` on macOS, `Get-FileHash <file>` in PowerShell (lowercase the result). Write names, never email addresses. Sources are repository paths or `https://` links a reader can open without an account; link a commit or a tagged release rather than a moving branch where you can. The schema is [`registry/entry.schema.json`](../../registry/entry.schema.json).
 
-### 3. Run the conformance suite
+### 6. Check and export
 
 ```bash
-urml conformance run --output conformance-report.json
+python -m urml_conformance.registry check
+python -m urml_conformance.registry export
 ```
 
-Exit code 0 means every fixture passed against the layers and profiles you declared. Exit code 1 means at least one fixture failed; the JSON report lists which ones. Do not submit a report with `all_passed: false`.
+`check` must print no problems. `export` rewrites `registry/registry.json`; commit it with your entry, because CI compares it with fresh output.
 
-### 4. Commit and tag
+### 7. Open the pull request
 
-Commit both `CONFORMANCE.md` and `conformance-report.json` to your runtime repository at a tagged release (or at minimum a stable commit hash). The registry entry links to the report at that pinned commit, not to a moving `main` branch, so reviewers can verify the claim later.
+Sign off every commit (`git commit -s`, the DCO), push, and open a pull request with the registry template: add `?template=registry-submission.md` to the new pull request URL. The template's acknowledgements are part of the review.
 
-### 5. Open a PR against this repo
+## What happens next
 
-Open a PR against `URML-MARS/URML` that adds one row to [docs/compatible-runtimes.md](../compatible-runtimes.md). Use the registry-submission PR template (it auto-loads if you append `?template=registry-submission.md` to the New Pull Request URL).
+The `registry-check` workflow runs the checker and the registry tests on the pull request. The maintainer then reviews for completeness only: the check passes, the sources open and say what the summary says, the limits are stated, and the acknowledgements are ticked. The maintainer does not re-run your hardware, run your runtime, or judge your robot.
 
-The row needs:
+## Keeping an entry current
 
-- **Runtime**: name of your project, linked to its repository.
-- **Maintainer**: org or person.
-- **Substrate**: ROS 2, PX4, vendor SDK, etc.
-- **Spec versions**: from your `CONFORMANCE.md`, comma-separated.
-- **Conformance report**: raw URL to `conformance-report.json` at the pinned commit.
-- **License**: your runtime's license (any OSI-approved license is acceptable).
-- **Last-verified commit**: the seven-character short hash of the commit where the report lives.
+Re-verify when URML releases a new version. A release can change a validator verdict, which makes a record stop reproducing, and it moves the urml-conformance version, which a compatibility report must match. Either one fails the check. Produce the records or the report again, update the pinned sha256 values and `last_verified`, run `export`, and open a pull request. If you cannot, withdraw the entry.
 
-The PR template includes a trademark-acknowledgement checkbox. Tick it before requesting review.
+## Withdrawing an entry
 
-## What the maintainer checks
-
-Five quick things:
-
-1. The JSON report parses as a valid `ConformanceReport`.
-2. `all_passed` is true.
-3. The declared spec versions match the versions tested in the report.
-4. The link to the report resolves at the pinned commit.
-5. The trademark-acknowledgement checkbox is ticked.
-
-That's it. The maintainer does not audit your code, run your tests independently, or assess fitness for any particular purpose. The registry trusts the report; readers who want stronger guarantees can re-run the suite against your runtime themselves.
-
-## Keeping your listing current
-
-When URML ships a new spec version that affects your declared coverage:
-
-- Re-run the suite against your runtime.
-- Update `CONFORMANCE.md` and `conformance-report.json` in your repo.
-- Open a PR updating the registry row.
-
-You have 90 days from a relevant spec bump to file an updated report before the listing is removed for staleness. The 90-day window is generous; nobody wants outdated claims sitting on the registry.
-
-## Withdrawing a listing
-
-Open a PR removing your row. No questions asked. Delisting is recorded in git, so the history is auditable.
+Open a pull request that sets `status: withdrawn` and says why. No questions asked. A withdrawn entry stays in `registry.json` with that status, so links to it keep resolving and git keeps the history.
 
 ## If something goes wrong
 
-Open an issue describing the problem. The maintainer commits to responding within 30 days during Phase 0. The conformance suite itself is Apache 2.0 and freely runnable, so disputes about whether your runtime passes are resolvable independently by anyone.
-
-## What this is not
-
-This registry is not a certification, an audit, or an endorsement. It is a public record that the maintainer of a runtime ran the public suite, got a passing report, and submitted the result. The URML-Certified program (Phase 4) is the certification surface and does not exist yet. See [TRADEMARK.md](../../TRADEMARK.md).
+Open an issue or start a thread in [GitHub Discussions](https://github.com/URML-MARS/URML/discussions). The conformance suite and the checker are Apache 2.0, so anyone can re-run them and settle a disagreement about what passes.

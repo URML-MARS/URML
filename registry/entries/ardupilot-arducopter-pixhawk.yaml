@@ -1,0 +1,86 @@
+# URML registry entry. The fields are explained in registry/README.md and
+# described by registry/entry.schema.json. Check with:
+#   python -m urml_conformance.registry check
+registry_version: "1"
+id: ardupilot-arducopter-pixhawk
+title: Pixhawk-class flight controller running ArduCopter, through the URML ArduPilot runtime
+status: listed
+listed: "2026-09-27"
+last_verified: "2026-09-27"
+submitted_by: URML maintainers
+
+robot:
+  name: Pixhawk-class flight controller with ArduCopter 4.6.3
+  class: multirotor flight controller
+  manifest: examples/drone/pixhawk-ardupilot.manifest.yaml
+
+runtime:
+  package: urml-ardupilot-runtime
+  version: "0.4.0"
+  adapter: urml_ardupilot_runtime:ArduCopterAdapter
+  substrate: ArduPilot ArduCopter over MAVLink (pymavlink), no ROS
+
+profiles: [drone]
+
+field_evidence:
+  - kind: hardware_run
+    date: "2026-08-29"
+    by: URML maintainers
+    summary: >-
+      A Pixhawk-class board running ArduCopter 4.6.3, on USB, propellers off.
+      The read-only probe identified the board (ArduPilot, quadrotor, MAVLink
+      system id 10, disarmed). `urml execute --adapter ardupilot` ran the
+      bench-battery program to SUCCESS: a battery read over MAVLink and a
+      report back to the autopilot's log. The bench-hop flight program passed
+      the validator, and the autopilot's own pre-arm checks refused to arm
+      (compass not calibrated, GPS bad fix, battery low voltage failsafe).
+      URML reported that reason and stopped; the vehicle stayed disarmed.
+    sources:
+      - docs/demos/sentence-to-pixhawk.md
+      - docs/launch/claims-audit.md
+      - reference/ardupilot-runtime/tests/integration/test_arducopter_bench.py
+      - https://github.com/URML-MARS/URML/commit/f6cba8fd349047c50cc4f32a35ee1b95679fe929
+  - kind: simulation_run
+    date: "2026-08-29"
+    by: URML maintainers
+    summary: >-
+      ArduCopter SITL built from the Copter-4.6.3 tag, in WSL2 on the
+      maintainer's machine. Three of three passed in one uninterrupted run:
+      the drone/flight_only_positive conformance fixture, the
+      site-photogrammetry example (take-off to 100 m, five stations with a
+      photo at each, return, land) and the parcel-delivery example (gripper
+      and winch through set_output). The run surfaced one defect, fixed the
+      same day: ArduCopter 4.6 rejects the MAVLink winch deliver and retract
+      actions, so the adapter uses relative-length control. On 2026-08-30 the
+      programs Gemini 2.5 Pro emitted through the LLM bridge for the two
+      flight-test sentences flew unchanged on the same SITL.
+    sources:
+      - docs/launch/claims-audit.md
+      - docs/demos/sentence-to-pixhawk.md
+      - reference/ardupilot-runtime/tests/integration/test_arducopter_sitl_e2e.py
+      - https://github.com/URML-MARS/URML/commit/221ddfe37da6dcd0ff587616791c157feee9eb14
+
+validation_records:
+  path: registry/evidence/ardupilot-arducopter-pixhawk/validation-records.jsonl
+  sha256: 6370c96dd9c9ee542297a9e2fa52819130fd26dd864936fd9862d022f1719f0e
+  summary: >-
+    Produced for this listing on 2026-09-27 with the urml_validator.evidence
+    API, by validating against the listed manifest the two committed programs
+    for it (bench-battery and bench-hop, both accepted) and four refusal cases
+    (a take-off to 150 m, a 15 m/s leg, a photo with no camera, a flight to an
+    undeclared place), with the compliance policy pass off and the bundled FAA
+    Part 107 rulebook on. Every record carries the Remote ID warning, because
+    no deployment rulebook declares a Remote ID method. The records show the
+    gate's verdicts on this manifest; they are not flight logs.
+  inputs:
+    manifest: examples/drone/pixhawk-ardupilot.manifest.yaml
+    policy: none
+
+limits:
+  - Propellers were off on the bench. No free flight is claimed, and the two flight-test runbooks have not been flown on hardware.
+  - No hardware run happens in CI. The bench run repeats only with the board attached (URML_ARDUPILOT_BENCH).
+  - The SITL run was local, on the maintainer's machine. The ardupilot-sitl-e2e CI job has not been run.
+  - The bench and SITL runs used the runtime as committed on 2026-08-29, when its package version was 0.1.0. Since then the adapter gained one optional capture argument (RFC-0699) and the version moved to 0.4.0; neither the board nor SITL has been run again.
+  - No conformance self-report. The adapter needs pymavlink and a live MAVLink autopilot (SITL or a board), so the suite cannot run it without one, and a transport faked for the suite would show nothing about the autopilot.
+  - The validation records were judged with the compliance policy pass off. The manifest declares no provenance, and this listing makes no compliance statement.
+  - PX4 is a different runtime (urml-px4-runtime) and is not covered by this entry.

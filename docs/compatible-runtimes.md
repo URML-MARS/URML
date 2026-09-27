@@ -19,12 +19,13 @@ executes only statically-validated programs, needs no cloud, and passes the
 public [conformance suite](../conformance/) for the profiles it claims. The
 normative contract is [RFC-0014](rfcs/0014-substrate-conformance.md).
 
-This page has two parts: the **first-party reference runtimes** the URML project
-maintains and verifies in-repo, and a **self-reported registry** for third-party
-runtimes. Neither is a certification. URML does not certify, audit, or endorse
-listed runtimes; the `URML-Certified` mark is a separate, future program (Phase
-4) and is not in use today. See [TRADEMARK.md](../TRADEMARK.md) for what a listing
-does and does not grant.
+This page lists the **first-party reference runtimes** the URML project
+maintains and verifies in-repo. Robots and runtimes maintained outside the
+project, and the evidence behind each one, are in the
+[URML registry](../registry/README.md). Neither list grants a mark or says
+anything about fitness for a purpose, and the `URML-Certified` mark is reserved
+for a separate, future program (Phase 4) that is not in use today. See
+[TRADEMARK.md](../TRADEMARK.md) for what a listing does and does not grant.
 
 If you make **robots or parts** rather than runtimes, the parallel surface is the
 [Manufacturer & Product Directory](manufacturers/directory.md).
@@ -41,6 +42,7 @@ hardware claim; see the [claims audit](launch/claims-audit.md).
 | ------- | --------- | ----- |
 | [`ros2-runtime`](../reference/ros2-runtime/) | ROS 2 (`rclpy`) + the mock | The reference Protocol implementation; the mock backs the conformance suite. |
 | [`px4-runtime`](../reference/px4-runtime/) | PX4 / MAVLink (`pymavlink`, no ROS) | Full Protocol with zero ROS dependency. |
+| [`ardupilot-runtime`](../reference/ardupilot-runtime/) | ArduPilot ArduCopter / MAVLink (`pymavlink`, no ROS) | Bench run on a Pixhawk-class board, propellers off, and a local ArduCopter SITL run, both 2026-08-29; no flight claimed. In the [registry](../registry/entries/ardupilot-arducopter-pixhawk.yaml). |
 | [`marine-runtime`](../reference/marine-runtime/) | BlueROV2 / ArduSub (MAVLink) | The zero-ROS underwater sibling. |
 | [`opcua-runtime`](../reference/opcua-runtime/) | OPC UA Robotics (zero ROS) | Factory-floor companion spec via `asyncua`. |
 | [`mujoco-runtime`](../reference/mujoco-runtime/) | MuJoCo simulator (zero ROS) | The purest substrate-neutrality proof: a sim with no robot, no middleware. |
@@ -51,7 +53,7 @@ hardware claim; see the [claims audit](launch/claims-audit.md).
 | [`legged-runtime`](../reference/legged-runtime/) | Quadruped platforms | Spot / ANYmal. |
 | [`humanoid-runtime`](../reference/humanoid-runtime/) | Biped / humanoid platforms | Digit-class. |
 | [`mobile-runtime`](../reference/mobile-runtime/) | Ground AMRs | Husky / Jackal. |
-| [`edu-runtime`](../reference/edu-runtime/) | Educational platforms | VEX / LEGO SPIKE / Thymio / Robotical Marty / Petoi / CircuitPython. |
+| [`edu-runtime`](../reference/edu-runtime/) | Educational platforms | VEX / LEGO SPIKE / Thymio / Robotical Marty / Petoi / CircuitPython / Microduck. |
 | [`embedded-runtime`](../reference/embedded-runtime/) | MCU serial | micro:bit / Arduino-class nodes. |
 | [`autosar-runtime`](../reference/autosar-runtime/) | AUTOSAR Adaptive | Scaffold (RFC-0019). |
 
@@ -72,36 +74,13 @@ The upstream side of this is open too: URML has contributed a small
 (a maintainer-invited PR) so a trained policy's capability declaration can travel
 with its checkpoint.
 
-## Third-party registry (self-reported)
+## Third-party runtimes and robots: the registry
 
-For runtimes maintained outside the URML project. Listing is **self-reported**:
-the maintainer ran the conformance suite and submitted the result; URML does not
-audit it. Open a PR following [docs/registry/SUBMISSION.md](registry/SUBMISSION.md),
-five steps and one PR. The registry is free and opt-in.
-
-<!-- Add new entries below this comment, one row per runtime. -->
-
-| Runtime | Maintainer | Substrate | Spec versions | Conformance report | License | Last-verified commit |
-| ------- | ---------- | --------- | ------------- | ------------------ | ------- | -------------------- |
-
-_No third-party entries yet. Be the first by following [SUBMISSION.md](registry/SUBMISSION.md)._
-
-### How to read the third-party table
-
-- **Runtime**: the project name, linked to its repository.
-- **Maintainer**: the org or person who submitted and maintains the listing.
-- **Substrate**: what URML compiles down to in this runtime (ROS 2, PX4, vendor SDK, etc.).
-- **Spec versions**: declared coverage. Per-layer semver, e.g. `layer-2: 0.1.0, layer-3: 0.1.0, profiles: home/0.1.0`.
-- **Conformance report**: link to the JSON report produced by `urml conformance run --output`, hosted in the runtime's own repository at a pinned commit.
-- **License**: the runtime's license. URML is Apache 2.0; listed runtimes may use any OSI-approved license.
-- **Last-verified commit**: the runtime commit hash at which the report was produced.
-
-## Delisting
-
-A third-party runtime is delisted if any of the following happens:
-
-- The maintainer requests removal (open a PR removing the row).
-- A bumped version of the spec invalidates the prior report and no updated report is filed within 90 days.
-- The trademark policy in [TRADEMARK.md](../TRADEMARK.md) is materially violated by the maintainer.
-
-Delisting is recorded in the PR removing the row, so the history is auditable in git.
+Runtimes and robots maintained outside the URML project are listed in the
+[URML registry](../registry/README.md), one YAML entry per robot, each with its
+evidence and its limits. A runtime's self-reported URML-compatible claim lives
+there as a conformance report produced with the runtime's own adapter
+(`urml conformance run --adapter module:attr --output report.json`), which a
+checker verifies in CI. Submitting is one pull request: see
+[docs/registry/SUBMISSION.md](registry/SUBMISSION.md). The registry is free and
+opt-in, and an entry is withdrawn by setting `status: withdrawn`.

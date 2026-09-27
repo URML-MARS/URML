@@ -77,15 +77,21 @@ Useful flags:
 python -m urml_conformance                       # hermetic self-test (MockROSAdapter)
 python -m urml_conformance --filter quadruped    # one family
 python -m urml_conformance --adapter p:A -v       # full per-case report
+python -m urml_conformance --adapter p:A --report report.json   # JSON report
 ```
+
+`urml conformance run --adapter p:A --filter drone --output report.json`
+does the same from the `urml` command line.
 
 Or wire it in code, the same hook the reference runtimes' gated CI
 uses:
 
 ```python
-from urml_conformance import ConformanceRunner
+from urml_conformance import ConformanceRunner, run_suite
 report = ConformanceRunner(adapter_factory=lambda: YourAdapter()).run()
 assert report.all_passed, report.render()
+
+report = run_suite("your_pkg.substrate:YourAdapter", filter="drone")  # what the CLIs run
 ```
 
 ## Step 3: read the result
@@ -98,6 +104,14 @@ cannot serve (no arm, no camera) are not your failures to force green:
 the right move is the honest not-supported result plus a fixture subset
 that matches your robot's declared capability manifest, exactly as the
 PX4 runtime runs the flight-only subset rather than faking perception.
+
+The JSON report (`urml.conformance-report/1`) says what ran:
+`all_passed`, the `passed` and `failed` counts, the `adapter` spec
+(`urml_ros2_runtime:MockROSAdapter` when you pass none), the
+urml-conformance and urml-validator versions, the `--filter`, the number
+of fixtures, and a sha256 over the fixture files, followed by one result
+per fixture. A report read back must agree with its own results, so an
+edited `all_passed` does not parse.
 
 ## The goal line: a rejected program sends nothing
 
@@ -124,11 +138,14 @@ reference `FleetRuntime`. In code, call
 ## What "URML-compatible" means
 
 Passing the suite is a factual statement: this runtime reproduces the
-spec's behavior on the shared contract. During Phase 0 this is
-**self-assessment** — run it yourself, in your own CI, against your own
-runtime. There is no badge to display and no claim to publish yet; a
-formal certification program is a later, separate concern and is not
-implied by passing these fixtures. Measure first, claim later.
+spec's behavior on the shared contract. It is the **self-reported** tier
+of [`spec/conformance/v0.1.0.md`](../spec/conformance/v0.1.0.md) section
+3: run it yourself, in your own CI, against your own runtime's adapter.
+To publish the result, add the JSON report to an entry in the
+[URML registry](../registry/README.md), whose checker refuses a report
+from the mock adapter or with a failed fixture. There is no badge to
+display, and the `URML-Certified` mark is reserved for a separate
+program that does not exist yet (see [TRADEMARK.md](../TRADEMARK.md)).
 
 ## Privacy
 
@@ -142,5 +159,5 @@ A good fixture is spec-level: it must pass on *any* URML-compatible
 runtime, not just one. If you find behavior the spec implies but no
 fixture pins, that is the most valuable contribution. The fixture
 format is `conformance/fixtures/<profile>/NN_name.yaml`; see existing
-ones for the shape. (External contribution process opens in Phase 1;
-until then, file it as an issue.)
+ones for the shape, and send it as a pull request per
+[CONTRIBUTING.md](../CONTRIBUTING.md).

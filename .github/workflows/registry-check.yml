@@ -1,0 +1,68 @@
+# Registry gate.
+#
+# Runs the registry checker (python -m urml_conformance.registry check) and the
+# registry tests on every PR, and every push to main, that touches something a
+# registry entry depends on:
+#
+#   - registry/**: the entries, their evidence, and the generated
+#     registry.json and entry.schema.json (the tests fail when either is stale);
+#   - conformance/src/urml_conformance/** and conformance/fixtures/**: the
+#     checker, the conformance report format, and the fixture set a
+#     compatibility report pins;
+#   - reference/validator/src/**: the checker replays every validation record
+#     through the validator, so any change to it (schemas, passes, bundled
+#     rulebooks) can move a recorded verdict;
+#   - examples/**: entries point at example manifests and programs.
+#
+# Hermetic: validator, ros2-runtime (the conformance suite imports it) and
+# conformance, installed editable. No entry today makes the checker import a
+# runtime or an adapter; an entry that does adds its runtime to the install
+# step. See registry/README.md.
+
+name: registry-check
+
+on:
+  pull_request:
+    paths:
+      - 'registry/**'
+      - 'conformance/src/urml_conformance/**'
+      - 'conformance/fixtures/**'
+      - 'conformance/tests/test_registry.py'
+      - 'reference/validator/src/**'
+      - 'examples/**'
+      - '.github/workflows/registry-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'registry/**'
+      - 'conformance/src/urml_conformance/**'
+      - 'conformance/fixtures/**'
+      - 'conformance/tests/test_registry.py'
+      - 'reference/validator/src/**'
+      - 'examples/**'
+      - '.github/workflows/registry-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  registry-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the validator, the reference runtime and the conformance suite
+        run: |
+          python -m pip install --quiet \
+            -e reference/validator \
+            -e reference/ros2-runtime \
+            -e conformance \
+            "pytest>=8"
+      - name: Check every registry entry
+        run: python -m urml_conformance.registry check
+      - name: Registry tests (fresh registry.json and entry.schema.json, every rule)
+        run: python -m pytest conformance/tests/test_registry.py -q

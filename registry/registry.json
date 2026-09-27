@@ -1,0 +1,164 @@
+{
+  "format": "urml.registry/1",
+  "entries": [
+    {
+      "id": "ardupilot-arducopter-pixhawk",
+      "title": "Pixhawk-class flight controller running ArduCopter, through the URML ArduPilot runtime",
+      "status": "listed",
+      "listed": "2026-09-27",
+      "last_verified": "2026-09-27",
+      "submitted_by": "URML maintainers",
+      "robot": {
+        "name": "Pixhawk-class flight controller with ArduCopter 4.6.3",
+        "class": "multirotor flight controller",
+        "maker": null,
+        "manifest_url": "https://github.com/URML-MARS/URML/blob/main/examples/drone/pixhawk-ardupilot.manifest.yaml"
+      },
+      "runtime": {
+        "package": "urml-ardupilot-runtime",
+        "version": "0.4.0",
+        "adapter": "urml_ardupilot_runtime:ArduCopterAdapter",
+        "substrate": "ArduPilot ArduCopter over MAVLink (pymavlink), no ROS"
+      },
+      "profiles": [
+        "drone"
+      ],
+      "compatibility": null,
+      "field_evidence": [
+        {
+          "kind": "hardware_run",
+          "date": "2026-08-29",
+          "by": "URML maintainers",
+          "summary": "A Pixhawk-class board running ArduCopter 4.6.3, on USB, propellers off. The read-only probe identified the board (ArduPilot, quadrotor, MAVLink system id 10, disarmed). `urml execute --adapter ardupilot` ran the bench-battery program to SUCCESS: a battery read over MAVLink and a report back to the autopilot's log. The bench-hop flight program passed the validator, and the autopilot's own pre-arm checks refused to arm (compass not calibrated, GPS bad fix, battery low voltage failsafe). URML reported that reason and stopped; the vehicle stayed disarmed.",
+          "sources": [
+            "https://github.com/URML-MARS/URML/blob/main/docs/demos/sentence-to-pixhawk.md",
+            "https://github.com/URML-MARS/URML/blob/main/docs/launch/claims-audit.md",
+            "https://github.com/URML-MARS/URML/blob/main/reference/ardupilot-runtime/tests/integration/test_arducopter_bench.py",
+            "https://github.com/URML-MARS/URML/commit/f6cba8fd349047c50cc4f32a35ee1b95679fe929"
+          ]
+        },
+        {
+          "kind": "simulation_run",
+          "date": "2026-08-29",
+          "by": "URML maintainers",
+          "summary": "ArduCopter SITL built from the Copter-4.6.3 tag, in WSL2 on the maintainer's machine. Three of three passed in one uninterrupted run: the drone/flight_only_positive conformance fixture, the site-photogrammetry example (take-off to 100 m, five stations with a photo at each, return, land) and the parcel-delivery example (gripper and winch through set_output). The run surfaced one defect, fixed the same day: ArduCopter 4.6 rejects the MAVLink winch deliver and retract actions, so the adapter uses relative-length control. On 2026-08-30 the programs Gemini 2.5 Pro emitted through the LLM bridge for the two flight-test sentences flew unchanged on the same SITL.",
+          "sources": [
+            "https://github.com/URML-MARS/URML/blob/main/docs/launch/claims-audit.md",
+            "https://github.com/URML-MARS/URML/blob/main/docs/demos/sentence-to-pixhawk.md",
+            "https://github.com/URML-MARS/URML/blob/main/reference/ardupilot-runtime/tests/integration/test_arducopter_sitl_e2e.py",
+            "https://github.com/URML-MARS/URML/commit/221ddfe37da6dcd0ff587616791c157feee9eb14"
+          ]
+        }
+      ],
+      "validation_records": {
+        "count": 6,
+        "accepted": 2,
+        "refused": 4,
+        "codes": {
+          "capability.missing_camera": 1,
+          "capability.missing_location": 1,
+          "envelope.altitude_exceeded": 1,
+          "envelope.velocity_exceeded": 1,
+          "rule.cap_exceeded": 1
+        },
+        "warning_codes": {
+          "rule.declaration_missing": 6
+        },
+        "summary": "Produced for this listing on 2026-09-27 with the urml_validator.evidence API, by validating against the listed manifest the two committed programs for it (bench-battery and bench-hop, both accepted) and four refusal cases (a take-off to 150 m, a 15 m/s leg, a photo with no camera, a flight to an undeclared place), with the compliance policy pass off and the bundled FAA Part 107 rulebook on. Every record carries the Remote ID warning, because no deployment rulebook declares a Remote ID method. The records show the gate's verdicts on this manifest; they are not flight logs.",
+        "url": "https://github.com/URML-MARS/URML/blob/main/registry/evidence/ardupilot-arducopter-pixhawk/validation-records.jsonl",
+        "reverified_with": "urml-validator 0.4.0"
+      },
+      "limits": [
+        "Propellers were off on the bench. No free flight is claimed, and the two flight-test runbooks have not been flown on hardware.",
+        "No hardware run happens in CI. The bench run repeats only with the board attached (URML_ARDUPILOT_BENCH).",
+        "The SITL run was local, on the maintainer's machine. The ardupilot-sitl-e2e CI job has not been run.",
+        "The bench and SITL runs used the runtime as committed on 2026-08-29, when its package version was 0.1.0. Since then the adapter gained one optional capture argument (RFC-0699) and the version moved to 0.4.0; neither the board nor SITL has been run again.",
+        "No conformance self-report. The adapter needs pymavlink and a live MAVLink autopilot (SITL or a board), so the suite cannot run it without one, and a transport faked for the suite would show nothing about the autopilot.",
+        "The validation records were judged with the compliance policy pass off. The manifest declares no provenance, and this listing makes no compliance statement.",
+        "PX4 is a different runtime (urml-px4-runtime) and is not covered by this entry."
+      ],
+      "entry_url": "https://github.com/URML-MARS/URML/blob/main/registry/entries/ardupilot-arducopter-pixhawk.yaml"
+    },
+    {
+      "id": "gopigo3-example-adapter",
+      "title": "GoPiGo3 educational robot, through the URML GoPiGo3 example adapter",
+      "status": "listed",
+      "listed": "2026-09-27",
+      "last_verified": "2026-09-27",
+      "submitted_by": "URML maintainers",
+      "robot": {
+        "name": "GoPiGo3",
+        "class": "two-wheel educational ground robot on a Raspberry Pi",
+        "maker": "Dexter Industries",
+        "manifest_url": "https://github.com/URML-MARS/URML/blob/main/examples/gopigo3/gopigo3.manifest.yaml"
+      },
+      "runtime": {
+        "package": "examples/gopigo3",
+        "version": "0.4.0",
+        "adapter": "gopigo3_adapter:GoPiGo3Adapter",
+        "substrate": "Dexter Industries' easygopigo3 library on the robot's Raspberry Pi, no ROS"
+      },
+      "profiles": [
+        "educational"
+      ],
+      "compatibility": null,
+      "field_evidence": [
+        {
+          "kind": "hardware_run",
+          "date": "2026-06-25",
+          "by": "@slowrunner, an independent user, on their own GoPiGo3",
+          "summary": "On @slowrunner's GoPiGo3 (Lyrical-Dave, with a Raspberry Pi), the example's two built-in programs ran through the real easygopigo3 library: the robot turned 90 degrees and drove under a chair. The run came from typing -h, because the example as it then stood drove the robot; the same day the maintainers made a bare run a dry run, with --execute to drive. Later that day @slowrunner ran the whole loop from a sentence: \"Announce 'Driving forward 10 centimeters' and then execute the action\", translated by qwen3.5:9b served through Ollama (a first request timed out; the retry was accepted after 0 revisions). The validated program ran with --execute, 2 steps, success, and the robot moved 10 cm. Speech was not heard in either run.",
+          "sources": [
+            "https://github.com/URML-MARS/URML/discussions/542",
+            "https://github.com/URML-MARS/URML/discussions/523",
+            "https://urml.dev/blog/field-notes-first-robot-runs-urml",
+            "https://github.com/URML-MARS/URML/commit/58ac44cdfb79ee64496e8790fa294a6fe176f806"
+          ]
+        },
+        {
+          "kind": "hardware_run",
+          "date": "2026-07-07",
+          "by": "@slowrunner",
+          "summary": "On the same robot, turns and arcs ran clockwise where URML specifies counterclockwise as positive (Issues #591 and #598, opened 2026-07-04 and 2026-07-06). The fix @slowrunner contributed negates the angle and the arc at the easygopigo3 call; with --execute the robot then turned and orbited counterclockwise. It was merged on 2026-08-05, URML's first merged external code contribution.",
+          "sources": [
+            "https://github.com/URML-MARS/URML/issues/591",
+            "https://github.com/URML-MARS/URML/issues/598",
+            "https://github.com/URML-MARS/URML/pull/602",
+            "https://github.com/URML-MARS/URML/commit/a93fe58d906adc147660bc2101b22f0ec2ceb434",
+            "https://github.com/URML-MARS/URML/blob/main/CHANGELOG.md"
+          ]
+        }
+      ],
+      "validation_records": {
+        "count": 6,
+        "accepted": 2,
+        "refused": 4,
+        "codes": {
+          "capability.drive_type_not_aerial": 1,
+          "capability.missing_location": 1,
+          "capability.missing_manipulation": 1,
+          "capability.missing_object_class": 1,
+          "capability.missing_service_ceiling": 1,
+          "capability.relative_distance_exceeded": 1
+        },
+        "warning_codes": {
+          "capability.tts_engine_undeclared": 2
+        },
+        "summary": "Produced for this listing on 2026-09-27 with the urml_validator.evidence API, by validating against the listed manifest the example's two built-in programs (announce then drive 1 m, and the short patrol; both accepted) and four refusal cases (a 3 m drive in one move, picking up a cup, a take-off, a trip to an undeclared kitchen), with the compliance policy pass off. The two accepted programs carry a warning that the manifest declares no text-to-speech engine. The records show the gate's verdicts on this manifest; they are not logs from the robot.",
+        "url": "https://github.com/URML-MARS/URML/blob/main/registry/evidence/gopigo3-example-adapter/validation-records.jsonl",
+        "reverified_with": "urml-validator 0.4.0"
+      },
+      "limits": [
+        "The hardware runs are @slowrunner's, on their own robot, as reported in @slowrunner's public threads. The maintainers have not reproduced them on a GoPiGo3.",
+        "The URML maintainers compiled this entry from those public reports; @slowrunner did not submit it.",
+        "The committed examples/gopigo3/gopigo3-report.txt is a dry run against a fake backend. It moves nothing and shows no hardware behavior.",
+        "The adapter is an example in examples/gopigo3, not a packaged runtime. It carries the version of the URML packages it runs on (0.4.0 today); the June runs used the example as it stood on 2026-06-25, on URML 0.2.0.",
+        "The example has changed since the last recorded hardware run (2026-07-07). The frame fix was reworked on 2026-07-23, and since 2026-09-07 a wait step holds the robot on the real clock under --execute. Those versions have no recorded hardware run.",
+        "No conformance self-report. The adapter drives the wheels through easygopigo3 on the robot, so the suite cannot run it anywhere else without a fake backend, and a fake backend would show nothing about the robot. The suite also has no fixture for the drive and turn primitives this robot moves with.",
+        "The gate does not compare a drive speed with the manifest's 0.3 m/s max_velocity; docs/safety/envelope-coverage.md leaves base velocity limits to the consuming node (RFC-0518). The example adapter passes no speed to easygopigo3, so the robot moves at the library's default speed.",
+        "The validation records were judged with the compliance policy pass off. The manifest declares no provenance, and this listing makes no compliance statement."
+      ],
+      "entry_url": "https://github.com/URML-MARS/URML/blob/main/registry/entries/gopigo3-example-adapter.yaml"
+    }
+  ]
+}

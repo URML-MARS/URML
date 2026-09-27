@@ -10,28 +10,40 @@ without changing the fixture set or the runner internals. Fixture-side
 ``adapter_overrides`` are only applied when the factory yields a
 ``MockROSAdapter``; real adapters get their behavior from the live
 substrate.
+
+``run_suite`` is the entry point both command lines use: it loads an
+adapter from a ``module:attribute`` spec, selects fixtures by ``--filter``,
+and returns a ``urml.conformance-report/1`` report that says what ran.
 """
 
 from __future__ import annotations
 
+import importlib
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from urml_ros2_runtime import FleetRuntime, MockROSAdapter, URMLRuntime
 from urml_ros2_runtime.substrate.base import ROSAdapter
+from urml_validator import __version__ as _validator_version
 from urml_validator import validate, validate_fleet
 
+from urml_conformance._version import __version__ as _conformance_version
 from urml_conformance.fixtures import (
     AdapterOverrides,
     FixtureCase,
     discover_fixtures,
+    fixture_paths,
+    fixtures_root,
+    fixtures_sha256,
+    load_fixture,
     manifest_base_dir,
     resolve_envelope,
     resolve_manifest,
     resolve_policy,
     rulebook_kwargs,
 )
-from urml_conformance.report import CaseResult, ConformanceReport
+from urml_conformance.report import DEFAULT_ADAPTER, CaseResult, ConformanceReport
 
 AdapterFactory = Callable[[], ROSAdapter]
 """Construct a fresh ROSAdapter per fixture case.
@@ -228,12 +240,18 @@ class ConformanceRunner:
         cases: list[FixtureCase] | None = None,
         *,
         adapter_factory: AdapterFactory | None = None,
+        adapter: str | None = None,
     ) -> None:
         self._cases: list[FixtureCase] = cases if cases is not None else discover_fixtures()
         # Default factory: hermetic mock. The factory pattern (callable, not
         # instance) gives each case a fresh adapter — important for real
         # adapters that accumulate state across calls.
         self._adapter_factory: AdapterFactory = adapter_factory or (lambda: MockROSAdapter())
+        # What the report names as the adapter: the caller's spec, the default
+        # mock, or the factory's own module and name.
+        self._adapter: str = adapter or (
+            DEFAULT_ADAPTER if adapter_factory is None else _describe(adapter_factory)
+        )
 
     @property
     def cases(self) -> list[FixtureCase]:
@@ -242,7 +260,13 @@ class ConformanceRunner:
     def run(self) -> ConformanceReport:
         """Execute every fixture; return an aggregated report."""
         results = [self._run_case(case) for case in self._cases]
-        return ConformanceReport(results=results)
+        return ConformanceReport(
+            adapter=self._adapter,
+            urml_conformance_version=_conformance_version,
+            urml_validator_version=_validator_version,
+            fixture_count=len(results),
+            results=results,
+        )
 
     def _run_case(self, case: FixtureCase) -> CaseResult:
         if case.roster is not None:
@@ -280,7 +304,13 @@ class ConformanceRunner:
             return CaseResult(name=case.name, passed=passed, diagnostics=diagnostics)
 
         # ----- Execution pass -----
-        adapter = self._adapter_factory()
+        try:
+            adapter = self._adapter_factory()
+        except Exception as exc:
+            # A factory that cannot build an adapter (a missing SDK, no link to
+            # the robot) fails the case with the reason instead of ending the run.
+            diagnostics.append(f"adapter factory raised: {type(exc).__name__}: {exc}")
+            return CaseResult(name=case.name, passed=False, diagnostics=diagnostics)
         # Fixture-declared overrides only make sense against the mock; real
         # adapters get their behavior from the live substrate.
         if isinstance(adapter, MockROSAdapter):
@@ -339,7 +369,11 @@ class ConformanceRunner:
         if case.expected_execution is None or not validation.accepted:
             return CaseResult(name=case.name, passed=not diagnostics, diagnostics=diagnostics)
 
-        adapters: dict[str, ROSAdapter] = {name: self._adapter_factory() for name in members}
+        try:
+            adapters: dict[str, ROSAdapter] = {name: self._adapter_factory() for name in members}
+        except Exception as exc:
+            diagnostics.append(f"adapter factory raised: {type(exc).__name__}: {exc}")
+            return CaseResult(name=case.name, passed=False, diagnostics=diagnostics)
         try:
             # Sequential for byte-stable per-member audits in conformance.
             fleet_result = FleetRuntime(adapters, sequential=True).execute(
@@ -357,3 +391,85 @@ class ConformanceRunner:
 
         diagnostics.extend(_diag_fleet_execution(case, fleet_result))
         return CaseResult(name=case.name, passed=not diagnostics, diagnostics=diagnostics)
+
+
+# ---------------------------------------------------------------------------
+# Loading an adapter from a spec, and running the published suite
+# ---------------------------------------------------------------------------
+
+
+class AdapterSpecError(ValueError):
+    """A ``module:attribute`` spec that does not resolve to a callable."""
+
+
+def load_factory(
+    spec: str,
+    flag: str = "--adapter",
+    example: str = "my_pkg.substrate:MyAdapter",
+) -> Callable[..., Any]:
+    """Resolve a ``module:attribute`` spec to a callable (a class or a factory function).
+
+    Raises ``AdapterSpecError`` with a message that names the flag and an example.
+    """
+    if ":" not in spec:
+        raise AdapterSpecError(
+            f"{flag} must be 'module:attribute' (got {spec!r}). Example: {example}"
+        )
+    module_name, _, attr = spec.partition(":")
+    kind = flag.lstrip("-")
+    try:
+        module = importlib.import_module(module_name)
+    except ImportError as exc:
+        raise AdapterSpecError(f"could not import {kind} module {module_name!r}: {exc}") from exc
+    try:
+        factory = getattr(module, attr)
+    except AttributeError as exc:
+        raise AdapterSpecError(f"module {module_name!r} has no attribute {attr!r}") from exc
+    if not callable(factory):
+        raise AdapterSpecError(f"{spec!r} is not callable; it must be a class or a factory function")
+    return factory  # type: ignore[no-any-return]
+
+
+def load_adapter_factory(spec: str) -> AdapterFactory:
+    """Resolve an ``--adapter`` spec to a zero-argument adapter factory."""
+    return load_factory(spec, "--adapter", "my_pkg.substrate:MyAdapter")
+
+
+def _describe(factory: Callable[..., Any]) -> str:
+    module = getattr(factory, "__module__", None) or "unknown"
+    name = getattr(factory, "__qualname__", None) or type(factory).__qualname__
+    return f"{module}:{name}"
+
+
+def run_suite(
+    adapter: str | None = None,
+    *,
+    filter: str | None = None,
+    root: Path | None = None,
+) -> ConformanceReport:
+    """Run the published fixture set and return a report that says what ran.
+
+    ``adapter`` is a ``module:attribute`` spec (a class or a zero-argument
+    factory); None runs the hermetic ``MockROSAdapter``. ``filter`` keeps the
+    fixtures whose name contains it. The report records the adapter spec, the
+    package versions, the fixture count, a sha256 over the fixture files that
+    ran, and the filter. No fixture matching the filter gives a report with no
+    results.
+
+    Raises ``AdapterSpecError`` when the spec does not resolve.
+    """
+    factory = load_adapter_factory(adapter) if adapter else None
+    base = root or fixtures_root()
+    selected = [(path, load_fixture(path)) for path in fixture_paths(base)]
+    if filter is not None:
+        selected = [(path, case) for path, case in selected if filter in case.name]
+    runner = ConformanceRunner(
+        cases=[case for _, case in selected], adapter_factory=factory, adapter=adapter
+    )
+    report = runner.run()
+    return report.model_copy(
+        update={
+            "fixtures_sha256": fixtures_sha256([path for path, _ in selected], base),
+            "filter": filter,
+        }
+    )

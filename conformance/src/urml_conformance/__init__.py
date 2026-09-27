@@ -21,6 +21,11 @@ The goal-line lane (``run_goal_line``, ``python -m urml_conformance
 --goal-line``) hands every rejected fixture to the runtime itself and
 requires a refusal with the expected codes and zero adapter calls.
 
+``run_suite`` runs the published fixture set against an adapter spec and
+returns a ``urml.conformance-report/1`` report that names the adapter, the
+versions and the fixture set; ``urml conformance run --output`` and
+``python -m urml_conformance --report`` write it as JSON.
+
 The fixtures themselves are Apache 2.0 and part of the URML Core
 Commitment — they're the contract a runtime claims compatibility with.
 """
@@ -37,21 +42,32 @@ from urml_conformance.fixtures import (
     ExpectedValidation,
     FixtureCase,
     discover_fixtures,
+    fixture_paths,
     fixtures_root,
+    fixtures_sha256,
     load_fixture,
     resolve_envelope,
     resolve_manifest,
     resolve_rulebook,
 )
 from urml_conformance.goal_line import RecordedCall, RecordingAdapter, run_goal_line
-from urml_conformance.report import CaseResult, ConformanceReport
-from urml_conformance.runner import ConformanceRunner
+from urml_conformance.report import DEFAULT_ADAPTER, REPORT_FORMAT, CaseResult, ConformanceReport
+from urml_conformance.runner import (
+    AdapterSpecError,
+    ConformanceRunner,
+    load_adapter_factory,
+    load_factory,
+    run_suite,
+)
 
 __all__ = [
+    "DEFAULT_ADAPTER",
     "ENVELOPE_REGISTRY",
     "MANIFEST_REGISTRY",
+    "REPORT_FORMAT",
     "RULEBOOK_REGISTRY",
     "AdapterOverrides",
+    "AdapterSpecError",
     "CaseResult",
     "ConformanceReport",
     "ConformanceRunner",
@@ -62,10 +78,15 @@ __all__ = [
     "RecordingAdapter",
     "__version__",
     "discover_fixtures",
+    "fixture_paths",
     "fixtures_root",
+    "fixtures_sha256",
+    "load_adapter_factory",
+    "load_factory",
     "load_fixture",
     "resolve_envelope",
     "resolve_manifest",
     "resolve_rulebook",
     "run_goal_line",
+    "run_suite",
 ]

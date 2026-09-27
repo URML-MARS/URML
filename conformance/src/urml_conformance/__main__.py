@@ -14,6 +14,9 @@ passes:
     # Just the quadruped fixtures, verbose:
     python -m urml_conformance --filter quadruped -v
 
+    # Write the JSON report (urml.conformance-report/1) a registry entry links:
+    python -m urml_conformance --adapter my_pkg.substrate:MyAdapter --report report.json
+
     # The goal line: every rejected fixture, handed to the runtime itself,
     # must be refused with the expected codes and zero adapter calls:
     python -m urml_conformance --goal-line
@@ -39,35 +42,22 @@ prints locally.
 from __future__ import annotations
 
 import argparse
-import importlib
 import sys
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from urml_conformance.fixtures import FixtureCase, discover_fixtures
 from urml_conformance.goal_line import rejected_cases, run_goal_line
-from urml_conformance.runner import ConformanceRunner
+from urml_conformance.runner import AdapterSpecError, load_factory, run_suite
 
 
 def _load_factory(spec: str, flag: str, example: str) -> Callable[..., Any]:
-    """Resolve a ``module:attribute`` spec to a callable factory."""
-    if ":" not in spec:
-        raise SystemExit(
-            f"{flag} must be 'module:attribute' (got {spec!r}). Example: {example}"
-        )
-    module_name, _, attr = spec.partition(":")
-    kind = flag.lstrip("-")
+    """Resolve a ``module:attribute`` spec to a callable factory, or exit with the reason."""
     try:
-        module = importlib.import_module(module_name)
-    except ImportError as exc:
-        raise SystemExit(f"could not import {kind} module {module_name!r}: {exc}") from exc
-    try:
-        factory = getattr(module, attr)
-    except AttributeError as exc:
-        raise SystemExit(f"module {module_name!r} has no attribute {attr!r}") from exc
-    if not callable(factory):
-        raise SystemExit(f"{spec!r} is not callable; it must be a class or a factory function")
-    return factory  # type: ignore[no-any-return]
+        return load_factory(spec, flag, example)
+    except AdapterSpecError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def _load_adapter_factory(spec: str) -> Callable[[], Any]:
@@ -131,35 +121,53 @@ def main(argv: list[str] | None = None) -> int:
         help="With --goal-line: runtime factory spec, called with one adapter. "
         "Omit to use the reference URMLRuntime.",
     )
+    parser.add_argument(
+        "--report",
+        metavar="PATH",
+        type=Path,
+        default=None,
+        help="Write the JSON report (urml.conformance-report/1) to PATH. Main run only.",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Print the full per-case report.")
     args = parser.parse_args(argv)
     if args.runtime and not args.goal_line:
         parser.error("--runtime applies only with --goal-line")
+    if args.report and args.goal_line:
+        parser.error("--report applies to the main run, not to --goal-line")
 
-    cases = discover_fixtures()
-    if args.filter:
-        cases = [c for c in cases if args.filter in c.name]
-        if not cases:
-            print(f"no fixtures match --filter {args.filter!r}", file=sys.stderr)
-            return 2
-
-    factory = _load_adapter_factory(args.adapter) if args.adapter else None
     target = args.adapter or "MockROSAdapter (hermetic self-test)"
 
     if args.goal_line:
+        cases = discover_fixtures()
+        if args.filter:
+            cases = [c for c in cases if args.filter in c.name]
+            if not cases:
+                print(f"no fixtures match --filter {args.filter!r}", file=sys.stderr)
+                return 2
+        factory = _load_adapter_factory(args.adapter) if args.adapter else None
         if not rejected_cases(cases):
             print(f"no rejected fixtures match --filter {args.filter!r}", file=sys.stderr)
             return 2
         return _run_goal_line(cases, factory, args.runtime, target, args.verbose)
 
-    runner = ConformanceRunner(cases=cases, adapter_factory=factory)
-    report = runner.run()
+    try:
+        report = run_suite(args.adapter, filter=args.filter)
+    except AdapterSpecError as exc:
+        raise SystemExit(str(exc)) from exc
+    if not report.results:
+        found = f"no fixtures match --filter {args.filter!r}" if args.filter else "no fixtures found"
+        print(found, file=sys.stderr)
+        return 2
 
-    passed = sum(1 for r in report.results if r.passed)
     print(f"URML conformance - adapter: {target}")
-    print(f"{passed}/{len(report.results)} fixtures passed")
+    print(f"{report.passed}/{len(report.results)} fixtures passed")
     if args.verbose or not report.all_passed:
         print(report.render())
+    if args.report is not None:
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        # LF on every platform, so the file's sha256 is the same wherever it is read.
+        args.report.write_text(report.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n")
+        print(f"wrote {args.report}")
     return 0 if report.all_passed else 1
 
 

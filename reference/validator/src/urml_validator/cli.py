@@ -9,7 +9,7 @@ Subcommands:
   urml translate REQUEST --manifest MANIFEST [...]
   urml emit-prompt --manifest MANIFEST [...]
   urml init DIRECTORY [--profile NAME] [--force]
-  urml conformance run [--output PATH]
+  urml conformance run [--adapter MODULE:ATTR] [--filter SUBSTR] [--output PATH]
 
 Exit codes:
 
@@ -679,8 +679,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the URML conformance suite against a runtime.",
         description=(
             "Run the public URML conformance suite and emit a structured report. "
-            "Used by runtime authors to produce the JSON artifact required for "
-            "the Compatible Runtimes registry. Requires the urml-conformance "
+            "Used by runtime authors to produce the JSON report a registry entry "
+            "links (registry/README.md). Requires the urml-conformance "
             "package (install with: pip install urml-conformance)."
         ),
     )
@@ -689,11 +689,29 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_conformance_run = p_conformance_sub.add_parser(
         "run",
-        help="Run every fixture in the bundled suite and emit a report.",
+        help="Run the bundled fixtures against an adapter and emit a report.",
         description=(
-            "Run every fixture against the default hermetic adapter and emit a "
-            "ConformanceReport. Exit 0 if all fixtures pass, 1 if any fail."
+            "Run the bundled fixtures against a runtime adapter (the hermetic "
+            "MockROSAdapter unless --adapter names another) and emit a "
+            "urml.conformance-report/1 report. Exit 0 if all selected fixtures "
+            "pass, 1 if any fail, 2 on a usage error."
         ),
+    )
+    p_conformance_run.add_argument(
+        "--adapter",
+        default=None,
+        metavar="MODULE:ATTR",
+        help=(
+            "Adapter factory spec: a class or a zero-argument factory that returns "
+            "a fresh adapter (e.g. my_pkg.substrate:MyAdapter). Omit to run the "
+            "hermetic MockROSAdapter."
+        ),
+    )
+    p_conformance_run.add_argument(
+        "--filter",
+        default=None,
+        metavar="SUBSTR",
+        help="Only run fixtures whose name contains SUBSTR (e.g. 'drone').",
     )
     p_conformance_run.add_argument(
         "--output",
@@ -2625,20 +2643,34 @@ def cmd_conformance_run(args: argparse.Namespace) -> int:
     even when the conformance suite isn't installed.
     """
     try:
-        from urml_conformance import ConformanceRunner  # type: ignore[import-not-found,unused-ignore]
+        from urml_conformance import (  # type: ignore[import-not-found,unused-ignore]
+            AdapterSpecError,
+            run_suite,
+        )
     except ImportError:
         print(
             "urml: error: `conformance` requires urml-conformance.\n"
-            "  Install with: pip install urml-conformance",
+            "  Install or upgrade with: pip install -U urml-conformance",
             file=sys.stderr,
         )
         return 2
 
-    report = ConformanceRunner().run()
+    try:
+        report = run_suite(args.adapter, filter=args.filter)
+    except AdapterSpecError as exc:
+        print(f"urml: error: {exc}", file=sys.stderr)
+        return 2
+    if not report.results:
+        found = "no fixtures match --filter " + repr(args.filter) if args.filter else "no fixtures found"
+        print(f"urml: error: {found}", file=sys.stderr)
+        return 2
 
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(report.model_dump_json(indent=2), encoding="utf-8")
+        # LF on every platform, so the report's sha256 is the same wherever it is read.
+        args.output.write_text(
+            report.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n"
+        )
         print(f"wrote {args.output}", file=sys.stderr)
 
     print(report.render(), file=sys.stderr)

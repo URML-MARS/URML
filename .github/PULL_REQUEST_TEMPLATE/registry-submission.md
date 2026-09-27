@@ -1,45 +1,40 @@
 <!--
-Thanks for submitting your runtime to the URML Compatible Runtimes registry.
+Thanks for submitting a robot to the URML registry.
 
-This template is for registry submissions only. For code or spec PRs, use the
-default template. See docs/registry/SUBMISSION.md for the full submission flow
-and TRADEMARK.md for what listing does and does not grant.
+This template is for registry entries only. For code or spec PRs, use the
+default template. The full flow is in docs/registry/SUBMISSION.md, what an
+entry means is in registry/README.md, and what a listing does and does not
+grant is in TRADEMARK.md.
 -->
 
-## Registry entry
+## Entry
 
-Fill in each field. The values below populate the row added in `docs/compatible-runtimes.md`.
+- **Entry id** (the file name in `registry/entries/`):
+- **Robot**:
+- **Runtime and version**:
+- **Evidence** (tick what the entry carries):
+  - [ ] `hardware_run`
+  - [ ] `simulation_run`
+  - [ ] validation records
+  - [ ] a self-reported compatibility claim (conformance report from the runtime's own adapter)
 
-- **Runtime name**:
-- **Runtime repository URL**:
-- **Maintainer (org or person)**:
-- **Substrate (ROS 2 / PX4 / vendor SDK / other)**:
-- **Declared spec versions** (from your `CONFORMANCE.md`):
-  - layer-1-hal:
-  - layer-2-primitives:
-  - layer-3-behavior:
-  - layer-4-nl-grammar:
-  - profiles:
-- **Conformance report URL** (raw `conformance-report.json` at a pinned commit):
-- **License of the runtime**:
-- **Last-verified commit (7-char short hash)**:
+## Checks
 
-## Pre-submit checks
-
-- [ ] `urml conformance run` against my runtime produced a report with `all_passed: true`.
-- [ ] The report covers exactly the spec versions declared above. No overclaim.
-- [ ] `CONFORMANCE.md` and `conformance-report.json` are committed at the pinned commit, not floating on `main`.
-- [ ] The conformance report URL above resolves and returns valid JSON.
-- [ ] I have read [TRADEMARK.md](../../TRADEMARK.md).
+- [ ] `python -m urml_conformance.registry check` prints no problems.
+- [ ] I ran `python -m urml_conformance.registry export` and committed the updated `registry/registry.json`.
+- [ ] Every date in the entry is quoted, every source opens without an account, and the entry names people and projects, not email addresses.
+- [ ] The summaries say only what the sources say.
+- [ ] The `limits` state what the evidence does not show.
+- [ ] If the entry claims compatibility: the report came from `urml conformance run --adapter <our adapter>` (or `python -m urml_conformance --adapter <our adapter> --report`), unedited, and it names only profiles whose fixtures ran and passed.
+- [ ] Every commit is signed off (`git commit -s`).
 
 ## Trademark acknowledgement
 
-- [ ] I understand that being listed in the Compatible Runtimes registry does not grant me a license to use the URML or URML-Certified trademarks beyond the factual descriptor use described in [TRADEMARK.md](../../TRADEMARK.md). I will not describe my runtime as "URML-Certified". I will not imply URML endorsement, sponsorship, or affiliation.
+- [ ] I have read [TRADEMARK.md](https://github.com/URML-MARS/URML/blob/main/TRADEMARK.md). A listing does not grant a license to the URML or URML-Certified marks beyond the factual descriptor use it describes. I will not describe the robot or the runtime as "URML-Certified", and I will not imply URML endorsement, sponsorship, or affiliation.
 
-## Maintenance commitment
+## Keeping it current
 
-- [ ] I will re-run the conformance suite against my runtime when URML ships a spec version that affects my declared coverage, and update my listing within 90 days of that spec version's release.
-- [ ] I will open a PR removing my listing if my runtime stops passing the suite or if I no longer want it listed.
+- [ ] When URML releases a new version, I will re-run the check and update the entry, or open a pull request that sets `status: withdrawn`.
 
 ## Anything else the reviewer should know
 
