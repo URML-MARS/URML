@@ -56,11 +56,22 @@ refused rather than guessed at. ``ArduCopterAdapter`` covers ArduPilot.
 
 PX4 itself doesn't have grippers, cameras, microphones, or perception
 nodes — those live on a companion computer (typically ROS-2-backed).
-The corresponding methods (`grasp`, `release`, `detect`, `capture`,
-`speak`, `listen`, `dock`) return ``NavigationResult(success=False,
-reason="not_supported_on_bare_autopilot: ...")``. Programs that need
-both flight control *and* perception/manipulation should pair PX4Adapter
-with RclpyAdapter via ``CompositeAdapter``.
+The corresponding methods (`grasp`, `release`, `detect`, `scan`,
+`capture`, `speak`, `listen`, `dock`) return a result with
+``success=False`` and ``reason="not_supported_on_bare_autopilot: ..."``.
+Programs that need both flight control *and* perception/manipulation
+should pair PX4Adapter with RclpyAdapter via ``CompositeAdapter``.
+
+## wait_for
+
+``wait_for(event: emergency_stop)`` fires when the autopilot's own
+``HEARTBEAT`` reports ``system_status`` ``MAV_STATE_FLIGHT_TERMINATION``
+or ``MAV_STATE_EMERGENCY``, and times out otherwise. PX4 v1.17 reports
+flight termination for a terminated flight, an engaged kill switch, and
+the motor lockdown that holds a throw launch (``COM_THROW_EN``, off by
+default); it does not send ``MAV_STATE_EMERGENCY``. ``wait_for`` with a
+battery ``sensor_threshold`` reads ``BATTERY_STATUS`` until a sample
+meets the threshold or the timeout expires.
 """
 
 from __future__ import annotations
@@ -111,7 +122,16 @@ MAV_RESULT_IN_PROGRESS = 5
 MAV_LANDED_STATE_UNDEFINED = 0
 MAV_LANDED_STATE_ON_GROUND = 1
 
+MAV_STATE_EMERGENCY = 6
+MAV_STATE_FLIGHT_TERMINATION = 8
+
 MSG_ID_HOME_POSITION = 242
+
+# HEARTBEAT.system_status values that wait_for(event: emergency_stop) fires on.
+_EMERGENCY_STATES = {
+    MAV_STATE_EMERGENCY: "emergency",
+    MAV_STATE_FLIGHT_TERMINATION: "flight_termination",
+}
 
 _MAV_RESULT_NAMES = {
     0: "accepted",
@@ -212,6 +232,17 @@ def _distance_to(msg: Any, lat: float, lon: float) -> float:
 
 def _is_armed_heartbeat(msg: Any) -> bool:
     return bool(int(getattr(msg, "base_mode", 0)) & MAV_MODE_FLAG_SAFETY_ARMED)
+
+
+def _emergency_state(msg: Any) -> str | None:
+    """The emergency an autopilot HEARTBEAT reports, or None.
+
+    A heartbeat from a ground station or a companion (autopilot
+    ``MAV_AUTOPILOT_INVALID``) never counts.
+    """
+    if int(getattr(msg, "autopilot", MAV_AUTOPILOT_INVALID)) == MAV_AUTOPILOT_INVALID:
+        return None
+    return _EMERGENCY_STATES.get(int(getattr(msg, "system_status", -1)))
 
 
 class PX4Adapter:
@@ -448,32 +479,23 @@ class PX4Adapter:
         self,
         msg_type: str,
         *,
-        predicate: Any = None,
+        predicate: Callable[[Any], bool] | None = None,
         timeout_seconds: float | None = None,
     ) -> tuple[Any | None, bool]:
-        """Wait for the next message of ``msg_type`` (optionally matching
-        ``predicate``). Returns ``(message, timed_out)``.
+        """Read until a ``msg_type`` message from the vehicle matches ``predicate``
+        (any one, when there is no predicate) or the timeout expires.
+        Returns ``(message, timed_out)``.
+
+        A message that does not match is skipped, not a reason to stop: a
+        battery watchdog waiting for 11 V reads past the 12 V samples.
         """
         try:
-            conn = self._connect()
+            self._connect()
         except Exception:
             return None, True
         wait = timeout_seconds if timeout_seconds is not None else self._config.message_timeout_seconds
-        # recv_match with blocking + timeout returns None on timeout.
-        # The predicate runs on candidate messages; we re-loop until we
-        # find a match or the timeout elapses.
-        if predicate is None:
-            msg = conn.recv_match(type=msg_type, blocking=True, timeout=wait)
-            return msg, msg is None
-        # With a predicate, recv_match itself accepts a `condition` kwarg
-        # in pymavlink, but using an explicit loop keeps behavior
-        # readable and easy to mock.
-        msg = conn.recv_match(type=msg_type, blocking=True, timeout=wait)
-        if msg is None:
-            return None, True
-        if predicate(msg):
-            return msg, False
-        return None, True
+        msg = self._await(msg_type, predicate or (lambda _m: True), wait)
+        return msg, msg is None
 
     # ------------------------------------------------------------------
     # Vehicle state
@@ -880,19 +902,12 @@ class PX4Adapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        # Scan = sequence of move_to waypoints + capture triggers. Full
-        # implementation requires a companion computer for capture; the
-        # bare-autopilot path returns a stub success matching MockROSAdapter.
-        return ScanResult(
-            success=True,
-            payload={
-                "samples": [],
-                "coverage": 1.0,
-                "anomalies": [],
-                "_note": "v0.1 PX4Adapter scan: stub. Full waypoint expansion + "
-                "capture requires a companion adapter; see README.",
-            },
-        )
+        # A scan is waypoints plus a capture at each one, and a bare PX4
+        # autopilot has no camera or perception to capture with. Reporting
+        # success here would claim an area was scanned when nothing flew,
+        # so this is the same not-supported answer as capture and detect.
+        # CompositeAdapter routes scan to the companion computer.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED_REASON)
 
     def take_measurement(
         self,
@@ -959,8 +974,8 @@ class PX4Adapter:
     ) -> WaitResult:
         # PX4 doesn't have a native event-topic taxonomy beyond STATUSTEXT
         # and the per-message types. v0.1 supports `sensor_threshold` against
-        # battery (voltage-low watchdog), `event:emergency_stop` mapped to
-        # SYSTEM_STATUS.MAV_STATE_EMERGENCY, and times out cleanly otherwise.
+        # battery (voltage-low watchdog) and `event:emergency_stop` read from
+        # the autopilot's HEARTBEAT.system_status (see _wait_for_emergency_stop).
         if kind == "sensor_threshold":
             sensor = (threshold or {}).get("sensor", "battery")
             op = (threshold or {}).get("op", "gt")
@@ -1001,18 +1016,35 @@ class PX4Adapter:
             return WaitResult(success=True, payload={"sensor": "battery", "value": v})
 
         if kind == "event" and name == "emergency_stop":
-            msg, timed_out = self._recv_message(
-                "SYS_STATUS",
-                timeout_seconds=timeout_seconds,
-            )
-            if timed_out or msg is None:
-                return WaitResult(success=False, timed_out=True, reason="timeout")
-            return WaitResult(success=True, payload={"event": "emergency_stop"})
+            return self._wait_for_emergency_stop(timeout_seconds)
 
         return WaitResult(
             success=False,
             reason=f"wait_kind_not_supported_on_bare_autopilot: kind={kind!r}, name={name!r}",
         )
+
+    def _wait_for_emergency_stop(self, timeout_seconds: float | None) -> WaitResult:
+        """``wait_for(event: emergency_stop)``: the autopilot's HEARTBEAT reports an emergency.
+
+        Fires on ``system_status`` MAV_STATE_FLIGHT_TERMINATION, which PX4
+        v1.17 reports for a terminated flight, an engaged kill switch, and a
+        throw launch's motor lockdown, or MAV_STATE_EMERGENCY, MAVLink's
+        mayday state (PX4 v1.17 does not send it; other autopilots do).
+        Other messages, other states and other senders' heartbeats keep the
+        wait going, and it times out when no such heartbeat arrives. The
+        backlog is read first, so a state that already holds fires at once.
+        """
+        failure = self._begin()
+        if failure is not None:
+            return WaitResult(success=False, reason=failure)
+        state = _emergency_state(self._heartbeat) if self._heartbeat is not None else None
+        if state is None:
+            wait = timeout_seconds if timeout_seconds is not None else self._config.message_timeout_seconds
+            heartbeat = self._await("HEARTBEAT", lambda m: _emergency_state(m) is not None, wait)
+            if heartbeat is None:
+                return WaitResult(success=False, timed_out=True, reason="timeout")
+            state = _emergency_state(heartbeat)
+        return WaitResult(success=True, payload={"event": "emergency_stop", "system_status": state})
 
     def wait_passively(self, *, duration_seconds: float) -> SubstrateResult:
         # PX4 holds position on its own in Hold mode, which is where

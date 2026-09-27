@@ -183,6 +183,9 @@ class _FakePX4:
       - ``start_armed_in_air``: the vehicle starts armed at 30 m, 15 m north.
       - ``queued``: messages delivered first for a matching type
         (measurement / wait tests).
+      - ``emergency_at`` / ``emergency_state``: from this simulated time
+        on, the vehicle HEARTBEAT reports ``system_status`` =
+        ``emergency_state`` (8 = MAV_STATE_FLIGHT_TERMINATION).
     """
 
     ack: dict[int, int] = {}  # noqa: RUF012
@@ -199,6 +202,8 @@ class _FakePX4:
     gcs_heartbeat_first: bool = False
     start_armed_in_air: bool = False
     queued: list[Any] = []  # noqa: RUF012
+    emergency_at: float | None = None
+    emergency_state: int = 8
 
     def __init__(self, url: str, *_: Any, **kwargs: Any) -> None:
         self.url = url
@@ -386,13 +391,14 @@ class _FakePX4:
 
     def _telemetry(self, kind: str) -> _Msg:
         if kind == "HEARTBEAT":
+            emergency = _FakePX4.emergency_at is not None and self.t_emit >= _FakePX4.emergency_at
             return _Msg(
                 "HEARTBEAT",
                 type=2,
                 autopilot=_FakePX4.autopilot,
                 base_mode=(128 if self.armed else 0) | 29,
                 custom_mode=0,
-                system_status=4 if self.armed else 3,
+                system_status=_FakePX4.emergency_state if emergency else (4 if self.armed else 3),
             )
         if kind == "GLOBAL_POSITION_INT":
             lat, lon = _lat_lon(self.north, self.east)
@@ -438,6 +444,8 @@ def _install_fake_pymavlink(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     _FakePX4.gcs_heartbeat_first = False
     _FakePX4.start_armed_in_air = False
     _FakePX4.queued = []
+    _FakePX4.emergency_at = None
+    _FakePX4.emergency_state = 8
     _CLOCK.now = 1000.0
 
     captured: dict[str, Any] = {"connections": []}
@@ -1043,7 +1051,7 @@ def test_measure_distance_reads_distance_sensor(fake_pymavlink: dict[str, Any]) 
 
     # DISTANCE_SENSOR.current_distance is cm; 1500 cm = 15 m.
     _FakePX4.queued = [
-        {"type": "DISTANCE_SENSOR", "msg": SimpleNamespace(current_distance=1500, time_boot_ms=12000)}
+        {"type": "DISTANCE_SENSOR", "msg": _Msg("DISTANCE_SENSOR", current_distance=1500, time_boot_ms=12000)}
     ]
     adapter = PX4Adapter()
     result = adapter.take_measurement(what="distance", target=None, sensor=None)
@@ -1056,7 +1064,7 @@ def test_measure_voltage_reads_battery_status(fake_pymavlink: dict[str, Any]) ->
 
     # voltages[0] is mV; 12400 mV = 12.4 V.
     _FakePX4.queued = [
-        {"type": "BATTERY_STATUS", "msg": SimpleNamespace(voltages=[12400], time_boot_ms=5000)}
+        {"type": "BATTERY_STATUS", "msg": _Msg("BATTERY_STATUS", voltages=[12400], time_boot_ms=5000)}
     ]
     adapter = PX4Adapter()
     result = adapter.take_measurement(what="voltage", target=None, sensor=None)
@@ -1089,35 +1097,106 @@ def test_measure_timeout(fake_pymavlink: dict[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_wait_for_battery_threshold(fake_pymavlink: dict[str, Any]) -> None:
-    from urml_px4_runtime import PX4Adapter
+def _battery(millivolts: int) -> dict[str, Any]:
+    return {"type": "BATTERY_STATUS", "msg": _Msg("BATTERY_STATUS", voltages=[millivolts])}
 
-    _FakePX4.queued = [{"type": "BATTERY_STATUS", "msg": SimpleNamespace(voltages=[10000])}]
-    adapter = PX4Adapter()
-    result = adapter.wait_for_condition(
+
+def _wait_for_battery_below(adapter: Any, volts: float, timeout_seconds: float) -> Any:
+    return adapter.wait_for_condition(
         kind="sensor_threshold",
         name=None,
         input_mode=None,
-        threshold={"sensor": "battery", "op": "lt", "value": 11.0},
-        timeout_seconds=1.0,
+        threshold={"sensor": "battery", "op": "lt", "value": volts},
+        timeout_seconds=timeout_seconds,
     )
-    assert result.success is True
-    assert result.payload == {"sensor": "battery", "value": 10.0}
 
 
-def test_wait_for_emergency_stop_event(fake_pymavlink: dict[str, Any]) -> None:
-    from urml_px4_runtime import PX4Adapter
-
-    _FakePX4.queued = [{"type": "SYS_STATUS", "msg": SimpleNamespace()}]
-    adapter = PX4Adapter()
-    result = adapter.wait_for_condition(
+def _wait_for_emergency_stop(adapter: Any, timeout_seconds: float) -> Any:
+    return adapter.wait_for_condition(
         kind="event",
         name="emergency_stop",
         input_mode=None,
         threshold=None,
-        timeout_seconds=1.0,
+        timeout_seconds=timeout_seconds,
     )
+
+
+def test_wait_for_battery_threshold(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [_battery(10000)]
+    result = _wait_for_battery_below(PX4Adapter(), 11.0, timeout_seconds=1.0)
     assert result.success is True
+    assert result.payload == {"sensor": "battery", "value": 10.0}
+
+
+def test_wait_for_battery_threshold_reads_past_samples_that_do_not_match(fake_pymavlink: dict[str, Any]) -> None:
+    """Regression: the wait gave up at the first BATTERY_STATUS that did not meet the threshold."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [_battery(12600), _battery(11600), _battery(10900)]
+    result = _wait_for_battery_below(PX4Adapter(), 11.0, timeout_seconds=5.0)
+    assert result.success is True, result.reason
+    assert result.payload == {"sensor": "battery", "value": 10.9}
+
+
+def test_wait_for_battery_threshold_times_out_when_no_sample_matches(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [_battery(12600)]
+    result = _wait_for_battery_below(PX4Adapter(), 11.0, timeout_seconds=2.0)
+    assert result.success is False
+    assert result.timed_out is True
+    assert _CLOCK.now >= 1002.0  # it kept reading until the timeout
+
+
+def test_wait_for_emergency_stop_is_not_any_sys_status(fake_pymavlink: dict[str, Any]) -> None:
+    """Regression: any SYS_STATUS counted as an emergency stop, and PX4 streams SYS_STATUS all the time."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [{"type": "SYS_STATUS", "msg": _Msg("SYS_STATUS", onboard_control_sensors_health=0)}]
+    result = _wait_for_emergency_stop(PX4Adapter(), timeout_seconds=3.0)
+    assert result.success is False
+    assert result.timed_out is True
+    assert result.reason == "timeout"
+
+
+@pytest.mark.parametrize(("state", "name"), [(8, "flight_termination"), (6, "emergency")])
+def test_wait_for_emergency_stop_fires_on_the_autopilot_heartbeat(
+    fake_pymavlink: dict[str, Any], state: int, name: str
+) -> None:
+    """MAV_STATE_FLIGHT_TERMINATION (PX4: termination, kill switch) or MAV_STATE_EMERGENCY."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.emergency_at = _CLOCK.now + 2.0
+    _FakePX4.emergency_state = state
+    result = _wait_for_emergency_stop(PX4Adapter(), timeout_seconds=10.0)
+    assert result.success is True, result.reason
+    assert result.payload == {"event": "emergency_stop", "system_status": name}
+    assert _CLOCK.now >= 1002.0  # it waited for the state; the normal heartbeats before it did not count
+
+
+def test_wait_for_emergency_stop_fires_at_once_when_the_state_already_holds(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.emergency_at = _CLOCK.now
+    result = _wait_for_emergency_stop(PX4Adapter(), timeout_seconds=10.0)
+    assert result.success is True
+    assert result.payload == {"event": "emergency_stop", "system_status": "flight_termination"}
+    assert _CLOCK.now < 1000.5
+
+
+def test_wait_for_emergency_stop_ignores_other_senders(fake_pymavlink: dict[str, Any]) -> None:
+    """A ground station's heartbeat, or another vehicle's, is not this autopilot's emergency."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.queued = [
+        _Msg("HEARTBEAT", src=(255, 190), type=6, autopilot=8, base_mode=0, custom_mode=0, system_status=8),
+        _Msg("HEARTBEAT", src=(2, 1), type=2, autopilot=12, base_mode=0, custom_mode=0, system_status=8),
+    ]
+    result = _wait_for_emergency_stop(PX4Adapter(), timeout_seconds=3.0)
+    assert result.success is False
+    assert result.timed_out is True
 
 
 def test_wait_passively_sleeps(fake_pymavlink: dict[str, Any]) -> None:
@@ -1152,11 +1231,12 @@ def test_emit_report_sends_statustext(fake_pymavlink: dict[str, Any]) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Scan stub
+# Scan
 # ---------------------------------------------------------------------------
 
 
-def test_scan_returns_stub_success(fake_pymavlink: dict[str, Any]) -> None:
+def test_scan_is_not_supported_on_a_bare_autopilot(fake_pymavlink: dict[str, Any]) -> None:
+    """Regression: scan reported success with coverage 1.0 while nothing flew and nothing was captured."""
     from urml_px4_runtime import PX4Adapter
 
     adapter = PX4Adapter()
@@ -1168,9 +1248,10 @@ def test_scan_returns_stub_success(fake_pymavlink: dict[str, Any]) -> None:
         media="photo",
         sensor=None,
     )
-    assert result.success is True
-    assert result.payload is not None
-    assert result.payload["coverage"] == 1.0
+    assert result.success is False
+    assert (result.reason or "").startswith("not_supported_on_bare_autopilot")
+    assert result.payload is None
+    assert fake_pymavlink["connections"] == []  # nothing was sent to the vehicle
 
 
 # ---------------------------------------------------------------------------

@@ -30,12 +30,14 @@ Full `ROSAdapter` Protocol (12 core methods + 3 drone-profile methods), wired ag
 | `return_to_home` | `MAV_CMD_NAV_RETURN_TO_LAUNCH` | inside `arrival_radius_m` of home, in the air or landed |
 | `land` | `MAV_CMD_NAV_LAND` (none if already on the ground) | `EXTENDED_SYS_STATE.landed_state` is ON_GROUND |
 | `wait` | timed sleep (PX4 holds position in Hold mode) | |
-| `wait_for` | MAVLink message-stream subscribe-once with predicate |
-| `measure` | sensor telemetry stream (`DISTANCE_SENSOR`, `BATTERY_STATUS`, etc.) |
-| `report` | `STATUSTEXT` MAVLink message |
-| `scan` | stub success (full waypoint expansion is a follow-up) |
+| `wait_for` `emergency_stop` | the autopilot's `HEARTBEAT.system_status` | `MAV_STATE_FLIGHT_TERMINATION` or `MAV_STATE_EMERGENCY` from the autopilot itself; otherwise a timeout |
+| `wait_for` battery `sensor_threshold` | `BATTERY_STATUS` | a sample that meets the threshold; samples that do not are skipped until the timeout |
+| `measure` | sensor telemetry stream (`DISTANCE_SENSOR`, `BATTERY_STATUS`, etc.) | |
+| `report` | `STATUSTEXT` MAVLink message | |
 
-The not-applicable primitives — `dock`, `grasp`, `release`, `detect`, `capture`, `speak`, `listen` — return `NavigationResult(success=False, reason="not_supported_on_bare_autopilot: ...")` rather than raising. Real drone deployments pair a PX4 autopilot with a ROS 2 companion computer for perception / manipulation / speech; in those stacks, dispatch through `CompositeAdapter` (below) instead of `PX4Adapter` alone.
+The not-applicable primitives (`dock`, `grasp`, `release`, `detect`, `scan`, `capture`, `speak`, `listen`) return a result with `success=False` and `reason="not_supported_on_bare_autopilot: ..."` rather than raising. A scan is waypoints plus a capture at each one, and a bare autopilot has no camera to capture with, so `scan` does not report success. Real drone deployments pair a PX4 autopilot with a ROS 2 companion computer for perception / manipulation / speech; in those stacks, dispatch through `CompositeAdapter` (below) instead of `PX4Adapter` alone.
+
+PX4 v1.17 reports `MAV_STATE_FLIGHT_TERMINATION` for a terminated flight, an engaged kill switch, and the motor lockdown that holds a throw launch (`COM_THROW_EN`, off by default). It does not send `MAV_STATE_EMERGENCY`; the adapter accepts it for autopilots that do. A heartbeat from a ground station or another vehicle never counts.
 
 ## Flight completion
 
@@ -151,7 +153,7 @@ report = runner.run()
 **Follow-ups (not yet):**
 - First run of `px4-sitl-e2e` on a Linux runner. The workflow still boots `make px4_sitl jmavsim`; the local run used `make px4_sitl sihsim_quadx` (no external simulator), which is the invocation to carry into CI.
 - Real Jetson + real-robot hardware-in-the-loop. QEMU emulation is a faithful proxy for our pure-Python + pymavlink code, not a hardware-verification claim.
-- True fly-and-capture `scan` (waypoint expansion + per-waypoint trigger) instead of the stub.
+- A fly-and-capture `scan` (waypoint expansion and a capture at each waypoint) for an autopilot with a camera. Until then `scan` returns not-supported on a bare autopilot, and `CompositeAdapter` routes it to the companion.
 
 ## Core Commitment
 

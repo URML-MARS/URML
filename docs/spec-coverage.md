@@ -131,10 +131,11 @@ fixtures are under `manipulation/` (`01_dexterous_precision_grasp_positive`,
   profile verbs; `grasp`/`release`/object-pickup `detect` are out of the drone
   profile by design. The "at least one runtime" bar is met by ros2-runtime for
   all twenty.
-- **`PX4Adapter.run_scan` is a v0.1 stub.** It returns a documented
-  not-yet-implemented result; full waypoint-expansion + capture needs a
-  companion adapter (see px4-runtime README and `CompositeAdapter`). This is
-  disclosed in code, not hidden. ros2-runtime's `exec_scan` is the conformant
+- **`PX4Adapter.run_scan` is not supported.** A bare autopilot has no camera
+  to capture with, so it returns the documented
+  `not_supported_on_bare_autopilot` result, like `capture` and `detect`;
+  waypoint expansion + capture needs a companion adapter (see px4-runtime
+  README and `CompositeAdapter`). ros2-runtime's `exec_scan` is the conformant
   reference.
 - **`spec/layer-2-primitives/README.md` is orientation, not the spec.** The
   normative text is `v0.1.0.md`; the README points to it.
