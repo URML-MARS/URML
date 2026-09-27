@@ -7,7 +7,8 @@ tool docstrings become the tool descriptions an agent reads.
 Run it directly with ``urml-mcp`` (installed console script) or
 ``python -m urml_mcp.server``. The operator pins the manifest, envelope,
 profiles, policy and rulebooks with flags or ``URML_MCP_*`` env vars (see
-``main``). No tool takes a rulebook as an argument.
+``main``), and sets the evidence log the same way. No tool takes a rulebook
+or the evidence log as an argument.
 """
 
 from __future__ import annotations
@@ -103,15 +104,19 @@ def main(argv: Sequence[str] | None = None) -> None:
     ``--policy``, ``--rulebooks`` and ``--default-rulebooks``, or the matching
     ``URML_MCP_*`` env vars; a flag wins over its env var. A pinned file that
     does not load stops the server before it serves a single call.
+    ``--evidence-log`` / ``URML_MCP_EVIDENCE_LOG`` names the file that
+    receives one validation record per verdict.
     """
     global _PINNED
     try:
         _PINNED = tools.load_pinned(os.environ, sys.argv[1:] if argv is None else argv)
     except tools.PinnedConfigError as exc:
         raise SystemExit(f"urml-mcp: {exc}") from exc
+    # stdout carries the MCP protocol, so the notes go to stderr.
     if _PINNED.names:
-        # stdout carries the MCP protocol, so the note goes to stderr.
         print(f"urml-mcp: pinned {', '.join(_PINNED.names)}", file=sys.stderr)
+    if _PINNED.evidence_log is not None:
+        print(f"urml-mcp: evidence log {_PINNED.evidence_log}", file=sys.stderr)
     mcp.run()
 
 

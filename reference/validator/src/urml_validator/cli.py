@@ -3,7 +3,7 @@
 Subcommands:
 
   urml validate PROGRAM --manifest MANIFEST [--envelope ENVELOPE] [--profile NAME]...
-                [--rulebook PATH]... [--no-default-rulebooks] [--json]
+                [--rulebook PATH]... [--no-default-rulebooks] [--evidence-log PATH] [--json]
   urml execute PROGRAM --manifest MANIFEST [--adapter mock|ros2|px4] [...]
   urml schema --name NAME | --all --out-dir DIR
   urml translate REQUEST --manifest MANIFEST [...]
@@ -16,7 +16,8 @@ Exit codes:
   0   command succeeded (validation accepted, execution succeeded, all-passed)
   1   command failed at the spec level (validation errors, conformance
       failures, a primitive failed at runtime)
-  2   usage error (missing files, bad YAML, bad arguments, optional dep missing)
+  2   usage error (missing files, bad YAML, bad arguments, optional dep missing,
+      an --evidence-log file that cannot be written)
   64  internal error (an unhandled exception bubbled out of validate())
   130 interrupted by the user (Ctrl-C / SIGINT)
 
@@ -32,6 +33,7 @@ import argparse
 import json
 import os
 import sys
+from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
@@ -41,6 +43,7 @@ import yaml
 from urml_validator import validate
 from urml_validator._version import __version__
 from urml_validator.errors import ValidationError, ValidationResult
+from urml_validator.evidence import Stage, Surface, append_record, build_record
 from urml_validator.init_templates import PROJECT_TEMPLATES
 from urml_validator.rulebook_engine import bundled_rulebooks
 from urml_validator.schema_export import SCHEMA_REGISTRY, export_schema, write_schemas
@@ -124,6 +127,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip Pass 5 (compliance policy) entirely. Rulebooks still apply.",
     )
     _add_rulebook_args(p_validate)
+    _add_evidence_log_args(p_validate)
     p_validate.add_argument(
         "--json",
         dest="as_json",
@@ -222,6 +226,7 @@ def build_parser() -> argparse.ArgumentParser:
         "Rulebooks still apply.",
     )
     _add_rulebook_args(p_execute)
+    _add_evidence_log_args(p_execute)
     p_execute.add_argument(
         "--json",
         dest="as_json",
@@ -327,6 +332,7 @@ def build_parser() -> argparse.ArgumentParser:
         "Rulebooks still apply.",
     )
     _add_rulebook_args(p_translate)
+    _add_evidence_log_args(p_translate)
     _add_llm_provider_args(p_translate)
     _add_speech_args(p_translate)
     p_translate.add_argument(
@@ -425,6 +431,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip Pass 5 (compliance policy) throughout the run. Rulebooks still apply.",
     )
     _add_rulebook_args(p_run)
+    _add_evidence_log_args(p_run)
     _add_llm_provider_args(p_run)
     _add_speech_args(p_run)
     p_run.add_argument(
@@ -725,6 +732,9 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         print("urml: interrupted", file=sys.stderr)
         return 130
+    except _EvidenceLogError as exc:
+        print(f"urml: {exc}", file=sys.stderr)
+        return 2
     except Exception as exc:
         print(f"urml: internal error: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 64
@@ -749,11 +759,12 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
 
+    profiles = tuple(args.profile)
     result = validate(
         program,
         manifest,
         envelope,
-        profiles=tuple(args.profile),
+        profiles=profiles,
         policy=policy_arg,
         # RFC-0005: resolve a component's relative hbom_ref.uri against the
         # manifest file's own directory for HBOM-content policy rules.
@@ -761,6 +772,16 @@ def cmd_validate(args: argparse.Namespace) -> int:
         rulebooks=rulebooks,
         default_rulebooks=default_rulebooks,
     )
+    _Evidence(
+        path=args.evidence_log,
+        surface="validate",
+        manifest=manifest,
+        envelope=envelope,
+        policy=policy_arg,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        profiles=profiles,
+    ).validation(result, program)
 
     if args.as_json:
         _emit_json(result)
@@ -837,6 +858,113 @@ def _resolve_rulebook_args(args: argparse.Namespace) -> tuple[list[dict[str, Any
 def _today_utc() -> date:
     """One validation date for a command that validates twice (CLI, then runtime)."""
     return datetime.now(UTC).date()
+
+
+# ---------------------------------------------------------------------------
+# Evidence log (validation records)
+# ---------------------------------------------------------------------------
+
+
+def _add_evidence_log_args(parser: argparse.ArgumentParser) -> None:
+    """Install --evidence-log, shared by every command that makes a verdict."""
+    parser.add_argument(
+        "--evidence-log",
+        dest="evidence_log",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help=(
+            "Append one validation record per verdict, accepted or refused, to this "
+            "JSON Lines file. Opt-in and local. See docs/evidence/validation-records.md."
+        ),
+    )
+
+
+class _EvidenceLogError(Exception):
+    """Internal: the --evidence-log file could not be written (exit code 2)."""
+
+
+@dataclass(frozen=True)
+class _Evidence:
+    """What one command judges against, for the records it appends to --evidence-log.
+
+    A command builds one after loading its inputs and calls it at each
+    verdict; with no --evidence-log every call does nothing. The record is
+    appended before the verdict is printed or acted on, so a log that cannot
+    be written stops the command (exit 2) before anything reaches an adapter.
+    Records never change what the command prints.
+    """
+
+    path: Path | None
+    surface: Surface
+    manifest: dict[str, Any]
+    envelope: dict[str, Any] | None
+    policy: Any
+    rulebooks: list[dict[str, Any]]
+    default_rulebooks: bool
+    profiles: tuple[str, ...]
+    as_of: date | None = None
+    request: str | None = None
+
+    def validation(self, result: ValidationResult, program: dict[str, Any]) -> None:
+        """Record the command's own validator verdict."""
+        self._append("validation", result, program)
+
+    def bridge_accepted(self, translation: Any) -> None:
+        """Record the bridge's accepted translation (a ``TranslateResult``)."""
+        self._append(
+            "bridge",
+            translation.last_validation,
+            translation.program,
+            attempts=translation.revision_count + 1,
+            attempt_codes=list(translation.attempt_codes),
+        )
+
+    def bridge_refused(self, exc: Any) -> None:
+        """Record the bridge's refusal: the final verdict its exception carries.
+
+        ``last_program`` is the parsed program that verdict judged. A bridge
+        too old to carry it leaves the record's program empty.
+        """
+        self._append(
+            "bridge",
+            exc.last_result,
+            getattr(exc, "last_program", None),
+            attempts=exc.attempts,
+            attempt_codes=list(exc.attempt_codes),
+        )
+
+    def _append(
+        self,
+        stage: Stage,
+        result: Any,
+        program: dict[str, Any] | None,
+        *,
+        attempts: int | None = None,
+        attempt_codes: list[list[str]] | None = None,
+    ) -> None:
+        if self.path is None or not isinstance(result, ValidationResult):
+            return
+        record = build_record(
+            surface=self.surface,
+            stage=stage,
+            result=result,
+            program=program,
+            manifest=self.manifest,
+            envelope=self.envelope,
+            policy=self.policy,
+            rulebooks=self.rulebooks,
+            default_rulebooks=self.default_rulebooks,
+            as_of=self.as_of,
+            profiles=self.profiles,
+            request=self.request,
+            attempts=attempts,
+            attempt_codes=attempt_codes,
+        )
+        try:
+            append_record(self.path, record)
+        except OSError as exc:
+            raise _EvidenceLogError(f"cannot write the evidence log {self.path}: {exc}") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -1208,7 +1336,9 @@ def cmd_execute(args: argparse.Namespace) -> int:
     same policy, manifest directory, rulebooks and validation date this
     command used, so ``--no-policy``, ``--policy``, ``--rulebook`` and
     ``--no-default-rulebooks`` mean the same thing at both checks. Skipping
-    the validator is prohibited (CLAUDE.md).
+    the validator is prohibited (CLAUDE.md). With ``--evidence-log``, the
+    first check's verdict is appended as a validation record, and the runtime
+    appends a record if its own check refuses.
     """
     try:
         from urml_ros2_runtime import (  # type: ignore[import-not-found,unused-ignore]
@@ -1255,6 +1385,17 @@ def cmd_execute(args: argparse.Namespace) -> int:
         default_rulebooks=default_rulebooks,
         as_of=as_of,
     )
+    _Evidence(
+        path=args.evidence_log,
+        surface="execute",
+        manifest=manifest,
+        envelope=envelope,
+        policy=policy_arg,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        profiles=profiles,
+        as_of=as_of,
+    ).validation(result, program)
     if not result.accepted:
         if args.as_json:
             _emit_json(result)
@@ -1284,7 +1425,8 @@ def cmd_execute(args: argparse.Namespace) -> int:
 
     # ----- Execute (the runtime re-validates first, with the same inputs) -----
     try:
-        runtime = URMLRuntime(adapter)
+        # The runtime records its own refusals in the same evidence log.
+        runtime = URMLRuntime(adapter, evidence_log=args.evidence_log)
         try:
             rr = runtime.execute(
                 program,
@@ -1773,6 +1915,18 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     profiles = tuple(args.profile)
     as_of = _today_utc()
+    evidence = _Evidence(
+        path=args.evidence_log,
+        surface="run",
+        manifest=manifest,
+        envelope=envelope,
+        policy=policy_arg,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        profiles=profiles,
+        as_of=as_of,
+        request=args.request,
+    )
 
     # ----- Translate (the bridge validates every emission) -----
     bridge = Bridge(
@@ -1805,6 +1959,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"urml: provider error: {exc}", file=sys.stderr)
         return 1
     except BridgeDeploymentViolation as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: run aborted after {exc.attempts} attempt(s): a rulebook needs a "
             "deployment change (a declaration or a rulebook file); editing the program "
@@ -1815,6 +1970,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
         return 1
     except BridgePolicyViolation as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: run aborted: compliance policy rejected the target robot "
             f"after {exc.attempts} attempt(s).",
@@ -1824,6 +1980,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
         return 1
     except BridgeRevisionExhausted as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: run failed: validator rejected the LLM's emission in all {exc.attempts} attempt(s).",
             file=sys.stderr,
@@ -1835,6 +1992,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if result.program is None:
         print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
         return 64
+    evidence.bridge_accepted(result)
     program = _with_source_prompt(result.program, args.request)
     print(
         f"Translation accepted after {result.revision_count} revision(s).",
@@ -1865,8 +2023,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         # The bridge validated with the chosen policy and rulebooks. The
         # runtime re-validates with the same policy and rulebooks plus the
         # manifest's directory, which the bridge does not have, so
-        # HBOM-content rules are read here.
-        runtime = URMLRuntime(adapter)
+        # HBOM-content rules are read here. It records its own refusals in
+        # the same evidence log.
+        runtime = URMLRuntime(adapter, evidence_log=args.evidence_log)
         try:
             rr = runtime.execute(
                 program,
@@ -1974,6 +2133,17 @@ def cmd_translate(args: argparse.Namespace) -> int:
         rulebooks=rulebooks,
         default_rulebooks=default_rulebooks,
     )
+    evidence = _Evidence(
+        path=args.evidence_log,
+        surface="translate",
+        manifest=manifest,
+        envelope=envelope,
+        policy=policy_arg,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        profiles=tuple(args.profile),
+        request=args.request,
+    )
 
     # ----- Translate -----
     try:
@@ -1994,6 +2164,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         print(f"urml: provider error: {exc}", file=sys.stderr)
         return 1
     except BridgeDeploymentViolation as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: translation stopped after {exc.attempts} attempt(s): a rulebook needs "
             "a deployment change (a declaration or a rulebook file). Editing the URML "
@@ -2005,6 +2176,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         _save_rejected_emission(args.save_rejected, exc.raw_completions, exc.attempts)
         return 1
     except BridgePolicyViolation as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: translation aborted: compliance policy rejected the target "
             f"robot after {exc.attempts} attempt(s). Policy errors cannot be "
@@ -2017,6 +2189,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         _save_rejected_emission(args.save_rejected, exc.raw_completions, exc.attempts)
         return 1
     except BridgeRevisionExhausted as exc:
+        evidence.bridge_refused(exc)
         print(
             f"urml: translation failed: validator rejected the LLM's emission in all {exc.attempts} attempt(s).",
             file=sys.stderr,
@@ -2031,6 +2204,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
     if result.program is None:
         print("urml: internal error: bridge returned no program despite accepting.", file=sys.stderr)
         return 64
+    evidence.bridge_accepted(result)
 
     program = _with_source_prompt(result.program, args.request)
     text = _render_program(program, as_json=args.as_json)

@@ -51,6 +51,14 @@ The NL path is provider-agnostic per CLAUDE.md: ``execute_request`` takes an
 ``LLMProvider`` (never a hard-coded vendor) and builds a ``Bridge`` per request.
 The program path is fully offline; the NL path requires a provider to be
 configured, exactly like ``urml translate``.
+
+## Evidence log
+
+The ``evidence_log`` node parameter (a file path; empty, the default, turns it
+off) makes the server append one validation record per verdict: the bridge's
+verdict for a sentence and the validator's verdict for every goal, accepted or
+refused, and the runtime's own refusals. It is operator configuration, like
+the pins; a goal cannot set it. See ``docs/evidence/validation-records.md``.
 """
 
 from __future__ import annotations
@@ -58,12 +66,13 @@ from __future__ import annotations
 import json
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Literal
 
 from pydantic import ValidationError as PydanticValidationError
 from urml_validator import ValidationResult, validate
+from urml_validator.evidence import Stage, append_record, build_record
 from urml_validator.schemas.policy import Policy
 from urml_validator.schemas.rulebook import Rulebook
 
@@ -163,6 +172,7 @@ def execute_request(
     provider: Any | None = None,
     feedback: FeedbackSink | None = None,
     pinned: PinnedConstraints | None = None,
+    evidence_log: Path | str | None = None,
 ) -> dict[str, Any]:
     """Run one URML request through translate? -> validate -> execute.
 
@@ -183,6 +193,12 @@ def execute_request(
                   goal is validated against these, and a goal that sets its own
                   manifest, envelope or ``no_policy`` is refused before any
                   provider or adapter call.
+        evidence_log: Optional JSON Lines file (opt-in, local). Each verdict
+                  this call makes, the bridge's for a sentence and the
+                  validator's for the program, is appended as a validation
+                  record, and the runtime appends its own refusals. A record
+                  that cannot be written refuses the goal before anything
+                  executes.
     """
     manifest: dict[str, Any]
     envelope: dict[str, Any] | None
@@ -222,6 +238,44 @@ def execute_request(
         if feedback is not None:
             feedback({"phase": phase, "detail": detail})
 
+    log = Path(evidence_log) if evidence_log else None
+
+    def record(
+        stage: Stage,
+        result: ValidationResult,
+        program: dict[str, Any] | None,
+        *,
+        as_of: date | None = None,
+        attempts: int | None = None,
+        attempt_codes: list[list[str]] | None = None,
+    ) -> str | None:
+        """Append one verdict to the evidence log. Returns why it failed, else None."""
+        if log is None:
+            return None
+        try:
+            append_record(
+                log,
+                build_record(
+                    surface="action_server",
+                    stage=stage,
+                    result=result,
+                    program=program,
+                    manifest=manifest,
+                    envelope=envelope,
+                    policy=policy,
+                    rulebooks=rulebooks,
+                    default_rulebooks=default_rulebooks,
+                    as_of=as_of,
+                    profiles=request.profiles,
+                    request=request.sentence if stage == "bridge" else None,
+                    attempts=attempts,
+                    attempt_codes=attempt_codes,
+                ),
+            )
+        except OSError as exc:
+            return f"the evidence log {log} could not be written ({exc}); nothing was executed"
+        return None
+
     # 1. Resolve the program: execute as-is, or translate a sentence first.
     program = request.program
     if program is None:
@@ -250,7 +304,30 @@ def execute_request(
         try:
             translated = bridge.translate(request.sentence)
         except BridgeError as exc:
-            return _refused(f"translation failed: {exc}")
+            reason = f"translation failed: {exc}"
+            # A refusal carries the bridge's final verdict. A provider error
+            # carries none: nothing was judged, so nothing is recorded.
+            last = getattr(exc, "last_result", None)
+            if isinstance(last, ValidationResult):
+                problem = record(
+                    "bridge",
+                    last,
+                    getattr(exc, "last_program", None),
+                    attempts=getattr(exc, "attempts", None),
+                    attempt_codes=getattr(exc, "attempt_codes", None),
+                )
+                if problem is not None:
+                    reason += f"\n{problem}"
+            return _refused(reason)
+        problem = record(
+            "bridge",
+            translated.last_validation,
+            translated.program,
+            attempts=translated.revision_count + 1,
+            attempt_codes=list(translated.attempt_codes),
+        )
+        if problem is not None:
+            return _refused(problem)
         program = translated.program
 
     assert program is not None  # resolved above or returned
@@ -270,13 +347,18 @@ def execute_request(
         default_rulebooks=default_rulebooks,
         as_of=as_of,
     )
+    problem = record("validation", verdict, program, as_of=as_of)
     if not verdict.accepted:
-        return _refused(_render_verdict(verdict))
+        rendered = _render_verdict(verdict)
+        return _refused(rendered if problem is None else f"{rendered}\n{problem}")
+    if problem is not None:
+        return _refused(problem)
 
     # 3. Execute. The runtime re-validates with the same manifest, envelope,
-    #    policy and rulebooks before its first adapter call (defense in depth).
+    #    policy and rulebooks before its first adapter call (defense in depth),
+    #    and records a refusal of its own in the same evidence log.
     emit("executing", f"executing {len(program.get('behavior', {}).get('steps', []))} step(s)")
-    runtime = URMLRuntime(adapter)
+    runtime = URMLRuntime(adapter, evidence_log=log)
     try:
         result = runtime.execute(
             program,
@@ -423,6 +505,12 @@ def load_pinned(
     )
 
 
+def evidence_log_path(value: str) -> Path | None:
+    """The ``evidence_log`` node parameter as a path. Blank leaves the log off."""
+    text = value.strip()
+    return Path(text).expanduser() if text else None
+
+
 def require_pinned_for_adapter(adapter_kind: str, pinned: PinnedConstraints | None) -> None:
     """Refuse to start a real-adapter server whose goals could pick their own limits.
 
@@ -461,10 +549,13 @@ def main(args: list[str] | None = None) -> None:
                        Draft; needs manifest_path). Empty entries are ignored.
         default_rulebooks  bool, default true. False switches off the bundled
                        rulebooks (needs manifest_path).
+        evidence_log   "" (default, off) or a JSON Lines file that receives
+                       one validation record per verdict. Works with or
+                       without pinned constraints.
 
     With any adapter other than "mock", the server will not start unless
     manifest_path and envelope_path are both set. Goals can never set the
-    rulebooks or the default switch.
+    rulebooks, the default switch or the evidence log.
     """
     rclpy = _require_rclpy()
     from rclpy.action import ActionServer  # type: ignore[import-not-found,unused-ignore]
@@ -489,6 +580,7 @@ def main(args: list[str] | None = None) -> None:
             # entries are ignored when the pins load.
             self.declare_parameter("rulebooks", [""])
             self.declare_parameter("default_rulebooks", True)
+            self.declare_parameter("evidence_log", "")
             # Pinned once, before the server accepts any goal.
             self._pinned = load_pinned(
                 self._string_param("manifest_path"),
@@ -498,6 +590,7 @@ def main(args: list[str] | None = None) -> None:
                 bool(self.get_parameter("default_rulebooks").get_parameter_value().bool_value),
             )
             require_pinned_for_adapter(self._string_param("adapter"), self._pinned)
+            self._evidence_log = evidence_log_path(self._string_param("evidence_log"))
             self._action_server = ActionServer(
                 self,
                 ExecuteURML,
@@ -507,6 +600,7 @@ def main(args: list[str] | None = None) -> None:
             self.get_logger().info(
                 "URML ExecuteURML action server ready"
                 + (" (constraints pinned)." if self._pinned is not None else ".")
+                + (f" Evidence log: {self._evidence_log}." if self._evidence_log is not None else "")
             )
 
         def _string_param(self, name: str) -> str:
@@ -560,6 +654,7 @@ def main(args: list[str] | None = None) -> None:
                     provider=self._build_provider(),
                     feedback=feedback,
                     pinned=self._pinned,
+                    evidence_log=self._evidence_log,
                 )
             finally:
                 close = getattr(adapter, "close", None)
