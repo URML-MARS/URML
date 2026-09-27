@@ -141,6 +141,8 @@ report = runner.run()
 - Unit tests with a scripted fake PX4 cover all 15 Protocol methods (including the not-applicable ones). The fake arms, climbs, repositions and lands on a simulated clock, so each flight primitive's success and failure paths (arm refused, take-off timeout, reposition never arriving, landing timeout) are tested against vehicle state, not against acks.
 - Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`, gated by `URML_PX4_SITL=1`). A listen-only witness on PX4's ground-station port checks that the vehicle armed, climbed to at least 90 percent of the take-off altitude, came within twice the acceptance radius of the waypoint, and ended on the ground.
 
+**Verified in simulation (2026-09-27):** the e2e test passed locally in WSL2 against PX4 v1.17.0 SITL (SIH quadrotor), and PX4's own log shows the arm, the take-off, the return to launch, the landing and the disarm; the witness measured a highest relative altitude of 31.79 m for the 30 m take-off and a closest approach of 0.92 m to the waypoint. The record is [`tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md`](tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md). An earlier version of the same test also passed, in 2.37 s, while the adapter counted acks as success and the simulated vehicle never armed; that result does not count as a flight. The CI job has not run.
+
 **Landed since v0.1:**
 - `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).
 - Geofence polygon-containment, 3D altitude bands, and people-occupancy zones in the safety-envelope pass (validator Pass 3).
