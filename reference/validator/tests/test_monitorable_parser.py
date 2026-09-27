@@ -80,10 +80,27 @@ def test_spatial_rejected_under_stl_but_ok_under_strel() -> None:
     assert referenced_signals(node) == {"person_distance"}
 
 
-def test_spatial_has_no_stl_compile() -> None:
-    node = parse_property("somewhere (x < 1.0)", dialect="stl_strel")
-    with pytest.raises(NotImplementedError):
-        compile_to_stl(node)
+def test_compile_to_strel_shapes() -> None:
+    # Spatial operators compile to canonical STREL text; the bound is a distance band.
+    assert (
+        compile_to_stl(parse_property("somewhere[0, 2] (person > 0.5)", dialect="stl_strel"))
+        == "somewhere[0, 2] (person > 0.5)"
+    )
+    assert (
+        compile_to_stl(parse_property("everywhere[0, 2] (person > 0.5)", dialect="stl_strel"))
+        == "everywhere[0, 2] (person > 0.5)"
+    )
+    assert (
+        compile_to_stl(
+            parse_property("(speed <= 1.0) surround[1, 3] (person > 0.5)", dialect="stl_strel")
+        )
+        == "((speed <= 1) surround[1, 3] (person > 0.5))"
+    )
+    # An unbounded spatial quantifier renders with no band, like the temporal ops.
+    assert (
+        compile_to_stl(parse_property("somewhere (x < 1.0)", dialect="stl_strel"))
+        == "somewhere (x < 1)"
+    )
 
 
 def test_custom_signal_extraction_skips_keywords() -> None:
