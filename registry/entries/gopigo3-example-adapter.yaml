@@ -26,18 +26,19 @@ profiles: [educational]
 field_evidence:
   - kind: hardware_run
     date: "2026-06-25"
-    by: "@slowrunner, an independent user, on his own GoPiGo3"
+    by: "@slowrunner, an independent user, on their own GoPiGo3"
     summary: >-
-      On his GoPiGo3 (Lyrical-Dave, with a Raspberry Pi), the example's two
-      built-in programs ran through the real easygopigo3 library: the robot
-      turned 90 degrees and drove under a chair. He had typed -h, and the
-      example as it then stood drove the robot; the same day the maintainers
-      made a bare run a dry run, with --execute to drive. Later that day he
-      ran the whole loop from a sentence: "Announce 'Driving forward 10
-      centimeters' and then execute the action", translated by qwen3.5:9b
-      served through Ollama (a first request timed out; the retry was accepted
-      after 0 revisions). The validated program ran with --execute, 2 steps,
-      success, and the robot moved 10 cm. Speech was not heard in either run.
+      On @slowrunner's GoPiGo3 (Lyrical-Dave, with a Raspberry Pi), the
+      example's two built-in programs ran through the real easygopigo3
+      library: the robot turned 90 degrees and drove under a chair. The run
+      came from typing -h, because the example as it then stood drove the
+      robot; the same day the maintainers made a bare run a dry run, with
+      --execute to drive. Later that day @slowrunner ran the whole loop from a
+      sentence: "Announce 'Driving forward 10 centimeters' and then execute
+      the action", translated by qwen3.5:9b served through Ollama (a first
+      request timed out; the retry was accepted after 0 revisions). The
+      validated program ran with --execute, 2 steps, success, and the robot
+      moved 10 cm. Speech was not heard in either run.
     sources:
       - https://github.com/URML-MARS/URML/discussions/542
       - https://github.com/URML-MARS/URML/discussions/523
@@ -49,10 +50,10 @@ field_evidence:
     summary: >-
       On the same robot, turns and arcs ran clockwise where URML specifies
       counterclockwise as positive (Issues #591 and #598, opened 2026-07-04
-      and 2026-07-06). His fix negates the angle and the arc at the
-      easygopigo3 call; with --execute the robot then turned and orbited
-      counterclockwise. It was merged on 2026-08-05, URML's first merged
-      external code contribution.
+      and 2026-07-06). The fix @slowrunner contributed negates the angle and
+      the arc at the easygopigo3 call; with --execute the robot then turned
+      and orbited counterclockwise. It was merged on 2026-08-05, URML's first
+      merged external code contribution.
     sources:
       - https://github.com/URML-MARS/URML/issues/591
       - https://github.com/URML-MARS/URML/issues/598
@@ -77,7 +78,7 @@ validation_records:
     policy: none
 
 limits:
-  - The hardware runs are @slowrunner's, on his robot, as he reported them in public threads. The maintainers have not reproduced them on a GoPiGo3.
+  - The hardware runs are @slowrunner's, on their own robot, as reported in @slowrunner's public threads. The maintainers have not reproduced them on a GoPiGo3.
   - The URML maintainers compiled this entry from those public reports; @slowrunner did not submit it.
   - The committed examples/gopigo3/gopigo3-report.txt is a dry run against a fake backend. It moves nothing and shows no hardware behavior.
   - The adapter is an example in examples/gopigo3, not a packaged runtime. It carries the version of the URML packages it runs on (0.4.0 today); the June runs used the example as it stood on 2026-06-25, on URML 0.2.0.
