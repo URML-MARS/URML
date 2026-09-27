@@ -86,7 +86,7 @@ except BridgePolicyViolation as exc:
 - Never skip validation. There is no path that reaches an actuator without the validator. That is a safety and liability boundary.
 - Never fabricate capability. If the goal needs something the manifest does not declare, the correct output is a `report(status: failure)` naming what is missing, not an invented action.
 - It does not require the cloud. Once a program is validated it runs fully offline.
-- It does not persist inputs or outputs. No telemetry.
+- It does not persist inputs or outputs unless the operator turns on the opt-in evidence log, a local file of validation records. No telemetry.
 
 ## References
 
