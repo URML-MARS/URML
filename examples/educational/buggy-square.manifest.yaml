@@ -1,0 +1,18 @@
+# A frameless classroom buggy: two motors, wheel encoders, dead reckoning
+# (RFC-0630). It has no map frame, so it moves by relative `drive` / `turn`
+# rather than `move_to` a declared location. `supports_relative_motion` +
+# `max_relative_distance` are what let those primitives validate.
+
+manifest_version: "0.1"
+robot_id: classroom_buggy
+description: Two-motor wheel-encoder buggy that drives a square by dead reckoning.
+
+frames:
+  - name: floor
+    parent: null
+
+mobility:
+  drive_type: differential
+  max_velocity: 0.30
+  supports_relative_motion: true
+  max_relative_distance: 5.0

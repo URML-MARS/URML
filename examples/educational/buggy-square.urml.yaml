@@ -1,0 +1,26 @@
+# URML v0.1
+#
+# Scenario: educational/buggy-square
+# Source NL: "Drive a half-metre square."
+#
+# The classroom relative-motion example (RFC-0630): a frameless buggy has no map
+# to `move_to`, so it drives a square with four `drive` / `turn` pairs. Both
+# verbs are gated to the educational profile and need
+# `mobility.supports_relative_motion`; each leg is within `max_relative_distance`.
+#
+#   urml validate buggy-square.urml.yaml \
+#     -m buggy-square.manifest.yaml --profile educational --no-policy
+
+profile: educational
+behavior:
+  type: sequence
+  on_error: abort_and_report
+  steps:
+    - drive: { distance: 0.5 }
+    - turn: { angle: 90 }
+    - drive: { distance: 0.5 }
+    - turn: { angle: 90 }
+    - drive: { distance: 0.5 }
+    - turn: { angle: 90 }
+    - drive: { distance: 0.5 }
+    - turn: { angle: 90 }
