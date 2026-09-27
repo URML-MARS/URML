@@ -188,9 +188,24 @@ proving job is green ×3," verifiable with `gh run view <id> --json jobs`, not
 `reference/px4-runtime/` — full Protocol via `pymavlink`. Evidence: 54 passed,
 4 skipped (gated SITL/live).
 
-**PX4 SITL end-to-end — gated, NOT yet calibrated.** Unchanged honest status:
-`px4-sitl-e2e` in `px4-integration.yml` has not been executed; its first run
-is the calibration run. No green run is claimed.
+**PX4 SITL end-to-end: flown locally 2026-09-27, not in CI.**
+`test_px4_sitl_e2e.py` (`URML_PX4_SITL=1`) passed on 2026-09-27 in WSL2
+(Ubuntu 24.04) on the maintainer's machine, against PX4 v1.17.0 SITL with
+PX4's built-in SIH quadrotor (`make px4_sitl sihsim_quadx`, headless), at URML
+commit 5c56703. The `drone/flight_only_positive` fixture ran through
+`ConformanceRunner` with a live `PX4Adapter`. PX4's log shows `Armed by
+external command`, `Takeoff detected`, `Returning to launch`, `Landing
+detected` and `Disarmed by landing`, and a listen-only witness on PX4's
+ground-station port measured a highest relative altitude of 31.79 m for the
+30 m take-off, a closest approach of 0.92 m to the waypoint, and a final
+landed state of ON_GROUND. Four runs that day on the final adapter code
+passed. Record:
+[`reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md`](../../reference/px4-runtime/tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md).
+No earlier green claim stands: earlier the same day the same gate passed in
+2.37 s while PX4's log showed no arming and no take-off, because the adapter
+then reported every COMMAND_ACK as success. The adapter now reports a flight
+primitive as done only when telemetry shows it. The GitHub `px4-sitl-e2e` job
+has not run and still boots jMAVSim. No hardware flight is claimed.
 
 **ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
 on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`

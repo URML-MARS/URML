@@ -6,6 +6,10 @@ A PX4 / MAVLink connection needs to know:
   for hardware-in-the-loop or wired companions).
 - Which MAVLink identity to use (``system_id``, ``component_id``).
 - Default per-command timeouts (heartbeat wait, ack wait, message wait).
+- How long each flight phase may take and how close counts as arrived:
+  the adapter reports a flight primitive as done only when telemetry
+  shows it (armed, at altitude, inside the acceptance radius, on the
+  ground), and gives up with a failure after these timeouts.
 - A mapping from manifest-declared location names to local-NED
   coordinates, mirroring the ROS 2 runtime's ``location_to_pose``.
 
@@ -23,20 +27,19 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class NEDPosition(BaseModel):
-    """A 3D position in the local-NED frame (north, east, down).
+    """A 3D position as an offset from home (north, east, altitude).
 
-    PX4's offboard/guided mode commands positions in NED relative to a
-    declared home. Altitude in NED is *negative-down* — 30m above home
-    is ``down = -30.0``. We use ``alt`` (positive up, meters AGL) as the
-    URML-facing field and convert internally so manifest authors don't
-    have to think in NED.
+    ``north`` and ``east`` are metres from PX4's home position; ``alt`` is
+    metres above home (positive up), so authors never think in NED's
+    negative-down. ``PX4Adapter`` converts the offset to a WGS84 target
+    from home and flies it with ``MAV_CMD_DO_REPOSITION``.
     """
 
     model_config = ConfigDict(extra="forbid")
 
     north: float = 0.0
     east: float = 0.0
-    alt: float = 0.0  # meters AGL (positive up). Adapter converts to NED down.
+    alt: float = 0.0  # metres above home (positive up)
 
 
 class PX4AdapterConfig(BaseModel):
@@ -63,9 +66,43 @@ class PX4AdapterConfig(BaseModel):
     heartbeat_timeout_seconds: float = 5.0
     ack_timeout_seconds: float = 5.0
     message_timeout_seconds: float = 5.0
+    arm_timeout_seconds: float = Field(
+        default=10.0,
+        gt=0,
+        description="take_off: how long to wait for the armed bit on HEARTBEAT after PX4 accepts the arm command.",
+    )
+    takeoff_timeout_seconds: float = Field(
+        default=120.0,
+        gt=0,
+        description="take_off: how long the climb to the target altitude may take. PX4 climbs at MPC_TKO_SPEED "
+        "(1.5 m/s by default), so 120 s covers a 120 m take-off with margin.",
+    )
+    arrival_radius_m: float = Field(
+        default=1.5,
+        gt=0,
+        description="move_to, hover and return_to_home: horizontal distance (m) from the target that counts as "
+        "arrived.",
+    )
+    arrival_alt_tolerance_m: float = Field(
+        default=1.0,
+        gt=0,
+        description="take_off and move_to: altitude difference (m) from the target that counts as arrived. For "
+        "take_off it is capped at half the target altitude.",
+    )
+    arrival_timeout_seconds: float = Field(
+        default=120.0,
+        gt=0,
+        description="move_to, hover and return_to_home: how long the flight to the target may take. Raise it for "
+        "long legs (PX4 cruises at MPC_XY_CRUISE, 5 m/s by default).",
+    )
+    land_timeout_seconds: float = Field(
+        default=180.0,
+        gt=0,
+        description="land: how long the descent may take before PX4 must report landed_state ON_GROUND.",
+    )
     location_to_pose: dict[str, NEDPosition] = Field(
         default_factory=dict,
-        description="Map manifest-declared location names to local-NED coordinates.",
+        description="Map manifest-declared location names to offsets from home (north, east, alt above home).",
     )
 
     def resolve_location(self, name: str) -> NEDPosition | None:
