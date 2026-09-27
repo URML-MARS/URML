@@ -22,7 +22,8 @@ Supported (mapped onto an MJCF model + actuator ``ctrl``):
 - ``wait_for`` → step-then-check (a sim has no external event bus; the
   step advances state and the predicate is evaluated once).
 - ``report`` → structured record to a local sink (no cloud — manifesto).
-- ``scan`` → documented **stub success**, mirroring PX4Adapter.run_scan.
+- ``scan`` → documented not-supported result: this adapter does not
+  expand an area into waypoints or capture along them.
 
 Not supported by a bare physics model (returned, not raised):
 ``grasp`` / ``release``, ``dock``, ``detect``, ``capture``, ``speak``,
@@ -204,10 +205,10 @@ class IsaacAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 IsaacAdapter scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     # ------------------------------------------------------------------
     # Not supported by a bare physics model
@@ -223,6 +224,8 @@ class IsaacAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return ManipulationResult(success=False, reason=_NOT_SUPPORTED.format(capability="manipulator controller"))
 

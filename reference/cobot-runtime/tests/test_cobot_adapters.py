@@ -228,9 +228,10 @@ def test_ur_adapter_lifecycle(fake_sdks: None) -> None:
         assert ur.send_manipulation_goal(action="grasp", force_n=10.0).success
         meas = ur.take_measurement(what="tcp_force", target=None, sensor=None)
         assert meas.success and meas.payload is not None and meas.payload["value"] == 12.5
-        assert ur.run_scan(
+        scan = ur.run_scan(
             area={}, pattern="grid", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_franka_adapter_lifecycle(fake_sdks: None) -> None:
@@ -416,6 +417,32 @@ def test_fraction_speed_reaches_move_l_in_mps(fake_sdks: None) -> None:
         ctrl, _ = ur._open()
     assert result.success is True
     assert ctrl.moves == [(vec, pytest.approx(0.9 * 0.25))]
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "UrRtdeAdapter",
+        "FrankaFciAdapter",
+        "DoosanDrflAdapter",
+        "TechmanTmflowAdapter",
+        "KinovaKortexAdapter",
+        "MecademicMeca500Adapter",
+        "NeuraMairaAdapter",
+        "KassowKrAdapter",
+    ],
+)
+def test_a_runtime_grasp_reaches_the_gripper(fake_sdks: None, name: str) -> None:
+    """exec_grasp, which the runtime calls for every grasp, passes arm, grasp_type and
+    target_motion (RFC-0010, RFC-0586, RFC-0671). Until 2026-09-27 no cobot adapter took
+    the last two, so every grasp through the runtime raised TypeError."""
+    import urml_cobot_runtime
+    from urml_ros2_runtime.primitives import exec_grasp
+    from urml_validator.schemas.primitives import GraspArgs
+
+    with getattr(urml_cobot_runtime, name)() as arm:
+        outcome = exec_grasp(GraspArgs(target="$part", force=10.0), arm, {"part": {"class": "part"}})
+    assert outcome.success, outcome.reason
 
 
 def test_conformance_runner_accepts_factories(fake_sdks: None) -> None:

@@ -27,7 +27,7 @@ URML scales *down* to a microcontroller: a buggy whose firmware reads short ASCI
 | `wait` | hold (success) |
 | `measure` / `wait_for` | query + read one serial line |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_on_mcu`. The drone trio returns `not_applicable_mcu`.
 
@@ -53,7 +53,7 @@ with EmbeddedAdapter(cfg) as buggy:
 
 **v0.1 (this release):**
 - `EmbeddedAdapter` + `EmbeddedConfig` (pyserial, no ROS). `microbit_edu` manifest + `conformance/fixtures/educational/01_buggy_patrol_positive.yaml` verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `EmbeddedAdapter`). First fixture under the new `educational` profile dir.
-- Hermetic unit tests: nav (configured + unmapped), grasp, measure, scan-stub, lifecycle, the not-supported / not-applicable sentinels, the missing-`[serial]`-extra error, the conformance hook — no pyserial install required.
+- Hermetic unit tests: nav (configured + unmapped), grasp, measure, scan (not supported), lifecycle, the not-supported / not-applicable sentinels, the missing-`[serial]`-extra error, the conformance hook; no pyserial install required.
 - Gated `.github/workflows/embedded-integration.yml`: `embedded-smoke` (real pyserial loopback), `embedded-arm64-build` (Jetson-class QEMU), `embedded-board-e2e` placeholder against a real micro:bit/Arduino (opt-in via the `run_placeholder` dispatch input; first run is a calibration run by design).
 
 **Follow-ups (not yet):** RFC-0018 outcome (minimal-MCU subset); a `pyfirmata2` path for stock Firmata sketches.

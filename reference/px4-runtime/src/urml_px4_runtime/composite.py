@@ -199,6 +199,8 @@ class CompositeAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return self._backend("send_manipulation_goal").send_manipulation_goal(
             action=action,
@@ -207,6 +209,9 @@ class CompositeAdapter:
             approach=approach,
             release_mode=release_mode,
             release_at=release_at,
+            arm=arm,
+            grasp_type=grasp_type,
+            target_motion=target_motion,
         )
 
     def query_detection(
@@ -264,6 +269,7 @@ class CompositeAdapter:
             target=target,
             duration_seconds=duration_seconds,
             attributes=attributes,
+            camera=camera,
         )
 
     def wait_for_condition(

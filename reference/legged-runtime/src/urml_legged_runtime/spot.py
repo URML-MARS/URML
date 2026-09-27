@@ -27,8 +27,8 @@ Supported (mapped to bosdyn clients):
 - ``wait_for`` → robot-state poll against a predicate — *partial*.
 - ``report`` → structured record to a local sink (no cloud — the
   manifesto bars cloud deps in reference runtimes).
-- ``scan`` → documented **stub success** (waypoint expansion is a
-  follow-up), mirroring PX4Adapter's ``run_scan``.
+- ``scan`` → documented not-supported result: this adapter does not
+  expand an area into waypoints or capture along them.
 
 Not supported on a bare Spot (no arm / not native), returned not raised
 as ``not_supported_on_spot``: ``grasp`` / ``release`` (needs the Spot
@@ -296,12 +296,10 @@ class SpotAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        # Documented stub success (mirrors PX4Adapter.run_scan): true
-        # waypoint expansion + per-waypoint capture is a follow-up.
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 SpotAdapter scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=self._reason("area-scan controller"))
 
     # ------------------------------------------------------------------
     # Spot Arm (opt-in via SpotConfig.arm_attached)

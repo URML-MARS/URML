@@ -129,6 +129,39 @@ def test_routing_override_remaps_a_method(
     assert composite.routing_for("query_detection") == COMPANION
 
 
+class _Receiving(MockROSAdapter):
+    """Keeps every keyword a grasp or a capture reaches it with."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.received: list[dict[str, Any]] = []
+
+    def send_manipulation_goal(self, **kwargs: Any) -> Any:
+        self.received.append(kwargs)
+        return super().send_manipulation_goal(**kwargs)
+
+    def capture_media(self, **kwargs: Any) -> Any:
+        self.received.append(kwargs)
+        return super().capture_media(**kwargs)
+
+
+def test_grasp_and_capture_keywords_reach_the_companion() -> None:
+    """The runtime passes arm, grasp_type and target_motion on every grasp and camera on
+    every capture (RFC-0010, RFC-0586, RFC-0671, RFC-0699). The composite dropped arm and
+    camera on the way to the companion and could not take grasp_type or target_motion."""
+    companion = _Receiving()
+    composite = CompositeAdapter(flight=MockROSAdapter(), companion=companion)
+    composite.send_manipulation_goal(
+        action="grasp", arm="left", grasp_type="precision", target_motion="tracked"
+    )
+    composite.capture_media(
+        media="photo", target=None, duration_seconds=None, attributes=None, camera="belly"
+    )
+    grasp, capture = companion.received
+    assert (grasp["arm"], grasp["grasp_type"], grasp["target_motion"]) == ("left", "precision", "tracked")
+    assert capture["camera"] == "belly"
+
+
 def test_override_unknown_method_rejected(
     backends: tuple[MockROSAdapter, MockROSAdapter],
 ) -> None:

@@ -302,6 +302,8 @@ class GoPiGo3Adapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return ManipulationResult(success=False, reason=_NOT_SUPPORTED.format(capability="gripper"))
 
@@ -337,6 +339,7 @@ class GoPiGo3Adapter:
         target: str | None,
         duration_seconds: float | None,
         attributes: dict[str, Any] | None,
+        camera: str | None = None,
     ) -> CaptureResult:
         return CaptureResult(success=False, reason=_NOT_SUPPORTED.format(capability="recordable camera"))
 

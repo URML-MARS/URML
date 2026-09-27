@@ -173,9 +173,10 @@ def test_spot_navigation_and_lifecycle(fake_bosdyn: _FakeSdk) -> None:
         assert spot.wait_passively(duration_seconds=0.1).success
         meas = spot.take_measurement(what="battery", target=None, sensor=None)
         assert meas.success and meas.payload is not None and meas.payload["value"] == 87.0
-        assert spot.run_scan(
+        scan = spot.run_scan(
             area={}, pattern="grid", overlap=0.1, altitude=None, media="photo", sensor=None
-        ).success  # documented stub success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
     assert fake_bosdyn.robot.powered_off is True
 
 

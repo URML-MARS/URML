@@ -86,9 +86,10 @@ def test_nav_dock_grasp_measure_lifecycle(fake_ara: type[_FakeAraSession]) -> No
         meas = cell.take_measurement(what="force", target=None, sensor="tcp_force")
         assert meas.success and meas.payload is not None and meas.payload["value"] == 7.0
         assert cell.wait_passively(duration_seconds=0.1).success
-        assert cell.run_scan(
+        scan = cell.run_scan(
             area={}, pattern="grid", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success  # documented stub
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_unconfigured_and_unsupported_sentinels(fake_ara: type[_FakeAraSession]) -> None:

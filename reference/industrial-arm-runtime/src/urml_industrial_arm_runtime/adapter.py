@@ -203,6 +203,8 @@ class IndustrialArmAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         """``grasp`` / ``release``: a ``control_msgs/GripperCommand`` action."""
         return self._inner.send_manipulation_goal(
@@ -212,6 +214,9 @@ class IndustrialArmAdapter:
             approach=approach,
             release_mode=release_mode,
             release_at=release_at,
+            arm=arm,
+            grasp_type=grasp_type,
+            target_motion=target_motion,
         )
 
     def take_measurement(

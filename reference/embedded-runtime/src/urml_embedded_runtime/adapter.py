@@ -153,6 +153,8 @@ class EmbeddedAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         cmd = self._config.manipulation_commands.get(action)
         if cmd is None:
@@ -213,10 +215,10 @@ class EmbeddedAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 EmbeddedAdapter scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     # ------------------------------------------------------------------
     # Not supported on a tiny MCU

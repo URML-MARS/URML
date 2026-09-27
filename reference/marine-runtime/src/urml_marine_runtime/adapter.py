@@ -19,7 +19,8 @@ Supported (mapped to MAVLink against ArduSub's GUIDED mode):
 - ``measure`` → telemetry (``SCALED_PRESSURE`` depth, ``BATTERY_STATUS``).
 - ``wait_for`` → MAVLink message-stream subscribe-once with a predicate.
 - ``report`` → structured record to a local sink (no cloud — manifesto).
-- ``scan`` → documented **stub success**, mirroring PX4Adapter.run_scan.
+- ``scan`` → documented not-supported result: this adapter does not
+  expand an area into waypoints or capture along them.
 
 Not supported on a bare ROV (returned, not raised): ``grasp`` /
 ``release`` (needs a manipulator payload — a follow-up companion),
@@ -227,10 +228,10 @@ class BlueRovAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 BlueRovAdapter scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     # ------------------------------------------------------------------
     # Not supported on a bare ROV
@@ -246,6 +247,8 @@ class BlueRovAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         return ManipulationResult(success=False, reason=_NOT_SUPPORTED.format(capability="manipulator"))
 

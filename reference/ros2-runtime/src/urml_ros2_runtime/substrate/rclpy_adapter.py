@@ -454,20 +454,17 @@ class RclpyAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        # Real scan implementation = expand area to waypoints, follow them
-        # with Nav2, trigger capture at each waypoint. The pattern
-        # generator is non-trivial (~150 lines) and lives in a future PR;
-        # v0.1 returns success with an empty sample set and full coverage,
-        # matching MockROSAdapter's default. Integration tests against
-        # Gazebo will exercise the real path.
-        payload = {
-            "samples": [],
-            "coverage": 1.0,
-            "anomalies": [],
-            "_note": "v0.1 RclpyAdapter scan: stub implementation. "
-            "Full waypoint expansion lands in a follow-up PR.",
-        }
-        return ScanResult(success=True, payload=payload)
+        # A scan is waypoints plus a capture at each one. Expanding the area
+        # into waypoints, following them with Nav2 and capturing at each is
+        # not written yet; reporting success here would claim an area was
+        # covered when the robot never moved.
+        return ScanResult(
+            success=False,
+            reason=(
+                "scan_not_implemented: RclpyAdapter does not yet expand an area "
+                "into waypoints with a capture at each one"
+            ),
+        )
 
     def take_measurement(
         self,

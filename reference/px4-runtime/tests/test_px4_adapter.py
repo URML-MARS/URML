@@ -1292,6 +1292,20 @@ def test_bare_autopilot_unsupported_primitives_return_clean_failure(
     assert "not_supported_on_bare_autopilot" in (result.reason or "")
 
 
+def test_a_runtime_grasp_gets_the_not_supported_answer(fake_pymavlink: dict[str, Any]) -> None:
+    """exec_grasp, which the runtime calls for every grasp, passes arm, grasp_type and
+    target_motion. Until 2026-09-27 PX4Adapter took neither of the last two, so a grasp
+    raised TypeError instead of returning the documented answer."""
+    from urml_ros2_runtime.primitives import exec_grasp
+    from urml_validator.schemas.primitives import GraspArgs
+
+    from urml_px4_runtime import PX4Adapter
+
+    outcome = exec_grasp(GraspArgs(target="$crate"), PX4Adapter(), {"crate": {"class": "crate"}})
+    assert outcome.success is False
+    assert "not_supported_on_bare_autopilot" in (outcome.reason or "")
+
+
 # ---------------------------------------------------------------------------
 # Measure
 # ---------------------------------------------------------------------------

@@ -87,9 +87,10 @@ def test_navigation_measure_scan_lifecycle(fake_mujoco: _FakeMujoco) -> None:
         assert sim.wait_passively(duration_seconds=0.1).success
         meas = sim.take_measurement(what="state", target=None, sensor=None)
         assert meas.success and meas.payload is not None and meas.payload["value"] == 42.0
-        assert sim.run_scan(
+        scan = sim.run_scan(
             area={}, pattern="serpentine", overlap=0.1, altitude=None, media="sensor_only", sensor=None
-        ).success  # documented stub success
+        )
+        assert not scan.success and "area-scan controller" in (scan.reason or "")
 
 
 def test_unsupported_and_sim_sentinels(fake_mujoco: _FakeMujoco) -> None:

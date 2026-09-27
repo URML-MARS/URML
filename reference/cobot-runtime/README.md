@@ -27,7 +27,7 @@ The two most-deployed cobots, driven by their **native SDKs with no ROS** — th
 | `wait` | hold (success) |
 | `measure` / `wait_for` | TCP force / robot state read |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_on_bare_cobot` (pair a station/vision/HMI companion). The drone trio returns `not_applicable_cobot`.
 
@@ -55,7 +55,7 @@ with UrRtdeAdapter(cfg) as ur:
 
 **v0.1 (this release):**
 - `UrRtdeAdapter` + `FrankaFciAdapter` + `CobotConfig` (native SDKs, no ROS). `cobot_cell` US-provenance manifest + `conformance/fixtures/industrial/08_cobot_cell_positive.yaml` (RFC-0013 `pick_from`/`place_at`) verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against the cobot adapters).
-- Hermetic unit tests for both adapters: nav (configured + unmapped), grasp/release, measure, scan-stub, lifecycle, the not-supported / not-applicable sentinels, the missing-`[ur]`/`[franka]`-extra errors, the conformance hook — no vendor SDK install required.
+- Hermetic unit tests for both adapters: nav (configured + unmapped), grasp/release, measure, scan (not supported), lifecycle, the not-supported / not-applicable sentinels, the missing-`[ur]`/`[franka]`-extra errors, the conformance hook; no vendor SDK install required.
 - Gated `.github/workflows/cobot-integration.yml`: `cobot-smoke` (real SDKs), `cobot-arm64-build` (Jetson-class QEMU), `cobot-controller-e2e` placeholder against a real UR/Franka (first run is a calibration run by design).
 
 **Follow-ups (not yet):** RFC-0017 outcome (digital I/O); real Robotiq/Franka-gripper wiring beyond the v0.1 gripper command.

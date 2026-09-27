@@ -27,7 +27,7 @@ Isaac is a pure-Python-bindings simulator over a bundled engine: headless, offli
 | `measure` | read `mjData.sensordata` |
 | `wait_for` | step-then-check (a sim has no external event bus) |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** (mirrors `PX4Adapter.run_scan`) |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `grasp`/`release`, `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_in_base_isaac_sim` (a task-specific model + controller pairs via a companion). The drone trio `take_off`/`land`/`return_to_home` return `not_applicable_sim`.
 
@@ -50,7 +50,7 @@ with IsaacAdapter(cfg) as sim:
 
 **v0.1 (this release):**
 - `IsaacAdapter` + `IsaacConfig` (Isaac, no ROS). `isaac_arm_sim` manifest + `conformance/fixtures/home/17_isaacsim_sentence_to_motion_positive.yaml` verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `IsaacAdapter`).
-- Hermetic unit tests: navigation (configured + unmapped), measure, scan-stub, lifecycle, the not-supported / not-applicable-sim sentinels, the model-path-required and missing-`[sim]`-extra errors, the conformance hook — no isaacsim install required.
+- Hermetic unit tests: navigation (configured + unmapped), measure, scan (not supported), lifecycle, the not-supported / not-applicable-sim sentinels, the model-path-required and missing-`[sim]`-extra errors, the conformance hook; no isaacsim install required.
 - Gated `.github/workflows/isaacsim-integration.yml`: `isaacsim-smoke` (real isaacsim), `isaacsim-arm64-build` (the Jetson-class QEMU signal), and `isaacsim-sitl-e2e` against a real MJCF model (first run is a calibration run by design — the established px4/ros2/marine convention).
 - [`SPEC-GAPS.md`](SPEC-GAPS.md): **none** — a simulator implements the existing primitives with zero new vocabulary.
 

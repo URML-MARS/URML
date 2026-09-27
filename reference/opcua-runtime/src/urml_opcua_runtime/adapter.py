@@ -21,7 +21,8 @@ Supported (mapped onto configured OPC UA method/variable nodes):
 - ``wait`` → no-op success (a cell holds position).
 - ``measure`` / ``wait_for`` → read the configured variable node once.
 - ``report`` → structured record to a local sink (no cloud — manifesto).
-- ``scan`` → documented **stub success**, mirroring PX4Adapter.run_scan.
+- ``scan`` → documented not-supported result: this adapter does not
+  expand an area into waypoints or capture along them.
 
 Not supported by a bare cell (returned, not raised): ``detect``,
 ``capture``, ``speak``, ``listen`` — pair a vision/HMI companion. The
@@ -173,6 +174,8 @@ class OpcUaAdapter:
         release_mode: Literal["drop", "place", "hand_to_user"] | None = None,
         release_at: dict[str, Any] | str | None = None,
         arm: str | None = None,
+        grasp_type: str | None = None,
+        target_motion: str | None = None,
     ) -> ManipulationResult:
         mt = self._config.manipulation_methods.get(action)
         if mt is None:
@@ -234,10 +237,10 @@ class OpcUaAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        return ScanResult(
-            success=True,
-            payload={"samples": [], "coverage": 0.0, "anomalies": [], "_note": "v0.1 OpcUaAdapter scan: stub."},
-        )
+        # A scan is waypoints plus a capture at each one, and this adapter
+        # does neither. Reporting success would claim an area was covered
+        # when nothing moved.
+        return ScanResult(success=False, reason=_NOT_SUPPORTED.format(capability="area-scan controller"))
 
     # ------------------------------------------------------------------
     # Not supported by a bare cell

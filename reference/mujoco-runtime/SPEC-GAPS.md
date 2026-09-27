@@ -25,7 +25,8 @@ silent primitive/schema change.
 **None.** A physics simulator is the purest case for the
 substrate-neutrality acid test: it faithfully implements the existing
 primitives (`move_to`/`hover`/`wait`/`measure`/`wait_for`/`report`,
-`scan` as the documented stub) with zero ROS and no new vocabulary.
+with `scan` a documented not-supported result) with zero ROS and no new
+vocabulary.
 Capabilities a *bare* model lacks (`grasp`/`release`, `dock`,
 `detect`, `capture`, `speak`, `listen`) are returned as honest
 unsuccessful `SubstrateResult`s, not gaps in URML — a task-specific

@@ -28,7 +28,7 @@ AUTOSAR Adaptive is the universal factory-floor / PLC companion spec. This adapt
 | `wait` | hold (success) |
 | `measure` / `wait_for` | read the configured variable node |
 | `report` | structured record to a local sink (no cloud) |
-| `scan` | documented **stub success** |
+| `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
 
 `detect`, `capture`, `speak`, `listen` return `not_supported_on_autosar_ecu_cell` (pair a vision/HMI companion). The drone trio returns `not_applicable_autosar`.
 
@@ -54,7 +54,7 @@ with AutosarAdaptiveAdapter(cfg) as cell:
 
 **v0.1 (this release):**
 - `AutosarAdaptiveAdapter` + `AutosarConfig` (ara, no ROS). `autosar_ecu_cell` US-provenance manifest + `conformance/fixtures/industrial/07_autosar_ecu_cell_positive.yaml` (RFC-0013 `pick_from`/`place_at`) verified through the runner (hermetic against `MockROSAdapter`; adapter-agnostic against `AutosarAdaptiveAdapter`).
-- Hermetic unit tests: nav (configured + unmapped), dock/swap_tool, grasp, measure, scan-stub, lifecycle, the unconfigured / not-supported / not-applicable sentinels, the missing-`[autosar]`-extra error, the conformance hook — no ara install required.
+- Hermetic unit tests: nav (configured + unmapped), dock/swap_tool, grasp, measure, scan (not supported), lifecycle, the unconfigured / not-supported / not-applicable sentinels, the missing-`[autosar]`-extra error, the conformance hook; no ara install required.
 - Gated `.github/workflows/autosar-integration.yml`: `autosar-smoke` (real ara), `autosar-arm64-build` (the Jetson-class QEMU signal), `autosar-server-e2e` against a local ara server (first run is a calibration run by design — the established px4/ros2/marine convention).
 
 **Follow-ups (not yet):** RFC-0015/0016 outcomes; a bundled ara demo server for the e2e.

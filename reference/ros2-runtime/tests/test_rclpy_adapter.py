@@ -551,7 +551,8 @@ def test_query_detection_no_match_in_message(fake_ros: dict[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_run_scan_returns_stub_success(fake_ros: dict[str, Any]) -> None:
+def test_run_scan_is_not_implemented(fake_ros: dict[str, Any]) -> None:
+    """No waypoint expansion yet, so the adapter refuses rather than report an area it never covered."""
     from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
 
     adapter = RclpyAdapter()
@@ -563,9 +564,9 @@ def test_run_scan_returns_stub_success(fake_ros: dict[str, Any]) -> None:
         media="photo",
         sensor=None,
     )
-    assert result.success is True
-    assert result.payload is not None
-    assert result.payload["coverage"] == 1.0
+    assert result.success is False
+    assert result.reason is not None and result.reason.startswith("scan_not_implemented:")
+    assert result.payload is None
 
 
 def test_take_measurement_happy_path(fake_ros: dict[str, Any]) -> None:
