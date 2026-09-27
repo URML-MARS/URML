@@ -39,18 +39,33 @@ telemetry until the action is complete, or returns a failure:
 
 A rejected command, a refused arm, or a timeout returns a failure whose
 reason names PX4's ``MAV_RESULT`` or what telemetry last showed (the
-altitude reached, the distance left). PX4 sends its ``STATUSTEXT``
-explanations only on links where it sees a ground-station heartbeat;
-this adapter sends none, so the explanation is on the autopilot console
-or the ground station, not in the reason. Failures are *returned*, not
-raised, the same contract as RclpyAdapter and MockROSAdapter. A
-connection that cannot be opened is reported as ``connection_failed``.
+altitude reached, the distance left), followed by any warning PX4 sent
+about it as ``STATUSTEXT``, for example ``arm_rejected:
+mav_result_temporarily_rejected; PX4 said: "Arming denied: Resolve
+system health failures first"``. Failures are *returned*, not raised,
+the same contract as RclpyAdapter and MockROSAdapter. A connection that
+cannot be opened is reported as ``connection_failed``.
 
 The adapter reads a PX4 autopilot only: the first autopilot heartbeat
 must say ``MAV_AUTOPILOT_PX4``. PX4 and ArduPilot read the same
 MAVLink commands differently (take-off altitude is AMSL on PX4 and
 relative on ArduPilot), so pointing this adapter at another autopilot is
 refused rather than guessed at. ``ArduCopterAdapter`` covers ArduPilot.
+
+## Ground-station heartbeat
+
+PX4 sends ``STATUSTEXT``, its human-readable explanations, only on links
+where it sees a ground-station heartbeat. From the moment it connects
+until ``close()``, the adapter therefore sends a ``MAV_TYPE_GCS``
+heartbeat once a second from a daemon thread. Every send on the
+connection takes one lock, because pymavlink sends are not thread-safe.
+
+PX4 then counts URML as a ground station. When the heartbeat stops
+(``close()``, or the process ends), PX4 declares the ground-station link
+lost after ``COM_DL_LOSS_T`` seconds and applies its data-link-loss
+action, ``NAV_DLL_ACT``. PX4 ships with ``NAV_DLL_ACT = 0``, no action.
+An operator who wants the vehicle to return or land when its controller
+dies sets it; that is the intended behaviour.
 
 ## What's not supported on a bare autopilot
 
@@ -77,10 +92,13 @@ meets the threshold or the timeout expires.
 from __future__ import annotations
 
 import math
+import threading
 import time
+import weakref
+from collections import deque
 from collections.abc import Callable
 from contextlib import suppress
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Literal
 
 from urml_ros2_runtime.substrate.base import (
@@ -105,6 +123,7 @@ DEFAULT_HEARTBEAT_TIMEOUT_SECONDS = 5.0
 # pymavlink import to load, and so tests can assert on ids.
 MAV_AUTOPILOT_PX4 = 12
 MAV_AUTOPILOT_INVALID = 8
+MAV_TYPE_GCS = 6
 
 MAV_CMD_NAV_RETURN_TO_LAUNCH = 20
 MAV_CMD_NAV_LAND = 21
@@ -122,8 +141,12 @@ MAV_RESULT_IN_PROGRESS = 5
 MAV_LANDED_STATE_UNDEFINED = 0
 MAV_LANDED_STATE_ON_GROUND = 1
 
+MAV_STATE_ACTIVE = 4
 MAV_STATE_EMERGENCY = 6
 MAV_STATE_FLIGHT_TERMINATION = 8
+
+MAV_SEVERITY_WARNING = 4
+MAV_SEVERITY_INFO = 6
 
 MSG_ID_HOME_POSITION = 242
 
@@ -132,6 +155,22 @@ _EMERGENCY_STATES = {
     MAV_STATE_EMERGENCY: "emergency",
     MAV_STATE_FLIGHT_TERMINATION: "flight_termination",
 }
+
+# Seconds between the adapter's ground-station heartbeats. PX4 counts a
+# ground station as present for 2.5 s after its last heartbeat.
+GCS_HEARTBEAT_PERIOD_SECONDS = 1.0
+# How long close() waits for the heartbeat thread to finish its last send.
+_GCS_HEARTBEAT_JOIN_SECONDS = 2.0
+
+# STATUSTEXT.text holds 50 characters; PX4 sends a longer text as chunks
+# that share an id.
+_STATUSTEXT_CHUNK_CHARS = 50
+# PX4 streams STATUSTEXT at 20 Hz, so the explanation for a refused
+# command can arrive just after its COMMAND_ACK. A refusal listens this
+# long before it composes the reason.
+_REFUSAL_LISTEN_SECONDS = 1.0
+# At most this many PX4 texts are quoted in one failure reason.
+_REASON_TEXTS_MAX = 4
 
 _MAV_RESULT_NAMES = {
     0: "accepted",
@@ -144,8 +183,8 @@ _MAV_RESULT_NAMES = {
 }
 _LANDED_STATE_NAMES = {0: "undefined", 1: "on_ground", 2: "in_air", 3: "takeoff", 4: "landing"}
 
-# The telemetry every flight wait keeps current while it reads.
-_STATE_TYPES = ("HEARTBEAT", "GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "HOME_POSITION")
+# The telemetry every wait keeps current while it reads, and PX4's texts.
+_STATE_TYPES = ("HEARTBEAT", "GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "HOME_POSITION", "STATUSTEXT")
 
 # Upper bound on messages read when catching up with the link. PX4 streams
 # a few hundred messages a second on the onboard link; this is minutes of
@@ -245,6 +284,45 @@ def _emergency_state(msg: Any) -> str | None:
     return _EMERGENCY_STATES.get(int(getattr(msg, "system_status", -1)))
 
 
+@dataclass(frozen=True)
+class _StatusText:
+    """A STATUSTEXT from the vehicle, whole, and when the adapter read it."""
+
+    received: float  # time.monotonic() when read
+    severity: int  # MAV_SEVERITY: 0 emergency .. 7 debug
+    text: str
+
+
+def _statustext_chunk(msg: Any) -> str:
+    """The text of one STATUSTEXT message, up to its first NUL."""
+    raw = getattr(msg, "text", "")
+    if isinstance(raw, (bytes, bytearray)):
+        raw = bytes(raw).decode("utf-8", "replace")
+    return str(raw).split("\x00", 1)[0]
+
+
+def _gcs_heartbeat(conn: Any) -> None:
+    """Send one ``MAV_TYPE_GCS`` heartbeat. The caller holds the send lock."""
+    conn.mav.heartbeat_send(MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, MAV_STATE_ACTIVE)
+
+
+def _gcs_heartbeat_loop(conn: Any, lock: threading.Lock, stop: threading.Event, period: float) -> None:
+    """The heartbeat thread: a ground-station heartbeat every ``period`` seconds until ``stop`` is set.
+
+    It holds the connection and the send lock, not the adapter, so an
+    adapter dropped without ``close()`` can still be collected (its
+    finalizer sets ``stop``).
+    """
+    while not stop.wait(period):
+        with lock:
+            if stop.is_set():
+                return
+            # A send on a closing or broken link fails; the next flight
+            # primitive reports the link, so the thread keeps going.
+            with suppress(Exception):
+                _gcs_heartbeat(conn)
+
+
 class PX4Adapter:
     """MAVLink-based URML substrate adapter."""
 
@@ -260,6 +338,16 @@ class PX4Adapter:
         self._global_position: Any = None
         self._extended_state: Any = None
         self._home: _Home | None = None
+        # One lock for every send on the connection: the heartbeat thread
+        # and the caller's thread both send, and pymavlink sends are not
+        # thread-safe.
+        self._send_lock = threading.Lock()
+        self._gcs_stop = threading.Event()
+        self._gcs_thread: threading.Thread | None = None
+        # PX4's STATUSTEXT, oldest first, and a chunked text being joined.
+        # (ArduCopterAdapter keeps its own `_statustext`; these names differ.)
+        self._statustext_log: deque[_StatusText] = deque(maxlen=64)
+        self._statustext_partial: tuple[tuple[int, int, int], _StatusText] | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -269,10 +357,13 @@ class PX4Adapter:
         """Open the MAVLink connection lazily; cache for reuse.
 
         Waits for the autopilot's heartbeat (other components on the link,
-        such as a ground station, are skipped), checks it is PX4, and locks
-        the command target to that autopilot. Raises ``RuntimeError`` when
-        no PX4 heartbeat arrives; callers turn that into a failure result.
+        such as a ground station, are skipped), checks it is PX4, locks
+        the command target to that autopilot, and starts the ground-station
+        heartbeat. Raises ``RuntimeError`` when no PX4 heartbeat arrives or
+        the adapter was closed; callers turn that into a failure result.
         """
+        if self._closed:
+            raise RuntimeError("adapter_closed: this PX4Adapter was closed; create a new one to reconnect")
         if self._connection is not None:
             return self._connection
         url = self._config.connection_url
@@ -314,16 +405,45 @@ class PX4Adapter:
             self._target = (int(conn.target_system), int(conn.target_component))
         self._heartbeat = heartbeat
         self._connection = conn
+        self._start_gcs_heartbeat(conn)
         return conn
 
+    def _start_gcs_heartbeat(self, conn: Any) -> None:
+        """Announce a ground station on this link now, then once a second until ``close()``.
+
+        PX4 sends STATUSTEXT only on links with a ground-station heartbeat.
+        The first heartbeat goes out before any command, so PX4 already
+        treats the link as a ground station when it answers the first one.
+        """
+        with self._send_lock, suppress(Exception):
+            _gcs_heartbeat(conn)
+        thread = threading.Thread(
+            target=_gcs_heartbeat_loop,
+            args=(conn, self._send_lock, self._gcs_stop, GCS_HEARTBEAT_PERIOD_SECONDS),
+            name="urml-px4-gcs-heartbeat",
+            daemon=True,
+        )
+        # An adapter that is garbage-collected without close() stops its
+        # heartbeat too; the thread does not keep the adapter alive.
+        weakref.finalize(self, self._gcs_stop.set)
+        self._gcs_thread = thread
+        thread.start()
+
     def close(self) -> None:
-        """Close the MAVLink connection. Safe to call multiple times."""
+        """Stop the ground-station heartbeat and close the MAVLink connection.
+
+        Safe to call multiple times. A closed adapter does not reconnect.
+        """
         if self._closed:
             return
+        self._closed = True
+        self._gcs_stop.set()
+        thread, self._gcs_thread = self._gcs_thread, None
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=_GCS_HEARTBEAT_JOIN_SECONDS)
         if self._connection is not None:
             with suppress(Exception):
                 self._connection.close()
-        self._closed = True
 
     def __enter__(self) -> PX4Adapter:
         return self
@@ -376,6 +496,63 @@ class PX4Adapter:
                 lon=float(getattr(msg, "longitude", 0)) / 1e7,
                 alt_amsl=float(getattr(msg, "altitude", 0)) / 1000.0,
             )
+        elif kind == "STATUSTEXT":
+            self._note_statustext(msg)
+
+    def _note_statustext(self, msg: Any) -> None:
+        """Keep a STATUSTEXT, joining a text PX4 sent as 50-character chunks.
+
+        Chunks of one text share an ``id`` and count up ``chunk_seq``; a
+        chunk shorter than 50 characters ends the text.
+        """
+        chunk = _statustext_chunk(msg)
+        get_system = getattr(msg, "get_srcSystem", None)
+        get_component = getattr(msg, "get_srcComponent", None)
+        key = (
+            int(get_system()) if callable(get_system) else -1,
+            int(get_component()) if callable(get_component) else -1,
+            int(getattr(msg, "id", 0)),
+        )
+        partial = self._statustext_partial
+        if partial is not None and (partial[0] != key or int(getattr(msg, "chunk_seq", 0)) == 0):
+            self._keep_statustext()
+            partial = None
+        if partial is None:
+            joined = _StatusText(time.monotonic(), int(getattr(msg, "severity", MAV_SEVERITY_INFO)), chunk)
+        else:
+            joined = replace(partial[1], text=partial[1].text + chunk)
+        self._statustext_partial = (key, joined)
+        if len(chunk) < _STATUSTEXT_CHUNK_CHARS:
+            self._keep_statustext()
+
+    def _keep_statustext(self) -> None:
+        """File the text being joined, if there is one."""
+        partial, self._statustext_partial = self._statustext_partial, None
+        if partial is None:
+            return
+        text = partial[1].text.strip()  # PX4 ends most texts with a tab
+        if text:
+            self._statustext_log.append(replace(partial[1], text=text))
+
+    def _px4_said(self, since: float) -> str:
+        """PX4's warnings read since ``since``, as a suffix for a failure reason.
+
+        Only STATUSTEXT of severity WARNING or worse counts; PX4's
+        narration ("Takeoff detected") is INFO and stays out. Returns ""
+        when PX4 said nothing of the kind.
+        """
+        self._keep_statustext()
+        texts: list[str] = []
+        for entry in self._statustext_log:
+            if entry.received >= since and entry.severity <= MAV_SEVERITY_WARNING and entry.text not in texts:
+                texts.append(entry.text)
+        if not texts:
+            return ""
+        return "; PX4 said: " + "; ".join(f'"{text}"' for text in texts[-_REASON_TEXTS_MAX:])
+
+    def _listen(self, seconds: float) -> None:
+        """Read the link for ``seconds``, keeping telemetry and STATUSTEXT current."""
+        self._await("STATUSTEXT", lambda _m: False, seconds)
 
     def _drain(self) -> None:
         """Read everything already queued on the link.
@@ -424,8 +601,13 @@ class PX4Adapter:
             if msg.get_type() == msg_type and self._from_target(msg) and predicate(msg):
                 return msg
 
-    def _wait_ack(self, command: int) -> tuple[bool, str | None]:
-        """Wait for the COMMAND_ACK of ``command`` (matched on its id)."""
+    def _wait_ack(self, command: int, sent_at: float) -> tuple[bool, str | None]:
+        """Wait for the COMMAND_ACK of ``command`` (matched on its id).
+
+        A refusal or a missing ack carries PX4's explanation when it sent
+        one. PX4 can send that STATUSTEXT just after the ack, so a refusal
+        listens briefly before it answers.
+        """
         ack = self._await(
             "COMMAND_ACK",
             lambda m: int(getattr(m, "command", -1)) == command
@@ -433,11 +615,12 @@ class PX4Adapter:
             self._config.ack_timeout_seconds,
         )
         if ack is None:
-            return False, "ack_timeout"
+            return False, "ack_timeout" + self._px4_said(sent_at)
         result = int(getattr(ack, "result", -1))
         if result == MAV_RESULT_ACCEPTED:
             return True, None
-        return False, f"mav_result_{_MAV_RESULT_NAMES.get(result, result)}"
+        self._listen(_REFUSAL_LISTEN_SECONDS)
+        return False, f"mav_result_{_MAV_RESULT_NAMES.get(result, result)}" + self._px4_said(sent_at)
 
     def _send_command_long(self, command: int, *params: float) -> tuple[bool, str | None]:
         """Send a MAV_CMD_* via COMMAND_LONG; wait for its COMMAND_ACK.
@@ -452,8 +635,10 @@ class PX4Adapter:
             return False, f"connection_failed: {exc}"
         padded = [float(p) for p in params] + [0.0] * (7 - len(params))
         target_system, target_component = self._target_ids()
-        conn.mav.command_long_send(target_system, target_component, command, 0, *padded[:7])
-        return self._wait_ack(command)
+        sent_at = time.monotonic()
+        with self._send_lock:
+            conn.mav.command_long_send(target_system, target_component, command, 0, *padded[:7])
+        return self._wait_ack(command, sent_at)
 
     def _send_command_int(
         self,
@@ -470,10 +655,12 @@ class PX4Adapter:
         except Exception as exc:
             return False, f"connection_failed: {exc}"
         target_system, target_component = self._target_ids()
-        conn.mav.command_int_send(
-            target_system, target_component, frame, command, 0, 0, *params, x, y, float(z)
-        )
-        return self._wait_ack(command)
+        sent_at = time.monotonic()
+        with self._send_lock:
+            conn.mav.command_int_send(
+                target_system, target_component, frame, command, 0, 0, *params, x, y, float(z)
+            )
+        return self._wait_ack(command, sent_at)
 
     def _recv_message(
         self,
@@ -518,19 +705,20 @@ class PX4Adapter:
         """
         conn = self._connection
         target_system, target_component = self._target_ids()
-        conn.mav.command_long_send(
-            target_system,
-            target_component,
-            MAV_CMD_REQUEST_MESSAGE,
-            0,
-            float(MSG_ID_HOME_POSITION),
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        )
+        with self._send_lock:
+            conn.mav.command_long_send(
+                target_system,
+                target_component,
+                MAV_CMD_REQUEST_MESSAGE,
+                0,
+                float(MSG_ID_HOME_POSITION),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            )
         self._await("HOME_POSITION", lambda _m: True, self._config.message_timeout_seconds)
         return self._home
 
@@ -557,6 +745,7 @@ class PX4Adapter:
 
     def _arm(self) -> tuple[bool, str | None]:
         """Arm and confirm the armed bit on a heartbeat. Never forces past PX4's checks."""
+        sent_at = time.monotonic()
         ok, reason = self._send_command_long(MAV_CMD_COMPONENT_ARM_DISARM, 1.0)
         if not ok:
             return False, f"arm_rejected: {reason}"
@@ -564,6 +753,7 @@ class PX4Adapter:
         if armed is None:
             return False, (
                 f"arm_rejected: armed flag not seen on HEARTBEAT within {self._config.arm_timeout_seconds:.0f}s"
+                + self._px4_said(sent_at)
             )
         return True, None
 
@@ -605,6 +795,7 @@ class PX4Adapter:
 
         # MAV_CMD_NAV_TAKEOFF: param4 yaw, param5/6 lat/lon (NaN = keep
         # current heading and position), param7 altitude AMSL on PX4.
+        sent_at = time.monotonic()
         ok, reason = self._send_command_long(
             MAV_CMD_NAV_TAKEOFF, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, home.alt_amsl + target
         )
@@ -628,7 +819,7 @@ class PX4Adapter:
             return NavigationResult(
                 success=False,
                 reason=f"takeoff_timeout: relative altitude {now} after "
-                f"{self._config.takeoff_timeout_seconds:.0f}s, target {target:.1f} m",
+                f"{self._config.takeoff_timeout_seconds:.0f}s, target {target:.1f} m" + self._px4_said(sent_at),
             )
         return NavigationResult(
             success=True,
@@ -665,6 +856,7 @@ class PX4Adapter:
                 reason="already_on_ground: PX4 reports landed_state ON_GROUND; no LAND command sent.",
             )
 
+        sent_at = time.monotonic()
         ok, reason = self._send_command_long(
             MAV_CMD_NAV_LAND, 0.0, 0.0, 0.0, math.nan, math.nan, math.nan, math.nan
         )
@@ -679,7 +871,8 @@ class PX4Adapter:
             state = _LANDED_STATE_NAMES.get(self._landed_state(), "unknown")
             return NavigationResult(
                 success=False,
-                reason=f"landing_timeout: landed_state {state} after {self._config.land_timeout_seconds:.0f}s",
+                reason=f"landing_timeout: landed_state {state} after {self._config.land_timeout_seconds:.0f}s"
+                + self._px4_said(sent_at),
             )
         return NavigationResult(success=True)
 
@@ -715,6 +908,7 @@ class PX4Adapter:
                 "return_to_home needs an airborne vehicle.",
             )
 
+        sent_at = time.monotonic()
         ok, reason = self._send_command_long(MAV_CMD_NAV_RETURN_TO_LAUNCH)
         if not ok:
             return NavigationResult(success=False, reason=f"rtl_rejected: {reason}")
@@ -728,7 +922,8 @@ class PX4Adapter:
             away = f"{_distance_to(last, home.lat, home.lon):.1f} m" if last is not None else "an unknown distance"
             return NavigationResult(
                 success=False,
-                reason=f"rtl_timeout: {away} from home after {self._config.arrival_timeout_seconds:.0f}s",
+                reason=f"rtl_timeout: {away} from home after {self._config.arrival_timeout_seconds:.0f}s"
+                + self._px4_said(sent_at),
             )
         return NavigationResult(
             success=True,
@@ -814,6 +1009,7 @@ class PX4Adapter:
         # MAV_DO_REPOSITION_FLAGS_CHANGE_MODE (PX4 answers UNSUPPORTED
         # without it), param4 yaw (NaN = keep heading).
         ground_speed = float(speed) if speed is not None and speed > 0 else -1.0
+        sent_at = time.monotonic()
         ok, reason = self._send_command_int(
             MAV_CMD_DO_REPOSITION,
             MAV_FRAME_GLOBAL,
@@ -841,7 +1037,8 @@ class PX4Adapter:
             )
             return NavigationResult(
                 success=False,
-                reason=f"arrival_timeout: {where} after {self._config.arrival_timeout_seconds:.0f}s",
+                reason=f"arrival_timeout: {where} after {self._config.arrival_timeout_seconds:.0f}s"
+                + self._px4_said(sent_at),
             )
         return NavigationResult(
             success=True,
@@ -1076,7 +1273,8 @@ class PX4Adapter:
             conn = self._connect()
         except Exception as exc:
             return SubstrateResult(success=False, reason=f"connection_failed: {exc}")
-        conn.mav.statustext_send(mav_severity, text.encode("utf-8"))
+        with self._send_lock:
+            conn.mav.statustext_send(mav_severity, text.encode("utf-8"))
         return SubstrateResult(success=True)
 
     def emit_speech(

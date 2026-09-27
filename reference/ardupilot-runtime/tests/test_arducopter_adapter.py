@@ -596,3 +596,13 @@ def test_scan_is_not_supported(fake: dict[str, Any]) -> None:
     assert result.success is False
     assert "not_supported_on_bare_autopilot" in (result.reason or "")
     assert fake["connections"] == []
+
+
+def test_close_without_a_heartbeat_thread(fake: dict[str, Any]) -> None:
+    """ArduCopterAdapter opens its own link and sends no ground-station heartbeat; close() still works."""
+    a = _adapter()
+    assert a.send_return_to_home_goal().success is True
+    a.close()
+    conn = fake["connections"][0]
+    assert conn._closed is True
+    assert a._gcs_thread is None

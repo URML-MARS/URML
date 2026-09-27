@@ -48,9 +48,26 @@ Each flight primitive sends its command, then reads telemetry until the action i
 - **return_to_home** succeeds when the vehicle is within `arrival_radius_m` of home. PX4's own RTL then descends and lands. On the ground at home it reports `already_at_home` without commanding anything.
 - **land** reports `already_on_ground` (success, no command) when PX4 already says ON_GROUND, for example after an RTL that landed by itself. `land(at=...)` flies to that location at the current altitude first. `precision` is not mapped; PX4 lands the way it is configured to.
 
-Refusal reasons carry PX4's `MAV_RESULT` (for example `arm_rejected: mav_result_temporarily_rejected`). PX4 sends its `STATUSTEXT` explanation only on links where it sees a ground-station heartbeat, and this adapter sends none, so read the explanation on the PX4 console or a ground station.
+Refusal and timeout reasons carry PX4's `MAV_RESULT` or what telemetry last showed, followed by the warnings PX4 sent about it as `STATUSTEXT` (severity WARNING or worse; PX4's INFO lines such as "Takeoff detected" narrate and stay out). For example, an arm refused because `COM_ARMABLE` is 0 reads:
+
+```
+arm_rejected: mav_result_temporarily_rejected; PX4 said: "Preflight Fail: Vehicle is in safety configuration"; "Arming denied: Resolve system health failures first"
+```
+
+After a refusal the adapter listens for up to a second, because PX4 can send its explanation just after the `COMMAND_ACK`. It joins texts PX4 splits into 50-character chunks.
 
 The adapter talks to PX4 only: it refuses an autopilot whose heartbeat is not `MAV_AUTOPILOT_PX4`, because ArduPilot reads the same take-off parameter as a relative altitude. Use `ArduCopterAdapter` for ArduPilot.
+
+### Ground-station heartbeat and PX4's data-link-loss failsafe
+
+PX4 sends `STATUSTEXT` only on links where it sees a ground-station heartbeat. So from the moment it connects until `close()`, the adapter sends a `MAV_TYPE_GCS` heartbeat once a second from a daemon thread. Every send on the connection (the heartbeat, commands, `report`) takes one lock, because pymavlink sends are not thread-safe. `close()` stops the thread before it closes the connection, and a closed adapter does not reconnect. An adapter that is garbage-collected without `close()` stops its heartbeat too.
+
+This makes URML a ground station in PX4's eyes, with a consequence to plan for. If URML stops mid-flight (the program ends, `close()` runs, the process dies, the link drops), the heartbeat stops, and after `COM_DL_LOSS_T` seconds (10 by default) PX4 logs "Connection to ground station lost" and applies its data-link-loss action, `NAV_DLL_ACT`:
+
+- PX4 ships with `NAV_DLL_ACT = 0`: no action. The vehicle carries on with what it was doing, for example holding position.
+- An operator who wants the vehicle to return or land when its controller dies sets `NAV_DLL_ACT` (2 = Return, 3 = Land). That is the intended behavior, not a side effect to suppress.
+- `COM_DLL_EXCEPT` exempts modes from the action. Its Hold bit (1) also covers take-off, and `take_off` and `move_to` leave the vehicle in Hold, so leave that bit clear if you want the action while URML flies.
+- With `NAV_DLL_ACT` set, PX4 also refuses to arm while no ground station is connected. The adapter's heartbeat counts as one.
 
 ### Flight settings
 
@@ -140,7 +157,7 @@ report = runner.run()
 
 **v0.1 (this release):**
 - Adapter loads on every host (lazy pymavlink import; clear actionable error if `pymavlink` is missing).
-- Unit tests with a scripted fake PX4 cover all 15 Protocol methods (including the not-applicable ones). The fake arms, climbs, repositions and lands on a simulated clock, so each flight primitive's success and failure paths (arm refused, take-off timeout, reposition never arriving, landing timeout) are tested against vehicle state, not against acks.
+- Unit tests with a scripted fake PX4 cover all 15 Protocol methods (including the not-applicable ones). The fake arms, climbs, repositions and lands on a simulated clock, so each flight primitive's success and failure paths (arm refused, take-off timeout, reposition never arriving, landing timeout) are tested against vehicle state, not against acks. Like PX4, the fake sends STATUSTEXT only after it has seen a ground-station heartbeat, so a test reason that quotes PX4 shows the adapter's heartbeat reached it; other tests check the heartbeat thread's period, that it stops on `close()`, and that every send holds the send lock.
 - Live PX4 SITL e2e test flies the `drone/flight_only_positive` conformance fixture through `ConformanceRunner` with a real `PX4Adapter` (`tests/integration/test_px4_sitl_e2e.py`, gated by `URML_PX4_SITL=1`). A listen-only witness on PX4's ground-station port checks that the vehicle armed, climbed to at least 90 percent of the take-off altitude, came within twice the acceptance radius of the waypoint, and ended on the ground.
 
 **Verified in simulation (2026-09-27):** the e2e test passed locally in WSL2 against PX4 v1.17.0 SITL (SIH quadrotor), and PX4's own log shows the arm, the take-off, the return to launch, the landing and the disarm; the witness measured a highest relative altitude of 31.79 m for the 30 m take-off and a closest approach of 0.92 m to the waypoint. The record is [`tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md`](tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md). An earlier version of the same test also passed, in 2.37 s, while the adapter counted acks as success and the simulated vehicle never armed; that result does not count as a flight. The CI job has not run.

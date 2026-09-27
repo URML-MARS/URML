@@ -14,14 +14,16 @@ above home, position, landed state), moves when the adapter's commands
 would move a real vehicle, and streams HEARTBEAT, GLOBAL_POSITION_INT,
 EXTENDED_SYS_STATE and HOME_POSITION on a simulated clock. Class-level
 knobs make it refuse, stall or never arrive, so every failure path is a
-test: an ACK alone never produces a success.
+test: an ACK alone never produces a success. Like PX4 v1.17, it sends
+STATUSTEXT only once it has seen a ground-station heartbeat, in
+50-character chunks.
 """
 
 from __future__ import annotations
 
 import math
 import sys
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from typing import Any
@@ -95,7 +97,9 @@ class _FakeMavLink:
     """Stand-in for the `mav` attribute of a pymavlink connection.
 
     Records every command so tests can assert on ids and parameters, and
-    hands commands to the simulated vehicle.
+    hands commands to the simulated vehicle. ``sent`` is the order of all
+    sends; ``lock_states`` records, per send, what ``_FakePX4.lock_probe``
+    said (whether the adapter's send lock was held).
     """
 
     def __init__(self, px4: _FakePX4) -> None:
@@ -104,6 +108,36 @@ class _FakeMavLink:
         self.command_int_calls: list[dict[str, Any]] = []
         self.set_position_target_calls: list[dict[str, Any]] = []
         self.statustext_calls: list[dict[str, Any]] = []
+        self.heartbeat_calls: list[dict[str, Any]] = []
+        self.sent: list[str] = []
+        self.lock_states: list[bool] = []
+
+    def _record(self, kind: str) -> None:
+        self.sent.append(kind)
+        probe = _FakePX4.lock_probe
+        if probe is not None:
+            self.lock_states.append(probe())
+
+    def heartbeat_send(
+        self,
+        type: int,  # pymavlink's keyword
+        autopilot: int,
+        base_mode: int,
+        custom_mode: int,
+        system_status: int,
+        mavlink_version: int = 3,
+    ) -> None:
+        self._record("HEARTBEAT")
+        self.heartbeat_calls.append(
+            {
+                "type": type,
+                "autopilot": autopilot,
+                "base_mode": base_mode,
+                "custom_mode": custom_mode,
+                "system_status": system_status,
+            }
+        )
+        self._px4.on_heartbeat(type)
 
     def command_long_send(
         self,
@@ -113,6 +147,7 @@ class _FakeMavLink:
         confirmation: int,
         *params: float,
     ) -> None:
+        self._record("COMMAND_LONG")
         self.command_long_calls.append(
             {"target": (target_system, target_component), "command": command, "params": tuple(params)}
         )
@@ -134,6 +169,7 @@ class _FakeMavLink:
         y: int,
         z: float,
     ) -> None:
+        self._record("COMMAND_INT")
         self.command_int_calls.append(
             {
                 "target": (target_system, target_component),
@@ -151,6 +187,7 @@ class _FakeMavLink:
         self.set_position_target_calls.append({"args": args})
 
     def statustext_send(self, severity: int, text: bytes) -> None:
+        self._record("STATUSTEXT")
         self.statustext_calls.append({"severity": severity, "text": text})
 
 
@@ -183,9 +220,14 @@ class _FakePX4:
       - ``start_armed_in_air``: the vehicle starts armed at 30 m, 15 m north.
       - ``queued``: messages delivered first for a matching type
         (measurement / wait tests).
+      - ``statustext``: {command_id: [(severity, text), ...]}: what PX4
+        says after its ack of that command (sent only once a
+        ground-station heartbeat has arrived, as PX4 does).
       - ``emergency_at`` / ``emergency_state``: from this simulated time
         on, the vehicle HEARTBEAT reports ``system_status`` =
         ``emergency_state`` (8 = MAV_STATE_FLIGHT_TERMINATION).
+      - ``lock_probe``: called on every send; its answers land in
+        ``mav.lock_states``.
     """
 
     ack: dict[int, int] = {}  # noqa: RUF012
@@ -202,8 +244,10 @@ class _FakePX4:
     gcs_heartbeat_first: bool = False
     start_armed_in_air: bool = False
     queued: list[Any] = []  # noqa: RUF012
+    statustext: dict[int, list[tuple[int, str]]] = {}  # noqa: RUF012
     emergency_at: float | None = None
     emergency_state: int = 8
+    lock_probe: Callable[[], bool] | None = None
 
     def __init__(self, url: str, *_: Any, **kwargs: Any) -> None:
         self.url = url
@@ -226,6 +270,8 @@ class _FakePX4:
         self.t_emit = _CLOCK.now  # simulated time the link has streamed up to
         self._cycle = 0
         self._gcs_sent = False
+        self.gcs_heartbeats = 0  # MAV_TYPE_GCS heartbeats received from the adapter
+        self._text_id = 0
         if _FakePX4.start_armed_in_air:
             self.armed = True
             self.up = 30.0
@@ -300,11 +346,27 @@ class _FakePX4:
             kinds.append("GCS_HEARTBEAT")
         return [k for k in kinds if wanted is None or (k if k != "GCS_HEARTBEAT" else "HEARTBEAT") in wanted]
 
+    def on_heartbeat(self, mav_type: int) -> None:
+        if mav_type == 6:  # MAV_TYPE_GCS
+            self.gcs_heartbeats += 1
+
+    def _say(self, severity: int, text: str) -> None:
+        """STATUSTEXT as PX4 v1.17 sends it: only to a link with a ground-station
+        heartbeat, split into 50-character chunks that share an id."""
+        if not self.gcs_heartbeats:
+            return
+        self._text_id += 1
+        chunks = [text[i : i + 50] for i in range(0, len(text), 50)]
+        for seq, chunk in enumerate(chunks):
+            self.pending.append(_Msg("STATUSTEXT", severity=severity, text=chunk, id=self._text_id, chunk_seq=seq))
+
     def _ack(self, command: int, result: int) -> None:
-        # PX4 sends STATUSTEXT only to links with a ground-station heartbeat;
-        # the adapter sends none, so a refusal is the ack alone.
         if result >= 0:
             self.pending.append(_Msg("COMMAND_ACK", command=command, result=result))
+        # PX4 publishes its explanation on its own 20 Hz stream, so on the
+        # wire it can trail the ack.
+        for severity, text in _FakePX4.statustext.get(command, []):
+            self._say(severity, text)
 
     def on_command(self, command: int, params: tuple[float, ...]) -> None:
         if _FakePX4.stray_ack:
@@ -444,8 +506,10 @@ def _install_fake_pymavlink(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     _FakePX4.gcs_heartbeat_first = False
     _FakePX4.start_armed_in_air = False
     _FakePX4.queued = []
+    _FakePX4.statustext = {}
     _FakePX4.emergency_at = None
     _FakePX4.emergency_state = 8
+    _FakePX4.lock_probe = None
     _CLOCK.now = 1000.0
 
     captured: dict[str, Any] = {"connections": []}
@@ -581,6 +645,7 @@ def test_non_px4_autopilot_is_refused(fake_pymavlink: dict[str, Any]) -> None:
     assert result.success is False
     assert "not_a_px4_autopilot" in (result.reason or "")
     assert _vehicle(fake_pymavlink).mav.command_long_calls == []
+    assert _vehicle(fake_pymavlink).mav.heartbeat_calls == []  # no ground-station heartbeat either
 
 
 def test_ground_station_heartbeat_is_not_the_vehicle(fake_pymavlink: dict[str, Any]) -> None:
@@ -595,6 +660,115 @@ def test_ground_station_heartbeat_is_not_the_vehicle(fake_pymavlink: dict[str, A
     assert {c["target"] for c in _vehicle(fake_pymavlink).mav.command_long_calls} == {(PX4_SYSID, PX4_COMPID)}
     # Ground-station heartbeats kept arriving; the vehicle is still seen as armed.
     assert adapter._is_armed() is True
+
+
+# ---------------------------------------------------------------------------
+# Ground-station heartbeat
+# ---------------------------------------------------------------------------
+
+
+def _real_wait_until(predicate: Callable[[], bool], timeout_s: float = 5.0) -> bool:
+    """Poll in real time (the heartbeat thread runs on the wall clock, not the simulated one)."""
+    import time as real_time
+
+    deadline = real_time.monotonic() + timeout_s
+    while real_time.monotonic() < deadline:
+        if predicate():
+            return True
+        real_time.sleep(0.01)
+    return predicate()
+
+
+def test_gcs_heartbeat_goes_out_before_the_first_command(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 sends STATUSTEXT only to a link with a ground-station heartbeat, so announce one first."""
+    from urml_px4_runtime import PX4Adapter
+
+    adapter = PX4Adapter()
+    assert adapter.send_takeoff_goal(altitude=10.0).success is True
+    mav = _vehicle(fake_pymavlink).mav
+    assert mav.sent[0] == "HEARTBEAT"
+    assert mav.heartbeat_calls[0] == {
+        "type": 6,  # MAV_TYPE_GCS
+        "autopilot": 8,  # MAV_AUTOPILOT_INVALID
+        "base_mode": 0,
+        "custom_mode": 0,
+        "system_status": 4,  # MAV_STATE_ACTIVE
+    }
+    adapter.close()
+
+
+def test_gcs_heartbeat_period_is_one_second(fake_pymavlink: dict[str, Any]) -> None:
+    import time as real_time
+
+    import urml_px4_runtime.adapter as adapter_module
+    from urml_px4_runtime import PX4Adapter
+
+    assert adapter_module.GCS_HEARTBEAT_PERIOD_SECONDS == 1.0
+    adapter = PX4Adapter()
+    adapter._connect()
+    real_time.sleep(0.3)  # well inside the first 1 s period: only the heartbeat sent on connect
+    assert len(_vehicle(fake_pymavlink).mav.heartbeat_calls) == 1
+    adapter.close()
+
+
+def test_gcs_heartbeat_repeats_from_a_daemon_thread_and_stops_on_close(
+    fake_pymavlink: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import time as real_time
+
+    import urml_px4_runtime.adapter as adapter_module
+    from urml_px4_runtime import PX4Adapter
+
+    monkeypatch.setattr(adapter_module, "GCS_HEARTBEAT_PERIOD_SECONDS", 0.01)
+    adapter = PX4Adapter()
+    adapter._connect()
+    thread = adapter._gcs_thread
+    assert thread is not None and thread.daemon and thread.is_alive()
+    mav = _vehicle(fake_pymavlink).mav
+    assert _real_wait_until(lambda: len(mav.heartbeat_calls) >= 5)
+    assert {c["type"] for c in mav.heartbeat_calls} == {6}
+
+    adapter.close()
+    assert not thread.is_alive()
+    assert adapter._gcs_thread is None
+    sent = len(mav.heartbeat_calls)
+    real_time.sleep(0.1)  # ten periods
+    assert len(mav.heartbeat_calls) == sent
+    assert _vehicle(fake_pymavlink)._closed is True
+
+
+def test_a_closed_adapter_does_not_reconnect(fake_pymavlink: dict[str, Any]) -> None:
+    """After close() nothing may restart the heartbeat, or PX4 would still see a ground station."""
+    from urml_px4_runtime import PX4Adapter
+
+    adapter = PX4Adapter()
+    adapter._connect()
+    adapter.close()
+    result = adapter.send_takeoff_goal(altitude=10.0)
+    assert result.success is False
+    assert (result.reason or "").startswith("connection_failed: adapter_closed")
+    assert len(fake_pymavlink["connections"]) == 1
+    assert adapter._gcs_thread is None
+
+
+def test_every_send_holds_the_send_lock(
+    fake_pymavlink: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The heartbeat thread and the caller both send; pymavlink sends are not thread-safe."""
+    import urml_px4_runtime.adapter as adapter_module
+    from urml_px4_runtime import PX4Adapter
+
+    monkeypatch.setattr(adapter_module, "GCS_HEARTBEAT_PERIOD_SECONDS", 0.001)
+    adapter = PX4Adapter(_cfg())
+    _FakePX4.lock_probe = adapter._send_lock.locked
+    assert adapter.send_takeoff_goal(altitude=10.0).success is True
+    assert adapter.send_navigation_goal(location="pad_east").success is True
+    assert adapter.emit_report(to="user", facts={}, attachments=None, status="success", severity="info").success
+    adapter.close()
+    mav = _vehicle(fake_pymavlink).mav
+    assert {"HEARTBEAT", "COMMAND_LONG", "COMMAND_INT", "STATUSTEXT"} <= set(mav.sent)
+    assert len(mav.lock_states) == len(mav.sent)
+    assert all(mav.lock_states)
 
 
 # ---------------------------------------------------------------------------
@@ -671,6 +845,55 @@ def test_takeoff_arm_rejected(fake_pymavlink: dict[str, Any]) -> None:
     assert result.reason == "arm_rejected: mav_result_temporarily_rejected"
     assert 22 not in _long_commands(fake_pymavlink)  # no take-off after a refused arm
     assert _vehicle(fake_pymavlink).up == 0.0
+
+
+def test_arm_refusal_reason_quotes_px4_statustext(fake_pymavlink: dict[str, Any]) -> None:
+    """PX4 v1.17 explains a refused arm in STATUSTEXT, and only to a link with a ground station.
+
+    These are PX4 v1.17's texts for an arm refused by COM_ARMABLE = 0. The
+    first is exactly 50 characters (one chunk, no terminator); the second
+    is 52, so PX4 splits it in two. Both arrive after the ack.
+    """
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.ack = {400: 1}  # TEMPORARILY_REJECTED
+    _FakePX4.statustext = {
+        400: [
+            (2, "Preflight Fail: Vehicle is in safety configuration"),
+            (2, "Arming denied: Resolve system health failures first\t"),
+        ]
+    }
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == (
+        "arm_rejected: mav_result_temporarily_rejected; PX4 said: "
+        '"Preflight Fail: Vehicle is in safety configuration"; '
+        '"Arming denied: Resolve system health failures first"'
+    )
+    assert 22 not in _long_commands(fake_pymavlink)
+
+
+def test_ack_timeout_reason_quotes_px4_statustext(fake_pymavlink: dict[str, Any]) -> None:
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.ack = {22: -1}  # never acked
+    _FakePX4.statustext = {22: [(3, "an error PX4 reported instead of an ack")]}
+    result = PX4Adapter().send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == 'takeoff_rejected: ack_timeout; PX4 said: "an error PX4 reported instead of an ack"'
+
+
+def test_timeout_reason_quotes_px4_warnings_not_its_narration(fake_pymavlink: dict[str, Any]) -> None:
+    """Only STATUSTEXT of severity WARNING or worse goes into a reason; PX4's INFO lines narrate."""
+    from urml_px4_runtime import PX4Adapter
+
+    _FakePX4.climb_rate = 0.0
+    _FakePX4.statustext = {22: [(6, "an info line PX4 narrates"), (4, "a warning PX4 sent")]}
+    result = PX4Adapter(_cfg(takeoff_timeout_seconds=5.0)).send_takeoff_goal(altitude=30.0)
+    assert result.success is False
+    assert result.reason == (
+        'takeoff_timeout: relative altitude 0.0 m after 5s, target 30.0 m; PX4 said: "a warning PX4 sent"'
+    )
 
 
 def test_takeoff_arm_accepted_but_never_armed(fake_pymavlink: dict[str, Any]) -> None:
