@@ -52,13 +52,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install build twine
-      - name: Build all twenty (dependency order)
+      - name: Build all packages (dependency order)
         run: |
           set -eux
           for p in reference/validator \
                    reference/llm-bridge reference/ros2-runtime \
                    reference/ardupilot-runtime reference/autosar-runtime reference/chrono-runtime \
-                   reference/cobot-runtime reference/edu-runtime \
+                   reference/av-runtime reference/cobot-runtime reference/edu-runtime \
                    reference/embedded-runtime reference/humanoid-runtime \
                    reference/industrial-arm-runtime reference/isaac-runtime \
                    reference/legged-runtime reference/marine-runtime \
