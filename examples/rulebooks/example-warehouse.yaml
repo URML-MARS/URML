@@ -10,9 +10,9 @@
 # with --rulebook, it applies to every program, whatever profile the program
 # names.
 #
-# Draft: the format is specified in spec/layer-1-hal/rulebook.md (RFC-0702).
-# The reference validator reads rulebooks once the RFC-0702 implementation
-# lands.
+# Draft: the format is specified in spec/layer-1-hal/rulebook.md (RFC-0702)
+# and stays Draft until RFC-0702 is accepted. The reference validator reads
+# this file when an operator passes it with --rulebook.
 
 rulebook_version: "0.1"
 rulebook_id: example_logistics_operations

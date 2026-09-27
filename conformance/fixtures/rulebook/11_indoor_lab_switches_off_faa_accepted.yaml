@@ -1,0 +1,23 @@
+name: rulebook/indoor_lab_switches_off_faa_accepted
+description: >
+  A deployment rulebook that declares indoor: true switches the bundled FAA
+  rulebook off, because the FAA states that Part 107 would not apply to
+  operations conducted indoors. The 450-foot take-off is accepted, and the
+  report lists the FAA rulebook as switched off, with the reason.
+
+manifest: drone_high_ceiling
+policy: none
+profiles: [drone]
+rulebooks: [deployment_indoor_lab]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 137.16 }
+      - land: {}
+
+expected_validation:
+  accepted: true

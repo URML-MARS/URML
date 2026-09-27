@@ -1,0 +1,24 @@
+name: rulebook/capture_at_unknown_place_rejected
+description: >
+  Zone rules fail closed. The Example Logistics rulebook (fictional) forbids
+  capture in two rooms, and this program captures before it names any place,
+  so the rule cannot tell where the capture happens. It refuses the step with
+  rule.place_unknown instead of assuming the robot is elsewhere.
+
+manifest: warehouse_areas
+policy: none
+profiles: [warehouse]
+rulebooks: [example_warehouse]
+
+program:
+  profile: warehouse
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - capture: { media: photo, store_as: snapshot }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - rule.place_unknown

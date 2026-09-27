@@ -218,7 +218,7 @@ Programs for aircraft change behavior, because the FAA rulebook is on by default
 - a new warning on every aircraft validation with no deployment rulebook, because Remote ID is not declared;
 - a new `rulebooks` section with obligations in every aircraft report, pretty and JSON.
 
-Known flips, to be measured by the implementation before merge: `conformance/fixtures/fleet/08_air_vertical_separation_accepted` flies two drones at once, and `examples/fleet/crazyswarm2/` flies three. The swarm is an indoor lab setup and needs a deployment rulebook that declares `indoor: true`; the fleet fixture needs either `remote_pilots_in_command: 2` or `default_rulebooks: false`. The maintainer decides which. Byte-asserted drone transcripts change because of the added report section. `--no-default-rulebooks` restores the old behavior, with a warning.
+Known flips, measured by the implementation: `conformance/fixtures/fleet/08_air_vertical_separation_accepted` flies two drones at once, and `examples/fleet/crazyswarm2/` flies three. The swarm is an indoor lab setup and ships a deployment rulebook that declares `indoor: true`. The fleet fixture tests air deconfliction, not rulebooks, so it sets `default_rulebooks: false` (maintainer decision, 2026-09-27). `docs/demos/safety-rejection.md` Scene 3 (a return to a home point inside the spectator area) is now refused under 14 CFR 107.39, and the demo keeps that refusal (maintainer decision, 2026-09-27). The goalkeeper demo's drone landing refusal gains a second reason, and the drone striker row was re-measured. Byte-asserted drone transcripts change because of the added report section. `--no-default-rulebooks` restores the old behavior, with a warning.
 
 ## Drawbacks
 

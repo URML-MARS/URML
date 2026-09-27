@@ -2,10 +2,11 @@
 # and 14 CFR Part 89 (remote identification), the statically checkable subset.
 #
 # Status: Draft. The format is specified in spec/layer-1-hal/rulebook.md and
-# proposed by RFC-0702 (Draft). The reference validator does not read this
-# file until the RFC-0702 implementation lands. From then on it applies by
-# default to drone-profile programs and to any robot whose manifest declares
-# an aircraft drive type, and --no-policy does not switch it off.
+# proposed by RFC-0702 (Draft), and stays Draft until RFC-0702 is accepted.
+# The reference validator loads this file by default. It applies to
+# drone-profile programs and to any robot whose manifest declares an aircraft
+# drive type, and --no-policy does not switch it off. --no-default-rulebooks
+# does, with a warning.
 #
 # Sources. Every rule and obligation below was checked on 2026-09-26 against
 # the text of 14 CFR in the eCFR (Title 14 up to date as of 2026-09-24, read

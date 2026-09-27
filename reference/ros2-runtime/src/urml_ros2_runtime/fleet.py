@@ -24,7 +24,10 @@ Bypassing the validator is prohibited (CLAUDE.md safety boundary).
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from collections.abc import Sequence as SequenceABC
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -108,13 +111,19 @@ class FleetRuntime:
         member_envelopes: dict[str, dict[str, Any]] | None = None,
         profiles: tuple[str, ...] = (),
         policy: dict[str, Any] | Policy | None | Literal["DEFAULT"] = "DEFAULT",
+        *,
+        rulebooks: SequenceABC[Mapping[str, Any]] = (),
+        default_rulebooks: bool = True,
+        as_of: date | None = None,
     ) -> FleetRuntimeResult:
         """Execute a fleet program against the runtime's member adapters.
 
         ``policy`` is forwarded to the defense-in-depth re-validation, so a
         deployment can run ``--no-policy`` (``policy=None``) exactly as the
-        validator does — the no-bypass rule is about skipping validation, not
-        about the optional compliance pass.
+        validator does. The no-bypass rule is about skipping validation, not
+        about the optional compliance pass. ``rulebooks``,
+        ``default_rulebooks`` and ``as_of`` (RFC-0702, Draft) are forwarded
+        too, so the runtime judges the same rulebooks the caller did.
 
         Raises ``ValidationRejectedError`` if defense-in-depth re-validation
         rejects the program, or ``UnsupportedCompositionError`` for a node this
@@ -124,6 +133,7 @@ class FleetRuntime:
             result: ValidationResult = validate_fleet(
                 roster, member_manifests, program, member_envelopes,
                 profiles=profiles, policy=policy,
+                rulebooks=rulebooks, default_rulebooks=default_rulebooks, as_of=as_of,
             )
             if not result.accepted:
                 raise ValidationRejectedError(

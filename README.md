@@ -14,8 +14,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+"></a>
   <a href="https://pypi.org/project/urml-validator/"><img src="https://img.shields.io/pypi/v/urml-validator.svg" alt="PyPI"></a>
-  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-2516%20passing-brightgreen.svg" alt="Tests"></a>
-  <a href="conformance/"><img src="https://img.shields.io/badge/conformance-244%20fixtures-brightgreen.svg" alt="Conformance"></a>
+  <a href="docs/launch/claims-audit.md"><img src="https://img.shields.io/badge/tests-2733%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="conformance/"><img src="https://img.shields.io/badge/conformance-260%20fixtures-brightgreen.svg" alt="Conformance"></a>
   <a href="docs/rfcs/"><img src="https://img.shields.io/badge/RFCs-51%20Spec%20%2B%20610%20Outreach-blue.svg" alt="RFCs"></a>
 </p>
 
@@ -86,15 +86,15 @@ The core install omits the heavy, provider-specific LLM SDKs. To `urml translate
 
 ## What URML gives you
 
-Every `✅` below maps to a shipped file and a passing test or recorded CI run; see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-09-26 via `make audit`: **2516 passed + 38 gated-skipped** across 19 packages).
+Every `✅` below maps to a shipped file and a passing test or recorded CI run; see [`docs/launch/claims-audit.md`](docs/launch/claims-audit.md). Test counts are measured, not estimated (re-measured 2026-09-27 via `make audit`: **2733 passed + 38 gated-skipped** across 19 packages).
 
 | Capability | State |
 |---|---|
-| **Five-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 1000 unit tests |
+| **Six-pass static validator** — argument typing, capability checks, safety-envelope tightening (incl. geofence, 3D altitude bands, people-occupancy zones), rulebooks for government and company rules (RFC-0702; FAA Part 107 bundled, on by default for drones), variable-binding + cross-primitive type analysis, compliance policy | ✅ Implemented, 1175 unit tests |
 | **24 primitives** — the 12 core (`move_to`, `dock`, `hover`, `wait`, `wait_for`, `grasp`, `release`, `detect`, `scan`, `measure`, `capture`, `report`)<br>plus profile / extension verbs: home (`speak`, `listen`), drone (`take_off`, `land`, `return_to_home`), industrial (`pick_from`, `place_at`, `swap_tool`), `bimanual` (RFC-0010), `set_output` (RFC-0017), and the `av` pair `plan_path` / `follow_trajectory` (RFC-0020) | ✅ Validator + reference-runtime executors for all 24 |
 | **Compliance enforcement** — provenance schema on the manifest, a pluggable YAML policy DSL, and a bundled US-federal default policy (NDAA §889 / FY26, FCC Covered List, EO 14307, ASRA) | ✅ Implemented; `--no-policy` opt-out |
-| **LLM bridge** — provider-agnostic (Anthropic + OpenAI + Ollama + llama.cpp + EchoProvider, all first-class in the CLI); RFC-0670 speech front-end (`--audio`, whisper.cpp default); revision loop with policy-error short-circuit; home / drone / industrial / fleet few-shots | ✅ 268 unit tests |
-| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 244 fixtures (home, drone, industrial, biped, quadruped, mobile, warehouse, marine, educational, research, fleet, flexbe, av, manipulation, actuation, language, translation, licensing, compliance, deployment, social, programs) |
+| **LLM bridge** — provider-agnostic (Anthropic + OpenAI + Ollama + llama.cpp + EchoProvider, all first-class in the CLI); RFC-0670 speech front-end (`--audio`, whisper.cpp default); revision loop with policy-error short-circuit; home / drone / industrial / fleet few-shots | ✅ 277 unit tests |
+| **Conformance suite** — declarative YAML fixtures any URML-compatible runtime must pass; runnable via `urml conformance run`; the runtime contract is normatively defined in [RFC-0014](docs/rfcs/0014-substrate-conformance.md) | ✅ 260 fixtures (home, drone, industrial, biped, quadruped, mobile, warehouse, marine, educational, research, fleet, flexbe, av, manipulation, actuation, language, translation, licensing, compliance, deployment, social, programs, rulebook) |
 | **CLI** — `urml validate`, `urml execute`, `urml schema`, `urml translate`, `urml run`, `urml bench`, `urml emit-prompt`, `urml init`, `urml conformance run` | ✅ All nine subcommands |
 | **Mock reference runtime** — hermetic execution without a robot, used by the conformance suite | ✅ Implemented |
 | **Real ROS 2 adapter** (`RclpyAdapter`) — full ROSAdapter Protocol via `rclpy` (Nav2 / MoveIt 2 / vision_msgs) | ✅ Implemented; the `gazebo-e2e` job (live TurtleBot 4 + Nav2 sim) passed ×3 — [job-level, badge caveat explained](docs/launch/claims-audit.md) |

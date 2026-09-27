@@ -2,7 +2,8 @@
 
 Subcommands:
 
-  urml validate PROGRAM --manifest MANIFEST [--envelope ENVELOPE] [--profile NAME]... [--json]
+  urml validate PROGRAM --manifest MANIFEST [--envelope ENVELOPE] [--profile NAME]...
+                [--rulebook PATH]... [--no-default-rulebooks] [--json]
   urml execute PROGRAM --manifest MANIFEST [--adapter mock|ros2|px4] [...]
   urml schema --name NAME | --all --out-dir DIR
   urml translate REQUEST --manifest MANIFEST [...]
@@ -31,6 +32,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +42,7 @@ from urml_validator import validate
 from urml_validator._version import __version__
 from urml_validator.errors import ValidationError, ValidationResult
 from urml_validator.init_templates import PROJECT_TEMPLATES
+from urml_validator.rulebook_engine import bundled_rulebooks
 from urml_validator.schema_export import SCHEMA_REGISTRY, export_schema, write_schemas
 
 _SCHEMA_NAMES = frozenset(SCHEMA_REGISTRY.keys())
@@ -118,8 +121,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-policy",
         dest="no_policy",
         action="store_true",
-        help="Skip Pass 5 (compliance policy) entirely.",
+        help="Skip Pass 5 (compliance policy) entirely. Rulebooks still apply.",
     )
+    _add_rulebook_args(p_validate)
     p_validate.add_argument(
         "--json",
         dest="as_json",
@@ -214,8 +218,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-policy",
         dest="no_policy",
         action="store_true",
-        help="Skip Pass 5 (compliance policy) when re-validating before execution.",
+        help="Skip Pass 5 (compliance policy) when re-validating before execution. "
+        "Rulebooks still apply.",
     )
+    _add_rulebook_args(p_execute)
     p_execute.add_argument(
         "--json",
         dest="as_json",
@@ -240,7 +246,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--name",
         choices=sorted(_SCHEMA_NAMES),
         metavar="NAME",
-        help="Print the named schema to stdout. One of: program, manifest, envelope.",
+        help=f"Print the named schema to stdout. One of: {', '.join(SCHEMA_REGISTRY)}.",
     )
     schema_excl.add_argument(
         "--all",
@@ -317,8 +323,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-policy",
         dest="no_policy",
         action="store_true",
-        help="Skip Pass 5 (compliance policy) when validating LLM emissions.",
+        help="Skip Pass 5 (compliance policy) when validating LLM emissions. "
+        "Rulebooks still apply.",
     )
+    _add_rulebook_args(p_translate)
     _add_llm_provider_args(p_translate)
     _add_speech_args(p_translate)
     p_translate.add_argument(
@@ -414,8 +422,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-policy",
         dest="no_policy",
         action="store_true",
-        help="Skip Pass 5 (compliance policy) throughout the run.",
+        help="Skip Pass 5 (compliance policy) throughout the run. Rulebooks still apply.",
     )
+    _add_rulebook_args(p_run)
     _add_llm_provider_args(p_run)
     _add_speech_args(p_run)
     p_run.add_argument(
@@ -466,7 +475,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Run a YAML corpus of natural-language utterances through the LLM "
             "bridge against one manifest and report where each landed: accepted, "
             "honest refusal (report-only program), blocked (the safety envelope "
-            "stopped it), invalid emission, provider error, or policy block. "
+            "or a rulebook stopped it), invalid emission, provider error, or policy block. "
             "Writes a machine-readable row YAML and prints a markdown table, plus "
             "a gate table when corpus rows carry hazard labels. This is a "
             "benchmark, not a conformance test. Requires the urml-llm-bridge package."
@@ -520,8 +529,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-policy",
         dest="no_policy",
         action="store_true",
-        help="Skip Pass 5 (compliance policy) when validating emissions.",
+        help="Skip Pass 5 (compliance policy) when validating emissions. Rulebooks still apply.",
     )
+    _add_rulebook_args(p_bench)
     _add_llm_provider_args(p_bench)
     p_bench.add_argument(
         "--echo-script",
@@ -734,6 +744,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
         policy_arg = _resolve_policy_arg(args)
+        rulebooks, default_rulebooks = _resolve_rulebook_args(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
@@ -747,6 +758,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
         # RFC-0005: resolve a component's relative hbom_ref.uri against the
         # manifest file's own directory for HBOM-content policy rules.
         manifest_base_dir=Path(args.manifest).parent,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
     )
 
     if args.as_json:
@@ -771,6 +784,59 @@ def _resolve_policy_arg(args: argparse.Namespace) -> Any:
     if policy_path is None:
         return "DEFAULT"
     return _load_yaml(policy_path, kind="policy")
+
+
+def _add_rulebook_args(parser: argparse.ArgumentParser) -> None:
+    """Install the rulebook flags (RFC-0702, Draft) shared by every validating command."""
+    parser.add_argument(
+        "--rulebook",
+        dest="rulebook_paths",
+        action="append",
+        type=Path,
+        default=[],
+        metavar="PATH",
+        help=(
+            "Organization or deployment rulebook file (YAML), repeatable, applied in "
+            "order after the bundled rulebooks. --no-policy does not affect rulebooks. "
+            "See spec/layer-1-hal/rulebook.md."
+        ),
+    )
+    parser.add_argument(
+        "--no-default-rulebooks",
+        dest="no_default_rulebooks",
+        action="store_true",
+        help=(
+            "Switch off the bundled rulebooks (the statically checkable subset of "
+            "14 CFR Part 107 for aircraft). Prints a warning; the result carries "
+            "rule.defaults_disabled for each one that would have applied."
+        ),
+    )
+
+
+def _resolve_rulebook_args(args: argparse.Namespace) -> tuple[list[dict[str, Any]], bool]:
+    """Load the --rulebook files and read --no-default-rulebooks.
+
+    Returns ``(rulebooks, default_rulebooks)`` for ``validate()``. A file that
+    is missing or is not YAML is a usage error (``_CLILoadError``); a file that
+    parses but breaks the rulebook format is reported by the validator as
+    ``rule.rulebook_invalid``.
+    """
+    paths: list[Path] = list(getattr(args, "rulebook_paths", None) or [])
+    rulebooks = [_load_yaml(path, kind="rulebook") for path in paths]
+    default_rulebooks = not getattr(args, "no_default_rulebooks", False)
+    if not default_rulebooks:
+        names = ", ".join(book.rulebook_id for book in bundled_rulebooks()) or "none"
+        print(
+            "urml: warning: --no-default-rulebooks switches off the bundled rulebooks "
+            f"({names}); their rules are not checked.",
+            file=sys.stderr,
+        )
+    return rulebooks, default_rulebooks
+
+
+def _today_utc() -> date:
+    """One validation date for a command that validates twice (CLI, then runtime)."""
+    return datetime.now(UTC).date()
 
 
 # ---------------------------------------------------------------------------
@@ -1139,9 +1205,10 @@ def cmd_execute(args: argparse.Namespace) -> int:
     The runtime (``urml_ros2_runtime``) is an optional dependency of the
     validator; the import is lazy so ``urml validate`` works without it.
     The runtime then re-validates before its first adapter call, with the
-    same policy and manifest directory this command used, so ``--no-policy``
-    and ``--policy`` mean the same thing at both checks. Skipping the
-    validator is prohibited (CLAUDE.md).
+    same policy, manifest directory, rulebooks and validation date this
+    command used, so ``--no-policy``, ``--policy``, ``--rulebook`` and
+    ``--no-default-rulebooks`` mean the same thing at both checks. Skipping
+    the validator is prohibited (CLAUDE.md).
     """
     try:
         from urml_ros2_runtime import (  # type: ignore[import-not-found,unused-ignore]
@@ -1168,11 +1235,13 @@ def cmd_execute(args: argparse.Namespace) -> int:
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
         policy_arg = _resolve_policy_arg(args)
+        rulebooks, default_rulebooks = _resolve_rulebook_args(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
 
     profiles = tuple(args.profile)
+    as_of = _today_utc()
 
     # ----- Defense-in-depth validation (surfaced, with the chosen policy) -----
     result = validate(
@@ -1182,6 +1251,9 @@ def cmd_execute(args: argparse.Namespace) -> int:
         profiles=profiles,
         policy=policy_arg,
         manifest_base_dir=Path(args.manifest).parent,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        as_of=as_of,
     )
     if not result.accepted:
         if args.as_json:
@@ -1221,6 +1293,9 @@ def cmd_execute(args: argparse.Namespace) -> int:
                 profiles=profiles,
                 policy=policy_arg,
                 manifest_base_dir=Path(args.manifest).parent,
+                rulebooks=rulebooks,
+                default_rulebooks=default_rulebooks,
+                as_of=as_of,
             )
         except ValidationRejectedError as exc:
             # Should not happen: the runtime re-validates the inputs this
@@ -1445,6 +1520,7 @@ def _emit_pretty(result: ValidationResult, program_path: Path) -> None:
             print(f"  ({len(result.warnings)} warning(s))", file=out)
             for w in result.warnings:
                 _render_issue(w, stream=out, severity_label="WARN ")
+        _render_rulebooks(result, stream=out)
         return
 
     print(
@@ -1456,6 +1532,51 @@ def _emit_pretty(result: ValidationResult, program_path: Path) -> None:
         _render_issue(e, stream=err, severity_label="ERROR")
     for w in result.warnings:
         _render_issue(w, stream=err, severity_label="WARN ")
+    _render_rulebooks(result, stream=err)
+
+
+def _render_rulebooks(result: ValidationResult, *, stream: Any) -> None:
+    """The rulebooks that applied, with their obligations (RFC-0702, Draft).
+
+    Prints nothing when no rulebook applied, so output for programs no
+    rulebook covers is unchanged.
+    """
+    if not result.rulebooks:
+        return
+    print(file=stream)
+    print("  rulebooks (a program that passes is not a legal compliance determination):", file=stream)
+    for book in result.rulebooks:
+        issuer = book.issuer
+        who = issuer.get("name") or ""
+        if issuer.get("jurisdiction"):
+            who += f", {issuer['jurisdiction']}"
+        if issuer.get("kind") == "deployment":
+            print(f"    {book.rulebook_id} (deployment): {book.title}", file=stream)
+            for key, value in (book.declarations or {}).items():
+                shown = ("true" if value else "false") if isinstance(value, bool) else value
+                print(f"      declares {key}: {shown}", file=stream)
+            for exc in book.exceptions or []:
+                terms = [f"limit {exc['limit']}" if exc.get("limit") is not None else ""]
+                terms.append(f"expires {exc['expires']}" if exc.get("expires") else "")
+                shown_terms = ", ".join(t for t in terms if t)
+                print(
+                    f"      exception to {exc['rule']}{' (' + shown_terms + ')' if shown_terms else ''}: "
+                    f"{str(exc['basis']).strip()}",
+                    file=stream,
+                )
+            continue
+        if not book.applied:
+            print(f"    {book.rulebook_id}: {book.reason}", file=stream)
+            continue
+        reviewed = f", reviewed {book.reviewed}" if book.reviewed else ""
+        print(f"    {book.rulebook_id}: {book.title}", file=stream)
+        print(f"      issued by {who} ({book.source_status}{reviewed})", file=stream)
+        if book.obligations:
+            print("      obligations URML lists and does not check:", file=stream)
+            for obligation in book.obligations:
+                cite = obligation.get("cite") or {}
+                source = f"{cite['text']}: " if cite.get("text") else ""
+                print(f"        - {source}{obligation['title']}", file=stream)
 
 
 def _render_issue(
@@ -1473,10 +1594,41 @@ def _render_issue(
     print(f"    {issue.message}", file=stream)
     if issue.suggestion:
         print(f"    suggestion: {issue.suggestion}", file=stream)
-    if issue.detail:
+    if issue.detail and issue.code_str.startswith("rule."):
+        _render_rule_detail(issue.detail, stream=stream)
+    elif issue.detail:
         # Render policy-error detail in a stable, scannable shape.
         for key, value in issue.detail.items():
             print(f"    {key}: {value}", file=stream)
+
+
+def _render_rule_detail(detail: dict[str, Any], *, stream: Any) -> None:
+    """The parts of a rule.* detail an operator reads; --json carries all of it."""
+    reference = str(detail.get("rulebook_id") or "")
+    if detail.get("rule_id"):
+        reference += f"/{detail['rule_id']}"
+    issuer = detail.get("issuer") or {}
+    who = issuer.get("name") or ""
+    if issuer.get("jurisdiction"):
+        who += f", {issuer['jurisdiction']}"
+    print(f"    rule: {reference}{' (' + who + ')' if who else ''}", file=stream)
+    cite = detail.get("cite") or {}
+    if cite.get("url"):
+        print(f"    source: {cite['url']}", file=stream)
+    exception = detail.get("exception")
+    if exception:
+        # The message already names the basis; this line says whether it held.
+        state = "expired" if exception.get("expired") else (
+            "the value is above its limit" if exception.get("exceeds_limit") else "applies"
+        )
+        print(
+            f"    exception: {state} (deployment rulebook {exception.get('rulebook_id')})",
+            file=stream,
+        )
+    if detail.get("member"):
+        print(f"    member: {detail['member']}", file=stream)
+    for problem in detail.get("problems") or []:
+        print(f"    problem: {problem}", file=stream)
 
 
 def _emit_json(result: ValidationResult) -> None:
@@ -1567,6 +1719,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
             Bridge,
             BridgeClarificationNeeded,
+            BridgeDeploymentViolation,
             BridgePolicyViolation,
             BridgeRevisionExhausted,
             ProviderError,
@@ -1612,12 +1765,14 @@ def cmd_run(args: argparse.Namespace) -> int:
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
         policy_arg = _resolve_policy_arg(args)
+        rulebooks, default_rulebooks = _resolve_rulebook_args(args)
         provider = _build_provider(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
 
     profiles = tuple(args.profile)
+    as_of = _today_utc()
 
     # ----- Translate (the bridge validates every emission) -----
     bridge = Bridge(
@@ -1628,6 +1783,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         max_revisions=args.max_revisions,
         policy=policy_arg,
         clarify=args.clarify,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
+        as_of=as_of,
     )
     try:
         result = bridge.translate(
@@ -1645,6 +1803,16 @@ def cmd_run(args: argparse.Namespace) -> int:
         return 1
     except ProviderError as exc:
         print(f"urml: provider error: {exc}", file=sys.stderr)
+        return 1
+    except BridgeDeploymentViolation as exc:
+        print(
+            f"urml: run aborted after {exc.attempts} attempt(s): a rulebook needs a "
+            "deployment change (a declaration or a rulebook file); editing the program "
+            "cannot fix it.",
+            file=sys.stderr,
+        )
+        for issue in getattr(exc.last_result, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
         return 1
     except BridgePolicyViolation as exc:
         print(
@@ -1694,9 +1862,10 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
     try:
-        # The bridge validated with the chosen policy. The runtime
-        # re-validates with the same policy plus the manifest's directory,
-        # which the bridge does not have, so HBOM-content rules are read here.
+        # The bridge validated with the chosen policy and rulebooks. The
+        # runtime re-validates with the same policy and rulebooks plus the
+        # manifest's directory, which the bridge does not have, so
+        # HBOM-content rules are read here.
         runtime = URMLRuntime(adapter)
         try:
             rr = runtime.execute(
@@ -1706,6 +1875,9 @@ def cmd_run(args: argparse.Namespace) -> int:
                 profiles=profiles,
                 policy=policy_arg,
                 manifest_base_dir=Path(args.manifest).parent,
+                rulebooks=rulebooks,
+                default_rulebooks=default_rulebooks,
+                as_of=as_of,
             )
         except ValidationRejectedError as exc:
             print(
@@ -1747,6 +1919,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
         from urml_llm_bridge import (  # type: ignore[import-not-found,unused-ignore]
             Bridge,
             BridgeClarificationNeeded,
+            BridgeDeploymentViolation,
             BridgePolicyViolation,
             BridgeRevisionExhausted,
             ProviderError,
@@ -1778,6 +1951,7 @@ def cmd_translate(args: argparse.Namespace) -> int:
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
         policy_arg = _resolve_policy_arg(args)
+        rulebooks, default_rulebooks = _resolve_rulebook_args(args)
     except _CLILoadError as exc:
         print(f"urml: {exc}", file=sys.stderr)
         return 2
@@ -1797,6 +1971,8 @@ def cmd_translate(args: argparse.Namespace) -> int:
         max_revisions=args.max_revisions,
         policy=policy_arg,
         clarify=args.clarify,
+        rulebooks=rulebooks,
+        default_rulebooks=default_rulebooks,
     )
 
     # ----- Translate -----
@@ -1816,6 +1992,17 @@ def cmd_translate(args: argparse.Namespace) -> int:
         return 1
     except ProviderError as exc:
         print(f"urml: provider error: {exc}", file=sys.stderr)
+        return 1
+    except BridgeDeploymentViolation as exc:
+        print(
+            f"urml: translation stopped after {exc.attempts} attempt(s): a rulebook needs "
+            "a deployment change (a declaration or a rulebook file). Editing the URML "
+            "program cannot fix it.",
+            file=sys.stderr,
+        )
+        for issue in getattr(exc.last_result, "errors", []) or []:
+            _render_issue(issue, stream=sys.stderr, severity_label="ERROR")
+        _save_rejected_emission(args.save_rejected, exc.raw_completions, exc.attempts)
         return 1
     except BridgePolicyViolation as exc:
         print(
@@ -1914,6 +2101,7 @@ def cmd_bench(args: argparse.Namespace) -> int:
             _load_yaml(args.envelope, kind="envelope") if args.envelope is not None else None
         )
         policy_arg = _resolve_policy_arg(args)
+        rulebooks, default_rulebooks = _resolve_rulebook_args(args)
         provider = _build_bench_provider(args)
         corpora = [bench.load_corpus(p) for p in args.corpus]
     except (_CLILoadError, bench.BenchCorpusError) as exc:
@@ -1935,6 +2123,7 @@ def cmd_bench(args: argparse.Namespace) -> int:
     manifest_ref = bench.file_ref(args.manifest)
     envelope_ref = bench.file_ref(args.envelope) if args.envelope is not None else None
     script_ref = bench.file_ref(args.echo_script) if args.echo_script is not None else None
+    rulebook_refs = tuple(bench.file_ref(path) for path in args.rulebook_paths)
 
     worst_match = 1.0
     for corpus in corpora:
@@ -1946,6 +2135,8 @@ def cmd_bench(args: argparse.Namespace) -> int:
             profiles=profiles,
             max_revisions=args.max_revisions,
             policy=policy_arg,
+            rulebooks=rulebooks,
+            default_rulebooks=default_rulebooks,
         )
         row = bench.run_bench(
             bridge=bridge,
@@ -1963,6 +2154,8 @@ def cmd_bench(args: argparse.Namespace) -> int:
                 provider=args.provider,
                 model=model_id,
                 echo_script=script_ref,
+                rulebooks=rulebook_refs,
+                default_rulebooks=default_rulebooks,
             ),
         )
         out = args.out

@@ -8,11 +8,17 @@ each result's outcome, codes and attempts. It also re-hashes every input the
 row pins, so an edited manifest, envelope or striker fails here until the
 row is re-recorded. A stale number cannot stay published.
 
-Two kinds of row are not re-run:
+Three kinds of row are not re-run:
 
 - Rows tagged `pre-fix` (row id ending in `-pre-fix`). They record the gate
   before a fix landed (the committed ones: c2d251d, before the envelope
   coverage fixes in 949ce9b), and do not reproduce on later code by design.
+- Rows listed in `SUPERSEDED`. They record the gate at a commit before a
+  later spec change added checks (the 2026-09-26 drone post-fix row was
+  measured at a16a03f, before the RFC-0702 rulebook pass put the bundled FAA
+  Part 107 rulebook on by default for drones). A newer row for the same
+  striker carries the current numbers, and
+  `test_each_striker_has_a_guarded_row` keeps one there.
 - Live-model rows. Re-running one needs a provider, and a model's output is
   not deterministic. They are skipped with that reason.
 """
@@ -36,6 +42,15 @@ RESULTS = BENCH / "results"
 
 #: The `--tag` of a before-the-fix row: history, not a claim about today's gate.
 PRE_FIX_TAG = "pre-fix"
+
+#: Rows kept as history of an earlier commit and replaced by a newer row for the
+#: same striker. Each entry says why; the rows themselves stay unedited.
+SUPERSEDED: dict[str, str] = {
+    "2026-09-26-echo-echo-adversarial-drone-en-post-fix": (
+        "measured at a16a03f, before the RFC-0702 rulebook pass; the FAA Part 107 "
+        "rulebook, on by default for drones, adds rule.* stops to this corpus"
+    ),
+}
 
 #: Setup entries that pin an input file by sha256.
 PINNED_INPUTS = ("manifest", "envelope", "echo_script")
@@ -93,15 +108,22 @@ def is_scripted(row: dict[str, Any]) -> bool:
     return setup.get("provider") == "echo"
 
 
-GUARDED = sorted(name for name, row in ROWS.items() if not is_pre_fix(row))
+def is_superseded(row: dict[str, Any]) -> bool:
+    return str(row.get("row_id", "")) in SUPERSEDED
+
+
+GUARDED = sorted(
+    name for name, row in ROWS.items() if not is_pre_fix(row) and not is_superseded(row)
+)
 
 
 def input_drift(row: dict[str, Any], root: Path = REPO_ROOT) -> list[str]:
     """Pinned inputs that are missing or no longer hash to the recorded sha256."""
     drift: list[str] = []
     setup = row.get("setup") or {}
-    for name in PINNED_INPUTS:
-        ref = setup.get(name)
+    refs = [(name, setup.get(name)) for name in PINNED_INPUTS]
+    refs += [("rulebook", ref) for ref in setup.get("rulebooks") or ()]
+    for name, ref in refs:
         if ref is None:
             continue
         path = root / ref["path"]
@@ -159,6 +181,12 @@ def rerun(row: dict[str, Any], out: Path) -> dict[str, Any]:
         args.append("--no-policy")
     elif setup["policy"] != "default":
         args += ["--policy", str(REPO_ROOT / setup["policy"])]
+    # RFC-0702: the row records rulebook settings only when they differ from
+    # the defaults (no extra rulebooks, bundled rulebooks on).
+    for ref in setup.get("rulebooks") or ():
+        args += ["--rulebook", str(REPO_ROOT / ref["path"])]
+    if setup.get("default_rulebooks") is False:
+        args.append("--no-default-rulebooks")
     assert main(args) == 0
     return _load(out)
 
@@ -223,6 +251,13 @@ def test_each_striker_has_a_guarded_row(stem: str) -> None:
         if is_scripted(ROWS[name]) and (ROWS[name]["setup"]["echo_script"] or {}).get("path") == script
     ]
     assert rows, f"no committed row outside `{PRE_FIX_TAG}` was measured with {script}"
+
+
+def test_superseded_rows_exist() -> None:
+    """Every SUPERSEDED entry names a committed row, so the list cannot rot."""
+    committed = {row["row_id"] for row in ROWS.values()}
+    missing = sorted(set(SUPERSEDED) - committed)
+    assert not missing, f"SUPERSEDED names rows that are not committed: {missing}"
 
 
 def test_pre_fix_rows_are_labeled() -> None:

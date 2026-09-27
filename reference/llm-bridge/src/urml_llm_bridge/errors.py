@@ -76,6 +76,38 @@ class BridgeClarificationNeeded(BridgeError):  # noqa: N818 - names the state, n
         self.raw_completions: list[str] = raw_completions or []
 
 
+class BridgeDeploymentViolation(BridgeError):  # noqa: N818 - "Violation" reads better than "ViolationError".
+    """The validator refused the program for a reason only the deployment can fix.
+
+    Raised by ``Bridge.translate()`` when a validation result carries a
+    rulebook error whose ``detail.remediation_hint`` is ``fix_deployment``
+    (RFC-0702, Draft): a declaration the deployment rulebook must make, such
+    as the Remote ID method, or a rulebook file that breaks the format. No
+    edit to the program can resolve it, so the bridge stops at once instead of
+    spending revisions. The caller should surface ``last_result`` to the
+    operator, who fixes the deployment's rulebooks.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        last_result: object,
+        attempts: int,
+        raw_completions: list[str] | None = None,
+        attempt_codes: list[list[str]] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.last_result = last_result
+        self.attempts = attempts
+        #: Every raw model emission, in order; the last entry is the final
+        #: rejected emission.
+        self.raw_completions: list[str] = raw_completions or []
+        #: The sorted, de-duplicated error codes of each validated attempt,
+        #: in order; the last entry holds the codes that ended the loop.
+        self.attempt_codes: list[list[str]] = attempt_codes or []
+
+
 class BridgePolicyViolation(BridgeError):  # noqa: N818 - "Violation" reads better than "ViolationError".
     """The validator rejected the program for compliance-policy reasons.
 

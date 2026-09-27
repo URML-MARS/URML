@@ -1,10 +1,10 @@
 """Shape checks for the rulebook files RFC-0702 (Draft) ships.
 
-The validator does not read rulebooks yet; the implementation lands after
-RFC-0702. Until then, these tests pin the files to the format frozen in
+These tests pin the files to the format frozen in
 spec/layer-1-hal/rulebook.md: the bundled FAA rulebook's citations and unit
-conversions, the two examples, and the industrial template. The
-implementation's schema tests take over the structural checks.
+conversions, the two examples, and the industrial template. They read the
+YAML directly. The validator's own schema and the rulebook pass are tested in
+test_rulebooks.py.
 """
 
 from __future__ import annotations

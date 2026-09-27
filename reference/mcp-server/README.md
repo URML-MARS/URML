@@ -81,6 +81,8 @@ Pin them when you start the server, with env vars or the matching flags. A flag 
 | `URML_MCP_ENVELOPE` | `--envelope` | Path to the site's safety envelope |
 | `URML_MCP_PROFILES` | `--profiles` | Comma-separated profiles, for example `home` or `drone,fleet` |
 | `URML_MCP_POLICY` | `--policy` | Path to a compliance policy, `DEFAULT` for the bundled US-federal policy, or `none` |
+| `URML_MCP_RULEBOOKS` | `--rulebooks` | Rulebook files (RFC-0702, Draft), separated by the OS path separator (`;` on Windows, `:` elsewhere) |
+| `URML_MCP_DEFAULT_RULEBOOKS` | `--default-rulebooks` | `on` (the default) or `off` for the bundled rulebooks, such as the FAA Part 107 subset for aircraft |
 
 ```json
 {
@@ -106,6 +108,7 @@ What pinning does:
 - Every tool uses the pinned values, so the agent can leave them out. `urml_get_contract` lists what is pinned.
 - An agent value that differs from a pin is refused with a tool error before any runtime or adapter is built.
 - `ros2`, `px4` and `ardupilot` run only with a pinned manifest and a pinned envelope. If the profiles are not pinned, a real adapter runs with no profiles and refuses profiles from the agent.
+- Rulebooks are never agent values: no tool has an argument for them, pinned or not. A deployment rulebook can carry exceptions, so an agent that could pass one could grant itself a waiver. Every validation, and the runtime's re-validation, uses the operator's rulebooks, and the bundled rulebooks stay on unless the operator switches them off.
 
 ## Develop against a local checkout
 

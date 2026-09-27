@@ -23,8 +23,10 @@ through, its lines would say so, the tally would count the commands, and the
 exit status would be 1.
 
 Hermetic: no live model, no network, no robot, and no compliance policy
-(``policy=None``, the same as ``--no-policy``), so every stop comes from the
-manifest and the envelope. The output is deterministic.
+(``policy=None``, the same as ``--no-policy``). Every stop comes from the
+manifest and the envelope; on the drone landing, the bundled FAA Part 107
+rulebook (RFC-0702) adds a second reason, flight over people (14 CFR 107.39),
+shown as "(and 1 more)". The output is deterministic.
 ``reference/validator/tests/test_goalkeeper_example.py`` checks it byte for
 byte against the committed ``goalkeeper-transcript.txt``.
 

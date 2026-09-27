@@ -27,8 +27,8 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-09-26, on `bench/goalkeeper-striker-rows`** (branching from
-`main` commit `a16a03f`), via
+**Measured 2026-09-27, on `feat/rulebooks-impl`** (the RFC-0702 implementation,
+with `main` at `dca0112` merged in), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
 (invoke with `make audit`), with `PYTHONPATH` set to the branch's `src`
 directories. Every row was re-measured on this host. New since the 2026-08-29
@@ -38,20 +38,21 @@ camera selector (RFC-0699), the social profile with `look_at` and `gesture`
 monitorable-envelope fixtures and example (9357edb), the bench that counts
 saves and its striker corpora (c2d251d), the envelope coverage fixes (949ce9b),
 the runtime gate and goal-line lane (c7dec9b), pinned constraints on the MCP
-server (a16a03f), and the committed striker rows with their guard test
-(9636cd7, 0dc49b5). The prior measurements
-(2026-08-29: 2122 total; 2026-08-09: 1997 total; 2026-06-24: 1668 total;
+server (a16a03f), the committed striker rows with their guard test
+(9636cd7, 0dc49b5), dynamic-target grasping (RFC-0671, 9838aa0), and the
+rulebook pass with the bundled FAA Part 107 rulebook (RFC-0702). The prior
+measurements (2026-09-26: 2516 total; 2026-08-29: 2122 total; 2026-08-09: 1997 total; 2026-06-24: 1668 total;
 2026-05-20 / 2026-05-22: 244 validator, 765 total, 101 fixtures) are in git
 history.
 
 | Suite | Result |
 |---|---|
-| validator | **1000 passed** |
-| llm-bridge | **268 passed** (2 more tests need the `openai` extra, not installed on this host) |
-| ros2-runtime | **194 passed, 4 skipped** |
+| validator | **1175 passed** |
+| llm-bridge | **277 passed** (2 more tests need the `openai` extra, not installed on this host) |
+| ros2-runtime | **204 passed, 4 skipped** |
 | px4-runtime | **54 passed, 4 skipped** |
 | ardupilot-runtime | **38 passed, 9 skipped** (live smoke, bench, SITL gated) |
-| conformance | **780 passed** |
+| conformance | **803 passed** |
 | marine-runtime | **4 passed** |
 | industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **6 passed** |
@@ -65,7 +66,7 @@ history.
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
 | model | **32 passed** |
-| **Total** | **2516 passed + 38 gated-skipped** |
+| **Total** | **2733 passed + 38 gated-skipped** |
 
 The two `openai` tests (`test_providers_openai.py` and `test_speech_openai.py`,
 `test_base_url_forwarded_to_client`) fail on this host because the optional
@@ -84,19 +85,21 @@ gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **244** YAML cases under `conformance/fixtures/` (live
-count 2026-09-26): actuation 5, av 4, biped 16, compliance 5, deployment 3,
+Conformance fixtures: **260** YAML cases under `conformance/fixtures/` (live
+count 2026-09-27): actuation 5, av 4, biped 16, compliance 5, deployment 3,
 drone 34, educational 12, fleet 14, flexbe 2, home 34, industrial 57, language 5,
-licensing 3, manipulation 4, marine 1, mobile 2, programs 3, quadruped 8,
-research 1, social 9, translation 3, warehouse 19. Auto-discovered; all pass hermetically
-against `MockROSAdapter` (`urml conformance run`: 244/244 passed). The new buckets since v0.1 track the v0.2.0 surface: `fleet`
+licensing 3, manipulation 7, marine 1, mobile 2, programs 3, quadruped 8,
+research 1, rulebook 13, social 9, translation 3, warehouse 19. Auto-discovered; all pass hermetically
+against `MockROSAdapter` (`urml conformance run`: 260/260 passed). The new buckets since v0.1 track the v0.2.0 surface: `fleet`
 (RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
 `actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
 0268/0304), `compliance`/`deployment` (policy), `programs` (RFC-0616), `social`
-(RFC-0698). Of the 57 fixtures added since 2026-08-29, 46 came with the
-envelope coverage fixes (949ce9b, four of them in `social`), 5 with the social
-profile (RFC-0698), 3 with the RFC-0382 monitorable-envelope fixtures (9357edb)
-and 3 with the capture camera selector (RFC-0699).
+(RFC-0698), `rulebook` (RFC-0702). Of the 73 fixtures added since 2026-08-29,
+46 came with the envelope coverage fixes (949ce9b, four of them in `social`),
+13 with the rulebook pass (RFC-0702), 5 with the social profile (RFC-0698),
+3 with the RFC-0382 monitorable-envelope fixtures (9357edb), 3 with the
+capture camera selector (RFC-0699) and 3 with dynamic-target grasping
+(RFC-0671).
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
@@ -113,12 +116,13 @@ RFC-0385 from iceoryx). Outreach state is tracked in the
 
 ## Per-row backing
 
-**Five-pass static validator (1000 unit tests).**
-`reference/validator/src/urml_validator/validator.py` (`validate()` runs Pass
-1–5); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
-people-occupancy; Pass 4 cross-primitive type check; Pass 5 compliance policy,
-including the opt-in evidence-traceability rules (RFC-0631). Evidence: validator
-suite 1000 passed. Which envelope check runs on which primitive is in
+**Six-pass static validator (1175 unit tests).**
+`reference/validator/src/urml_validator/validator.py` (`validate()` runs the
+passes in order); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
+people-occupancy; then the rulebook pass (RFC-0702, `rulebook_engine.py`, with
+the bundled FAA Part 107 rulebook on by default for drone programs); Pass 4
+cross-primitive type check; Pass 5 compliance policy, including the opt-in
+evidence-traceability rules (RFC-0631). Evidence: validator suite 1175 passed. Which envelope check runs on which primitive is in
 [`docs/safety/envelope-coverage.md`](../safety/envelope-coverage.md).
 
 **24 primitives — validator + reference-runtime executors for all 24.** The 12
@@ -144,21 +148,21 @@ ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
 `turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
 suite.
 
-**LLM bridge (268 unit tests).**
+**LLM bridge (277 unit tests).**
 `reference/llm-bridge/`: provider-agnostic (anthropic, openai, ollama,
 llama_cpp, echo; all first-class in the CLI as of 0.4.0) plus the RFC-0670
 speech front-end (whisper.cpp, OpenAI-compatible transcription, echo);
 revision loop with `BridgePolicyViolation` short-circuit; single-robot +
 roster-aware fleet assembly (RFC-0286); the `urml bench` harness. Evidence:
-llm-bridge 268 passed (2 more need the `openai` extra; see the table note).
+llm-bridge 277 passed (2 more need the `openai` extra; see the table note).
 
-**Conformance suite (244 fixtures), `urml conformance run`, and a normative
-runtime contract.** `conformance/fixtures/**/*.yaml` = 244 cases (per-bucket
+**Conformance suite (260 fixtures), `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 260 cases (per-bucket
 counts above). [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively,
 what makes a runtime URML-compatible (manifest intake, the frozen substrate
 Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
-spec-gap loop). Evidence: `urml conformance run` reports 244/244 passed, and
-the conformance pytest suite 780 passed (parametrized over the fixtures +
+spec-gap loop). Evidence: `urml conformance run` reports 260/260 passed, and
+the conformance pytest suite 803 passed (parametrized over the fixtures +
 loader/registry/smoke).
 
 **CLI (nine subcommands).** `urml --help` →
@@ -303,15 +307,25 @@ per-primitive matrix is
 [`docs/safety/envelope-coverage.md`](../safety/envelope-coverage.md). A
 scripted striker measures the gate, not a model, and no live-model row is
 claimed. `reference/llm-bridge/tests/test_bench_results_guard.py` re-runs the
-after rows and fails when one stops reproducing or when an input it pins
+current rows and fails when one stops reproducing or when an input it pins
 changes.
+
+**Drone row with the rulebook pass (RFC-0702), measured 2026-09-27.** The
+bundled FAA Part 107 rulebook is on by default for drone programs, so the drone
+corpus was re-measured with it on:
+`bench/results/2026-09-27/2026-09-27-echo-echo-adversarial-drone-en-rulebook.yaml`.
+Envelope rows passed 0 of 14, safe controls were accepted 4 of 4, `known_gap`
+rows passed 1 of 2 (`gap_wgs84` is now stopped by `rule.place_unknown`), and
+`beyond_envelope` rows passed 2 of 2. The a16a03f drone row above stays as the
+record of that commit; the guard lists it as superseded and re-runs the new one.
 
 **Goal-line lane.** `python -m urml_conformance --goal-line` hands every
 rejected conformance fixture to the reference runtime (`URMLRuntime`, and
 `FleetRuntime` for fleet fixtures) through an adapter that records every call.
 Result with the code at a16a03f: 110/110 rejected fixtures refused, with the
 expected codes and zero adapter calls. URML sent zero commands for any of
-them. The lane is `conformance/src/urml_conformance/goal_line.py`, merged in
+them. Re-measured 2026-09-27 with the rulebook pass: 121/121, the new
+rulebook fixtures included. The lane is `conformance/src/urml_conformance/goal_line.py`, merged in
 c7dec9b.
 
 ## Re-running this audit
@@ -323,7 +337,7 @@ c7dec9b.
 python -m pytest <pkg>/tests -q --tb=no --junit-xml=j.xml
 python -c "import xml.etree.ElementTree as E;print(E.parse('j.xml').getroot().find('testsuite').attrib)"
 python -m pytest conformance/tests -q --tb=no --junit-xml=c.xml
-find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (244)
+find conformance/fixtures -name '*.yaml' | wc -l    # fixtures (260)
 ls docs/rfcs/ | grep -E '^00[0-2][0-9]'              # RFCs (exclude 0000-template)
 urml --help                                           # subcommands
 python -m urml_conformance --goal-line                # rejected fixtures send zero commands
