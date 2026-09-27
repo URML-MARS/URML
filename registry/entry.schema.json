@@ -1,0 +1,387 @@
+{
+  "$comment": "Generated from urml_conformance.registry.Entry by `python -m urml_conformance.registry schema`. Do not edit by hand.",
+  "$defs": {
+    "Compatibility": {
+      "additionalProperties": false,
+      "description": "The self-reported URML-compatible tier (spec/conformance/v0.1.0.md section 3).",
+      "properties": {
+        "profiles": {
+          "description": "The profiles whose fixtures pass with the runtime's own adapter.",
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Profiles",
+          "type": "array"
+        },
+        "report": {
+          "$ref": "#/$defs/FileRef",
+          "description": "The urml.conformance-report/1 JSON report."
+        },
+        "tier": {
+          "const": "self_reported",
+          "title": "Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier",
+        "profiles",
+        "report"
+      ],
+      "title": "Compatibility",
+      "type": "object"
+    },
+    "FieldEvidence": {
+      "additionalProperties": false,
+      "description": "A recorded run of the robot. Kinds describe what happened; they are not ranked.",
+      "properties": {
+        "by": {
+          "description": "Who ran it: a person or a project, never an email address.",
+          "minLength": 1,
+          "title": "By",
+          "type": "string"
+        },
+        "date": {
+          "description": "A quoted ISO date, YYYY-MM-DD.",
+          "title": "Date",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "hardware_run",
+            "simulation_run"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sources": {
+          "description": "Repository paths or https URLs a reader can open.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        },
+        "summary": {
+          "description": "What was run and what happened, as the sources report it.",
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "date",
+        "by",
+        "summary",
+        "sources"
+      ],
+      "title": "FieldEvidence",
+      "type": "object"
+    },
+    "FileRef": {
+      "additionalProperties": false,
+      "description": "A repository file pinned by its sha256.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "Lowercase hex sha256 of the file's bytes.",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "FileRef",
+      "type": "object"
+    },
+    "RecordInputs": {
+      "additionalProperties": false,
+      "description": "The inputs every validation record was judged against.",
+      "properties": {
+        "default_rulebooks": {
+          "default": true,
+          "title": "Default Rulebooks",
+          "type": "boolean"
+        },
+        "envelope": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Envelope"
+        },
+        "manifest": {
+          "title": "Manifest",
+          "type": "string"
+        },
+        "policy": {
+          "default": "none",
+          "description": "`none`, `default` (the bundled policy), or a repository path to a policy file.",
+          "title": "Policy",
+          "type": "string"
+        },
+        "rulebooks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rulebooks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "manifest"
+      ],
+      "title": "RecordInputs",
+      "type": "object"
+    },
+    "Robot": {
+      "additionalProperties": false,
+      "description": "The robot the entry is about.",
+      "properties": {
+        "class": {
+          "description": "What kind of robot, in a few words (for example: multirotor aircraft).",
+          "minLength": 1,
+          "title": "Class",
+          "type": "string"
+        },
+        "maker": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Who makes the robot, when there is one maker to name.",
+          "title": "Maker"
+        },
+        "manifest": {
+          "description": "The robot's URML capability manifest, a repository path.",
+          "title": "Manifest",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "class",
+        "manifest"
+      ],
+      "title": "Robot",
+      "type": "object"
+    },
+    "Runtime": {
+      "additionalProperties": false,
+      "description": "The software that runs URML programs on the robot.",
+      "properties": {
+        "adapter": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z_][A-Za-z0-9_.]*:[A-Za-z_][A-Za-z0-9_.]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The runtime's adapter factory as module:attribute, as `--adapter` takes it.",
+          "title": "Adapter"
+        },
+        "package": {
+          "description": "A distribution name (for example urml-ardupilot-runtime), or a repository path for an example.",
+          "minLength": 1,
+          "title": "Package",
+          "type": "string"
+        },
+        "substrate": {
+          "description": "What the runtime drives: an autopilot, an SDK, a middleware.",
+          "minLength": 1,
+          "title": "Substrate",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "package",
+        "version",
+        "substrate"
+      ],
+      "title": "Runtime",
+      "type": "object"
+    },
+    "ValidationRecords": {
+      "additionalProperties": false,
+      "description": "A file of urml.validation-record/1 lines, pinned and replayable.",
+      "properties": {
+        "inputs": {
+          "$ref": "#/$defs/RecordInputs"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "Lowercase hex sha256 of the file's bytes.",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "summary": {
+          "description": "How and when the records were produced, and what they show.",
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "summary",
+        "inputs"
+      ],
+      "title": "ValidationRecords",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One registry entry: registry/entries/<id>.yaml.",
+  "properties": {
+    "compatibility": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Compatibility"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "field_evidence": {
+      "items": {
+        "$ref": "#/$defs/FieldEvidence"
+      },
+      "title": "Field Evidence",
+      "type": "array"
+    },
+    "id": {
+      "description": "Lowercase words joined by hyphens; the file name.",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "last_verified": {
+      "description": "A quoted ISO date, YYYY-MM-DD.",
+      "title": "Last Verified",
+      "type": "string"
+    },
+    "limits": {
+      "description": "What the listing does not show. Every entry states at least one limit.",
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Limits",
+      "type": "array"
+    },
+    "listed": {
+      "description": "A quoted ISO date, YYYY-MM-DD.",
+      "title": "Listed",
+      "type": "string"
+    },
+    "profiles": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Profiles",
+      "type": "array"
+    },
+    "registry_version": {
+      "const": "1",
+      "title": "Registry Version",
+      "type": "string"
+    },
+    "robot": {
+      "$ref": "#/$defs/Robot"
+    },
+    "runtime": {
+      "$ref": "#/$defs/Runtime"
+    },
+    "status": {
+      "enum": [
+        "listed",
+        "withdrawn"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "submitted_by": {
+      "description": "A person or project name, never an email address.",
+      "minLength": 1,
+      "title": "Submitted By",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "validation_records": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ValidationRecords"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "registry_version",
+    "id",
+    "title",
+    "status",
+    "listed",
+    "last_verified",
+    "submitted_by",
+    "robot",
+    "runtime",
+    "profiles",
+    "limits"
+  ],
+  "title": "Entry",
+  "type": "object"
+}
