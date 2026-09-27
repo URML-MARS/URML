@@ -34,11 +34,14 @@
 # build-only `make px4_sitl_default` (on v1.17, `DONT_RUN=1 make px4_sitl
 # sihsim_quadx` still starts the pxh shell and exits with an error), and
 # `sleep infinity | HEADLESS=1 make px4_sitl sihsim_quadx` to boot (the
-# pipe keeps the pxh shell's stdin open). The clone, venv and build steps
-# were rehearsed from scratch in WSL2 on 2026-09-27. A GitHub runner can
-# still differ: every diagnostic (SITL log, pytest output, PX4 ULog) is
-# uploaded on `always()`, so treat the first run as the calibration run,
-# exactly as the ros2-integration gazebo-e2e job was treated.
+# pipe keeps the pxh shell's stdin open). The steps were rehearsed from
+# scratch in WSL2 on 2026-09-27, from the clone to the stop, and the
+# fixture flew (see the sitl-runs record with "heartbeat" in its name);
+# only apt ran without sudo, and the GitHub-only env and upload steps did
+# not run. A GitHub runner can still differ: every diagnostic (SITL log,
+# pytest output, PX4 ULog) is uploaded on `always()`, so treat the first
+# run as the calibration run, exactly as the ros2-integration gazebo-e2e
+# job was treated.
 
 name: px4-integration
 

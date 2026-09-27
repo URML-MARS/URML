@@ -162,6 +162,8 @@ report = runner.run()
 
 **Verified in simulation (2026-09-27):** the e2e test passed locally in WSL2 against PX4 v1.17.0 SITL (SIH quadrotor), and PX4's own log shows the arm, the take-off, the return to launch, the landing and the disarm; the witness measured a highest relative altitude of 31.79 m for the 30 m take-off and a closest approach of 0.92 m to the waypoint. The record is [`tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md`](tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih.md). An earlier version of the same test also passed, in 2.37 s, while the adapter counted acks as success and the simulated vehicle never armed; that result does not count as a flight. The CI job has not run.
 
+**With the ground-station heartbeat (2026-09-27):** the same test passed again with the heartbeat running (a highest relative altitude of 31.778 m, a closest approach of 0.95 m), PX4 sent its STATUSTEXT to the adapter's link during the flight, and PX4 logged "Connection to ground station lost" after the adapter closed. A no-flight probe got `arm_rejected: mav_result_temporarily_rejected; PX4 said: "Arming denied: Resolve system health failures first"` from a take-off requested before PX4 was ready, saw `wait_for(emergency_stop)` time out on a healthy vehicle, and saw it fire on `MAV_STATE_FLIGHT_TERMINATION` after a flight termination commanded on the ground. The record is [`tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md`](tests/integration/sitl-runs/2026-09-27-px4-v1.17.0-sih-heartbeat.md).
+
 **Landed since v0.1:**
 - `CompositeAdapter` for stacks that pair PX4 with a ROS 2 companion (see above).
 - Geofence polygon-containment, 3D altitude bands, and people-occupancy zones in the safety-envelope pass (validator Pass 3).
