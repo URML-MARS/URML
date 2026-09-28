@@ -58,6 +58,8 @@ SUITES: list[tuple[str, Path]] = [
     ("autosar-runtime", REPO / "reference" / "autosar-runtime"),
     ("av-runtime", REPO / "reference" / "av-runtime"),
     ("model", REPO / "reference" / "model"),
+    ("chrono-runtime", REPO / "reference" / "chrono-runtime"),
+    ("mcp-server", REPO / "reference" / "mcp-server"),
 ]
 
 # Match pytest's summary line: "234 passed in 3.78s",
