@@ -2,7 +2,7 @@
 rfc: 0702
 title: Rulebooks, the file for government and company operating rules
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-09-26
 updated: 2026-09-26
 supersedes: none
