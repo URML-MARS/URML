@@ -27,79 +27,87 @@ what URML has shipped; outreach commitments tracks what URML has promised in
 public threads. Both are derivative views of `main`; both should be re-checked
 before any public update.
 
-**Measured 2026-09-27, on `feat/rulebooks-impl`** (the RFC-0702 implementation,
-with `main` at `dca0112` merged in), via
+**Measured 2026-09-28, on `chore/audit-refresh-openai-skip`** (`main` at
+`a191d75` plus this change), via
 [`tools/scripts/refresh_audit.py`](../../tools/scripts/refresh_audit.py)
 (invoke with `make audit`), with `PYTHONPATH` set to the branch's `src`
-directories. Every row was re-measured on this host. New since the 2026-08-29
-measurement: the Microduck adapter in `edu-runtime` (0569e50), the capture
-camera selector (RFC-0699), the social profile with `look_at` and `gesture`
-(RFC-0698), `urml bench` (a97a175), clarify mode (RFC-0700), the RFC-0382
-monitorable-envelope fixtures and example (9357edb), the bench that counts
-saves and its striker corpora (c2d251d), the envelope coverage fixes (949ce9b),
-the runtime gate and goal-line lane (c7dec9b), pinned constraints on the MCP
-server (a16a03f), the committed striker rows with their guard test
-(9636cd7, 0dc49b5), dynamic-target grasping (RFC-0671, 9838aa0), and the
-rulebook pass with the bundled FAA Part 107 rulebook (RFC-0702). The prior
-measurements (2026-09-26: 2516 total; 2026-08-29: 2122 total; 2026-08-09: 1997 total; 2026-06-24: 1668 total;
-2026-05-20 / 2026-05-22: 244 validator, 765 total, 101 fixtures) are in git
-history.
+directories. Every row was re-measured on this host, and every package with a
+test suite is now a row: `av-runtime` is new, and the script now also runs
+`chrono-runtime` and `mcp-server`, which it skipped before. New since the
+2026-09-27 measurement: the STREL compile target for monitorable envelopes
+(7af25a0), the RFC-0684 aerial-delivery extension (e87d2e9) and the ArduPilot
+payload-release adapter (353155f), the validation-record evidence log
+(e3b4bbf), the robot registry and its submission flow (bc4c490, 5720ab5,
+f03e245), PX4 flight confirmed by telemetry in SITL (9530a2f) and the PX4
+ground-station heartbeat (5709b39), drive/turn and speak/listen conformance
+coverage (ec5f72e), a research-profile example (29b4363), the adapter keyword
+fixes and honest `scan` refusals with their guard test (2c64018), the GoPiGo3
+relative-motion adapter (2c49e18), and the Autoware runtime (7eda4ac) with its
+MCP wiring (a191d75). The prior measurements (2026-09-27: 2733 total;
+2026-09-26: 2516 total; 2026-08-29: 2122 total; 2026-08-09: 1997 total;
+2026-06-24: 1668 total; 2026-05-20 / 2026-05-22: 244 validator, 765 total, 101
+fixtures) are in git history.
 
 | Suite | Result |
 |---|---|
-| validator | **1175 passed** |
-| llm-bridge | **277 passed** (2 more tests need the `openai` extra, not installed on this host) |
-| ros2-runtime | **204 passed, 4 skipped** |
-| px4-runtime | **54 passed, 4 skipped** |
-| ardupilot-runtime | **38 passed, 9 skipped** (live smoke, bench, SITL gated) |
-| conformance | **803 passed** |
+| validator | **1214 passed** |
+| llm-bridge | **282 passed** |
+| ros2-runtime | **216 passed, 4 skipped** |
+| px4-runtime | **103 passed, 4 skipped** |
+| ardupilot-runtime | **45 passed, 9 skipped** (live smoke, bench, SITL gated) |
+| conformance | **889 passed** |
 | marine-runtime | **4 passed** |
-| industrial-arm-runtime | **65 passed, 1 skipped** (16 brand adapters parameterized) |
+| industrial-arm-runtime | **81 passed, 1 skipped** (16 brand adapters parameterized) |
 | legged-runtime | **6 passed** |
-| humanoid-runtime | **4 passed** |
+| humanoid-runtime | **5 passed** |
 | mobile-runtime | **4 passed** |
 | opcua-runtime | **4 passed, 3 skipped** |
-| cobot-runtime | **12 passed, 2 skipped** (8 brand adapters parameterized) |
+| cobot-runtime | **20 passed, 2 skipped** (8 brand adapters parameterized) |
 | mujoco-runtime | **10 passed, 4 skipped** |
 | embedded-runtime | **4 passed, 3 skipped** |
-| edu-runtime | **28 passed, 2 skipped** (7 platform adapters) |
+| edu-runtime | **31 passed, 2 skipped** (8 platform adapters) |
 | isaac-runtime | **5 passed, 3 skipped** |
 | autosar-runtime | **4 passed, 3 skipped** |
+| av-runtime | **8 passed** |
 | model | **32 passed** |
-| **Total** | **2733 passed + 38 gated-skipped** |
+| chrono-runtime | **10 passed, 3 skipped** |
+| mcp-server | **100 passed, 1 skipped** (the skipped module needs the optional `mcp` SDK) |
+| **Total** | **3077 passed + 42 skipped** |
 
-The two `openai` tests (`test_providers_openai.py` and `test_speech_openai.py`,
-`test_base_url_forwarded_to_client`) fail on this host because the optional
-`openai` package is absent; the llm-bridge row counts only what passed. Two
-newer packages, `chrono-runtime` and `mcp-server`, have suites that the audit
-script does not run yet, so the total leaves them out.
+No suite had a failure. The two `openai` base-URL tests in llm-bridge now run
+without the optional `openai` package, through a stand-in module, so the row
+counts them. The script now reports a suite with any failure as a failure, with
+no number: it used to read "2 failed, 280 passed" as 280 passed. This
+measurement first found `conformance` failing on `main`, because the GoPiGo3
+relative-motion adapter (3baa782) merged after the adapter keyword fix
+(422b5ee) without its keywords; this change fixes the adapter.
 
-The 38 skips are live integration tests, gated behind per-runtime environment
-flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` / `URML_PX4_SITL` /
-`URML_ARDUPILOT_INTEGRATION` / `URML_ARDUPILOT_BENCH` / `URML_ARDUPILOT_SITL` /
-`URML_OPCUA_INTEGRATION` / `URML_COBOT_INTEGRATION` / `URML_MUJOCO_INTEGRATION`
-/ `URML_EMBEDDED_INTEGRATION` / `URML_EDU_INTEGRATION` /
-`URML_ISAAC_INTEGRATION` / `URML_AUTOSAR_INTEGRATION`, plus the industrial-arm
-sim flag) — no rclpy/sim/SITL/vendor-SDK on a dev box. They are *run* by the
+Of the 42 skips, 41 are live integration tests, gated behind per-runtime
+environment flags (`URML_ROS2_INTEGRATION` / `URML_GAZEBO_E2E` /
+`URML_PX4_SITL` / `URML_ARDUPILOT_INTEGRATION` / `URML_ARDUPILOT_BENCH` /
+`URML_ARDUPILOT_SITL` / `URML_OPCUA_INTEGRATION` / `URML_COBOT_INTEGRATION` /
+`URML_MUJOCO_INTEGRATION` / `URML_EMBEDDED_INTEGRATION` /
+`URML_EDU_INTEGRATION` / `URML_ISAAC_INTEGRATION` / `URML_AUTOSAR_INTEGRATION`
+/ `URML_CHRONO_INTEGRATION`, plus the industrial-arm sim flag), because a dev
+box has no rclpy, simulator, SITL or vendor SDK. The other is the
+`mcp-server` module that needs the optional `mcp` SDK. The live tests are *run* by the
 gated CI workflows (`*-integration.yml`, workflow_dispatch + weekly cron), each
 of which carries a top-of-file honesty note: the first run of any live e2e is a
 calibration run, not a regression signal.
 
-Conformance fixtures: **260** YAML cases under `conformance/fixtures/` (live
-count 2026-09-27): actuation 5, av 4, biped 16, compliance 5, deployment 3,
-drone 34, educational 12, fleet 14, flexbe 2, home 34, industrial 57, language 5,
+Conformance fixtures: **269** YAML cases under `conformance/fixtures/` (live
+count 2026-09-28): actuation 5, av 4, biped 16, compliance 5, deployment 3,
+drone 38, educational 15, fleet 14, flexbe 2, home 36, industrial 57, language 5,
 licensing 3, manipulation 7, marine 1, mobile 2, programs 3, quadruped 8,
 research 1, rulebook 13, social 9, translation 3, warehouse 19. Auto-discovered; all pass hermetically
-against `MockROSAdapter` (`urml conformance run`: 260/260 passed). The new buckets since v0.1 track the v0.2.0 surface: `fleet`
+against `MockROSAdapter` (`urml conformance run`: 269/269 passed). The new buckets since v0.1 track the v0.2.0 surface: `fleet`
 (RFC-0286/0290/0291), `av` (RFC-0020), `manipulation` (RFC-0010/0586),
 `actuation` (RFC-0017), `language`/`translation`/`licensing` (RFC-0260/0262/
 0268/0304), `compliance`/`deployment` (policy), `programs` (RFC-0616), `social`
-(RFC-0698), `rulebook` (RFC-0702). Of the 73 fixtures added since 2026-08-29,
-46 came with the envelope coverage fixes (949ce9b, four of them in `social`),
-13 with the rulebook pass (RFC-0702), 5 with the social profile (RFC-0698),
-3 with the RFC-0382 monitorable-envelope fixtures (9357edb), 3 with the
-capture camera selector (RFC-0699) and 3 with dynamic-target grasping
-(RFC-0671).
+(RFC-0698), `rulebook` (RFC-0702). Of the 9 fixtures added since 2026-09-27,
+4 came with the RFC-0684 aerial-delivery extension (1e6109c, all in `drone`)
+and 5 with the drive/turn and speak/listen coverage closure (916263d, 3 in
+`educational` and 2 in `home`).
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
@@ -116,13 +124,13 @@ RFC-0385 from iceoryx). Outreach state is tracked in the
 
 ## Per-row backing
 
-**Six-pass static validator (1175 unit tests).**
+**Six-pass static validator (1214 unit tests).**
 `reference/validator/src/urml_validator/validator.py` (`validate()` runs the
 passes in order); `errors.py` `ErrorCode` namespaces. Pass 3 geofence / 3D-altitude /
 people-occupancy; then the rulebook pass (RFC-0702, `rulebook_engine.py`, with
 the bundled FAA Part 107 rulebook on by default for drone programs); Pass 4
 cross-primitive type check; Pass 5 compliance policy, including the opt-in
-evidence-traceability rules (RFC-0631). Evidence: validator suite 1175 passed. Which envelope check runs on which primitive is in
+evidence-traceability rules (RFC-0631). Evidence: validator suite 1214 passed. Which envelope check runs on which primitive is in
 [`docs/safety/envelope-coverage.md`](../safety/envelope-coverage.md).
 
 **24 primitives — validator + reference-runtime executors for all 24.** The 12
@@ -148,21 +156,21 @@ ACCEPTED; `unitree_quadruped_denied` / `hesai_lidar_denied` /
 `turtlebot4_home_dji_vendor` remain rejected. All exercised by the conformance
 suite.
 
-**LLM bridge (277 unit tests).**
+**LLM bridge (282 unit tests).**
 `reference/llm-bridge/`: provider-agnostic (anthropic, openai, ollama,
 llama_cpp, echo; all first-class in the CLI as of 0.4.0) plus the RFC-0670
 speech front-end (whisper.cpp, OpenAI-compatible transcription, echo);
 revision loop with `BridgePolicyViolation` short-circuit; single-robot +
 roster-aware fleet assembly (RFC-0286); the `urml bench` harness. Evidence:
-llm-bridge 277 passed (2 more need the `openai` extra; see the table note).
+llm-bridge 282 passed.
 
-**Conformance suite (260 fixtures), `urml conformance run`, and a normative
-runtime contract.** `conformance/fixtures/**/*.yaml` = 260 cases (per-bucket
+**Conformance suite (269 fixtures), `urml conformance run`, and a normative
+runtime contract.** `conformance/fixtures/**/*.yaml` = 269 cases (per-bucket
 counts above). [RFC-0014](../rfcs/0014-substrate-conformance.md) defines, normatively,
 what makes a runtime URML-compatible (manifest intake, the frozen substrate
 Protocol, validate-before-actuate, offline, the zero-ROS acid test, the
-spec-gap loop). Evidence: `urml conformance run` reports 260/260 passed, and
-the conformance pytest suite 803 passed (parametrized over the fixtures +
+spec-gap loop). Evidence: `urml conformance run` reports 269/269 passed, and
+the conformance pytest suite 889 passed (parametrized over the fixtures +
 loader/registry/smoke).
 
 **CLI (nine subcommands).** `urml --help` →
@@ -184,8 +192,8 @@ unrelated, pre-calibration `rclpy-smoke` job failed (fixed in #45); only run
 proving job is green ×3," verifiable with `gh run view <id> --json jobs`, not
 "the workflow is green ×3."
 
-**PX4 / MAVLink reference runtime (`PX4Adapter`) — 54 tests, zero ROS.**
-`reference/px4-runtime/` — full Protocol via `pymavlink`. Evidence: 54 passed,
+**PX4 / MAVLink reference runtime (`PX4Adapter`) — 103 tests, zero ROS.**
+`reference/px4-runtime/`: full Protocol via `pymavlink`. Evidence: 103 passed,
 4 skipped (gated SITL/live).
 
 **PX4 SITL end-to-end: flown locally 2026-09-27, not in CI.**
@@ -214,7 +222,7 @@ yet. No hardware flight is claimed.
 
 **ArduPilot / MAVLink reference runtime (`ArduCopterAdapter`) — bench-verified
 on physical hardware, no flight claimed.** `reference/ardupilot-runtime/`
-(RFC-0041 implemented for Copter). Evidence: the hermetic suite (38 passed,
+(RFC-0041 implemented for Copter). Evidence: the hermetic suite (45 passed,
 9 gated-skipped) plus a bench run on 2026-08-29 against a Pixhawk-class board
 running ArduCopter 4.6.3 over USB, propellers off: the read-only probe
 identified the board, `urml execute --adapter ardupilot` ran the

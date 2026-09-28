@@ -58,6 +58,8 @@ SUITES: list[tuple[str, Path]] = [
     ("autosar-runtime", REPO / "reference" / "autosar-runtime"),
     ("av-runtime", REPO / "reference" / "av-runtime"),
     ("model", REPO / "reference" / "model"),
+    ("chrono-runtime", REPO / "reference" / "chrono-runtime"),
+    ("mcp-server", REPO / "reference" / "mcp-server"),
 ]
 
 # Match pytest's summary line: "234 passed in 3.78s",
@@ -98,11 +100,27 @@ def run_suite(label: str, cwd: Path):
         )
     except subprocess.TimeoutExpired:
         return ("fail", "timed out after 600 s")
-    out = (proc.stdout or "") + "\n" + (proc.stderr or "")
+    return classify((proc.stdout or "") + "\n" + (proc.stderr or ""), proc.returncode)
+
+
+# pytest's summary names failures and collection errors before the passes:
+# "2 failed, 280 passed in 19.45s", "1 error, 40 passed in 1.10s".
+# "xfailed" (an expected failure) does not match.
+_FAILURES = re.compile(r"\b\d+\s+(?:failed|errors?)\b")
+
+
+def classify(out: str, returncode: int):
+    """Turn one suite's pytest output into the outcome tuple run_suite returns."""
     tail = out[-4000:]
     matches = list(_SUMMARY.finditer(tail))
     if matches:
         last = matches[-1]
+        start = tail.rfind("\n", 0, last.start()) + 1
+        end = tail.find("\n", last.end())
+        summary = tail[start : end if end != -1 else len(tail)].strip(" =")
+        if _FAILURES.search(summary):
+            # A suite with failures has no number to publish, however many passed.
+            return ("fail", summary[:140])
         passed = int(last.group(1))
         skipped = int(last.group(2)) if last.group(2) else 0
         return ("ok", passed, skipped, last.group(0).strip())
@@ -117,7 +135,7 @@ def run_suite(label: str, cwd: Path):
     if "no tests ran" in tail or "collected 0 items" in tail:
         return ("env", "no tests collected (package not installed?)")
     last_line = next((ln for ln in reversed(tail.splitlines()) if ln.strip()), "")
-    return ("fail", f"rc={proc.returncode}; {last_line.strip()[:140]}")
+    return ("fail", f"rc={returncode}; {last_line.strip()[:140]}")
 
 
 def read_audit_baseline() -> dict[str, tuple[int, int]]:
@@ -243,7 +261,7 @@ def main() -> int:
             print(f"| {label} | **{passed} passed** |")
     print(
         f"| **Total** | **{paste_total_passed} passed + "
-        f"{paste_total_skipped} gated-skipped** |"
+        f"{paste_total_skipped} skipped** |"
     )
     if unmeasurable:
         print()
