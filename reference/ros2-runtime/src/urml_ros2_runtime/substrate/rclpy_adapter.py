@@ -46,10 +46,12 @@ URML on-error policy is well-positioned to handle.
 
 from __future__ import annotations
 
+import math
 import threading
 from contextlib import suppress
 from typing import Any, Literal
 
+from urml_ros2_runtime.scan_plan import Region, ScanPlan, ScanPlanError, coverage, plan_scan, resolve_area
 from urml_ros2_runtime.substrate.adapter_config import AdapterConfig
 from urml_ros2_runtime.substrate.base import (
     CaptureResult,
@@ -73,6 +75,30 @@ DEFAULT_TOPIC_TIMEOUT_SECONDS = 5.0
 """Default wait for a single message on a topic (detection, sensor,
 audio). Each method can override per-call via its `timeout_seconds`
 argument when URML provides one."""
+
+# action_msgs/msg/GoalStatus values, fixed by the ROS 2 action design. A
+# result arrives for every finished goal, aborted and canceled ones too;
+# only SUCCEEDED means the action did what it was asked.
+_GOAL_STATUS_SUCCEEDED = 4
+_GOAL_STATUS_REASONS = {5: "goal_canceled", 6: "goal_aborted"}
+
+# Navigation failures that end a scan at once: every later waypoint would
+# fail the same way. Any other failure skips that waypoint.
+_SCAN_FATAL_NAVIGATION = frozenset({"server_unavailable", "goal_rejected"})
+
+
+def _goal_status_reason(status: Any, result: Any) -> str:
+    """The failure reason for a goal that finished without SUCCEEDED.
+
+    Nav2 (Jazzy) results carry an ``error_code`` and ``error_msg``; when
+    present they follow the status.
+    """
+    reason = _GOAL_STATUS_REASONS.get(status, f"goal_status_{status}")
+    code = getattr(result, "error_code", None)
+    if code:
+        message = getattr(result, "error_msg", "") or ""
+        reason += f" (error_code {code}{': ' + message if message else ''})"
+    return reason
 
 
 def _require_rclpy() -> Any:
@@ -158,8 +184,10 @@ class RclpyAdapter:
         """Common send-and-wait scaffolding for action clients.
 
         Returns ``(success, reason, result)``. ``result`` is the action's
-        typed result object (or None on failure). Timeouts and server
-        unavailability translate into clean failure tuples; only
+        typed result object (or None when none arrived). A goal succeeds
+        only when its final status is SUCCEEDED; an aborted or canceled
+        goal is a failure with that status as the reason. Timeouts and
+        server unavailability translate into clean failure tuples; only
         unrecoverable substrate errors propagate.
         """
         server_wait = timeout_seconds or DEFAULT_ACTION_TIMEOUT_SECONDS
@@ -175,6 +203,9 @@ class RclpyAdapter:
         wrapped = result_future.result()
         if wrapped is None:
             return False, "no_result", None
+        status = getattr(wrapped, "status", None)
+        if status != _GOAL_STATUS_SUCCEEDED:
+            return False, _goal_status_reason(status, wrapped.result), wrapped.result
         return True, None, wrapped.result
 
     def _subscribe_once(
@@ -283,10 +314,14 @@ class RclpyAdapter:
         msg.pose.position.x = float(target_pose.get("x", 0.0))
         msg.pose.position.y = float(target_pose.get("y", 0.0))
         msg.pose.position.z = float(target_pose.get("z", 0.0))
-        # Yaw → quaternion is normally a small helper; we leave w=1 (no
-        # rotation) when yaw isn't supplied. Real deployments often have
-        # a tf2 conversion utility for this.
-        msg.pose.orientation.w = 1.0
+        # A heading is a rotation about z: the quaternion (0, 0, sin(yaw/2),
+        # cos(yaw/2)). Without one, w=1 faces +x in the target frame.
+        yaw = target_pose.get("yaw")
+        if yaw is not None:
+            msg.pose.orientation.z = math.sin(float(yaw) / 2.0)
+            msg.pose.orientation.w = math.cos(float(yaw) / 2.0)
+        else:
+            msg.pose.orientation.w = 1.0
 
         goal = NavigateToPose.Goal()
         goal.pose = msg
@@ -454,17 +489,133 @@ class RclpyAdapter:
         media: Literal["photo", "video", "sensor_only"],
         sensor: str | None,
     ) -> ScanResult:
-        # A scan is waypoints plus a capture at each one. Expanding the area
-        # into waypoints, following them with Nav2 and capturing at each is
-        # not written yet; reporting success here would claim an area was
-        # covered when the robot never moved.
-        return ScanResult(
-            success=False,
-            reason=(
-                "scan_not_implemented: RclpyAdapter does not yet expand an area "
-                "into waypoints with a capture at each one"
-            ),
+        """Survey ``area``: drive to each waypoint of the pattern with Nav2 and take a reading there.
+
+        The waypoints come from ``urml_ros2_runtime.scan_plan``. At each one the
+        adapter sends a NavigateToPose goal facing the next waypoint and, once
+        Nav2 reports it SUCCEEDED, reads the camera (``media: photo``) or
+        ``/sensor/<sensor>`` (``media: sensor_only``). A waypoint Nav2 aborts,
+        or where the reading fails, is skipped and listed under ``skipped``;
+        Nav2 being unavailable ends the scan. The scan succeeds when at least
+        one sample was taken, and ``coverage`` is the share of the area the
+        taken samples' footprints cover. No anomaly detector is wired, so
+        ``anomalies`` stays empty.
+        """
+        if media == "video":
+            return ScanResult(
+                success=False,
+                reason=(
+                    "scan_video_not_supported: recording along the path needs a recorder (rosbag2) this "
+                    "adapter does not start; scan with media photo or sensor_only"
+                ),
+            )
+        if media == "sensor_only" and not sensor:
+            return ScanResult(
+                success=False,
+                reason="scan_sensor_required: media sensor_only reads /sensor/<name>; name the sensor",
+            )
+        settings = self._config.scan
+        regions = {
+            name: Region(frame=region.frame, polygon=tuple(region.polygon))
+            for name, region in self._config.region_to_polygon.items()
+        }
+        try:
+            frame, polygon = resolve_area(area, regions=regions, default_frame=settings.frame)
+            plan = plan_scan(
+                polygon,
+                frame=frame,
+                pattern=pattern,
+                overlap=overlap,
+                swath=settings.swath_m,
+                max_waypoints=settings.max_waypoints,
+            )
+        except ScanPlanError as exc:
+            return ScanResult(success=False, reason=f"scan_{exc}")
+
+        samples: list[dict[str, Any]] = []
+        skipped: list[dict[str, Any]] = []
+        for index, waypoint in enumerate(plan.waypoints):
+            pose: dict[str, float] = {"x": waypoint.x, "y": waypoint.y, "yaw": waypoint.yaw}
+            if altitude is not None:
+                pose["z"] = float(altitude)
+            nav = self.send_navigation_goal(pose=pose, frame=plan.frame)
+            if not nav.success:
+                reason = nav.reason or "navigation_failed"
+                if reason in _SCAN_FATAL_NAVIGATION:
+                    return ScanResult(
+                        success=False,
+                        reason=f"scan_navigation_unavailable: waypoint {index}: {reason}",
+                        payload=self._scan_payload(plan, samples, skipped),
+                    )
+                skipped.append({"index": index, "pose": pose, "reason": reason})
+                continue
+            reading = self._scan_reading(media, sensor)
+            if isinstance(reading, str):
+                skipped.append({"index": index, "pose": pose, "reason": reading})
+                continue
+            samples.append(
+                {"index": index, "pose": pose, "frame": plan.frame, "timestamp": self._now_seconds(), **reading}
+            )
+
+        payload = self._scan_payload(plan, samples, skipped)
+        if not samples:
+            return ScanResult(
+                success=False,
+                reason=f"scan_no_samples: none of the {len(plan.waypoints)} waypoints produced a reading",
+                payload=payload,
+            )
+        return ScanResult(success=True, payload=payload)
+
+    def _scan_reading(self, media: str, sensor: str | None) -> dict[str, Any] | str:
+        """One reading at the current waypoint: the sample fields, or a failure reason."""
+        if media == "sensor_only":
+            if not sensor:
+                return "scan_sensor_required"
+            measurement = self.take_measurement(what=sensor, target=None, sensor=sensor)
+            if not measurement.success or measurement.payload is None:
+                return measurement.reason or "no_reading"
+            return {
+                "reading": {
+                    "sensor": sensor,
+                    "value": measurement.payload["value"],
+                    "unit": measurement.payload["unit"],
+                }
+            }
+        capture = self.capture_media(
+            media="photo", target=None, duration_seconds=None, attributes=None, camera=sensor
         )
+        if not capture.success or capture.payload is None:
+            return capture.reason or "no_image"
+        return {
+            "media": {
+                "type": "photo",
+                "uri": capture.payload["uri"],
+                "format": capture.payload["format"],
+                "frame": capture.payload["frame"],
+            }
+        }
+
+    def _scan_payload(
+        self, plan: ScanPlan, samples: list[dict[str, Any]], skipped: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """The ``store_as`` binding: ``samples``, ``coverage`` and ``anomalies`` (Layer 2 §2.9), plus the plan."""
+        centres = [(sample["pose"]["x"], sample["pose"]["y"]) for sample in samples]
+        return {
+            "samples": samples,
+            "coverage": round(coverage(plan.polygon, centres, plan.swath), 3),
+            "anomalies": [],
+            "sample_count": len(samples),
+            "waypoints": len(plan.waypoints),
+            "skipped": skipped,
+            "pattern": plan.pattern,
+            "frame": plan.frame,
+            "area_m2": round(plan.area_m2, 3),
+            "spacing_m": round(plan.step, 3),
+            "swath_m": plan.swath,
+        }
+
+    def _now_seconds(self) -> float:
+        return float(self._node.get_clock().now().nanoseconds) / 1e9
 
     def take_measurement(
         self,
@@ -518,16 +669,15 @@ class RclpyAdapter:
             }
             return CaptureResult(success=True, payload=payload)
 
-        # Video: v0.1 records a single frame and returns a stub URI.
-        # rosbag2 integration lives in a follow-up.
-        payload = {
-            "type": "video",
-            "format": (attributes or {}).get("format", "default"),
-            "pose": {"x": 0.0, "y": 0.0},
-            "frame": "map",
-            "uri": f"rosbag2://urml_capture/{duration_seconds or 0.0}s",
-        }
-        return CaptureResult(success=True, payload=payload)
+        # Video needs a recorder (rosbag2) this adapter does not start yet. It
+        # used to return a rosbag2:// URI with no recording behind it.
+        return CaptureResult(
+            success=False,
+            reason=(
+                "video_capture_not_supported: recording needs rosbag2, which this adapter does not "
+                "start; capture a photo instead"
+            ),
+        )
 
     # ------------------------------------------------------------------
     # Wait / report
