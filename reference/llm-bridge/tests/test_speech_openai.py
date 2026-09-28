@@ -6,7 +6,8 @@ the transcription request and returning a canned response.
 
 from __future__ import annotations
 
-from types import SimpleNamespace
+import sys
+from types import ModuleType, SimpleNamespace
 from typing import Any
 
 import pytest
@@ -77,7 +78,10 @@ def test_base_url_forwarded_to_client(monkeypatch: pytest.MonkeyPatch) -> None:
         recorded.update(kwargs)
         return _FakeOpenAIClient(text="ok")
 
-    monkeypatch.setattr("openai.OpenAI", _fake_openai)
+    # A stand-in module, so the test runs with or without the optional openai SDK.
+    sdk = ModuleType("openai")
+    sdk.OpenAI = _fake_openai  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "openai", sdk)
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     OpenAISpeechProvider(base_url="http://127.0.0.1:1234/v1")
     assert recorded["base_url"] == "http://127.0.0.1:1234/v1"
