@@ -2,7 +2,7 @@
 rfc: 0699
 title: A `camera` selector for the `capture` primitive
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-09-18
 updated: 2026-09-18
 supersedes: —
