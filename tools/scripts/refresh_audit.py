@@ -261,7 +261,7 @@ def main() -> int:
             print(f"| {label} | **{passed} passed** |")
     print(
         f"| **Total** | **{paste_total_passed} passed + "
-        f"{paste_total_skipped} gated-skipped** |"
+        f"{paste_total_skipped} skipped** |"
     )
     if unmeasurable:
         print()
