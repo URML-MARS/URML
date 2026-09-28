@@ -78,7 +78,7 @@ _DEFAULT_RULEBOOKS_ENV = "URML_MCP_DEFAULT_RULEBOOKS"
 _EVIDENCE_LOG_ENV = "URML_MCP_EVIDENCE_LOG"
 
 #: Every adapter ``execute_program`` accepts. All but ``mock`` drive hardware.
-_ADAPTERS: tuple[str, ...] = ("mock", "ros2", "px4", "ardupilot")
+_ADAPTERS: tuple[str, ...] = ("mock", "ros2", "px4", "ardupilot", "autoware")
 
 #: How many validator errors a rejection message quotes.
 _MAX_ERRORS_SHOWN = 5
@@ -564,7 +564,7 @@ def execute_program(
     """Execute a validated URML program against a substrate adapter.
 
     ``adapter`` is ``"mock"`` (default, hermetic, touches no hardware),
-    ``"ros2"``, ``"px4"``, or ``"ardupilot"``. The real adapters need their
+    ``"ros2"``, ``"px4"``, ``"ardupilot"``, or ``"autoware"``. The real adapters need their
     runtime, the ``URML_MCP_ALLOW_REAL_EXECUTE`` opt-in, and a manifest and an
     envelope pinned by the operator: the agent's own manifest or envelope never
     unlocks them. On a real adapter the agent does not pick the profiles
@@ -581,7 +581,9 @@ def execute_program(
     """
     pins = pinned if pinned is not None else Pinned()
     if adapter not in _ADAPTERS:
-        raise ValueError(f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', or 'ardupilot')")
+        raise ValueError(
+            f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', 'ardupilot', or 'autoware')"
+        )
     if adapter != "mock":
         _require_real_adapter_pins(adapter, pins)
         if pins.profiles is None and _profiles_tuple(profiles):
@@ -652,7 +654,7 @@ def _build_runtime(adapter: str, *, evidence_log: Path | None = None) -> tuple[A
     """Construct (runtime, cleanup-callables) for the chosen adapter.
 
     Mirrors the CLI's adapter selection. ``mock`` is always available;
-    ``ros2``, ``px4`` and ``ardupilot`` are gated behind
+    ``ros2``, ``px4``, ``ardupilot`` and ``autoware`` are gated behind
     ``URML_MCP_ALLOW_REAL_EXECUTE`` and their respective runtime dependencies.
     ``execute_program`` also requires the operator's pinned manifest and
     envelope before it gets here. ``evidence_log`` is handed to the runtime,
@@ -667,8 +669,10 @@ def _build_runtime(adapter: str, *, evidence_log: Path | None = None) -> tuple[A
 
         return URMLRuntime(MockROSAdapter(), evidence_log=evidence_log), cleanup
 
-    if adapter not in {"ros2", "px4", "ardupilot"}:
-        raise ValueError(f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', or 'ardupilot')")
+    if adapter not in {"ros2", "px4", "ardupilot", "autoware"}:
+        raise ValueError(
+            f"unknown adapter: {adapter!r} (expected 'mock', 'ros2', 'px4', 'ardupilot', or 'autoware')"
+        )
 
     if not _real_execute_allowed():
         raise PermissionError(
@@ -714,6 +718,32 @@ def _build_runtime(adapter: str, *, evidence_log: Path | None = None) -> tuple[A
         if callable(ap_close):
             cleanup.append(ap_close)
         return URMLRuntime(ap_adapter, evidence_log=evidence_log), cleanup
+
+    if adapter == "autoware":
+        try:
+            import rclpy  # type: ignore[import-not-found,unused-ignore]
+        except ImportError as exc:
+            raise RuntimeError(
+                "the autoware adapter requires a ROS 2 + Autoware environment (rclpy is not "
+                "importable). Source a ROS 2/Autoware install on Linux, or use adapter='mock'."
+            ) from exc
+        try:
+            from urml_av_runtime import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+                AutowareAdapter,
+                load_av_config,
+            )
+        except ImportError as exc:
+            raise RuntimeError(
+                "the autoware adapter requires urml-av-runtime "
+                "(pip install urml-av-runtime), plus a reachable Autoware stack."
+            ) from exc
+
+        av_config = load_av_config(Path(config_path)) if config_path else None
+        rclpy.init()
+        cleanup.append(rclpy.shutdown)
+        av_adapter = AutowareAdapter(av_config)
+        cleanup.append(av_adapter.close)
+        return URMLRuntime(av_adapter, evidence_log=evidence_log), cleanup
 
     # adapter == "px4"
     try:
