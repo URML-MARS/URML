@@ -44,7 +44,7 @@ dependencies = [
 # RTX host (the manifesto's no-cloud rule holds — we never call a
 # remote service).
 sim = [
-  "isaacsim>=4,<5",
+  "isaacsim>=4,<6",
 ]
 dev = [
   "pytest>=8",
