@@ -8,7 +8,8 @@
   PetoiAdapter         — Petoi Bittle X / Bittle / Nybble Q via the OpenCat skill library.
   MicroduckAdapter     — Pollen Robotics / Hugging Face Microduck via its JSON-RPC contract.
   CircuitPythonAdapter — Adafruit CircuitPython (Python on MCU) via a host-side comms bridge.
-  (+ EduConfig, BRAND_ADAPTERS, load_edu_config)
+  ReachyMiniAdapter    — Pollen / Hugging Face Reachy Mini expressive gaze + gesture (RFC-0698 ExpressionAdapter).
+  (+ EduConfig, ReachyConfig, BRAND_ADAPTERS, load_edu_config)
 
 The classroom/maker adoption flywheel (RFC-0011). Each platform's
 native SDK is imported lazily by its adapter (the marine/cobot
@@ -38,6 +39,7 @@ from urml_edu_runtime.adapter import (
     load_edu_config,
 )
 from urml_edu_runtime.microduck import MicroduckAdapter
+from urml_edu_runtime.reachy import ReachyConfig, ReachyMiniAdapter
 
 BRAND_ADAPTERS = {
     "vex": VexV5Adapter,
@@ -60,6 +62,8 @@ __all__ = [
     "LegoSpikeAdapter",
     "MicroduckAdapter",
     "PetoiAdapter",
+    "ReachyConfig",
+    "ReachyMiniAdapter",
     "RoboticalMartyAdapter",
     "ThymioAdapter",
     "VexV5Adapter",
