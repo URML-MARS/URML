@@ -36,7 +36,7 @@ CN_MANIFEST = HOME / "red-mug.cn-critical.manifest.yaml"
 
 ALLOW_REAL = "URML_MCP_ALLOW_REAL_EXECUTE"
 PIN_ENV_VARS = ("URML_MCP_MANIFEST", "URML_MCP_ENVELOPE", "URML_MCP_PROFILES", "URML_MCP_POLICY")
-REAL_ADAPTERS = ("ros2", "px4", "ardupilot")
+REAL_ADAPTERS = ("ros2", "px4", "ardupilot", "autoware")
 
 # 4 N is inside the manifest's 5 N gripper limit and above the envelope's 3 N
 # cap, so only the envelope can reject it.
