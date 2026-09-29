@@ -111,9 +111,9 @@ and 5 with the drive/turn and speak/listen coverage closure (916263d, 3 in
 
 **Spec vs Outreach RFCs.** The `docs/rfcs/` dir mixes two kinds, distinguished
 by the Kind column in [`docs/rfcs/README.md`](../rfcs/README.md). **Spec RFCs**
-(51 as of 2026-07-17: 8 Accepted, 37 Implemented, 5 Draft, 1 Open) change
+(63 as of 2026-09-29: 8 Accepted, 48 Implemented, 6 Draft, 1 Open) change
 URML's normative surface — Layer-N schemas, primitives, the policy mechanism,
-profiles. **Outreach RFCs** (the large remainder of the ~662 total docs) are per-target
+profiles. **Outreach RFCs** (the large remainder of the 693 total docs) are per-target
 request-for-comment documents that explicitly propose zero spec change ("No spec
 change is proposed here") and live in the RFC dir for discoverability. The
 shipped surface above is the Spec RFCs' result; Outreach RFCs add per-target
@@ -273,9 +273,10 @@ sentences. No physical flight claimed.
 **CompositeAdapter.** `reference/px4-runtime/.../composite.py` — per-method
 routing across a flight + companion backend. Evidence: px4-runtime suite.
 
-**Twelve further reference runtimes — hermetic-tested, live CI gated (no
-hardware claim).** Beyond ROS 2 and PX4, `main` ships:
-`marine-runtime` (BlueROV2/ArduSub MAVLink), `industrial-arm-runtime`
+**Fourteen further reference runtimes — hermetic-tested, live CI gated (no
+hardware claim).** Beyond ROS 2, PX4 and ArduPilot, `main` ships:
+`av-runtime` (Autoware, RFC-0020; below), `chrono-runtime` (Project Chrono
+simulator), `marine-runtime` (BlueROV2/ArduSub MAVLink), `industrial-arm-runtime`
 (16 brand adapters across ROS-Industrial + MoveIt 2: ABB / FANUC / KUKA /
 YASKAWA / UR / Franka / Kawasaki / Stäubli / Comau / Mitsubishi Electric /
 Denso / Hyundai / Nachi / Epson / Omron / Hanwha), `legged-runtime`
@@ -286,6 +287,8 @@ TMflow, Kinova Kortex, Mecademic mecademicpy, Neura neurapy, Kassow kassow-py;
 RFC-0017 spec-gap), `mujoco-runtime` (simulator — pure Protocol proof),
 `embedded-runtime` (micro:bit/Arduino over serial; RFC-0018 spec-gap),
 `edu-runtime` (VEX V5, LEGO SPIKE via Pybricks, Thymio via Aseba TDM,
+Petoi, CircuitPython, GoPiGo3 (RFC-0630 relative motion), Microduck, Reachy
+Mini (RFC-0698 expression, hermetic only),
 **`RoboticalMartyAdapter` graduated 2026-05-27 to production**: real-`martypy`
 API-surface CI gate in `.github/workflows/marty-real-integration.yml` +
 richer arg-passing dispatch via `EduSkillCall`; hardware-in-the-loop still
@@ -293,29 +296,28 @@ the documented next gate per `docs/launch/outreach-commitments.md` —
 RFC-0011 educational flywheel; RFC-0073 the engagement record),
 `isaac-runtime` (NVIDIA Isaac Sim/Lab — local
 RTX/Omniverse host, **not** cloud), `autosar-runtime` (AUTOSAR Adaptive
-scaffold, RFC-0019 Draft). **Honest scope:** each ships a hermetic unit suite
+scaffold, RFC-0019). **Honest scope:** each ships a hermetic unit suite
 that passes today (counts in the table above; vendor SDKs are lazy, so suites
 run with the SDK absent) and a gated `*-integration.yml` whose live e2e is an
 explicit calibration placeholder that fails loudly until wired — exactly the
 PX4-SITL posture. These prove *our code* across the substrate set and the
 zero-ROS acid test (RFC-0014); they are **not** hardware-verification claims.
 Each carries a `SPEC-GAPS.md` recording anything the substrate needed that
-URML cannot express, promoted to a Draft RFC (0015/0016/0017/0018/0019/0020)
+URML cannot express, promoted to an RFC (0015 through 0020)
 rather than silently bolted on.
 
-**Autoware AV — manifest+spec only (RFC-0020 Draft).** The
-`autoware_av_research` manifest validates under the existing `research`
-profile; there is **no** `reference/autoware-runtime/` package. RFC-0020
-proposes two new primitives (`plan_path`, `follow_trajectory`) and an `av`
-profile + hd_map/odd/mrm manifest blocks — none ratified, so this follows the
-no-SDK-humanoid precedent (Optimus/Figure/Apollo/NEO/Ghost). A green adapter
-will land only after RFC-0020 + the new primitives ratify.
+**Autoware AV: `av-runtime` (RFC-0020, Implemented).** RFC-0020 added the
+`plan_path` and `follow_trajectory` primitives, the `av` profile and the
+hd_map/odd/mrm manifest blocks. `reference/av-runtime/` ships
+`AutowareAdapter`, the first real trajectory adapter, and the MCP server's
+execute path uses it (#774, #775). Evidence: av-runtime suite (8 passed,
+hermetic). No vehicle run is claimed.
 
 **RFCs 0001–0020.** `docs/rfcs/`. States are tracked per-RFC header
-(RFC-0001 §Lifecycle is authoritative). 0015/0016/0017/0018 are the Drafts
-the substrate work surfaced; 0014 (substrate conformance) defines the runtime
-contract above; 0019 (AUTOSAR binding) and 0020 (Autoware AV substrate) are
-the latest Drafts. No primitive or schema changed without an accepted RFC.
+(RFC-0001 §Lifecycle is authoritative). 0015 through 0018 are the RFCs
+the substrate work surfaced (0015 Open, 0016 through 0018 Implemented); 0014
+(substrate conformance) defines the runtime contract above; 0019 (AUTOSAR
+binding) and 0020 (Autoware AV substrate) are Implemented. No primitive or schema changed without an accepted RFC.
 
 ## Striker and goal-line evidence
 
