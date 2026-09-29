@@ -1,0 +1,25 @@
+name: drone/wait_in_flight_rejected
+description: >
+  RFC-0701 §4.4: a `wait` that runs while the aircraft is airborne (after a
+  `take_off`, before the next `land` or `return_to_home`) is rejected; `hover`
+  is the verb that holds position aloft. The drone profile has always prohibited
+  a `wait` in flight in prose, but no error code existed. The RFC-0684 nav-state
+  walk tracks airborne state, so Pass 3 now rejects with envelope.wait_in_flight.
+  No envelope is needed: the check is nav-state based, not a numeric cap.
+
+manifest: drone_civilian
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - wait: { duration: 5.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.wait_in_flight

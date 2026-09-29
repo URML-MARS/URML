@@ -1,0 +1,22 @@
+name: drone/hover_in_flight_positive
+description: >
+  RFC-0701 §4.4 companion to the wait-in-flight rejection: `hover` is the verb
+  that holds position in the air, so the same take_off / hold / land shape is
+  accepted when the hold is a `hover` rather than a `wait`. Confirms the
+  wait-in-flight check does not over-fire on a legitimate airborne hold.
+
+manifest: drone_civilian
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - hover: { duration: 5.0 }
+      - land: {}
+
+expected_validation:
+  accepted: true

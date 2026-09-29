@@ -1,0 +1,27 @@
+name: drone/return_to_home_speed_exceeded_rejected
+description: >
+  RFC-0701 §4.1: a declared `return_to_home` speed must be at or below the
+  strictest speed cap. §3.5 listed only the return altitude, so the validator
+  only checked the altitude; the return `speed` was never compared. The strictest
+  cap here is the envelope's 10 m/s (below the manifest's 15 m/s); the program
+  returns at 14 m/s. Pass 3 rejects with envelope.velocity_exceeded attributed
+  to `return_to_home`. The altitude is omitted (substrate default), so only the
+  speed check fires.
+
+manifest: drone_civilian
+envelope: drone_low_ceiling
+profiles: [drone]
+
+program:
+  profile: drone
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - take_off: { altitude: 20.0 }
+      - return_to_home: { speed: 14.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.velocity_exceeded

@@ -1,0 +1,24 @@
+name: educational/drive_speed_over_cap_rejected
+description: >
+  RFC-0701 §4.1: a declared `drive` speed must be at or below the strictest of
+  mobility.max_velocity and envelope.max_velocity. RFC-0630 gave `drive` a
+  `speed`; the envelope pass now compares it, reusing envelope.velocity_exceeded
+  (the check move_to already had). The buggy's mobility cap is 0.30 m/s; the
+  program drives at 1.0 m/s. The consuming node (RFC-0518) still enforces the
+  base twist bounds; this catches the static over-cap declaration first.
+
+manifest: educational_buggy
+profiles: [educational]
+
+program:
+  profile: educational
+  behavior:
+    type: sequence
+    on_error: abort_and_report
+    steps:
+      - drive: { distance: 0.3, speed: 1.0 }
+
+expected_validation:
+  accepted: false
+  error_codes:
+    - envelope.velocity_exceeded
