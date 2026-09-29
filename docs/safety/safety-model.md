@@ -35,7 +35,7 @@ its own:
 |---|---|---|
 | Capability manifest | What the robot can do | The robot's maker or integrator |
 | Deployment envelope | What this site allows physically: force, speed and altitude caps, geofences, people-occupancy zones | The site operator |
-| Rulebook ([RFC-0702](../rfcs/0702-rulebooks.md), Draft) | What law and company policy allow | A regulator, a company, or the operator |
+| Rulebook ([RFC-0702](../rfcs/0702-rulebooks.md)) | What law and company policy allow | A regulator, a company, or the operator |
 
 The compliance policy is operator input too. It judges what the robot is made
 of, not what it does, so this page leaves it out.
@@ -283,7 +283,7 @@ write it somewhere else.
 ## Rulebooks
 
 The envelope holds a site's physical limits. Law and company policy go in a
-rulebook ([RFC-0702](../rfcs/0702-rulebooks.md), Draft): a regulator's or a
+rulebook ([RFC-0702](../rfcs/0702-rulebooks.md)): a regulator's or a
 company's rules as flat entries, each with its citation, checked in a
 validator pass after the envelope. A refusal names the rule it enforces. The
 bundled rulebook covers the statically checkable subset of 14 CFR Part 107 and

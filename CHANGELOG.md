@@ -20,11 +20,66 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
-### Changed — `urml translate` and `urml run` carry the request into `description`
+Work on `main` since 0.4.0, not yet cut into a release. The packages on `main` still carry version 0.4.0. PyPI serves 0.4.0 of `urml-validator`, `urml-llm-bridge`, and `urml-ardupilot-runtime` (uploaded 2026-09-10), and those builds predate most of the work below. The other packages install from source; install every URML package from the same source, because a runtime built from `main` needs the validator from `main`.
+
+### Added: ArduPilot reference runtime
+
+- `urml-ardupilot-runtime` (`ArduCopterAdapter`): ArduCopter over MAVLink through pymavlink, no ROS (#720). On a Pixhawk-class board with ArduCopter 4.6.3, on USB with propellers off (2026-08-29), the bench-battery program ran to success. The bench-hop program passed the validator and the autopilot's own pre-arm checks refused to arm; URML reported the autopilot's reason and stopped. No free flight on hardware is claimed.
+- ArduCopter SITL (Copter-4.6.3, run locally): the flight-only conformance fixture, the site-photogrammetry example and the parcel-delivery example passed, 3 of 3 (#721). The run surfaced one defect: ArduCopter 4.6 rejects the MAVLink winch deliver and retract actions, so the adapter uses relative-length control. On 2026-08-30 the programs Gemini 2.5 Pro emitted through the LLM bridge for the two flight-test sentences flew unchanged on the same SITL (#724).
+- Payload release through winch and latch (RFC-0684, #771).
+
+### Added: first real adapters for four more kinds of behavior
+
+- Trajectory: `urml-av-runtime` ships `AutowareAdapter`, the first real `plan_path` / `follow_trajectory` adapter (RFC-0020, #774), wired into the MCP server's execute path (#775).
+- Expression: `ReachyMiniAdapter` in the edu runtime, the first real expression adapter (RFC-0698, #777). Hermetic tests only; it has not run on a robot yet.
+- Relative motion: `GoPiGo3Adapter` in the edu runtime, the first real `drive` / `turn` runtime (RFC-0630, #773).
+- Arm: the Spot adapter gains grasp and release behind `arm_attached`, with a Spot-with-Arm manifest (#700). The `capture` primitive gains a camera selector (RFC-0699, #740).
+- `MicroduckAdapter` for the Hugging Face duck over its JSON-RPC contract, with the velocity cap held to the policy's training range (#727, #728).
+
+### Added: rulebooks (RFC-0702)
+
+- A rulebook pass for government and company rules (#756, #759). The bundled rulebook, the statically checkable subset of 14 CFR Part 107, applies to drone programs by default. `--no-policy` does not switch it off; `--no-default-rulebooks` does, with a warning. `--rulebook PATH` adds an organization or deployment rulebook. 13 conformance fixtures under `conformance/fixtures/rulebook/`; spec text in `spec/layer-1-hal/rulebook.md`.
+
+### Added: validation records and the registry
+
+- `--evidence-log PATH` appends one validation record per verdict, accepted or refused, with content digests, at every entry point (#762). Opt-in and local.
+- `registry/`: a public registry of robots and runtimes validated with URML, submitted by pull request and checked by `python -m urml_conformance.registry check` (#764). Three entries: ArduCopter on a Pixhawk-class board, the GoPiGo3 example adapter, and PX4 in SITL (#766). A compatibility claim covers a whole profile (#767). Rendered at https://urml.dev/registry.
+
+### Added: `urml bench` and clarify mode
+
+- `urml bench` measures how well a model speaks URML, with starter corpora, adversarial corpora, a scripted worst-case striker, and a gate table per row (#743, #751).
+- Clarify mode: with `--clarify`, `urml translate` and `urml run` let the model ask one clarifying question instead of guessing. Default off, experimental. Its Spec RFC (RFC-0700) is proposed and not yet merged (#746).
+
+### Added: safety model and the goalkeeper
+
+- `docs/safety/safety-model.md` and `docs/safety/envelope-coverage.md`: what the validator checks for each primitive, and what it cannot see (#752, #758).
+- `examples/goalkeeper/`: a scripted compromised model against three robots; every attack refused, no command sent (#754). Worst-case striker rows: 21 of 40 attacks got through before the fixes, 0 of 40 after, with 12 of 12 safe controls still accepted (#755).
+- A goal-line conformance lane: every rejected fixture is refused with zero adapter calls (#750).
+- The MCP server pins manifest, envelope, profiles and policy per server (#749).
+- A STREL compile target for monitorable envelopes; RFC-0667 and RFC-0668 move to Implemented (#760). Dynamic-target grasping (RFC-0671, #753).
+
+### Added: examples
+
+- A learned ExecuTorch policy behind the runtime shield (#688), a Decart Oasis world-model rehearsal (#680), Unitree G1 whole-body (#690), URDF to manifest (#678), MTConnect `MOVE_MATERIAL` lowered to a UR arm (#697), a physical-AI safety-eval harness over Anthropic's Model Hardware Standard (#705), and Times Square geocoding with NYC and FAA rules (#722).
+
+### Fixed: the PX4 adapter flies the program
+
+- The adapter treated every `COMMAND_ACK` as success, so a SITL test could pass while the vehicle stayed on the ground. Each flight primitive is now confirmed from PX4 telemetry (#765). The adapter sends a ground-station heartbeat, and a refused command carries PX4's own reason (#769). Recorded SITL runs, local and not in CI: `reference/px4-runtime/tests/integration/sitl-runs/`.
+- `scan` no longer reports success with made-up results, and grasp and capture calls no longer raise TypeErrors, across the reference adapters (#772).
+
+### Added: ROS 2 `scan` through Nav2
+
+- `RclpyAdapter` runs a `scan` step as a real scan plan through Nav2 (#783). Run locally against Nav2's loopback simulator (real planner, controller and behavior tree over a kinematic robot, no physics), not in CI: one validated `scan` step drove Nav2 to all nine waypoints of a serpentine over a 2 m square, a listen-only witness saw the robot within 0.23 m of every waypoint, and a goal off the map came back as `goal_aborted` instead of a success. Record: `reference/ros2-runtime/tests/integration/nav2-runs/2026-09-29-nav2-loopback-scan.md`.
+
+### Removed: the Moltbook agent
+
+- RFC-0640, its ledger, and `tools/moltbook/` are gone (#781). The channel drew no response in seven weeks. The venue-neutral agent guide, `docs/integrations/urml-for-ai-agents.md`, stays. RFC numbering keeps a gap at 0640.
+
+### Changed: `urml translate` and `urml run` carry the request into `description`
 
 - The emitted program's existing optional top-level `description` now holds the sentence (or the spoken transcript) it was translated from, placed right after `profile`. A description the model wrote itself is kept. Runtimes can print it next to the lowered calls; the GoPiGo3 example does, as `prompted by:`. No schema change (Discussion #597).
 
-### Fixed — GoPiGo3 example
+### Fixed: GoPiGo3 example
 
 - `wait` is honored. The adapter takes a `wait` clock (default `time.sleep`) and the runner gates it exactly like speech: `--execute` holds the robot for the declared duration, a dry run records `time.sleep(N)` in the plan and never blocks. The report line now shows the duration (Discussion #600, Issue #592).
 - PR and issue templates link `CONTRIBUTING.md`, `CLAUDE.md`, and `MANIFESTO.md` by absolute URL. Relative links do not resolve from a PR or issue page (Discussion #604).

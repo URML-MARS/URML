@@ -34,7 +34,7 @@ Optionally point `URML_MCP_ADAPTER_CONFIG` at an adapter-config YAML. Every exec
 
 ## Use it now, from GitHub (no PyPI needed)
 
-The server runs today, straight from source. The PyPI packages are not published yet (they ship with the 0.2.0 release), so install the server together with its three dependencies from their git subdirectories in a single `pip install`. Passing all four URLs at once lets the `>=0.2.0` version pins resolve against these git builds instead of PyPI:
+The server runs today, straight from source. `urml-mcp-server` is not on PyPI yet, and the `urml-validator` 0.4.0 build on PyPI predates code the server imports (a mixed install fails with `No module named 'urml_validator.evidence'`). Install the server together with its three dependencies from their git subdirectories in a single `pip install`, so all four come from the same source:
 
 ```bash
 python -m venv .urml-mcp
@@ -67,7 +67,7 @@ Point the client at the `urml-mcp` command (stdio transport), using the absolute
 
 Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`) take that shape as-is; VS Code (`.vscode/mcp.json`) uses the same fields under a top-level `servers` key instead of `mcpServers`. The agent then holds the five URML tools: it emits URML, the server validates and runs it.
 
-Once the 0.2.0 release is on PyPI, the four git URLs collapse to `pip install urml-mcp-server`.
+Once `urml-mcp-server` and a release that carries this code are on PyPI, the four git URLs collapse to `pip install urml-mcp-server`.
 
 ## Pin the deployment
 
