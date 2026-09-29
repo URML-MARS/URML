@@ -20,7 +20,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
-Work on `main` since 0.4.0, not yet cut into a release. The packages on `main` still carry version 0.4.0. PyPI serves 0.4.0 of `urml-validator`, `urml-llm-bridge`, and `urml-ardupilot-runtime` (uploaded 2026-09-10), and those builds predate most of the work below. The other packages install from source; install every URML package from the same source, because a runtime built from `main` needs the validator from `main`.
+Work on `main` since 0.4.0, not yet cut into a release. The packages on `main` still carry version 0.4.0. PyPI serves 0.4.0 of `urml-validator`, `urml-llm-bridge`, and four runtimes (`urml-ardupilot-runtime`, `urml-autosar-runtime`, `urml-chrono-runtime`, `urml-cobot-runtime`), uploaded 2026-09-10, and those builds predate most of the work below. The other packages, including `urml-ros2-runtime` (the mock runtime), `urml-px4-runtime` and `urml-mcp-server`, install from source; install every URML package from the same source, because a runtime built from `main` needs the validator from `main`.
 
 ### Added: ArduPilot reference runtime
 
