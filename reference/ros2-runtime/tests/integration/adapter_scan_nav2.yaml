@@ -1,0 +1,19 @@
+# Deployment-side adapter config for the scan end-to-end test
+# (test_scan_nav2_e2e.py) against Nav2's loopback simulation.
+#
+# The scan area is a literal bounding box in the program, read in
+# scan.frame. A sample covers a 1 m square (the test camera has no real
+# footprint), so a 2 m x 2 m area at 0.3 overlap is nine stops.
+
+ros2_namespace: ""
+
+action_servers:
+  navigate_to_pose: /navigate_to_pose
+
+perception:
+  image_topic: /camera/image_raw
+
+scan:
+  swath_m: 1.0
+  max_waypoints: 50
+  frame: map

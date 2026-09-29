@@ -8,9 +8,11 @@ Read from source, so no adapter package, SDK or optional extra is imported:
   grasp through them raised TypeError until 2026-09-27.
 - A method that forwards to the same method on another adapter passes on every
   keyword it accepts. ``CompositeAdapter`` dropped ``arm`` and ``camera``.
-- Only the conformance mock reports a scan as done. A scan is waypoints plus a
-  capture at each one, and no adapter here implements that; eleven reported
-  success anyway until 2026-09-27.
+- Only an adapter that performs a scan reports one as done. A scan is
+  waypoints plus a reading at each one; eleven adapters reported success
+  without either until 2026-09-27. ``RclpyAdapter`` performs it (Nav2 to each
+  waypoint of ``urml_ros2_runtime.scan_plan``, then a photo or a sensor
+  reading), and the conformance mock simulates it.
 """
 
 from __future__ import annotations
@@ -23,8 +25,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RUNTIME = REPO_ROOT / "reference" / "ros2-runtime" / "src" / "urml_ros2_runtime"
 SEARCHED = (REPO_ROOT / "reference", REPO_ROOT / "examples", REPO_ROOT / "conformance" / "src")
 SKIPPED_DIRS = {"tests", "node_modules", ".venv", "build", "dist"}
-# The conformance mock simulates a scan so every hermetic suite can run the scan fixtures.
-SCAN_SUCCESS_ALLOWED = {"MockROSAdapter"}
+# Adapters whose run_scan may report success: the conformance mock, which
+# simulates a scan so every hermetic suite can run the scan fixtures, and
+# RclpyAdapter, which drives Nav2 to each waypoint and reads at each.
+SCAN_SUCCESS_ALLOWED = {"MockROSAdapter", "RclpyAdapter"}
 
 
 def _protocol_methods() -> set[str]:
@@ -105,7 +109,7 @@ def test_forwarding_adapters_pass_every_keyword_on() -> None:
     assert not problems, "these methods accept keywords they do not pass on:\n" + "\n".join(problems)
 
 
-def test_only_the_conformance_mock_reports_a_scan_as_done() -> None:
+def test_only_an_adapter_that_scans_reports_a_scan_as_done() -> None:
     problems = []
     for where, cls, f in ADAPTER_METHODS:
         if f.name != "run_scan" or cls in SCAN_SUCCESS_ALLOWED:
@@ -119,6 +123,7 @@ def test_only_the_conformance_mock_reports_a_scan_as_done() -> None:
             ):
                 problems.append(f"{where} {cls}.run_scan reports success")
     assert not problems, (
-        "a scan is waypoints plus a capture at each one; an adapter that does not do both "
-        "returns a documented refusal, not success:\n" + "\n".join(problems)
+        "a scan is waypoints plus a reading at each one; an adapter that does not do both "
+        "returns a documented refusal, not success (an adapter that does joins "
+        "SCAN_SUCCESS_ALLOWED with its tests):\n" + "\n".join(problems)
     )

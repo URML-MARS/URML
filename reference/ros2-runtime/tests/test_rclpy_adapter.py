@@ -133,13 +133,18 @@ class _FakeFuture:
         return self._value
 
 
+GOAL_SUCCEEDED, GOAL_CANCELED, GOAL_ABORTED = 4, 5, 6  # action_msgs/msg/GoalStatus
+
+
 class _FakeGoalHandle:
-    def __init__(self, *, accepted: bool, result: Any) -> None:
+    def __init__(self, *, accepted: bool, result: Any, status: int) -> None:
         self.accepted = accepted
         self._result = result
+        self._status = status
 
     def get_result_async(self) -> _FakeFuture:
-        return _FakeFuture(SimpleNamespace(result=self._result))
+        # Like rclpy's GetResult response: the goal's final status and its result.
+        return _FakeFuture(SimpleNamespace(status=self._status, result=self._result))
 
 
 class _FakeActionClient:
@@ -150,6 +155,9 @@ class _FakeActionClient:
     server_available: bool = True
     goal_accepted: bool = True
     goal_result: Any = SimpleNamespace(effort=0.0)
+    goal_status: int = GOAL_SUCCEEDED
+    # Per-goal final statuses, consumed in order; goal_status once empty.
+    status_queue: list[int] = []  # noqa: RUF012
     sent_goals: list[Any] = []  # noqa: RUF012  — shared across all clients
 
     def __init__(self, _node: Any, _action_type: Any, action_name: str) -> None:
@@ -160,10 +168,12 @@ class _FakeActionClient:
 
     def send_goal_async(self, goal: Any) -> _FakeFuture:
         _FakeActionClient.sent_goals.append({"action_name": self.action_name, "goal": goal})
+        queue = _FakeActionClient.status_queue
         return _FakeFuture(
             _FakeGoalHandle(
                 accepted=_FakeActionClient.goal_accepted,
                 result=_FakeActionClient.goal_result,
+                status=queue.pop(0) if queue else _FakeActionClient.goal_status,
             )
         )
 
@@ -197,6 +207,8 @@ def _install_fake_rclpy(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     _FakeActionClient.server_available = True
     _FakeActionClient.goal_accepted = True
     _FakeActionClient.goal_result = SimpleNamespace(effort=0.0)
+    _FakeActionClient.goal_status = GOAL_SUCCEEDED
+    _FakeActionClient.status_queue = []
     _FakeActionClient.sent_goals = []
 
     captured: dict[str, Any] = {"nodes": [], "spin_calls": 0}
@@ -438,6 +450,57 @@ def test_send_navigation_goal_rejected_returns_failure(fake_ros: dict[str, Any])
     assert result.reason == "goal_rejected"
 
 
+@pytest.mark.parametrize(
+    ("status", "reason"),
+    [(GOAL_ABORTED, "goal_aborted"), (GOAL_CANCELED, "goal_canceled")],
+)
+def test_a_goal_that_does_not_succeed_is_a_failure(
+    fake_ros: dict[str, Any], status: int, reason: str
+) -> None:
+    """Nav2 returns a result for aborted and canceled goals too; only SUCCEEDED counts."""
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    _FakeActionClient.goal_status = status
+    result = RclpyAdapter().send_navigation_goal(pose={"x": 1.0, "y": 2.0}, frame="map")
+    assert result.success is False
+    assert result.reason == reason
+    assert result.final_pose is None
+
+
+def test_an_aborted_goal_carries_the_nav2_error(fake_ros: dict[str, Any]) -> None:
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    _FakeActionClient.goal_status = GOAL_ABORTED
+    _FakeActionClient.goal_result = SimpleNamespace(error_code=204, error_msg="Failed to create a plan")
+    result = RclpyAdapter().send_navigation_goal(pose={"x": 9.0, "y": 9.0}, frame="map")
+    assert result.reason == "goal_aborted (error_code 204: Failed to create a plan)"
+
+
+def test_navigation_goal_faces_the_requested_heading(fake_ros: dict[str, Any]) -> None:
+    import math
+
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    RclpyAdapter().send_navigation_goal(pose={"x": 1.0, "y": 2.0, "yaw": math.pi / 2}, frame="map")
+    orientation = _FakeActionClient.sent_goals[-1]["goal"].pose.pose.orientation
+    assert orientation.z == pytest.approx(math.sin(math.pi / 4))
+    assert orientation.w == pytest.approx(math.cos(math.pi / 4))
+
+
+def test_a_configured_location_yaw_reaches_the_goal(fake_ros: dict[str, Any]) -> None:
+    """adapter.yaml's yaw for a location was dropped; the goal always faced +x."""
+    import math
+
+    from urml_ros2_runtime.substrate.adapter_config import AdapterConfig, PoseLiteral
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    cfg = AdapterConfig(location_to_pose={"dock_front": PoseLiteral(x=1.0, y=0.0, yaw=math.pi)})
+    RclpyAdapter(cfg).send_navigation_goal(location="dock_front")
+    orientation = _FakeActionClient.sent_goals[-1]["goal"].pose.pose.orientation
+    assert orientation.z == pytest.approx(1.0)
+    assert orientation.w == pytest.approx(0.0, abs=1e-9)
+
+
 # ---------------------------------------------------------------------------
 # Docking
 # ---------------------------------------------------------------------------
@@ -498,6 +561,21 @@ def test_release_opens_gripper(fake_ros: dict[str, Any]) -> None:
     assert _FakeActionClient.sent_goals[-1]["goal"].command.position > 0.0
 
 
+def test_an_aborted_gripper_goal_is_a_failure(fake_ros: dict[str, Any]) -> None:
+    from urml_ros2_runtime.substrate.adapter_config import (
+        ActionServerConfig,
+        AdapterConfig,
+    )
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    cfg = AdapterConfig(action_servers=ActionServerConfig(gripper={"claw": "/claw/gripper_command"}))
+    _FakeActionClient.goal_status = GOAL_ABORTED
+    result = RclpyAdapter(cfg).send_manipulation_goal(action="grasp", force_n=2.5)
+    assert result.success is False
+    assert result.reason == "goal_aborted"
+    assert result.grip_force_n is None
+
+
 def test_manipulation_no_gripper_configured_returns_failure(fake_ros: dict[str, Any]) -> None:
     from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
 
@@ -551,22 +629,145 @@ def test_query_detection_no_match_in_message(fake_ros: dict[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_run_scan_is_not_implemented(fake_ros: dict[str, Any]) -> None:
-    """No waypoint expansion yet, so the adapter refuses rather than report an area it never covered."""
+SQUARE = {"bounding_box": {"min_x": 0.0, "max_x": 2.0, "min_y": 0.0, "max_y": 2.0}}
+
+
+def _image(stamp: int) -> SimpleNamespace:
+    return SimpleNamespace(
+        encoding="mono8",
+        header=SimpleNamespace(frame_id="camera_link", stamp=SimpleNamespace(sec=stamp, nanosec=0)),
+    )
+
+
+def _goal_xy(sent: dict[str, Any]) -> tuple[float, float]:
+    position = sent["goal"].pose.pose.position
+    return (round(position.x, 3), round(position.y, 3))
+
+
+def _scan(adapter: Any, **overrides: Any) -> Any:
+    call: dict[str, Any] = {
+        "area": SQUARE,
+        "pattern": "serpentine",
+        "overlap": 0.3,
+        "altitude": None,
+        "media": "photo",
+        "sensor": None,
+    }
+    return adapter.run_scan(**{**call, **overrides})
+
+
+def test_run_scan_drives_each_waypoint_and_photographs_it(fake_ros: dict[str, Any]) -> None:
+    """A 2 m square with a 1 m sample and 0.3 overlap: nine stops in a lawnmower, a photo at each."""
     from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
 
     adapter = RclpyAdapter()
-    result = adapter.run_scan(
-        area={"bounding_box": {"min_x": 0, "max_x": 10, "min_y": 0, "max_y": 10}},
-        pattern="serpentine",
-        overlap=0.3,
-        altitude=30.0,
-        media="photo",
-        sensor=None,
-    )
+    fake_ros["nodes"][-1].subscription_messages.extend(_image(k) for k in range(9))
+    result = _scan(adapter)
+    assert result.success is True, result.reason
+    assert [_goal_xy(g) for g in _FakeActionClient.sent_goals] == [
+        (0.5, 0.5), (1.0, 0.5), (1.5, 0.5),
+        (1.5, 1.0), (1.0, 1.0), (0.5, 1.0),
+        (0.5, 1.5), (1.0, 1.5), (1.5, 1.5),
+    ]  # fmt: skip
+    assert {g["action_name"] for g in _FakeActionClient.sent_goals} == {"/navigate_to_pose"}
+    payload = result.payload
+    assert (payload["sample_count"], payload["waypoints"], payload["skipped"]) == (9, 9, [])
+    assert payload["coverage"] == 1.0
+    assert payload["anomalies"] == []
+    assert [s["media"]["uri"] for s in payload["samples"]] == [f"in_memory://{k}.0" for k in range(9)]
+    # Each stop faces the next one: the first lane runs along +x, the turn faces +y.
+    assert [round(s["pose"]["yaw"], 3) for s in payload["samples"][:4]] == [0.0, 0.0, 1.571, 3.142]
+
+
+def test_run_scan_skips_a_waypoint_nav2_aborts(fake_ros: dict[str, Any]) -> None:
+    """With no overlap the square is four stops; losing one leaves a quarter of it unseen."""
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    adapter = RclpyAdapter()
+    _FakeActionClient.status_queue = [GOAL_SUCCEEDED, GOAL_ABORTED, GOAL_SUCCEEDED, GOAL_SUCCEEDED]
+    fake_ros["nodes"][-1].subscription_messages.extend(_image(k) for k in range(3))
+    result = _scan(adapter, overlap=0.0)
+    assert result.success is True, result.reason
+    payload = result.payload
+    assert payload["sample_count"] == 3
+    assert [(s["index"], s["reason"]) for s in payload["skipped"]] == [(1, "goal_aborted")]
+    assert payload["coverage"] == 0.75
+
+
+def test_run_scan_stops_when_nav2_is_not_there(fake_ros: dict[str, Any]) -> None:
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    _FakeActionClient.server_available = False
+    result = _scan(RclpyAdapter())
     assert result.success is False
-    assert result.reason is not None and result.reason.startswith("scan_not_implemented:")
-    assert result.payload is None
+    assert result.reason == "scan_navigation_unavailable: waypoint 0: server_unavailable"
+    assert result.payload["sample_count"] == 0
+
+
+def test_run_scan_reads_the_named_sensor_at_each_waypoint(fake_ros: dict[str, Any]) -> None:
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    adapter = RclpyAdapter()
+    node = fake_ros["nodes"][-1]
+    node.subscription_messages.extend(SimpleNamespace(data=float(k)) for k in range(4))
+    result = _scan(adapter, overlap=0.0, media="sensor_only", sensor="soil_probe")
+    assert result.success is True, result.reason
+    assert [s["reading"]["value"] for s in result.payload["samples"]] == [0.0, 1.0, 2.0, 3.0]
+    assert [sub["topic"] for sub in node.subscriptions_created] == ["/sensor/soil_probe"] * 4
+
+
+def test_run_scan_plans_over_a_configured_region(fake_ros: dict[str, Any]) -> None:
+    """A named region is planned in its own frame, and the altitude rides on each goal."""
+    from urml_ros2_runtime.substrate.adapter_config import AdapterConfig, RegionLiteral
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    cfg = AdapterConfig(
+        region_to_polygon={"bed_a": RegionLiteral(frame="garden", polygon=[(0, 0), (2, 0), (2, 1), (0, 1)])}
+    )
+    adapter = RclpyAdapter(cfg)
+    fake_ros["nodes"][-1].subscription_messages.extend(_image(k) for k in range(2))
+    result = _scan(adapter, area={"named_region": "bed_a"}, overlap=0.0, altitude=2.5)
+    assert result.success is True, result.reason
+    assert [_goal_xy(g) for g in _FakeActionClient.sent_goals] == [(0.5, 0.5), (1.5, 0.5)]
+    assert {g["goal"].pose.header.frame_id for g in _FakeActionClient.sent_goals} == {"garden"}
+    assert {g["goal"].pose.pose.position.z for g in _FakeActionClient.sent_goals} == {2.5}
+    assert result.payload["frame"] == "garden"
+
+
+@pytest.mark.parametrize(
+    ("overrides", "reason"),
+    [
+        ({"media": "video"}, "scan_video_not_supported:"),
+        ({"pattern": "adaptive"}, "scan_pattern_not_supported:"),
+        ({"media": "sensor_only"}, "scan_sensor_required:"),
+        ({"area": {"named_region": "nowhere"}}, "scan_region_not_configured:"),
+        (
+            {"area": {"bounding_box": {"min_x": 0, "max_x": 100, "min_y": 0, "max_y": 100}}},
+            "scan_too_many_waypoints:",
+        ),
+    ],
+)
+def test_run_scan_refuses_before_moving(
+    fake_ros: dict[str, Any], overrides: dict[str, Any], reason: str
+) -> None:
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    result = _scan(RclpyAdapter(), **overrides)
+    assert result.success is False
+    assert result.reason is not None and result.reason.startswith(reason)
+    assert _FakeActionClient.sent_goals == []
+
+
+def test_run_scan_with_no_readings_fails(fake_ros: dict[str, Any]) -> None:
+    """No image arrives at the one stop, so there is no sample and no scan."""
+    from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
+
+    result = _scan(RclpyAdapter(), area={"bounding_box": {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1}})
+    assert result.success is False
+    assert result.reason is not None and result.reason.startswith("scan_no_samples:")
+    assert result.payload["skipped"] == [
+        {"index": 0, "pose": {"x": 0.5, "y": 0.5, "yaw": 0.0}, "reason": "no_image_within_timeout"}
+    ]
 
 
 def test_take_measurement_happy_path(fake_ros: dict[str, Any]) -> None:
@@ -610,17 +811,17 @@ def test_capture_media_photo(fake_ros: dict[str, Any]) -> None:
     assert result.payload["frame"] == "camera"
 
 
-def test_capture_media_video_returns_stub_uri(fake_ros: dict[str, Any]) -> None:
+def test_capture_media_video_is_not_supported(fake_ros: dict[str, Any]) -> None:
+    """No recorder starts, so a video capture refuses instead of returning a URI with nothing behind it."""
     from urml_ros2_runtime.substrate.rclpy_adapter import RclpyAdapter
 
     adapter = RclpyAdapter()
     result = adapter.capture_media(
         media="video", target=None, duration_seconds=5.0, attributes={"format": "mp4"}
     )
-    assert result.success is True
-    assert result.payload is not None
-    assert result.payload["type"] == "video"
-    assert "rosbag2://" in result.payload["uri"]
+    assert result.success is False
+    assert result.reason is not None and result.reason.startswith("video_capture_not_supported:")
+    assert result.payload is None
 
 
 # ---------------------------------------------------------------------------

@@ -52,9 +52,9 @@ The methods:
 | `send_docking_goal` | `dock` | Nav2 `DockRobot` action (Iron+); for older distros, a custom action wrapping Nav2's docking server |
 | `send_manipulation_goal` | `grasp`, `release` | MoveIt 2 + gripper action server (per-gripper, e.g., `parallel_gripper_action_controller`) |
 | `query_detection` | `detect` | Subscribe to a configured perception topic (e.g., `vision_msgs/Detection2DArray`) and resolve a single match. Default suggestion: `vision_msgs` with the URML-validator's `Identifier`-typed object classes as filter |
-| `run_scan` | `scan` | Nav2 path-following along a generated pattern with per-waypoint perception triggers. The pattern → waypoint expansion happens *inside* the adapter, not in URML |
+| `run_scan` | `scan` | [`scan_plan`](src/urml_ros2_runtime/scan_plan.py) expands the area into waypoints (`serpentine`, `grid`, `spiral`); one Nav2 `NavigateToPose` per waypoint, facing the next; once Nav2 reports SUCCEEDED, one image from `perception.image_topic` (`media: photo`) or one reading from `/sensor/<sensor>` (`media: sensor_only`). `adaptive` and `media: video` are refused. See [How `run_scan` works](#how-run_scan-works) |
 | `take_measurement` | `measure` | Subscribe to a configured sensor topic; take one message; return |
-| `capture_media` | `capture` | `image_transport` for photos; `rosbag2` (or a configured external sink) for video |
+| `capture_media` | `capture` | One `sensor_msgs/Image` from `perception.image_topic` for photos. Video returns `video_capture_not_supported`: no recorder (`rosbag2`) is started yet |
 | `wait_for_condition` | `wait_for` | Subscribe to the relevant topic / service with a predicate matcher. For `condition.input: speech`, route through the LLM-bridge speech path |
 | `wait_passively` | `wait` | A `rclpy.sleep_for` equivalent or a no-op timer node, depending on whether the robot needs to remain active |
 | `emit_report` | `report` | Publish to a configured topic with a structured message. For `to: user`, route through the LLM-bridge response path |
@@ -94,6 +94,8 @@ The adapter needs a deployment-provided config to know:
 - Which perception topic to subscribe to (default: `/vision_msgs/detections`).
 - Which TTS / STT topic to use (no default; home-profile only).
 - Per-station location → pose mapping (the validator resolves names; the adapter resolves the named pose against the actual world).
+- Per-area region → polygon mapping, for `scan` over a manifest-declared area (RFC-0615).
+- How wide one scan sample is (`scan.swath_m`), the most waypoints a scan may plan, and the frame for a literal scan polygon or bounding box.
 - Per-gripper action client mapping.
 
 Suggested format: a single `adapter.yaml` next to the manifest, loaded at adapter construction.
@@ -109,14 +111,33 @@ action_servers:
 location_to_pose:
   kitchen: { x: 3.2, y: 1.0, frame: map }
   user:    { x: 0.5, y: 0.5, frame: map }
+region_to_polygon:
+  garden_bed: { frame: map, polygon: [[0, 0], [4, 0], [4, 2], [0, 2]] }
+scan:
+  swath_m: 1.0        # width one sample covers; set it to the sensor's real footprint
+  max_waypoints: 200  # a plan with more is refused rather than driven
+  frame: map          # frame for a literal polygon or bounding box
 perception:
   detection_topic: /vision_msgs/detections
+  image_topic: /camera/image_raw
 speech:
   output_topic: /tts/utter
   input_topic:  /stt/transcription
 ```
 
 This format is NOT normative URML — the adapter is free to use a different shape. But the v0.1 reference adapter ships with this format documented.
+
+### How `run_scan` works
+
+The spec (Layer 2 §2.9) names the patterns but not their geometry. This adapter's reading, from [`scan_plan.py`](src/urml_ros2_runtime/scan_plan.py), which imports nothing from ROS so any runtime can reuse it:
+
+- **Area.** A literal `polygon` or `bounding_box` is read in `scan.frame`; a `named_region` is looked up in `region_to_polygon` and carries its own frame. An unmapped name is refused (`scan_region_not_configured`).
+- **Spacing.** A sample covers a square `swath_m` wide. Samples and lanes sit at most `swath_m * (1 - overlap)` apart, spread evenly so the outermost footprints reach the edges of the area's bounding box. Every waypoint is inside the area polygon.
+- **Patterns.** `serpentine`: parallel lanes along the longer side, alternating direction. `grid`: the serpentine, then the area again in lanes at right angles, so each point is seen from two directions. `spiral`: the serpentine's points, visited outward from the middle in square rings. `adaptive` is refused: it refines around what the scan finds, and no anomaly detector is wired.
+- **At each waypoint.** A `NavigateToPose` goal facing the next waypoint (with `altitude` as z, when given). Once Nav2 reports SUCCEEDED, one image or one sensor reading becomes a sample with its pose, frame and timestamp.
+- **Failures.** A waypoint Nav2 aborts, or where no image or reading arrives, is skipped and listed under `skipped` with the reason. Nav2 being unavailable ends the scan at once. The scan succeeds when at least one sample was taken.
+- **Result.** `samples`, `coverage` (the share of the area the taken samples' footprints cover, on a raster of a quarter swath), and `anomalies` (empty: no detector), plus `sample_count`, `waypoints`, `skipped`, `pattern`, `frame`, `area_m2`, `spacing_m` and `swath_m`.
+- **Limits.** Only the waypoints are checked against the area. Nav2 plans the path between them, and in a concave area that path can cross outside the polygon, so the geofence belongs in Nav2's keep-out map too. A plan with more than `max_waypoints` waypoints is refused (`scan_too_many_waypoints`), including an overlap near 1, which is refused before the lattice is built.
 
 ---
 
@@ -135,6 +156,8 @@ A pinned Gazebo + TurtleBot 4 simulator stack. Eventually every navigation-compa
 CI gating: the `gazebo-e2e` job in [`.github/workflows/ros2-integration.yml`](../../.github/workflows/ros2-integration.yml). Manual-dispatch + weekly cron only — never per-push. It uploads sim/Nav2/pytest logs as artifacts on `always()`, so a failed run is diagnosable rather than opaque.
 
 **What runs end-to-end today:** [`tests/integration/test_nav_patrol_gazebo_e2e.py`](tests/integration/test_nav_patrol_gazebo_e2e.py) takes the `home/nav_patrol_positive` fixture (three plain `move_to` goals) and runs it through the *same* `ConformanceRunner` the hermetic suite uses, with `adapter_factory` wired to a live `RclpyAdapter`. This closes the full loop: URML program → validator → ConformanceRunner → RclpyAdapter → Nav2 → a simulated TurtleBot 4 that actually drives. A stock TB4 sim only exposes Nav2 navigation (its dock is iRobot Create 3's `/dock`, not Nav2 `DockRobot`; no gripper/camera), so the navigation slice is what's covered; perception/manipulation/docking e2e need a richer sim and are tracked as follow-ups below.
+
+**Scan end to end:** [`tests/integration/test_scan_nav2_e2e.py`](tests/integration/test_scan_nav2_e2e.py) (`URML_NAV2_SCAN_E2E=1`) runs a validated program with one `scan` step through `URMLRuntime` and a live `RclpyAdapter` against Nav2's loopback simulator (`nav2_bringup`'s `tb3_loopback_simulation.launch.py`: the real planner, controller and behavior tree over a kinematic robot, no Gazebo), with the test publishers in [`tests/integration/nav2_loopback/`](tests/integration/nav2_loopback/) standing in for a camera and a soil probe. A listen-only witness on `map` -> `base_link` checks that the robot came within 0.35 m of every waypoint it reported a sample at. It also checks that a goal Nav2 aborts comes back as a failure. It passed three times on 2026-09-29 in WSL2 (Ubuntu 24.04, ROS 2 Jazzy, Nav2 1.3.13); the record, with the commands, is [`tests/integration/nav2-runs/2026-09-29-nav2-loopback-scan.md`](tests/integration/nav2-runs/2026-09-29-nav2-loopback-scan.md). It is not in CI.
 
 #### Local repro (WSL2 + ROS 2 Jazzy)
 
@@ -167,7 +190,7 @@ The adapter↔world pose mapping lives in [`tests/integration/adapter_nav_patrol
 
 2. **rclpy vs. rcl/raw bindings.** rclpy is the obvious choice for the reference adapter. A future high-performance adapter might use `rcl` C bindings directly; out of scope here.
 
-3. **Action timing and the validator's static checks.** The validator says "this program can be executed against this manifest." It does NOT say "this program will complete in N seconds." A real robot's action might time out or stall. The adapter's contract is: return `success: True` only when the action completes; return `success: False` with `reason: "timed_out"` if the substrate timed it out. The runtime's `on_error` policy decides what happens next. This is the same contract `MockROSAdapter` follows.
+3. **Action timing and the validator's static checks.** The validator says "this program can be executed against this manifest." It does NOT say "this program will complete in N seconds." A real robot's action might time out or stall. The adapter's contract is: return `success: True` only when the action completes, meaning its final status is SUCCEEDED; an aborted or canceled goal returns `success: False` with `reason: "goal_aborted"` or `"goal_canceled"` (plus Nav2's `error_code` and `error_msg` when it sends them). Until 2026-09-28 the adapter counted any returned result as success. The runtime's `on_error` policy decides what happens next. This is the same contract `MockROSAdapter` follows.
 
 4. **Live-state queries.** Some primitives might want to read live robot state (current battery level for `wait_for(condition.sensor_threshold)`, etc.). The Protocol covers this through `take_measurement` and `wait_for_condition`. A future RFC may extend.
 

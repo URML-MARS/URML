@@ -192,6 +192,19 @@ unrelated, pre-calibration `rclpy-smoke` job failed (fixed in #45); only run
 proving job is green ×3," verifiable with `gh run view <id> --json jobs`, not
 "the workflow is green ×3."
 
+**`RclpyAdapter` scan through Nav2: run locally 2026-09-29, not in CI.**
+`test_scan_nav2_e2e.py` (`URML_NAV2_SCAN_E2E=1`) passed three times in WSL2
+(Ubuntu 24.04, ROS 2 Jazzy, Nav2 1.3.13) against Nav2's loopback simulator,
+which runs the real planner, controller and behavior tree over a kinematic
+robot with no physics. A validated program with one `scan` step drove Nav2 to
+all nine waypoints of a serpentine over a 2 m square and took an image at each
+stop, and a listen-only witness on `map` -> `base_link` saw the robot within
+0.23 m of every waypoint. A goal off the map came back as
+`goal_aborted (error_code 204)` instead of a success, and a spiral scan read a
+test probe at all four stops. The images are synthetic 16x16 frames from a test
+publisher. Record:
+[`reference/ros2-runtime/tests/integration/nav2-runs/2026-09-29-nav2-loopback-scan.md`](../../reference/ros2-runtime/tests/integration/nav2-runs/2026-09-29-nav2-loopback-scan.md).
+
 **PX4 / MAVLink reference runtime (`PX4Adapter`) — 103 tests, zero ROS.**
 `reference/px4-runtime/`: full Protocol via `pymavlink`. Evidence: 103 passed,
 4 skipped (gated SITL/live).

@@ -143,15 +143,20 @@ fixtures are under `manipulation/` (`01_dexterous_precision_grasp_positive`,
   `wait_for`, `scan`, `capture`, `report`, `dock`, `measure`, plus the drone
   profile verbs; `grasp`/`release`/object-pickup `detect` are out of the drone
   profile by design. The "at least one runtime" bar is met by ros2-runtime for
-  all twenty-seven, `scan` only through `MockROSAdapter` (next note).
-- **No substrate adapter performs `scan` yet.** A scan is waypoints plus a
-  capture at each one. ros2-runtime's `exec_scan` runs the primitive and
-  `MockROSAdapter` simulates it for the conformance suite, but `RclpyAdapter`
-  returns `scan_not_implemented` (the Nav2 waypoint expansion is not written)
-  and every other adapter returns a documented not-supported result. Until
+  all twenty-seven.
+- **`scan` runs on `RclpyAdapter` alone.** A scan is waypoints plus a reading
+  at each one. `RclpyAdapter` expands the area into `serpentine`, `grid` or
+  `spiral` waypoints (`urml_ros2_runtime.scan_plan`), drives Nav2 to each, and
+  takes a photo or a sensor reading there; `adaptive` and `media: video` are
+  refused (see "How `run_scan` works" in
+  [`reference/ros2-runtime/INTEGRATION.md`](../reference/ros2-runtime/INTEGRATION.md)).
+  Every other adapter returns a documented not-supported result. Until
   2026-09-27 eleven adapters, `RclpyAdapter` among them, reported success
-  without moving. A bare PX4 autopilot has no camera to capture with; a PX4
-  stack routes `scan` to its companion through `CompositeAdapter`.
+  without moving. A bare PX4 autopilot has no camera, so `PX4Adapter` refuses
+  `scan`; `CompositeAdapter` routes it to the companion adapter, which scans
+  with its own navigation. The ROS 2 scan ran end to end against Nav2's
+  loopback simulator on 2026-09-29, locally, not in CI (record in
+  `reference/ros2-runtime/tests/integration/nav2-runs/`).
 - **`spec/layer-2-primitives/README.md` is orientation, not the spec.** The
   normative text is `v0.1.0.md`; the README points to it.
 - **Validator passes.** RFC-0002 described four; the shipped validator runs

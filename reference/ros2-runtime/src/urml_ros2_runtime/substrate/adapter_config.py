@@ -11,7 +11,7 @@ real ROS 2 action servers, topics, and poses:
 - Which perception topic carries detections.
 - Which TTS / STT topics back the home-profile speech primitives.
 - Where, in the substrate's map frame, the manifest's named locations
-  actually live.
+  and areas actually live, and how wide one scan sample is.
 
 These facts are deployment- and substrate-specific, so they do NOT
 belong in the URML program, manifest, or envelope. They live in an
@@ -25,7 +25,6 @@ a different format — the adapter's constructor accepts any compatible
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -91,6 +90,37 @@ class PoseLiteral(BaseModel):
     frame: str = "map"
 
 
+class RegionLiteral(BaseModel):
+    """A named area's boundary in substrate coordinates, for ``scan`` over a named region.
+
+    The manifest declares the area by name (RFC-0615); this map pins the name
+    to a polygon the adapter can plan over, the way ``location_to_pose`` pins a
+    location name to a pose.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    polygon: list[tuple[float, float]] = Field(..., min_length=3, description="Boundary vertices as [x, y].")
+    frame: str = "map"
+
+
+class ScanSettings(BaseModel):
+    """How ``run_scan`` turns an area into waypoints.
+
+    ``swath_m`` is the width one sample covers (for a camera, its footprint on
+    the ground); samples and lanes sit ``swath_m * (1 - overlap)`` apart. The
+    default suits a ground robot's camera; set it to the real footprint.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    swath_m: float = Field(1.0, gt=0, description="Width one sample covers, in metres.")
+    max_waypoints: int = Field(
+        200, gt=0, description="A plan with more waypoints is refused rather than driven."
+    )
+    frame: str = Field("map", description="Frame for a literal polygon or bounding box, which carry none.")
+
+
 class AdapterConfig(BaseModel):
     """The deployment-side adapter config loaded from ``adapter.yaml``."""
 
@@ -104,6 +134,11 @@ class AdapterConfig(BaseModel):
         default_factory=dict,
         description="Map manifest-declared location names to substrate coordinates.",
     )
+    region_to_polygon: dict[str, RegionLiteral] = Field(
+        default_factory=dict,
+        description="Map manifest-declared area names to substrate polygons, for scan.",
+    )
+    scan: ScanSettings = Field(default_factory=ScanSettings)
 
     def resolve_location(self, name: str) -> PoseLiteral | None:
         """Return the pose for a named location, or None if unmapped.
