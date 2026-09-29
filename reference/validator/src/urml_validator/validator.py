@@ -3543,6 +3543,30 @@ def _check_envelope_release(
     return []
 
 
+def _check_envelope_wait_in_flight(
+    path: list[str],
+    nav: _NavState | None,
+) -> list[ValidationError]:
+    """RFC-0701 §4.4: a `wait` reached while the aircraft is airborne (after a
+    `take_off`, before the next `land` / `return_to_home`) is rejected; `hover`
+    is the verb that holds position aloft. Airborne state comes from the RFC-0684
+    nav-state walk, so this fires only after a `take_off` set a positive
+    altitude and no `land` reset it. With no nav-state (the fleet path, or a
+    control-flow join) it cannot tell, and returns nothing."""
+    if nav is None or nav.altitude is None or nav.altitude <= 0:
+        return []
+    return [
+        _err(
+            ErrorCode.ENVELOPE_WAIT_IN_FLIGHT,
+            "wait",
+            path,
+            f"wait runs while airborne (nav-state altitude {nav.altitude} m, after take_off "
+            "and before land / return_to_home).",
+            suggestion="Use `hover` to hold position in the air; `wait` is a ground or station hold.",
+        )
+    ]
+
+
 def _check_envelope(
     step: Step,
     manifest: CapabilityManifest,
@@ -3577,6 +3601,12 @@ def _check_envelope(
         out.extend(_check_envelope_look_at(args, envelope, path))
     elif name == "gesture":
         out.extend(_check_envelope_gesture(args, manifest, envelope, path))
+    elif name == "drive":
+        # RFC-0630 / RFC-0701 §4.1: the declared drive speed against the caps.
+        out.extend(_check_declared_speed("drive", args.speed, manifest, envelope, path))
+    elif name == "wait":
+        # RFC-0701 §4.4: a `wait` that runs while airborne; `hover` holds aloft.
+        out.extend(_check_envelope_wait_in_flight(path, nav))
 
     # Spatial targets: every place a step names (a pose, a declared location
     # or area, a docking station, a scan area) meets the altitude cap, the
@@ -3725,6 +3755,67 @@ def _check_envelope_follow_trajectory(
     return out
 
 
+def _check_declared_speed(
+    primitive: str,
+    speed: Any,
+    manifest: CapabilityManifest,
+    envelope: SafetyEnvelope | None,
+    path: list[str],
+    *,
+    field: str = "speed",
+) -> list[ValidationError]:
+    """A declared `speed` must be at or below the strictest of
+    `mobility.max_velocity` and `envelope.max_velocity` (RFC-0701 §4.1). A
+    fraction is of the mobility maximum. Reuses `envelope.velocity_exceeded`.
+    Shared by `move_to`, `drive` (RFC-0630) and `return_to_home` (RFC-0701);
+    a `None` speed or one at or below the cap returns nothing."""
+    manifest_max = manifest.mobility.max_velocity if manifest.mobility else None
+    envelope_max = envelope.max_velocity if envelope else None
+    cap = _strictest(manifest_max, envelope_max)
+    declared_speed: float | None = None
+    fraction: float | None = None
+    if isinstance(speed, (int, float)):
+        declared_speed = float(speed)
+    elif speed is not None and getattr(speed, "units", None) == "m_per_s":
+        declared_speed = float(speed.value)
+    elif speed is not None and manifest_max is not None:
+        # A fraction is of the manifest maximum (spec §1.1 `<speed>`), so it
+        # declares value x max_velocity m/s. Above 1.0 it exceeds the manifest.
+        fraction = float(speed.value)
+        declared_speed = fraction * manifest_max
+    if declared_speed is None or cap is None or declared_speed <= cap:
+        return []
+    if fraction is not None and manifest_max:
+        message = (
+            f"{primitive}.{field} (fraction {fraction} of the manifest maximum "
+            f"{manifest_max} m/s = {declared_speed:.4g} m/s) exceeds the strictest "
+            f"declared cap ({cap} m/s)."
+        )
+        suggestion = (
+            f"Use a fraction of at most {cap / manifest_max:.4g}, or an absolute "
+            f"speed of at most {cap} m/s."
+        )
+    else:
+        message = (
+            f"{primitive}.{field} ({declared_speed} m/s) exceeds the strictest "
+            f"declared cap ({cap} m/s)."
+        )
+        suggestion = (
+            f"Reduce {field} to at most {cap} m/s, "
+            "or relax the manifest/envelope cap if the deployment allows."
+        )
+    return [
+        _err(
+            ErrorCode.ENVELOPE_VELOCITY_EXCEEDED,
+            primitive,
+            path,
+            message,
+            field=field,
+            suggestion=suggestion,
+        )
+    ]
+
+
 def _check_envelope_move_to(
     args: MoveToArgs,
     manifest: CapabilityManifest,
@@ -3734,50 +3825,7 @@ def _check_envelope_move_to(
     out: list[ValidationError] = []
     # Velocity cap: declared `speed` (if given) must be at or below the
     # strictest of (manifest.mobility.max_velocity, envelope.max_velocity).
-    manifest_max = manifest.mobility.max_velocity if manifest.mobility else None
-    envelope_max = envelope.max_velocity if envelope else None
-    cap = _strictest(manifest_max, envelope_max)
-    declared_speed: float | None = None
-    fraction: float | None = None
-    if isinstance(args.speed, (int, float)):
-        declared_speed = float(args.speed)
-    elif args.speed is not None and getattr(args.speed, "units", None) == "m_per_s":
-        declared_speed = float(args.speed.value)
-    elif args.speed is not None and manifest_max is not None:
-        # A fraction is of the manifest maximum (spec §1.1 `<speed>`), so it
-        # declares value x max_velocity m/s. Above 1.0 it exceeds the manifest.
-        fraction = float(args.speed.value)
-        declared_speed = fraction * manifest_max
-    if declared_speed is not None and cap is not None and declared_speed > cap:
-        if fraction is not None and manifest_max:
-            message = (
-                f"move_to.speed (fraction {fraction} of the manifest maximum "
-                f"{manifest_max} m/s = {declared_speed:.4g} m/s) exceeds the strictest "
-                f"declared cap ({cap} m/s)."
-            )
-            suggestion = (
-                f"Use a fraction of at most {cap / manifest_max:.4g}, or an absolute "
-                f"speed of at most {cap} m/s."
-            )
-        else:
-            message = (
-                f"move_to.speed ({declared_speed} m/s) exceeds the strictest "
-                f"declared cap ({cap} m/s)."
-            )
-            suggestion = (
-                f"Reduce speed to at most {cap} m/s, "
-                "or relax the manifest/envelope cap if the deployment allows."
-            )
-        out.append(
-            _err(
-                ErrorCode.ENVELOPE_VELOCITY_EXCEEDED,
-                "move_to",
-                path,
-                message,
-                field="speed",
-                suggestion=suggestion,
-            )
-        )
+    out.extend(_check_declared_speed("move_to", args.speed, manifest, envelope, path))
     # Altitude cap (drone profile-ish; applies if `pose.z` is set).
     if args.pose is not None and args.pose.z is not None:
         ceiling = _strictest(
@@ -3855,10 +3903,13 @@ def _check_envelope_return_to_home(
     envelope: SafetyEnvelope | None,
     path: list[str],
 ) -> list[ValidationError]:
-    """Drone profile: declared RTH altitude (if set) must be at or below the cap."""
+    """Drone profile: declared RTH altitude and speed (if set) must be at or
+    below the strictest caps (RFC-0701 §4.1 adds the speed check)."""
     out: list[ValidationError] = []
+    # Return speed against the strictest velocity cap.
+    out.extend(_check_declared_speed("return_to_home", args.speed, manifest, envelope, path))
     if args.altitude is None:
-        return out  # substrate default; nothing to check statically
+        return out  # substrate default; nothing more to check statically
     manifest_ceiling = manifest.mobility.service_ceiling if manifest.mobility else None
     envelope_max = envelope.max_altitude if envelope else None
     cap = _strictest(manifest_ceiling, envelope_max)

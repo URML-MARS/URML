@@ -182,6 +182,8 @@ class ErrorCode(StrEnum):
     ENVELOPE_PAYLOAD_EXCEEDED = "envelope.payload_exceeded"
     # RFC-0684: payload release above the deployment's drop-height ceiling.
     ENVELOPE_DROP_HEIGHT_EXCEEDED = "envelope.drop_height_exceeded"
+    # RFC-0701 (§4.4): a `wait` that can run while airborne; `hover` holds aloft.
+    ENVELOPE_WAIT_IN_FLIGHT = "envelope.wait_in_flight"
     ENVELOPE_FORCE_EXCEEDED = "envelope.force_exceeded"
     ENVELOPE_GEOFENCE_VIOLATION = "envelope.geofence_violation"
     ENVELOPE_OCCUPANCY_ZONE_INTRUSION = "envelope.occupancy_zone_intrusion"
