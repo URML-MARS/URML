@@ -7,6 +7,7 @@ wider than the swath and overlap allow, and each pattern's visiting order.
 
 from __future__ import annotations
 
+import itertools
 import math
 import time
 
@@ -91,7 +92,7 @@ def test_neighbours_are_never_further_apart_than_the_step(overlap: float) -> Non
     xs = sorted({w.x for w in plan.waypoints})
     ys = sorted({w.y for w in plan.waypoints})
     for axis in (xs, ys):
-        gaps = [b - a for a, b in zip(axis, axis[1:], strict=False)]
+        gaps = [b - a for a, b in itertools.pairwise(axis)]
         assert all(gap <= step + 1e-9 for gap in gaps)
     # The outermost footprints reach the edges.
     assert xs[0] - 0.5 == pytest.approx(0.0) and xs[-1] + 0.5 == pytest.approx(7.3)

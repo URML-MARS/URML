@@ -141,7 +141,9 @@ fixtures are under `manipulation/` (`01_dexterous_precision_grasp_positive`,
   2026-09-27 eleven adapters, `RclpyAdapter` among them, reported success
   without moving. A bare PX4 autopilot has no camera, so `PX4Adapter` refuses
   `scan`; `CompositeAdapter` routes it to the companion adapter, which scans
-  with its own navigation.
+  with its own navigation. The ROS 2 scan ran end to end against Nav2's
+  loopback simulator on 2026-09-29, locally, not in CI (record in
+  `reference/ros2-runtime/tests/integration/nav2-runs/`).
 - **`spec/layer-2-primitives/README.md` is orientation, not the spec.** The
   normative text is `v0.1.0.md`; the README points to it.
 - **Validator passes.** RFC-0002 described four; the shipped validator runs

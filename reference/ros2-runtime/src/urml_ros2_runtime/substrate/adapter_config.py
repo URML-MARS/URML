@@ -25,7 +25,6 @@ a different format — the adapter's constructor accepts any compatible
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
