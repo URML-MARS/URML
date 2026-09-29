@@ -12,9 +12,8 @@ Cursor, Gemini CLI, VS Code, and many other agents). A skill is a folder with a
 `SKILL.md`: frontmatter (`name`, `description`) plus markdown instructions an
 agent loads on demand.
 
-This is the agent-adoption side of [RFC-0640](../../docs/rfcs/0640-moltbook.md)'s
-strategy: rather than only telling agents about URML, publish URML as a
-capability any compatible agent can install.
+This is the agent-adoption strategy: rather than only telling agents about
+URML, publish URML as a capability any compatible agent can install.
 
 ## What is here
 
