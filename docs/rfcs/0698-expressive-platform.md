@@ -2,7 +2,7 @@
 rfc: 0698
 title: Expressive platform, the `expression` manifest block and the social-profile `look_at` / `gesture` primitives
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Accepted
+state: Implemented
 created: 2026-09-10
 updated: 2026-09-19
 supersedes: —

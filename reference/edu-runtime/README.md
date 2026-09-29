@@ -29,8 +29,11 @@ The classroom/maker adoption flywheel (RFC-0011). VEX V5 brain (USB/serial via `
 | `measure` / `wait_for` | one telemetry read |
 | `report` | structured record to a local sink (no cloud) |
 | `scan` | documented not-supported result: no area-scan controller (a scan is waypoints plus a capture at each one) |
+| `look_at` / `gesture` (RFC-0698) | `ReachyMiniAdapter` only: expressive gaze + gesture on the Hugging Face Reachy Mini (`ExpressionAdapter`, `social` profile). The first substrate to implement the expression surface |
 
 `dock`, `detect`, `capture`, `speak`, `listen` return `not_supported_on_edu_platform`. The drone trio returns `not_applicable_edu`.
+
+`ReachyMiniAdapter` is a standalone `ExpressionAdapter` (not an `_EduBase` nav robot): `look_at` orients the head/body (a 4x4 head matrix + body yaw through the SDK's `goto_target`), `gesture` plays a named move mapped in `ReachyConfig.gesture_moves`. The client surface is config-overridable and imported lazily; hardware validation pairs with a live Reachy Mini and is a follow-up.
 
 ## Spec gaps (RFC-0014 protocol)
 

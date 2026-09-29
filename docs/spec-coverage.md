@@ -26,8 +26,8 @@ a claim ("the standard is complete") mapped cell-by-cell to the artifact that
 backs it. It grows one layer at a time; regenerate the relevant section
 whenever a construct is added or a leg moves.
 
-- **[Layer 1 — capability manifest](#layer-1--capability-manifest)** — 12/12 covered.
-- **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 20/20 covered.
+- **[Layer 1 — capability manifest](#layer-1--capability-manifest)** — all 29 manifest blocks covered.
+- **[Layer 2 — intent primitives](#layer-2--intent-primitives)** — 27/27 covered.
 - **[Layer 3 — behavior composition](#layer-3--behavior-composition)** — 6/6 covered.
 - **[Layer 4 — natural-language prompt contract](#layer-4--natural-language-prompt-contract)** — 6/6 covered. *(Completes the layer set; URML is now normative end to end.)*
 
@@ -39,10 +39,12 @@ whenever a construct is added or a leg moves.
 
 The authoritative primitive set is `PRIMITIVE_MODELS` in
 [`reference/validator/src/urml_validator/schemas/primitives.py`](../reference/validator/src/urml_validator/schemas/primitives.py)
-— twenty verbs: twelve core (RFC-0002) plus eight profile-scoped
+— twenty-seven verbs: twelve core (RFC-0002), eight profile-scoped
 (`speak`/`listen` home, `take_off`/`land`/`return_to_home` drone,
-`pick_from`/`place_at`/`swap_tool` industrial — RFC-0013). Each leg is
-verified by path:
+`pick_from`/`place_at`/`swap_tool` industrial — RFC-0013), and seven added
+since (`bimanual` RFC-0010, `plan_path`/`follow_trajectory` RFC-0020,
+`set_output` RFC-0017, `call_program` RFC-0015, `look_at`/`gesture` RFC-0698).
+Each leg is verified by path:
 
 - **Spec** — a normative section in
   [`spec/layer-2-primitives/v0.1.0.md`](../spec/layer-2-primitives/v0.1.0.md),
@@ -54,7 +56,7 @@ verified by path:
 - **Impl** — a `PRIMITIVE_EXECUTORS` entry in
   [`reference/ros2-runtime/.../primitives.py`](../reference/ros2-runtime/src/urml_ros2_runtime/primitives.py)
   (the bar requires "at least one runtime"; ros2-runtime implements all
-  twenty). PX4 coverage is the RFC-0002-defined drone subset; see Notes.
+  twenty-seven). PX4 coverage is the RFC-0002-defined drone subset; see Notes.
 - **Conformance** — at least one fixture in
   [`conformance/fixtures/`](../conformance/fixtures/) exercising the primitive.
 - **Example** — at least one runnable program in
@@ -84,7 +86,7 @@ Two real gaps, both closed in the PR that adds this document:
 
 ## The matrix
 
-All twenty-four primitives are fully covered. Fixture column cites one
+All twenty-seven primitives are fully covered. Fixture column cites one
 representative fixture; most primitives have several (positive and negative).
 The `arm` selector on `grasp`/`release` (RFC-0010) rides their existing rows;
 it has its own fixtures (`biped/07_digit_arm_addressed_positive`,
@@ -117,20 +119,31 @@ fixtures are under `manipulation/` (`01_dexterous_precision_grasp_positive`,
 | 18 | `pick_from` | v0.1.0 §3.6 | `PickFromArgs` | `exec_pick_from` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
 | 19 | `place_at` | v0.1.0 §3.7 | `PlaceAtArgs` | `exec_place_at` | `industrial/04_pick_from_positive` | `industrial/pick-place-tool-change` |
 | 20 | `swap_tool` | v0.1.0 §3.8 | `SwapToolArgs` | `exec_swap_tool` | `industrial/05_swap_tool_positive` | `industrial/pick-place-tool-change` |
-| 21 | `call_program` | v0.1.0 §3.9 | `CallProgramArgs` | `exec_call_program` | `industrial/10_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
+| 21 | `call_program` | v0.1.0 §3.9 | `CallProgramArgs` | `exec_call_program` | `industrial/45_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
 | 22 | `bimanual` | v0.1.0 §3.10 | `BimanualArgs` | `exec_bimanual` | `biped/06_digit_bimanual_lift_positive` | `humanoid/digit-tote-lift` |
 | 23 | `plan_path` | v0.1.0 §3.11 | `PlanPathArgs` | `exec_plan_path` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
 | 24 | `follow_trajectory` | v0.1.0 §3.12 | `FollowTrajectoryArgs` | `exec_follow_trajectory` | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
 | 25 | `set_output` | v0.1.0 §3.13 | `SetOutputArgs` | `exec_set_output` | `actuation/01_set_output_digital_positive` | `cobot/glue-bead` |
+| 26 | `look_at` | RFC-0698 (`social`) | `LookAtArgs` | `exec_look_at` | `social/01_reachy_greeting_positive` | `social/reachy-mini-greeting` |
+| 27 | `gesture` | RFC-0698 (`social`) | `GestureArgs` | `exec_gesture` | `social/02_undeclared_gesture_rejected` | `social/reachy-mini-greeting` |
 
 ## Notes (honest deferrals, not gaps)
 
+- **`drive` / `turn` are counted separately (RFC-0630).** The relative-motion
+  verbs for frameless robots are gated to the `educational` profile and kept
+  out of `PRIMITIVE_MODELS` (the general primitive set the row count above
+  measures), so they are not in the twenty-seven. They are fully covered on
+  their own terms: `DriveArgs` / `TurnArgs` schemas, Pass-2 checks
+  (`capability.relative_motion_unsupported`, `…relative_distance_exceeded`,
+  `profile.relative_motion_requires_educational`), `educational/13`–`15`
+  fixtures, the `educational/buggy-square` example, and a real runtime in
+  `GoPiGo3Adapter` (the first `RelativeMotionAdapter`).
 - **PX4 runtime is a deliberate subset.** RFC-0002 §Reference-runtime-changes
   requires a drone runtime to implement only `move_to`, `hover`, `wait`,
   `wait_for`, `scan`, `capture`, `report`, `dock`, `measure`, plus the drone
   profile verbs; `grasp`/`release`/object-pickup `detect` are out of the drone
   profile by design. The "at least one runtime" bar is met by ros2-runtime for
-  all twenty.
+  all twenty-seven.
 - **`scan` runs on `RclpyAdapter` alone.** A scan is waypoints plus a reading
   at each one. `RclpyAdapter` expands the area into `serpentine`, `grid` or
   `spiral` waypoints (`urml_ros2_runtime.scan_plan`), drives Nav2 to each, and
@@ -271,10 +284,10 @@ The authoritative block set is the manifest schema in
 ## What this audit found and closed
 
 One real gap, closed in the PR that adds this section: **no example manifest
-declared a `connectivity:` block.** Eleven of the twelve blocks appeared in
-the nine shipped example manifests; `connectivity:` (RFC-0006) appeared in
-zero, though it is schema-defined, validator-enforced (Pass 2 + Pass 3), and
-covered by validator fixtures. A new scenario closes it:
+declared a `connectivity:` block.** At the original audit every manifest block
+but one appeared in a shipped example manifest; `connectivity:` (RFC-0006)
+appeared in zero, though it is schema-defined, validator-enforced (Pass 2 +
+Pass 3), and covered by validator fixtures. A new scenario closes it:
 [`examples/drone/link-aware-patrol`](../examples/drone/link-aware-patrol.urml.yaml)
 — a manifest declaring a required `command_link` plus a companion
 `*.envelope.yaml` declaring a `return_to_home` link-loss policy; it passes
@@ -282,7 +295,9 @@ covered by validator fixtures. A new scenario closes it:
 
 ## The matrix
 
-All twelve blocks are covered.
+The `CapabilityManifest` has 29 top-level fields (`model_fields`), all covered
+by the validator. The matrix documents the load-bearing blocks; the metadata
+and config-only fields are listed in the notes below.
 
 | Block | Spec | Schema | Consumer | Conformance | Example |
 |---|---|---|---|---|---|
@@ -306,9 +321,25 @@ All twelve blocks are covered.
 | `licensing` (RFC-0262) | v0.2.0 §2.19 | `Licensing` / `LicenseComponent` | Pass 2 (vendored-copyleft hard error) + Pass 5 (restrictiveness cap) | `licensing/02_vendored_gpl_rejected` | `licensing/license-boundary` |
 | `deployment` (RFC-0268) | v0.2.0 §2.20 | `Deployment` | Pass 2 (class consistency) + Pass 5 (commercial-use gate) | `deployment/01_commercial_gated_rejected` | `deployment/commercial-gate` |
 | `language.translation_alternatives` (RFC-0304) | v0.2.0 §2.18 | `TranslationAlternative` (`open_llm`) | Pass 5 (commercial-gate fork: permissive alternative satisfies the gate) | `translation/02_nllb_permissive_alternative_accepted` | `language/commercial-translation-fork` |
+| `declared_areas` (geofence) | RFC-0011 profiles | `Area` | Pass 2 (`move_to` area, geofence) | `home/34_move_to_area_inside_geofence_positive` | `world-model/home` |
+| `programs` (RFC-0015) | v0.1.0 §3.9 | `Program` | Pass 2 (`call_program`) | `industrial/45_kawasaki_call_program_positive` | `industrial/kawasaki-as-program` |
+| `whole_body` (RFC-0384) | RFC-0384 | `WholeBody` | Pass 2 (`bimanual` / whole-body kinematics) | `biped/09_digit_wholebody_carry_positive` | `humanoid/digit-tote-lift` |
+| `realtime` (RFC-0016) | RFC-0016 | `Realtime` | Pass 2 (cyclic-timing coherence) | `home/27_realtime_cyclic_positive` | `fieldbus/ethercat-drive` |
+| `av` (RFC-0020) | RFC-0020 | `AvProfile` | Pass 2 + Pass 3 (`plan_path` / `follow_trajectory` ODD speed) | `av/01_plan_follow_positive` | `av/robotaxi-trip` |
+| `expression` (RFC-0698) | RFC-0698 (`social`) | `Expression` / `HeadExpression` / `GestureDecl` | Pass 2 (`look_at` / `gesture`) + Pass 4 (envelope) | `social/01_reachy_greeting_positive` | `social/reachy-mini-greeting` |
+| `payload_mechanisms` (RFC-0684) | RFC-0684 | `PayloadMechanism` | Pass 2 (`release` winch/latch) + Pass 3 (drop-height / carried mass) | `drone/35_payload_winch_delivery_positive` | `drone/parcel-delivery-release` |
 
 ## Notes (honest deferrals, not gaps)
 
+- **Metadata and config-only blocks not given their own matrix row.** The 29
+  `CapabilityManifest` fields include `description` (free-text metadata, no
+  validation logic beyond being optional), and the config blocks `substrate`
+  (RFC-0270 / RFC-0385, `Substrate`, Pass 2 substrate-class coherence),
+  `validation` (RFC-0631, `ValidationContext`, Pass 2 + evidence traceability),
+  `learned_policy` / `learned_policies` (`LearnedPolicy`, Pass 2 learned-policy
+  declaration), and `firmware` (`Firmware`, Pass 2 minimal-node cross-ref).
+  Each has a Pydantic model and a validator consumer; they are covered, just
+  not load-bearing enough to warrant a row.
 - **No URDF/SDF cross-reference.** The manifest has no `urdf_ref:` and the
   validator performs no manifest↔URDF frame check. Stated in `v0.1.0.md` §5;
   a candidate future RFC, not a hidden gap.

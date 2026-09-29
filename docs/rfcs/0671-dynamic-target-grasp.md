@@ -2,7 +2,7 @@
 rfc: 0671
 title: Dynamic-target grasping, target_motion on grasp and an interception declaration
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Draft
+state: Implemented
 created: 2026-08-10
 updated: 2026-08-10
 supersedes: —

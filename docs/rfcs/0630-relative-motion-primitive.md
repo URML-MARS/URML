@@ -2,7 +2,7 @@
 rfc: 0630
 title: Relative-motion primitives for frameless robots (drive, turn)
 author: Ido Yahalomi (greenvh@gmail.com)
-state: Accepted
+state: Implemented
 created: 2026-06-22
 updated: 2026-06-22
 supersedes: —
