@@ -38,7 +38,7 @@ dependencies = [
 # load (the same posture as rclpy / pymavlink). The LGPL-optional-dep
 # posture is flagged for maintainer ratification — see SPEC-GAPS.md.
 opcua = [
-  "asyncua>=1.0,<2",
+  "asyncua>=1.0,<3",
 ]
 dev = [
   "pytest>=8",
